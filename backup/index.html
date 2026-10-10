@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Quest: Expanded</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        body { margin: 0; background-color: #333; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #game-container { border: 4px solid #000; box-shadow: 8px 8px 0 #fbbf24; border-radius: 12px; overflow: hidden; }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <script>
+        // SCENE 1: Boot & Asset Loading
+        class BootScene extends Phaser.Scene {
+            constructor() { super('BootScene'); }
+            
+            preload() {
+                // Asset placeholders (we will replace these with real images later)
+                this.load.image('node_locked', 'https://labs.phaser.io/assets/sprites/red_ball.png');
+                this.load.image('node_unlocked', 'https://labs.phaser.io/assets/sprites/green_ball.png');
+            }
+            
+            create() {
+                this.add.text(20, 20, 'Loading Grammar Quest...', { font: '24px Arial', fill: '#fff' });
+                // Instantly transition to the map once loaded
+                this.scene.start('MapScene'); 
+            }
+        }
+
+        // SCENE 2: The Overworld Map
+        class MapScene extends Phaser.Scene {
+            constructor() { super('MapScene'); }
+            
+            create() {
+                // Map Background
+                this.cameras.main.setBackgroundColor('#7dd3fc');
+                
+                // UI: Pencil the Familiar's Dialogue Box
+                const uiBox = this.add.rectangle(400, 530, 760, 100, 0xffffff).setStrokeStyle(4, 0x000000);
+                this.guideText = this.add.text(60, 500, "Pencil: Meow! Click a map node to start a lesson.", { font: 'bold 20px Courier', fill: '#000' });
+
+                // Draw Path Lines
+                const graphics = this.add.graphics();
+                graphics.lineStyle(4, 0x000000, 1);
+                graphics.beginPath();
+                graphics.moveTo(150, 300); // Base Camp
+                graphics.lineTo(400, 200); // Syntax Shire
+                graphics.lineTo(650, 300); // Corporate Boardroom
+                graphics.strokePath();
+
+                // Node 1: Base Camp
+                const node1 = this.add.sprite(150, 300, 'node_unlocked').setInteractive();
+                this.add.text(100, 330, 'Base Camp', { font: 'bold 16px Arial', fill: '#000' });
+                
+                // Node 2: Syntax Shire
+                const node2 = this.add.sprite(400, 200, 'node_locked').setInteractive();
+                this.add.text(340, 230, 'Syntax Shire', { font: 'bold 16px Arial', fill: '#000' });
+
+                // Interaction Logic
+                node1.on('pointerover', () => { node1.setScale(1.2); this.guideText.setText("Pencil: Review the basics here!"); });
+                node1.on('pointerout', () => { node1.setScale(1); });
+                node1.on('pointerdown', () => { 
+                    this.guideText.setText("Pencil: Loading Base Camp...");
+                    // this.scene.start('SyntaxMiniGame'); 
+                });
+
+                node2.on('pointerdown', () => { this.guideText.setText("Pencil: This area is locked. Clear Base Camp first!"); });
+            }
+        }
+
+        // GAME CONFIGURATION
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game-container',
+            scene: [ BootScene, MapScene ]
+        };
+
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>
