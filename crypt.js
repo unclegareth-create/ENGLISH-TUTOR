@@ -23,11 +23,11 @@
 
     // Keys are zero-based level indexes (4 = Floor 5, etc.)
     const milestonePrizes = {
-        4:  { name: "Goblet of Huel Stamina",      emoji: "??",   desc: "Dark sustenance for endless midnight tutoring sessions." },
-        9:  { name: "Trezor Vault of Souls",       emoji: "???",  desc: "A cryptographically secure phylactery for your assets." },
-        14: { name: "Obsidian Phantom Carriage",   emoji: "??",   desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
-        19: { name: "Pencil the Shadow Familiar",  emoji: "????", desc: "A void-feline that purrs at the sight of C2-level syntax." },
-        24: { name: "The Crown of Fluency",        emoji: "??", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
+        4:  { name: "Goblet of Huel Stamina",      emoji: "🍷",   desc: "Dark sustenance for endless midnight tutoring sessions." },
+        9:  { name: "Trezor Vault of Souls",       emoji: "🗄️",  desc: "A cryptographically secure phylactery for your assets." },
+        14: { name: "Obsidian Phantom Carriage",   emoji: "🦇",   desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
+        19: { name: "Pencil the Shadow Familiar",  emoji: "🐈‍⬛", desc: "A void-feline that purrs at the sight of C2-level syntax." },
+        24: { name: "The Crown of Fluency",        emoji: "👑", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
     };
 
     const TYPES = { w: 'wh-word', a: 'aux', s: 'subject', v: 'verb', o: 'object', p: 'punctuation', d: 'decoy', adv: 'adverb' };
@@ -151,11 +151,11 @@
         if ($('level-display')) $('level-display').textContent = `Floor: ${state.level + 1}/${levels.length}`;
         if ($('rank-display')) {
             const prefix = state.playerName ? `${state.playerName} - ` : '';
-            $('rank-display').textContent  = `?? ${prefix}Rank ${Math.floor(state.xp / XP_PER_RANK) + 1}`;
+            $('rank-display').textContent  = `⚔️ ${prefix}Rank ${Math.floor(state.xp / XP_PER_RANK) + 1}`;
         }
-        if ($('gold-counter')) $('gold-counter').textContent  = `?? ${state.gold}`;
-        if ($('xp-counter')) $('xp-counter').textContent    = `?? ${state.xp % XP_PER_RANK}/${XP_PER_RANK}`;
-        if ($('streak-display')) $('streak-display').textContent = `?? ${state.streak}`;
+        if ($('gold-counter')) $('gold-counter').textContent  = `🪙 ${state.gold}`;
+        if ($('xp-counter')) $('xp-counter').textContent    = `🔮 ${state.xp % XP_PER_RANK}/${XP_PER_RANK}`;
+        if ($('streak-display')) $('streak-display').textContent = `🔥 ${state.streak}`;
     }
 
     /* ---------------- LEVEL SETUP ---------------- */
@@ -172,7 +172,7 @@
         board.innerHTML = '';
         bank.innerHTML = '';
         nextBtn.disabled = true;
-        nextBtn.textContent = 'Next Floor ?';
+        nextBtn.textContent = 'Next Floor ➔';
         setStatus('Summon the sentence!', '');
 
         level.pattern.forEach((slot) => {
@@ -226,7 +226,7 @@
         const level = levels[state.level];
         const cost = hintsUsed === 0 ? 0 : 5;
         if (state.gold < cost) { 
-            setStatus('Not enough gold for another hint (5 ??).', 'error'); 
+            setStatus('Not enough gold for another hint (5 🪙).', 'error'); 
             return; 
         }
         
@@ -245,7 +245,7 @@
         refreshHud(); 
         saveState();
         
-        setStatus(`Rune ${firstWrongIndex + 1} is glowing!` + (cost ? ' (-5 ??)' : ' (first hint is free)'), '');
+        setStatus(`Rune ${firstWrongIndex + 1} is glowing!` + (cost ? ' (-5 🪙)' : ' (first hint is free)'), '');
         if (tipEl) tipEl.textContent = tips[level.pattern[firstWrongIndex].type] || '';
         sfx('grab');
     }
@@ -399,11 +399,11 @@
             state.xp += 20;
         }
         setStatus(isLast ? 'The Crypt is Conquered!' : (firstClear ? 'The incantation is complete!' : 'The incantation is complete! (Rewards already claimed)'), 'success');
-        if (tipEl) tipEl.textContent = '? "' + levels[state.level].answer.map(a => a.text).join(' ').replace(/ \?/g, '?') + '"';
+        if (tipEl) tipEl.textContent = '✔ "' + levels[state.level].answer.map(a => a.text).join(' ').replace(/ \?/g, '?') + '"';
         sfx('success');
 
         nextBtn.disabled = false;
-        nextBtn.textContent = isLast ? 'Restart Crypt ?' : 'Next Floor ?';
+        nextBtn.textContent = isLast ? 'Restart Crypt ↺' : 'Next Floor ➔';
 
         if (firstClear) {
             const item = rollLoot();
@@ -627,4 +627,3 @@
         initLevel();
     });
 })();
-
