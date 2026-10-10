@@ -1,0 +1,203 @@
+:root {
+    --bg: #050505;
+    --neon: #00ff41;
+    --neon-dim: #008f11;
+    --danger: #ff003c;
+    --text: #e0e0e0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--bg);
+    color: var(--neon);
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* CRT Scanline Effect */
+.crt-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+/* Modals */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+.modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.modal-content {
+    background: #000;
+    border: 1px solid var(--neon);
+    padding: 2rem;
+    max-w: 500px;
+    width: 90%;
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+}
+.modal-content h1 {
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-shadow: 0 0 5px var(--neon);
+}
+.modal-content p { margin-bottom: 1.5rem; line-height: 1.5; }
+
+input {
+    width: 100%;
+    background: #000;
+    border: 1px solid var(--neon-dim);
+    color: var(--neon);
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+}
+input:focus { border-color: var(--neon); box-shadow: 0 0 10px rgba(0, 255, 65, 0.4); }
+
+button {
+    width: 100%;
+    background: var(--neon-dim);
+    color: #000;
+    border: 1px solid var(--neon);
+    padding: 0.75rem;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 0.5rem;
+}
+button:disabled { background: #111; color: #333; border-color: #333; cursor: not-allowed; }
+button:not(:disabled):hover { background: var(--neon); box-shadow: 0 0 15px var(--neon); }
+button.secondary { background: #000; color: var(--neon); }
+button.secondary:hover { background: rgba(0, 255, 65, 0.1); }
+
+/* Game Layout */
+.game-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--neon-dim);
+}
+.exit-link { color: var(--danger); text-decoration: none; }
+.exit-link:hover { text-shadow: 0 0 10px var(--danger); }
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    max-w: 800px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.section-title {
+    font-size: 0.8rem;
+    color: var(--neon-dim);
+    margin-bottom: 0.5rem;
+}
+.mt-4 { margin-top: 1.5rem; }
+
+.terminal-panel {
+    background: rgba(0, 255, 65, 0.05);
+    border: 1px solid var(--neon-dim);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.sentence {
+    font-size: 1.2rem;
+    color: var(--text);
+}
+
+.keyword {
+    display: inline-block;
+    padding: 0.2rem 1rem;
+    background: rgba(0, 255, 65, 0.2);
+    border: 1px solid var(--neon);
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px var(--neon);
+}
+.keyword.pulse { animation: pulse 2s infinite; }
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.output-area {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.5rem;
+    background: #000;
+    border: 1px dashed var(--neon-dim);
+}
+.static-text { color: var(--text); font-size: 1.2rem; }
+
+.slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    min-width: 100px;
+}
+
+.fragments-panel {
+    margin-bottom: 2rem;
+}
+.fragments-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    min-height: 4rem;
+}
+
+.fragment {
+    background: #000;
+    color: var(--neon);
+    border: 1px solid var(--neon-dim);
+    padding: 0.5rem 1rem;
+    font-family: inherit;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+.fragment:hover { background: rgba(0, 255, 65, 0.2); border-color: var(--neon); }
+.fragment.used { opacity: 0.3; pointer-events: none; border-style: dashed; }
+
+.execute-btn {
+    margin-top: auto;
+    font-size: 1.5rem;
+    padding: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.execute-btn.error { background: var(--danger); border-color: var(--danger); color: #fff; box-shadow: 0 0 15px var(--danger); }
+.execute-btn.success { background: var(--neon); border-color: var(--neon); color: #000; box-shadow: 0 0 20px var(--neon); }
