@@ -1,0 +1,189 @@
+:root {
+    --bg: #09090b;
+    --core: #38bdf8;
+    --danger: #ef4444;
+    --success: #22c55e;
+    --text: #e2e8f0;
+    --panel: #18181b;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* Modals */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+.modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.modal-content {
+    background: var(--panel);
+    border: 1px solid var(--core);
+    padding: 2rem;
+    max-w: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+}
+.modal-content h1 {
+    color: var(--core);
+    margin-bottom: 1rem;
+    font-size: 2rem;
+}
+.modal-content p { margin-bottom: 1.5rem; line-height: 1.5; color: #a1a1aa; }
+
+input {
+    width: 100%;
+    background: #000;
+    border: 1px solid #3f3f46;
+    color: var(--core);
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+}
+input:focus { border-color: var(--core); box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+
+button {
+    width: 100%;
+    background: var(--core);
+    color: #000;
+    border: none;
+    padding: 0.75rem;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 0.5rem;
+}
+button:disabled { background: #3f3f46; cursor: not-allowed; }
+button:not(:disabled):hover { background: #7dd3fc; box-shadow: 0 0 15px var(--core); }
+button.secondary { background: transparent; border: 1px solid var(--core); color: var(--core); }
+button.secondary:hover { background: rgba(56, 189, 248, 0.1); }
+
+
+/* Game Layout */
+.game-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #27272a;
+}
+.exit-link { color: var(--danger); text-decoration: none; }
+.exit-link:hover { text-shadow: 0 0 10px var(--danger); }
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+#target-definition {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    min-height: 4rem;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(255,255,255,0.5);
+}
+
+.reactor-area {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.core {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--core) 0%, transparent 70%);
+    border: 2px solid var(--core);
+    box-shadow: 0 0 30px var(--core), inset 0 0 20px var(--core);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    z-index: 10;
+}
+.core.pulse { animation: pulse 2s infinite alternate; }
+.core.success { border-color: var(--success); box-shadow: 0 0 50px var(--success); color: var(--success); background: radial-gradient(circle, var(--success) 0%, transparent 70%); animation: none; }
+.core.error { border-color: var(--danger); box-shadow: 0 0 50px var(--danger); color: var(--danger); background: radial-gradient(circle, var(--danger) 0%, transparent 70%); animation: none; }
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 20px var(--core); }
+    100% { transform: scale(1.05); box-shadow: 0 0 40px var(--core); }
+}
+
+.particles-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+}
+.particle {
+    position: absolute;
+    width: 80px; height: 40px;
+    background: var(--panel);
+    border: 1px solid #52525b;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0; margin: 0;
+}
+.particle:hover { border-color: var(--core); box-shadow: 0 0 10px var(--core); }
+
+/* Orbit positions */
+.particle[data-index="0"] { top: 0; left: 50%; transform: translate(-50%, -50%); }
+.particle[data-index="1"] { bottom: 0; left: 50%; transform: translate(-50%, 50%); }
+.particle[data-index="2"] { top: 50%; left: 0; transform: translate(-50%, -50%); }
+.particle[data-index="3"] { top: 50%; right: 0; transform: translate(50%, -50%); }
+
+.timer-container {
+    height: 10px;
+    background: #18181b;
+    width: 100%;
+}
+#timer-bar {
+    height: 100%;
+    width: 100%;
+    background: var(--core);
+    transition: width 0.1s linear, background-color 0.3s;
+}
