@@ -1,8 +1,8 @@
 /* ==========================================================
-   Shared behaviour for the tutor landing pages (gareth.html, web.html)
+   Shared behaviour for the tutor landing pages (index.html, web.html)
    - Accessible mobile menu
-   - Contact form: AJAX submit with inline status (falls back to a normal
-     POST if JavaScript is unavailable)
+   - Contact form: submitted natively by the browser to FormSubmit
+     (no JavaScript involved), so it works from any host.
    ========================================================== */
 (() => {
     'use strict';
@@ -27,6 +27,8 @@
         });
         // If the window grows past the mobile breakpoint, reset the menu.
         window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => { if (e.matches) setOpen(false); });
+    }
+
     /* ---------- Contact form ---------- */
     // We intentionally let the browser handle form submission natively 
     // to ensure formsubmit.co handles spam, captchas, and delivery reliably.
