@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Boardroom Pitch | Gareth Montgomery</title>
+    <meta name="description" content="A Business English simulation game. Navigate high-stakes corporate conversations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="boardroom.css">
+</head>
+<body>
+
+    <!-- Intro Screen -->
+    <div id="intro-screen" class="modal open">
+        <div class="modal-content">
+            <h1>THE BOARDROOM PITCH</h1>
+            <p>You are pitching a high-stakes project to the CEO. You must translate your blunt thoughts into diplomatic, C1-level Business English. One wrong phrase could ruin the deal.</p>
+            <input type="text" id="player-name" placeholder="Your Name..." maxlength="15" autocomplete="off">
+            <input type="email" id="player-email" placeholder="Your Work Email..." autocomplete="email">
+            <button id="btn-start" disabled>ENTER THE MEETING</button>
+        </div>
+    </div>
+
+    <!-- Game Over / Lead Capture Screen -->
+    <div id="end-screen" class="modal">
+        <div class="modal-content">
+            <h1 id="end-title">MEETING CONCLUDED</h1>
+            <p id="end-desc">The Board has made a decision regarding your pitch.</p>
+            <p>Final Reputation: <span id="final-score">0</span>%</p>
+            
+            <form action="https://formsubmit.co/gareth_montgomery@hotmail.com" method="POST" id="lead-form">
+                <input type="hidden" name="_subject" value="Boardroom Pitch Lead!">
+                <input type="hidden" name="_next" value="">
+                <input type="hidden" name="score" id="lead-score" value="">
+                <input type="hidden" name="email" id="lead-email" required>
+                <button type="submit" id="btn-claim">GET FEEDBACK & CLAIM DISCOUNT</button>
+            </form>
+            <button id="btn-restart" class="secondary">SCHEDULE ANOTHER MEETING</button>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <header>
+            <div class="brand">EXECUTIVE SUITE</div>
+            <a href="index.html" class="exit-link">LEAVE MEETING</a>
+        </header>
+
+        <main>
+            <div class="ceo-panel">
+                <div class="ceo-avatar">💼</div>
+                <div class="patience-wrapper">
+                    <div class="patience-label">CEO PATIENCE</div>
+                    <div class="patience-bar-bg">
+                        <div id="patience-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scenario-panel">
+                <div class="scenario-label">YOUR INTERNAL THOUGHT:</div>
+                <div id="scenario-thought" class="thought">"Their idea is completely terrible and won't work."</div>
+            </div>
+
+            <div class="options-panel">
+                <div class="options-label">CHOOSE YOUR RESPONSE:</div>
+                <div id="options-container">
+                    <!-- Buttons injected via JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="boardroom.js"></script>
+</body>
+</html>
