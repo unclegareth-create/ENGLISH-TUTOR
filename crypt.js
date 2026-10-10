@@ -30,6 +30,13 @@
         24: { name: "The Crown of Fluency",        emoji: "👑", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
     };
 
+        const bosses = {
+        4: { name: "The Goblin of Gerunds", emoji: "👺", taunt: "You'll never master the -ing form, mortal!" },
+        9: { name: "Phantom of the Past Perfect", emoji: "👻", taunt: "I had already won before you even arrived!" },
+        14: { name: "Vampire of the Passive Voice", emoji: "🧛", taunt: "Your active sentences will be drained of life!" },
+        19: { name: "Inquisitor of Inversion", emoji: "🧙‍♂️", taunt: "Seldom have I seen such weak syntax!" },
+        24: { name: "The Syntax Dragon (C2)", emoji: "🐉", taunt: "Only absolute perfection will pierce my scales." }
+    };
     const TYPES = { w: 'wh-word', a: 'aux', s: 'subject', v: 'verb', o: 'object', p: 'punctuation', d: 'decoy', adv: 'adverb' };
 
     /**
@@ -163,6 +170,21 @@
     function initLevel() {
         const level = levels[state.level];
         locked = false;
+        
+        const boss = bosses[state.level];
+        if (boss) {
+            document.body.classList.add('boss-mode');
+            boss-arena.classList.remove('hidden');
+            boss-avatar.textContent = boss.emoji;
+            boss-avatar.style.filter = 'drop-shadow(2px 4px 0 #000)';
+            boss-name.textContent = boss.name;
+            boss-taunt.textContent = "${boss.taunt}";
+            if (hintBtn) hintBtn.style.display = 'none'; // No hints in boss fights!
+        } else {
+            document.body.classList.remove('boss-mode');
+            boss-arena.classList.add('hidden');
+            if (hintBtn) hintBtn.style.display = 'inline-block';
+        }
         targetedZone = null;
         hintsUsed = 0;
         if (tipEl) tipEl.textContent = '';
@@ -411,8 +433,17 @@
             state.gold += goldEarned;
             state.xp += 20;
             
-            showFloatingText('+' + goldEarned + ' 🪙', '#facc15', gold-counter);
-            setTimeout(() => showFloatingText('+20 🔮', '#a855f7', xp-counter), 300);
+            const boss = bosses[state.level];
+            if (boss) {
+                state.gold += 50; // Boss clear bonus
+                boss-taunt.textContent = '"Impossible! My syntax is broken!"';
+                boss-avatar.style.filter = 'grayscale(100%) blur(3px)';
+                showFloatingText('+50 🪙 BOSS BONUS', '#facc15', gold-counter);
+                setTimeout(() => showFloatingText('+20 🔮', '#a855f7', xp-counter), 600);
+            } else {
+                showFloatingText('+' + goldEarned + ' 🪙', '#facc15', gold-counter);
+                setTimeout(() => showFloatingText('+20 🔮', '#a855f7', xp-counter), 300);
+            }
             
             if (window.confetti) {
                 confetti({
