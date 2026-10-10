@@ -384,6 +384,18 @@
         }
     }
 
+        function showFloatingText(text, color, element) {
+        const floater = document.createElement('div');
+        floater.className = 'floating-text';
+        floater.textContent = text;
+        floater.style.color = color;
+        const rect = element.getBoundingClientRect();
+        floater.style.left = (rect.left + rect.width / 2 - 30 + window.scrollX) + 'px';
+        floater.style.top = (rect.top - 20 + window.scrollY) + 'px';
+        document.body.appendChild(floater);
+        setTimeout(() => floater.remove(), 1000);
+    }
+
     function solveLevel() {
         locked = true;
         board.querySelectorAll('.block').forEach(b => { b.classList.add('correct'); b.draggable = false; });
@@ -395,8 +407,22 @@
         if (firstClear) {
             state.completed.push(state.level);
             state.streak++;
-            state.gold += 15 + Math.min(state.streak - 1, 5) * 3;
+            const goldEarned = 15 + Math.min(state.streak - 1, 5) * 3;
+            state.gold += goldEarned;
             state.xp += 20;
+            
+            showFloatingText('+' + goldEarned + ' 🪙', '#facc15', gold-counter);
+            setTimeout(() => showFloatingText('+20 🔮', '#a855f7', xp-counter), 300);
+            
+            if (window.confetti) {
+                confetti({
+                    particleCount: 100,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#22c55e', '#a855f7', '#facc15'],
+                    disableForReducedMotion: true
+                });
+            }
         }
         setStatus(isLast ? 'The Crypt is Conquered!' : (firstClear ? 'The incantation is complete!' : 'The incantation is complete! (Rewards already claimed)'), 'success');
         if (tipEl) tipEl.textContent = '✔ "' + levels[state.level].answer.map(a => a.text).join(' ').replace(/ \?/g, '?') + '"';
