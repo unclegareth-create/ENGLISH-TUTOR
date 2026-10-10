@@ -26,7 +26,8 @@
         4:  { name: "Goblet of Huel Stamina",      emoji: "🍷",   desc: "Dark sustenance for endless midnight tutoring sessions." },
         9:  { name: "Trezor Vault of Souls",       emoji: "🗄️",  desc: "A cryptographically secure phylactery for your assets." },
         14: { name: "Obsidian Phantom Carriage",   emoji: "🦇",   desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
-        19: { name: "Pencil the Shadow Familiar",  emoji: "🐈‍⬛", desc: "A void-feline that purrs at the sight of C2-level syntax." }
+        19: { name: "Pencil the Shadow Familiar",  emoji: "?????", desc: "A void-feline that purrs at the sight of C2-level syntax." },
+        24: { name: "The Crown of Fluency",        emoji: "??", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
     };
 
     const TYPES = { w: 'wh-word', a: 'aux', s: 'subject', v: 'verb', o: 'object', p: 'punctuation', d: 'decoy', adv: 'adverb' };
@@ -519,6 +520,19 @@
                 if ($('lead-score')) {
                     $('lead-score').value = `${state.playerName} - Gold: ${state.gold}, Streak: ${state.streak}`;
                 }
+                const leadHeading = $('lead-heading');
+                const leadPara = leadModal.querySelector('p');
+                if (state.streak >= 20) {
+                    leadHeading.textContent = "Your Syntax is Flawless!";
+                    leadPara.textContent = "You're ready for C1 Advanced or IELTS 8.0. Enter your email to claim your Grammar Crypt Certificate, and get a special 50% discount on a trial lesson to polish your speaking!";
+                } else if (state.streak >= 10) {
+                    leadHeading.textContent = "You Survived!";
+                    leadPara.textContent = "Solid grammar, but a few cracks in the armor. Enter your email to see your final score and get a 50% discount on a trial lesson to fix those gaps.";
+                } else {
+                    leadHeading.textContent = "The Crypt Defeated You...";
+                    leadPara.textContent = "Time for some targeted practice! Enter your email to get your score breakdown and book a 50% off trial lesson to level up your English.";
+                    leadHeading.style.color = "#ef4444";
+                }
                 leadModal.classList.add('open');
                 
                 const form = $('lead-form');
@@ -599,3 +613,6 @@
         initLevel();
     });
 })();
+
+
+
