@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%A6%87%3C/text%3E%3C/svg%3E">
+    <meta property="og:title" content="Grammar Crypt: Audio Edition">
+    <meta property="og:description" content="Drag grammar runes into order to survive 25 floors of English questions.">
     <link rel="stylesheet" href="crypt.css">
 </head>
 <body>
@@ -26,9 +29,9 @@
     <div id="name-screen" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="name-heading">
         <div class="modal-panel">
             <h2 id="name-heading">Who Dares Enter?</h2>
-            <p>Enter your name and email to unlock the crypt...</p>
+            <p>Enter your name to unlock the crypt. Email is optional (you can add it at the end for your certificate).</p>
             <input type="text" id="player-name-input" class="name-input" placeholder="Your Name..." maxlength="15" autocomplete="off" style="margin-bottom: 10px;">
-            <input type="email" id="player-email-input" class="name-input" placeholder="Your Email Address..." autocomplete="email">
+            <input type="email" id="player-email-input" class="name-input" placeholder="Email (optional)" autocomplete="email">
             <br>
             <button type="button" id="btn-start-game" class="btn-next" disabled>Begin</button>
         </div>
@@ -42,10 +45,13 @@
             <form action="https://formsubmit.co/de094039c8f01c6fa3862b3a6a060db1" method="POST" id="lead-form">
                 <input type="hidden" name="_subject" value="Grammar Crypt Lead!">
                 <input type="hidden" name="_next" value="">
+                <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+                <input type="hidden" name="name" id="lead-name">
                 <input type="hidden" name="score" id="lead-score" value="">
-                <input type="hidden" name="email" id="lead-email-hidden" required>
-                <br>
-                <button type="submit" class="btn-claim" id="btn-submit-lead">Unlock My Score</button>
+                <input type="email" name="email" id="lead-email" class="name-input" placeholder="Your Email Address..." required autocomplete="email" aria-label="Email address">
+                <label class="consent"><input type="checkbox" id="lead-consent" required> I agree to be emailed my score and a trial-lesson offer.</label>
+                <button type="submit" class="btn-claim" id="btn-submit-lead" style="margin-top:0">Unlock My Score</button>
+                <br><button type="button" id="btn-skip-lead" class="btn-reset">No thanks, restart</button>
             </form>
         </div>
     </div>
@@ -54,7 +60,7 @@
         <main class="main-quest">
             <h1>Grammar Crypt!</h1>
             <div class="hud">
-                <div id="level-display">Floor: 1/20</div>
+                <div id="level-display">Floor: 1/25</div>
                 <div id="rank-display">⚔️ Rank 1</div>
                 <div id="gold-counter" title="Gold">🪙 0</div>
                 <div id="xp-counter" title="Experience">🔮 0/100</div>
