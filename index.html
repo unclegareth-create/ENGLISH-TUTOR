@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Quest: Expanded</title>
+    <meta name="description" content="Grammar Quest overworld map: travel from Base Camp to the Corporate Boardroom, unlocking each area as you learn.">
+    <meta name="theme-color" content="#333333">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body { margin: 0; background-color: #333; display: flex; justify-content: center; align-items: center; color: #fff; font-family: Arial, sans-serif; }
+        #game-container {
+            width: min(100vw - 24px, (100vh - 24px) * 4 / 3);   /* keep 4:3, never overflow the viewport */
+            aspect-ratio: 4 / 3;
+            border: 4px solid #000; box-shadow: 8px 8px 0 #fbbf24; border-radius: 12px; overflow: hidden;
+        }
+        noscript { padding: 24px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div id="game-container" role="application" aria-label="Grammar Quest map. Click or tap a map node to start a lesson."></div>
+    <noscript>Grammar Quest needs JavaScript to run. Please enable it and reload.</noscript>
+
+    <script>
+        const SAVE_KEY = 'grammarQuest.map.v1';
+
+        // Map nodes in travel order. A node unlocks once the previous one is completed.
+        const NODES = [
+            { id: 'base',      label: 'Base Camp',            x: 150, y: 300, hint: 'Review the basics here!' },
+            { id: 'shire',     label: 'Syntax Shire',         x: 400, y: 200, hint: 'Sentence structure awaits!' },
+            { id: 'boardroom', label: 'Corporate Boardroom',  x: 650, y: 300, hint: 'Professional English, at last!' }
+        ];
+
+        const progress = {
+            completed: [],
+            load() {
+                try {
+                    const saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+                    this.completed = Array.isArray(saved) ? saved.filter(id => NODES.some(n => n.id === id)) : [];
+                } catch (_) { this.completed = []; }
+            },
+            save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(this.completed)); } catch (_) {} },
+            reset() { this.completed = []; this.save(); },
+            isDone(i) { return this.completed.includes(NODES[i].id); },
+            isUnlocked(i) { return i === 0 || this.isDone(i - 1); }
+        };
+
+        // SCENE 1: Boot & texture generation (no external image downloads needed)
+        class BootScene extends Phaser.Scene {
+            constructor() { super('BootScene'); }
+
+            create() {
+                const makeNode = (key, fill) => {
+                    const g = this.make.graphics({ x: 0, y: 0, add: false });
+                    g.fillStyle(fill, 1).fillCircle(24, 24, 22);
+                    g.lineStyle(4, 0x000000, 1).strokeCircle(24, 24, 22);
+                    g.generateTexture(key, 48, 48);
+                    g.destroy();
+                };
+                makeNode('node_locked', 0x6b7280);     // grey
+                makeNode('node_unlocked', 0x22c55e);   // green
+                makeNode('node_done', 0xfbbf24);       // gold
+
+                progress.load();
+                this.scene.start('MapScene');
+            }
+        }
+
+        // SCENE 2: The Overworld Map
+        class MapScene extends Phaser.Scene {
+            constructor() { super('MapScene'); }
+
+            create() {
+                this.cameras.main.setBackgroundColor('#7dd3fc');
+
+                // Path lines between consecutive nodes
+                const graphics = this.add.graphics();
+                graphics.lineStyle(4, 0x000000, 1);
+                graphics.beginPath();
+                NODES.forEach((n, i) => i === 0 ? graphics.moveTo(n.x, n.y) : graphics.lineTo(n.x, n.y));
+                graphics.strokePath();
+
+                // UI: Pencil the Familiar's dialogue box
+                this.add.rectangle(400, 530, 760, 100, 0xffffff).setStrokeStyle(4, 0x000000);
+                this.guideText = this.add.text(40, 495, '', {
+                    font: 'bold 20px Courier', fill: '#000', wordWrap: { width: 720 }
+                });
+                this.say('Meow! Click a map node to start a lesson.');
+
+                // Nodes
+                this.sprites = NODES.map((node, i) => {
+                    const sprite = this.add.sprite(node.x, node.y, 'node_locked').setInteractive({ useHandCursor: true });
+                    this.add.text(node.x, node.y + 40, node.label, { font: 'bold 16px Arial', fill: '#000' }).setOrigin(0.5, 0);
+
+                    sprite.on('pointerover', () => {
+                        this.tweens.add({ targets: sprite, scale: 1.2, duration: 100 });
+                        this.say(progress.isUnlocked(i) ? node.hint : 'This area is locked.');
+                    });
+                    sprite.on('pointerout', () => this.tweens.add({ targets: sprite, scale: 1, duration: 100 }));
+                    sprite.on('pointerdown', () => this.enterNode(i));
+                    return sprite;
+                });
+
+                // Small reset control
+                const reset = this.add.text(780, 20, 'Reset progress', { font: '14px Arial', fill: '#0c4a6e', backgroundColor: '#ffffffaa', padding: { x: 6, y: 4 } })
+                    .setOrigin(1, 0).setInteractive({ useHandCursor: true });
+                reset.on('pointerdown', () => { progress.reset(); this.refreshNodes(); this.say('Progress reset. Back to Base Camp!'); });
+
+                this.refreshNodes();
+            }
+
+            say(message) { this.guideText.setText('Pencil: ' + message); }
+
+            refreshNodes() {
+                this.sprites.forEach((sprite, i) => {
+                    sprite.setTexture(progress.isDone(i) ? 'node_done' : (progress.isUnlocked(i) ? 'node_unlocked' : 'node_locked'));
+                });
+            }
+
+            enterNode(i) {
+                const node = NODES[i];
+                if (!progress.isUnlocked(i)) {
+                    const prev = NODES[i - 1].label;
+                    this.say(`This area is locked. Clear ${prev} first!`);
+                    this.tweens.add({ targets: this.sprites[i], x: node.x + 6, yoyo: true, repeat: 3, duration: 40, onComplete: () => this.sprites[i].setX(node.x) });
+                    return;
+                }
+                this.say(`Loading ${node.label}...`);
+                // TODO: replace with the real lesson, e.g. this.scene.start('SyntaxMiniGame', { node });
+                // Until then, entering a node marks it complete so the unlock flow can be tried.
+                if (!progress.isDone(i)) {
+                    progress.completed.push(node.id);
+                    progress.save();
+                    this.refreshNodes();
+                    this.time.delayedCall(700, () => {
+                        const next = NODES[i + 1];
+                        this.say(next ? `${node.label} cleared! ${next.label} is now unlocked.` : 'You cleared every area. Well done!');
+                    });
+                }
+            }
+        }
+
+        // GAME CONFIGURATION
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 600,
+            parent: 'game-container',
+            scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+            scene: [BootScene, MapScene]
+        };
+
+        const game = new Phaser.Game(config);
+    </script>
+</body>
+</html>

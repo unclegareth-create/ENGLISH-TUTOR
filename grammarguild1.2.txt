@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Crypt: Audio Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@700;900&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #120a1f;
+            background-image: radial-gradient(#2a1245 4px, transparent 4px);
+            background-size: 40px 40px;
+            color: #e2e8f0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 25px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1, h2, h3 { 
+            font-family: 'Creepster', cursive; 
+            color: #a855f7; 
+            text-shadow: 4px 4px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; 
+            letter-spacing: 3px;
+            margin-top: 0;
+            font-weight: normal;
+        }
+
+        h1 { font-size: 3.5rem; color: #22c55e; }
+        
+        .hud { 
+            display: flex; gap: 20px; margin-bottom: 25px; 
+            font-size: 22px; font-weight: 900; color: #facc15;
+            text-shadow: 3px 3px 0 #000;
+            align-items: center;
+        }
+        
+        .panel {
+            background-color: #1e1b4b; 
+            border: 6px solid #000; 
+            border-radius: 12px;
+            padding: 25px; 
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.8);
+        }
+
+        .puzzle-board {
+            display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap;
+            padding: 25px; background-color: #312e81; border: 5px solid #000;
+            border-radius: 8px; margin-bottom: 25px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
+        }
+
+        .drop-zone {
+            width: auto; min-width: 90px; height: 60px; padding: 0 10px;
+            border: 4px dashed #6b7280; border-radius: 8px;
+            display: flex; justify-content: center; align-items: center;
+            background-color: rgba(0,0,0,0.4);
+            color: #9ca3af; font-weight: 900; font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .block-bank {
+            display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;
+            padding: 25px; border: 5px solid #000; background-color: #0f172a; 
+            border-radius: 8px;
+        }
+
+        .block {
+            padding: 12px 20px; border-radius: 8px; color: #fff; font-weight: 900; font-size: 18px;
+            cursor: grab; user-select: none; transition: transform 0.1s, box-shadow 0.1s;
+            text-transform: uppercase; text-align: center; 
+            border: 4px solid #000;
+            box-shadow: 0 6px 0 #000;
+        }
+        .block:active { cursor: grabbing; transform: translateY(6px); box-shadow: 0 0 0 #000; }
+
+        .wh-word { background-color: #6b21a8; }
+        .aux { background-color: #1e3a8a; }
+        .subject { background-color: #14532d; }
+        .verb { background-color: #9a3412; }
+        .object { background-color: #7f1d1d; }
+        .adverb { background-color: #0f766e; }
+        .punctuation { background-color: #334155; }
+        .decoy { background-color: #831843; color: #fbcfe8; }
+
+        .drop-zone.active { background-color: rgba(168, 85, 247, 0.3); transform: scale(1.05); border-color: #a855f7; }
+        .block.correct { animation: float-spooky 1.5s ease-in-out infinite alternate; border-color: #22c55e; box-shadow: 0 6px 0 #22c55e; }
+
+        .status-panel { margin-top: 20px; font-size: 24px; text-align: center; min-height: 35px; font-weight: 900; }
+        .success { color: #22c55e; text-shadow: 2px 2px 0 #000; } 
+        .error { color: #ef4444; text-shadow: 2px 2px 0 #000;}
+        
+        button {
+            padding: 12px 25px; background-color: #9333ea; color: #fff;
+            border: 4px solid #000; border-radius: 8px; font-weight: 900; font-size: 18px;
+            cursor: pointer; font-family: 'Creepster', cursive; letter-spacing: 2px; margin: 5px;
+            box-shadow: 0 6px 0 #000; transition: transform 0.1s, box-shadow 0.1s;
+        }
+        button:hover { background-color: #a855f7; }
+        button:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 0 0 #000; }
+        button:disabled { background-color: #334155; opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: 0 6px 0 #000;}
+        
+        #audio-toggle { background-color: #14532d; font-size: 14px; padding: 8px 15px; margin-left: auto; }
+
+        .inventory-panel { display: flex; flex-direction: column; gap: 12px; }
+        .loot-item {
+            display: flex; align-items: center; padding: 12px;
+            background-color: #0f172a; border: 3px solid #000; border-radius: 8px;
+            font-size: 16px; font-weight: bold; color: #e2e8f0;
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+        }
+        .loot-icon { width: 35px; height: 35px; border-radius: 4px; margin-right: 12px; border: 2px solid #000; }
+
+        #prize-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(8px);
+        }
+        .prize-content {
+            background: #1e1b4b; border: 6px solid #a855f7; border-radius: 12px;
+            padding: 40px; text-align: center; max-width: 500px;
+            animation: superPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 15px 15px 0 #000;
+        }
+        .prize-icon { font-size: 80px; margin: 20px 0; animation: float-spooky 2.5s ease-in-out infinite; }
+        .prize-title { color: #22c55e; font-size: 36px; margin-bottom: 10px; font-family: 'Creepster', cursive; text-shadow: 2px 2px 0 #000; }
+        .prize-desc { font-size: 20px; font-weight: bold; color: #cbd5e1; }
+
+        @keyframes float-spooky { from { transform: translateY(0) rotate(-2deg); } to { transform: translateY(-10px) rotate(2deg); } }
+        @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+        @keyframes superPop { 0% { transform: scale(0) rotate(15deg); } 100% { transform: scale(1) rotate(0deg); } }
+
+        #loot-announcement {
+            position: fixed; top: 20px; right: 20px; background: #0f172a;
+            border: 4px solid #a855f7; padding: 15px 25px; border-radius: 8px;
+            display: none; z-index: 100; box-shadow: 6px 6px 0 #000; color: #fff;
+            font-family: 'Creepster', cursive; font-size: 22px; letter-spacing: 1px; animation: popIn 0.3s;
+        }
+        .drop-zone.wrong { border-color: #ef4444; background-color: rgba(239,68,68,.25); }
+        .block.hint { animation: pulse .6s ease-in-out 4; border-color: #facc15; }
+        .shake { animation: shake .4s; }
+        .tip { font-size: 16px; color: #cbd5e1; font-weight: 700; margin-top: 8px; min-height: 22px; text-align: center; }
+        @keyframes pulse { 50% { transform: scale(1.15); } }
+        @keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+    </style>
+</head>
+<body>
+
+    <div class="layout-grid">
+        <div class="main-quest">
+            <h1>Grammar Crypt!</h1>
+            <div class="hud">
+                <div id="level-display">Floor: 1/20</div>
+                <div id="gold-counter">🪙 0</div>
+                <div id="xp-counter">🔮 0/100</div>
+                <div id="rank-display"></div>
+                <div id="streak-display"></div>
+                <button id="audio-toggle" onclick="toggleAudio()">🔈 Sound Off</button>
+            </div>
+
+            <div class="panel">
+                <h2 id="quest-title" style="color: #a855f7;">Level 1: The Basics</h2>
+                <div class="puzzle-board" id="board"></div>
+                <div class="block-bank" id="bank" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <div class="status-panel" id="status">Summon the sentence!</div>
+                <div class="tip" id="tip"></div>
+                
+                <div style="text-align: center; margin-top: 25px;">
+                    <button onclick="resetBoard()" style="background-color: #ef4444;">Reset</button>
+                    <button onclick="useHint()" style="background-color: #ca8a04;">Hint 💡</button>
+                    <button id="next-btn" onclick="nextLevel()" disabled style="background-color: #22c55e;">Next Floor ➔</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="inventory-panel panel">
+            <h3 style="color: #facc15;">Relics</h3>
+            <div id="inventory-list"></div>
+        </div>
+    </div>
+
+    <div id="loot-announcement"></div>
+
+    <div id="prize-modal">
+        <div class="prize-content">
+            <h2 style="color: #facc15; font-size: 40px; margin-top: 0;">🦇 MILESTONE REACHED! 🦇</h2>
+            <div class="prize-icon" id="prize-emoji">🏆</div>
+            <div class="prize-title" id="prize-name">Legendary Item</div>
+            <div class="prize-desc" id="prize-description">Description goes here.</div>
+            <button onclick="closePrizeModal()" style="margin-top: 30px; font-size: 24px; padding: 15px 40px; background: #9333ea;">Claim Relic</button>
+        </div>
+    </div>
+
+    <script>
+        // --- SYNTHESIZER AUDIO ENGINE ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        let bgmOscillator;
+        let bgmGain;
+        let isAudioEnabled = false;
+
+        function toggleAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            
+            isAudioEnabled = !isAudioEnabled;
+            const btn = document.getElementById('audio-toggle');
+            
+            if (isAudioEnabled) {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                btn.textContent = "🔊 Sound On";
+                btn.style.backgroundColor = "#22c55e";
+                startBGM();
+                playTone(440, 'sine', 0.1, 0.1);
+            } else {
+                btn.textContent = "🔈 Sound Off";
+                btn.style.backgroundColor = "#14532d";
+                stopBGM();
+            }
+        }
+
+        function playTone(freq, type, duration, vol=0.1) {
+            if (!isAudioEnabled || !audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        let bgmTimer, bgmStep = 0;
+        const bgmNotes = [110, 130.8, 164.8, 130.8, 98, 123.5, 146.8, 123.5];
+        function startBGM() {
+            if (!audioCtx || bgmOscillator) return;
+            bgmOscillator = audioCtx.createOscillator();
+            bgmGain = audioCtx.createGain();
+            bgmOscillator.type = 'sine';
+            bgmOscillator.frequency.setValueAtTime(55, audioCtx.currentTime);
+            bgmGain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            bgmOscillator.connect(bgmGain);
+            bgmGain.connect(audioCtx.destination);
+            bgmOscillator.start();
+            bgmTimer = setInterval(() => {
+                playTone(bgmNotes[bgmStep % bgmNotes.length], 'triangle', 0.9, 0.04);
+                if (bgmStep % 8 === 0) playTone(55, 'sine', 2.5, 0.05);
+                bgmStep++;
+            }, 650);
+        }
+
+        function stopBGM() {
+            clearInterval(bgmTimer);
+            if (bgmOscillator) {
+                bgmOscillator.stop();
+                bgmOscillator.disconnect();
+                bgmOscillator = null;
+            }
+        }
+
+        // Specific Sound Effects
+        const sfx = {
+            grab: () => playTone(300, 'triangle', 0.1, 0.05),
+            drop: () => playTone(150, 'square', 0.1, 0.05),
+            success: () => {
+                if(!isAudioEnabled) return;
+                playTone(261.6, 'sine', 0.3, 0.1); // C4
+                setTimeout(() => playTone(329.6, 'sine', 0.3, 0.1), 150); // E4
+                setTimeout(() => playTone(392.0, 'sine', 0.6, 0.1), 300); // G4
+            },
+            error: () => {
+                if(!isAudioEnabled) return;
+                playTone(150, 'sawtooth', 0.3, 0.1);
+                setTimeout(() => playTone(140, 'sawtooth', 0.3, 0.1), 150);
+            },
+            loot: () => {
+                if(!isAudioEnabled) return;
+                [523, 659, 783, 1046].forEach((f, i) => {
+                    setTimeout(() => playTone(f, 'sine', 0.4, 0.05), i * 80);
+                });
+            },
+            levelup: () => {
+                if(!isAudioEnabled) return;
+                [392, 523, 659, 784, 1046].forEach((f, i) => setTimeout(() => playTone(f, 'triangle', 0.35, 0.07), i * 90));
+            },
+            epic: () => {
+                if(!isAudioEnabled) return;
+                playTone(220, 'square', 1.5, 0.1);
+                setTimeout(() => playTone(277, 'square', 1.5, 0.1), 200);
+                setTimeout(() => playTone(330, 'square', 2.0, 0.1), 400);
+            }
+        };
+
+        // --- GAME LOGIC ---
+        const lootTable = [
+            { name: "Dusty Syntax Cobweb", rarity: "Common", color: "#475569", chance: 50 },
+            { name: "Vial of Red Ink", rarity: "Uncommon", color: "#b91c1c", chance: 25 },
+            { name: "C1 Advanced Grimoire", rarity: "Rare", color: "#1d4ed8", chance: 15 },
+            { name: "Tome of Mottola", rarity: "Epic", color: "#7e22ce", chance: 8 },
+            { name: "Golden Chalk of Inversion", rarity: "Legendary", color: "#fbbf24", chance: 2 }
+        ];
+
+        const milestonePrizes = {
+            4: { name: "Goblet of Huel Stamina", emoji: "🍷", desc: "Dark sustenance for endless midnight tutoring sessions." },
+            9: { name: "Trezor Vault of Souls", emoji: "🗄️", desc: "A cryptographically secure phylactery for your assets." },
+            14: { name: "Obsidian Phantom Carriage", emoji: "🦇", desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
+            19: { name: "Pencil the Shadow Familiar", emoji: "🐈‍⬛", desc: "A void-feline that purrs at the sight of C2-level syntax." }
+        };
+
+        let inventory = [];
+        let currentLevelIndex = 0;
+        let gold = 0; let xp = 0; let rank = 0; let streak = 0;
+        let levelSolved = false; let hintsUsed = 0; let solvedLevels = new Set();
+        const ranks = ['🕯️ Apprentice', '📜 Scribe', '🔮 Syntax Warlock', '💀 Grammar Lich', '👑 Archlich'];
+        const tips = {
+            'wh-word': 'A Wh-word opens a question and asks for information.',
+            'aux': 'In a question, the auxiliary comes before the subject.',
+            'subject': 'The subject is who or what does the action.',
+            'verb': 'The verb follows the subject. Check its form: base, -ing or past participle.',
+            'object': 'The object receives the action or completes the meaning.',
+            'adverb': 'An adverb tells us how, when or to what degree.',
+            'punctuation': 'A question always ends with a question mark.'
+        };
+        function updateHud() {
+            document.getElementById('gold-counter').textContent = `🪙 ${gold}`;
+            document.getElementById('xp-counter').textContent = `🔮 ${xp}/100`;
+            document.getElementById('rank-display').textContent = ranks[rank];
+            document.getElementById('streak-display').textContent = `🔥 ${streak}`;
+        }
+        function saveGame() {
+            try { localStorage.setItem('grammarCrypt', JSON.stringify({ currentLevelIndex, gold, xp, rank, inventory, solved: [...solvedLevels] })); } catch (e) {}
+        }
+        function loadGame() {
+            try {
+                const d = JSON.parse(localStorage.getItem('grammarCrypt'));
+                if (!d) return;
+                currentLevelIndex = Math.min(d.currentLevelIndex || 0, levels.length - 1);
+                gold = d.gold || 0; xp = d.xp || 0; rank = d.rank || 0;
+                inventory = d.inventory || []; solvedLevels = new Set(d.solved || []);
+            } catch (e) {}
+        }
+        function levelUp() {
+            xp -= 100; rank = Math.min(rank + 1, ranks.length - 1);
+            setTimeout(() => {
+                sfx.levelup();
+                const popup = document.getElementById('loot-announcement');
+                popup.innerHTML = `<span>Rank up! ${ranks[rank]}</span>`;
+                popup.style.display = 'block';
+                setTimeout(() => { popup.style.display = 'none'; }, 2200);
+            }, 2000);
+        }
+        function useHint() {
+            if (levelSolved) return;
+            const zones = [...document.querySelectorAll('.drop-zone')];
+            const level = levels[currentLevelIndex];
+            const status = document.getElementById('status');
+            const cost = hintsUsed === 0 ? 0 : 5;
+            if (gold < cost) { status.textContent = 'Not enough gold for another hint (5 🪙).'; status.className = 'status-panel error'; return; }
+            const i = zones.findIndex((z, n) => !z.firstElementChild || z.firstElementChild.dataset.text !== level.answer[n].text);
+            if (i < 0) return;
+            const block = [...document.querySelectorAll('.block')].find(b => b.dataset.text === level.answer[i].text && !zones[i].contains(b));
+            if (block) { block.classList.add('hint'); setTimeout(() => block.classList.remove('hint'), 2600); }
+            gold -= cost; hintsUsed++; updateHud(); saveGame();
+            status.textContent = `Rune ${i + 1} is glowing!` + (cost ? ' (-5 🪙)' : ' (first hint is free)');
+            status.className = 'status-panel';
+            document.getElementById('tip').textContent = tips[level.pattern[i].type];
+            sfx.grab();
+        }
+        function showEnding() {
+            document.getElementById('prize-emoji').textContent = '👑';
+            document.getElementById('prize-name').textContent = 'The Crypt is Conquered!';
+            document.getElementById('prize-description').textContent = `Rank: ${ranks[rank]}. ${gold} gold and ${inventory.length} relics claimed.`;
+            document.getElementById('prize-modal').style.display = 'flex';
+            sfx.epic();
+            try { localStorage.removeItem('grammarCrypt'); } catch (e) {}
+        }
+
+        function createLevel(title, patternArr, blocksArr) {
+            const types = { w:'wh-word', a:'aux', s:'subject', v:'verb', o:'object', p:'punctuation', d:'decoy', adv:'adverb' };
+            const pattern = patternArr.map(p => ({ type: types[p[0]], label: p[1] }));
+            const blocks = blocksArr.map(b => ({ type: types[b[0]], text: b[1] }));
+            const answer = blocks.filter(b => b.type !== 'decoy');
+            return { title, pattern, blocks, answer };
+        }
+
+        const levels = [
+            createLevel("L1: A Simple Inquiry", [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','What'], ['a','Did'], ['s','She'], ['v','Say'], ['p','?'], ['d','Said']]),
+            createLevel("L2: The Direct Approach", [['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','They'], ['v','Win'], ['o','The Game'], ['p','?']]),
+            createLevel("L3: Location Assessment", [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','Where'], ['a','Did'], ['s','He'], ['v','Hide'], ['p','?'], ['d','Hid']]),
+            createLevel("L4: Temporal Inquiry", [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','When'], ['a','Did'], ['s','We'], ['v','Agree'], ['p','?']]),
+            createLevel("L5: Ongoing Past Action", [['a','Aux'], ['s','Sub'], ['v','V-ing'], ['p','?']], [['a','Were'], ['s','They'], ['v','Arguing'], ['p','?'], ['d','Argued']]),
+            createLevel("L6: Continuous State", [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','V-ing'], ['p','?']], [['w','Why'], ['a','Was'], ['s','He'], ['v','Running'], ['p','?']]),
+            createLevel("L7: Professional Scrutiny", [['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Manager'], ['v','Approve'], ['o','The Budget'], ['p','?']]),
+            createLevel("L8: Past Perfect Check", [['a','Aux'], ['s','Sub'], ['v','V-PastPart'], ['o','Obj'], ['p','?']], [['a','Had'], ['s','The Patient'], ['v','Recovered'], ['o','Fully'], ['p','?']]),
+            createLevel("L9: Corporate Strategy", [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','Why'], ['a','Did'], ['s','The Executive'], ['v','Resign'], ['p','?']]),
+            createLevel("L10: Duration of Action", [['w','Wh'], ['a','Aux'], ['s','Sub'], ['a','Been'], ['v','V-ing'], ['p','?']], [['w','How Long'], ['a','Had'], ['s','You'], ['a','Been'], ['v','Waiting'], ['p','?']]),
+            createLevel("L11: Medical Assessment", [['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Specialist'], ['adv','Quickly'], ['v','Review'], ['o','The Chart'], ['p','?']]),
+            createLevel("L12: The Modal Past", [['w','Wh'], ['a','Aux'], ['s','Sub'], ['a','Have'], ['v','V-PastPart'], ['p','?']], [['w','What'], ['a','Could'], ['s','They'], ['a','Have'], ['v','Done'], ['p','?']]),
+            createLevel("L13: Conditional Speculation", [['a','Aux'], ['s','Sub'], ['a','Have'], ['v','V-PastPart'], ['adv','Adv'], ['p','?']], [['a','Would'], ['s','She'], ['a','Have'], ['v','Survived'], ['adv','Otherwise'], ['p','?']]),
+            createLevel("L14: Past Perfect Passive", [['a','Aux'], ['s','Sub'], ['a','Been'], ['v','V-PastPart'], ['p','?']], [['a','Had'], ['s','The Ledger'], ['a','Been'], ['v','Updated'], ['p','?'], ['d','Update']]),
+            createLevel("L15: Avoiding Consequences", [['a','Aux'], ['s','Sub'], ['v','Verb'], ['adv','Lest'], ['s','Sub2'], ['v','Verb2'], ['p','?']], [['a','Did'], ['s','He'], ['v','Flee'], ['adv','Lest'], ['s','He'], ['v','Be Caught'], ['p','?']]),
+            createLevel("L16: Analyzing Assets", [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','?']], [['w','How'], ['a','Did'], ['s','Sony'], ['v','Value'], ['o','The Catalog'], ['p','?']]),
+            createLevel("L17: Inversion Preview", [['a','Had'], ['s','Sub'], ['v','V-PastPart'], ['o','Obj'], ['p','?']], [['a','Had'], ['s','The Board'], ['v','Realized'], ['o','The Error'], ['p','?']]),
+            createLevel("L18: C1 Level Nuance", [['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Counsel'], ['adv','Deliberately'], ['v','Mislead'], ['o','The Jury'], ['p','?']]),
+            createLevel("L19: C2 Proficiency Trial", [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['adv','Adv'], ['p','?']], [['w','Whom'], ['a','Did'], ['s','The Director'], ['v','Appoint'], ['o','As Successor'], ['adv','Ultimately'], ['p','?']]),
+            createLevel("L20: The Master's Final Test", [['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','They'], ['adv','Scrupulously'], ['v','Examine'], ['o','The Transcript'], ['p','?']]),
+        ];
+
+        function initLevel() {
+            const level = levels[currentLevelIndex];
+            document.getElementById('level-display').textContent = `Floor: ${currentLevelIndex + 1}/${levels.length}`;
+            document.getElementById('quest-title').textContent = level.title;
+            
+            const board = document.getElementById('board');
+            const bank = document.getElementById('bank');
+            board.innerHTML = ''; bank.innerHTML = '';
+            levelSolved = false; hintsUsed = 0; document.getElementById('tip').textContent = '';
+            document.getElementById('next-btn').disabled = true;
+            document.getElementById('status').textContent = "Summon the sentence!";
+            document.getElementById('status').className = "status-panel";
+
+            level.pattern.forEach((slot, i) => {
+                const zone = document.createElement('div');
+                zone.className = 'drop-zone';
+                zone.setAttribute('data-type', slot.type);
+                zone.textContent = slot.label;
+                zone.ondrop = drop; zone.ondragover = allowDrop; zone.ondragleave = () => zone.classList.remove('active');
+                board.appendChild(zone);
+            });
+
+            const shuffled = [...level.blocks].sort(() => Math.random() - 0.5);
+            shuffled.forEach((b, i) => {
+                const block = document.createElement('div');
+                block.className = `block ${b.type}`;
+                block.id = `rune-${i}`;
+                block.draggable = true;
+                block.setAttribute('data-type', b.type);
+                block.setAttribute('data-text', b.text); 
+                block.textContent = b.text;
+                block.ondragstart = drag; block.ondragend = clearActive;
+                bank.appendChild(block);
+            });
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); const z = ev.target.closest('.drop-zone'); if (z) z.classList.add('active'); }
+        function clearActive() { document.querySelectorAll('.drop-zone.active').forEach(z => z.classList.remove('active')); }
+
+        function drag(ev) {
+            if (levelSolved) { ev.preventDefault(); return; }
+            ev.dataTransfer.setData("text", ev.target.id);
+            sfx.grab();
+        }
+
+        function drop(ev) {
+            ev.preventDefault(); clearActive();
+            if (levelSolved) return;
+            const dragged = document.getElementById(ev.dataTransfer.getData("text"));
+            if (!dragged) return;
+            const target = ev.target.closest('.drop-zone') || ev.target.closest('#bank');
+            if (!target) return;
+            if (target.classList.contains('drop-zone') && target.firstElementChild && target.firstElementChild !== dragged) return;
+            target.appendChild(dragged);
+            dragged.classList.remove('correct', 'hint');
+            sfx.drop();
+            validateBoard();
+        }
+
+        function validateBoard() {
+            const zones = [...document.querySelectorAll('.drop-zone')];
+            const level = levels[currentLevelIndex];
+            const status = document.getElementById('status');
+            const tip = document.getElementById('tip');
+            zones.forEach(z => z.classList.remove('wrong'));
+            if (zones.some(z => !z.firstElementChild)) return;
+
+            const bad = zones.filter((z, i) => z.firstElementChild.dataset.text !== level.answer[i].text);
+            if (bad.length === 0) {
+                levelSolved = true;
+                status.textContent = "The incantation is complete!";
+                status.className = "status-panel success";
+                tip.textContent = '✔ "' + level.answer.map(a => a.text).join(' ').replace(/ \?/g, '?') + '"';
+                document.querySelectorAll('#board .block').forEach(b => { b.classList.add('correct'); b.draggable = false; });
+                document.getElementById('next-btn').disabled = false;
+                sfx.success();
+                if (!solvedLevels.has(currentLevelIndex)) {
+                    solvedLevels.add(currentLevelIndex);
+                    triggerLoot();
+                    checkMilestone();
+                    saveGame();
+                }
+            } else {
+                streak = 0; updateHud();
+                bad.forEach(z => z.classList.add('wrong'));
+                const i = zones.indexOf(bad[0]);
+                const need = level.pattern[i];
+                const isDecoy = bad[0].firstElementChild.dataset.type === 'decoy';
+                status.textContent = `${bad.length} rune${bad.length > 1 ? 's' : ''} misplaced. ` + (isDecoy ? 'That one is a decoy!' : `Rune ${i + 1} needs: ${need.label}.`);
+                status.className = "status-panel error";
+                tip.textContent = tips[need.type];
+                const board = document.getElementById('board');
+                board.classList.remove('shake'); void board.offsetWidth; board.classList.add('shake');
+                sfx.error();
+            }
+        }
+
+        function triggerLoot() {
+            streak++; gold += 15 + Math.min(streak - 1, 5) * 3; xp += 20;
+            if (xp >= 100) levelUp();
+            updateHud();
+
+            const roll = Math.random() * 100;
+            let currentChance = 0;
+            let droppedItem = lootTable[0];
+
+            for (let item of lootTable) {
+                currentChance += item.chance;
+                if (roll <= currentChance) { droppedItem = item; break; }
+            }
+
+            inventory.push(droppedItem);
+            updateInventoryUI();
+            
+            setTimeout(() => {
+                sfx.loot();
+                const popup = document.getElementById('loot-announcement');
+                popup.innerHTML = `<span>Uncovered: <span style="color:${droppedItem.color}">${droppedItem.name}</span>!</span>`;
+                popup.style.display = 'block';
+                setTimeout(() => { popup.style.display = 'none'; }, 2000);
+            }, 600); // Slight delay after success chime
+        }
+
+        function updateInventoryUI() {
+            const list = document.getElementById('inventory-list');
+            list.innerHTML = '';
+            inventory.slice().reverse().forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'loot-item';
+                div.innerHTML = `<span class="loot-icon" style="background-color:${item.color};"></span> ${item.name}`;
+                list.appendChild(div);
+            });
+        }
+
+        function checkMilestone() {
+            if (milestonePrizes[currentLevelIndex]) {
+                const prize = milestonePrizes[currentLevelIndex];
+                document.getElementById('prize-emoji').textContent = prize.emoji;
+                document.getElementById('prize-name').textContent = prize.name;
+                document.getElementById('prize-description').textContent = prize.desc;
+                setTimeout(() => {
+                    document.getElementById('prize-modal').style.display = 'flex';
+                    sfx.epic();
+                }, 1200);
+            }
+        }
+
+        function closePrizeModal() { document.getElementById('prize-modal').style.display = 'none'; }
+        function resetBoard() { initLevel(); }
+        function nextLevel() {
+            if (currentLevelIndex < levels.length - 1) { 
+                currentLevelIndex++; 
+                initLevel(); saveGame();
+            } else { 
+                showEnding();
+            }
+        }
+
+        window.onload = () => { loadGame(); initLevel(); updateHud(); updateInventoryUI(); };
+    </script>
+</body>
+</html>

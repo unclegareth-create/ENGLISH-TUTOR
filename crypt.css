@@ -1,0 +1,251 @@
+/* ==========================================================
+   Grammar Crypt – shared styles (fantasy.html + sounds.html)
+   ========================================================== */
+
+:root {
+    --bg: #120a1f;
+    --bg-dot: #2a1245;
+    --panel: #1e1b4b;
+    --board: #312e81;
+    --bank: #0f172a;
+    --purple: #a855f7;
+    --purple-dark: #9333ea;
+    --green: #22c55e;
+    --gold: #facc15;
+    --red: #ef4444;
+    --ink: #000;
+    --text: #e2e8f0;
+    --muted: #cbd5e1;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Nunito', system-ui, sans-serif;
+    background-color: var(--bg);
+    background-image: radial-gradient(var(--bg-dot) 4px, transparent 4px);
+    background-size: 40px 40px;
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.layout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 25px;
+    max-width: 1200px;
+    width: 100%;
+    align-items: start;
+}
+
+h1, h2, h3 {
+    font-family: 'Creepster', cursive;
+    color: var(--purple);
+    text-shadow: 4px 4px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    letter-spacing: 3px;
+    margin-top: 0;
+    font-weight: normal;
+}
+
+h1 { font-size: clamp(2.4rem, 6vw, 3.5rem); color: var(--green); margin-bottom: 0.3em; }
+h3 { color: var(--gold); }
+
+/* ---------- HUD ---------- */
+.hud {
+    display: flex; flex-wrap: wrap; gap: 10px 20px; margin-bottom: 25px;
+    font-size: 22px; font-weight: 900; color: var(--gold);
+    text-shadow: 3px 3px 0 #000;
+    align-items: center;
+}
+
+/* ---------- Panels & board ---------- */
+.panel {
+    background-color: var(--panel);
+    border: 6px solid var(--ink);
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.8);
+}
+
+.puzzle-board {
+    display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap;
+    padding: 25px; background-color: var(--board); border: 5px solid var(--ink);
+    border-radius: 8px; margin-bottom: 25px;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);
+}
+
+.drop-zone {
+    min-width: 90px; min-height: 66px; padding: 0 10px;
+    border: 4px dashed #6b7280; border-radius: 8px;
+    display: flex; justify-content: center; align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: #9ca3af; font-weight: 900; font-size: 14px;
+    text-transform: uppercase;
+    transition: transform 0.12s, border-color 0.12s, background-color 0.12s;
+}
+.drop-zone.filled { border-style: solid; border-color: #000; background-color: transparent; padding: 0; }
+.drop-zone.filled .slot-label { display: none; }
+.drop-zone.active,
+.drop-zone.targeted { background-color: rgba(168, 85, 247, 0.3); transform: scale(1.05); border-color: var(--purple); }
+.drop-zone.wrong { border-color: var(--red); animation: shake 0.4s; }
+
+.block-bank {
+    display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; align-items: center;
+    min-height: 100px;
+    padding: 25px; border: 5px solid var(--ink); background-color: var(--bank);
+    border-radius: 8px;
+    transition: background-color 0.12s;
+}
+.block-bank.active { background-color: #1b2540; }
+
+/* ---------- Rune blocks ---------- */
+.block {
+    padding: 12px 20px; border-radius: 8px; color: #fff; font-weight: 900; font-size: 18px;
+    cursor: grab; user-select: none; -webkit-user-select: none;
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-transform: uppercase; text-align: center;
+    border: 4px solid var(--ink);
+    box-shadow: 0 6px 0 var(--ink);
+    touch-action: manipulation;
+}
+.block:active { cursor: grabbing; transform: translateY(6px); box-shadow: 0 0 0 var(--ink); }
+.block.dragging { opacity: 0.45; }
+.drop-zone .block { margin: -4px; }
+
+.wh-word     { background-color: #6b21a8; }
+.aux         { background-color: #1e3a8a; }
+.subject     { background-color: #14532d; }
+.verb        { background-color: #9a3412; }
+.object      { background-color: #7f1d1d; }
+.adverb      { background-color: #0f766e; }
+.punctuation { background-color: #334155; }
+.decoy       { background-color: #831843; color: #fbcfe8; }
+
+.block.correct { animation: float-spooky 1.5s ease-in-out infinite alternate; border-color: var(--green); box-shadow: 0 6px 0 var(--green); cursor: default; }
+
+/* ---------- Status ---------- */
+.status-panel { margin-top: 20px; font-size: 24px; text-align: center; min-height: 35px; font-weight: 900; }
+.success { color: var(--green); text-shadow: 2px 2px 0 #000; }
+.error   { color: var(--red);   text-shadow: 2px 2px 0 #000; }
+.hint-line { text-align: center; color: var(--muted); font-size: 15px; margin: 8px 0 0; }
+
+/* ---------- Buttons ---------- */
+button {
+    padding: 12px 25px; background-color: var(--purple-dark); color: #fff;
+    border: 4px solid var(--ink); border-radius: 8px; font-weight: 900; font-size: 18px;
+    cursor: pointer; font-family: 'Creepster', cursive; letter-spacing: 2px; margin: 5px;
+    box-shadow: 0 6px 0 var(--ink); transition: transform 0.1s, box-shadow 0.1s, background-color 0.1s;
+}
+button:hover:not(:disabled) { background-color: var(--purple); }
+button:active:not(:disabled) { transform: translateY(6px); box-shadow: 0 0 0 var(--ink); }
+button:disabled { background-color: #334155; opacity: 0.7; cursor: not-allowed; }
+.btn-reset { background-color: #b91c1c; }
+.btn-next  { background-color: #15803d; }
+.btn-hint  { background-color: #ca8a04; }
+.btn-claim { margin-top: 30px; font-size: 24px; padding: 15px 40px; }
+.actions { text-align: center; margin-top: 25px; }
+
+.tip { font-size: 16px; color: #cbd5e1; font-weight: 700; margin-top: 8px; min-height: 22px; text-align: center; }
+.block.hint { animation: pulse .6s ease-in-out 4; border-color: #facc15; }
+@keyframes pulse { 50% { transform: scale(1.15); } }
+
+#audio-toggle { background-color: #14532d; font-size: 14px; padding: 8px 15px; margin-left: auto; }
+#audio-toggle[aria-pressed="true"] { background-color: #16a34a; }
+
+/* ---------- Focus (keyboard users) ---------- */
+:focus-visible { outline: 4px solid var(--gold); outline-offset: 3px; }
+
+/* ---------- Inventory ---------- */
+.inventory-panel { display: flex; flex-direction: column; gap: 12px; }
+.inventory-panel h3 { margin-bottom: 0; }
+#inventory-list { display: flex; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding: 2px 6px 6px 2px; }
+.empty-note { color: #94a3b8; font-weight: 700; font-size: 15px; margin: 0; }
+.loot-item {
+    display: flex; align-items: center; padding: 12px;
+    background-color: var(--bank); border: 3px solid var(--ink); border-radius: 8px;
+    font-size: 16px; font-weight: bold; color: var(--text);
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.5);
+}
+.loot-icon { flex: none; width: 35px; height: 35px; border-radius: 4px; margin-right: 12px; border: 2px solid var(--ink); }
+.loot-rarity { display: block; font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+
+/* ---------- Milestone modal ---------- */
+#prize-modal {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.9); display: none; justify-content: center; align-items: center;
+    z-index: 1000; backdrop-filter: blur(8px); padding: 20px;
+}
+#prize-modal.open { display: flex; }
+.prize-content {
+    background: var(--panel); border: 6px solid var(--purple); border-radius: 12px;
+    padding: 40px; text-align: center; max-width: 500px;
+    animation: superPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 15px 15px 0 #000;
+}
+.prize-content h2 { color: var(--gold); font-size: 40px; }
+.prize-icon { font-size: 80px; margin: 20px 0; animation: float-spooky 2.5s ease-in-out infinite; }
+.prize-title { color: var(--green); font-size: 36px; margin-bottom: 10px; font-family: 'Creepster', cursive; text-shadow: 2px 2px 0 #000; }
+.prize-desc { font-size: 20px; font-weight: bold; color: var(--muted); }
+
+#loot-announcement {
+    position: fixed; top: 20px; right: 20px; background: var(--bank);
+    border: 4px solid var(--purple); padding: 15px 25px; border-radius: 8px;
+    display: none; z-index: 100; box-shadow: 6px 6px 0 #000; color: #fff;
+    font-family: 'Creepster', cursive; font-size: 22px; letter-spacing: 1px; animation: popIn 0.3s;
+}
+#loot-announcement.show { display: block; }
+
+/* ---------- Intro & Name Modals ---------- */
+.fullscreen-modal {
+    position: fixed; inset: 0; background: var(--bg);
+    display: none; justify-content: center; align-items: center; z-index: 2000;
+    background-image: radial-gradient(var(--bg-dot) 4px, transparent 4px);
+    background-size: 40px 40px;
+}
+.fullscreen-modal.open { display: flex; }
+.modal-panel {
+    background: var(--panel); border: 6px solid var(--ink); border-radius: 12px;
+    padding: 40px; text-align: center; max-width: 600px; width: 90%;
+    box-shadow: 15px 15px 0 var(--ink);
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.modal-panel h2 { color: var(--green); font-size: 48px; margin-top: 0; margin-bottom: 20px; text-shadow: 3px 3px 0 var(--ink); font-family: 'Creepster', cursive; font-weight: normal; letter-spacing: 2px;}
+.modal-panel p { font-size: 22px; line-height: 1.5; color: var(--muted); font-weight: bold; margin-bottom: 30px; }
+.name-input {
+    background: var(--bank); border: 4px solid var(--purple); color: #fff;
+    padding: 15px; font-size: 24px; font-family: 'Nunito', sans-serif; font-weight: 900;
+    border-radius: 8px; width: 80%; max-width: 350px; text-align: center; margin-bottom: 30px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    transition: border-color 0.2s;
+}
+.name-input:focus { outline: none; border-color: var(--green); }
+
+/* ---------- Animation ---------- */
+@keyframes float-spooky { from { transform: translateY(0) rotate(-2deg); } to { transform: translateY(-10px) rotate(2deg); } }
+@keyframes popIn        { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes superPop     { 0% { transform: scale(0) rotate(15deg); } 100% { transform: scale(1) rotate(0deg); } }
+@keyframes shake        { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .layout-grid { grid-template-columns: minmax(0, 1fr); }
+    #inventory-list { max-height: 260px; }
+}
+@media (max-width: 520px) {
+    body { padding: 10px; }
+    .panel { padding: 15px; border-width: 4px; box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.8); }
+    .puzzle-board, .block-bank { padding: 15px; gap: 10px; }
+    .block { font-size: 15px; padding: 10px 14px; }
+    .drop-zone { min-width: 70px; }
+    .hud { font-size: 18px; }
+    .prize-content { padding: 25px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
