@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Syntax Hacker | Gareth Montgomery</title>
+    <meta name="description" content="A cyberpunk syntax hacking game for Cambridge C1 and C2 Key Word Transformations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="hacker.css">
+</head>
+<body>
+    <div class="crt-overlay"></div>
+
+    <!-- Intro Screen -->
+    <div id="intro-screen" class="modal open">
+        <div class="modal-content">
+            <h1>SYNTAX_HACKER.exe</h1>
+            <p>> SYSTEM BREACH DETECTED.<br>> YOU MUST DECRYPT THE SENTENCES USING THE EXACT KEY WORD.<br>> DO NOT CHANGE THE WORD.<br>> USE 3 TO 6 FRAGMENTS.</p>
+            <input type="text" id="player-name" placeholder="> Enter Alias..." maxlength="15" autocomplete="off">
+            <input type="email" id="player-email" placeholder="> Enter Secure Email..." autocomplete="email">
+            <button id="btn-start" disabled>> INITIATE HACK</button>
+        </div>
+    </div>
+
+    <!-- Game Over / Lead Capture Screen -->
+    <div id="end-screen" class="modal">
+        <div class="modal-content">
+            <h1 id="end-title">> CONNECTION LOST</h1>
+            <p id="end-desc">> FIREWALL TRIGGERED. HACK FAILED.</p>
+            <p>> NODES DECRYPTED: <span id="final-score">0</span></p>
+            
+            <form action="https://formsubmit.co/gareth_montgomery@hotmail.com" method="POST" id="lead-form">
+                <input type="hidden" name="_subject" value="Syntax Hacker Lead!">
+                <input type="hidden" name="_next" value="">
+                <input type="hidden" name="score" id="lead-score" value="">
+                <input type="hidden" name="email" id="lead-email" required>
+                <button type="submit" id="btn-claim">> UPLOAD LOGS & CLAIM DISCOUNT</button>
+            </form>
+            <button id="btn-restart" class="secondary">> RETRY EXPLOIT</button>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <header>
+            <div class="stat">> NODES: <span id="score-display">0</span>/10</div>
+            <div class="stat">> TRACE TIMER: <span id="time-display">02:00</span></div>
+            <a href="index.html" class="exit-link">> DISCONNECT</a>
+        </header>
+
+        <main>
+            <div class="terminal-panel">
+                <div class="section-title">ENCRYPTED DATA:</div>
+                <div id="original-sentence" class="sentence">Loading...</div>
+                
+                <div class="section-title mt-4">BYPASS KEY (MUST USE EXACTLY):</div>
+                <div id="key-word" class="keyword pulse">...</div>
+                
+                <div class="section-title mt-4">DECRYPTED OUTPUT:</div>
+                <div class="output-area">
+                    <span id="sent-start" class="static-text">Start</span>
+                    <div id="slot-container" class="slots">
+                        <!-- Clicked fragments go here -->
+                    </div>
+                    <span id="sent-end" class="static-text">End</span>
+                </div>
+            </div>
+
+            <div class="fragments-panel">
+                <div class="section-title">AVAILABLE CODE FRAGMENTS:</div>
+                <div id="fragments-pool" class="fragments-pool">
+                    <!-- Buttons go here -->
+                </div>
+            </div>
+            
+            <button id="btn-execute" class="execute-btn">> EXECUTE DECRYPTION</button>
+        </main>
+    </div>
+
+    <script src="hacker.js"></script>
+</body>
+</html>
