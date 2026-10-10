@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Formation Factory | Gareth Montgomery</title>
+    <meta name="description" content="A steampunk word formation challenge for Cambridge English exams.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="factory.css">
+</head>
+<body>
+
+    <!-- Intro Screen -->
+    <div id="intro-screen" class="modal open">
+        <div class="modal-content">
+            <h1>THE FORMATION FACTORY</h1>
+            <p>The gears are turning. A root word will drop onto the conveyor belt. Type the required form (Noun, Adverb, Adjective, etc.) before it falls into the furnace!</p>
+            <input type="text" id="player-name" placeholder="Foreman Name..." maxlength="15" autocomplete="off">
+            <input type="email" id="player-email" placeholder="Email Address..." autocomplete="email">
+            <button id="btn-start" disabled>PULL THE LEVER</button>
+        </div>
+    </div>
+
+    <!-- Game Over / Lead Capture Screen -->
+    <div id="end-screen" class="modal">
+        <div class="modal-content">
+            <h1 id="end-title">SHIFT OVER</h1>
+            <p id="end-desc">The furnace consumed too many raw materials.</p>
+            <p>Parts Manufactured: <span id="final-score">0</span></p>
+            
+            <form action="https://formsubmit.co/gareth_montgomery@hotmail.com" method="POST" id="lead-form">
+                <input type="hidden" name="_subject" value="Word Factory Lead!">
+                <input type="hidden" name="_next" value="">
+                <input type="hidden" name="score" id="lead-score" value="">
+                <input type="hidden" name="email" id="lead-email" required>
+                <button type="submit" id="btn-claim">SUBMIT TIMESHEET & CLAIM DISCOUNT</button>
+            </form>
+            <button id="btn-restart" class="secondary">RESTART MACHINERY</button>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <header>
+            <div class="stat">MANUFACTURED: <span id="score-display">0</span>/10</div>
+            <div class="stat">LIVES: <span id="lives-display">⚙️⚙️⚙️</span></div>
+            <a href="index.html" class="exit-link">CLOCK OUT</a>
+        </header>
+
+        <main>
+            <div class="prompt-area">
+                <h2>REQUIRED FORM:</h2>
+                <div id="target-form">NOUN</div>
+            </div>
+            
+            <div class="factory-floor">
+                <!-- Conveyor Belt -->
+                <div class="belt-container">
+                    <div class="belt"></div>
+                    <!-- The object moving on the belt -->
+                    <div id="word-block" class="block">
+                        <span id="root-word">DESTROY</span>
+                    </div>
+                    <!-- The furnace at the end -->
+                    <div class="furnace"></div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="typing-input" placeholder="Type new word here..." autocomplete="off">
+            </div>
+        </main>
+    </div>
+
+    <script src="factory.js"></script>
+</body>
+</html>
