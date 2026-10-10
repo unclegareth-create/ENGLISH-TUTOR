@@ -47,10 +47,11 @@
     const sounds = {
         grab:    () => tone(300, 'triangle', 0.1, 0.05),
         drop:    () => tone(150, 'square', 0.1, 0.05),
-        success: () => {
-            tone(261.6, 'sine', 0.3, 0.1, 0);       // C4
-            tone(329.6, 'sine', 0.3, 0.1, 0.15);    // E4
-            tone(392.0, 'sine', 0.6, 0.1, 0.30);    // G4
+        success: (streak = 0) => {                 // chime climbs a semitone per streak step (max one octave)
+            const k = Math.pow(2, Math.min(streak, 12) / 12);
+            tone(261.6 * k, 'sine', 0.3, 0.1, 0);       // C4 root
+            tone(329.6 * k, 'sine', 0.3, 0.1, 0.15);    // E4
+            tone(392.0 * k, 'sine', 0.6, 0.1, 0.30);    // G4
         },
         error:   () => {
             tone(150, 'sawtooth', 0.3, 0.1, 0);
@@ -64,10 +65,10 @@
         }
     };
 
-    function play(name) {
+    function play(name, arg) {
         if (!enabled || !ctx || ctx.state !== 'running') return;
         const fn = sounds[name];
-        if (fn) fn();
+        if (fn) fn(arg);
     }
 
     /* ---- Background drone: low, slightly detuned pair with slow tremolo ---- */
