@@ -1,4 +1,4 @@
-/* ==========================================================
+﻿/* ==========================================================
    Grammar Crypt – shared game logic (fantasy.html + sounds.html)
 
    Optional audio: if audio.js is loaded it exposes window.GCAudio
@@ -26,7 +26,7 @@
     ];
 
     // Keys are zero-based level indexes (4 = Floor 5, etc.)
-    const milestonePrizes = {
+        const milestonePrizes = {
         4:  { name: "Goblet of Huel Stamina",      emoji: "🍷",   desc: "Dark sustenance for endless midnight tutoring sessions." },
         9:  { name: "Trezor Vault of Souls",       emoji: "🗄️",  desc: "A cryptographically secure phylactery for your assets." },
         14: { name: "Obsidian Phantom Carriage",   emoji: "🦇",   desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
@@ -34,7 +34,7 @@
         24: { name: "The Crown of Fluency",        emoji: "👑", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
     };
 
-        const bosses = {
+            const bosses = {
         4: { name: "The Goblin of Gerunds", emoji: "👺", taunt: "You'll never master the -ing form, mortal!" },
         9: { name: "Phantom of the Past Perfect", emoji: "👻", taunt: "I had already won before you even arrived!" },
         14: { name: "Vampire of the Passive Voice", emoji: "🧛", taunt: "Your active sentences will be drained of life!" },
