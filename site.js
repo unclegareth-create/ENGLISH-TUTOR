@@ -32,11 +32,11 @@
         const leadForm = document.getElementById('lead-form');
         
         if (formStatus) {
-            formStatus.innerHTML = '<div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm font-semibold">Message sent successfully! I will be in touch shortly.</div>';
+            formStatus.innerHTML = '<div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm font-semibold">Thank you! I'll reply within 24 hours to schedule your trial lesson.</div>';
         } else if (leadForm) {
             const msg = document.createElement('div');
             msg.className = 'bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm font-semibold';
-            msg.textContent = 'Message sent successfully! I will be in touch shortly.';
+            msg.textContent = 'Thank you! I'll reply within 24 hours to schedule your trial lesson.';
             leadForm.parentNode.insertBefore(msg, leadForm);
         }
         
