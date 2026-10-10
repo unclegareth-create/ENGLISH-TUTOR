@@ -1,4 +1,4 @@
-/* ==========================================================
+﻿/* ==========================================================
    Grammar Crypt – shared game logic (fantasy.html + sounds.html)
 
    Optional audio: if audio.js is loaded it exposes window.GCAudio
@@ -26,8 +26,8 @@
         4:  { name: "Goblet of Huel Stamina",      emoji: "🍷",   desc: "Dark sustenance for endless midnight tutoring sessions." },
         9:  { name: "Trezor Vault of Souls",       emoji: "🗄️",  desc: "A cryptographically secure phylactery for your assets." },
         14: { name: "Obsidian Phantom Carriage",   emoji: "🦇",   desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
-        19: { name: "Pencil the Shadow Familiar",  emoji: "?????", desc: "A void-feline that purrs at the sight of C2-level syntax." },
-        24: { name: "The Crown of Fluency",        emoji: "??", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
+        19: { name: "Pencil the Shadow Familiar",  emoji: "🐈‍⬛", desc: "A void-feline that purrs at the sight of C2-level syntax." },
+        24: { name: "The Crown of Fluency",        emoji: "👑", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
     };
 
     const TYPES = { w: 'wh-word', a: 'aux', s: 'subject', v: 'verb', o: 'object', p: 'punctuation', d: 'decoy', adv: 'adverb' };
@@ -69,7 +69,12 @@
         createLevel("L18: C1 Level Nuance",        [['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Counsel'], ['adv','Deliberately'], ['v','Mislead'], ['o','The Jury'], ['p','?']]),
         createLevel("L19: C2 Proficiency Trial",   [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['adv','Adv'], ['p','?']], [['w','Whom'], ['a','Did'], ['s','The Director'], ['v','Appoint'], ['o','As Successor'], ['adv','Ultimately'], ['p','?']]),
         // Floor 20 - Prize 4
-        createLevel("L20: The Master's Final Test",[['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','They'], ['adv','Scrupulously'], ['v','Examine'], ['o','The Transcript'], ['p','?']])
+        createLevel("L20: The Master's Final Test",[['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','They'], ['adv','Scrupulously'], ['v','Examine'], ['o','The Transcript'], ['p','?']]),
+        createLevel("L21: Negative Inversion (C1)",[['adv','Neg Adv'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','.']], [['adv','Never'], ['a','Had'], ['s','I'], ['v','Seen'], ['o','Such Chaos'], ['p','.'], ['d','Saw']]),
+        createLevel("L22: Conditionals Without If",[['a','Aux'], ['s','Sub'], ['v','V-PastPart'], ['o','Obj'], ['adv','Result'], ['p','.']], [['a','Had'], ['s','He'], ['v','Known'], ['o','The Truth'], ['adv','He Would Have Fled'], ['p','.'], ['d','If']]),
+        createLevel("L23: Only After Inversion",   [['adv','Only After'], ['s','Sub'], ['v','Verb'], ['a','Aux'], ['s','Sub2'], ['v','Verb2'], ['p','.']], [['adv','Only After'], ['s','She'], ['v','Left'], ['a','Did'], ['s','We'], ['v','Speak'], ['p','.']]),
+        createLevel("L24: Cleft Sentence (C2)",    [['s','It'], ['v','Be'], ['adv','Phrase'], ['w','That'], ['s','Sub'], ['v','Verb'], ['p','.']], [['s','It'], ['v','Was'], ['adv','With Reluctance'], ['w','That'], ['s','They'], ['v','Agreed'], ['p','.']]),
+        createLevel("L25: The Ultimate Syntax",    [['adv','Not Only'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['adv','But'], ['s','Sub2'], ['adv','Also'], ['v','Verb2'], ['p','.']], [['adv','Not Only'], ['a','Did'], ['s','He'], ['v','Fail'], ['adv','But'], ['s','He'], ['adv','Also'], ['v','Lied'], ['p','.']])
     ];
 
     /* ---------------- STATE (persisted) ---------------- */
@@ -613,6 +618,3 @@
         initLevel();
     });
 })();
-
-
-
