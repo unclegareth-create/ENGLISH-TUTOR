@@ -1,8 +1,5 @@
-/* ==========================================================
-   Shared behaviour for the tutor landing pages (index.html, web.html)
-   - Accessible mobile menu
-   - Contact form: submitted natively by the browser to FormSubmit
-     (no JavaScript involved), so it works from any host.
+﻿/* ==========================================================
+   Shared behaviour for the tutor landing pages
    ========================================================== */
 (() => {
     'use strict';
@@ -25,11 +22,25 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !menu.classList.contains('hidden')) { setOpen(false); btn.focus(); }
         });
-        // If the window grows past the mobile breakpoint, reset the menu.
         window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => { if (e.matches) setOpen(false); });
     }
 
-    /* ---------- Contact form ---------- */
-    // We intentionally let the browser handle form submission natively 
-    // to ensure formsubmit.co handles spam, captchas, and delivery reliably.
+    /* ---------- Form Success Handling ---------- */
+    // If we've just been redirected from FormSubmit
+    if (window.location.search.includes('submitted=true')) {
+        const formStatus = document.getElementById('form-status');
+        const leadForm = document.getElementById('lead-form');
+        
+        if (formStatus) {
+            formStatus.innerHTML = '<div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm font-semibold">Message sent successfully! I will be in touch shortly.</div>';
+        } else if (leadForm) {
+            const msg = document.createElement('div');
+            msg.className = 'bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm font-semibold';
+            msg.textContent = 'Message sent successfully! I will be in touch shortly.';
+            leadForm.parentNode.insertBefore(msg, leadForm);
+        }
+        
+        // Clean up the URL
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+    }
 })();
