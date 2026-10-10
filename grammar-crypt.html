@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Crypt: Audio Edition</title>
+    <meta name="description" content="Grammar Crypt with synthesized sound effects and a brooding soundtrack: drag grammar runes into the right order to build correct English questions.">
+    <meta name="theme-color" content="#120a1f">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="crypt.css">
+</head>
+<body>
+
+    <!-- Intro Screen -->
+    <div id="intro-screen" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="intro-heading">
+        <div class="modal-panel">
+            <h2 id="intro-heading">Grammar Crypt</h2>
+            <p>Enter the crypt and piece together the scattered runes to form questions of power.</p>
+            <button type="button" id="btn-continue-intro" class="btn-claim" style="margin-top: 10px;">Enter the Shadows</button>
+        </div>
+    </div>
+
+    <!-- Name Entry Screen -->
+    <div id="name-screen" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="name-heading">
+        <div class="modal-panel">
+            <h2 id="name-heading">Who Dares Enter?</h2>
+            <p>By what name shall the tombstones remember you?</p>
+            <input type="text" id="player-name-input" class="name-input" placeholder="Your Name..." maxlength="15" autocomplete="off">
+            <br>
+            <button type="button" id="btn-start-game" class="btn-next" disabled>Begin</button>
+        </div>
+    </div>
+
+    <!-- Lead Capture Modal (End Game) -->
+    <div id="lead-modal" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="lead-heading">
+        <div class="modal-panel">
+            <h2 id="lead-heading" style="color: var(--gold);">You Survived!</h2>
+            <p>Enter your email to reveal your final score, claim your Grammar Crypt Certificate, and get a special 50% discount on your first lesson.</p>
+            <form action="https://formsubmit.co/gareth_montgomery@hotmail.com" method="POST" id="lead-form">
+                <input type="hidden" name="_subject" value="Grammar Crypt Lead!">
+                <input type="hidden" name="_next" value="">
+                <input type="hidden" name="score" id="lead-score" value="">
+                <input type="email" name="email" required class="name-input" placeholder="Enter your email..." style="margin-bottom: 20px;">
+                <br>
+                <button type="submit" class="btn-claim" id="btn-submit-lead">Unlock My Score</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="layout-grid">
+        <main class="main-quest">
+            <h1>Grammar Crypt!</h1>
+            <div class="hud">
+                <div id="level-display">Floor: 1/20</div>
+                <div id="rank-display">⚔️ Rank 1</div>
+                <div id="gold-counter" title="Gold">🪙 0</div>
+                <div id="xp-counter" title="Experience">🔮 0/100</div>
+                <div id="streak-display" title="Streak">🔥 0</div>
+                <button type="button" id="audio-toggle" aria-pressed="false">🔈 Sound Off</button>
+            </div>
+
+            <div class="panel">
+                <h2 id="quest-title">L1: A Simple Inquiry</h2>
+                <div class="puzzle-board" id="board" aria-label="Sentence board"></div>
+                <div class="block-bank" id="bank" aria-label="Rune bank"></div>
+                <div class="status-panel" id="status" role="status" aria-live="polite">Summon the sentence!</div>
+                <div id="tip" class="tip" aria-live="polite"></div>
+                <p class="hint-line">Drag runes into the slots, or tap a rune to place it (tap a placed rune to take it back).</p>
+
+                <div class="actions">
+                    <button type="button" id="reset-btn" class="btn-reset">Reset</button>
+                    <button type="button" id="hint-btn" class="btn-hint">Hint 💡</button>
+                    <button type="button" id="next-btn" class="btn-next" disabled>Next Floor ➔</button>
+                </div>
+            </div>
+        </main>
+
+        <aside class="inventory-panel panel" aria-label="Relics">
+            <h3>Relics</h3>
+            <div id="inventory-list"></div>
+        </aside>
+    </div>
+
+    <div id="loot-announcement" role="status" aria-live="polite"></div>
+
+    <div id="prize-modal" role="dialog" aria-modal="true" aria-labelledby="prize-heading">
+        <div class="prize-content">
+            <h2 id="prize-heading">🦇 MILESTONE REACHED! 🦇</h2>
+            <div class="prize-icon" id="prize-emoji" aria-hidden="true">🏆</div>
+            <div class="prize-title" id="prize-name">Legendary Item</div>
+            <div class="prize-desc" id="prize-description">Description goes here.</div>
+            <button type="button" id="claim-btn" class="btn-claim">Claim Relic</button>
+        </div>
+    </div>
+
+    <script src="audio.js"></script>
+    <script src="crypt.js"></script>
+</body>
+</html>
