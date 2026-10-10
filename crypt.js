@@ -23,11 +23,11 @@
 
     // Keys are zero-based level indexes (4 = Floor 5, etc.)
     const milestonePrizes = {
-        4:  { name: "Goblet of Huel Stamina",      emoji: "🍷",   desc: "Dark sustenance for endless midnight tutoring sessions." },
-        9:  { name: "Trezor Vault of Souls",       emoji: "🗄️",  desc: "A cryptographically secure phylactery for your assets." },
-        14: { name: "Obsidian Phantom Carriage",   emoji: "🦇",   desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
-        19: { name: "Pencil the Shadow Familiar",  emoji: "🐈‍⬛", desc: "A void-feline that purrs at the sight of C2-level syntax." },
-        24: { name: "The Crown of Fluency",        emoji: "👑", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
+        4:  { name: "Goblet of Huel Stamina",      emoji: "??",   desc: "Dark sustenance for endless midnight tutoring sessions." },
+        9:  { name: "Trezor Vault of Souls",       emoji: "???",  desc: "A cryptographically secure phylactery for your assets." },
+        14: { name: "Obsidian Phantom Carriage",   emoji: "??",   desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
+        19: { name: "Pencil the Shadow Familiar",  emoji: "????", desc: "A void-feline that purrs at the sight of C2-level syntax." },
+        24: { name: "The Crown of Fluency",        emoji: "??", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
     };
 
     const TYPES = { w: 'wh-word', a: 'aux', s: 'subject', v: 'verb', o: 'object', p: 'punctuation', d: 'decoy', adv: 'adverb' };
@@ -83,7 +83,7 @@
     const XP_PER_RANK = 100;
     const lastLevel = levels.length - 1;
 
-    let state = { level: 0, gold: 0, xp: 0, streak: 0, playerName: '', inventory: [], completed: [] };
+    let state = { level: 0, gold: 0, xp: 0, streak: 0, playerName: '', playerEmail: '', inventory: [], completed: [] };
     let locked = false;          // true once the current floor is solved
     let targetedZone = null;     // tap-to-place: slot chosen by the player
     let draggedBlock = null;
@@ -151,11 +151,11 @@
         if ($('level-display')) $('level-display').textContent = `Floor: ${state.level + 1}/${levels.length}`;
         if ($('rank-display')) {
             const prefix = state.playerName ? `${state.playerName} - ` : '';
-            $('rank-display').textContent  = `⚔️ ${prefix}Rank ${Math.floor(state.xp / XP_PER_RANK) + 1}`;
+            $('rank-display').textContent  = `?? ${prefix}Rank ${Math.floor(state.xp / XP_PER_RANK) + 1}`;
         }
-        if ($('gold-counter')) $('gold-counter').textContent  = `🪙 ${state.gold}`;
-        if ($('xp-counter')) $('xp-counter').textContent    = `🔮 ${state.xp % XP_PER_RANK}/${XP_PER_RANK}`;
-        if ($('streak-display')) $('streak-display').textContent = `🔥 ${state.streak}`;
+        if ($('gold-counter')) $('gold-counter').textContent  = `?? ${state.gold}`;
+        if ($('xp-counter')) $('xp-counter').textContent    = `?? ${state.xp % XP_PER_RANK}/${XP_PER_RANK}`;
+        if ($('streak-display')) $('streak-display').textContent = `?? ${state.streak}`;
     }
 
     /* ---------------- LEVEL SETUP ---------------- */
@@ -172,7 +172,7 @@
         board.innerHTML = '';
         bank.innerHTML = '';
         nextBtn.disabled = true;
-        nextBtn.textContent = 'Next Floor ➔';
+        nextBtn.textContent = 'Next Floor ?';
         setStatus('Summon the sentence!', '');
 
         level.pattern.forEach((slot) => {
@@ -226,7 +226,7 @@
         const level = levels[state.level];
         const cost = hintsUsed === 0 ? 0 : 5;
         if (state.gold < cost) { 
-            setStatus('Not enough gold for another hint (5 🪙).', 'error'); 
+            setStatus('Not enough gold for another hint (5 ??).', 'error'); 
             return; 
         }
         
@@ -245,7 +245,7 @@
         refreshHud(); 
         saveState();
         
-        setStatus(`Rune ${firstWrongIndex + 1} is glowing!` + (cost ? ' (-5 🪙)' : ' (first hint is free)'), '');
+        setStatus(`Rune ${firstWrongIndex + 1} is glowing!` + (cost ? ' (-5 ??)' : ' (first hint is free)'), '');
         if (tipEl) tipEl.textContent = tips[level.pattern[firstWrongIndex].type] || '';
         sfx('grab');
     }
@@ -399,11 +399,11 @@
             state.xp += 20;
         }
         setStatus(isLast ? 'The Crypt is Conquered!' : (firstClear ? 'The incantation is complete!' : 'The incantation is complete! (Rewards already claimed)'), 'success');
-        if (tipEl) tipEl.textContent = '✔ "' + levels[state.level].answer.map(a => a.text).join(' ').replace(/ \?/g, '?') + '"';
+        if (tipEl) tipEl.textContent = '? "' + levels[state.level].answer.map(a => a.text).join(' ').replace(/ \?/g, '?') + '"';
         sfx('success');
 
         nextBtn.disabled = false;
-        nextBtn.textContent = isLast ? 'Restart Crypt ↺' : 'Next Floor ➔';
+        nextBtn.textContent = isLast ? 'Restart Crypt ?' : 'Next Floor ?';
 
         if (firstClear) {
             const item = rollLoot();
@@ -522,6 +522,7 @@
             const leadModal = $('lead-modal');
             if (leadModal) {
                 // Populate the hidden score field so Gareth knows how they did
+                if ($('lead-email-hidden')) $('lead-email-hidden').value = state.playerEmail;
                 if ($('lead-score')) {
                     $('lead-score').value = `${state.playerName} - Gold: ${state.gold}, Streak: ${state.streak}`;
                 }
@@ -529,13 +530,13 @@
                 const leadPara = leadModal.querySelector('p');
                 if (state.streak >= 20) {
                     leadHeading.textContent = "Your Syntax is Flawless!";
-                    leadPara.textContent = "You're ready for C1 Advanced or IELTS 8.0. Enter your email to claim your Grammar Crypt Certificate, and get a special 50% discount on a trial lesson to polish your speaking!";
+                    leadPara.textContent = "You're ready for C1 Advanced or IELTS 8.0. Click below to claim your Grammar Crypt Certificate, and get a special 50% discount on a trial lesson to polish your speaking!";
                 } else if (state.streak >= 10) {
                     leadHeading.textContent = "You Survived!";
-                    leadPara.textContent = "Solid grammar, but a few cracks in the armor. Enter your email to see your final score and get a 50% discount on a trial lesson to fix those gaps.";
+                    leadPara.textContent = "Solid grammar, but a few cracks in the armor. Click below to reveal your final score and get a 50% discount on a trial lesson to fix those gaps.";
                 } else {
                     leadHeading.textContent = "The Crypt Defeated You...";
-                    leadPara.textContent = "Time for some targeted practice! Enter your email to get your score breakdown and book a 50% off trial lesson to level up your English.";
+                    leadPara.textContent = "Time for some targeted practice! Click below to get your score breakdown and book a 50% off trial lesson to level up your English.";
                     leadHeading.style.color = "#ef4444";
                 }
                 leadModal.classList.add('open');
@@ -592,20 +593,28 @@
             });
             
             const nameInput = $('player-name-input');
+            const emailInput = $('player-email-input');
             const startBtn = $('btn-start-game');
             
-            nameInput.addEventListener('input', () => {
-                startBtn.disabled = nameInput.value.trim().length === 0;
-            });
+            const validateStart = () => {
+                const n = nameInput.value.trim();
+                const e = emailInput ? emailInput.value.trim() : '';
+                startBtn.disabled = !(n.length > 0 && e.includes('@') && e.includes('.'));
+            };
             
-            nameInput.addEventListener('keydown', (e) => {
+            nameInput.addEventListener('input', validateStart);
+            if(emailInput) emailInput.addEventListener('input', validateStart);
+            
+            if(emailInput) emailInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !startBtn.disabled) startBtn.click();
             });
             
             startBtn.addEventListener('click', () => {
                 const name = nameInput.value.trim();
-                if (name) {
+                const email = emailInput ? emailInput.value.trim() : '';
+                if (name && email) {
                     state.playerName = name;
+                    state.playerEmail = email;
                     saveState();
                     nameScreen.classList.remove('open');
                     refreshHud();
@@ -618,3 +627,4 @@
         initLevel();
     });
 })();
+
