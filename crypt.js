@@ -1,4 +1,4 @@
-﻿/* ==========================================================
+/* ==========================================================
    Grammar Crypt – shared game logic (fantasy.html + sounds.html)
 
    Optional audio: if audio.js is loaded it exposes window.GCAudio
@@ -11,8 +11,17 @@
     const DISCOUNT_CODE = 'CRYPT50';
     const BOOKING_URL = '';   // e.g. your booking page; leave empty to hide
 
+    const vibrate = (pattern) => {
+        try { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); } catch (_) {}
+    };
+
     const sfx = (name, arg) => {
         try { if (window.GCAudio) window.GCAudio.play(name, arg); } catch (_) { /* audio is optional */ }
+        if (name === 'grab' || name === 'drop') vibrate(15);
+        else if (name === 'success') vibrate([30, 40, 60]);
+        else if (name === 'error') vibrate([50, 50, 50]);
+        else if (name === 'loot' || name === 'milestone') vibrate([40, 50, 40, 50, 80]);
+        else if (name === 'boss') vibrate([60, 50, 60, 50, 100]);
     };
 
     /* ---------------- DATA ---------------- */
