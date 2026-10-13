@@ -27,6 +27,7 @@
     
     const defEl = document.getElementById('target-definition');
     const verbEl = document.getElementById('base-verb');
+    const particlesContainer = document.querySelector('.particles-container');
     const particles = Array.from(document.querySelectorAll('.particle'));
     const scoreEl = document.getElementById('score-display');
     const timerBar = document.getElementById('timer-bar');
@@ -37,6 +38,7 @@
     let score = 0;
     let timeLeft = 100; // Percentage
     let gameLoop;
+    let lastTickTime = 0;
     let isActive = false;
 
     // --- Init ---
@@ -58,6 +60,18 @@
         startGame();
     });
 
+    // Event delegation on particle options container
+    if (particlesContainer) {
+        particlesContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.particle');
+            if (!btn || !isActive) return;
+            const lvl = levels[currentLevel];
+            if (lvl) {
+                handleGuess(btn.dataset.particle === lvl.ans);
+            }
+        });
+    }
+
     function shuffle(array) {
         let currentIndex = array.length, randomIndex;
         while (currentIndex != 0) {
@@ -76,9 +90,11 @@
         isActive = true;
         updateScore();
         loadLevel();
+        renderTimerBar();
         
         clearInterval(gameLoop);
-        gameLoop = setInterval(updateTimer, 100);
+        lastTickTime = performance.now();
+        gameLoop = setInterval(updateTimer, 50);
     }
 
     function loadLevel() {
@@ -96,7 +112,7 @@
         
         particles.forEach((p, i) => {
             p.textContent = options[i];
-            p.onclick = () => handleGuess(options[i] === lvl.ans);
+            p.dataset.particle = options[i];
         });
     }
 
@@ -115,7 +131,12 @@
             }, 600);
         } else {
             verbEl.className = 'core error';
-            timeLeft -= 15; // Penalty
+            timeLeft = Math.max(0, timeLeft - 15); // Penalty
+            renderTimerBar();
+            if (timeLeft <= 0) {
+                endGame(false);
+                return;
+            }
             setTimeout(() => {
                 if (isActive) verbEl.className = 'core pulse';
             }, 300);
@@ -126,16 +147,8 @@
         scoreEl.textContent = score;
     }
 
-    function updateTimer() {
-        if (!isActive) return;
-        
-        timeLeft -= 0.2; // Deplete
-        if (timeLeft <= 0) {
-            timeLeft = 0;
-            endGame(false);
-        }
-
-        timerBar.style.width = timeLeft + '%';
+    function renderTimerBar() {
+        timerBar.style.width = Math.max(0, timeLeft) + '%';
         if (timeLeft > 50) {
             timerBar.style.backgroundColor = 'var(--core)';
         } else if (timeLeft > 20) {
@@ -145,9 +158,29 @@
         }
     }
 
+    function updateTimer() {
+        if (!isActive) return;
+        
+        const now = performance.now();
+        const deltaMs = lastTickTime ? (now - lastTickTime) : 50;
+        lastTickTime = now;
+
+        // 100% deplete rate equivalent to ~50s base time (0.002% per ms)
+        timeLeft -= deltaMs * 0.002;
+        if (timeLeft <= 0) {
+            timeLeft = 0;
+            renderTimerBar();
+            endGame(false);
+            return;
+        }
+
+        renderTimerBar();
+    }
+
     function endGame(won) {
         isActive = false;
         clearInterval(gameLoop);
+        lastTickTime = 0;
         
         const title = document.getElementById('end-title');
         const desc = document.getElementById('end-desc');
@@ -155,11 +188,11 @@
         if (won) {
             title.textContent = "REACTOR SECURED";
             title.style.color = "var(--success)";
-            desc.textContent = "Outstanding work, Agent. The phrasal verbs have been stabilized. Submit your report to claim your C1 Clearance (and a discount on a trial lesson).";
+            desc.textContent = "Outstanding work, Agent. The phrasal verbs have been stabilized. Submit your report to claim your C1 Clearance and 50% off your 30-min trial lesson (only £10).";
         } else {
             title.textContent = "MELTDOWN IMMINENT";
             title.style.color = "var(--danger)";
-            desc.textContent = "The core collapsed under poor syntax. Submit your data logs to get a full debriefing and a trial lesson to repair your knowledge.";
+            desc.textContent = "The core collapsed under poor syntax. Submit your data logs to get a full debriefing and claim 50% off a 30-min trial lesson (only £10) to repair your knowledge.";
         }
         
         document.getElementById('final-score').textContent = score + "/10";
