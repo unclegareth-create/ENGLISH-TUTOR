@@ -205,11 +205,11 @@
         if (survived) {
             title.textContent = "MEETING SUCCESSFUL";
             title.style.color = "var(--success)";
-            desc.textContent = "You navigated the corporate minefield with excellent diplomacy. Submit your pitch logs to claim a C1 Business English trial lesson discount.";
+            desc.textContent = "You navigated the corporate minefield with excellent diplomacy. Submit your pitch logs to claim 50% off your 30-min trial lesson (only £10).";
         } else {
             title.textContent = "YOU WERE FIRED";
             title.style.color = "var(--danger)";
-            desc.textContent = "Your blunt approach offended the board. Submit your exit interview logs to book a trial lesson and repair your diplomatic English.";
+            desc.textContent = "Your blunt approach offended the board. Submit your exit interview logs to claim 50% off a 30-min trial lesson (only £10) and polish your diplomatic English.";
         }
         
         document.getElementById('final-score').textContent = finalReputation;
