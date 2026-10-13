@@ -189,11 +189,11 @@
         if (won) {
             title.textContent = "QUOTA MET";
             title.style.color = "var(--brass-light)";
-            desc.textContent = "Excellent craftsmanship! You forged all the words correctly. Submit your timesheet to claim your C1 Clearance and a trial lesson discount.";
+            desc.textContent = "Excellent craftsmanship! You forged all the words correctly. Submit your timesheet to claim 50% off your 30-min trial lesson (only £10).";
         } else {
             title.textContent = "FACTORY SHUTDOWN";
             title.style.color = "var(--danger)";
-            desc.textContent = "Too many raw materials were lost to the furnace. Your word formation needs recalibration. Book a trial lesson to repair your gears.";
+            desc.textContent = "Too many raw materials were lost to the furnace. Submit your timesheet to claim 50% off a 30-min trial lesson (only £10) and recalibrate your word formation.";
         }
         
         document.getElementById('final-score').textContent = score + "/10";
