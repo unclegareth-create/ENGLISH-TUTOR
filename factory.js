@@ -186,14 +186,18 @@
         const title = document.getElementById('end-title');
         const desc = document.getElementById('end-desc');
         
-        if (won) {
-            title.textContent = "QUOTA MET";
+        if (won && score >= 9) {
+            title.textContent = "QUOTA MET (C2 LEVEL)";
             title.style.color = "var(--brass-light)";
-            desc.textContent = "Excellent craftsmanship! You forged all the words correctly. Submit your timesheet to claim 50% off your 30-min trial lesson (only £10).";
+            desc.textContent = "Masterful craftsmanship! You forged every complex derivative with zero hesitation. Ready to apply this lexical control in full C1/C2 exam tasks?";
+        } else if (won) {
+            title.textContent = "QUOTA MET (MARGINAL)";
+            title.style.color = "var(--brass-light)";
+            desc.textContent = "Scored under 9/10? Cambridge Part 3 Use of English penalises tricky prefixes and internal vowel shifts. In 1-to-1 sessions, we eliminate these recurring errors.";
         } else {
             title.textContent = "FACTORY SHUTDOWN";
             title.style.color = "var(--danger)";
-            desc.textContent = "Too many raw materials were lost to the furnace. Submit your timesheet to claim 50% off a 30-min trial lesson (only £10) and recalibrate your word formation.";
+            desc.textContent = "Word formation requires speed and morphological precision. In our 1-to-1 diagnostic lessons, we identify your exact spelling and affix weaknesses.";
         }
         
         document.getElementById('final-score').textContent = score + "/10";
