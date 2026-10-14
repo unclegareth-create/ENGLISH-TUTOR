@@ -202,14 +202,18 @@
         let finalReputation = Math.round((score / totalQuestions) * 100);
         if (!survived) finalReputation = 0; // Fired
         
-        if (survived) {
+        if (survived && finalReputation >= 80) {
             title.textContent = "MEETING SUCCESSFUL";
             title.style.color = "var(--success)";
-            desc.textContent = "You navigated the corporate minefield with excellent diplomacy. Submit your pitch logs to claim 50% off your 30-min trial lesson (only £10).";
+            desc.textContent = "Outstanding executive poise! You navigated the boardroom with natural diplomacy. Ready to master high-stakes phrasing for your real meetings?";
+        } else if (survived) {
+            title.textContent = "MEETING SURVIVED (NEEDS POLISH)";
+            title.style.color = "#f59e0b";
+            desc.textContent = "Scored under 80%? In high-stakes meetings, even small phrasing slips can undermine your credibility. In our 1-to-1 Business English sessions, we practice real-time diplomatic phrasing for your actual work calls.";
         } else {
             title.textContent = "YOU WERE FIRED";
             title.style.color = "var(--danger)";
-            desc.textContent = "Your blunt approach offended the board. Submit your exit interview logs to claim 50% off a 30-min trial lesson (only £10) and polish your diplomatic English.";
+            desc.textContent = "Your blunt phrasing alienated the board. In international business, linguistic nuance is influence. In our 1-to-1 Business English sessions, we build instinctive tact and diplomacy.";
         }
         
         document.getElementById('final-score').textContent = finalReputation;
