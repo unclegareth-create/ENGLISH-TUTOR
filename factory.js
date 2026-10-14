@@ -203,6 +203,7 @@
         document.getElementById('final-score').textContent = score + "/10";
         document.getElementById('lead-score').value = `Word Factory - Score: ${score}/10`;
         document.getElementById('lead-email').value = emailInput.value.trim();
+        document.getElementById('lead-name').value = nameInput.value.trim();
         
         endModal.classList.add('open');
     }
