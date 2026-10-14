@@ -473,22 +473,22 @@
           </div>
         </article>
 
-        <!-- Card 6: Pronunciation & Connected Speech -->
+        <!-- Card 6: Spoken Fluency & Presentations -->
         <article class="bg-white p-7 rounded-2xl shadow-sm border border-slate-200/70 hover:shadow-md transition flex flex-col justify-between">
           <div>
             <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-xl mb-5" aria-hidden="true">
-              <i class="fa-solid fa-volume-high"></i>
+              <i class="fa-solid fa-microphone-lines"></i>
             </div>
-            <h3 class="text-lg font-bold text-slate-900 mb-2">Pronunciation &amp; Connected Speech</h3>
-            <p class="text-sm text-slate-600 leading-relaxed mb-4">Master natural rhythm, intonation, sentence stress, and connected speech features (linking, elision) so you speak smoothly and effortlessly.</p>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Pronunciation &amp; Public Speaking</h3>
+            <p class="text-sm text-slate-600 leading-relaxed mb-4">Clear, authoritative delivery for international conferences, medical boards, legal arguments, and Q&amp;A panels.</p>
             <ul class="text-xs space-y-2 text-slate-600 font-medium">
-              <li><i class="fa-solid fa-check text-rose-700 mr-1.5" aria-hidden="true"></i> Accent softening &amp; speech clarity</li>
-              <li><i class="fa-solid fa-check text-rose-700 mr-1.5" aria-hidden="true"></i> Connected speech &amp; weak forms</li>
+              <li><i class="fa-solid fa-check text-rose-700 mr-1.5" aria-hidden="true"></i> Pacing, stress &amp; natural intonation</li>
+              <li><i class="fa-solid fa-check text-rose-700 mr-1.5" aria-hidden="true"></i> High-stakes Q&amp;A &amp; interview prep</li>
             </ul>
           </div>
           <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold">
-            <a href="speaking-naturally.html" class="text-rose-700 hover:text-rose-900">Connected Speech Guide &rarr;</a>
-            <a href="#booking" class="text-brand-600 hover:text-brand-800">Book Diagnostic &rarr;</a>
+            <a href="#intro-video" class="text-rose-700 hover:text-rose-900">Hear My Accent &rarr;</a>
+            <a href="#contact" class="text-rose-700 hover:text-rose-900">Book Diagnostic &rarr;</a>
           </div>
         </article>
 
@@ -1280,23 +1280,23 @@ function renderComponent() {
             renderCommentaryCards(sample);
         }
 function renderParagraphSegments(segments, mode) {
-            return segments.map(seg => {
-                if (seg.type === 'text') {
-                    return `<span>${seg.content}</span>`;
-                }
-                const isActive = seg.id === activeAnnotationId;
-                const activeClass = isActive ? 'active-annotation' : '';
-
-                if (mode === 'draft') {
-                    return `<span class="draft-weakness ${activeClass}" data-note-id="${seg.id}" role="button" tabindex="0" aria-label="Examiner feedback ${seg.id}" onclick="selectAnnotation(${seg.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${seg.id});}">${seg.before}<span class="markup-badge">${seg.id}</span></span>`;
-                } else if (mode === 'polished') {
-                    return `<span class="polished-highlight ${activeClass}" data-note-id="${seg.id}" role="button" tabindex="0" aria-label="Examiner feedback ${seg.id}" onclick="selectAnnotation(${seg.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${seg.id});}">${seg.after}<span class="markup-badge">${seg.id}</span></span>`;
-                } else {
-                    // Default: 'markup' mode
-                    return `<span class="markup-group ${activeClass}" data-note-id="${seg.id}" role="button" tabindex="0" aria-label="Examiner feedback ${seg.id}" onclick="selectAnnotation(${seg.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${seg.id});}"><del class="markup-del">${seg.before}</del><ins class="markup-ins no-underline">${seg.after}</ins><span class="markup-badge">${seg.id}</span></span>`;
-                }
-            }).join('');
+    return segments.map(seg => {
+        if (seg.type === 'text') {
+            return `<span>${seg.content}</span>`;
         }
+        const isActive = seg.id === activeAnnotationId;
+        const activeClass = isActive ? 'active-annotation' : '';
+        const a11yAttrs = `data-note-id="${seg.id}" role="button" tabindex="0" aria-label="Examiner feedback ${seg.id}" onclick="selectAnnotation(${seg.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${seg.id});}"`;
+
+        if (mode === 'draft') {
+            return `<span class="draft-weakness ${activeClass}" ${a11yAttrs}>${seg.before}<span class="markup-badge">${seg.id}</span></span>`;
+        } else if (mode === 'polished') {
+            return `<span class="polished-highlight ${activeClass}" ${a11yAttrs}>${seg.after}<span class="markup-badge">${seg.id}</span></span>`;
+        } else {
+            return `<span class="markup-group ${activeClass}" ${a11yAttrs}><del class="markup-del">${seg.before}</del><ins class="markup-ins no-underline">${seg.after}</ins><span class="markup-badge">${seg.id}</span></span>`;
+        }
+    }).join('');
+}
 function renderSplitView(sample) {
             const beforeHtml = renderParagraphSegments(sample.segments, 'draft');
             const afterHtml = renderParagraphSegments(sample.segments, 'polished');
@@ -2060,7 +2060,7 @@ if (document.readyState === 'loading') {
       </div>
 
             <div class="mb-10 w-full bg-white rounded-2xl overflow-hidden shadow-inner border border-slate-200">
-        <div id="my-cal-inline" style="width:100%; min-height:600px; overflow:hidden" class="relative pointer-events-none">
+        <div id="my-cal-inline" style="width:100%; min-height:600px;" class="relative pointer-events-none">
           <!-- Friendly loading / fallback card that disappears once Cal.com mounts -->
           <div id="cal-fallback-card" class="cal-fallback-card flex flex-col items-center justify-center p-8 sm:p-12 text-center text-slate-600 bg-white min-h-[600px] pointer-events-auto relative z-20">
             <div class="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-100 text-brand-600 flex items-center justify-center text-2xl mb-4 shadow-xs">
