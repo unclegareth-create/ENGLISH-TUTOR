@@ -55,4 +55,32 @@
         // Clean up the URL
         window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
     }
+
+    /* ---------- Sticky Mobile CTA visibility ---------- */
+    const stickyBar = document.getElementById('sticky-mobile-cta');
+    const contactSec = document.getElementById('contact');
+    if (stickyBar) {
+        const updateSticky = () => {
+            const scrollY = window.scrollY || window.pageYOffset;
+            const heroThreshold = 320;
+            let nearContact = false;
+            if (contactSec) {
+                const rect = contactSec.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    nearContact = true;
+                }
+            }
+            if (scrollY > heroThreshold && !nearContact) {
+                stickyBar.style.transform = 'translateY(0)';
+                stickyBar.style.opacity = '1';
+                stickyBar.style.pointerEvents = 'auto';
+            } else {
+                stickyBar.style.transform = 'translateY(100%)';
+                stickyBar.style.opacity = '0';
+                stickyBar.style.pointerEvents = 'none';
+            }
+        };
+        window.addEventListener('scroll', updateSticky, { passive: true });
+        updateSticky();
+    }
 })();
