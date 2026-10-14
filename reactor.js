@@ -185,14 +185,18 @@
         const title = document.getElementById('end-title');
         const desc = document.getElementById('end-desc');
         
-        if (won) {
-            title.textContent = "REACTOR SECURED";
+        if (won && score >= 9) {
+            title.textContent = "REACTOR STABILISED";
             title.style.color = "var(--success)";
-            desc.textContent = "Outstanding work, Agent. The phrasal verbs have been stabilized. Submit your report to claim your C1 Clearance and 50% off your 30-min trial lesson (only £10).";
+            desc.textContent = "Outstanding reflexes, Agent. You have mastered high-level particle collocations. Ready to test your spoken fluency and writing with Gareth?";
+        } else if (won) {
+            title.textContent = "CORE STABILISED (MARGINAL)";
+            title.style.color = "#f59e0b";
+            desc.textContent = "Scored under 9/10? Phrasal verbs and prepositions are the most frequent area where C1/C2 and IELTS candidates lose marks.";
         } else {
-            title.textContent = "MELTDOWN IMMINENT";
+            title.textContent = "MELTDOWN OCCURRED";
             title.style.color = "var(--danger)";
-            desc.textContent = "The core collapsed under poor syntax. Submit your data logs to get a full debriefing and claim 50% off a 30-min trial lesson (only £10) to repair your knowledge.";
+            desc.textContent = "The core collapsed under unstable syntax. In our 1-to-1 sessions, we diagnose your exact grammar hurdles and give you a structured study roadmap.";
         }
         
         document.getElementById('final-score').textContent = score + "/10";
