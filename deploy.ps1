@@ -26,6 +26,8 @@ param(
     "business-english-meetings.html",
     "grammar-crypt.html",
     "crypt.js",
+    "cryptData.js",
+    "cryptEngine.js",
     "crypt.css",
     "manifest.json",
     "sw.js",
