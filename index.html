@@ -2046,29 +2046,31 @@ if (document.readyState === 'loading') {
         <p class="text-slate-300 text-sm max-w-md mx-auto">Pick a time that suits your time zone (£20 for 30 minutes &mdash; approx. €24 / $26), or send me a note about what you'd like to work on and I'll reply within 24 hours.</p>
       </div>
 
-      <div class="mb-10 w-full bg-white rounded-2xl overflow-hidden shadow-inner relative min-h-[650px]">
-        <!-- Clean Inviting Fallback Card (shown while Cal loads or if blocked by strict ad/privacy blockers) -->
-        <div id="cal-loading-fallback" class="absolute inset-0 flex flex-col items-center justify-center p-8 sm:p-12 text-center text-slate-600 bg-white z-0">
-          <div class="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-100 text-brand-600 flex items-center justify-center text-2xl mb-4 shadow-xs">
-            <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
+            <div class="mb-10 w-full bg-white rounded-2xl overflow-hidden shadow-inner border border-slate-200">
+        <div id="my-cal-inline" style="width:100%; min-height:600px; overflow:scroll" class="relative">
+          <!-- Friendly loading / fallback card that disappears once Cal.com mounts -->
+          <div id="cal-fallback-card" class="cal-fallback-card flex flex-col items-center justify-center p-8 sm:p-12 text-center text-slate-600 bg-white min-h-[600px]">
+            <div class="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-100 text-brand-600 flex items-center justify-center text-2xl mb-4 shadow-xs">
+              <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
+            </div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 mb-3">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live 1-on-1 Availability
+            </div>
+            <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">Book Your 30-Minute Trial (£20)</h3>
+            <p class="text-sm font-semibold text-slate-800 mb-1">Loading live availability calendar...</p>
+            <p class="text-sm text-slate-500 mb-6 max-w-md leading-relaxed">
+              Taking too long to load? You can open the scheduler directly:
+            </p>
+            <a href="https://cal.com/gareth-montgomery-jgaefz/30min" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-lg shadow-brand-600/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
+              <span>Open Booking Calendar on Cal.com &rarr;</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-xs" aria-hidden="true"></i>
+            </a>
+            <p class="text-xs text-slate-400 mt-4 flex items-center gap-1.5">
+              <i class="fa-solid fa-shield-halved text-slate-400"></i> Instant confirmation &bull; Powered by Cal.com &bull; Secure Stripe checkout
+            </p>
           </div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-200 mb-3">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true"></span> Live 1-on-1 Availability
-          </div>
-          <h3 class="text-xl sm:text-2xl font-extrabold text-slate-900 mb-2">Book Your 30-Minute Trial (£20)</h3>
-          <p class="text-sm text-slate-500 mb-6 max-w-md leading-relaxed">
-            Loading live availability calendar... If you use a strict privacy blocker, third-party cookies are disabled, or the widget takes a moment, you can open Gareth's scheduling calendar directly.
-          </p>
-          <a href="https://cal.com/gareth-montgomery-jgaefz/30min" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-lg shadow-brand-600/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
-            <span>Open Scheduling Calendar Directly</span>
-            <i class="fa-solid fa-arrow-up-right-from-square text-xs" aria-hidden="true"></i>
-          </a>
-          <p class="text-xs text-slate-400 mt-4 flex items-center gap-1.5">
-            <i class="fa-solid fa-shield-halved text-slate-400"></i> Instant confirmation &bull; Powered by Cal.com &bull; Secure Stripe checkout
-          </p>
         </div>
 
-        <div style="width:100%;height:650px;overflow:auto" id="my-cal-inline" class="relative z-10"></div>
         <script type="text/javascript">
           (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
           Cal("init", {origin:"https://cal.com"});
@@ -2079,31 +2081,39 @@ if (document.readyState === 'loading') {
           });
           Cal("ui", {"styles":{"branding":{"brandColor":"#0284c7"}},"hideEventTypeDetails":false,"layout":"month_view"});
 
-          // Smooth fallback handling: hide loading state once iframe mounts; sanitize any error state
+          // Seamless Cal fallback handling: once iframe mounts, hide the fallback card; if error string appears, restore the clean card
           (function() {
             const calEl = document.getElementById('my-cal-inline');
-            const fallbackEl = document.getElementById('cal-loading-fallback');
             if (!calEl) return;
-            const checkLoaded = function() {
-              if (calEl.querySelector('iframe')) {
-                if (fallbackEl) fallbackEl.style.display = 'none';
+            const fallbackCard = document.getElementById('cal-fallback-card');
+
+            const checkState = function() {
+              const iframe = calEl.querySelector('iframe');
+              if (iframe) {
+                if (fallbackCard) fallbackCard.style.display = 'none';
               }
+              // If Cal outputs its default alarming error string, sanitize it immediately
               if (calEl.textContent && (calEl.textContent.includes('Something went wrong') || calEl.textContent.includes('enable JavaScript'))) {
-                calEl.innerHTML = '';
-                if (fallbackEl) fallbackEl.style.display = 'flex';
+                const existingIframe = calEl.querySelector('iframe');
+                if (!existingIframe && fallbackCard) {
+                  calEl.innerHTML = '';
+                  fallbackCard.style.display = 'flex';
+                  calEl.appendChild(fallbackCard);
+                }
               }
             };
-            const observer = new MutationObserver(checkLoaded);
+
+            const observer = new MutationObserver(checkState);
             observer.observe(calEl, { childList: true, subtree: true, characterData: true });
+
             setTimeout(function() {
-              if (!calEl.querySelector('iframe') && fallbackEl) {
-                fallbackEl.style.display = 'flex';
+              if (!calEl.querySelector('iframe') && fallbackCard) {
+                fallbackCard.style.display = 'flex';
               }
             }, 6000);
           })();
         </script>
         <noscript>
-          <style>#cal-loading-fallback { display: none !important; }</style>
           <div class="relative z-20 p-8 sm:p-12 text-center text-slate-600 bg-white min-h-[400px] flex flex-col items-center justify-center space-y-4">
             <div class="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-100 text-brand-600 flex items-center justify-center text-2xl shadow-xs">
               <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
@@ -2112,7 +2122,7 @@ if (document.readyState === 'loading') {
             <p class="text-sm text-slate-500 max-w-md leading-relaxed">JavaScript is disabled or blocked. You can view all live times and book your £20 trial lesson directly on Cal.com:</p>
             <div class="pt-2">
               <a href="https://cal.com/gareth-montgomery-jgaefz/30min" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold shadow-lg shadow-brand-600/30 transition">
-                <span>Open Scheduling Calendar Directly</span>
+                <span>Open Booking Calendar on Cal.com &rarr;</span>
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs" aria-hidden="true"></i>
               </a>
             </div>
