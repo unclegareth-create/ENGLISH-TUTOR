@@ -58,7 +58,7 @@
 
         if (href === '#contact' || href.includes('#contact')) {
             send(`booking-cta: ${label(a)}`);
-        } else if (/(^|\/)(new|fantasy|sounds)\.html/.test(href)) {
+        } else if (/(^|\/)(grammar-crypt|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch)\.html/.test(href)) {
             send(`game: ${page(href)}`);
         } else if (a.closest('[data-track="articles"]')) {
             send(`article: ${page(href)}`);
