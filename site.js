@@ -57,30 +57,52 @@
     }
 
     /* ---------- Sticky Mobile CTA visibility ---------- */
+    /* ---------- Sticky Mobile CTA visibility ---------- */
     const stickyBar = document.getElementById('sticky-mobile-cta');
-    const contactSec = document.getElementById('contact');
+    const contactSection = document.getElementById('contact');
     if (stickyBar) {
-        const updateSticky = () => {
+        let isContactVisible = false;
+
+        const updateStickyVisibility = () => {
             const scrollY = window.scrollY || window.pageYOffset;
             const heroThreshold = 320;
-            let nearContact = false;
-            if (contactSec) {
-                const rect = contactSec.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    nearContact = true;
+            const shouldHide = scrollY <= heroThreshold || isContactVisible;
+
+            stickyBar.classList.toggle('translate-y-full', shouldHide);
+            stickyBar.classList.toggle('opacity-0', shouldHide);
+            stickyBar.classList.toggle('pointer-events-none', shouldHide);
+            stickyBar.classList.toggle('translate-y-0', !shouldHide);
+            stickyBar.classList.toggle('opacity-100', !shouldHide);
+        };
+
+        if (contactSection && 'IntersectionObserver' in window) {
+            new IntersectionObserver(([entry]) => {
+                isContactVisible = entry.isIntersecting;
+                updateStickyVisibility();
+            }, { threshold: 0.08 }).observe(contactSection);
+        }
+
+        window.addEventListener('scroll', updateStickyVisibility, { passive: true });
+        updateStickyVisibility();
+    }
+
+    /* ---------- Pre-fill Package Intent on Inquiry Form ---------- */
+    document.querySelectorAll('[data-prefill-package]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const pkg = btn.getAttribute('data-prefill-package');
+            const goalInput = document.getElementById('goal');
+            const contactForm = document.getElementById('contact-form');
+            if (goalInput && pkg) {
+                goalInput.value = pkg;
+                if (contactForm) {
+                    setTimeout(() => {
+                        contactForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        goalInput.focus();
+                        goalInput.classList.add('ring-2', 'ring-sky-400');
+                        setTimeout(() => goalInput.classList.remove('ring-2', 'ring-sky-400'), 2200);
+                    }, 60);
                 }
             }
-            if (scrollY > heroThreshold && !nearContact) {
-                stickyBar.style.transform = 'translateY(0)';
-                stickyBar.style.opacity = '1';
-                stickyBar.style.pointerEvents = 'auto';
-            } else {
-                stickyBar.style.transform = 'translateY(100%)';
-                stickyBar.style.opacity = '0';
-                stickyBar.style.pointerEvents = 'none';
-            }
-        };
-        window.addEventListener('scroll', updateSticky, { passive: true });
-        updateSticky();
-    }
+        });
+    });
 })();
