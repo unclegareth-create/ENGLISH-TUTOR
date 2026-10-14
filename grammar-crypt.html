@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>Grammar Crypt: Audio Edition</title>
-    <meta name="description" content="Grammar Crypt with synthesized sound effects and a brooding soundtrack: drag grammar runes into the right order to build correct English questions.">
-    <meta name="theme-color" content="#120a1f">
+    <title>Grammar Crypt: Advanced English Syntax Dungeon | Gareth English</title>
+    <meta name="description" content="Conquer advanced English syntax in Grammar Crypt. Assemble C1/C2 inverted clauses, mixed conditionals, and participle structures, then defeat grammar bosses in tactical error-correction duels.">
+    <meta name="theme-color" content="#0d0817">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Grammar Crypt">
+    <link rel="canonical" href="https://garethenglish.com/grammar-crypt.html">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,119 +17,154 @@
     <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-    <meta property="og:title" content="Grammar Crypt: Audio Edition">
-    <meta property="og:description" content="Drag grammar runes into order to survive 25 floors of English questions.">
+    <meta property="og:title" content="Grammar Crypt: Advanced English Syntax Dungeon">
+    <meta property="og:description" content="Synthesise advanced clause orders and defeat syntax bosses in Gareth's interactive grammar dungeon.">
+    <meta property="og:url" content="https://garethenglish.com/grammar-crypt.html">
+    <meta property="og:type" content="website">
     <link rel="stylesheet" href="crypt.css">
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4576939732610828"
-     crossorigin="anonymous"></script>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4576939732610828" crossorigin="anonymous"></script>
 </head>
 <body>
 
-    <!-- Intro Screen -->
-    <div id="intro-screen" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="intro-heading">
-        <div class="modal-panel">
-            <h2 id="intro-heading">Grammar Crypt</h2>
-            <p>Enter the crypt and piece together the scattered runes to form questions of power.</p>
-            <button type="button" id="btn-continue-intro" class="btn-claim" style="margin-top: 10px;">Enter the Shadows</button>
+    <!-- Top Navigation -->
+    <nav class="crypt-nav" aria-label="Main Navigation">
+        <a href="index.html" class="crypt-logo">
+            <span aria-hidden="true">⚡</span> Gareth's Grammar Crypt
+        </a>
+        <div class="crypt-nav-links">
+            <a href="index.html" class="crypt-nav-link">Home</a>
+            <a href="ielts-7-syllabus.html" class="crypt-nav-link">Syllabus</a>
+            <a href="index.html#writing-sample" class="crypt-nav-link">Sample Markup</a>
+            <a href="index.html#pricing" class="btn-nav-trial">Book £20 Trial &rarr;</a>
         </div>
+    </nav>
+
+    <!-- Dungeon Mode Switcher Bar -->
+    <div class="dungeon-selector-bar" role="toolbar" aria-label="Dungeon Curriculum Selector">
+        <span class="dungeon-label">Dungeons:</span>
+        <button type="button" class="dungeon-pill" data-load-dungeon="main">🏰 Main Catacombs (10 Floors)</button>
+        <button type="button" class="dungeon-pill" data-load-dungeon="cae-inversion">⚔️ C1/C2 Inversions (5 Floors)</button>
+        <button type="button" class="dungeon-pill" data-load-dungeon="mixed-conditionals">⏳ Mixed Conditionals (4 Floors)</button>
+        <button type="button" class="dungeon-pill" data-load-dungeon="boss-trial">💀 Grand Boss Gauntlet</button>
     </div>
 
-    <!-- Name Entry Screen -->
-    <div id="name-screen" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="name-heading">
-        <div class="modal-panel">
-            <h2 id="name-heading">Who Dares Enter?</h2>
-            <p>Enter your name to unlock the crypt. Email is optional (you can add it at the end for your certificate).</p>
-            <input type="text" id="player-name-input" class="name-input" placeholder="Your Name..." maxlength="15" autocomplete="off" style="margin-bottom: 10px;">
-            <input type="email" id="player-email-input" class="name-input" placeholder="Email (optional)" autocomplete="email">
-            <br>
-            <button type="button" id="btn-start-game" class="btn-next" disabled>Begin</button>
-        </div>
-    </div>
+    <!-- Main Game Container -->
+    <main class="crypt-container" id="crypt-game">
+        <!-- Top HUD -->
+        <header class="crypt-hud" aria-label="Player Status">
+            <div class="hud-item hp" title="Torch Health">Torch: <span id="player-hp">🔥🔥🔥</span></div>
+            <div class="hud-item score" title="Score">🪙 <span id="player-score">0</span></div>
+            <div class="hud-item streak" title="Streak"><span id="streak-counter"></span></div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button type="button" id="audio-toggle" class="hud-btn" aria-pressed="false">🔈 Sound Off</button>
+                <button type="button" id="pwa-install-btn" class="hud-btn hidden" title="Install App to your device">📲 Install</button>
+            </div>
+        </header>
 
-    <!-- Lead Capture Modal (End Game) -->
-    <div id="lead-modal" class="fullscreen-modal" role="dialog" aria-modal="true" aria-labelledby="lead-heading">
-        <div class="modal-panel">
-            <h2 id="lead-heading" style="color: var(--gold);">You Survived the Crypt!</h2>
-            <p>Enter your email to reveal your final score and claim your Grammar Crypt Certificate.</p>
-            
-            <div style="background: rgba(147, 51, 234, 0.12); border: 1px solid rgba(147, 51, 234, 0.35); border-radius: 12px; padding: 14px; margin: 14px 0; text-align: left;">
-                <p style="font-size: 0.85rem; color: #e9d5ff; margin-bottom: 8px;"><strong>Diagnostic Next Step:</strong> Struggle with question order or clause hierarchy? In our 1-to-1 lessons, former lecturer Gareth Montgomery diagnoses your syntax hurdles and gives you a personalised study roadmap.</p>
-                <a href="index.html#contact" style="display: block; text-align: center; background: #9333ea; color: #ffffff; font-weight: 800; padding: 10px 16px; border-radius: 9999px; text-decoration: none; font-size: 0.85rem; margin-top: 6px;">Book a £20 Diagnostic Trial &rarr;</a>
+        <!-- Room Header -->
+        <section class="room-header" aria-labelledby="room-title">
+            <div class="room-badge-row">
+                <span class="badge-category" id="mode-badge">Catacombs Campaign</span>
+                <span class="badge-category" id="room-category">Syntax Trial</span>
+            </div>
+            <h1 class="room-title" id="room-title">Floor 1</h1>
+            <p class="room-desc" id="room-desc">Assemble the ancient clauses in exact grammatical order to unseal the chamber.</p>
+        </section>
+
+        <!-- Boss Arena HUD (Hidden during assembly floors) -->
+        <section id="boss-hud" class="boss-hud hidden" aria-label="Boss Arena">
+            <div class="boss-header-row">
+                <div class="boss-identity">
+                    <span class="boss-avatar" id="boss-avatar">👺</span>
+                    <span class="boss-name" id="boss-name">The Goblin of Gerunds</span>
+                </div>
+                <div class="boss-hp" id="boss-hp">💀💀💀</div>
+            </div>
+            <div id="boss-timer" class="boss-timer-container hidden" role="progressbar" aria-label="Boss spell timer">
+                <div id="boss-timer-bar" class="boss-timer-bar"></div>
+            </div>
+        </section>
+
+        <!-- Sentence Altar Board -->
+        <section class="puzzle-zone" id="puzzle-zone" aria-label="Sentence Altar"></section>
+
+        <!-- Rune Bank Area -->
+        <section class="bank-zone" id="bank-zone" aria-label="Rune Bank"></section>
+
+        <!-- Feedback & Spell Result Box -->
+        <div class="feedback-box hidden" id="feedback-box" role="status" aria-live="polite"></div>
+
+        <!-- Interactive Control Bar -->
+        <footer class="crypt-controls">
+            <button type="button" id="reset-btn" class="crypt-btn secondary">Reset Altar</button>
+            <button type="button" id="hint-btn" class="crypt-btn secondary">Hint 💡</button>
+            <button type="button" id="action-btn" class="crypt-btn primary">Cast / Verify Syntax</button>
+            <button type="button" id="next-btn" class="crypt-btn next-btn hidden">Descend Deeper ➔</button>
+        </footer>
+    </main>
+
+    <!-- Diagnostic Debrief Modal -->
+    <div id="debrief-modal" class="debrief-modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="debrief-title">
+        <div class="debrief-content">
+            <header class="debrief-header">
+                <h2 id="debrief-title">Diagnostic Debrief</h2>
+                <p id="debrief-summary">Here is your grammatical syntax breakdown from the crypt trial:</p>
+            </header>
+
+            <!-- Real-time Stats Grid -->
+            <div id="debrief-stats"></div>
+
+            <!-- Gareth's Diagnostic Assessment Pitch Card -->
+            <div class="debrief-diagnostic-pitch">
+                <h4>Former Lecturer 1-to-1 Diagnostic Evaluation (£20)</h4>
+                <p>Struggling with subject-verb inversion, cleft sentences, or mixed conditionals? In IELTS Academic (7.0+) and Cambridge C1/C2 exams, these fossilised structural errors drag your Grammatical Range &amp; Accuracy score down to Band 6/B2. In our 30-minute diagnostic session, former lecturer Gareth Montgomery identifies your exact patterns and provides a surgical corrective roadmap.</p>
+                <a href="index.html#contact" class="btn-debrief-trial">Book Your £20 Diagnostic Evaluation &rarr;</a>
             </div>
 
-            <form action="https://formsubmit.co/de094039c8f01c6fa3862b3a6a060db1" method="POST" id="lead-form">
-                <input type="hidden" name="_subject" value="Grammar Crypt Lead!">
+            <!-- Score Capture Form -->
+            <form action="https://formsubmit.co/de094039c8f01c6fa3862b3a6a060db1" method="POST" id="lead-form" style="margin-top: 14px;">
+                <input type="hidden" name="_subject" value="Grammar Crypt Diagnostic Lead!">
                 <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact">
                 <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-                <input type="hidden" name="name" id="lead-name">
                 <input type="hidden" name="score" id="lead-score" value="">
-                <input type="email" name="email" id="lead-email" class="name-input" placeholder="Your Email Address..." required autocomplete="email" aria-label="Email address">
-                <label class="consent"><input type="checkbox" id="lead-consent" required> I agree to be emailed my score report and C1/C2 grammar tips.</label>
-                <button type="submit" class="btn-claim" id="btn-submit-lead" style="margin-top:0">Unlock Score &amp; Save Debrief</button>
-                <br><button type="button" id="btn-skip-lead" class="btn-reset">No thanks, restart</button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <input type="email" name="email" id="lead-email" placeholder="Your email for detailed grammar breakdown & C1/C2 tips..." required style="flex: 1; min-width: 220px; padding: 10px 14px; background: #0f0b24; border: 1px solid #352a5c; border-radius: 8px; color: #fff; font-size: 0.85rem;">
+                    <button type="submit" class="crypt-btn primary" style="padding: 10px 16px; font-size: 0.85rem;">Email My Report</button>
+                </div>
             </form>
+
+            <div style="text-align: center; margin-top: 16px;">
+                <button type="button" id="btn-close-debrief" class="crypt-btn secondary" style="font-size: 0.85rem; padding: 6px 16px;">Close Debrief</button>
+            </div>
         </div>
     </div>
 
-    <div class="layout-grid">
-        <main class="main-quest">
-            <h1>Grammar Crypt!</h1>
-            <div class="hud">
-                <div id="level-display">Floor: 1/25</div>
-                <div id="rank-display">⚔️ Rank 1</div>
-                <div id="gold-counter" title="Gold">🪙 0</div>
-                <div id="xp-counter" title="Experience">🔮 0/100</div>
-                <div id="streak-display" title="Streak">🔥 0</div>
-                <button type="button" id="audio-toggle" aria-pressed="false">🔈 Sound Off</button>
-                <button type="button" id="pwa-install-btn" class="hidden" title="Install App to your device">📲 Install App</button>
-            </div>
-
-            <div class="panel">
-                                <div id="boss-arena" class="hidden">
-                    <div id="boss-avatar">👺</div>
-                    <div id="boss-info">
-                        <div id="boss-name">The Goblin of Gerunds</div>
-                        <div id="boss-taunt">"You'll never untangle these participles!"</div>
-                    </div>
-                </div>
-                <h2 id="quest-title">L1: A Simple Inquiry</h2>
-                <div class="puzzle-board" id="board" aria-label="Sentence board"></div>
-                <div class="block-bank" id="bank" aria-label="Rune bank"></div>
-                <div class="status-panel" id="status" role="status" aria-live="polite">Summon the sentence!</div>
-                <div id="tip" class="tip" aria-live="polite"></div>
-                <p class="hint-line">Drag runes into the slots, or tap a rune to place it (tap a placed rune to take it back).</p>
-
-                <div class="actions">
-                    <button type="button" id="reset-btn" class="btn-reset">Reset</button>
-                    <button type="button" id="hint-btn" class="btn-hint">Hint 💡</button>
-                    <button type="button" id="next-btn" class="btn-next" disabled>Next Floor ➔</button>
-                </div>
-            </div>
-        </main>
-
-        <aside class="inventory-panel panel" aria-label="Relics">
-            <h3>Relics</h3>
-            <div id="inventory-list"></div>
-        </aside>
-    </div>
-
-    <div id="loot-announcement" role="status" aria-live="polite"></div>
-
-    <div id="prize-modal" role="dialog" aria-modal="true" aria-labelledby="prize-heading">
-        <div class="prize-content">
-            <h2 id="prize-heading">🦇 MILESTONE REACHED! 🦇</h2>
-            <div class="prize-icon" id="prize-emoji" aria-hidden="true">🏆</div>
-            <div class="prize-title" id="prize-name">Legendary Item</div>
-            <div class="prize-desc" id="prize-description">Description goes here.</div>
-            <button type="button" id="claim-btn" class="btn-claim">Claim Relic</button>
-        </div>
-    </div>
-
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <script src="audio.js"></script>
-    <script src="crypt.js"></script>
+    <script src="cryptData.js"></script>
+    <script src="cryptEngine.js"></script>
     <script>
+        // Highlight active dungeon pill
+        document.addEventListener('DOMContentLoaded', () => {
+            const curLevel = new URLSearchParams(window.location.search).get('level') || 'main';
+            document.querySelectorAll('[data-load-dungeon]').forEach(btn => {
+                if (btn.getAttribute('data-load-dungeon') === curLevel) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Debrief modal close button
+            const closeBtn = document.getElementById('btn-close-debrief');
+            const debriefModal = document.getElementById('debrief-modal');
+            if (closeBtn && debriefModal) {
+                closeBtn.addEventListener('click', () => {
+                    debriefModal.classList.add('hidden');
+                });
+            }
+        });
+
         // Register Service Worker for offline PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
