@@ -1,0 +1,171 @@
+/**
+ * GarethEnglish.com - Conversion Funnel Telemetry & Attribution Tracker
+ * Tracks: game_start -> diagnostic_gate_shown -> select_tier -> checkout_initiated
+ */
+(function () {
+  'use strict';
+
+  const FUNNEL_KEY = 'gm_attribution_trail';
+
+  function getTrail() {
+    try {
+      return JSON.parse(localStorage.getItem(FUNNEL_KEY) || '[]');
+    } catch (e) {
+      return [];
+    }
+  }
+
+  window.trackFunnelEvent = function (eventName, params) {
+    params = params || {};
+    const payload = {
+      event: eventName,
+      path: window.location.pathname,
+      timestamp: new Date().toISOString(),
+      ...params
+    };
+
+    // 1. Save to local attribution trail (last 10 touchpoints before booking)
+    const trail = getTrail();
+    trail.push(payload);
+    if (trail.length > 10) trail.shift();
+    try {
+      localStorage.setItem(FUNNEL_KEY, JSON.stringify(trail));
+    } catch (e) {}
+
+    // 2. Forward to GA4 if present
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', eventName, params);
+    }
+
+    // 3. Forward custom tags to Microsoft Clarity if present
+    if (typeof window.clarity === 'function') {
+      window.clarity('set', 'last_funnel_step', eventName);
+      if (params.tier) window.clarity('set', 'selected_tier', params.tier);
+    }
+
+    // 4. Forward to GoatCounter if present
+    if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+      try {
+        window.goatcounter.count({
+          path: eventName + (params.tier ? '/' + params.tier : ''),
+          title: 'Funnel Event: ' + eventName,
+          event: true
+        });
+      } catch (e) {}
+    }
+
+    // 5. Console trace on localhost / staging
+    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+      console.info('[GM Funnel Telemetry]', eventName, payload);
+    }
+  };
+
+  /**
+   * GarethEnglish.com - In-Game Clinical Diagnostic Gate
+   * Triggers on game completion to convert free players into £20 Diagnostic / £29 Audit leads.
+   */
+  window.showDiagnosticGate = function (opts) {
+    opts = opts || {};
+    const gameName = opts.gameName || 'Interactive Skill Test';
+    const score = typeof opts.score === 'number' ? opts.score : 0;
+    const maxScore = typeof opts.maxScore === 'number' ? opts.maxScore : 10;
+    const weakArea = opts.weakArea || 'C1/C2 Linguistic Precision under Time Pressure';
+    const examImpact = opts.examImpact || 'In Cambridge C1/C2 and IELTS examinations, hesitation and syntax friction reduce your Lexical Resource & Grammar scores by up to a full band.';
+    const onReplay = typeof opts.onReplay === 'function' ? opts.onReplay : null;
+
+    const pct = Math.max(0, Math.min(100, Math.round((score / (maxScore || 1)) * 100)));
+    const cefrEstimate = pct >= 85 ? 'C1 Advanced / C2 Ready' : pct >= 65 ? 'B2 Upper-Intermediate (Borderline C1)' : 'B1/B2 Transition';
+
+    // Fire telemetry event
+    window.trackFunnelEvent('diagnostic_gate_shown', { gameName, score, maxScore, pct, cefrEstimate });
+
+    const existing = document.getElementById('gm-diag-overlay');
+    if (existing) existing.remove();
+
+    const modalHtml = `
+      <div id="gm-diag-overlay" role="dialog" aria-modal="true" aria-label="Clinical Telemetry" style="position:fixed;inset:0;background:rgba(10,15,28,0.88);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;">
+        <div style="background:#111827;border:1px solid #374151;border-radius:16px;max-width:540px;width:100%;padding:28px;color:#f9fafb;box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);box-sizing:border-box;">
+          
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <span style="background:#1e3a8a;color:#93c5fd;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:0.05em;">
+              Clinical Telemetry &bull; ${gameName}
+            </span>
+            <button id="gm-diag-close" type="button" aria-label="Close" style="background:none;border:none;color:#9ca3af;font-size:24px;line-height:1;cursor:pointer;padding:4px;">&times;</button>
+          </div>
+
+          <h3 style="font-size:22px;font-weight:800;margin:0 0 8px 0;color:#ffffff;line-height:1.2;">
+            Your Reflex Score: ${score}/${maxScore} (${pct}%)
+          </h3>
+          <p style="margin:0 0 16px 0;font-size:14px;color:#d1d5db;">
+            Estimated Execution Band: <strong style="color:#fbbf24;">${cefrEstimate}</strong>
+          </p>
+
+          <div style="background:#1f2937;border-left:4px solid #f59e0b;padding:14px;border-radius:8px;margin-bottom:20px;font-size:14px;line-height:1.5;">
+            <strong style="color:#fcd34d;display:block;margin-bottom:4px;">⚠️ Diagnosed Bottleneck: ${weakArea}</strong>
+            <span style="color:#e5e7eb;">${examImpact}</span>
+          </div>
+
+          <p style="font-size:14px;color:#d1d5db;margin-bottom:18px;line-height:1.5;">
+            Want me to pinpoint exactly where this shows up in your actual speaking and writing? Choose how you want to fix it:
+          </p>
+
+          <div style="display:grid;gap:10px;">
+            <a href="index.html#book-diagnostic" 
+               onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'trial_20', pct: ${pct} })"
+               style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:14px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 4px 6px -1px rgba(37,99,235,0.4);">
+              Book a 30-Min Live Diagnostic with Gareth (£20) &rarr;
+            </a>
+            <a href="ielts-7-syllabus.html" 
+               onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'view_syllabus', pct: ${pct} })"
+               style="display:block;text-align:center;background:#1f2937;border:1px solid #4b5563;color:#e5e7eb;font-weight:600;padding:12px;border-radius:10px;text-decoration:none;font-size:14px;">
+              See My 6-Week Intensive Syllabus &amp; Sample Markup
+            </a>
+          </div>
+
+          <button id="gm-diag-replay" type="button" style="margin-top:14px;width:100%;background:none;border:none;color:#9ca3af;font-size:13px;cursor:pointer;text-decoration:underline;">
+            Play again to beat ${score}/${maxScore}
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const overlay = document.getElementById('gm-diag-overlay');
+    const closeBtn = document.getElementById('gm-diag-close');
+    const replayBtn = document.getElementById('gm-diag-replay');
+
+    const cleanup = () => {
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    };
+
+    if (closeBtn) closeBtn.onclick = cleanup;
+    if (replayBtn) {
+      replayBtn.onclick = () => {
+        window.trackFunnelEvent('game_replay_clicked', { gameName, score });
+        cleanup();
+        if (onReplay) onReplay();
+      };
+    }
+
+    const escHandler = (e) => {
+      if (e.key === 'Escape') {
+        cleanup();
+        document.removeEventListener('keydown', escHandler);
+      }
+    };
+    document.addEventListener('keydown', escHandler);
+  };
+
+  // Auto-bind all elements with [data-track] attributes
+  document.addEventListener('click', function (e) {
+    const target = e.target.closest('[data-track]');
+    if (!target) return;
+
+    const eventName = target.getAttribute('data-track');
+    const tier = target.getAttribute('data-tier') || null;
+    window.trackFunnelEvent(eventName, {
+      tier: tier,
+      cta_text: (target.innerText || '').trim().slice(0, 50)
+    });
+  });
+})();
