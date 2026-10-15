@@ -206,6 +206,22 @@
         document.getElementById('lead-name').value = nameInput.value.trim();
         
         endModal.classList.add('open');
+
+        if (typeof window.showDiagnosticGate === 'function') {
+            setTimeout(() => {
+                window.showDiagnosticGate({
+                    gameName: 'The Formation Factory',
+                    score: score,
+                    maxScore: 10,
+                    weakArea: 'Morphological Derivation & Suffix Shifts (Use of English Part 3)',
+                    examImpact: 'In Cambridge C1/C2 Use of English Part 3, missing double-affixes (e.g. un-precedented-ly) drops your score directly into B2 territory.',
+                    onReplay: () => {
+                        endModal.classList.remove('open');
+                        btnStart.click();
+                    }
+                });
+            }, 600);
+        }
     }
 
 })();
