@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAE Essay Builder & Examiner Rubric (C1)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --card-light: #334155;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.25);
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #475569;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem 1rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+
+    /* Hero Banner */
+    header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    }
+    .tag {
+      background: var(--accent);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.3rem 0.75rem;
+      border-radius: 99px;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    header h1 { font-size: 1.85rem; margin-bottom: 0.35rem; }
+    header p { color: #cbd5e1; max-width: 580px; font-size: 0.95rem; }
+
+    /* Timer Box */
+    .timer-box {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid var(--border);
+      padding: 1rem 1.4rem;
+      border-radius: 12px;
+      text-align: center;
+      min-width: 170px;
+    }
+    .timer-display {
+      font-size: 2rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--amber);
+    }
+    .timer-btn {
+      margin-top: 0.5rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      margin-bottom: 1.75rem;
+    }
+    .card h2 { font-size: 1.25rem; color: #60a5fa; margin-bottom: 0.75rem; }
+    .task-box {
+      background: #0f172a;
+      border-left: 4px solid var(--accent);
+      padding: 1.25rem;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      margin-top: 0.75rem;
+    }
+
+    /* Step Navigation */
+    .tower-progress {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.75rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+    .step-pill {
+      flex: 1;
+      min-width: 120px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.65rem 0.5rem;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .step-pill.active { border-color: var(--accent); background: var(--accent-glow); color: white; }
+    .step-pill.done { border-color: var(--green); color: #86efac; }
+
+    /* Constraints */
+    .frankenstein-note {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #bbf7d0;
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      margin: 0.85rem 0 1.25rem;
+    }
+    .constraints-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .constraint-item {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      cursor: pointer;
+    }
+    .constraint-item input { margin-top: 0.25rem; accent-color: var(--green); transform: scale(1.15); }
+    .constraint-item strong { display: block; font-size: 0.88rem; color: #e2e8f0; }
+    .constraint-item span { font-size: 0.78rem; color: var(--muted); }
+
+    textarea {
+      width: 100%;
+      min-height: 105px;
+      background: #0f172a;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      color: white;
+      padding: 1rem;
+      font-size: 1rem;
+      line-height: 1.5;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--accent); }
+
+    .nav-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.15rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .btn {
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-secondary { background: var(--card-light); color: white; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-success { background: var(--green); color: #052e16; }
+
+    /* Assembled Essay */
+    .essay-output {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-top: 0.85rem;
+      white-space: pre-wrap;
+      font-size: 0.98rem;
+      line-height: 1.75;
+      color: #e2e8f0;
+    }
+
+    /* Official C1 Assessment Scale Rubric */
+    .rubric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .criterion-col {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .criterion-col h4 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #93c5fd;
+      margin-bottom: 0.6rem;
+    }
+    .band-buttons {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 0.85rem;
+    }
+    .band-btn {
+      flex: 1;
+      padding: 0.45rem 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .band-btn.selected {
+      background: var(--accent);
+      color: white;
+      border-color: #93c5fd;
+    }
+    .descriptor-text {
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      min-height: 110px;
+      background: rgba(255,255,255,0.03);
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px dashed #334155;
+    }
+    .score-banner {
+      margin-top: 1.25rem;
+      background: linear-gradient(90deg, #1e3a8a, #0f172a);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.15rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .score-total { font-size: 1.5rem; font-weight: 800; color: #60a5fa; }
+
+    @media print {
+      body { background: white; color: black; padding: 0; }
+      header, .tower-progress, #builder-section { display: none; }
+      .card, .essay-output, .criterion-col { background: white; color: black; border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <span class="tag">CAE (C1 Advanced) • Collaborative Writing</span>
+      <h1>The "Human Tower" Essay Builder & C1 Rubric</h1>
+      <p>Step 1: Build your essay sentence-by-sentence using the 5-minute clock and C1 grammar checklist.<br>Step 2: Grade the finished "Frankenstein" essay using the official Cambridge C1 Assessment Scale.</p>
+    </div>
+    <div class="timer-box">
+      <div style="font-size:0.75rem; color:var(--muted); text-transform:uppercase;">5-Min Sentence Clock</div>
+      <div class="timer-display" id="timer">05:00</div>
+      <button class="timer-btn" onclick="toggleTimer()" id="timer-btn">Start 5:00</button>
+      <button class="timer-btn" style="background:#475569;" onclick="resetTimer()">Reset</button>
+    </div>
+  </header>
+
+  <!-- Step Navigation -->
+  <div class="tower-progress" id="step-nav"></div>
+
+  <!-- Active Sentence Builder -->
+  <div class="card" id="builder-section">
+    <span class="tag" id="step-badge" style="background:#475569;">Step 1 of 5</span>
+    <h2 id="step-title" style="margin-top:0.4rem;">Sentence 1: The Hook & Context</h2>
+
+    <div class="frankenstein-note">
+      🧟 <strong>"Don't worry if the essay is starting to look like Frankenstein's monster!"</strong> Packing all these C1 structures into single sentences feels intense at first—that's how you stretch your grammatical range.
+    </div>
+
+    <p id="step-desc" style="margin-bottom:1.1rem; color:#cbd5e1; font-size:0.94rem;"></p>
+
+    <div style="font-size:0.8rem; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem;">Mandatory Grammar Checklist for this stage:</div>
+    <div class="constraints-grid" id="constraints-box"></div>
+
+    <textarea id="sentence-input" placeholder="Draft your sentence(s) here..." oninput="saveCurrentInput()"></textarea>
+
+    <div class="nav-row">
+      <button class="btn btn-secondary" onclick="prevStep()" id="prev-btn">← Previous</button>
+      <button class="btn btn-secondary" onclick="insertModelHint()">Show C1 Model Example</button>
+      <button class="btn btn-primary" onclick="nextStep()" id="next-btn">Next Sentence →</button>
+    </div>
+    <div id="hint-box" style="display:none; margin-top:1rem; padding:0.9rem; background:#0f172a; border-left:3px solid var(--amber); border-radius:6px; font-size:0.88rem; color:#fde68a;"></div>
+  </div>
+
+  <!-- Live Assembled Essay -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <h2>1. Your Assembled "Human Tower" Essay</h2>
+      <span id="word-count" style="font-size:0.85rem; color:var(--muted);">Word count: 0 words (Target: 220–260)</span>
+    </div>
+    <div class="essay-output" id="full-essay-output">Your sentences will stitch together here as you type...</div>
+  </div>
+
+  <!-- Official C1 Writing Assessment Scale -->
+  <div class="card">
+    <h2>2. Be the Examiner: Official C1 Writing Assessment Scale</h2>
+    <p style="font-size:0.9rem; color:var(--muted);">Click a Band (1–5) for each of the four Cambridge criteria below to inspect the official descriptors and calculate the essay's grade.</p>
+
+    <div class="rubric-grid" id="rubric-container"></div>
+
+    <div class="score-banner">
+      <div>
+        <div style="font-size:0.8rem; text-transform:uppercase; color:#93c5fd;">Official CAE Writing Score</div>
+        <div class="score-total" id="total-rubric-score">12 / 20 (Band 3 – C1 Pass)</div>
+      </div>
+      <button class="btn btn-success" onclick="window.print()">Print Essay + Examiner Report (PDF)</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const steps = [
+    {
+      badge: "Intro • Sentence 1",
+      title: "Sentence 1: General Background Hook",
+      desc: "Introduce the debate around government intervention in public health without copying phrases from the prompt.",
+      constraints: [
+        { label: "Impersonal Passive", hint: "It is widely acknowledged that... / Much has been said about..." },
+        { label: "Time / Trend Marker", hint: "Over the past few decades... / In an increasingly sedentary era..." }
+      ],
+      model: "Over the past few decades, it has become increasingly apparent that modern sedentary lifestyles and processed diets are placing unprecedented strain on public healthcare systems.",
+      paragraphBreakAfter: false
+    },
+    {
+      badge: "Intro • Sentence 2",
+      title: "Sentence 2: Narrowing to the Two Points",
+      desc: "You now have five minutes to write the second sentence of the introduction: outline the two points you will compare.",
+      constraints: [
+        { label: "Clause of Contrast", hint: "While some advocate..., others maintain..." },
+        { label: "Cleft Structure", hint: "What remains open to debate is whether..." }
+      ],
+      model: "While some commentators advocate punitive taxation on junk food, what remains open to debate is whether such fiscal measures are as effective as investing directly in community sports infrastructure.",
+      paragraphBreakAfter: true
+    },
+    {
+      badge: "Body 1 • Sentence 3–4",
+      title: "Sentence 3 & 4: Your Analysis of Content Point 1",
+      desc: "Analyse the pros and cons of taxing unhealthy food using the four exact grammar targets from the Prezi node.",
+      constraints: [
+        { label: "Modal verb of hedging (p.43)", hint: "may well, might, could conceivably, would appear to" },
+        { label: "Non-defining relative clause (p.112)", hint: "..., which disproportionately affects lower earners, ..." },
+        { label: "Adverb of attitude", hint: "Admittedly, Undeniably, Regrettably, Crucially" },
+        { label: "A future form (p.222)", hint: "will inevitably lead to / is bound to provoke" }
+      ],
+      model: "Admittedly, levying higher taxes on sugary beverages may well deter impulsive purchases in the short term. Nevertheless, such regressive policies, which invariably hit low-income households hardest, will rarely address the root causes of poor nutrition.",
+      paragraphBreakAfter: true
+    },
+    {
+      badge: "Body 2 • Sentence 5–6",
+      title: "Sentence 5 & 6: Your Analysis of Content Point 2",
+      desc: "Evaluate the second point (investing in free local sports facilities) and contrast it with Point 1.",
+      constraints: [
+        { label: "Participle Clause (-ing / -ed)", hint: "By removing financial barriers... / Stripped of high membership fees..." },
+        { label: "Negative Inversion", hint: "Not only does this cultivate..., but it also..." }
+      ],
+      model: "By contrast, removing financial barriers to local leisure centres empowers citizens to take ownership of their wellbeing. Not only does state-funded sports infrastructure cultivate lifelong physical habits, but it also fosters vital social cohesion.",
+      paragraphBreakAfter: true
+    },
+    {
+      badge: "Conclusion • Final",
+      title: "Final Sentence: Your Weighing Up & Verdict",
+      desc: "State clearly which of the two measures is more effective and why.",
+      constraints: [
+        { label: "Summative Discourse Marker", hint: "On balance, / All things considered, / Ultimately," },
+        { label: "Inverted Conditional", hint: "Were governments to prioritise..., society would reap..." }
+      ],
+      model: "On balance, were governments to channel resources into free community recreation rather than punitive food taxes, society would reap far more sustainable health dividends.",
+      paragraphBreakAfter: false
+    }
+  ];
+
+  // Official Cambridge C1 Writing Rubric Descriptors (from Prezi tables)
+  const rubricData = [
+    {
+      key: "content",
+      title: "Content",
+      selected: 3,
+      bands: {
+        5: "All content is relevant to the task. Target reader is fully informed.",
+        4: "Performance shares features of Bands 3 and 5.",
+        3: "Minor irrelevances and/or omissions may be present. Target reader is on the whole informed.",
+        2: "Performance shares features of Bands 1 and 3.",
+        1: "Irrelevances and misinterpretation of task may be present. Target reader is minimally informed."
+      }
+    },
+    {
+      key: "comm",
+      title: "Communicative Achievement",
+      selected: 3,
+      bands: {
+        5: "Uses the conventions of the communicative task with sufficient flexibility to communicate complex ideas in an effective way, holding the target reader's attention with ease, fulfilling all communicative purposes.",
+        4: "Performance shares features of Bands 3 and 5.",
+        3: "Uses the conventions of the communicative task effectively to hold the target reader's attention and communicate straightforward and complex ideas, as appropriate.",
+        2: "Performance shares features of Bands 1 and 3.",
+        1: "Uses the conventions of the communicative task to hold the target reader's attention and communicate straightforward ideas."
+      }
+    },
+    {
+      key: "org",
+      title: "Organisation",
+      selected: 3,
+      bands: {
+        5: "Text is a well-organised, coherent whole, using a variety of cohesive devices and organisational patterns with flexibility.",
+        4: "Performance shares features of Bands 3 and 5.",
+        3: "Text is well organised and coherent, using a variety of cohesive devices and organisational patterns to generally good effect.",
+        2: "Performance shares features of Bands 1 and 3.",
+        1: "Text is generally well organised and coherent, using a variety of linking words and cohesive devices."
+      }
+    },
+    {
+      key: "lang",
+      title: "Language",
+      selected: 3,
+      bands: {
+        5: "Uses a range of vocabulary, including less common lexis, effectively and precisely. Uses a wide range of simple and complex grammatical forms with full control, flexibility and sophistication. Errors, if present, are related to less common words and structures, or occur as slips.",
+        4: "Performance shares features of Bands 3 and 5.",
+        3: "Uses a range of vocabulary, including less common lexis, appropriately. Uses a range of simple and complex grammatical forms with control and flexibility. Occasional errors may be present, but do not impede communication.",
+        2: "Performance shares features of Bands 1 and 3.",
+        1: "Uses a range of everyday vocabulary appropriately, with occasional inappropriate use of less common lexis. Uses a range of simple and some complex grammatical forms with a good degree of control. Errors do not impede communication."
+      }
+    }
+  ];
+
+  let currentStep = 0;
+  let userInputs = Array(steps.length).fill("");
+  let checkedState = steps.map(s => Array(s.constraints.length).fill(false));
+
+  // Timer
+  let timeLeft = 300;
+  let timerInterval = null;
+  function updateTimerDisplay() {
+    const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+    const secs = String(timeLeft % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = `${mins}:${secs}`;
+  }
+  function toggleTimer() {
+    const btn = document.getElementById('timer-btn');
+    if (timerInterval) {
+      clearInterval(timerInterval); timerInterval = null; btn.textContent = "Resume";
+    } else {
+      btn.textContent = "Pause";
+      timerInterval = setInterval(() => {
+        if (timeLeft > 0) { timeLeft--; updateTimerDisplay(); }
+        else { clearInterval(timerInterval); timerInterval = null; btn.textContent = "Time's Up!"; }
+      }, 1000);
+    }
+  }
+  function resetTimer() {
+    clearInterval(timerInterval); timerInterval = null; timeLeft = 300; updateTimerDisplay();
+    document.getElementById('timer-btn').textContent = "Start 5:00";
+  }
+
+  function renderStep() {
+    const step = steps[currentStep];
+    document.getElementById('step-badge').textContent = `${step.badge} (${currentStep + 1}/${steps.length})`;
+    document.getElementById('step-title').textContent = step.title;
+    document.getElementById('step-desc').textContent = step.desc;
+    document.getElementById('sentence-input').value = userInputs[currentStep];
+    document.getElementById('hint-box').style.display = 'none';
+
+    document.getElementById('step-nav').innerHTML = steps.map((s, idx) => {
+      const isDone = userInputs[idx].trim().length > 10;
+      const cls = idx === currentStep ? 'step-pill active' : (isDone ? 'step-pill done' : 'step-pill');
+      return `<div class="${cls}" onclick="goToStep(${idx})">${idx + 1}. ${s.badge}</div>`;
+    }).join('');
+
+    document.getElementById('constraints-box').innerHTML = step.constraints.map((c, cIdx) => `
+      <label class="constraint-item">
+        <input type="checkbox" ${checkedState[currentStep][cIdx] ? 'checked' : ''} onchange="checkedState[currentStep][${cIdx}] = this.checked">
+        <div><strong>${c.label}</strong><span>${c.hint}</span></div>
+      </label>
+    `).join('');
+
+    document.getElementById('prev-btn').disabled = currentStep === 0;
+    document.getElementById('next-btn').textContent = currentStep === steps.length - 1 ? "Finish Essay ✓" : "Next Sentence →";
+    updateFullEssay();
+  }
+
+  function saveCurrentInput() {
+    userInputs[currentStep] = document.getElementById('sentence-input').value;
+    updateFullEssay();
+  }
+
+  function updateFullEssay() {
+    let paragraphs = [], currentPara = [];
+    steps.forEach((step, idx) => {
+      const txt = userInputs[idx].trim();
+      if (txt) currentPara.push(txt);
+      if (step.paragraphBreakAfter && currentPara.length > 0) {
+        paragraphs.push(currentPara.join(' '));
+        currentPara = [];
+      }
+    });
+    if (currentPara.length > 0) paragraphs.push(currentPara.join(' '));
+    const finalStr = paragraphs.join('\n\n');
+    document.getElementById('full-essay-output').textContent = finalStr || "Your sentences will stitch together here as you type...";
+    const words = finalStr.trim() ? finalStr.trim().split(/\s+/).length : 0;
+    document.getElementById('word-count').textContent = `Word count: ${words} words (Target: 220–260)`;
+  }
+
+  function insertModelHint() {
+    const hintBox = document.getElementById('hint-box');
+    hintBox.innerHTML = `<strong>C1 Model Sentence:</strong> "${steps[currentStep].model}"`;
+    hintBox.style.display = 'block';
+  }
+  function goToStep(idx) { currentStep = idx; resetTimer(); renderStep(); }
+  function nextStep() { if (currentStep < steps.length - 1) { currentStep++; resetTimer(); renderStep(); } }
+  function prevStep() { if (currentStep > 0) { currentStep--; resetTimer(); renderStep(); } }
+
+  // Render Rubric
+  function renderRubric() {
+    const container = document.getElementById('rubric-container');
+    container.innerHTML = rubricData.map((crit, cIdx) => {
+      const btns = [1, 2, 3, 4, 5].map(b => `
+        <button class="band-btn ${crit.selected === b ? 'selected' : ''}" onclick="selectBand(${cIdx}, ${b})">${b}</button>
+      `).join('');
+      return `
+        <div class="criterion-col">
+          <div>
+            <h4>${crit.title}</h4>
+            <div class="band-buttons">${btns}</div>
+            <div class="descriptor-text">${crit.bands[crit.selected]}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const total = rubricData.reduce((acc, c) => acc + c.selected, 0);
+    let verdict = "Below C1 (B2 Level)";
+    if (total >= 18) verdict = "Grade A (C2 Level • ~200–210)";
+    else if (total >= 16) verdict = "Grade B (Strong C1 • ~193–199)";
+    else if (total >= 12) verdict = "Grade C (C1 Pass • ~180–192)";
+    document.getElementById('total-rubric-score').textContent = `${total} / 20 — ${verdict}`;
+  }
+
+  function selectBand(cIdx, band) {
+    rubricData[cIdx].selected = band;
+    renderRubric();
+  }
+
+  renderStep();
+  renderRubric();
+</script>
+
+</body>
+</html>
