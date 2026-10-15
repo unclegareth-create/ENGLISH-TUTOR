@@ -87,7 +87,6 @@
     }
 
     /* ---------- Sticky Mobile CTA visibility ---------- */
-    /* ---------- Sticky Mobile CTA visibility ---------- */
     const stickyBar = document.getElementById('sticky-mobile-cta');
     const contactSection = document.getElementById('contact');
     if (stickyBar) {
