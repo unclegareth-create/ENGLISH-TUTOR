@@ -58,10 +58,25 @@
 
         if (href === '#contact' || href.includes('#contact')) {
             send(`booking-cta: ${label(a)}`);
+        } else if (href.includes('cal.com/gareth-montgomery-jgaefz')) {
+            send('booking-external: cal.com');
+        } else if (/(^|\/)(fce-friendship-conditionals|cae-essay-builder|cpe-psychometrics-passives)\.html/.test(href)) {
+            send(`exam-lab: ${page(href)}`);
         } else if (/(^|\/)(grammar-crypt|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch)\.html/.test(href)) {
             send(`game: ${page(href)}`);
         } else if (a.closest('[data-track="articles"]')) {
             send(`article: ${page(href)}`);
+        }
+    });
+
+    // Form submission tracking
+    document.addEventListener('submit', (e) => {
+        const form = e.target;
+        if (!form) return;
+        if (form.closest('#cheat-sheet')) {
+            send('lead-magnet: cheat-sheet-download');
+        } else if (form.id === 'contact-form' || form.id === 'lead-form') {
+            send('contact-form: enquiry-sent');
         }
     });
 })();
