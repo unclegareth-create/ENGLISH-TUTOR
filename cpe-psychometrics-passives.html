@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPE (C2) Masterclass: Psychometric Testing & Advanced Passives</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #111827;
+      --card-alt: #1f2937;
+      --red: #dc2626;
+      --red-soft: rgba(220, 38, 38, 0.15);
+      --blue: #2563eb;
+      --blue-soft: rgba(37, 99, 235, 0.15);
+      --green: #16a34a;
+      --green-bg: rgba(22, 163, 74, 0.2);
+      --amber: #f59e0b;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --border: #374151;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { background: var(--bg); color: var(--text); line-height: 1.65; padding: 2rem 1rem; }
+    .container { max-width: 920px; margin: 0 auto; }
+
+    /* Hero Header inspired by the Red/Blue Active-Passive Road Signs */
+    header {
+      background: linear-gradient(135deg, #7f1d1d 0%, #111827 55%, #1e3a8a 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2.5rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      box-shadow: 0 14px 35px rgba(0,0,0,0.45);
+    }
+    .sign-badges { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+    .sign {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      border: 2px solid white;
+    }
+    .sign-active { background: var(--red); color: white; }
+    .sign-passive { background: var(--blue); color: white; }
+    header h1 { font-size: 2rem; line-height: 1.2; margin-bottom: 0.4rem; }
+    header p { color: #d1d5db; font-size: 0.95rem; max-width: 560px; }
+
+    .score-box {
+      background: rgba(17, 24, 39, 0.85);
+      border: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      border-radius: 14px;
+      text-align: center;
+      min-width: 150px;
+    }
+    .score-box span { display: block; font-size: 1.9rem; font-weight: 800; color: #f87171; }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.75rem;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.85rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .card-header h2 { font-size: 1.3rem; color: #f3f4f6; }
+    .pill {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      color: #93c5fd;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 99px;
+      text-transform: uppercase;
+    }
+
+    /* Part 1: Psychometric Testing Reading & Sorting */
+    .reading-extract {
+      background: #030712;
+      border-left: 4px solid var(--red);
+      padding: 1.35rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: #e5e7eb;
+      margin-bottom: 1.5rem;
+    }
+    .sort-item {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .sort-text { flex: 1; min-width: 240px; font-size: 0.92rem; }
+    .sort-btns { display: flex; gap: 0.5rem; }
+    .btn-sort {
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #111827;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .btn-sort:hover:not(:disabled) { border-color: #60a5fa; }
+    .btn-sort.correct { background: var(--green-bg); border-color: var(--green); color: #86efac; }
+    .btn-sort.wrong { background: var(--red-soft); border-color: var(--red); color: #fca5a5; }
+
+    /* Part 2: The 4 Prezi Passive Nodes */
+    .nodes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .node-card {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--red);
+      padding: 1.15rem;
+      border-radius: 10px;
+    }
+    .node-card:nth-child(even) { border-top-color: var(--blue); }
+    .node-card h3 { font-size: 0.98rem; margin-bottom: 0.45rem; color: #f9fafb; }
+    .node-card p { font-size: 0.84rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .node-example {
+      background: #090d16;
+      padding: 0.6rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      color: #d1d5db;
+      border: 1px solid #1f2937;
+    }
+    .node-example strong { color: #60a5fa; }
+
+    /* Multiple Choice Nuance Quiz */
+    .mc-block {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .mc-prompt { font-weight: 600; margin-bottom: 0.75rem; font-size: 0.95rem; }
+    .mc-options { display: flex; flex-direction: column; gap: 0.5rem; }
+    .mc-btn {
+      text-align: left;
+      padding: 0.7rem 1rem;
+      background: #090d16;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .mc-btn:hover:not(:disabled) { border-color: #60a5fa; }
+    .mc-btn.correct { background: var(--green-bg); border-color: var(--green); color: #86efac; }
+    .mc-btn.wrong { background: var(--red-soft); border-color: var(--red); color: #fca5a5; }
+    .feedback { font-size: 0.85rem; margin-top: 0.6rem; padding: 0.5rem 0.75rem; border-radius: 6px; display: none; }
+
+    /* Part 3: C2 Key Word Transformations */
+    .kwt-card {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .kwt-key {
+      display: inline-block;
+      background: var(--red);
+      color: white;
+      font-weight: 800;
+      font-size: 0.78rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 4px;
+      margin: 0.45rem 0;
+      letter-spacing: 0.08em;
+    }
+    .kwt-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.35rem;
+    }
+    .kwt-input {
+      flex: 1;
+      min-width: 240px;
+      background: #090d16;
+      border: 2px solid var(--border);
+      color: white;
+      padding: 0.55rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .btn-main {
+      background: var(--blue);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.15rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .footer-bar {
+      background: linear-gradient(90deg, #1e3a8a, #111827);
+      border: 1px solid var(--border);
+      padding: 1.35rem 1.75rem;
+      border-radius: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    @media print {
+      body { background: white; color: black; padding: 0; }
+      .btn-main, .sort-btns { display: none; }
+      .card, .reading-extract, .node-card, .mc-block, .kwt-card { background: white; color: black; border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <div class="sign-badges">
+        <span class="sign sign-active">Active</span>
+        <span class="sign sign-passive">Passive</span>
+      </div>
+      <h1>CPE Masterclass: Psychometric Testing & C2 Passives</h1>
+      <p>Evaluate the pros and cons of corporate psychometric screening while mastering C2 causative, agentless, and reporting passives.</p>
+    </div>
+    <div class="score-box">
+      C2 Score
+      <span id="score-display">0 / 11</span>
+    </div>
+  </header>
+
+  <!-- Section 1: Central Prezi Node - Psychometric Testing -->
+  <div class="card">
+    <div class="card-header">
+      <h2>1. Reading & Evaluation: Psychometric Testing</h2>
+      <span class="pill">Psychology & Employment</span>
+    </div>
+    <p style="font-size:0.92rem; color:var(--muted); margin-bottom:1rem;">Read the continuation of the article below, then classify each argument as either <strong>In Favour (Pro)</strong> or <strong>Against (Con)</strong> psychometric testing:</p>
+
+    <div class="reading-extract">
+      "Once the preserve of military recruitment, psychometric testing is now routinely deployed by corporate HR departments eager to have applicants' cognitive agility and emotional resilience quantified before a single interview takes place. Proponents maintain that standardised testing strips away unconscious interviewer bias, allowing introverted yet highly capable candidates to be evaluated on an equal footing. Furthermore, longitudinal data suggests that staff turnover can be significantly reduced when personality profiles are matched to company culture.<br><br>
+      Yet sceptics remain unconvinced. Not only can seasoned applicants get themselves coached to manipulate multiple-choice personality inventories, but rigid algorithmic filtering also risks screening out neurodivergent or unconventional thinkers whose creativity resists neat categorisation. Worse still, when complex human temperament is reduced to an arbitrary percentile, hiring managers may belulled into a false sense of scientific certainty."
+    </div>
+
+    <div id="sorting-container"></div>
+  </div>
+
+  <!-- Section 2: The 4 Prezi Grammar Nodes -->
+  <div class="card">
+    <div class="card-header">
+      <h2>2. Four Pillars of C2 Passive & Causative Grammar</h2>
+      <span class="pill">Grammar Reference</span>
+    </div>
+
+    <div class="nodes-grid">
+      <div class="node-card">
+        <h3>1. Uses of HAVE and GET</h3>
+        <p>Both form causatives (<em>have/get something done</em>), but differ in active agency and register:</p>
+        <div class="node-example">
+          • <strong>Have sb do sth</strong> (authority): <em>The board <strong>had the consultant sign</strong> an NDA.</em><br>
+          • <strong>Get sb to do sth</strong> (persuasion): <em>She <strong>got her referee to submit</strong> the form early.</em>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <h3>2. Passives with "HAVE" (Experiencer)</h3>
+        <p>Can describe either a planned service OR an unwanted event that happens to the subject:</p>
+        <div class="node-example">
+          • <em>He <strong>had his application rejected</strong> without explanation.</em> (Unwanted experience — he didn't arrange it!)
+        </div>
+      </div>
+
+      <div class="node-card">
+        <h3>3. The Passive with "GET"</h3>
+        <p>More dynamic and emphatic than <em>be</em>; used for unplanned actions or overcoming difficulty (avoid in very formal essays):</p>
+        <div class="node-example">
+          • <em>Over 500 candidates <strong>got shortlisted</strong>.</em><br>
+          • <em>My CV <strong>got lost</strong> in the spam folder.</em>
+        </div>
+      </div>
+
+      <div class="node-card">
+        <h3>4. The Passive with "BY" Phrases</h3>
+        <p>Omit <em>by...</em> when the agent is obvious or unknown. <strong>Keep "by"</strong> when the agent carries new, heavy, or surprising information:</p>
+        <div class="node-example">
+          • <em>Applicants were screened <strong>by an untrained AI algorithm</strong>.</em> (Crucial end-focus)
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-size:1.05rem; margin-bottom:0.85rem;">Test the Nuance (Choose the C2-accurate option):</h3>
+
+    <div class="mc-block" data-correct="1">
+      <div class="mc-prompt">5. Which sentence correctly uses a causative structure to show that the manager <em>persuaded</em> a reluctant employee to take the psychometric test?</div>
+      <div class="mc-options">
+        <button class="mc-btn" onclick="checkMC(this, 0, 'Grammar trap: HAVE someone DO (bare infinitive), never have someone TO do.')">A) The manager had the reluctant employee to take the psychometric test.</button>
+        <button class="mc-btn" onclick="checkMC(this, 1, 'Spot on! GET + object + TO-infinitive emphasizes persuasion or effort.')">B) The manager got the reluctant employee to take the psychometric test.</button>
+        <button class="mc-btn" onclick="checkMC(this, 2, 'Grammar trap: GET requires the to-infinitive (got him TO take).')">C) The manager got the reluctant employee take the psychometric test.</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="mc-block" data-correct="2">
+      <div class="mc-prompt">6. In a formal C2 academic report on recruitment, which passive sentence uses the most appropriate register and end-focus?</div>
+      <div class="mc-options">
+        <button class="mc-btn" onclick="checkMC(this, 0, 'Too informal for a C2 report (got binned), and by someone is vague and redundant.')">A) Numerous promising applications got binned by someone during the initial screening.</button>
+        <button class="mc-btn" onclick="checkMC(this, 1, 'By people is completely redundant here and weakens the academic style.')">B) Psychometric tests are widely believed by people to be infallible.</button>
+        <button class="mc-btn" onclick="checkMC(this, 2, 'Excellent C2 style: impersonal reporting passive + informative by-agent at the end.')">C) Conventional interviews are increasingly being supplemented by automated personality assessments.</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="mc-block" data-correct="0">
+      <div class="mc-prompt">7. What does "Hannah had her research data questioned at the conference" mean?</div>
+      <div class="mc-options">
+        <button class="mc-btn" onclick="checkMC(this, 0, 'Correct! Here, have + object + past participle describes an unpleasant experience that happened to Hannah.')">A) Audience members challenged her data (an unwanted experience for Hannah).</button>
+        <button class="mc-btn" onclick="checkMC(this, 1, 'Unlikely in context—this is the experiential passive, not an arranged service.')">B) Hannah paid someone to question her own research data.</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </div>
+
+  <!-- Section 3: C2 Key Word Transformations (3 to 8 words) -->
+  <div class="card">
+    <div class="card-header">
+      <h2>3. CPE Use of English Part 4: Key Word Transformations</h2>
+      <span class="pill">3 to 8 Words</span>
+    </div>
+    <p style="font-size:0.92rem; color:var(--muted); margin-bottom:1.15rem;">Complete the second sentence using between <strong>3 and 8 words</strong>, including the key word in bold. Do not change the word given.</p>
+
+    <div class="kwt-card" data-valid="are rumoured to have been manipulated|are rumored to have been manipulated">
+      <div>8. People rumour that several candidates manipulated the personality test results.</div>
+      <span class="kwt-key">RUMOURED</span>
+      <div class="kwt-row">
+        <span>The personality test results</span>
+        <input type="text" class="kwt-input" placeholder="3–8 words...">
+        <span>by several candidates.</span>
+        <button class="btn-main" onclick="checkKWT(this, 'are rumoured to have been manipulated')">Check</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="kwt-card" data-valid="had their funding cut|got their funding cut">
+      <div>9. The government unexpectedly reduced the psychology department's funding last month.</div>
+      <span class="kwt-key">CUT</span>
+      <div class="kwt-row">
+        <span>The psychology department</span>
+        <input type="text" class="kwt-input" placeholder="3–8 words...">
+        <span>last month.</span>
+        <button class="btn-main" onclick="checkKWT(this, 'had their funding cut')">Check</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="kwt-card" data-valid="finally got the board to approve|eventually got the board to approve">
+      <div>10. After hours of debate, the HR director finally persuaded the board to approve the new testing software.</div>
+      <span class="kwt-key">GOT</span>
+      <div class="kwt-row">
+        <span>After hours of debate, the HR director</span>
+        <input type="text" class="kwt-input" placeholder="3–8 words...">
+        <span>the new testing software.</span>
+        <button class="btn-main" onclick="checkKWT(this, 'finally got the board to approve')">Check</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="kwt-card" data-valid="objects to being made to sit|objects to being forced to sit">
+      <div>11. "I hate it when companies force me to sit three-hour aptitude tests," said Marcus.</div>
+      <span class="kwt-key">MADE</span>
+      <div class="kwt-row">
+        <span>Marcus</span>
+        <input type="text" class="kwt-input" placeholder="3–8 words...">
+        <span>three-hour aptitude tests.</span>
+        <button class="btn-main" onclick="checkKWT(this, 'objects to being made to sit')">Check</button>
+      </div>
+      <div class="feedback"></div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <div>
+      <strong>Preparing for Cambridge C2 Proficiency (CPE)?</strong>
+      <p style="font-size:0.88rem; color:#cbd5e1;">Save your completed worksheet as a PDF and bring it to your 1-on-1 session.</p>
+    </div>
+    <button class="btn-main" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+</div>
+
+<script>
+  let score = 0;
+  const total = 11;
+  function updateScore() {
+    document.getElementById('score-display').textContent = `${score} / ${total}`;
+  }
+
+  // Part 1 Sorting Data
+  const sortItems = [
+    { text: "1. Eliminates unconscious human bias during the initial screening stage.", type: "pro" },
+    { text: "2. Candidates can be coached beforehand to 'game' or fake the desired answers.", type: "con" },
+    { text: "3. Gives introverted candidates a fair chance to shine before a live interview.", type: "pro" },
+    { text: "4. Risks filtering out creative or neurodivergent thinkers who don't fit standard moulds.", type: "con" }
+  ];
+
+  const sortContainer = document.getElementById('sorting-container');
+  sortContainer.innerHTML = sortItems.map((item, idx) => `
+    <div class="sort-item">
+      <div class="sort-text">${item.text}</div>
+      <div class="sort-btns">
+        <button class="btn-sort" onclick="checkSort(this, 'pro', '${item.type}')">In Favour (Pro)</button>
+        <button class="btn-sort" onclick="checkSort(this, 'con', '${item.type}')">Against (Con)</button>
+      </div>
+    </div>
+  `).join('');
+
+  function checkSort(btn, chosen, actual) {
+    const parent = btn.parentElement;
+    parent.querySelectorAll('button').forEach(b => b.disabled = true);
+    if (chosen === actual) {
+      btn.classList.add('correct');
+      score++;
+      updateScore();
+    } else {
+      btn.classList.add('wrong');
+    }
+  }
+
+  function checkMC(btn, chosenIdx, msg) {
+    const block = btn.closest('.mc-block');
+    const correctIdx = parseInt(block.getAttribute('data-correct'));
+    const allBtns = block.querySelectorAll('.mc-btn');
+    const fb = block.querySelector('.feedback');
+    allBtns.forEach(b => b.disabled = true);
+
+    if (chosenIdx === correctIdx) {
+      btn.classList.add('correct');
+      fb.style.background = 'rgba(22, 163, 74, 0.2)';
+      fb.style.color = '#86efac';
+      score++;
+      updateScore();
+    } else {
+      btn.classList.add('wrong');
+      allBtns[correctIdx].classList.add('correct');
+      fb.style.background = 'rgba(220, 38, 38, 0.2)';
+      fb.style.color = '#fca5a5';
+    }
+    fb.textContent = msg;
+    fb.style.display = 'block';
+  }
+
+  function checkKWT(btn, modelAns) {
+    const card = btn.closest('.kwt-card');
+    const input = card.querySelector('.kwt-input');
+    const fb = card.querySelector('.feedback');
+    const valid = card.getAttribute('data-valid').split('|');
+    const userVal = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+    if (!userVal) return;
+
+    input.disabled = true;
+    btn.disabled = true;
+
+    if (valid.includes(userVal)) {
+      input.style.borderColor = '#16a34a';
+      fb.style.background = 'rgba(22, 163, 74, 0.2)';
+      fb.style.color = '#86efac';
+      fb.textContent = `✓ Full 2 marks! "${modelAns}"`;
+      score++;
+      updateScore();
+    } else {
+      input.style.borderColor = '#dc2626';
+      fb.style.background = 'rgba(220, 38, 38, 0.2)';
+      fb.style.color = '#fca5a5';
+      fb.textContent = `✗ Expected C2 transformation: "${modelAns}"`;
+    }
+    fb.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
