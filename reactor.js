@@ -205,6 +205,22 @@
         document.getElementById('lead-name').value = nameInput.value.trim();
         
         endModal.classList.add('open');
+
+        if (typeof window.showDiagnosticGate === 'function') {
+            setTimeout(() => {
+                window.showDiagnosticGate({
+                    gameName: 'Phrasal Reactor',
+                    score: score,
+                    maxScore: 10,
+                    weakArea: 'C1 Particle Precision & Phrasal Collocations under Time Pressure',
+                    examImpact: 'In Cambridge C1/C2 Use of English (Parts 1–4) and IELTS Speaking Part 3, hesitation on phrasal particles drops your Lexical Resource score from Band 7.5 to 6.5.',
+                    onReplay: () => {
+                        endModal.classList.remove('open');
+                        btnStart.click();
+                    }
+                });
+            }, 600);
+        }
     }
 
 })();
