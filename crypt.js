@@ -650,6 +650,22 @@
         leadModal.classList.add('open');
         $('lead-email').focus();
 
+        if (typeof window.showDiagnosticGate === 'function') {
+            setTimeout(() => {
+                window.showDiagnosticGate({
+                    gameName: 'Grammar Crypt',
+                    score: state.perfect || state.completed.length || 18,
+                    maxScore: levels.length || 25,
+                    weakArea: 'C1/C2 Inverted Syntax & Complex Question Architecture',
+                    examImpact: 'In Cambridge C1/C2 Use of English and IELTS Writing Task 2, inverted syntax errors prevent you from scoring in the top grammatical band.',
+                    onReplay: () => {
+                        leadModal.classList.remove('open');
+                        restartCrypt();
+                    }
+                });
+            }, 800);
+        }
+
         const form = $('lead-form');
         if (!form.dataset.bound) {
             form.dataset.bound = 'true';
