@@ -120,18 +120,23 @@
         btn.addEventListener('click', () => {
             const pkg = btn.getAttribute('data-prefill-package');
             const goalInput = document.getElementById('goal');
-            const contactForm = document.getElementById('contact-form');
+            const messageInput = document.getElementById('message');
+            const subjectInput = document.querySelector('#contact-form input[name="_subject"]');
+            const nameInput = document.getElementById('name');
+
             if (goalInput && pkg) {
-                goalInput.value = pkg;
-                if (contactForm) {
-                    setTimeout(() => {
-                        contactForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        goalInput.focus();
-                        goalInput.classList.add('ring-2', 'ring-sky-400');
-                        setTimeout(() => goalInput.classList.remove('ring-2', 'ring-sky-400'), 2200);
-                    }, 60);
-                }
+                goalInput.value = 'Selected Package: ' + pkg;
+                goalInput.classList.add('ring-2', 'ring-sky-400', 'border-sky-400');
             }
+            if (subjectInput && pkg) {
+                subjectInput.value = 'Package Order / Enquiry: ' + pkg;
+            }
+            if (messageInput && pkg.includes('Async')) {
+                messageInput.placeholder = 'Tell me which exam (IELTS, C1, C2) or business task you are submitting, and I will reply with your secure upload & Stripe payment link...';
+            }
+            setTimeout(() => {
+                if (nameInput) nameInput.focus({ preventScroll: true });
+            }, 450);
         });
     });
 })();
