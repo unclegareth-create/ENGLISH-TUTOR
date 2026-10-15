@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Cambridge Exam Lab | Gareth English</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --accent-blue: #3b82f6;
+      --accent-amber: #f59e0b;
+      --accent-green: #22c55e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    body { background: var(--bg); color: var(--text-main); line-height: 1.6; padding: 3rem 1rem; }
+    
+    .lab-container { max-width: 1050px; margin: 0 auto; }
+
+    /* Section Header */
+    .lab-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 2.5rem auto;
+    }
+    .lab-header span {
+      display: inline-block;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.35rem 0.9rem;
+      border-radius: 99px;
+      margin-bottom: 0.75rem;
+    }
+    .lab-header h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #ffffff; }
+    .lab-header p { color: var(--text-muted); font-size: 1.05rem; }
+
+    /* Filter Buttons */
+    .filter-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 0.5rem 1.25rem;
+      border-radius: 99px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-btn:hover { border-color: var(--accent-blue); color: white; }
+    .filter-btn.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: white;
+    }
+
+    /* Cards Grid */
+    .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .lab-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .lab-card:hover {
+      transform: translateY(-4px);
+      border-color: #64748b;
+    }
+    .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .level-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+    }
+    .badge-b2 { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-c1 { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-c2 { background: rgba(220, 38, 38, 0.15); color: #f87171; border: 1px solid rgba(220, 38, 38, 0.3); }
+    
+    .card-type { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+
+    .lab-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: #ffffff; }
+    .lab-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+
+    .features-list {
+      list-style: none;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+    .features-list li {
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .features-list li::before {
+      content: "✓";
+      color: var(--accent-green);
+      font-weight: 800;
+    }
+
+    .launch-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: #334155;
+      color: white;
+      text-decoration: none;
+      padding: 0.7rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    .lab-card:hover .launch-btn { background: var(--accent-blue); }
+
+    /* Bottom Booking Banner */
+    .lab-cta {
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    .lab-cta h3 { font-size: 1.35rem; margin-bottom: 0.3rem; }
+    .lab-cta p { color: var(--text-muted); font-size: 0.92rem; max-width: 520px; }
+    .cta-btn {
+      background: var(--accent-green);
+      color: #052e16;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .cta-btn:hover { opacity: 0.9; }
+
+    @media (max-width: 768px) {
+      .lab-cta { flex-direction: column; text-align: center; }
+      .lab-cta p { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="lab-container">
+  
+  <!-- Header -->
+  <div class="lab-header">
+    <span>Free Interactive Practice</span>
+    <h2>The Cambridge Exam Lab</h2>
+    <p>Test your grammar, sharpen your essay structure, and practice exam tasks interactively in your browser before your next session.</p>
+  </div>
+
+  <!-- Filter Buttons -->
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="filterLabs('all', this)">All Levels</button>
+    <button class="filter-btn" onclick="filterLabs('b2', this)">B2 First</button>
+    <button class="filter-btn" onclick="filterLabs('c1', this)">C1 Advanced</button>
+    <button class="filter-btn" onclick="filterLabs('c2', this)">C2 Proficiency</button>
+  </div>
+
+  <!-- Cards Grid -->
+  <div class="lab-grid">
+    
+    <!-- B2 Card -->
+    <div class="lab-card" data-level="b2">
+      <div>
+        <div class="card-top-row">
+          <span class="level-badge badge-b2">B2 First</span>
+          <span class="card-type">Vocabulary & Grammar</span>
+        </div>
+        <h3>True Friends & Conditionals</h3>
+        <p>Explore Unit 10 friendship themes with 8 compound personality adjectives and conditional structures without "if".</p>
+        <ul class="features-list">
+          <li>3-minute speaking timer widget</li>
+          <li>Interactive adjective matcher</li>
+          <li>Use of English Part 4 practice</li>
+        </ul>
+      </div>
+      <a href="fce-friendship-conditionals.html" target="_blank" class="launch-btn">Launch Module →</a>
+    </div>
+
+    <!-- C1 Card -->
+    <div class="lab-card" data-level="c1">
+      <div>
+        <div class="card-top-row">
+          <span class="level-badge badge-c1">C1 Advanced</span>
+          <span class="card-type">Writing Part 1</span>
+        </div>
+        <h3>The "Human Tower" Essay Builder</h3>
+        <p>Build a C1 essay sentence-by-sentence against a 5-minute timer while ticking off advanced grammar constraints.</p>
+        <ul class="features-list">
+          <li>Interactive 5-minute sentence clock</li>
+          <li>Live essay stitcher & word counter</li>
+          <li>Official Cambridge C1 marking rubric</li>
+        </ul>
+      </div>
+      <a href="cae-essay-builder-v2.html" target="_blank" class="launch-btn">Launch Module →</a>
+    </div>
+
+    <!-- C2 Card -->
+    <div class="lab-card" data-level="c2">
+      <div>
+        <div class="card-top-row">
+          <span class="level-badge badge-c2">C2 Proficiency</span>
+          <span class="card-type">Reading & Advanced Passives</span>
+        </div>
+        <h3>Psychometric Testing & Passives</h3>
+        <p>Evaluate corporate screening arguments and master the 4 pillars of C2 causative and agentless passives.</p>
+        <ul class="features-list">
+          <li>Pro/Con reading analysis task</li>
+          <li>C2 nuance multiple-choice drill</li>
+          <li>3-to-8-word Key Word Transformations</li>
+        </ul>
+      </div>
+      <a href="cpe-psychometrics-passives.html" target="_blank" class="launch-btn">Launch Module →</a>
+    </div>
+
+  </div>
+
+  <!-- Bottom CTA Banner -->
+  <div class="lab-cta">
+    <div>
+      <h3>Want expert feedback on your completed worksheets?</h3>
+      <p>Print or save any module as a PDF report and bring it to a 1-on-1 trial lesson for personalised examiner feedback.</p>
+    </div>
+    <a href="https://garethenglish.com" target="_blank" class="cta-btn">Book a Trial Session</a>
+  </div>
+
+</div>
+
+<script>
+  function filterLabs(level, btn) {
+    // Update active tab style
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Filter cards
+    document.querySelectorAll('.lab-card').forEach(card => {
+      if (level === 'all' || card.getAttribute('data-level') === level) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
