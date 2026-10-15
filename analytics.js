@@ -23,7 +23,7 @@
 (() => {
     'use strict';
 
-    const GOATCOUNTER_CODE = '';   // <-- e.g. 'garethenglish'
+    const GOATCOUNTER_CODE = 'garethenglish';   // <-- Registered GoatCounter site code
 
     if (!GOATCOUNTER_CODE) return;
 
