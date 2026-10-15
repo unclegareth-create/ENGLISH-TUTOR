@@ -184,7 +184,11 @@
             Resources <i class="fa-solid fa-chevron-down text-[10px]" aria-hidden="true"></i>
           </button>
           <div class="absolute top-full left-0 mt-2 w-56 bg-white border border-slate-100 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all flex flex-col p-2 z-50">
-            <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider px-3 mb-1 mt-1">Interactive Diagnostic</span>
+            <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider px-3 mb-1 mt-1">Interactive Practice</span>
+            <a href="#exam-lab" class="px-3 py-2 text-sm text-blue-700 font-bold hover:bg-blue-50 rounded-lg flex items-center justify-between">
+              <span>Cambridge Exam Lab</span>
+              <span class="bg-blue-100 text-blue-700 text-[9px] px-1.5 py-0.5 rounded-full font-bold">New</span>
+            </a>
             <a href="#gareth-writing-markup" class="px-3 py-2 text-sm text-indigo-700 font-bold hover:bg-indigo-50 rounded-lg flex items-center justify-between">
               <span>Sample Writing Markup</span>
               <span class="bg-indigo-100 text-indigo-700 text-[9px] px-1.5 py-0.5 rounded-full font-bold">Interactive</span>
@@ -218,6 +222,10 @@
     <nav id="mobile-menu" aria-label="Mobile" class="hidden md:hidden px-6 pt-2 pb-6 border-b border-slate-100 bg-white flex flex-col gap-3 text-slate-700 font-medium">
       <a href="#services" class="hover:text-brand-600">Services</a>
       <a href="#about" class="hover:text-brand-600">About Me</a>
+      <a href="#exam-lab" class="text-blue-700 hover:text-blue-800 flex items-center justify-between font-bold py-2 px-3 rounded-xl bg-blue-50 border border-blue-200">
+        <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span> Cambridge Exam Lab</span>
+        <span class="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">New</span>
+      </a>
       <a href="#gareth-writing-markup" class="text-indigo-700 hover:text-indigo-800 flex items-center justify-between font-bold py-2 px-3 rounded-xl bg-indigo-50 border border-indigo-200">
         <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span> Sample Writing Markup</span>
         <span class="bg-indigo-600 text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Interactive</span>
@@ -1711,6 +1719,248 @@
         </div>
 
       </div>
+    </section>
+
+    <!-- ================= INTERACTIVE CAMBRIDGE EXAM LAB ================= -->
+    <section id="exam-lab" class="py-20 border-t border-slate-800 scroll-mt-16" aria-labelledby="lab-main-heading">
+      <style>
+        #exam-lab {
+          --lab-bg: #0f172a;
+          --lab-card-bg: #1e293b;
+          --lab-card-border: #334155;
+          --lab-accent-blue: #3b82f6;
+          --lab-accent-amber: #f59e0b;
+          --lab-accent-green: #22c55e;
+          --lab-text-main: #f8fafc;
+          --lab-text-muted: #94a3b8;
+          background: var(--lab-bg);
+          color: var(--lab-text-main);
+        }
+        #exam-lab .lab-container { max-width: 1050px; margin: 0 auto; }
+        #exam-lab .lab-header { text-align: center; max-width: 700px; margin: 0 auto 2.5rem auto; }
+        #exam-lab .lab-header span {
+          display: inline-block;
+          background: rgba(59, 130, 246, 0.15);
+          color: #60a5fa;
+          border: 1px solid rgba(59, 130, 246, 0.3);
+          font-size: 0.78rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          padding: 0.35rem 0.9rem;
+          border-radius: 99px;
+          margin-bottom: 0.75rem;
+        }
+        #exam-lab .lab-header h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #ffffff; }
+        #exam-lab .lab-header p { color: var(--lab-text-muted); font-size: 1.05rem; }
+        #exam-lab .filter-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        #exam-lab .filter-btn {
+          background: var(--lab-card-bg);
+          border: 1px solid var(--lab-card-border);
+          color: var(--lab-text-muted);
+          padding: 0.5rem 1.25rem;
+          border-radius: 99px;
+          font-weight: 600;
+          font-size: 0.88rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        #exam-lab .filter-btn:hover { border-color: var(--lab-accent-blue); color: white; }
+        #exam-lab .filter-btn.active {
+          background: var(--lab-accent-blue);
+          border-color: var(--lab-accent-blue);
+          color: white;
+        }
+        #exam-lab .lab-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 3rem;
+        }
+        #exam-lab .lab-card {
+          background: var(--lab-card-bg);
+          border: 1px solid var(--lab-card-border);
+          border-radius: 16px;
+          padding: 1.75rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        #exam-lab .lab-card:hover {
+          transform: translateY(-4px);
+          border-color: #64748b;
+        }
+        #exam-lab .card-top-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1rem;
+        }
+        #exam-lab .level-badge {
+          font-size: 0.72rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          padding: 0.25rem 0.65rem;
+          border-radius: 6px;
+        }
+        #exam-lab .badge-b2 { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        #exam-lab .badge-c1 { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+        #exam-lab .badge-c2 { background: rgba(220, 38, 38, 0.15); color: #f87171; border: 1px solid rgba(220, 38, 38, 0.3); }
+        #exam-lab .card-type { font-size: 0.8rem; color: var(--lab-text-muted); font-weight: 600; }
+        #exam-lab .lab-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: #ffffff; }
+        #exam-lab .lab-card p { font-size: 0.9rem; color: var(--lab-text-muted); margin-bottom: 1.5rem; }
+        #exam-lab .features-list { list-style: none; margin-bottom: 1.5rem; font-size: 0.85rem; color: #cbd5e1; }
+        #exam-lab .features-list li { margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
+        #exam-lab .features-list li::before { content: "✓"; color: var(--lab-accent-green); font-weight: 800; }
+        #exam-lab .launch-btn {
+          display: block;
+          width: 100%;
+          text-align: center;
+          background: #334155;
+          color: white;
+          text-decoration: none;
+          padding: 0.7rem;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 0.9rem;
+          transition: background 0.2s;
+        }
+        #exam-lab .lab-card:hover .launch-btn { background: var(--lab-accent-blue); }
+        #exam-lab .lab-cta {
+          background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+          border: 1px solid var(--lab-card-border);
+          border-radius: 16px;
+          padding: 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 1.5rem;
+        }
+        #exam-lab .lab-cta h3 { font-size: 1.35rem; margin-bottom: 0.3rem; color: #ffffff; }
+        #exam-lab .lab-cta p { color: var(--lab-text-muted); font-size: 0.92rem; max-width: 520px; }
+        #exam-lab .cta-btn {
+          background: var(--lab-accent-green);
+          color: #052e16;
+          text-decoration: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 0.92rem;
+          transition: opacity 0.2s;
+          white-space: nowrap;
+        }
+        #exam-lab .cta-btn:hover { opacity: 0.9; }
+        @media (max-width: 768px) {
+          #exam-lab .lab-cta { flex-direction: column; text-align: center; }
+          #exam-lab .lab-cta p { max-width: 100%; }
+        }
+      </style>
+
+      <div class="lab-container px-6">
+        <!-- Header -->
+        <div class="lab-header">
+          <span>Free Interactive Practice</span>
+          <h2 id="lab-main-heading">The Cambridge Exam Lab</h2>
+          <p>Test your grammar, sharpen your essay structure, and practice exam tasks interactively in your browser before your next session.</p>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="filterLabs('all', this)">All Levels</button>
+          <button class="filter-btn" onclick="filterLabs('b2', this)">B2 First</button>
+          <button class="filter-btn" onclick="filterLabs('c1', this)">C1 Advanced</button>
+          <button class="filter-btn" onclick="filterLabs('c2', this)">C2 Proficiency</button>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="lab-grid">
+          
+          <!-- B2 Card -->
+          <div class="lab-card" data-level="b2">
+            <div>
+              <div class="card-top-row">
+                <span class="level-badge badge-b2">B2 First</span>
+                <span class="card-type">Vocabulary &amp; Grammar</span>
+              </div>
+              <h3>True Friends &amp; Conditionals</h3>
+              <p>Explore Unit 10 friendship themes with 8 compound personality adjectives and conditional structures without "if".</p>
+              <ul class="features-list">
+                <li>3-minute speaking timer widget</li>
+                <li>Interactive adjective matcher</li>
+                <li>Use of English Part 4 practice</li>
+              </ul>
+            </div>
+            <a href="fce-friendship-conditionals.html" target="_blank" class="launch-btn">Launch Module &rarr;</a>
+          </div>
+
+          <!-- C1 Card -->
+          <div class="lab-card" data-level="c1">
+            <div>
+              <div class="card-top-row">
+                <span class="level-badge badge-c1">C1 Advanced</span>
+                <span class="card-type">Writing Part 1</span>
+              </div>
+              <h3>The "Human Tower" Essay Builder</h3>
+              <p>Build a C1 essay sentence-by-sentence against a 5-minute timer while ticking off advanced grammar constraints.</p>
+              <ul class="features-list">
+                <li>Interactive 5-minute sentence clock</li>
+                <li>Live essay stitcher &amp; word counter</li>
+                <li>Official Cambridge C1 marking rubric</li>
+              </ul>
+            </div>
+            <a href="cae-essay-builder-v2.html" target="_blank" class="launch-btn">Launch Module &rarr;</a>
+          </div>
+
+          <!-- C2 Card -->
+          <div class="lab-card" data-level="c2">
+            <div>
+              <div class="card-top-row">
+                <span class="level-badge badge-c2">C2 Proficiency</span>
+                <span class="card-type">Reading &amp; Advanced Passives</span>
+              </div>
+              <h3>Psychometric Testing &amp; Passives</h3>
+              <p>Evaluate corporate screening arguments and master the 4 pillars of C2 causative and agentless passives.</p>
+              <ul class="features-list">
+                <li>Pro/Con reading analysis task</li>
+                <li>C2 nuance multiple-choice drill</li>
+                <li>3-to-8-word Key Word Transformations</li>
+              </ul>
+            </div>
+            <a href="cpe-psychometrics-passives.html" target="_blank" class="launch-btn">Launch Module &rarr;</a>
+          </div>
+
+        </div>
+
+        <!-- Bottom CTA Banner -->
+        <div class="lab-cta">
+          <div>
+            <h3 class="text-white font-bold">Want expert feedback on your completed worksheets?</h3>
+            <p>Print or save any module as a PDF report and bring it to a 1-on-1 trial lesson for personalised examiner feedback.</p>
+          </div>
+          <a href="#contact" class="cta-btn">Book a Trial Session</a>
+        </div>
+
+      </div>
+
+      <script>
+        function filterLabs(level, btn) {
+          // Update active tab style
+          document.querySelectorAll('#exam-lab .filter-btn').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+
+          // Filter cards
+          document.querySelectorAll('#exam-lab .lab-card').forEach(function(card) {
+            if (level === 'all' || card.getAttribute('data-level') === level) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        }
+      </script>
     </section>
 
     <!-- ================= FREQUENTLY ASKED QUESTIONS ================= -->
