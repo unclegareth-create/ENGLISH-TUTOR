@@ -222,6 +222,22 @@
         document.getElementById('lead-name').value = nameInput.value.trim();
         
         endModal.classList.add('open');
+
+        if (typeof window.showDiagnosticGate === 'function') {
+            setTimeout(() => {
+                window.showDiagnosticGate({
+                    gameName: 'The Boardroom Pitch',
+                    score: Math.max(0, score),
+                    maxScore: totalQuestions || 8,
+                    weakArea: 'Executive Diplomatic Nuance & C1/C2 Register Precision',
+                    examImpact: 'In international executive meetings and Cambridge C2 speaking, blunt or informal phrasing undermines professional authority and reduces your discourse management score.',
+                    onReplay: () => {
+                        endModal.classList.remove('open');
+                        btnStart.click();
+                    }
+                });
+            }, 600);
+        }
     }
 
 })();
