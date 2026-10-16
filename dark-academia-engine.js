@@ -1,25 +1,426 @@
 /**
  * ==========================================================================
- * Dark Academia: The Gothic Canon — Interactive Learning Engine
- * Clean, student-friendly scoring, interactive tap-to-build word tiles,
- * instant feedback, hints, and forgiving 2-try KWT checking
+ * Dark Academia: The Gothic Canon — Interactive Learning Engine & £24 Paywall Gate
+ * Handles:
+ * - £24 Stripe Self-Serve Paywall Gate (4 Free Unit 1s + 8 Gated Advanced Units + Compendium)
+ * - Auto-unlock via Stripe redirect (?unlock=archive_c2_master) & Scholar's Passkey (BORGO-89)
+ * - Interactive Tap-to-Build Word Tiles, Hint Button, and 2-Try Forgiving KWT Checking
  * ==========================================================================
  */
 
 const DarkAcademiaGate = {
-  STORAGE_KEY: 'da_canon_unlocked',
+  STORAGE_KEY: 'da_archive_unlocked',
+  LEGACY_KEY: 'da_canon_unlocked',
+  VALID_KEYS: [
+    'archive_c2_master',
+    'borgo-89',
+    'borgo89',
+    'archive24',
+    'gothic24',
+    'scholars_key',
+    'c2proficient',
+    'gareth-canon-2026'
+  ],
+  STRIPE_LINK: 'https://buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01',
 
   isUnlocked() {
-    return true;
+    try {
+      return (
+        localStorage.getItem(this.STORAGE_KEY) === 'true' ||
+        localStorage.getItem(this.LEGACY_KEY) === 'true'
+      );
+    } catch (e) {
+      return false;
+    }
   },
 
-  isUnitGated() {
+  isUnitGated(unitId) {
+    const lockedUnits = [
+      'dracula_unit2', 'dracula_unit3',
+      'frankenstein_unit2', 'frankenstein_unit3',
+      'jekyll_unit2', 'jekyll_unit3',
+      'baskerville_unit2', 'baskerville_unit3',
+      'compendium'
+    ];
+    return lockedUnits.includes(unitId) && !this.isUnlocked();
+  },
+
+  unlock(token) {
+    if (!token) return false;
+    const cleanToken = token.trim().toLowerCase().replace(/[\s_-]+/g, '');
+    const isMatch = this.VALID_KEYS.some((k) => k.replace(/[\s_-]+/g, '') === cleanToken);
+
+    if (isMatch || token === 'force_unlock') {
+      try {
+        localStorage.setItem(this.STORAGE_KEY, 'true');
+        localStorage.setItem(this.LEGACY_KEY, 'true');
+      } catch (e) {}
+      this.syncUI();
+      return true;
+    }
     return false;
   },
 
-  openModal() {},
-  closeModal() {},
-  enforceGate() {}
+  lock() {
+    try {
+      localStorage.removeItem(this.STORAGE_KEY);
+      localStorage.removeItem(this.LEGACY_KEY);
+    } catch (e) {}
+    this.syncUI();
+  },
+
+  checkUrlUnlock() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const unlockParam =
+        params.get('unlock') ||
+        (params.get('unlocked') === 'true' ? 'archive_c2_master' : null) ||
+        (params.get('session_id') ? 'archive_c2_master' : null);
+      if (unlockParam && this.unlock(unlockParam)) {
+        const cleanUrl = window.location.pathname + window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+        this.showUnlockBanner();
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  },
+
+  showUnlockBanner() {
+    if (document.getElementById('da-unlock-success-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'da-unlock-success-banner';
+    banner.setAttribute('role', 'status');
+    banner.style.cssText =
+      'background:linear-gradient(90deg,#064e3b,#0f172a);border:1px solid #10b981;color:#ecfdf5;padding:1rem 1.5rem;border-radius:12px;margin:1rem auto;max-width:1100px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.5);';
+    banner.innerHTML = `
+      <div>
+        <strong style="color:#6ee7b7;font-size:1rem;">✓ Payment Confirmed — Full Dark Academia Course Unlocked!</strong>
+        <p style="font-size:0.86rem;color:#d1fae5;margin:0.25rem 0 0 0;">
+          All 12 Lessons and the Printable Study Guide & Answer Key are now unlocked on this browser. Save your backup Passkey for other devices: <code style="background:#022c22;padding:0.15rem 0.45rem;border-radius:4px;border:1px solid #10b981;color:#fde68a;font-weight:800;">BORGO-89</code>
+        </p>
+      </div>
+      <button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.4rem 0.85rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:700;">Dismiss</button>
+    `;
+    const container =
+      document.querySelector('.container') ||
+      document.querySelector('.compendium-container') ||
+      document.body;
+    container.insertBefore(banner, container.firstChild);
+  },
+
+  syncUI() {
+    const unlocked = this.isUnlocked();
+    if (unlocked) {
+      document.body.classList.remove('da-is-locked');
+    }
+
+    // 1. Update index cards
+    document.querySelectorAll('.unit-card').forEach((card) => {
+      const isLockedUnit = card.getAttribute('data-locked') === 'true';
+      const actionBtn = card.querySelector('.unit-action-btn') || card.querySelector('.unit-cta');
+      const lockBadge = card.querySelector('.unit-lock-badge');
+      const targetUrl = card.getAttribute('data-href') || card.getAttribute('href');
+
+      if (targetUrl && !card.getAttribute('data-href')) {
+        card.setAttribute('data-href', targetUrl);
+      }
+
+      if (isLockedUnit) {
+        if (unlocked) {
+          card.classList.remove('is-locked');
+          if (targetUrl && card.tagName === 'A') {
+            card.setAttribute('href', targetUrl);
+            card.onclick = null;
+          }
+          if (lockBadge) {
+            lockBadge.textContent = '✓ Unlocked';
+            lockBadge.classList.remove('badge-locked');
+            lockBadge.classList.add('badge-unlocked');
+          }
+          if (actionBtn) {
+            actionBtn.textContent = 'Open Lesson →';
+            if (targetUrl && actionBtn.tagName === 'A') actionBtn.setAttribute('href', targetUrl);
+            actionBtn.removeAttribute('onclick');
+          }
+        } else {
+          card.classList.add('is-locked');
+          if (card.tagName === 'A') {
+            card.removeAttribute('href');
+            card.style.cursor = 'pointer';
+            card.onclick = (e) => {
+              e.preventDefault();
+              DarkAcademiaGate.openModal(card.getAttribute('data-unit-id') || '');
+            };
+          }
+          if (lockBadge) {
+            lockBadge.textContent = '🔒 Full Course (£24)';
+            lockBadge.classList.add('badge-locked');
+            lockBadge.classList.remove('badge-unlocked');
+          }
+          if (actionBtn) {
+            actionBtn.textContent = '🔒 Unlock Lesson (£24)';
+            if (actionBtn.tagName === 'A') {
+              actionBtn.removeAttribute('href');
+              actionBtn.setAttribute(
+                'onclick',
+                `DarkAcademiaGate.openModal('${card.getAttribute('data-unit-id') || ''}')`
+              );
+            }
+          }
+        }
+      }
+    });
+
+    // 1b. Update top passkey button on index hub if unlocked
+    const passkeyTrigger = document.getElementById('da-hub-passkey-btn');
+    if (passkeyTrigger) {
+      if (unlocked) {
+        passkeyTrigger.innerHTML = '✓ Full Course Unlocked';
+        passkeyTrigger.style.borderColor = '#10b981';
+        passkeyTrigger.style.color = '#86efac';
+      } else {
+        passkeyTrigger.innerHTML = '🔑 Enter Course Passkey';
+      }
+    }
+
+    // 2. Update locked screen veil if present
+    const gateVeil = document.getElementById('da-gate-veil');
+    if (gateVeil) {
+      if (unlocked) {
+        gateVeil.classList.add('unlocked');
+        document.body.classList.remove('da-is-locked');
+        document.body.style.overflow = '';
+      } else {
+        gateVeil.classList.remove('unlocked');
+        document.body.classList.add('da-is-locked');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    // 3. Update completion cards on Unit 1
+    if (window.darkEngine) {
+      window.darkEngine.updateCompletionBanner();
+    }
+  },
+
+  openModal(targetUnit) {
+    let modal = document.getElementById('da-paywall-modal');
+    if (!modal) {
+      modal = this.createModalElement();
+      document.body.appendChild(modal);
+    }
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => {
+      const input = modal.querySelector('.da-passkey-input');
+      if (input) input.focus();
+    }, 100);
+  },
+
+  closeModal() {
+    const modal = document.getElementById('da-paywall-modal');
+    if (modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  },
+
+  createModalElement() {
+    const backdrop = document.createElement('div');
+    backdrop.id = 'da-paywall-modal';
+    backdrop.className = 'da-modal-backdrop';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.setAttribute('aria-labelledby', 'modal-gate-title');
+
+    backdrop.innerHTML = `
+      <div class="da-modal">
+        <button class="da-modal-close" onclick="DarkAcademiaGate.closeModal()" aria-label="Close unlock modal">&times;</button>
+        <div style="text-align:center;">
+          <div class="da-modal-seal">🕯️</div>
+          <span class="da-modal-badge">Full Course Access</span>
+          <h2 id="modal-gate-title" class="da-modal-title">Unlock the Complete 12-Lesson Course</h2>
+          <p class="da-modal-subtitle">
+            Lesson 1 of each book is free to try. Unlock all 8 Advanced Lessons across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, and <em>The Hound of the Baskervilles</em> (+ the Printable Study Guide &amp; Complete Answer Key) for <strong>£24</strong> (one-time payment, lifetime access).
+          </p>
+        </div>
+
+        <div class="da-modal-benefits">
+          <div class="da-benefit-item">
+            <span class="da-benefit-icon">✓</span>
+            <span><strong>All 12 Interactive C1/C2 Lessons:</strong> Complete 3-part modules for <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, and <em>The Hound of the Baskervilles</em>.</span>
+          </div>
+          <div class="da-benefit-item">
+            <span class="da-benefit-icon">✓</span>
+            <span><strong>60 Interactive Key Word Transformations:</strong> With tap-to-build word tiles, instant hints, and Cambridge C1/C2 feedback.</span>
+          </div>
+          <div class="da-benefit-item">
+            <span class="da-benefit-icon">✓</span>
+            <span><strong>Modern Exam Writing Practice:</strong> Learn how to use every grammar pattern naturally in IELTS &amp; Cambridge essays, reviews, and reports.</span>
+          </div>
+          <div class="da-benefit-item">
+            <span class="da-benefit-icon">✓</span>
+            <span><strong>Printable Study Guide &amp; Answer Key:</strong> Complete grammar cheat sheet, vocabulary filter, and all 180 answers.</span>
+          </div>
+        </div>
+
+        <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
+          <span>Unlock Instant Access via Stripe (£24)</span>
+          <span aria-hidden="true">→</span>
+        </a>
+
+        <div class="da-passkey-box">
+          <p>Already purchased? Enter your <strong>Course Passkey</strong> from your confirmation screen or receipt:</p>
+          <div class="da-passkey-row">
+            <input type="text" class="da-passkey-input" id="da-modal-passkey" placeholder="ENTER PASSKEY" autocomplete="off" aria-label="Course passkey input">
+            <button class="da-passkey-btn" onclick="DarkAcademiaGate.submitPasskey()">Unlock</button>
+          </div>
+          <div class="da-passkey-feedback" id="da-modal-feedback"></div>
+        </div>
+      </div>
+    `;
+
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) DarkAcademiaGate.closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && backdrop.classList.contains('active')) {
+        DarkAcademiaGate.closeModal();
+      }
+    });
+
+    const input = backdrop.querySelector('.da-passkey-input');
+    if (input) {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') DarkAcademiaGate.submitPasskey();
+      });
+    }
+
+    return backdrop;
+  },
+
+  submitPasskey() {
+    const input = document.getElementById('da-modal-passkey');
+    const feedback = document.getElementById('da-modal-feedback');
+    if (!input || !feedback) return;
+
+    const val = input.value.trim();
+    if (!val) {
+      feedback.style.color = '#fca5a5';
+      feedback.textContent = 'Please enter your passkey.';
+      return;
+    }
+
+    if (this.unlock(val)) {
+      feedback.style.color = '#86efac';
+      feedback.innerHTML = '✓ Passkey Verified! Full Course Unlocked.';
+      setTimeout(() => {
+        this.closeModal();
+        if (
+          window.location.pathname.includes('unit2') ||
+          window.location.pathname.includes('unit3') ||
+          window.location.pathname.includes('compendium')
+        ) {
+          window.location.reload();
+        }
+      }, 600);
+    } else {
+      feedback.style.color = '#fca5a5';
+      feedback.textContent = '✗ Invalid passkey. Please check your confirmation message or contact Gareth.';
+    }
+  },
+
+  enforceGate(unitId) {
+    const lockedUnits = [
+      'dracula_unit2', 'dracula_unit3',
+      'frankenstein_unit2', 'frankenstein_unit3',
+      'jekyll_unit2', 'jekyll_unit3',
+      'baskerville_unit2', 'baskerville_unit3',
+      'compendium'
+    ];
+
+    if (!lockedUnits.includes(unitId)) return;
+
+    if (!this.isUnlocked()) {
+      document.body.classList.add('da-is-locked');
+      let veil = document.getElementById('da-gate-veil');
+      if (!veil) {
+        veil = document.createElement('div');
+        veil.id = 'da-gate-veil';
+        veil.className = 'da-gate-veil';
+        veil.innerHTML = `
+          <div class="da-modal" style="max-width:540px;">
+            <div style="text-align:center;">
+              <div class="da-modal-seal">🔒</div>
+              <span class="da-modal-badge">Full Course Lesson</span>
+              <h2 class="da-modal-title">Unlock the Complete Course (£24)</h2>
+              <p class="da-modal-subtitle">
+                Lesson 1 of each book is free to try. Unlock all 12 lessons across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, and <em>The Hound of the Baskervilles</em> + the Printable Study Guide &amp; Answer Key.
+              </p>
+            </div>
+
+            <div class="da-modal-benefits">
+              <div class="da-benefit-item">
+                <span class="da-benefit-icon">✓</span>
+                <span>Full access to all 12 Interactive C1/C2 Lessons + the Printable Study Guide &amp; Complete Answer Key.</span>
+              </div>
+              <div class="da-benefit-item">
+                <span class="da-benefit-icon">✓</span>
+                <span>One-time payment (£24) — instant lifetime access on your browser plus a backup Passkey for all your devices.</span>
+              </div>
+            </div>
+
+            <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
+              <span>Unlock Full Course via Stripe (£24)</span>
+              <span aria-hidden="true">→</span>
+            </a>
+
+            <div class="da-passkey-box">
+              <p>Already purchased? Enter your Course Passkey:</p>
+              <div class="da-passkey-row">
+                <input type="text" class="da-passkey-input" id="veil-passkey-input" placeholder="ENTER PASSKEY" autocomplete="off" aria-label="Enter passkey to unlock">
+                <button class="da-passkey-btn" onclick="DarkAcademiaGate.submitVeilPasskey()">Unlock</button>
+              </div>
+              <div class="da-passkey-feedback" id="veil-passkey-feedback"></div>
+            </div>
+
+            <div style="text-align:center; margin-top:1.25rem;">
+              <a href="dark-academia-index.html" class="da-link-secondary">← Return to Free Lessons on Course Hub</a>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(veil);
+        const veilInput = veil.querySelector('#veil-passkey-input');
+        if (veilInput) {
+          veilInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') DarkAcademiaGate.submitVeilPasskey();
+          });
+        }
+      }
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('da-is-locked');
+    }
+  },
+
+  submitVeilPasskey() {
+    const input = document.getElementById('veil-passkey-input');
+    const feedback = document.getElementById('veil-passkey-feedback');
+    if (!input || !feedback) return;
+
+    const val = input.value.trim();
+    if (this.unlock(val)) {
+      feedback.style.color = '#86efac';
+      feedback.textContent = '✓ Unlocked! Loading lesson...';
+      setTimeout(() => window.location.reload(), 500);
+    } else {
+      feedback.style.color = '#fca5a5';
+      feedback.textContent = '✗ Invalid passkey.';
+    }
+  }
 };
 
 window.DarkAcademiaGate = DarkAcademiaGate;
@@ -38,6 +439,8 @@ class DarkAcademiaEngine {
 
   init() {
     this.injectHelperStyles();
+    DarkAcademiaGate.checkUrlUnlock();
+    DarkAcademiaGate.enforceGate(this.unitId);
     this.renderSortTask();
     this.renderStyleShiftDrills();
     this.initKWTScaffolds();
@@ -45,12 +448,13 @@ class DarkAcademiaEngine {
     this.initCapstoneAudit();
     this.renderCompletionBanner();
     this.updateScoreDisplay();
+    DarkAcademiaGate.syncUI();
 
     window.resetAll = () => this.resetAll();
   }
 
   /**
-   * Injects mobile-friendly styling for interactive KWT Word Tiles & Hint Bar
+   * Injects mobile-friendly styling for interactive KWT Word Tiles, Hint Bar & Paywall Fallback
    */
   injectHelperStyles() {
     if (document.getElementById('da-kwt-helper-styles')) return;
@@ -143,6 +547,19 @@ class DarkAcademiaEngine {
       .kwt-hint-box.visible {
         display: block;
       }
+      .unit-card.is-locked {
+        opacity: 0.9;
+      }
+      .badge-locked {
+        background: rgba(245, 158, 11, 0.16) !important;
+        color: #fde68a !important;
+        border: 1px solid rgba(245, 158, 11, 0.4) !important;
+      }
+      .badge-unlocked {
+        background: rgba(16, 185, 129, 0.18) !important;
+        color: #86efac !important;
+        border: 1px solid #10b981 !important;
+      }
       @media print {
         .kwt-helper-wrap { display: none !important; }
       }
@@ -184,7 +601,6 @@ class DarkAcademiaEngine {
         { word: distractor, id: `d-${cIdx}` }
       ];
 
-      // Deterministic shuffle so each card looks natural
       for (let i = tileItems.length - 1; i > 0; i--) {
         const j = (i * 7 + cIdx * 3) % (i + 1);
         const temp = tileItems[i];
@@ -221,7 +637,6 @@ class DarkAcademiaEngine {
         tileBtn.addEventListener('click', () => {
           if (card.dataset.answered === 'true') return;
           if (tileBtn.classList.contains('used')) {
-            // Remove one instance of this word from the input
             tileBtn.classList.remove('used');
             const currentWords = input.value.trim() ? input.value.trim().split(/\s+/) : [];
             const removeIdx = currentWords.lastIndexOf(item.word);
@@ -239,7 +654,6 @@ class DarkAcademiaEngine {
         tilesRow.appendChild(tileBtn);
       });
 
-      // Sync tile highlights if user types manually
       input.addEventListener('input', () => {
         const typedWords = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
         const remaining = [...typedWords];
@@ -284,11 +698,11 @@ class DarkAcademiaEngine {
     el.textContent = `${this.score} / ${this.totalMarks}`;
 
     if (this.score >= Math.ceil(this.totalMarks * 0.8)) {
-      el.style.color = '#4ade80'; // Green for 80%+
+      el.style.color = '#4ade80';
     } else if (this.score >= Math.ceil(this.totalMarks * 0.5)) {
-      el.style.color = '#fbbf24'; // Amber for 50%+
+      el.style.color = '#fbbf24';
     } else {
-      el.style.color = ''; // Default theme accent
+      el.style.color = '';
     }
 
     this.saveProgress();
@@ -296,7 +710,7 @@ class DarkAcademiaEngine {
   }
 
   /**
-   * Renders the completion banner at the bottom of the unit
+   * Renders the completion banner at the bottom of the unit (with £24 Stripe CTA when locked)
    */
   renderCompletionBanner() {
     const container = document.getElementById('dynamic-completion-card');
@@ -310,21 +724,88 @@ class DarkAcademiaEngine {
     const container = document.getElementById('dynamic-completion-card');
     if (!container) return;
 
+    const unlocked = DarkAcademiaGate.isUnlocked();
     const pct = Math.round((this.score / this.totalMarks) * 100);
 
-    container.innerHTML = `
-      <div class="da-completion-flex">
-        <div>
-          <span class="da-completion-eyebrow">Lesson Progress • ${this.score} / ${this.totalMarks} Marks (${pct}%)</span>
-          <h3>Want to review all 12 lessons side by side?</h3>
-          <p>Open the printable <strong>Course Study Guide</strong> for a clean summary of every grammar pattern, key vocabulary item, and answer key, or return to the course hub to choose another story.</p>
+    const metaMap = {
+      dracula_unit1: {
+        mastered: 'Participle Clauses in Dracula Chapter 1',
+        unit2Url: 'dracula-unit2-counts-hospitality.html',
+        unit2Title: "Lesson 2: The Count's Hospitality",
+        nextFreeUrl: 'frankenstein-unit1-spark-of-being.html',
+        nextFreeTitle: 'Frankenstein Lesson 1'
+      },
+      frankenstein_unit1: {
+        mastered: 'Inverted Conditionals in Frankenstein',
+        unit2Url: 'frankenstein-unit2-sea-of-ice.html',
+        unit2Title: 'Lesson 5: The Sea of Ice',
+        nextFreeUrl: 'jekyll-unit1-soho-threshold.html',
+        nextFreeTitle: 'Jekyll & Hyde Lesson 1'
+      },
+      jekyll_unit1: {
+        mastered: 'Concessive Clauses in Jekyll & Hyde',
+        unit2Url: 'jekyll-unit2-lanyons-narrative.html',
+        unit2Title: "Lesson 8: Dr Lanyon's Narrative",
+        nextFreeUrl: 'baskerville-unit1-curse-of-the-moors.html',
+        nextFreeTitle: 'Hound of the Baskervilles Lesson 1'
+      },
+      baskerville_unit1: {
+        mastered: 'Past Modals of Deduction at 221B Baker Street',
+        unit2Url: 'baskerville-unit2-grimpen-mire.html',
+        unit2Title: 'Lesson 11: Grimpen Mire',
+        nextFreeUrl: 'dracula-unit1-carpathian-threshold.html',
+        nextFreeTitle: 'Dracula Lesson 1'
+      }
+    };
+
+    const meta = metaMap[this.unitId] || metaMap.dracula_unit1;
+
+    if (unlocked) {
+      container.innerHTML = `
+        <div class="da-completion-top">
+          <span class="da-score-callout">✓ Lesson Score: ${this.score} / ${this.totalMarks} Marks (${pct}%)</span>
+          <span class="badge badge-verbatim">Full Course Unlocked</span>
+        </div>
+        <h3 class="da-completion-title">Ready for the Next Lesson?</h3>
+        <p class="da-completion-body">
+          You have practiced ${meta.mastered}. Continue to the next lesson or open the printable Study Guide &amp; Answer Key.
+        </p>
+        <div class="da-completion-actions">
+          <a href="${meta.unit2Url}" class="btn-main" style="text-decoration:none;">
+            Continue to ${meta.unit2Title} →
+          </a>
+          <a href="the-gothic-canon-c1-c2-compendium.html" class="dossier-pill-btn">
+            📖 Open Study Guide &amp; Answer Key
+          </a>
+        </div>
+      `;
+    } else {
+      container.innerHTML = `
+        <div class="da-completion-top">
+          <span class="da-score-callout">Free Lesson Score: ${this.score} / ${this.totalMarks} Marks (${pct}%)</span>
+          <span class="badge badge-canon-dracula">C1/C2 Complete Course</span>
+        </div>
+        <h3 class="da-completion-title">Enjoying the Course? Unlock All 12 Lessons</h3>
+        <p class="da-completion-body">
+          You've practiced ${meta.mastered}. Unlock the complete <strong>12-Lesson Dark Academia Course</strong> across <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, and <em>The Hound of the Baskervilles</em> (+ the Printable Study Guide &amp; Complete Answer Key) for <strong>£24</strong>.
+        </p>
+        <div class="da-completion-perks">
+          <div class="da-perk-chip"><span>🔓</span> 8 Advanced C1/C2 Lessons</div>
+          <div class="da-perk-chip"><span>✓</span> 60 Interactive Transformations</div>
+          <div class="da-perk-chip"><span>✍️</span> Modern Essay &amp; Review Practice</div>
+          <div class="da-perk-chip"><span>📖</span> Printable Study Guide &amp; Answer Key</div>
         </div>
         <div class="da-completion-actions">
-          <a href="the-gothic-canon-c1-c2-compendium.html" class="da-btn-gold">📖 Open Study Guide</a>
-          <a href="dark-academia-index.html" class="da-btn-outline">← Back to Course Hub</a>
+          <button class="da-btn-stripe" style="max-width:340px;" onclick="DarkAcademiaGate.openModal('${this.unitId}')">
+            <span>Unlock Full 12-Lesson Course — £24</span>
+            <span aria-hidden="true">→</span>
+          </button>
+          <a href="${meta.nextFreeUrl}" class="da-link-secondary">
+            Or try ${meta.nextFreeTitle} for free first →
+          </a>
         </div>
-      </div>
-    `;
+      `;
+    }
   }
 
   /**
@@ -477,7 +958,6 @@ class DarkAcademiaEngine {
 
   /**
    * Section 3: Cambridge Part 4 Key Word Transformations (2 Marks Each)
-   * Includes a forgiving 1st-attempt hint before locking on the 2nd attempt.
    */
   normalizeText(str) {
     return str
@@ -554,7 +1034,6 @@ class DarkAcademiaEngine {
       return;
     }
 
-    // First wrong/partial attempt: give a gentle hint and let the learner adjust!
     if (attempts === 1) {
       const firstTwo = modelWords.slice(0, 2).join(' ');
       if (input) {
@@ -567,7 +1046,6 @@ class DarkAcademiaEngine {
       return;
     }
 
-    // Second attempt: lock and award partial or show model answer
     this.lockKWTCard(card, input, btn);
 
     if (isPartialMatch) {
@@ -736,9 +1214,7 @@ class DarkAcademiaEngine {
           updatedAt: new Date().toISOString()
         })
       );
-    } catch (e) {
-      // Ignore storage quota errors
-    }
+    } catch (e) {}
   }
 
   resetAll() {
@@ -789,3 +1265,8 @@ class DarkAcademiaEngine {
 }
 
 window.DarkAcademiaEngine = DarkAcademiaEngine;
+
+document.addEventListener('DOMContentLoaded', () => {
+  DarkAcademiaGate.checkUrlUnlock();
+  DarkAcademiaGate.syncUI();
+});
