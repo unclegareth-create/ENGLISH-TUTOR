@@ -203,18 +203,18 @@ class DarkAcademiaGate {
           <span class="da-modal-badge">Self-Serve Digital Access</span>
           <h2 id="modal-gate-title" class="da-modal-title">The Archive is Sealed</h2>
           <p class="da-modal-subtitle">
-            Unlock Stages 2, 3 &amp; 4 (4 Masterclass Units + Capstone Writing Labs + Printable Study Dossier) for <strong>£24</strong> (one-time payment, lifetime browser access).
+            Unlock all 8 Advanced Masterclass Units across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, and <em>The Hound of the Baskervilles</em> (+ 4 Capstone Writing Labs &amp; Printable Study Dossier) for <strong>£24</strong> (one-time payment, lifetime browser access).
           </p>
         </div>
 
         <div class="da-modal-benefits">
           <div class="da-benefit-item">
             <span class="da-benefit-icon">✦</span>
-            <span><strong>4 Advanced Masterclass Units:</strong> Castle Dracula (Negative Inversion), Log of the Demeter (Forensic Passives), Montanvert Glacier (Subjunctives), Creature's Apologia (Clefts).</span>
+            <span><strong>12 Complete Masterclass Units (4 Free + 8 Advanced):</strong> Full trilogies for <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, and <em>The Hound of the Baskervilles</em>.</span>
           </div>
           <div class="da-benefit-item">
             <span class="da-benefit-icon">✦</span>
-            <span><strong>20 Additional Cambridge KWTs:</strong> Rigorous 2-mark diagnostic scoring with full syntactic breakdowns and alternative answer keys.</span>
+            <span><strong>40+ Additional Cambridge KWTs:</strong> Rigorous 2-mark diagnostic scoring covering Negative Inversion, Subjunctives, Register Shift, and Modals of Deduction.</span>
           </div>
           <div class="da-benefit-item">
             <span class="da-benefit-icon">✦</span>
@@ -222,7 +222,7 @@ class DarkAcademiaGate {
           </div>
           <div class="da-benefit-item">
             <span class="da-benefit-icon">✦</span>
-            <span><strong>The Gothic Canon Compendium:</strong> Instant print-ready 4-page reference dossier of all Arsenal Lexis and grammatical formulas.</span>
+            <span><strong>The Gothic Canon Compendium:</strong> Instant print-ready reference dossier of all Arsenal Lexis and grammatical formulas.</span>
           </div>
         </div>
 
@@ -293,6 +293,8 @@ class DarkAcademiaGate {
     const lockedUnits = [
       'dracula_unit2', 'dracula_unit3',
       'frankenstein_unit2', 'frankenstein_unit3',
+      'jekyll_unit2', 'jekyll_unit3',
+      'baskerville_unit2', 'baskerville_unit3',
       'compendium'
     ];
 
@@ -312,18 +314,18 @@ class DarkAcademiaGate {
               <span class="da-modal-badge">Archival Gate</span>
               <h2 class="da-modal-title">Stage Sealed</h2>
               <p class="da-modal-subtitle">
-                This advanced masterclass resource is part of the full Dark Academia curriculum (£24).
+                This advanced masterclass resource is part of the full 12-Unit Dark Academia curriculum (£24).
               </p>
             </div>
 
             <div class="da-modal-benefits">
               <div class="da-benefit-item">
                 <span class="da-benefit-icon">✦</span>
-                <span>Full access to Stages 2, 3 &amp; 4 across Dracula &amp; Frankenstein + the 4-Page Study Dossier.</span>
+                <span>Full access to all 12 Masterclass Units across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, and <em>The Hound of the Baskervilles</em> + the Study Dossier.</span>
               </div>
               <div class="da-benefit-item">
                 <span class="da-benefit-icon">✦</span>
-                <span>Includes the interactive Style-Shift labs and Capstone Writing self-audit.</span>
+                <span>Includes the interactive Apothecary &amp; Forensic Style-Shift labs and Capstone Writing self-audits.</span>
               </div>
             </div>
 
@@ -711,37 +713,37 @@ class DarkAcademiaEngine {
           }
         }
 
-        // Live Syntactic Constraint 1: Negative / Restrictive Inversion
+        // Live Syntactic Constraint 1: Inversion / Epistemic Modals / Clefts
         if (auditInversion) {
-          const invRegex = /(under\s+no\s+circumstances|scarcely\s+had|little\s+did|seldom|rarely|on\s+no\s+account|nowhere|hardly\s+had|not\s+only|had\s+i|were\s+we|much\s+as)/i;
+          const invRegex = capstoneConfig.invRegex || /(under\s+no\s+circumstances|scarcely\s+had|little\s+did|seldom|rarely|on\s+no\s+account|nowhere|hardly\s+had|not\s+only|had\s+i|were\s+we|much\s+as|must\s+have\s+been|cannot\s+have|could\s+not\s+have|might\s+conceivably\s+have|ought\s+to\s+have|it\s+was\s+only\s+when|what\s+precipitated)/i;
           const match = text.match(invRegex);
           const badge = auditInversion.querySelector('.audit-badge');
           const note = auditInversion.querySelector('.audit-note');
           if (match) {
             badge.classList.add('passed');
             badge.textContent = '✓';
-            if (note) note.textContent = `Detected inversion: "${match[0]}"`;
+            if (note) note.textContent = `Detected target structure: "${match[0]}"`;
           } else {
             badge.classList.remove('passed');
             badge.textContent = '○';
-            if (note) note.textContent = 'Include at least 1 negative/restrictive inversion.';
+            if (note) note.textContent = capstoneConfig.invHint || 'Include at least 1 target inversion or modal deduction structure.';
           }
         }
 
-        // Live Constraint 2: Participle / Syntax Opening
+        // Live Constraint 2: Participle / Nominalisation / Locative Opening
         if (auditParticiple) {
-          const partRegex = /(having\s+[a-z]+|steering|abandoned|shrouded|confronted|quivering|heaving|foreseeing|realising|struck|deprived)/i;
+          const partRegex = capstoneConfig.partRegex || /(having\s+[a-z]+|steering|abandoned|shrouded|confronted|quivering|heaving|foreseeing|realising|struck|deprived|compounded\s+by|driven\s+by|concealed\s+behind|emerging\s+from|beyond\s+the|shrouded\s+in|far\s+from\s+being)/i;
           const match = text.match(partRegex);
           const badge = auditParticiple.querySelector('.audit-badge');
           const note = auditParticiple.querySelector('.audit-note');
           if (match) {
             badge.classList.add('passed');
             badge.textContent = '✓';
-            if (note) note.textContent = `Detected participle opening: "${match[0]}"`;
+            if (note) note.textContent = `Detected clause architecture: "${match[0]}"`;
           } else {
             badge.classList.remove('passed');
             badge.textContent = '○';
-            if (note) note.textContent = 'Include at least 1 fronted participle or conditional clause.';
+            if (note) note.textContent = capstoneConfig.partHint || 'Include at least 1 fronted participle, concessive, or locative clause.';
           }
         }
 
@@ -811,7 +813,38 @@ class DarkAcademiaEngine {
     if (!card) return;
 
     const unlocked = DarkAcademiaGate.isUnlocked();
-    const isDracula = this.unitId.includes('dracula');
+    const metaMap = {
+      dracula_unit1: {
+        mastered: 'Participle Clauses at the Borgo Pass',
+        unit2Url: 'dracula-unit2-counts-hospitality.html',
+        unit2Title: "The Count's Hospitality",
+        nextFreeUrl: 'frankenstein-unit1-spark-of-being.html',
+        nextFreeTitle: 'Frankenstein Unit 1'
+      },
+      frankenstein_unit1: {
+        mastered: 'Inverted Conditionals at the Spark of Being',
+        unit2Url: 'frankenstein-unit2-sea-of-ice.html',
+        unit2Title: 'The Sea of Ice',
+        nextFreeUrl: 'jekyll-unit1-soho-threshold.html',
+        nextFreeTitle: 'Jekyll & Hyde Unit 1'
+      },
+      jekyll_unit1: {
+        mastered: 'Extreme Register Contrasts in Fog-Bound Soho',
+        unit2Url: 'jekyll-unit2-lanyons-narrative.html',
+        unit2Title: "Dr Lanyon's Narrative",
+        nextFreeUrl: 'baskerville-unit1-curse-of-the-moors.html',
+        nextFreeTitle: 'Hound of the Baskervilles Unit 1'
+      },
+      baskerville_unit1: {
+        mastered: 'Modals of Deduction at 221B Baker Street',
+        unit2Url: 'baskerville-unit2-grimpen-mire.html',
+        unit2Title: 'Grimpen Mire & Baskerville Hall',
+        nextFreeUrl: 'dracula-unit1-carpathian-threshold.html',
+        nextFreeTitle: 'Dracula Unit 1'
+      }
+    };
+
+    const meta = metaMap[this.unitId] || metaMap.dracula_unit1;
 
     if (unlocked) {
       card.innerHTML = `
@@ -821,11 +854,11 @@ class DarkAcademiaEngine {
         </div>
         <h3 class="da-completion-title">Stage 1 Complete — The Gate is Open</h3>
         <p class="da-completion-body">
-          You have mastered ${isDracula ? 'Participle Clauses at the Borgo Pass' : 'Inverted Conditionals at the Spark of Being'}. Continue along the canonical roadmap into Stage 2.
+          You have mastered ${meta.mastered}. Continue along the canonical roadmap into Stage 2.
         </p>
         <div class="da-completion-actions">
-          <a href="${isDracula ? 'dracula-unit2-counts-hospitality.html' : 'frankenstein-unit2-sea-of-ice.html'}" class="btn-main" style="text-decoration:none;">
-            Enter Stage 2: ${isDracula ? "The Count's Hospitality" : 'The Sea of Ice'} →
+          <a href="${meta.unit2Url}" class="btn-main" style="text-decoration:none;">
+            Enter Stage 2: ${meta.unit2Title} →
           </a>
           <a href="the-gothic-canon-c1-c2-compendium.html" class="dossier-pill-btn" target="_blank">
             📑 View Offline Study Dossier
@@ -838,23 +871,23 @@ class DarkAcademiaEngine {
           <span class="da-score-callout">Stage 1 Complete • Your Score: ${this.currentScore} / ${this.totalMarks} Marks</span>
           <span class="badge badge-canon-dracula">CEFR C1/C2 Archive</span>
         </div>
-        <h3 class="da-completion-title">The Carpathian Threshold is Crossed</h3>
+        <h3 class="da-completion-title">The Threshold is Crossed</h3>
         <p class="da-completion-body">
-          You've mastered ${isDracula ? 'Participle Clauses at the Borgo Pass' : 'Inverted Conditionals in the Garret'}. Unlock the full <strong>Dark Academia Archive</strong> to enter Castle Dracula (Negative Inversion), decode the Log of the Demeter (Forensic Passives), and conquer Mary Shelley's Frankenstein trilogy.
+          You've mastered ${meta.mastered}. Unlock the full <strong>12-Unit Dark Academia Archive</strong> to access all advanced masterclasses across <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, and <em>The Hound of the Baskervilles</em>.
         </p>
         <div class="da-completion-perks">
-          <div class="da-perk-chip"><span>🗝️</span> 4 Advanced Locked Units</div>
-          <div class="da-perk-chip"><span>⚡</span> 20 Extra Cambridge KWTs</div>
-          <div class="da-perk-chip"><span>🖋️</span> Capstone Writing &amp; Model Overlays</div>
-          <div class="da-perk-chip"><span>📑</span> Printable 4-Page Lexis &amp; Syntax Dossier</div>
+          <div class="da-perk-chip"><span>🗝️</span> 8 Advanced Locked Units</div>
+          <div class="da-perk-chip"><span>⚡</span> 40+ Extra Cambridge KWTs</div>
+          <div class="da-perk-chip"><span>🖋️</span> 4 Capstone Writing &amp; Model Overlays</div>
+          <div class="da-perk-chip"><span>📑</span> Printable C1/C2 Lexis &amp; Syntax Dossier</div>
         </div>
         <div class="da-completion-actions">
           <button class="da-btn-stripe" style="max-width:340px;" onclick="DarkAcademiaGate.openModal('${this.unitId}')">
-            <span>Unlock Full Archive — £24</span>
+            <span>Unlock Full 12-Unit Archive — £24</span>
             <span aria-hidden="true">→</span>
           </button>
-          <a href="${isDracula ? 'frankenstein-unit1-spark-of-being.html' : 'dracula-unit1-carpathian-threshold.html'}" class="da-link-secondary">
-            Or try ${isDracula ? 'Frankenstein Unit 1' : 'Dracula Unit 1'} for free first →
+          <a href="${meta.nextFreeUrl}" class="da-link-secondary">
+            Or try ${meta.nextFreeTitle} for free first →
           </a>
         </div>
       `;
