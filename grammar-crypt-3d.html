@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Grammar Crypt 3D: The Full 25-Floor Gothic Syntax Crawl</title>
+  <meta name="description" content="Master Cambridge C1/C2 syntax, inversions, and cleft sentences in full 3D. 25 procedural floors, 5 boss battles, and legendary relics in Three.js WebGL.">
+  <meta name="theme-color" content="#090514">
+
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
+
+  <!-- Three.js (r128) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #07040d;
+      --purple-glow: #9333ea;
+      --purple-dark: #3b0764;
+      --purple-subtle: rgba(147, 51, 234, 0.25);
+      --gold: #fbbf24;
+      --amber: #f59e0b;
+      --emerald: #10b981;
+      --crimson: #ef4444;
+      --font-gothic: 'Creepster', cursive;
+      --font-ui: 'Nunito', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      font-family: var(--font-ui);
+      color: #fff;
+      touch-action: none;
+    }
+
+    #webgl-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: block;
+      cursor: grab;
+      touch-action: none;
+    }
+    #webgl-canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Gothic UI Overlay */
+    .game-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .interactive-element {
+      pointer-events: auto;
+    }
+
+    /* Top Bar HUD */
+    .top-hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .crypt-title-box {
+      background: rgba(18, 10, 31, 0.88);
+      border: 1px solid rgba(147, 51, 234, 0.45);
+      border-radius: 14px;
+      padding: 0.5rem 1.2rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .crypt-title-box h1 {
+      font-family: var(--font-gothic);
+      font-size: 1.75rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
+    }
+    .back-nav-link {
+      font-size: 0.76rem;
+      font-weight: 800;
+      color: #cbd5e1;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .back-nav-link:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+    .level-badge {
+      font-size: 0.78rem;
+      font-weight: 900;
+      background: var(--purple-dark);
+      color: #e9d5ff;
+      border: 1px solid rgba(147, 51, 234, 0.6);
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hud-metrics {
+      display: flex;
+      gap: 0.65rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .hud-pill {
+      background: rgba(18, 10, 31, 0.85);
+      border: 1px solid rgba(147, 51, 234, 0.3);
+      border-radius: 10px;
+      padding: 0.45rem 0.85rem;
+      font-weight: 800;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+    .hud-pill i {
+      color: var(--gold);
+    }
+
+    .btn-hud {
+      background: rgba(147, 51, 234, 0.25);
+      border: 1px solid rgba(147, 51, 234, 0.6);
+      color: #fff;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+    }
+    .btn-hud:hover {
+      background: rgba(147, 51, 234, 0.5);
+      transform: translateY(-1px);
+    }
+
+    /* Top Container to hold HUD & Objective */
+    .top-hud-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    /* Boss Announcement Banner */
+    .boss-arena-hud {
+      display: none;
+      align-self: center;
+      background: linear-gradient(135deg, rgba(69, 10, 10, 0.92), rgba(18, 10, 31, 0.92));
+      border: 1px solid var(--crimson);
+      border-radius: 12px;
+      padding: 0.45rem 1.25rem;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.35);
+      max-width: 580px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+    .boss-name {
+      font-family: var(--font-gothic);
+      font-size: 1.25rem;
+      color: #fca5a5;
+      letter-spacing: 0.05em;
+    }
+    .boss-taunt {
+      font-size: 0.82rem;
+      color: #fef08a;
+      font-style: italic;
+    }
+
+    /* Quest Guidance Banner (Docked, Sleek, Unobtrusive) */
+    .quest-banner {
+      align-self: center;
+      max-width: 680px;
+      width: 100%;
+      text-align: center;
+      background: rgba(15, 8, 26, 0.82);
+      border: 1px solid rgba(147, 51, 234, 0.4);
+      border-radius: 12px;
+      padding: 0.45rem 1rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      transition: all 0.25s ease;
+    }
+    .quest-banner.minimized {
+      display: none;
+    }
+    .quest-header-compact {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .quest-header-compact h2 {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #fef08a;
+      margin: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .syntax-formula {
+      display: inline-flex;
+      gap: 0.35rem;
+      font-family: monospace;
+      font-size: 0.78rem;
+      background: rgba(0, 0, 0, 0.45);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid rgba(147, 51, 234, 0.35);
+      color: #c084fc;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+      color: #c084fc;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Bottom Control Tray */
+    .bottom-tray {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* Camera Switcher */
+    .camera-switcher {
+      display: flex;
+      gap: 0.4rem;
+      background: rgba(18, 10, 31, 0.85);
+      border: 1px solid rgba(147, 51, 234, 0.3);
+      padding: 0.35rem;
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+    }
+    .cam-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 0.45rem 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cam-btn.active, .cam-btn:hover {
+      background: var(--purple-dark);
+      color: #fff;
+    }
+
+    /* Rune Selection Tray */
+    .rune-selector-panel {
+      background: rgba(15, 8, 26, 0.92);
+      border: 1px solid rgba(147, 51, 234, 0.5);
+      border-radius: 16px;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.55rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      max-width: 680px;
+    }
+    .rune-selector-panel span {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+    }
+    .rune-tokens-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .rune-chip {
+      background: linear-gradient(135deg, #1e1333, #110a1f);
+      border: 1px solid rgba(147, 51, 234, 0.6);
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.88rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 9px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .rune-chip:hover {
+      transform: translateY(-2px) scale(1.04);
+      border-color: var(--gold);
+      box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4);
+    }
+    .rune-chip.placed {
+      opacity: 0.35;
+      pointer-events: none;
+      transform: scale(0.9);
+      border-color: #475569;
+    }
+    .rune-chip.decoy {
+      border-color: rgba(239, 68, 68, 0.6);
+    }
+
+    /* Action Buttons */
+    .action-group {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Victory / Relic Milestone Modal */
+    .victory-modal {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15, 8, 26, 0.97);
+      border: 2px solid var(--gold);
+      border-radius: 22px;
+      padding: 2.25rem;
+      text-align: center;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 0 60px rgba(245, 158, 11, 0.35), 0 25px 60px rgba(0, 0, 0, 0.85);
+      z-index: 100;
+      pointer-events: auto;
+      backdrop-filter: blur(16px);
+      animation: modalPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalPop {
+      0% { opacity: 0; transform: translate(-50%, -45%) scale(0.9); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    .victory-modal h2 {
+      font-family: var(--font-gothic);
+      font-size: 2.2rem;
+      color: var(--gold);
+      margin-bottom: 0.4rem;
+      text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+    }
+    .victory-modal p {
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
+    .loot-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(147, 51, 234, 0.4);
+      border-radius: 12px;
+      padding: 0.9rem 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      text-align: left;
+    }
+    .loot-icon {
+      font-size: 2rem;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .loot-info strong {
+      display: block;
+      color: #fff;
+      font-size: 1rem;
+    }
+    .loot-info span {
+      font-size: 0.78rem;
+      color: #c084fc;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+    .diagnostic-lead-box {
+      background: rgba(147, 51, 234, 0.12);
+      border: 1px solid rgba(147, 51, 234, 0.35);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.84rem;
+      color: #e9d5ff;
+      text-align: left;
+    }
+    .btn-next-level {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--amber) 100%);
+      color: #000;
+      border: none;
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 900;
+      padding: 0.9rem 1.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-next-level:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6);
+    }
+
+    /* Relic Inventory Drawer Modal */
+    .relics-modal {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15, 8, 26, 0.97);
+      border: 1px solid rgba(147, 51, 234, 0.6);
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 520px;
+      width: 90%;
+      z-index: 100;
+      pointer-events: auto;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+    }
+    .relics-modal h2 {
+      font-family: var(--font-gothic);
+      font-size: 1.85rem;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+    .relics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      max-height: 320px;
+      overflow-y: auto;
+      margin-bottom: 1.25rem;
+      padding-right: 0.25rem;
+    }
+    .relic-item-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(147, 51, 234, 0.3);
+      border-radius: 10px;
+      padding: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .relic-item-card.locked {
+      opacity: 0.35;
+      filter: grayscale(1);
+    }
+    .relic-emoji {
+      font-size: 1.5rem;
+    }
+    .relic-details strong {
+      font-size: 0.82rem;
+      display: block;
+      color: #fff;
+    }
+    .relic-details span {
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+
+    /* 3D Aim Reticle */
+    .aim-reticle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.35);
+      pointer-events: none;
+      z-index: 5;
+      transition: all 0.2s;
+    }
+    .aim-reticle.active {
+      width: 16px;
+      height: 16px;
+      background: transparent;
+      border: 2px solid var(--gold);
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+    }
+    /* Mobile Responsive Overhaul */
+    @media (max-width: 768px) {
+      .game-overlay {
+        padding: 0.5rem 0.5rem 0.75rem;
+      }
+      .top-hud {
+        gap: 0.35rem;
+      }
+      .crypt-title-box {
+        padding: 0.3rem 0.55rem;
+        gap: 0.4rem;
+        border-radius: 10px;
+      }
+      .crypt-title-box h1 {
+        font-size: 1.15rem;
+      }
+      .back-nav-link {
+        font-size: 0.68rem;
+        padding: 0.15rem 0.35rem;
+      }
+      .level-badge {
+        font-size: 0.68rem;
+        padding: 0.15rem 0.45rem;
+      }
+      .hud-metrics {
+        gap: 0.3rem;
+      }
+      .hud-pill {
+        padding: 0.28rem 0.45rem;
+        font-size: 0.74rem;
+        gap: 0.2rem;
+      }
+      .btn-hud {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.72rem;
+        gap: 0.25rem;
+      }
+      .btn-hud span {
+        display: none; /* Icon-only on mobile */
+      }
+      .quest-banner {
+        padding: 0.35rem 0.6rem;
+        border-radius: 10px;
+      }
+      .quest-header-compact {
+        gap: 0.5rem;
+      }
+      .quest-header-compact h2 {
+        font-size: 0.76rem;
+      }
+      .syntax-formula {
+        font-size: 0.68rem;
+        gap: 0.2rem;
+        padding: 0.15rem 0.4rem;
+      }
+      .bottom-tray {
+        gap: 0.45rem;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .camera-switcher {
+        justify-content: center;
+        align-self: center;
+        padding: 0.25rem;
+      }
+      .cam-btn {
+        padding: 0.3rem 0.55rem;
+        font-size: 0.72rem;
+      }
+      .rune-selector-panel {
+        width: 100%;
+        max-width: 100%;
+        padding: 0.5rem 0.5rem;
+      }
+      .rune-selector-panel span {
+        font-size: 0.66rem;
+      }
+      .rune-tokens-row {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        padding-bottom: 0.35rem;
+        gap: 0.45rem;
+      }
+      .rune-chip {
+        flex-shrink: 0;
+        font-size: 0.88rem;
+        padding: 0.55rem 0.85rem;
+        min-height: 42px;
+      }
+      .action-group {
+        justify-content: center;
+        align-self: center;
+      }
+      .action-group .btn-hud span {
+        display: inline; /* Keep text on action buttons like Hint and Reset */
+      }
+      .victory-modal {
+        padding: 1.5rem 1.25rem;
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .victory-modal h2 {
+        font-size: 1.75rem;
+      }
+      .diagnostic-lead-box {
+        font-size: 0.78rem;
+        padding: 0.6rem 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- WebGL 3D Canvas -->
+  <canvas id="webgl-canvas"></canvas>
+  <div class="aim-reticle" id="reticle"></div>
+
+  <!-- UI Overlay -->
+  <div class="game-overlay">
+    <!-- Top HUD Container (Docked cleanly at the top, leaving the 3D crypt open) -->
+    <div class="top-hud-container">
+      <header class="top-hud">
+        <div class="crypt-title-box interactive-element">
+          <a href="dark-academia-index.html" class="back-nav-link" title="Return to Dark Academia Archive">
+            <i class="fa-solid fa-arrow-left"></i> Archive
+          </a>
+          <h1>Grammar Crypt 3D</h1>
+          <span class="level-badge" id="hudFloor">Floor 1 / 25</span>
+        </div>
+
+        <div class="hud-metrics">
+          <div class="hud-pill interactive-element" title="Gold Acquired">
+            <i class="fa-solid fa-coins"></i> <span id="hudGold">0</span>
+          </div>
+          <div class="hud-pill interactive-element" title="Experience Points">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="hudXP">0 / 100 XP</span>
+          </div>
+          <div class="hud-pill interactive-element" title="Current Winning Streak">
+            <i class="fa-solid fa-fire"></i> <span id="hudStreak">0</span>
+          </div>
+          <button type="button" class="btn-hud interactive-element" id="btnRelics">
+            <i class="fa-solid fa-trophy"></i> <span>Relics</span>
+          </button>
+          <button type="button" class="btn-hud interactive-element" id="audioToggle">
+            <i class="fa-solid fa-volume-high"></i> <span>Audio: ON</span>
+          </button>
+          <button type="button" class="btn-hud interactive-element" id="toggleInstructionsBtn" title="Hide/Show Syntax Objective">
+            <i class="fa-solid fa-eye-slash" id="instructionToggleIcon"></i> <span>Hide</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Boss Arena Active Notice -->
+      <div class="boss-arena-hud interactive-element" id="bossArenaHud">
+        <div class="boss-name" id="bossName">👹 Boss Encounter</div>
+        <div class="boss-taunt" id="bossTaunt">"Taunt goes here..."</div>
+      </div>
+
+      <!-- Quest Objective Strip (Docked to top, slim, never blocks central 3D view) -->
+      <section class="quest-banner interactive-element" id="questBanner">
+        <div class="quest-header-compact">
+          <h2 id="questTitle"><i class="fa-solid fa-scroll"></i> L1: A Simple Inquiry</h2>
+          <div class="syntax-formula" id="syntaxFormula">
+            <!-- Rendered dynamically per floor -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Bottom Tray -->
+    <footer class="bottom-tray">
+      <!-- Camera View Controls -->
+      <div class="camera-switcher interactive-element">
+        <button class="cam-btn active" data-cam="altar"><i class="fa-solid fa-gem"></i> Altar</button>
+        <button class="cam-btn" data-cam="room"><i class="fa-solid fa-eye"></i> Hall</button>
+        <button class="cam-btn" data-cam="gate"><i class="fa-solid fa-dungeon"></i> Gate</button>
+      </div>
+
+      <!-- Quick Rune Tray (Click to Slot Directly) -->
+      <div class="rune-selector-panel interactive-element">
+        <span>Available Inscribed Runes (Click to Slot)</span>
+        <div class="rune-tokens-row" id="runeTokensRow">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Action Group -->
+      <div class="action-group interactive-element">
+        <button type="button" class="btn-hud" id="btnHint"><i class="fa-solid fa-lightbulb"></i> Hint</button>
+        <button type="button" class="btn-hud" id="btnReset"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Victory / Level Complete Modal -->
+  <div class="victory-modal" id="victoryModal">
+    <h2 id="modalTitle">FLOOR PURGED!</h2>
+    <p id="modalDesc">The sentence has unlocked the ancient seal.</p>
+    
+    <div class="loot-card" id="modalLootCard">
+      <div class="loot-icon" id="modalLootIcon"><i class="fa-solid fa-award"></i></div>
+      <div class="loot-info">
+        <strong id="modalLootName">Dusty Syntax Cobweb</strong>
+        <span id="modalLootType">Common Relic</span>
+      </div>
+    </div>
+
+    <div class="diagnostic-lead-box">
+      <strong>Cambridge C1/C2 Grammar Coaching:</strong> Former Belfast Met lecturer Gareth Montgomery provides 1-to-1 syntax diagnostics. 
+      <a href="index.html#book-diagnostic" style="color:var(--gold); font-weight:700; text-decoration:underline;">Book a £20 Trial Lesson &rarr;</a>
+    </div>
+
+    <button type="button" class="btn-next-level" id="btnNextFloor">Descend to Next Floor &rarr;</button>
+  </div>
+
+  <!-- Relics Drawer Modal -->
+  <div class="relics-modal" id="relicsModal">
+    <h2>Vault of Relics</h2>
+    <div class="relics-grid" id="relicsGrid">
+      <!-- Populated dynamically -->
+    </div>
+    <button type="button" class="btn-hud" style="width:100%; justify-content:center; padding:0.75rem;" onclick="document.getElementById('relicsModal').style.display='none';">Close Vault</button>
+  </div>
+
+  <!-- Full 25-Level Curriculum & Game Logic -->
+  <script>
+    /* ==========================================================
+       1. COMPLETE 25-LEVEL GRAMMAR CRYPT CURRICULUM DATA
+       (Directly integrated from crypt.js)
+       ========================================================== */
+    const TYPES = { w: 'wh-word', a: 'aux', s: 'subject', v: 'verb', o: 'object', p: 'punctuation', d: 'decoy', adv: 'adverb' };
+
+    function createLevel(title, patternArr, blocksArr) {
+      const pattern = patternArr.map(p => ({ type: TYPES[p[0]], label: p[1] }));
+      const blocks  = blocksArr.map(b => ({ type: TYPES[b[0]], text: b[1] }));
+      const answer  = blocks.filter(b => b.type !== TYPES.d);
+      return { title, pattern, blocks, answer };
+    }
+
+    const LEVELS = [
+      createLevel("L1: A Simple Inquiry",        [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','What'], ['a','Did'], ['s','She'], ['v','Say'], ['p','?'], ['d','Said']]),
+      createLevel("L2: The Direct Approach",     [['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','They'], ['v','Win'], ['o','The Game'], ['p','?']]),
+      createLevel("L3: Location Assessment",     [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','Where'], ['a','Did'], ['s','He'], ['v','Hide'], ['p','?'], ['d','Hid']]),
+      createLevel("L4: Temporal Inquiry",        [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','When'], ['a','Did'], ['s','We'], ['v','Agree'], ['p','?']]),
+      // Floor 5 - Boss 1 & Prize 1
+      createLevel("L5: Ongoing Past Action",     [['a','Aux'], ['s','Sub'], ['v','V-ing'], ['p','?']], [['a','Were'], ['s','They'], ['v','Arguing'], ['p','?'], ['d','Argued']]),
+      createLevel("L6: Continuous State",        [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','V-ing'], ['p','?']], [['w','Why'], ['a','Was'], ['s','He'], ['v','Running'], ['p','?']]),
+      createLevel("L7: Professional Scrutiny",   [['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Manager'], ['v','Approve'], ['o','The Budget'], ['p','?']]),
+      createLevel("L8: Past Perfect Check",      [['a','Aux'], ['s','Sub'], ['v','V-PastPart'], ['adv','Adv'], ['p','?']], [['a','Had'], ['s','The Patient'], ['v','Recovered'], ['adv','Fully'], ['p','?']]),
+      createLevel("L9: Corporate Strategy",      [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','Why'], ['a','Did'], ['s','The Executive'], ['v','Resign'], ['p','?']]),
+      // Floor 10 - Boss 2 & Prize 2
+      createLevel("L10: Duration of Action",     [['w','Wh'], ['a','Aux'], ['s','Sub'], ['a','Been'], ['v','V-ing'], ['p','?']], [['w','How Long'], ['a','Had'], ['s','You'], ['a','Been'], ['v','Waiting'], ['p','?']]),
+      createLevel("L11: Medical Assessment",     [['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Specialist'], ['adv','Quickly'], ['v','Review'], ['o','The Chart'], ['p','?']]),
+      createLevel("L12: The Modal Past",         [['w','Wh'], ['a','Aux'], ['s','Sub'], ['a','Have'], ['v','V-PastPart'], ['p','?']], [['w','What'], ['a','Could'], ['s','They'], ['a','Have'], ['v','Done'], ['p','?']]),
+      createLevel("L13: Conditional Speculation",[['a','Aux'], ['s','Sub'], ['a','Have'], ['v','V-PastPart'], ['adv','Adv'], ['p','?']], [['a','Would'], ['s','She'], ['a','Have'], ['v','Survived'], ['adv','Otherwise'], ['p','?']]),
+      createLevel("L14: Past Perfect Passive",   [['a','Aux'], ['s','Sub'], ['a','Been'], ['v','V-PastPart'], ['p','?']], [['a','Had'], ['s','The Ledger'], ['a','Been'], ['v','Updated'], ['p','?'], ['d','Update']]),
+      // Floor 15 - Boss 3 & Prize 3
+      createLevel("L15: Avoiding Consequences",  [['a','Aux'], ['s','Sub'], ['v','Verb'], ['adv','Lest'], ['s','Sub2'], ['v','Verb2'], ['p','?']], [['a','Did'], ['s','He'], ['v','Flee'], ['adv','Lest'], ['s','He'], ['v','Be Caught'], ['p','?']]),
+      createLevel("L16: Analyzing Assets",       [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','?']], [['w','How'], ['a','Did'], ['s','Sony'], ['v','Value'], ['o','The Catalog'], ['p','?']]),
+      createLevel("L17: Inversion Preview",      [['a','Had'], ['s','Sub'], ['v','V-PastPart'], ['o','Obj'], ['p','?']], [['a','Had'], ['s','The Board'], ['v','Realized'], ['o','The Error'], ['p','?']]),
+      createLevel("L18: C1 Level Nuance",        [['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Counsel'], ['adv','Deliberately'], ['v','Mislead'], ['o','The Jury'], ['p','?']]),
+      createLevel("L19: C2 Proficiency Trial",   [['w','Wh'], ['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['w','Whom'], ['a','Did'], ['s','The Director'], ['adv','Ultimately'], ['v','Appoint'], ['o','As Successor'], ['p','?']]),
+      // Floor 20 - Boss 4 & Prize 4
+      createLevel("L20: The Master's Final Test",[['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','They'], ['adv','Scrupulously'], ['v','Examine'], ['o','The Transcript'], ['p','?']]),
+      createLevel("L21: Negative Inversion (C1)",[['adv','Neg Adv'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','.']], [['adv','Never'], ['a','Had'], ['s','I'], ['v','Seen'], ['o','Such Chaos'], ['p','.'], ['d','Saw']]),
+      createLevel("L22: Conditionals Without If",[['a','Aux'], ['s','Sub'], ['v','V-PastPart'], ['o','Obj'], ['adv','Result'], ['p','.']], [['a','Had'], ['s','He'], ['v','Known'], ['o','The Truth'], ['adv','He Would Have Fled'], ['p','.'], ['d','If']]),
+      createLevel("L23: Only After Inversion",   [['adv','Only After'], ['s','Sub'], ['v','Verb'], ['a','Aux'], ['s','Sub2'], ['v','Verb2'], ['p','.']], [['adv','Only After'], ['s','She'], ['v','Left'], ['a','Did'], ['s','We'], ['v','Speak'], ['p','.']]),
+      createLevel("L24: Cleft Sentence (C2)",    [['s','It'], ['v','Be'], ['adv','Phrase'], ['w','That'], ['s','Sub'], ['v','Verb'], ['p','.']], [['s','It'], ['v','Was'], ['adv','With Reluctance'], ['w','That'], ['s','They'], ['v','Agreed'], ['p','.']]),
+      // Floor 25 - Boss 5 & Crown of Fluency
+      createLevel("L25: The Ultimate Syntax",    [['adv','Not Only'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['adv','But'], ['s','Sub2'], ['adv','Also'], ['v','Verb2'], ['p','.']], [['adv','Not Only'], ['a','Did'], ['s','He'], ['v','Fail'], ['adv','But'], ['s','He'], ['adv','Also'], ['v','Lied'], ['p','.']])
+    ];
+
+    const BOSSES = {
+      4:  { name: "The Goblin of Gerunds", emoji: "👺", taunt: "You'll never untangle these participles, mortal!" },
+      9:  { name: "Phantom of the Past Perfect", emoji: "👻", taunt: "I had already won before you even drew breath!" },
+      14: { name: "Vampire of the Passive Voice", emoji: "🧛", taunt: "Your active sentences will be drained of life!" },
+      19: { name: "Inquisitor of Inversion", emoji: "🧙‍♂️", taunt: "Seldom have I seen such fragile syntax!" },
+      24: { name: "The Syntax Dragon (C2)", emoji: "🐉", taunt: "Only absolute perfection will pierce my scales." }
+    };
+
+    const MILESTONES = {
+      4:  { name: "Goblet of Huel Stamina", emoji: "🍷", desc: "Dark sustenance for endless midnight tutoring sessions." },
+      9:  { name: "Trezor Vault of Souls", emoji: "🗄️", desc: "A cryptographically secure phylactery for your assets." },
+      14: { name: "Obsidian Phantom Carriage", emoji: "🦇", desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
+      19: { name: "Pencil the Shadow Familiar", emoji: "🐈‍⬛", desc: "A void-feline that purrs at the sight of C2-level syntax." },
+      24: { name: "The Crown of Fluency", emoji: "👑", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
+    };
+
+    const LOOT_DROPS = [
+      { name: "Dusty Syntax Cobweb", rarity: "Common" },
+      { name: "Vial of Red Ink", rarity: "Uncommon" },
+      { name: "C1 Advanced Grimoire", rarity: "Rare" },
+      { name: "Tome of Mottola", rarity: "Epic" },
+      { name: "Golden Chalk of Inversion", rarity: "Legendary" }
+    ];
+
+    /* ==========================================================
+       2. SYNTHESIZED PROCEDURAL WEB AUDIO ENGINE
+       ========================================================== */
+    const AudioEngine = (() => {
+      let ctx = null;
+      let master = null;
+      let enabled = true;
+      let bgmGain = null;
+
+      function init() {
+        if (ctx) return;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        ctx = new AudioCtx();
+        master = ctx.createGain();
+        master.gain.value = 0.85;
+        master.connect(ctx.destination);
+        startDungeonDrone();
+      }
+
+      function tone(freq, type, dur, vol, delay = 0) {
+        if (!enabled || !ctx) return;
+        const t = ctx.currentTime + delay;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.linearRampToValueAtTime(vol, t + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start(t);
+        osc.stop(t + dur + 0.05);
+      }
+
+      function startDungeonDrone() {
+        if (bgmGain) return;
+        bgmGain = ctx.createGain();
+        bgmGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        bgmGain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 2);
+        bgmGain.connect(master);
+
+        [55, 55.4, 110].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.value = idx === 2 ? 0.35 : 0.8;
+          osc.connect(gain);
+          gain.connect(bgmGain);
+          osc.start();
+        });
+      }
+
+      return {
+        init,
+        toggle: () => {
+          enabled = !enabled;
+          if (master) master.gain.value = enabled ? 0.85 : 0;
+          return enabled;
+        },
+        playGrab: () => tone(320, 'triangle', 0.1, 0.08),
+        playSlot: () => {
+          tone(140, 'square', 0.12, 0.09);
+          tone(220, 'sine', 0.18, 0.06, 0.02);
+        },
+        playError: () => {
+          tone(130, 'sawtooth', 0.25, 0.12);
+          tone(115, 'sawtooth', 0.25, 0.12, 0.1);
+        },
+        playVictory: () => {
+          [261.6, 311.1, 392.0, 523.2, 622.2].forEach((f, i) => {
+            tone(f, 'sine', 0.8, 0.12, i * 0.12);
+          });
+        },
+        playBossDefeat: () => {
+          [130.8, 164.8, 196.0, 261.6, 329.6, 392.0, 523.2].forEach((f, i) => {
+            tone(f, 'triangle', 1.2, 0.14, i * 0.15);
+          });
+        },
+        playGateRumble: () => {
+          tone(45, 'sawtooth', 2.5, 0.15);
+          tone(55, 'square', 2.0, 0.12, 0.1);
+        }
+      };
+    })();
+
+    /* ==========================================================
+       3. THREE.JS 3D SCENE & PERSISTENT DUNGEON WORLD
+       ========================================================== */
+    const canvas = document.getElementById('webgl-canvas');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x06030c);
+    scene.fog = new THREE.FogExp2(0x06030c, 0.038);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // Persistent Player State & Level Tracking
+    const playerState = {
+      level: parseInt(localStorage.getItem('gc3d_level') || '0', 10),
+      gold: parseInt(localStorage.getItem('gc3d_gold') || '0', 10),
+      xp: parseInt(localStorage.getItem('gc3d_xp') || '0', 10),
+      streak: parseInt(localStorage.getItem('gc3d_streak') || '0', 10),
+      relics: JSON.parse(localStorage.getItem('gc3d_relics') || '[]')
+    };
+
+    function saveState() {
+      localStorage.setItem('gc3d_level', playerState.level);
+      localStorage.setItem('gc3d_gold', playerState.gold);
+      localStorage.setItem('gc3d_xp', playerState.xp);
+      localStorage.setItem('gc3d_streak', playerState.streak);
+      localStorage.setItem('gc3d_relics', JSON.stringify(playerState.relics));
+    }
+
+    let currentLevelIndex = Math.min(Math.max(0, playerState.level || 0), (typeof LEVELS !== 'undefined' ? LEVELS.length - 1 : 0));
+    let isCurrentLevelSolved = false;
+
+    const cameraPresets = {
+      altar: { pos: new THREE.Vector3(0, 3.8, 4.8), lookAt: new THREE.Vector3(0, 1.1, 0) },
+      room:  { pos: new THREE.Vector3(0, 5.8, 9.0), lookAt: new THREE.Vector3(0, 1.8, -2) },
+      gate:  { pos: new THREE.Vector3(0, 3.2, -4.5), lookAt: new THREE.Vector3(0, 3.5, -12) }
+    };
+    let currentCamTarget = cameraPresets.altar;
+    let cameraOrbitOffset = { x: 0, y: 0 };
+
+    function updateCameraForViewport() {
+      const isPortrait = window.innerWidth < window.innerHeight;
+      const aspect = window.innerWidth / window.innerHeight;
+      camera.aspect = aspect;
+
+      const lvl = (typeof LEVELS !== 'undefined' && LEVELS[currentLevelIndex]) ? LEVELS[currentLevelIndex] : null;
+      const slotCount = (lvl && lvl.pattern) ? lvl.pattern.length : 5;
+      const altarWidth = Math.max(6.2, slotCount * 1.15 + 0.6);
+
+      if (isPortrait) {
+        camera.fov = Math.max(68, Math.min(84, 46 / Math.max(0.38, aspect)));
+        const requiredZ = Math.max(7.2, altarWidth * 1.05);
+        cameraPresets.altar.pos.set(0, 4.8, requiredZ);
+        cameraPresets.altar.lookAt.set(0, 1.1, 0);
+        cameraPresets.room.pos.set(0, 7.5, 12.5);
+        cameraPresets.gate.pos.set(0, 3.8, -3.2);
+      } else {
+        camera.fov = 60;
+        cameraPresets.altar.pos.set(0, 3.8, 4.8);
+        cameraPresets.altar.lookAt.set(0, 1.1, 0);
+        cameraPresets.room.pos.set(0, 5.8, 9.0);
+        cameraPresets.gate.pos.set(0, 3.2, -4.5);
+      }
+      camera.updateProjectionMatrix();
+    }
+    updateCameraForViewport();
+
+    camera.position.copy(currentCamTarget.pos);
+    let cameraLookAt = currentCamTarget.lookAt.clone();
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x281242, 0.5);
+    scene.add(ambientLight);
+
+    const torch1 = new THREE.PointLight(0xf59e0b, 2.2, 14, 2);
+    torch1.position.set(-3.5, 3.2, 0);
+    torch1.castShadow = true;
+    scene.add(torch1);
+
+    const torch2 = new THREE.PointLight(0xf59e0b, 2.2, 14, 2);
+    torch2.position.set(3.5, 3.2, 0);
+    torch2.castShadow = true;
+    scene.add(torch2);
+
+    const gateTorch = new THREE.PointLight(0xa855f7, 2.8, 16, 2);
+    gateTorch.position.set(0, 4.2, -10);
+    scene.add(gateTorch);
+
+    // Procedural Stone Texture Canvas Generator
+    function createStoneTexture() {
+      const cvs = document.createElement('canvas');
+      cvs.width = 512;
+      cvs.height = 512;
+      const ctx = cvs.getContext('2d');
+      ctx.fillStyle = '#171124';
+      ctx.fillRect(0, 0, 512, 512);
+
+      ctx.strokeStyle = '#0b0713';
+      ctx.lineWidth = 6;
+      for (let y = 0; y < 512; y += 64) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(512, y);
+        ctx.stroke();
+
+        const offset = (y / 64) % 2 === 0 ? 0 : 40;
+        for (let x = offset; x < 512; x += 80) {
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y + 64);
+          ctx.stroke();
+        }
+      }
+
+      for (let i = 0; i < 8000; i++) {
+        const x = Math.random() * 512;
+        const y = Math.random() * 512;
+        const shade = Math.floor(Math.random() * 40);
+        ctx.fillStyle = `rgba(${shade}, ${shade}, ${shade + 10}, 0.25)`;
+        ctx.fillRect(x, y, 2, 2);
+      }
+
+      const tex = new THREE.CanvasTexture(cvs);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      return tex;
+    }
+
+    const stoneTex = createStoneTexture();
+    stoneTex.repeat.set(4, 8);
+
+    const floorMat = new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 0.85, metalness: 0.15 });
+    const floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(16, 28), floorMat);
+    floorMesh.rotation.x = -Math.PI / 2;
+    floorMesh.receiveShadow = true;
+    scene.add(floorMesh);
+
+    const wallMat = new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 0.9, color: 0x221833 });
+    const ceilingMesh = new THREE.Mesh(new THREE.PlaneGeometry(16, 28), wallMat);
+    ceilingMesh.position.y = 7.5;
+    ceilingMesh.rotation.x = Math.PI / 2;
+    scene.add(ceilingMesh);
+
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(28, 8), wallMat);
+    leftWall.position.set(-8, 3.75, 0);
+    leftWall.rotation.y = Math.PI / 2;
+    scene.add(leftWall);
+
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(28, 8), wallMat);
+    rightWall.position.set(8, 3.75, 0);
+    rightWall.rotation.y = -Math.PI / 2;
+    scene.add(rightWall);
+
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(16, 8), wallMat);
+    backWall.position.set(0, 3.75, 14);
+    backWall.rotation.y = Math.PI;
+    scene.add(backWall);
+
+    const farWall = new THREE.Mesh(new THREE.PlaneGeometry(16, 8), wallMat);
+    farWall.position.set(0, 3.75, -14);
+    scene.add(farWall);
+
+    // Nave Pillars
+    const pillarMat = new THREE.MeshStandardMaterial({ color: 0x181024, roughness: 0.7 });
+    for (let z = -10; z <= 10; z += 5) {
+      [-5.5, 5.5].forEach(x => {
+        const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.8, 7.5, 0.8), pillarMat);
+        pillar.position.set(x, 3.75, z);
+        pillar.castShadow = true;
+        pillar.receiveShadow = true;
+        scene.add(pillar);
+      });
+    }
+
+    // Portcullis Iron Gate
+    const gateGroup = new THREE.Group();
+    const ironMat = new THREE.MeshStandardMaterial({ color: 0x0f0b17, roughness: 0.5, metalness: 0.85 });
+    for (let x = -3.2; x <= 3.2; x += 0.5) {
+      const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 6, 8), ironMat);
+      bar.position.set(x, 3, 0);
+      gateGroup.add(bar);
+    }
+    for (let y = 1.2; y <= 5.2; y += 1.3) {
+      const cross = new THREE.Mesh(new THREE.BoxGeometry(6.6, 0.12, 0.12), ironMat);
+      cross.position.set(0, y, 0);
+      gateGroup.add(cross);
+    }
+    gateGroup.position.set(0, 0, -11.5);
+    scene.add(gateGroup);
+
+    // Glowing Boss Eyes in the Shadow
+    const eyeGeo = new THREE.SphereGeometry(0.1, 8, 8);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+    const eye1 = new THREE.Mesh(eyeGeo, eyeMat);
+    eye1.position.set(-0.35, 2.4, -12.8);
+    scene.add(eye1);
+    const eye2 = new THREE.Mesh(eyeGeo, eyeMat);
+    eye2.position.set(0.35, 2.4, -12.8);
+    scene.add(eye2);
+
+    /* ==========================================================
+       4. DYNAMIC 3D ALTAR & RUNES SYSTEM (SUPPORTING 25 LEVELS)
+       ========================================================== */
+    const altarGroup = new THREE.Group();
+    scene.add(altarGroup);
+
+    let activeSlotMeshes = [];
+    let activeRuneMeshes = [];
+    let activeInteractiveObjects = [];
+
+    function createRuneTexture(text, isDecoy = false) {
+      const cvs = document.createElement('canvas');
+      cvs.width = 256;
+      cvs.height = 256;
+      const ctx = cvs.getContext('2d');
+
+      ctx.fillStyle = isDecoy ? '#261313' : '#1e1136';
+      ctx.fillRect(0, 0, 256, 256);
+
+      ctx.strokeStyle = isDecoy ? '#ef4444' : '#fbbf24';
+      ctx.lineWidth = 10;
+      ctx.strokeRect(12, 12, 232, 232);
+
+      // Inscribed text with dynamic font scaling for long words
+      ctx.fillStyle = '#ffffff';
+      const fontSize = text.length > 8 ? 36 : (text.length > 5 ? 44 : 54);
+      ctx.font = `bold ${fontSize}px Nunito, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 128, 128);
+
+      ctx.font = '22px sans-serif';
+      ctx.fillStyle = isDecoy ? '#f87171' : '#c084fc';
+      ctx.fillText('ᚠ ᚢ ᚦ', 128, 44);
+      ctx.fillText('ᚨ ᚱ ᚲ', 128, 212);
+
+      return new THREE.CanvasTexture(cvs);
+    }
+
+    function loadFloor(lvlIdx) {
+      if (lvlIdx >= LEVELS.length) lvlIdx = 0;
+      currentLevelIndex = lvlIdx;
+      isCurrentLevelSolved = false;
+
+      // Reset torch colours
+      torch1.color.setHex(0xf59e0b);
+      torch2.color.setHex(0xf59e0b);
+      ambientLight.color.setHex(0x281242);
+      gateGroup.position.y = 0; // Close gate
+
+      const level = LEVELS[lvlIdx];
+
+      // Update HUD
+      document.getElementById('hudFloor').textContent = `Floor ${lvlIdx + 1} / 25`;
+      document.getElementById('hudGold').textContent = playerState.gold;
+      document.getElementById('hudXP').textContent = `${playerState.xp} / 100 XP`;
+      document.getElementById('hudStreak').textContent = `${playerState.streak} 🔥`;
+      document.getElementById('questTitle').innerHTML = `<i class="fa-solid fa-scroll"></i> ${level.title}`;
+
+      // Boss Display
+      const bossHud = document.getElementById('bossArenaHud');
+      if (BOSSES[lvlIdx]) {
+        bossHud.style.display = 'block';
+        document.getElementById('bossName').textContent = `${BOSSES[lvlIdx].emoji} ${BOSSES[lvlIdx].name}`;
+        document.getElementById('bossTaunt').textContent = `"${BOSSES[lvlIdx].taunt}"`;
+        eyeMat.color.setHex(0xf87171);
+      } else {
+        bossHud.style.display = 'none';
+        eyeMat.color.setHex(0x551111);
+      }
+
+      // Syntax formula chips
+      const formulaContainer = document.getElementById('syntaxFormula');
+      formulaContainer.innerHTML = level.pattern.map(p => `<span>[${p.label}]</span>`).join(' &rarr; ');
+
+      // Clear existing 3D altar objects & runes
+      while (altarGroup.children.length > 0) {
+        altarGroup.remove(altarGroup.children[0]);
+      }
+      activeRuneMeshes.forEach(m => scene.remove(m));
+      activeRuneMeshes = [];
+      activeSlotMeshes = [];
+      activeInteractiveObjects = [];
+
+      // Rebuild Dynamic Altar Platform based on slot count
+      const slotCount = level.pattern.length;
+      updateCameraForViewport();
+      const altarWidth = Math.max(6.2, slotCount * 1.15 + 0.6);
+      
+      const altarMat = new THREE.MeshStandardMaterial({ color: 0x160f24, roughness: 0.6, metalness: 0.2 });
+      const altarBase = new THREE.Mesh(new THREE.BoxGeometry(altarWidth, 0.7, 1.8), altarMat);
+      altarBase.position.y = 0.35;
+      altarBase.castShadow = true;
+      altarBase.receiveShadow = true;
+      altarGroup.add(altarBase);
+
+      const stepMesh = new THREE.Mesh(new THREE.BoxGeometry(altarWidth + 1.0, 0.2, 2.8), altarMat);
+      stepMesh.position.y = 0.1;
+      stepMesh.receiveShadow = true;
+      altarGroup.add(stepMesh);
+
+      // Generate Altar Pedestal Slots
+      const slotSpacing = altarWidth / (slotCount + 1);
+      const startX = -(altarWidth / 2) + slotSpacing;
+
+      level.pattern.forEach((slotData, i) => {
+        const slotX = startX + i * slotSpacing;
+        const slotGeo = new THREE.CylinderGeometry(0.38, 0.40, 0.12, 16);
+        const slotMat = new THREE.MeshStandardMaterial({
+          color: 0x2e1065,
+          emissive: 0x3b0764,
+          emissiveIntensity: 0.4,
+          roughness: 0.4
+        });
+        const mesh = new THREE.Mesh(slotGeo, slotMat);
+        mesh.position.set(slotX, 0.75, 0);
+        mesh.receiveShadow = true;
+        mesh.userData = { isSlot: true, slotIndex: i, expected: level.answer[i] ? level.answer[i].text : '', filled: null };
+        altarGroup.add(mesh);
+        activeSlotMeshes.push(mesh);
+      });
+
+      // Clear & Populate Bottom Rune Tray
+      const tokensContainer = document.getElementById('runeTokensRow');
+      tokensContainer.innerHTML = '';
+
+      // Shuffle blocks for physical spawn on plinths
+      const shuffledBlocks = [...level.blocks].sort(() => Math.random() - 0.5);
+      const runeCount = shuffledBlocks.length;
+      const runeSpacing = Math.min(1.2, 6.5 / (runeCount || 1));
+      const runeStartX = -((runeCount - 1) * runeSpacing) / 2;
+
+      shuffledBlocks.forEach((block, idx) => {
+        const isDecoy = block.type === TYPES.d;
+        const initialPos = new THREE.Vector3(runeStartX + idx * runeSpacing, 1.1, 2.4 + (idx % 2 === 0 ? 0 : 0.6));
+
+        // Create 3D Mesh
+        const runeGeo = new THREE.BoxGeometry(0.72, 0.42, 0.72);
+        const runeFaceTex = createRuneTexture(block.text, isDecoy);
+        const materials = [
+          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 }),
+          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 }),
+          new THREE.MeshStandardMaterial({ map: runeFaceTex, roughness: 0.3, metalness: 0.1 }),
+          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 }),
+          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 }),
+          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 })
+        ];
+
+        const runeMesh = new THREE.Mesh(runeGeo, materials);
+        runeMesh.position.copy(initialPos);
+        runeMesh.castShadow = true;
+        runeMesh.receiveShadow = true;
+        runeMesh.userData = {
+          isRune: true,
+          id: `${block.text}-${idx}`,
+          text: block.text,
+          isDecoy: isDecoy,
+          initialPos: initialPos.clone(),
+          targetPos: initialPos.clone(),
+          currentSlot: null
+        };
+
+        scene.add(runeMesh);
+        activeRuneMeshes.push(runeMesh);
+        activeInteractiveObjects.push(runeMesh);
+
+        // Add to UI tray
+        const chip = document.createElement('button');
+        chip.className = `rune-chip ${isDecoy ? 'decoy' : ''}`;
+        chip.id = `chip-${runeMesh.userData.id}`;
+        chip.textContent = block.text;
+        chip.onclick = () => slotRuneByName(runeMesh.userData.id);
+        tokensContainer.appendChild(chip);
+      });
+    }
+
+    /* ==========================================================
+       5. INTERACTIVE RUNE SLOTTING & RAYCASTING
+       ========================================================== */
+    function getFirstEmptySlot() {
+      for (let i = 0; i < activeSlotMeshes.length; i++) {
+        if (!activeSlotMeshes[i].userData.filled) return i;
+      }
+      return -1;
+    }
+
+    function slotRune(runeMesh, slotIdx) {
+      AudioEngine.init();
+      AudioEngine.playSlot();
+
+      if (runeMesh.userData.currentSlot !== null) {
+        activeSlotMeshes[runeMesh.userData.currentSlot].userData.filled = null;
+      }
+
+      const slot = activeSlotMeshes[slotIdx];
+      if (slot.userData.filled) {
+        recallRune(slot.userData.filled);
+      }
+
+      slot.userData.filled = runeMesh;
+      runeMesh.userData.currentSlot = slotIdx;
+      runeMesh.userData.targetPos.set(slot.position.x, 0.95, slot.position.z);
+
+      const chip = document.getElementById(`chip-${runeMesh.userData.id}`);
+      if (chip) chip.classList.add('placed');
+
+      checkAltarPuzzle();
+    }
+
+    function recallRune(runeMesh) {
+      if (runeMesh.userData.currentSlot !== null) {
+        activeSlotMeshes[runeMesh.userData.currentSlot].userData.filled = null;
+        runeMesh.userData.currentSlot = null;
+      }
+      runeMesh.userData.targetPos.copy(runeMesh.userData.initialPos);
+
+      const chip = document.getElementById(`chip-${runeMesh.userData.id}`);
+      if (chip) chip.classList.remove('placed');
+    }
+
+    function slotRuneByName(runeId) {
+      const rune = activeRuneMeshes.find(r => r.userData.id === runeId);
+      if (!rune) return;
+
+      if (rune.userData.currentSlot !== null) {
+        recallRune(rune);
+        AudioEngine.playGrab();
+      } else {
+        const slotIdx = getFirstEmptySlot();
+        if (slotIdx !== -1) {
+          slotRune(rune, slotIdx);
+        } else {
+          AudioEngine.playError();
+        }
+      }
+    }
+
+    // Raycast & Unified Pointer Handler (Touch, Mouse, Pen)
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const reticle = document.getElementById('reticle');
+
+    let pointerDownStartPos = { x: 0, y: 0, time: 0 };
+    let pointerDownPos = { x: 0, y: 0 };
+    let isPointerDragging = false;
+
+    window.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.interactive-element')) return;
+      isPointerDragging = true;
+      pointerDownStartPos = { x: e.clientX, y: e.clientY, time: performance.now() };
+      pointerDownPos = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      if (isPointerDragging) {
+        const dx = e.clientX - pointerDownPos.x;
+        const dy = e.clientY - pointerDownPos.y;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+          // Touch drag to orbit / pan camera across altar
+          cameraOrbitOffset.x = Math.max(-3.5, Math.min(3.5, cameraOrbitOffset.x - dx * 0.006));
+          cameraOrbitOffset.y = Math.max(-0.8, Math.min(1.5, cameraOrbitOffset.y + dy * 0.004));
+          pointerDownPos.x = e.clientX;
+          pointerDownPos.y = e.clientY;
+        }
+      }
+
+      // Reticle active indicator
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(activeInteractiveObjects);
+      if (intersects.length > 0) {
+        reticle.classList.add('active');
+      } else {
+        reticle.classList.remove('active');
+      }
+    });
+
+    window.addEventListener('pointerup', (e) => {
+      if (!isPointerDragging) return;
+      isPointerDragging = false;
+      if (e.target.closest('.interactive-element')) return;
+
+      const dist = Math.hypot(e.clientX - pointerDownStartPos.x, e.clientY - pointerDownStartPos.y);
+      const duration = performance.now() - pointerDownStartPos.time;
+
+      // Clean tap detection (< 14px movement, < 450ms duration)
+      if (dist < 14 && duration < 450) {
+        AudioEngine.init();
+        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+
+        const intersects = raycaster.intersectObjects(activeInteractiveObjects);
+        if (intersects.length > 0) {
+          const hit = intersects[0].object;
+          if (hit.userData.isRune) {
+            slotRuneByName(hit.userData.id);
+          }
+        }
+      }
+    });
+
+    /* ==========================================================
+       6. VICTORY CHECK & LEVEL CLEAR ANIMATION
+       ========================================================== */
+    function checkAltarPuzzle() {
+      if (isCurrentLevelSolved) return;
+
+      const isAllFilled = activeSlotMeshes.every(s => s.userData.filled !== null);
+      if (!isAllFilled) return;
+
+      const level = LEVELS[currentLevelIndex];
+      const isCorrect = activeSlotMeshes.every((slot, idx) => {
+        return slot.userData.filled.userData.text === level.answer[idx].text;
+      });
+
+      if (isCorrect) {
+        triggerVictory();
+      } else {
+        AudioEngine.playError();
+        torch1.color.setHex(0xef4444);
+        torch2.color.setHex(0xef4444);
+        setTimeout(() => {
+          torch1.color.setHex(0xf59e0b);
+          torch2.color.setHex(0xf59e0b);
+        }, 600);
+      }
+    }
+
+    function triggerVictory() {
+      isCurrentLevelSolved = true;
+      AudioEngine.playVictory();
+      AudioEngine.playGateRumble();
+
+      // Confetti burst
+      try {
+        if (window.confetti) {
+          window.confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
+        }
+      } catch (_) {}
+
+      // Celestial Soul-Fire
+      torch1.color.setHex(0x38bdf8);
+      torch2.color.setHex(0x38bdf8);
+      ambientLight.color.setHex(0x0284c7);
+
+      // Player stats update
+      playerState.gold += 15;
+      playerState.xp += 20;
+      playerState.streak += 1;
+      if (playerState.xp >= 100) {
+        playerState.xp = playerState.xp % 100;
+      }
+      saveState();
+
+      // Check Boss / Milestone Reward
+      const isBoss = !!BOSSES[currentLevelIndex];
+      const milestone = MILESTONES[currentLevelIndex];
+      let lootItem = LOOT_DROPS[Math.floor(Math.random() * LOOT_DROPS.length)];
+
+      if (milestone) {
+        lootItem = { name: milestone.name, rarity: "Legendary Relic", emoji: milestone.emoji, desc: milestone.desc };
+        if (!playerState.relics.find(r => r.name === milestone.name)) {
+          playerState.relics.push(lootItem);
+          saveState();
+        }
+        AudioEngine.playBossDefeat();
+      }
+
+      // Populate victory modal
+      document.getElementById('modalTitle').textContent = isBoss ? `BOSS VANQUISHED: ${BOSSES[currentLevelIndex].name}!` : `FLOOR ${currentLevelIndex + 1} PURGED!`;
+      document.getElementById('modalDesc').innerHTML = `Syntax correctly assembled: <em>"${LEVELS[currentLevelIndex].answer.map(a => a.text).join(' ')}"</em>`;
+      document.getElementById('modalLootName').textContent = lootItem.name;
+      document.getElementById('modalLootType').textContent = lootItem.rarity;
+      if (lootItem.emoji) {
+        document.getElementById('modalLootIcon').textContent = lootItem.emoji;
+      } else {
+        document.getElementById('modalLootIcon').innerHTML = `<i class="fa-solid fa-trophy"></i>`;
+      }
+
+      // Raise portcullis gate smoothly
+      const startY = gateGroup.position.y;
+      const targetY = 5.2;
+      const duration = 2200;
+      const startTime = performance.now();
+
+      function animateGate(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(1, elapsed / duration);
+        gateGroup.position.y = startY + progress * (targetY - startY);
+        if (progress < 1) {
+          requestAnimationFrame(animateGate);
+        } else {
+          document.getElementById('victoryModal').style.display = 'block';
+        }
+      }
+      requestAnimationFrame(animateGate);
+    }
+
+    document.getElementById('btnNextFloor').addEventListener('click', () => {
+      document.getElementById('victoryModal').style.display = 'none';
+      playerState.level = currentLevelIndex + 1;
+      saveState();
+      loadFloor(playerState.level);
+    });
+
+    /* ==========================================================
+       7. UI INTERACTION & CONTROLS
+       ========================================================== */
+    document.querySelectorAll('.cam-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const camKey = btn.getAttribute('data-cam');
+        currentCamTarget = cameraPresets[camKey];
+      });
+    });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+      AudioEngine.playGrab();
+      activeRuneMeshes.forEach(r => recallRune(r));
+    });
+
+    document.getElementById('btnHint').addEventListener('click', () => {
+      AudioEngine.playGrab();
+      const nextIdx = getFirstEmptySlot();
+      if (nextIdx !== -1) {
+        const expected = LEVELS[currentLevelIndex].answer[nextIdx].text;
+        const match = activeRuneMeshes.find(r => r.userData.text === expected && r.userData.currentSlot === null);
+        if (match) {
+          slotRuneByName(match.userData.id);
+        }
+      }
+    });
+
+    document.getElementById('audioToggle').addEventListener('click', () => {
+      AudioEngine.init();
+      const isOn = AudioEngine.toggle();
+      document.querySelector('#audioToggle span').textContent = isOn ? 'Audio: ON' : 'Audio: OFF';
+      document.querySelector('#audioToggle i').className = isOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+    });
+
+    const toggleBtn = document.getElementById('toggleInstructionsBtn');
+    const questBanner = document.getElementById('questBanner');
+    const toggleIcon = document.getElementById('instructionToggleIcon');
+    if (toggleBtn && questBanner) {
+      toggleBtn.addEventListener('click', () => {
+        questBanner.classList.toggle('minimized');
+        const isMin = questBanner.classList.contains('minimized');
+        toggleIcon.className = isMin ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+        toggleBtn.querySelector('span').textContent = isMin ? 'Show' : 'Hide';
+      });
+    }
+
+    // Relics Vault Drawer
+    document.getElementById('btnRelics').addEventListener('click', () => {
+      const modal = document.getElementById('relicsModal');
+      const grid = document.getElementById('relicsGrid');
+      grid.innerHTML = '';
+
+      Object.keys(MILESTONES).forEach(k => {
+        const m = MILESTONES[k];
+        const isUnlocked = playerState.relics.some(r => r.name === m.name);
+        const card = document.createElement('div');
+        card.className = `relic-item-card ${isUnlocked ? '' : 'locked'}`;
+        card.innerHTML = `
+          <div class="relic-emoji">${m.emoji}</div>
+          <div class="relic-details">
+            <strong>${m.name}</strong>
+            <span>${isUnlocked ? m.desc : 'Floor ' + (parseInt(k, 10) + 1) + ' Boss Relic'}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+      modal.style.display = 'block';
+    });
+
+    /* ==========================================================
+       8. ANIMATION LOOP & STARTUP
+       ========================================================== */
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const time = clock.getElapsedTime();
+
+      // Torch flame flicker
+      torch1.intensity = 2.2 + Math.sin(time * 12) * 0.35 + Math.cos(time * 7) * 0.2;
+      torch2.intensity = 2.2 + Math.cos(time * 11) * 0.35 + Math.sin(time * 8) * 0.2;
+
+      // Smooth Camera Lerp including touch/mouse orbit offset
+      const targetPos = currentCamTarget.pos.clone();
+      targetPos.x += cameraOrbitOffset.x;
+      targetPos.y += cameraOrbitOffset.y;
+
+      camera.position.lerp(targetPos, 0.05);
+      cameraLookAt.lerp(currentCamTarget.lookAt, 0.05);
+      camera.lookAt(cameraLookAt);
+
+      // Smooth Rune Stone Lerp & Floating Idle
+      activeRuneMeshes.forEach((mesh, idx) => {
+        let target = mesh.userData.targetPos.clone();
+        if (mesh.userData.currentSlot === null) {
+          target.y += Math.sin(time * 2.5 + idx) * 0.06;
+        }
+        mesh.position.lerp(target, 0.12);
+        
+        if (mesh.userData.currentSlot === null) {
+          mesh.rotation.y = Math.sin(time * 1.5 + idx) * 0.08;
+        } else {
+          mesh.rotation.y = 0;
+        }
+      });
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      updateCameraForViewport();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Initial Floor Load from saved progress
+    loadFloor(playerState.level);
+  </script>
+</body>
+</html>
