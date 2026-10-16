@@ -32,7 +32,7 @@
         "@id": "https://garethenglish.com/#tutor",
         "name": "Gareth Montgomery",
         "jobTitle": "Clinical Exam & Executive English Specialist (Fmr. Belfast Met Lecturer)",
-        "description": "Former Belfast Met lecturer and University of Stirling graduate with 15+ years of experience specializing in Cambridge C1/C2, IELTS 7.0–8.5, and Executive Language Coaching.",
+        "description": "Former Belfast Met lecturer and University of Stirling graduate with 15+ years of experience specialising in Cambridge C1/C2, IELTS 7.0–8.5, and Executive Language Coaching.",
         "url": "https://garethenglish.com/",
         "image": "https://garethenglish.com/gareth-portrait.webp",
         "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of Stirling" },
@@ -99,6 +99,60 @@
             }
           ]
         }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://garethenglish.com/#faq-schema",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What platform do we use, and which time zones do you teach?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "All private 1-to-1 sessions take place online via Zoom or Google Meet with HD audio and live screen sharing. Based in Northern Ireland (UK time), I teach weekday and weekend slots that suit students across Europe, East Asia, the Middle East, and the Americas."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does a typical lesson run?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Each 50-minute session is relaxed, interactive, and focused on getting you speaking. Depending on your goals, we might work on natural conversation and vocabulary, unpack specific Cambridge or IELTS tasks, or rehearse upcoming presentations. We finish with clear feedback, pronunciation tips, and a shared Google Doc of notes."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which English levels do you accept?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "I specialise in intermediate-to-advanced learners (CEFR B1+ up to C2 Proficiency): exam candidates targeting Cambridge or IELTS, professionals using English at work, and lifelong or heritage learners who want to speak more naturally. I do not accept complete beginners (A1/A2)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Do you provide lesson materials and writing feedback?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, all lesson materials—custom slides, official Cambridge/IELTS practice papers, interactive presentations, and writing prompts—are provided free of charge. Every student gets a shared Google Doc for class notes, and students on 5-, 10-, or 12-lesson packages (or our standalone £29 Async Audit) also receive between-class markups on essays or emails."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is your cancellation and package refund policy?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Any lesson can be rescheduled or cancelled with at least 12 hours' advance notice at no cost. Multi-lesson packages are valid for 6 months from purchase, and any unused sessions in a pack can be refunded pro-rata."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does payment work?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "When booking your £20 diagnostic lesson on the calendar below, payment is handled securely at checkout via Stripe. For 5-, 10-, or 12-lesson packages, single sessions, or 24-hour Async Audits, you can pay securely via Stripe, PayPal, or Wise."
+            }
+          }
+        ]
       }
     ]
   }
@@ -556,6 +610,255 @@
       font-weight: 700;
       text-decoration: underline;
     }
+
+    /* ==========================================================
+       2. INTERACTIVE WRITING MARKUP COMPONENT STYLES
+       ========================================================== */
+    .essay-text {
+      font-family: 'Newsreader', Georgia, serif;
+      line-height: 1.95;
+      font-size: 1.14rem;
+    }
+    .markup-group {
+      position: relative;
+      display: inline;
+      border-radius: 0.375rem;
+      padding: 0.1rem 0.25rem;
+      margin: 0 -0.15rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      border-bottom: 2px dashed transparent;
+    }
+    .markup-group:hover,
+    .markup-group.active-annotation {
+      background-color: rgba(79, 70, 229, 0.09);
+      border-bottom-color: #4f46e5;
+    }
+    .markup-del {
+      color: #be123c;
+      background-color: #ffe4e6;
+      text-decoration: line-through;
+      text-decoration-thickness: 1.5px;
+      padding: 0.05rem 0.3rem;
+      border-radius: 0.25rem;
+      font-size: 0.96em;
+      opacity: 0.85;
+    }
+    .markup-ins {
+      color: #065f46;
+      background-color: #d1fae5;
+      font-weight: 500;
+      padding: 0.05rem 0.35rem;
+      border-radius: 0.25rem;
+      margin-left: 0.2rem;
+      box-shadow: inset 0 -1px 0 rgba(5, 150, 105, 0.25);
+    }
+    .markup-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.35rem;
+      height: 1.35rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      border-radius: 9999px;
+      background-color: #4f46e5;
+      color: #ffffff;
+      margin-left: 0.25rem;
+      vertical-align: middle;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    .markup-group:hover .markup-badge,
+    .markup-group.active-annotation .markup-badge {
+      transform: translateY(-2px) scale(1.15);
+      background-color: #3730a3;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    }
+    .polished-highlight {
+      background: linear-gradient(120deg, rgba(209, 250, 229, 0.7) 0%, rgba(224, 231, 255, 0.7) 100%);
+      color: #065f46;
+      font-weight: 500;
+      padding: 0.05rem 0.3rem;
+      border-radius: 0.25rem;
+      border-bottom: 1.5px solid #10b981;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .polished-highlight:hover,
+    .polished-highlight.active-annotation {
+      background: #d1fae5;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+    }
+    .draft-weakness {
+      border-bottom: 2px wavy #f43f5e;
+      background-color: rgba(255, 228, 230, 0.45);
+      padding: 0.05rem 0.2rem;
+      border-radius: 0.2rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .draft-weakness:hover,
+    .draft-weakness.active-annotation {
+      background-color: rgba(254, 205, 211, 0.85);
+    }
+    .note-card {
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .note-card.active-card {
+      border-color: #4f46e5;
+      background-color: #f5f7ff;
+      box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.14), 0 0 0 1px #4f46e5;
+      transform: translateX(-2px);
+    }
+    .paper-surface {
+      background-color: #ffffff;
+      background-image: radial-gradient(#e2e8f0 0.65px, transparent 0.65px);
+      background-size: 20px 20px;
+    }
+    .custom-scroll::-webkit-scrollbar { width: 6px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 9999px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* ==========================================================
+       3. CAMBRIDGE EXAM LAB STYLES
+       ========================================================== */
+    #exam-lab {
+      --lab-bg: #0f172a;
+      --lab-card-bg: #1e293b;
+      --lab-card-border: #334155;
+      --lab-accent-blue: #3b82f6;
+      --lab-accent-amber: #f59e0b;
+      --lab-accent-green: #22c55e;
+      --lab-text-main: #f8fafc;
+      --lab-text-muted: #94a3b8;
+      background: var(--lab-bg);
+      color: var(--lab-text-main);
+    }
+    #exam-lab .lab-container { max-width: 1050px; margin: 0 auto; }
+    #exam-lab .lab-header { text-align: center; max-width: 700px; margin: 0 auto 2.5rem auto; }
+    #exam-lab .lab-header span {
+      display: inline-block;
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.35rem 0.9rem;
+      border-radius: 99px;
+      margin-bottom: 0.75rem;
+    }
+    #exam-lab .lab-header h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #ffffff; }
+    #exam-lab .lab-header p { color: var(--lab-text-muted); font-size: 1.05rem; }
+    #exam-lab .filter-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    #exam-lab .filter-btn {
+      background: var(--lab-card-bg);
+      border: 1px solid var(--lab-card-border);
+      color: var(--lab-text-muted);
+      padding: 0.5rem 1.25rem;
+      border-radius: 99px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #exam-lab .filter-btn:hover { border-color: var(--lab-accent-blue); color: white; }
+    #exam-lab .filter-btn.active {
+      background: var(--lab-accent-blue);
+      border-color: var(--lab-accent-blue);
+      color: white;
+    }
+    #exam-lab .lab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    #exam-lab .lab-card {
+      background: var(--lab-card-bg);
+      border: 1px solid var(--lab-card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    #exam-lab .lab-card:hover {
+      transform: translateY(-4px);
+      border-color: #64748b;
+    }
+    #exam-lab .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    #exam-lab .level-badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+    }
+    #exam-lab .badge-b2 { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    #exam-lab .badge-c1 { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    #exam-lab .badge-c2 { background: rgba(220, 38, 38, 0.15); color: #f87171; border: 1px solid rgba(220, 38, 38, 0.3); }
+    #exam-lab .card-type { font-size: 0.8rem; color: var(--lab-text-muted); font-weight: 600; }
+    #exam-lab .lab-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: #ffffff; }
+    #exam-lab .lab-card p { font-size: 0.9rem; color: var(--lab-text-muted); margin-bottom: 1.5rem; }
+    #exam-lab .features-list { list-style: none; margin-bottom: 1.5rem; font-size: 0.85rem; color: #cbd5e1; }
+    #exam-lab .features-list li { margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
+    #exam-lab .features-list li::before { content: "✓"; color: var(--lab-accent-green); font-weight: 800; }
+    #exam-lab .launch-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: #334155;
+      color: white;
+      text-decoration: none;
+      padding: 0.7rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+    #exam-lab .lab-card:hover .launch-btn { background: var(--lab-accent-blue); }
+    #exam-lab .lab-cta {
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      border: 1px solid var(--lab-card-border);
+      border-radius: 16px;
+      padding: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+    #exam-lab .lab-cta h3 { font-size: 1.35rem; margin-bottom: 0.3rem; color: #ffffff; }
+    #exam-lab .lab-cta p { color: var(--lab-text-muted); font-size: 0.92rem; max-width: 520px; }
+    #exam-lab .cta-btn {
+      background: var(--lab-accent-green);
+      color: #052e16;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    #exam-lab .cta-btn:hover { opacity: 0.9; }
+    @media (max-width: 768px) {
+      #exam-lab .lab-cta { flex-direction: column; text-align: center; }
+      #exam-lab .lab-cta p { max-width: 100%; }
+    }
   </style>
 </head>
 
@@ -690,7 +993,7 @@
 
       <div class="hidden lg:flex items-center gap-4 shrink-0">
         <a href="#contact" class="px-5 py-2.5 rounded-full bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700 shadow-md shadow-brand-600/20 transition whitespace-nowrap">
-          Book a Trial Lesson
+          Book £20 Diagnostic
         </a>
       </div>
 
@@ -997,117 +1300,6 @@
     </section>
 
     <!-- ================= INTERACTIVE WRITING MARKUP COMPONENT ================= -->
-    <style>
-      .essay-text {
-        font-family: 'Newsreader', Georgia, serif;
-        line-height: 1.95;
-        font-size: 1.14rem;
-      }
-      .markup-group {
-        position: relative;
-        display: inline;
-        border-radius: 0.375rem;
-        padding: 0.1rem 0.25rem;
-        margin: 0 -0.15rem;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        cursor: pointer;
-        border-bottom: 2px dashed transparent;
-      }
-      .markup-group:hover,
-      .markup-group.active-annotation {
-        background-color: rgba(79, 70, 229, 0.09);
-        border-bottom-color: #4f46e5;
-      }
-      .markup-del {
-        color: #be123c;
-        background-color: #ffe4e6;
-        text-decoration: line-through;
-        text-decoration-thickness: 1.5px;
-        padding: 0.05rem 0.3rem;
-        border-radius: 0.25rem;
-        font-size: 0.96em;
-        opacity: 0.85;
-      }
-      .markup-ins {
-        color: #065f46;
-        background-color: #d1fae5;
-        font-weight: 500;
-        padding: 0.05rem 0.35rem;
-        border-radius: 0.25rem;
-        margin-left: 0.2rem;
-        box-shadow: inset 0 -1px 0 rgba(5, 150, 105, 0.25);
-      }
-      .markup-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1.35rem;
-        height: 1.35rem;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 0.72rem;
-        font-weight: 700;
-        border-radius: 9999px;
-        background-color: #4f46e5;
-        color: #ffffff;
-        margin-left: 0.25rem;
-        vertical-align: middle;
-        transform: translateY(-2px);
-        box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
-        transition: transform 0.15s ease, background-color 0.15s ease;
-      }
-      .markup-group:hover .markup-badge,
-      .markup-group.active-annotation .markup-badge {
-        transform: translateY(-2px) scale(1.15);
-        background-color: #3730a3;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
-      }
-      .polished-highlight {
-        background: linear-gradient(120deg, rgba(209, 250, 229, 0.7) 0%, rgba(224, 231, 255, 0.7) 100%);
-        color: #065f46;
-        font-weight: 500;
-        padding: 0.05rem 0.3rem;
-        border-radius: 0.25rem;
-        border-bottom: 1.5px solid #10b981;
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .polished-highlight:hover,
-      .polished-highlight.active-annotation {
-        background: #d1fae5;
-        box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
-      }
-      .draft-weakness {
-        border-bottom: 2px wavy #f43f5e;
-        background-color: rgba(255, 228, 230, 0.45);
-        padding: 0.05rem 0.2rem;
-        border-radius: 0.2rem;
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-      }
-      .draft-weakness:hover,
-      .draft-weakness.active-annotation {
-        background-color: rgba(254, 205, 211, 0.85);
-      }
-      .note-card {
-        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-      .note-card.active-card {
-        border-color: #4f46e5;
-        background-color: #f5f7ff;
-        box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.14), 0 0 0 1px #4f46e5;
-        transform: translateX(-2px);
-      }
-      .paper-surface {
-        background-color: #ffffff;
-        background-image: radial-gradient(#e2e8f0 0.65px, transparent 0.65px);
-        background-size: 20px 20px;
-      }
-      .custom-scroll::-webkit-scrollbar { width: 6px; }
-      .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 9999px; }
-      .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-      .custom-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
-
     <section id="gareth-writing-markup" class="py-16 sm:py-24 bg-gradient-to-b from-slate-50/70 via-indigo-50/15 to-slate-50/70 border-y border-slate-200/90 scroll-mt-16" aria-labelledby="markup-title">
       <div id="writing-markup" class="relative -top-20"></div>
       <div id="sample-markup" class="relative -top-20"></div>
@@ -1135,15 +1327,15 @@
 
               <!-- 1. Exam / Context Switcher Tabs -->
               <div class="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Writing Context Tabs">
-                <button onclick="switchContext('c1')" id="tab-c1" role="tab" aria-selected="true" class="context-tab active-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm">
+                <button type="button" onclick="switchContext('c1')" id="tab-c1" role="tab" aria-selected="true" class="context-tab active-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm">
                   <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                   Cambridge C1 Advanced (Essay)
                 </button>
-                <button onclick="switchContext('ielts')" id="tab-ielts" role="tab" aria-selected="false" class="context-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800">
+                <button type="button" onclick="switchContext('ielts')" id="tab-ielts" role="tab" aria-selected="false" class="context-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800">
                   <span class="w-2 h-2 rounded-full bg-amber-400"></span>
                   IELTS Task 2 (Band 6.5 &rarr; 8.0+)
                 </button>
-                <button onclick="switchContext('business')" id="tab-business" role="tab" aria-selected="false" class="context-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800">
+                <button type="button" onclick="switchContext('business')" id="tab-business" role="tab" aria-selected="false" class="context-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 text-slate-300 hover:text-white hover:bg-slate-800">
                   <span class="w-2 h-2 rounded-full bg-sky-400"></span>
                   Business English (Client Email)
                 </button>
@@ -1151,14 +1343,16 @@
 
               <!-- 2. View Mode Switcher -->
               <div class="flex items-center bg-slate-800/90 p-1 rounded-xl border border-slate-700/70 self-start lg:self-auto">
-                <button onclick="switchViewMode('draft')" id="mode-draft" class="view-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:text-white">1. Student Draft</button>
-                <button onclick="switchViewMode('markup')" id="mode-markup" class="view-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-slate-900 shadow-sm">
+                <button type="button" onclick="switchViewMode('draft')" id="mode-draft" class="view-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:text-white">
+                  1. Student Draft
+                </button>
+                <button type="button" onclick="switchViewMode('markup')" id="mode-markup" class="view-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-slate-900 shadow-sm">
                   2. Gareth's Markup
                 </button>
-                <button onclick="switchViewMode('polished')" id="mode-polished" class="view-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:text-white">
+                <button type="button" onclick="switchViewMode('polished')" id="mode-polished" class="view-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:text-white">
                   3. Polished C1/C2
                 </button>
-                <button onclick="switchViewMode('split')" id="mode-split" class="view-mode-btn hidden sm:inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:text-white" title="Compare Before &amp; After Side-by-Side">
+                <button type="button" onclick="switchViewMode('split')" id="mode-split" class="view-mode-btn hidden sm:inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium transition-all text-slate-300 hover:text-white" title="Compare Before &amp; After Side-by-Side">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7"></path></svg>
                   Side-by-Side
                 </button>
@@ -1354,7 +1548,7 @@
                       </div>
                     </div>
                     <p class="text-sm text-slate-600 leading-relaxed">
-                      <strong class="text-slate-800">Why it scores higher:</strong> Rather than repeating basic nouns ('tickets', 'buses'), shifting to natural nominalisation ('subsidising fares', 'services remain unreliable') and 'Nevertheless' strengthens both Organisation and Communicative Achievement.
+                      <strong class="text-slate-800">Why it scores higher:</strong> Rather than repeating basic nouns ('tickets', 'buses'), shifting to natural nominalisation ('subsidising fares', 'services remain chronically unreliable') and 'Nevertheless' strengthens both Organisation and Communicative Achievement.
                     </p>
                   </div>
 
@@ -2552,148 +2746,12 @@
 
     <!-- ================= INTERACTIVE CAMBRIDGE EXAM LAB ================= -->
     <section id="exam-lab" class="py-20 border-t border-slate-800 scroll-mt-16" aria-labelledby="lab-main-heading">
-      <style>
-        #exam-lab {
-          --lab-bg: #0f172a;
-          --lab-card-bg: #1e293b;
-          --lab-card-border: #334155;
-          --lab-accent-blue: #3b82f6;
-          --lab-accent-amber: #f59e0b;
-          --lab-accent-green: #22c55e;
-          --lab-text-main: #f8fafc;
-          --lab-text-muted: #94a3b8;
-          background: var(--lab-bg);
-          color: var(--lab-text-main);
-        }
-        #exam-lab .lab-container { max-width: 1050px; margin: 0 auto; }
-        #exam-lab .lab-header { text-align: center; max-width: 700px; margin: 0 auto 2.5rem auto; }
-        #exam-lab .lab-header span {
-          display: inline-block;
-          background: rgba(59, 130, 246, 0.15);
-          color: #60a5fa;
-          border: 1px solid rgba(59, 130, 246, 0.3);
-          font-size: 0.78rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          padding: 0.35rem 0.9rem;
-          border-radius: 99px;
-          margin-bottom: 0.75rem;
-        }
-        #exam-lab .lab-header h2 { font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; color: #ffffff; }
-        #exam-lab .lab-header p { color: var(--lab-text-muted); font-size: 1.05rem; }
-        #exam-lab .filter-row { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
-        #exam-lab .filter-btn {
-          background: var(--lab-card-bg);
-          border: 1px solid var(--lab-card-border);
-          color: var(--lab-text-muted);
-          padding: 0.5rem 1.25rem;
-          border-radius: 99px;
-          font-weight: 600;
-          font-size: 0.88rem;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-        #exam-lab .filter-btn:hover { border-color: var(--lab-accent-blue); color: white; }
-        #exam-lab .filter-btn.active {
-          background: var(--lab-accent-blue);
-          border-color: var(--lab-accent-blue);
-          color: white;
-        }
-        #exam-lab .lab-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
-          gap: 1.5rem;
-          margin-bottom: 3rem;
-        }
-        #exam-lab .lab-card {
-          background: var(--lab-card-bg);
-          border: 1px solid var(--lab-card-border);
-          border-radius: 16px;
-          padding: 1.75rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-        #exam-lab .lab-card:hover {
-          transform: translateY(-4px);
-          border-color: #64748b;
-        }
-        #exam-lab .card-top-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1rem;
-        }
-        #exam-lab .level-badge {
-          font-size: 0.72rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-          padding: 0.25rem 0.65rem;
-          border-radius: 6px;
-        }
-        #exam-lab .badge-b2 { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-        #exam-lab .badge-c1 { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
-        #exam-lab .badge-c2 { background: rgba(220, 38, 38, 0.15); color: #f87171; border: 1px solid rgba(220, 38, 38, 0.3); }
-        #exam-lab .card-type { font-size: 0.8rem; color: var(--lab-text-muted); font-weight: 600; }
-        #exam-lab .lab-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: #ffffff; }
-        #exam-lab .lab-card p { font-size: 0.9rem; color: var(--lab-text-muted); margin-bottom: 1.5rem; }
-        #exam-lab .features-list { list-style: none; margin-bottom: 1.5rem; font-size: 0.85rem; color: #cbd5e1; }
-        #exam-lab .features-list li { margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
-        #exam-lab .features-list li::before { content: "✓"; color: var(--lab-accent-green); font-weight: 800; }
-        #exam-lab .launch-btn {
-          display: block;
-          width: 100%;
-          text-align: center;
-          background: #334155;
-          color: white;
-          text-decoration: none;
-          padding: 0.7rem;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 0.9rem;
-          transition: background 0.2s;
-        }
-        #exam-lab .lab-card:hover .launch-btn { background: var(--lab-accent-blue); }
-        #exam-lab .lab-cta {
-          background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
-          border: 1px solid var(--lab-card-border);
-          border-radius: 16px;
-          padding: 2rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 1.5rem;
-        }
-        #exam-lab .lab-cta h3 { font-size: 1.35rem; margin-bottom: 0.3rem; color: #ffffff; }
-        #exam-lab .lab-cta p { color: var(--lab-text-muted); font-size: 0.92rem; max-width: 520px; }
-        #exam-lab .cta-btn {
-          background: var(--lab-accent-green);
-          color: #052e16;
-          text-decoration: none;
-          padding: 0.75rem 1.5rem;
-          border-radius: 8px;
-          font-weight: 700;
-          font-size: 0.92rem;
-          transition: opacity 0.2s;
-          white-space: nowrap;
-        }
-        #exam-lab .cta-btn:hover { opacity: 0.9; }
-        @media (max-width: 768px) {
-          #exam-lab .lab-cta { flex-direction: column; text-align: center; }
-          #exam-lab .lab-cta p { max-width: 100%; }
-        }
-      </style>
-
       <div class="lab-container px-6">
         <!-- Header -->
         <div class="lab-header">
           <span>Free Interactive Practice</span>
           <h2 id="lab-main-heading">The Cambridge Exam Lab</h2>
-          <p>Test your grammar, sharpen your essay structure, and practice exam tasks interactively in your browser before your next session.</p>
+          <p>Test your grammar, sharpen your essay structure, and practise exam tasks interactively in your browser before your next session.</p>
         </div>
 
         <!-- Filter Buttons -->
@@ -2768,7 +2826,7 @@
                 <span class="level-badge" style="background: rgba(212, 160, 23, 0.18); color: #fde68a; border: 1px solid rgba(212, 160, 23, 0.5);">New Self-Paced Course &bull; C1/C2</span>
                 <span class="card-type" style="color: #f87171;"><i class="fa-solid fa-book-skull mr-1"></i> Flagship Archive</span>
               </div>
-              <h3 style="color: #ffffff; font-family: 'Cinzel', serif, Georgia; font-size: 1.3rem;">The Dark Academia Archive: Dracula &amp; Frankenstein</h3>
+              <h3 style="color: #ffffff; font-family: 'Newsreader', Georgia, serif; font-size: 1.3rem;">The Dark Academia Archive: Dracula &amp; Frankenstein</h3>
               <p style="color: #cbd5e1; line-height: 1.55; margin-bottom: 1rem;">Tired of dry textbook topics? Master C1/C2 Use of English Part 4, negative inversion, and forensic report writing through the greatest works of Gothic fiction. Unit 1 free in browser.</p>
               <ul class="features-list">
                 <li>6 Masterclass Units &bull; 20 Marks Each</li>
