@@ -20,7 +20,7 @@ class DarkAcademiaGate {
     'scholars_key',
     'c2proficient'
   ];
-  static STRIPE_LINK = 'https://buy.stripe.com/dRmfZg3OY8gsa2xc4Xb3q00';
+  static STRIPE_LINK = 'https://buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01';
 
   static isUnlocked() {
     try {
