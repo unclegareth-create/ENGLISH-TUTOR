@@ -1,7 +1,8 @@
 /**
  * ==========================================================================
  * Dark Academia: The Gothic Canon — Interactive Learning Engine
- * Clean, student-friendly scoring, instant feedback, and keyboard support
+ * Clean, student-friendly scoring, interactive tap-to-build word tiles,
+ * instant feedback, hints, and forgiving 2-try KWT checking
  * ==========================================================================
  */
 
@@ -36,14 +37,241 @@ class DarkAcademiaEngine {
   }
 
   init() {
+    this.injectHelperStyles();
     this.renderSortTask();
     this.renderStyleShiftDrills();
+    this.initKWTScaffolds();
     this.bindKeyboardEvents();
     this.initCapstoneAudit();
     this.renderCompletionBanner();
     this.updateScoreDisplay();
 
     window.resetAll = () => this.resetAll();
+  }
+
+  /**
+   * Injects mobile-friendly styling for interactive KWT Word Tiles & Hint Bar
+   */
+  injectHelperStyles() {
+    if (document.getElementById('da-kwt-helper-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'da-kwt-helper-styles';
+    style.textContent = `
+      .kwt-helper-wrap {
+        margin-top: 0.75rem;
+        padding-top: 0.7rem;
+        border-top: 1px dashed rgba(255, 255, 255, 0.12);
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+      }
+      .kwt-helper-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .kwt-helper-label {
+        font-size: 0.78rem;
+        color: #94a3b8;
+        font-weight: 500;
+      }
+      .kwt-helper-actions {
+        display: flex;
+        gap: 0.45rem;
+      }
+      .kwt-mini-btn {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #e2e8f0;
+        padding: 0.25rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .kwt-mini-btn:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.14);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      .kwt-mini-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .kwt-tiles-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.42rem;
+      }
+      .kwt-word-tile {
+        background: #1e293b;
+        border: 1px solid #475569;
+        color: #f8fafc;
+        padding: 0.35rem 0.72rem;
+        border-radius: 999px;
+        font-size: 0.86rem;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+      }
+      .kwt-word-tile:hover:not(:disabled) {
+        background: #334155;
+        border-color: #94a3b8;
+        transform: translateY(-1px);
+      }
+      .kwt-word-tile.used {
+        opacity: 0.35;
+        background: #0f172a;
+        border-style: dashed;
+        text-decoration: line-through;
+      }
+      .kwt-word-tile:disabled {
+        cursor: not-allowed;
+      }
+      .kwt-hint-box {
+        display: none;
+        font-size: 0.84rem;
+        color: #fde68a;
+        background: rgba(245, 158, 11, 0.12);
+        border-left: 3px solid #f59e0b;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+      }
+      .kwt-hint-box.visible {
+        display: block;
+      }
+      @media print {
+        .kwt-helper-wrap { display: none !important; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  /**
+   * Automatically attaches tap-to-build word tiles, Hint button, and Clear button
+   * to every .kwt-card across all 12 lessons so mobile & desktop users never get stuck.
+   */
+  initKWTScaffolds() {
+    const cards = document.querySelectorAll('.kwt-card');
+    cards.forEach((card, cIdx) => {
+      if (card.querySelector('.kwt-helper-wrap')) return;
+
+      const checkBtn = card.querySelector('.btn-main');
+      const input = card.querySelector('.kwt-input');
+      const inputRow = card.querySelector('.kwt-input-row');
+      if (!checkBtn || !input || !inputRow) return;
+
+      const onclickAttr = checkBtn.getAttribute('onclick') || '';
+      const match = onclickAttr.match(/handleKWT\(\s*this\s*,\s*'((?:\\'|[^'])*)'\s*,\s*'((?:\\'|[^'])*)'/);
+      if (!match) return;
+
+      const modelAnswer = match[1].replace(/\\'/g, "'").trim();
+      const explanation = match[2].replace(/\\'/g, "'").trim();
+      card.dataset.modelAnswer = modelAnswer;
+      card.dataset.explanation = explanation;
+      card.dataset.attempts = '0';
+
+      const modelWords = modelAnswer.split(/\s+/);
+      const distractorPool = ['being', 'has', 'did', 'for', 'having', 'were', 'which', 'by'];
+      const modelLower = modelWords.map((w) => w.toLowerCase());
+      const distractor = distractorPool.find((d) => !modelLower.includes(d)) || 'being';
+
+      const tileItems = [
+        ...modelWords.map((w, i) => ({ word: w, id: `m-${cIdx}-${i}` })),
+        { word: distractor, id: `d-${cIdx}` }
+      ];
+
+      // Deterministic shuffle so each card looks natural
+      for (let i = tileItems.length - 1; i > 0; i--) {
+        const j = (i * 7 + cIdx * 3) % (i + 1);
+        const temp = tileItems[i];
+        tileItems[i] = tileItems[j];
+        tileItems[j] = temp;
+      }
+
+      const helperWrap = document.createElement('div');
+      helperWrap.className = 'kwt-helper-wrap';
+
+      const firstTwo = modelWords.slice(0, 2).join(' ');
+      helperWrap.innerHTML = `
+        <div class="kwt-helper-top">
+          <span class="kwt-helper-label">Tap words to build your answer (or type directly): <strong style="color:#cbd5e1;">${modelWords.length} words needed</strong> (+1 extra decoy word)</span>
+          <div class="kwt-helper-actions">
+            <button type="button" class="kwt-mini-btn kwt-hint-btn">💡 Hint</button>
+            <button type="button" class="kwt-mini-btn kwt-clear-btn">↺ Clear</button>
+          </div>
+        </div>
+        <div class="kwt-tiles-row"></div>
+        <div class="kwt-hint-box">
+          <strong>💡 Hint (${modelWords.length} words):</strong> Start with <em>"${firstTwo}..."</em> — ${explanation}
+        </div>
+      `;
+
+      const tilesRow = helperWrap.querySelector('.kwt-tiles-row');
+      tileItems.forEach((item) => {
+        const tileBtn = document.createElement('button');
+        tileBtn.type = 'button';
+        tileBtn.className = 'kwt-word-tile';
+        tileBtn.textContent = item.word;
+        tileBtn.dataset.word = item.word;
+
+        tileBtn.addEventListener('click', () => {
+          if (card.dataset.answered === 'true') return;
+          if (tileBtn.classList.contains('used')) {
+            // Remove one instance of this word from the input
+            tileBtn.classList.remove('used');
+            const currentWords = input.value.trim() ? input.value.trim().split(/\s+/) : [];
+            const removeIdx = currentWords.lastIndexOf(item.word);
+            if (removeIdx !== -1) {
+              currentWords.splice(removeIdx, 1);
+              input.value = currentWords.join(' ');
+            }
+          } else {
+            tileBtn.classList.add('used');
+            const curr = input.value.trim();
+            input.value = curr ? `${curr} ${item.word}` : item.word;
+          }
+        });
+
+        tilesRow.appendChild(tileBtn);
+      });
+
+      // Sync tile highlights if user types manually
+      input.addEventListener('input', () => {
+        const typedWords = input.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+        const remaining = [...typedWords];
+        tilesRow.querySelectorAll('.kwt-word-tile').forEach((tile) => {
+          const wLow = (tile.dataset.word || '').toLowerCase();
+          const idx = remaining.indexOf(wLow);
+          if (idx !== -1) {
+            tile.classList.add('used');
+            remaining.splice(idx, 1);
+          } else {
+            tile.classList.remove('used');
+          }
+        });
+      });
+
+      const hintBtn = helperWrap.querySelector('.kwt-hint-btn');
+      const clearBtn = helperWrap.querySelector('.kwt-clear-btn');
+      const hintBox = helperWrap.querySelector('.kwt-hint-box');
+
+      hintBtn.addEventListener('click', () => {
+        hintBox.classList.toggle('visible');
+      });
+
+      clearBtn.addEventListener('click', () => {
+        if (card.dataset.answered === 'true') return;
+        input.value = '';
+        tilesRow.querySelectorAll('.kwt-word-tile').forEach((t) => t.classList.remove('used'));
+        input.focus();
+      });
+
+      inputRow.insertAdjacentElement('afterend', helperWrap);
+    });
   }
 
   /**
@@ -249,6 +477,7 @@ class DarkAcademiaEngine {
 
   /**
    * Section 3: Cambridge Part 4 Key Word Transformations (2 Marks Each)
+   * Includes a forgiving 1st-attempt hint before locking on the 2nd attempt.
    */
   normalizeText(str) {
     return str
@@ -257,6 +486,15 @@ class DarkAcademiaEngine {
       .replace(/['’]/g, "'")
       .replace(/[.,!?;:]+$/g, '')
       .replace(/\s+/g, ' ');
+  }
+
+  lockKWTCard(card, input, btn) {
+    card.dataset.answered = 'true';
+    if (input) input.disabled = true;
+    if (btn) btn.disabled = true;
+    card.querySelectorAll('.kwt-word-tile, .kwt-mini-btn').forEach((b) => {
+      b.disabled = true;
+    });
   }
 
   handleKWT(btn, modelAnswer, explanation) {
@@ -271,15 +509,11 @@ class DarkAcademiaEngine {
     if (!userNorm) {
       if (fb) {
         fb.className = 'feedback-box wrong';
-        fb.innerHTML = `<strong>⚠️ Please type your transformation before checking.</strong>`;
+        fb.innerHTML = `<strong>⚠️ Tap the word tiles below or type your answer before checking.</strong>`;
       }
       if (input) input.focus();
       return;
     }
-
-    card.dataset.answered = 'true';
-    if (input) input.disabled = true;
-    btn.disabled = true;
 
     const validList = (card.getAttribute('data-valid') || '')
       .split('|')
@@ -291,17 +525,22 @@ class DarkAcademiaEngine {
     let isPartialMatch = false;
     const keyPill = card.querySelector('.kwt-key');
     const keyWord = keyPill ? this.normalizeText(keyPill.textContent) : '';
+    const modelWords = modelAnswer.trim().split(/\s+/);
 
     if (!isExactMatch && keyWord && userNorm.includes(keyWord)) {
-      const modelWords = this.normalizeText(modelAnswer).split(' ');
+      const normModelWords = this.normalizeText(modelAnswer).split(' ');
       const userWords = userNorm.split(' ');
-      const overlap = userWords.filter((w) => modelWords.includes(w)).length;
-      if (overlap >= Math.ceil(modelWords.length * 0.65) && userWords.length >= 3 && userWords.length <= 8) {
+      const overlap = userWords.filter((w) => normModelWords.includes(w)).length;
+      if (overlap >= Math.ceil(normModelWords.length * 0.65) && userWords.length >= 3 && userWords.length <= 8) {
         isPartialMatch = true;
       }
     }
 
+    const attempts = parseInt(card.dataset.attempts || '0', 10) + 1;
+    card.dataset.attempts = String(attempts);
+
     if (isExactMatch) {
+      this.lockKWTCard(card, input, btn);
       if (input) {
         input.style.borderColor = 'var(--green)';
         input.style.color = 'var(--green-text)';
@@ -312,7 +551,26 @@ class DarkAcademiaEngine {
         fb.className = 'feedback-box correct';
         fb.innerHTML = `<strong>✓ Full Marks (+2/2):</strong> Excellent! <em>"${modelAnswer}"</em> — ${explanation}`;
       }
-    } else if (isPartialMatch) {
+      return;
+    }
+
+    // First wrong/partial attempt: give a gentle hint and let the learner adjust!
+    if (attempts === 1) {
+      const firstTwo = modelWords.slice(0, 2).join(' ');
+      if (input) {
+        input.style.borderColor = 'var(--amber)';
+      }
+      if (fb) {
+        fb.className = 'feedback-box partial';
+        fb.innerHTML = `<strong>⚡ Almost there! Try once more:</strong> Start with <strong>"${firstTwo}..."</strong> (${modelWords.length} words total). Tap the word tiles or adjust your answer and click <strong>Check</strong> again!`;
+      }
+      return;
+    }
+
+    // Second attempt: lock and award partial or show model answer
+    this.lockKWTCard(card, input, btn);
+
+    if (isPartialMatch) {
       if (input) {
         input.style.borderColor = 'var(--amber)';
         input.style.color = '#fde68a';
@@ -321,7 +579,7 @@ class DarkAcademiaEngine {
       this.updateScoreDisplay();
       if (fb) {
         fb.className = 'feedback-box partial';
-        fb.innerHTML = `<strong>⚡ Partial Credit (+1/2):</strong> You used the right key word and idea! Full model answer: <strong>"${modelAnswer}"</strong>.<br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
+        fb.innerHTML = `<strong>⚡ Partial Credit (+1/2):</strong> Good effort using the key word! Full answer: <strong>"${modelAnswer}"</strong>.<br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
       }
     } else {
       if (input) {
@@ -505,6 +763,7 @@ class DarkAcademiaEngine {
 
     document.querySelectorAll('.kwt-card').forEach((card) => {
       delete card.dataset.answered;
+      card.dataset.attempts = '0';
       const input = card.querySelector('.kwt-input');
       const btn = card.querySelector('.btn-main');
       const fb = card.querySelector('.feedback-box');
@@ -519,6 +778,12 @@ class DarkAcademiaEngine {
         fb.className = 'feedback-box';
         fb.innerHTML = '';
       }
+      card.querySelectorAll('.kwt-word-tile, .kwt-mini-btn').forEach((b) => {
+        b.disabled = false;
+        b.classList.remove('used');
+      });
+      const hintBox = card.querySelector('.kwt-hint-box');
+      if (hintBox) hintBox.classList.remove('visible');
     });
   }
 }
