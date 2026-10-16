@@ -1283,3 +1283,27 @@ body .unit-card:hover::before{opacity:1}
   transform: translateY(-1px);
 }
 
+/* Paywall Lock Protection (Screen & Print-to-PDF Bypass Prevention) */
+body.da-is-locked .container > *:not(.worksheet-header),
+body.da-is-locked .compendium-container > *:not(.compendium-toolbar) {
+  filter: blur(8px);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media print {
+  body.da-is-locked .container,
+  body.da-is-locked .compendium-container {
+    display: none !important;
+  }
+  body.da-is-locked::before {
+    content: "Locked Module — Please unlock The Dark Academia Archive (£24) at garethenglish.com to print or export this C1/C2 study dossier.";
+    display: block;
+    padding: 3rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #000;
+    text-align: center;
+  }
+}
+
