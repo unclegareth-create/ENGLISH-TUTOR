@@ -65,12 +65,20 @@
     if (urlParams.get('subscribed') === 'true') {
         const cheatSheetSection = document.getElementById('cheat-sheet');
         const cheatSheetForm = cheatSheetSection ? cheatSheetSection.querySelector('form') : null;
-        const subMsg = "🎉 You're subscribed! Check your inbox for your C1/C2 Examiner Cheat Sheet & free study guides.";
 
         const createSubAlertBox = () => {
             const div = document.createElement('div');
-            div.className = 'bg-emerald-500/20 border border-emerald-400 text-emerald-200 px-5 py-4 rounded-xl mb-4 text-sm font-semibold shadow-sm flex items-center gap-3 text-left max-w-lg mx-auto';
-            div.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 text-lg shrink-0"></i> <span>' + subMsg + '</span>';
+            div.className = 'bg-emerald-500/20 border border-emerald-400 text-emerald-100 px-5 py-4 rounded-xl mb-4 text-sm shadow-sm text-left max-w-lg mx-auto space-y-2.5';
+            div.innerHTML =
+                '<div class="flex items-center gap-2.5 font-bold text-emerald-300">' +
+                '<i class="fa-solid fa-circle-check text-emerald-400 text-lg shrink-0"></i>' +
+                '<span>Check your inbox! You can also access your guides &amp; PDF immediately below:</span>' +
+                '</div>' +
+                '<div class="flex flex-wrap gap-2 pt-1 text-xs font-semibold">' +
+                '<a href="cpe-inversion.html" class="px-3 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-white border border-emerald-400/40 transition">C1/C2 Inversion Guide &rarr;</a>' +
+                '<a href="c1-c2-common-mistakes.html" class="px-3 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-white border border-emerald-400/40 transition">10 Common C1 Mistakes &rarr;</a>' +
+                '<a href="ielts-7-syllabus.pdf" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-indigo-500/40 hover:bg-indigo-500/60 text-white border border-indigo-400/40 transition"><i class="fa-solid fa-file-pdf mr-1"></i>Download Study Syllabus PDF</a>' +
+                '</div>';
             return div;
         };
 
