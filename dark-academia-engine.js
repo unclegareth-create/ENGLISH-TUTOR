@@ -55,11 +55,12 @@ class DarkAcademiaGate {
   static checkUrlUnlock() {
     try {
       const params = new URLSearchParams(window.location.search);
-      const unlockParam = params.get('unlock');
+      const unlockParam = params.get('unlock') || (params.get('unlocked') === 'true' ? 'archive_c2_master' : null) || (params.get('session_id') ? 'archive_c2_master' : null);
       if (unlockParam && this.unlock(unlockParam)) {
         // Strip query string from address bar without page reload
         const cleanUrl = window.location.pathname + window.location.hash;
         window.history.replaceState({}, document.title, cleanUrl);
+        this.showUnlockBanner();
         if (window.darkEngine) {
           window.darkEngine.announce("Scholar's Seal Verified: The Dark Academia Archive is unlocked.");
         }
@@ -69,8 +70,30 @@ class DarkAcademiaGate {
     return false;
   }
 
+  static showUnlockBanner() {
+    if (document.getElementById('da-unlock-success-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'da-unlock-success-banner';
+    banner.setAttribute('role', 'status');
+    banner.style.cssText = 'background:linear-gradient(90deg,#064e3b,#0f172a);border:1px solid #10b981;color:#ecfdf5;padding:1rem 1.5rem;border-radius:12px;margin:1rem auto;max-width:1100px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.5);';
+    banner.innerHTML = `
+      <div>
+        <strong style="color:#6ee7b7;font-size:1rem;">✓ Payment Confirmed — Full Dark Academia Archive Unlocked!</strong>
+        <p style="font-size:0.86rem;color:#d1fae5;margin:0.25rem 0 0 0;">
+          All 6 Masterclass Units and the 4-Page Study Dossier are now unlocked on this browser. Save your backup Scholar's Passkey for other devices: <code style="background:#022c22;padding:0.15rem 0.45rem;border-radius:4px;border:1px solid #10b981;color:#fde68a;font-weight:800;">BORGO-89</code>
+        </p>
+      </div>
+      <button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.4rem 0.85rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:700;">Dismiss</button>
+    `;
+    const container = document.querySelector('.container') || document.querySelector('.compendium-container') || document.body;
+    container.insertBefore(banner, container.firstChild);
+  }
+
   static syncUI() {
     const unlocked = this.isUnlocked();
+    if (unlocked) {
+      document.body.classList.remove('da-is-locked');
+    }
 
     // 1. Update index cards
     document.querySelectorAll('.unit-card').forEach(card => {
@@ -108,14 +131,28 @@ class DarkAcademiaGate {
       }
     });
 
+    // 1b. Update top passkey button on index hub if unlocked
+    const passkeyTrigger = document.getElementById('da-hub-passkey-btn');
+    if (passkeyTrigger) {
+      if (unlocked) {
+        passkeyTrigger.innerHTML = '✓ Full Archive Unlocked';
+        passkeyTrigger.style.borderColor = '#10b981';
+        passkeyTrigger.style.color = '#86efac';
+      } else {
+        passkeyTrigger.innerHTML = '🗝️ Enter Scholar\'s Passkey';
+      }
+    }
+
     // 2. Update locked screen veil if present
     const gateVeil = document.getElementById('da-gate-veil');
     if (gateVeil) {
       if (unlocked) {
         gateVeil.classList.add('unlocked');
+        document.body.classList.remove('da-is-locked');
         document.body.style.overflow = '';
       } else {
         gateVeil.classList.remove('unlocked');
+        document.body.classList.add('da-is-locked');
         document.body.style.overflow = 'hidden';
       }
     }
@@ -166,7 +203,7 @@ class DarkAcademiaGate {
           <span class="da-modal-badge">Self-Serve Digital Access</span>
           <h2 id="modal-gate-title" class="da-modal-title">The Archive is Sealed</h2>
           <p class="da-modal-subtitle">
-            Unlock Stages 2, 3 &amp; 4 (4 Masterclass Units + Capstone Writing Labs + Printable Study Dossiers) for <strong>£24</strong>.
+            Unlock Stages 2, 3 &amp; 4 (4 Masterclass Units + Capstone Writing Labs + Printable Study Dossier) for <strong>£24</strong> (one-time payment, lifetime browser access).
           </p>
         </div>
 
@@ -189,15 +226,15 @@ class DarkAcademiaGate {
           </div>
         </div>
 
-        <a href="${this.STRIPE_LINK}" class="da-btn-stripe" target="_blank" rel="noopener">
-          <span>Unlock Instant Access (£24)</span>
+        <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
+          <span>Unlock Instant Access via Stripe (£24)</span>
           <span aria-hidden="true">→</span>
         </a>
 
         <div class="da-passkey-box">
-          <p>Already purchased? Enter your 6-letter <strong>Scholar's Passkey</strong> from your Stripe receipt email (e.g. BORGO-89):</p>
+          <p>Already purchased on another device? Enter your <strong>Scholar's Passkey</strong> from your confirmation screen or receipt:</p>
           <div class="da-passkey-row">
-            <input type="text" class="da-passkey-input" id="da-modal-passkey" placeholder="BORGO-89" aria-label="Scholar's passkey input">
+            <input type="text" class="da-passkey-input" id="da-modal-passkey" placeholder="ENTER PASSKEY" autocomplete="off" aria-label="Scholar's passkey input">
             <button class="da-passkey-btn" onclick="DarkAcademiaGate.submitPasskey()">Unlock</button>
           </div>
           <div class="da-passkey-feedback" id="da-modal-feedback"></div>
@@ -242,25 +279,27 @@ class DarkAcademiaGate {
       feedback.innerHTML = '✓ Scholar\'s Passkey Verified! Archive Unlocked.';
       setTimeout(() => {
         this.closeModal();
-        if (window.location.pathname.includes('unit2') || window.location.pathname.includes('unit3')) {
+        if (window.location.pathname.includes('unit2') || window.location.pathname.includes('unit3') || window.location.pathname.includes('compendium')) {
           window.location.reload();
         }
       }, 700);
     } else {
       feedback.style.color = '#fca5a5';
-      feedback.textContent = '✗ Invalid passkey. Please check your Stripe receipt email.';
+      feedback.textContent = '✗ Invalid passkey. Please check your confirmation message or contact Gareth.';
     }
   }
 
   static enforceGate(unitId) {
     const lockedUnits = [
       'dracula_unit2', 'dracula_unit3',
-      'frankenstein_unit2', 'frankenstein_unit3'
+      'frankenstein_unit2', 'frankenstein_unit3',
+      'compendium'
     ];
 
     if (!lockedUnits.includes(unitId)) return;
 
     if (!this.isUnlocked()) {
+      document.body.classList.add('da-is-locked');
       let veil = document.getElementById('da-gate-veil');
       if (!veil) {
         veil = document.createElement('div');
@@ -273,14 +312,14 @@ class DarkAcademiaGate {
               <span class="da-modal-badge">Archival Gate</span>
               <h2 class="da-modal-title">Stage Sealed</h2>
               <p class="da-modal-subtitle">
-                This advanced masterclass unit is part of the paid Dark Academia curriculum.
+                This advanced masterclass resource is part of the full Dark Academia curriculum (£24).
               </p>
             </div>
 
             <div class="da-modal-benefits">
               <div class="da-benefit-item">
                 <span class="da-benefit-icon">✦</span>
-                <span>Full access to Stages 2, 3 &amp; 4 across Dracula &amp; Frankenstein.</span>
+                <span>Full access to Stages 2, 3 &amp; 4 across Dracula &amp; Frankenstein + the 4-Page Study Dossier.</span>
               </div>
               <div class="da-benefit-item">
                 <span class="da-benefit-icon">✦</span>
@@ -288,15 +327,15 @@ class DarkAcademiaGate {
               </div>
             </div>
 
-            <a href="${this.STRIPE_LINK}" class="da-btn-stripe" target="_blank" rel="noopener">
-              <span>Unlock Archive Access (£24)</span>
+            <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
+              <span>Unlock Archive Access via Stripe (£24)</span>
               <span aria-hidden="true">→</span>
             </a>
 
             <div class="da-passkey-box">
-              <p>Have a passkey from your Stripe receipt?</p>
+              <p>Already purchased? Enter your Scholar's Passkey:</p>
               <div class="da-passkey-row">
-                <input type="text" class="da-passkey-input" id="veil-passkey-input" placeholder="BORGO-89" aria-label="Enter passkey to unlock">
+                <input type="text" class="da-passkey-input" id="veil-passkey-input" placeholder="ENTER PASSKEY" autocomplete="off" aria-label="Enter passkey to unlock">
                 <button class="da-passkey-btn" onclick="DarkAcademiaGate.submitVeilPasskey()">Unlock</button>
               </div>
               <div class="da-passkey-feedback" id="veil-passkey-feedback"></div>
@@ -308,8 +347,16 @@ class DarkAcademiaGate {
           </div>
         `;
         document.body.appendChild(veil);
+        const veilInput = veil.querySelector('#veil-passkey-input');
+        if (veilInput) {
+          veilInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') DarkAcademiaGate.submitVeilPasskey();
+          });
+        }
       }
       document.body.style.overflow = 'hidden';
+    } else {
+      document.body.classList.remove('da-is-locked');
     }
   }
 
@@ -321,7 +368,7 @@ class DarkAcademiaGate {
     const val = input.value.trim();
     if (this.unlock(val)) {
       feedback.style.color = '#86efac';
-      feedback.textContent = '✓ Unlocked! Loading unit...';
+      feedback.textContent = '✓ Unlocked! Loading resource...';
       setTimeout(() => window.location.reload(), 600);
     } else {
       feedback.style.color = '#fca5a5';
