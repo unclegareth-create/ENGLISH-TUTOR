@@ -1,950 +1,526 @@
 /**
- * Dark Academia: The Gothic Canon — Master Interactive Interaction Engine
- * Version 2.0 (Self-Serve Architecture & C1/C2 Pedagogical Suite)
- * Handles:
- * - 20-Mark Cambridge Grading: 4 Lexis Sorts (4m) + 3 Diagnostic MCQs (3m) + 5 KWTs (10m) + 3 Style-Shift Nominalisations (3m)
- * - Self-Serve Client Gate: Zero-backend paywall with Stripe redirect, URL auto-unlock (?unlock=archive_c2_master), and Scholar's Passkey verification
- * - Dynamic Funnel Completion Card: Dynamic score reading and contextual C1/C2 Archive pitch
- * - Unit 3 Capstone Self-Audit Workspace: Real-time regex syntactic auditing (Inversions, Participles, Arsenal Lexis) + Clickable [1-4] Band C2 Model Answer Overlay
- * - WCAG 2.1 AA/AAA Accessibility: ARIA announcements, focus rings, keyboard traps, color-independent feedback
+ * ==========================================================================
+ * Dark Academia: The Gothic Canon — Interactive Learning Engine
+ * Clean, student-friendly scoring, instant feedback, and keyboard support
+ * ==========================================================================
  */
 
-class DarkAcademiaGate {
-  static STORAGE_KEY = 'da_archive_unlocked';
-  static VALID_KEYS = [
-    'archive_c2_master',
-    'borgo-89',
-    'borgo89',
-    'archive24',
-    'gothic24',
-    'scholars_key',
-    'c2proficient'
-  ];
-  static STRIPE_LINK = 'https://buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01';
+const DarkAcademiaGate = {
+  STORAGE_KEY: 'da_canon_unlocked',
 
-  static isUnlocked() {
-    try {
-      return localStorage.getItem(this.STORAGE_KEY) === 'true';
-    } catch (e) {
-      return false;
-    }
-  }
+  isUnlocked() {
+    return true;
+  },
 
-  static unlock(token) {
-    if (!token) return false;
-    const cleanToken = token.trim().toLowerCase().replace(/[\s_-]+/g, '');
-    const isMatch = this.VALID_KEYS.some(k => k.replace(/[\s_-]+/g, '') === cleanToken);
-
-    if (isMatch || token === 'force_unlock') {
-      try {
-        localStorage.setItem(this.STORAGE_KEY, 'true');
-      } catch (e) {}
-      this.syncUI();
-      return true;
-    }
+  isUnitGated() {
     return false;
-  }
+  },
 
-  static lock() {
-    try {
-      localStorage.removeItem(this.STORAGE_KEY);
-    } catch (e) {}
-    this.syncUI();
-  }
+  openModal() {},
+  closeModal() {},
+  enforceGate() {}
+};
 
-  static checkUrlUnlock() {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      const unlockParam = params.get('unlock') || (params.get('unlocked') === 'true' ? 'archive_c2_master' : null) || (params.get('session_id') ? 'archive_c2_master' : null);
-      if (unlockParam && this.unlock(unlockParam)) {
-        // Strip query string from address bar without page reload
-        const cleanUrl = window.location.pathname + window.location.hash;
-        window.history.replaceState({}, document.title, cleanUrl);
-        this.showUnlockBanner();
-        if (window.darkEngine) {
-          window.darkEngine.announce("Scholar's Seal Verified: The Dark Academia Archive is unlocked.");
-        }
-        return true;
-      }
-    } catch (e) {}
-    return false;
-  }
-
-  static showUnlockBanner() {
-    if (document.getElementById('da-unlock-success-banner')) return;
-    const banner = document.createElement('div');
-    banner.id = 'da-unlock-success-banner';
-    banner.setAttribute('role', 'status');
-    banner.style.cssText = 'background:linear-gradient(90deg,#064e3b,#0f172a);border:1px solid #10b981;color:#ecfdf5;padding:1rem 1.5rem;border-radius:12px;margin:1rem auto;max-width:1100px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;box-shadow:0 10px 25px rgba(0,0,0,0.5);';
-    banner.innerHTML = `
-      <div>
-        <strong style="color:#6ee7b7;font-size:1rem;">✓ Payment Confirmed — Full Dark Academia Archive Unlocked!</strong>
-        <p style="font-size:0.86rem;color:#d1fae5;margin:0.25rem 0 0 0;">
-          All 6 Masterclass Units and the 4-Page Study Dossier are now unlocked on this browser. Save your backup Scholar's Passkey for other devices: <code style="background:#022c22;padding:0.15rem 0.45rem;border-radius:4px;border:1px solid #10b981;color:#fde68a;font-weight:800;">BORGO-89</code>
-        </p>
-      </div>
-      <button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.4rem 0.85rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:700;">Dismiss</button>
-    `;
-    const container = document.querySelector('.container') || document.querySelector('.compendium-container') || document.body;
-    container.insertBefore(banner, container.firstChild);
-  }
-
-  static syncUI() {
-    const unlocked = this.isUnlocked();
-    if (unlocked) {
-      document.body.classList.remove('da-is-locked');
-    }
-
-    // 1. Update index cards
-    document.querySelectorAll('.unit-card').forEach(card => {
-      const isLockedUnit = card.getAttribute('data-locked') === 'true';
-      const actionBtn = card.querySelector('.unit-action-btn');
-      const lockBadge = card.querySelector('.unit-lock-badge');
-
-      if (isLockedUnit) {
-        if (unlocked) {
-          card.classList.remove('is-locked');
-          if (lockBadge) {
-            lockBadge.textContent = '✓ Unlocked';
-            lockBadge.classList.remove('badge-locked');
-            lockBadge.classList.add('badge-unlocked');
-          }
-          if (actionBtn) {
-            actionBtn.textContent = 'Launch Masterclass →';
-            const targetUrl = card.getAttribute('data-href');
-            if (targetUrl) actionBtn.setAttribute('href', targetUrl);
-            actionBtn.removeAttribute('onclick');
-          }
-        } else {
-          card.classList.add('is-locked');
-          if (lockBadge) {
-            lockBadge.textContent = '🔒 Sealed (£24)';
-            lockBadge.classList.add('badge-locked');
-            lockBadge.classList.remove('badge-unlocked');
-          }
-          if (actionBtn) {
-            actionBtn.textContent = 'Unlock Access (£24) 🔒';
-            actionBtn.removeAttribute('href');
-            actionBtn.setAttribute('onclick', `DarkAcademiaGate.openModal('${card.getAttribute('data-unit-id') || ''}')`);
-          }
-        }
-      }
-    });
-
-    // 1b. Update top passkey button on index hub if unlocked
-    const passkeyTrigger = document.getElementById('da-hub-passkey-btn');
-    if (passkeyTrigger) {
-      if (unlocked) {
-        passkeyTrigger.innerHTML = '✓ Full Archive Unlocked';
-        passkeyTrigger.style.borderColor = '#10b981';
-        passkeyTrigger.style.color = '#86efac';
-      } else {
-        passkeyTrigger.innerHTML = '🗝️ Enter Scholar\'s Passkey';
-      }
-    }
-
-    // 2. Update locked screen veil if present
-    const gateVeil = document.getElementById('da-gate-veil');
-    if (gateVeil) {
-      if (unlocked) {
-        gateVeil.classList.add('unlocked');
-        document.body.classList.remove('da-is-locked');
-        document.body.style.overflow = '';
-      } else {
-        gateVeil.classList.remove('unlocked');
-        document.body.classList.add('da-is-locked');
-        document.body.style.overflow = 'hidden';
-      }
-    }
-
-    // 3. Update completion cards on Unit 1
-    if (window.darkEngine) {
-      window.darkEngine.renderCompletionCard();
-    }
-  }
-
-  static openModal(targetUnit) {
-    let modal = document.getElementById('da-paywall-modal');
-    if (!modal) {
-      modal = this.createModalElement();
-      document.body.appendChild(modal);
-    }
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-
-    // Focus input or primary button for accessibility
-    setTimeout(() => {
-      const input = modal.querySelector('.da-passkey-input');
-      if (input) input.focus();
-    }, 100);
-  }
-
-  static closeModal() {
-    const modal = document.getElementById('da-paywall-modal');
-    if (modal) {
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  }
-
-  static createModalElement() {
-    const backdrop = document.createElement('div');
-    backdrop.id = 'da-paywall-modal';
-    backdrop.className = 'da-modal-backdrop';
-    backdrop.setAttribute('role', 'dialog');
-    backdrop.setAttribute('aria-modal', 'true');
-    backdrop.setAttribute('aria-labelledby', 'modal-gate-title');
-
-    backdrop.innerHTML = `
-      <div class="da-modal">
-        <button class="da-modal-close" onclick="DarkAcademiaGate.closeModal()" aria-label="Close unlock modal">&times;</button>
-        <div style="text-align:center;">
-          <div class="da-modal-seal">🗝️</div>
-          <span class="da-modal-badge">Self-Serve Digital Access</span>
-          <h2 id="modal-gate-title" class="da-modal-title">The Archive is Sealed</h2>
-          <p class="da-modal-subtitle">
-            Unlock all 8 Advanced Masterclass Units across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, and <em>The Hound of the Baskervilles</em> (+ 4 Capstone Writing Labs &amp; Printable Study Dossier) for <strong>£24</strong> (one-time payment, lifetime browser access).
-          </p>
-        </div>
-
-        <div class="da-modal-benefits">
-          <div class="da-benefit-item">
-            <span class="da-benefit-icon">✦</span>
-            <span><strong>12 Complete Masterclass Units (4 Free + 8 Advanced):</strong> Full trilogies for <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, and <em>The Hound of the Baskervilles</em>.</span>
-          </div>
-          <div class="da-benefit-item">
-            <span class="da-benefit-icon">✦</span>
-            <span><strong>40+ Additional Cambridge KWTs:</strong> Rigorous 2-mark diagnostic scoring covering Negative Inversion, Subjunctives, Register Shift, and Modals of Deduction.</span>
-          </div>
-          <div class="da-benefit-item">
-            <span class="da-benefit-icon">✦</span>
-            <span><strong>Interactive Capstone Writing Labs:</strong> Live self-audit syntactic engine with Gareth's Band C2 Annotated Model Reports.</span>
-          </div>
-          <div class="da-benefit-item">
-            <span class="da-benefit-icon">✦</span>
-            <span><strong>The Gothic Canon Compendium:</strong> Instant print-ready reference dossier of all Arsenal Lexis and grammatical formulas.</span>
-          </div>
-        </div>
-
-        <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
-          <span>Unlock Instant Access via Stripe (£24)</span>
-          <span aria-hidden="true">→</span>
-        </a>
-
-        <div class="da-passkey-box">
-          <p>Already purchased on another device? Enter your <strong>Scholar's Passkey</strong> from your confirmation screen or receipt:</p>
-          <div class="da-passkey-row">
-            <input type="text" class="da-passkey-input" id="da-modal-passkey" placeholder="ENTER PASSKEY" autocomplete="off" aria-label="Scholar's passkey input">
-            <button class="da-passkey-btn" onclick="DarkAcademiaGate.submitPasskey()">Unlock</button>
-          </div>
-          <div class="da-passkey-feedback" id="da-modal-feedback"></div>
-        </div>
-      </div>
-    `;
-
-    backdrop.addEventListener('click', (e) => {
-      if (e.target === backdrop) DarkAcademiaGate.closeModal();
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && backdrop.classList.contains('active')) {
-        DarkAcademiaGate.closeModal();
-      }
-    });
-
-    const input = backdrop.querySelector('.da-passkey-input');
-    if (input) {
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') DarkAcademiaGate.submitPasskey();
-      });
-    }
-
-    return backdrop;
-  }
-
-  static submitPasskey() {
-    const input = document.getElementById('da-modal-passkey');
-    const feedback = document.getElementById('da-modal-feedback');
-    if (!input || !feedback) return;
-
-    const val = input.value.trim();
-    if (!val) {
-      feedback.style.color = '#fca5a5';
-      feedback.textContent = 'Please enter your passkey.';
-      return;
-    }
-
-    if (this.unlock(val)) {
-      feedback.style.color = '#86efac';
-      feedback.innerHTML = '✓ Scholar\'s Passkey Verified! Archive Unlocked.';
-      setTimeout(() => {
-        this.closeModal();
-        if (window.location.pathname.includes('unit2') || window.location.pathname.includes('unit3') || window.location.pathname.includes('compendium')) {
-          window.location.reload();
-        }
-      }, 700);
-    } else {
-      feedback.style.color = '#fca5a5';
-      feedback.textContent = '✗ Invalid passkey. Please check your confirmation message or contact Gareth.';
-    }
-  }
-
-  static enforceGate(unitId) {
-    const lockedUnits = [
-      'dracula_unit2', 'dracula_unit3',
-      'frankenstein_unit2', 'frankenstein_unit3',
-      'jekyll_unit2', 'jekyll_unit3',
-      'baskerville_unit2', 'baskerville_unit3',
-      'compendium'
-    ];
-
-    if (!lockedUnits.includes(unitId)) return;
-
-    if (!this.isUnlocked()) {
-      document.body.classList.add('da-is-locked');
-      let veil = document.getElementById('da-gate-veil');
-      if (!veil) {
-        veil = document.createElement('div');
-        veil.id = 'da-gate-veil';
-        veil.className = 'da-gate-veil';
-        veil.innerHTML = `
-          <div class="da-modal" style="max-width:540px;">
-            <div style="text-align:center;">
-              <div class="da-modal-seal">🗝️</div>
-              <span class="da-modal-badge">Archival Gate</span>
-              <h2 class="da-modal-title">Stage Sealed</h2>
-              <p class="da-modal-subtitle">
-                This advanced masterclass resource is part of the full 12-Unit Dark Academia curriculum (£24).
-              </p>
-            </div>
-
-            <div class="da-modal-benefits">
-              <div class="da-benefit-item">
-                <span class="da-benefit-icon">✦</span>
-                <span>Full access to all 12 Masterclass Units across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, and <em>The Hound of the Baskervilles</em> + the Study Dossier.</span>
-              </div>
-              <div class="da-benefit-item">
-                <span class="da-benefit-icon">✦</span>
-                <span>Includes the interactive Apothecary &amp; Forensic Style-Shift labs and Capstone Writing self-audits.</span>
-              </div>
-            </div>
-
-            <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
-              <span>Unlock Archive Access via Stripe (£24)</span>
-              <span aria-hidden="true">→</span>
-            </a>
-
-            <div class="da-passkey-box">
-              <p>Already purchased? Enter your Scholar's Passkey:</p>
-              <div class="da-passkey-row">
-                <input type="text" class="da-passkey-input" id="veil-passkey-input" placeholder="ENTER PASSKEY" autocomplete="off" aria-label="Enter passkey to unlock">
-                <button class="da-passkey-btn" onclick="DarkAcademiaGate.submitVeilPasskey()">Unlock</button>
-              </div>
-              <div class="da-passkey-feedback" id="veil-passkey-feedback"></div>
-            </div>
-
-            <div style="text-align:center; margin-top:1.25rem;">
-              <a href="dark-academia-index.html" class="da-link-secondary">← Return to Free Curriculum Hub</a>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(veil);
-        const veilInput = veil.querySelector('#veil-passkey-input');
-        if (veilInput) {
-          veilInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') DarkAcademiaGate.submitVeilPasskey();
-          });
-        }
-      }
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.classList.remove('da-is-locked');
-    }
-  }
-
-  static submitVeilPasskey() {
-    const input = document.getElementById('veil-passkey-input');
-    const feedback = document.getElementById('veil-passkey-feedback');
-    if (!input || !feedback) return;
-
-    const val = input.value.trim();
-    if (this.unlock(val)) {
-      feedback.style.color = '#86efac';
-      feedback.textContent = '✓ Unlocked! Loading resource...';
-      setTimeout(() => window.location.reload(), 600);
-    } else {
-      feedback.style.color = '#fca5a5';
-      feedback.textContent = '✗ Invalid passkey.';
-    }
-  }
-}
+window.DarkAcademiaGate = DarkAcademiaGate;
 
 class DarkAcademiaEngine {
   constructor(config) {
-    this.unitId = config.unitId || 'generic_unit';
-    // 20 Marks standard: 4 Sort (1 ea) + 3 MCQ (1 ea) + 5 KWT (2 ea = 10) + 3 Style-Shift (1 ea) = 20
+    this.unitId = config.unitId || 'gothic_unit';
     this.totalMarks = config.totalMarks || 20;
-    this.currentScore = 0;
-    this.completedItems = new Set();
-    this.storageKey = `dark_academia_${this.unitId}`;
+    this.sortItems = config.sortItems || [];
+    this.styleShiftItems = config.styleShiftItems || [];
+    this.capstoneConfig = config.capstoneConfig || null;
+    this.score = 0;
 
-    this.initAriaLive();
-    this.initSortTasks(config.sortItems || []);
-    this.initMCQs();
-    this.initKWTs();
-    this.initStyleShift(config.styleShiftItems || []);
-    this.initCapstone(config.capstone || null);
-    this.initScoreBox();
-    this.restoreProgress();
-    this.initCompletionCard();
-
-    // Check URL parameters and enforce gate
-    DarkAcademiaGate.checkUrlUnlock();
-    DarkAcademiaGate.enforceGate(this.unitId);
+    this.init();
   }
 
-  // 1. Accessibility: Screen Reader Live Region
-  initAriaLive() {
-    let liveRegion = document.getElementById('aria-live-status');
-    if (!liveRegion) {
-      liveRegion = document.createElement('div');
-      liveRegion.id = 'aria-live-status';
-      liveRegion.setAttribute('role', 'status');
-      liveRegion.setAttribute('aria-live', 'polite');
-      liveRegion.style.position = 'absolute';
-      liveRegion.style.width = '1px';
-      liveRegion.style.height = '1px';
-      liveRegion.style.margin = '-1px';
-      liveRegion.style.overflow = 'hidden';
-      liveRegion.style.clip = 'rect(0, 0, 0, 0)';
-      liveRegion.style.whiteSpace = 'nowrap';
-      liveRegion.style.border = '0';
-      document.body.appendChild(liveRegion);
-    }
-    this.liveRegion = liveRegion;
-  }
-
-  announce(message) {
-    if (this.liveRegion) {
-      this.liveRegion.textContent = '';
-      setTimeout(() => {
-        this.liveRegion.textContent = message;
-      }, 50);
-    }
-  }
-
-  // 2. Score Management
-  initScoreBox() {
-    this.scoreDisplay = document.getElementById('score-display');
+  init() {
+    this.renderSortTask();
+    this.renderStyleShiftDrills();
+    this.bindKeyboardEvents();
+    this.initCapstoneAudit();
+    this.renderCompletionBanner();
     this.updateScoreDisplay();
+
+    window.resetAll = () => this.resetAll();
   }
 
-  addMarks(itemId, marks) {
-    if (!this.completedItems.has(itemId)) {
-      this.completedItems.add(itemId);
-      this.currentScore += marks;
-      this.updateScoreDisplay();
-      this.saveProgress();
-      this.renderCompletionCard();
-    }
-  }
-
+  /**
+   * Updates the score display in the header and checks for completion
+   */
   updateScoreDisplay() {
-    if (this.scoreDisplay) {
-      this.scoreDisplay.textContent = `${this.currentScore} / ${this.totalMarks}`;
-      this.scoreDisplay.setAttribute('aria-label', `Masterclass score: ${this.currentScore} out of ${this.totalMarks} marks`);
+    const el = document.getElementById('score-display');
+    if (!el) return;
+
+    el.textContent = `${this.score} / ${this.totalMarks}`;
+
+    if (this.score >= Math.ceil(this.totalMarks * 0.8)) {
+      el.style.color = '#4ade80'; // Green for 80%+
+    } else if (this.score >= Math.ceil(this.totalMarks * 0.5)) {
+      el.style.color = '#fbbf24'; // Amber for 50%+
+    } else {
+      el.style.color = ''; // Default theme accent
     }
+
+    this.saveProgress();
+    this.updateCompletionBanner();
   }
 
-  // 3. Section 1: Lexicon Sort Tasks
-  initSortTasks(sortItems) {
-    const container = document.getElementById('sorting-container');
-    if (!container || !sortItems.length) return;
+  /**
+   * Renders the completion banner at the bottom of the unit
+   */
+  renderCompletionBanner() {
+    const container = document.getElementById('dynamic-completion-card');
+    if (!container) return;
 
-    container.innerHTML = sortItems.map((item, idx) => {
-      const itemId = `sort_${idx}`;
-      return `
-        <div class="sort-row" id="${itemId}" data-item-id="${itemId}" data-type="${item.type}">
-          <div class="sort-word">
-            ${idx + 1}. ${item.word}
-            <small>${item.sub}</small>
-          </div>
-          <div class="sort-actions">
-            <button class="btn-sort" onclick="darkEngine.handleSort(this, 'arsenal', '${item.type}', '${encodeURIComponent(item.exp)}')">
-              Active Arsenal (C1/C2)
-            </button>
-            <button class="btn-sort" onclick="darkEngine.handleSort(this, 'museum', '${item.type}', '${encodeURIComponent(item.exp)}')">
-              Museum Word (Historical)
-            </button>
-          </div>
-          <div class="sort-explanation feedback-box" id="${itemId}_exp"></div>
+    container.className = 'da-completion-card';
+    this.updateCompletionBanner();
+  }
+
+  updateCompletionBanner() {
+    const container = document.getElementById('dynamic-completion-card');
+    if (!container) return;
+
+    const pct = Math.round((this.score / this.totalMarks) * 100);
+
+    container.innerHTML = `
+      <div class="da-completion-flex">
+        <div>
+          <span class="da-completion-eyebrow">Lesson Progress • ${this.score} / ${this.totalMarks} Marks (${pct}%)</span>
+          <h3>Want to review all 12 lessons side by side?</h3>
+          <p>Open the printable <strong>Course Study Guide</strong> for a clean summary of every grammar pattern, key vocabulary item, and answer key, or return to the course hub to choose another story.</p>
         </div>
+        <div class="da-completion-actions">
+          <a href="the-gothic-canon-c1-c2-compendium.html" class="da-btn-gold">📖 Open Study Guide</a>
+          <a href="dark-academia-index.html" class="da-btn-outline">← Back to Course Hub</a>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Task 1: Renders the 4-item Vocabulary Filter
+   */
+  renderSortTask() {
+    const container = document.getElementById('sorting-container');
+    if (!container || !this.sortItems.length) return;
+
+    container.innerHTML = '';
+
+    this.sortItems.forEach((item, index) => {
+      const row = document.createElement('div');
+      row.className = 'sort-row';
+      row.id = `sort-row-${index}`;
+
+      row.innerHTML = `
+        <div class="sort-word">
+          ${item.word}
+          <span>${item.sub}</span>
+        </div>
+        <div class="sort-controls" role="group" aria-label="Classify ${item.word}">
+          <button type="button" class="btn-sort" data-choice="arsenal" aria-label="Mark ${item.word} as a Modern C1/C2 Word">
+            ✓ Modern C1/C2 Word
+          </button>
+          <button type="button" class="btn-sort" data-choice="museum" aria-label="Mark ${item.word} as an Old-Fashioned Word">
+            🏛 Old-Fashioned Word
+          </button>
+        </div>
+        <div class="sort-feedback" id="sort-fb-${index}" aria-live="polite"></div>
       `;
-    }).join('');
-  }
 
-  handleSort(btn, chosen, actual, encodedExp) {
-    const parentRow = btn.closest('.sort-row');
-    const itemId = parentRow.getAttribute('data-item-id');
-    const expBox = parentRow.querySelector('.sort-explanation');
-    const allBtns = parentRow.querySelectorAll('button');
-    const explanation = decodeURIComponent(encodedExp);
-
-    allBtns.forEach(b => b.disabled = true);
-
-    if (chosen === actual) {
-      btn.classList.add('correct');
-      btn.innerHTML = `✓ ${btn.textContent.trim()}`;
-      expBox.style.background = 'rgba(16, 185, 129, 0.18)';
-      expBox.style.color = '#86efac';
-      expBox.innerHTML = `<strong>✓ Correct! (+1 Mark)</strong> ${explanation}`;
-      this.addMarks(itemId, 1);
-      this.announce(`Correct! You earned 1 mark. ${explanation}`);
-    } else {
-      btn.classList.add('wrong');
-      btn.innerHTML = `✗ ${btn.textContent.trim()}`;
-      const correctBtn = chosen === 'arsenal' ? allBtns[1] : allBtns[0];
-      correctBtn.classList.add('correct');
-      correctBtn.innerHTML = `✓ ${correctBtn.textContent.trim()}`;
-      expBox.style.background = 'rgba(239, 68, 68, 0.18)';
-      expBox.style.color = '#fca5a5';
-      expBox.innerHTML = `<strong>✗ Distinct Category:</strong> ${explanation}`;
-      this.completedItems.add(itemId);
-      this.saveProgress();
-      this.announce(`Incorrect. ${explanation}`);
-    }
-    expBox.style.display = 'block';
-  }
-
-  // 4. Section 2: Diagnostic MCQs with Pedagogical Feedback
-  initMCQs() {
-    const blocks = document.querySelectorAll('.mc-block');
-    blocks.forEach((block, idx) => {
-      block.setAttribute('data-mc-id', `mc_${idx}`);
-    });
-  }
-
-  handleMC(btn, chosenIdx, encodedMsg) {
-    const block = btn.closest('.mc-block');
-    const itemId = block.getAttribute('data-mc-id');
-    const correctIdx = parseInt(block.getAttribute('data-correct'), 10);
-    const allBtns = block.querySelectorAll('.mc-btn');
-    const fb = block.querySelector('.feedback-box');
-    const msg = decodeURIComponent(encodedMsg);
-
-    allBtns.forEach(b => b.disabled = true);
-
-    if (chosenIdx === correctIdx) {
-      btn.classList.add('correct');
-      btn.innerHTML = `✓ ${btn.innerHTML}`;
-      fb.style.background = 'rgba(16, 185, 129, 0.2)';
-      fb.style.color = '#86efac';
-      fb.innerHTML = `<strong>✓ Spot On (+1 Mark):</strong> ${msg}`;
-      this.addMarks(itemId, 1);
-      this.announce(`Correct! 1 mark awarded. ${msg}`);
-    } else {
-      btn.classList.add('wrong');
-      btn.innerHTML = `✗ ${btn.innerHTML}`;
-      allBtns[correctIdx].classList.add('correct');
-      allBtns[correctIdx].innerHTML = `✓ ${allBtns[correctIdx].innerHTML}`;
-      fb.style.background = 'rgba(239, 68, 68, 0.2)';
-      fb.style.color = '#fca5a5';
-      fb.innerHTML = `<strong>✗ Grammatical Revision:</strong> ${msg}`;
-      this.completedItems.add(itemId);
-      this.saveProgress();
-      this.announce(`Incorrect. ${msg}`);
-    }
-    fb.style.display = 'block';
-  }
-
-  // 5. Section 3: Cambridge Key Word Transformations (2 Marks Each)
-  initKWTs() {
-    const cards = document.querySelectorAll('.kwt-card');
-    cards.forEach((card, idx) => {
-      card.setAttribute('data-kwt-id', `kwt_${idx}`);
-      const input = card.querySelector('.kwt-input');
-      if (input) {
-        input.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            const btn = card.querySelector('.btn-main');
-            if (btn && !btn.disabled) btn.click();
-          }
+      const buttons = row.querySelectorAll('.btn-sort');
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          this.handleSort(index, btn.getAttribute('data-choice'), btn);
         });
-      }
+      });
+
+      container.appendChild(row);
     });
   }
 
-  handleKWT(btn, modelAns, explanation) {
+  handleSort(index, choice, btnElement) {
+    const row = document.getElementById(`sort-row-${index}`);
+    if (!row || row.dataset.answered === 'true') return;
+    row.dataset.answered = 'true';
+
+    const item = this.sortItems[index];
+    const buttons = row.querySelectorAll('.btn-sort');
+    const fb = document.getElementById(`sort-fb-${index}`);
+
+    buttons.forEach((b) => (b.disabled = true));
+
+    if (choice === item.type) {
+      btnElement.classList.add('correct');
+      this.score += 1;
+      this.updateScoreDisplay();
+      if (fb) {
+        fb.textContent = `✓ Correct! ${item.exp}`;
+        fb.style.color = 'var(--green-text)';
+      }
+    } else {
+      btnElement.classList.add('wrong');
+      if (fb) {
+        fb.textContent = `✗ Not quite. ${item.exp}`;
+        fb.style.color = 'var(--red-text)';
+      }
+    }
+  }
+
+  /**
+   * Section 2: Multiple Choice Grammar Questions
+   */
+  handleMC(btn, optionIndex, explanation) {
+    const block = btn.closest('.mc-block');
+    if (!block || block.dataset.answered === 'true') return;
+    block.dataset.answered = 'true';
+
+    const correctIndex = parseInt(block.getAttribute('data-correct'), 10);
+    const buttons = block.querySelectorAll('.mc-btn');
+    const fb = block.querySelector('.feedback-box');
+
+    buttons.forEach((b) => (b.disabled = true));
+
+    if (optionIndex === correctIndex) {
+      btn.classList.add('correct');
+      this.score += 1;
+      this.updateScoreDisplay();
+      if (fb) {
+        fb.className = 'feedback-box correct';
+        fb.innerHTML = `<strong>✓ Correct (+1 Mark):</strong> ${explanation}`;
+      }
+    } else {
+      btn.classList.add('wrong');
+      if (buttons[correctIndex]) {
+        buttons[correctIndex].classList.add('correct');
+      }
+      if (fb) {
+        fb.className = 'feedback-box wrong';
+        fb.innerHTML = `<strong>✗ Key Point:</strong> ${explanation}`;
+      }
+    }
+  }
+
+  /**
+   * Section 4: Modern Exam Writing Practice (3 Marks)
+   */
+  renderStyleShiftDrills() {
+    const container = document.getElementById('style-shift-drills');
+    if (!container || !this.styleShiftItems.length) return;
+
+    container.innerHTML = '';
+
+    this.styleShiftItems.forEach((item, idx) => {
+      const qNum = 13 + idx;
+      const block = document.createElement('div');
+      block.className = 'mc-block';
+      block.setAttribute('data-correct', item.correctIdx);
+
+      const optionsHtml = item.options
+        .map(
+          (opt, oIdx) => `
+        <button type="button" class="mc-btn" data-opt-idx="${oIdx}">
+          ${String.fromCharCode(65 + oIdx)}) ${opt}
+        </button>
+      `
+        )
+        .join('');
+
+      block.innerHTML = `
+        <div class="mc-prompt">${qNum}. ${item.prompt}</div>
+        <div class="mc-options">
+          ${optionsHtml}
+        </div>
+        <div class="feedback-box" aria-live="polite"></div>
+      `;
+
+      const btns = block.querySelectorAll('.mc-btn');
+      btns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const selectedIdx = parseInt(btn.getAttribute('data-opt-idx'), 10);
+          this.handleMC(btn, selectedIdx, item.exp);
+        });
+      });
+
+      container.appendChild(block);
+    });
+  }
+
+  /**
+   * Section 3: Cambridge Part 4 Key Word Transformations (2 Marks Each)
+   */
+  normalizeText(str) {
+    return str
+      .trim()
+      .toLowerCase()
+      .replace(/['’]/g, "'")
+      .replace(/[.,!?;:]+$/g, '')
+      .replace(/\s+/g, ' ');
+  }
+
+  handleKWT(btn, modelAnswer, explanation) {
     const card = btn.closest('.kwt-card');
-    const itemId = card.getAttribute('data-kwt-id');
+    if (!card || card.dataset.answered === 'true') return;
+
     const input = card.querySelector('.kwt-input');
     const fb = card.querySelector('.feedback-box');
-    const valid = card.getAttribute('data-valid').toLowerCase().split('|');
+    const rawUser = input ? input.value : '';
+    const userNorm = this.normalizeText(rawUser);
 
-    // Normalize user response: trim, lowercase, collapse whitespace, strip trailing punctuation
-    const rawVal = input.value.trim().toLowerCase().replace(/[.,!?;]+$/, '').replace(/\s+/g, ' ');
-
-    if (!rawVal) {
-      input.focus();
+    if (!userNorm) {
+      if (fb) {
+        fb.className = 'feedback-box wrong';
+        fb.innerHTML = `<strong>⚠️ Please type your transformation before checking.</strong>`;
+      }
+      if (input) input.focus();
       return;
     }
 
-    // Word count check (C1/C2: between 3 and 8 words)
-    const wordCount = rawVal.split(' ').length;
-
-    input.disabled = true;
+    card.dataset.answered = 'true';
+    if (input) input.disabled = true;
     btn.disabled = true;
 
-    const isFullMatch = valid.some(v => v.trim() === rawVal);
+    const validList = (card.getAttribute('data-valid') || '')
+      .split('|')
+      .map((s) => this.normalizeText(s))
+      .filter(Boolean);
 
-    if (isFullMatch) {
-      input.style.borderColor = '#10b981';
-      fb.style.background = 'rgba(16, 185, 129, 0.2)';
-      fb.style.color = '#86efac';
-      fb.innerHTML = `
-        <strong>✓ Full 2 Marks!</strong><br>
-        • Target Structure: <em>"${modelAns}"</em><br>
-        • <strong>Grammar Analysis:</strong> ${explanation}
-      `;
-      this.addMarks(itemId, 2);
-      this.announce(`Full 2 marks awarded! Target structure: ${modelAns}. ${explanation}`);
-    } else {
-      input.style.borderColor = '#ef4444';
-      fb.style.background = 'rgba(239, 68, 68, 0.2)';
-      fb.style.color = '#fca5a5';
+    const isExactMatch = validList.includes(userNorm);
 
-      let countWarning = '';
-      if (wordCount < 3 || wordCount > 8) {
-        countWarning = `<div style="margin-top:0.35rem; color:#fde68a;">⚠️ Word count penalty: You wrote ${wordCount} words. Cambridge requires strictly between 3 and 8 words.</div>`;
+    let isPartialMatch = false;
+    const keyPill = card.querySelector('.kwt-key');
+    const keyWord = keyPill ? this.normalizeText(keyPill.textContent) : '';
+
+    if (!isExactMatch && keyWord && userNorm.includes(keyWord)) {
+      const modelWords = this.normalizeText(modelAnswer).split(' ');
+      const userWords = userNorm.split(' ');
+      const overlap = userWords.filter((w) => modelWords.includes(w)).length;
+      if (overlap >= Math.ceil(modelWords.length * 0.65) && userWords.length >= 3 && userWords.length <= 8) {
+        isPartialMatch = true;
       }
-
-      fb.innerHTML = `
-        <strong>✗ Needs Revision (0 / 2 Marks):</strong><br>
-        • Expected Cambridge Form: <em>"${modelAns}"</em><br>
-        • <strong>Key Breakdown:</strong> ${explanation}
-        ${countWarning}
-      `;
-      this.completedItems.add(itemId);
-      this.saveProgress();
-      this.announce(`Incorrect. Expected structure was: ${modelAns}. ${explanation}`);
     }
-    fb.style.display = 'block';
-  }
 
-  // 6. Section 4: Interactive Style-Shift Nominalisation Drills (+3 Marks)
-  initStyleShift(shiftItems) {
-    const container = document.getElementById('style-shift-drills');
-    if (!container || !shiftItems.length) return;
-
-    container.innerHTML = shiftItems.map((item, idx) => {
-      const qId = `shift_${idx}`;
-      return `
-        <div class="shift-q-card" id="${qId}" data-shift-id="${qId}">
-          <div class="shift-q-prompt">
-            <strong>Question ${13 + idx}:</strong> ${item.prompt}
-          </div>
-          <div class="shift-q-opts">
-            ${item.options.map((opt, optIdx) => `
-              <button class="shift-q-btn" onclick="darkEngine.handleStyleShift(this, ${optIdx === item.correctIdx}, '${encodeURIComponent(item.exp)}')">
-                ${opt}
-              </button>
-            `).join('')}
-          </div>
-          <div class="feedback-box" style="margin-top:0.75rem;"></div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  handleStyleShift(btn, isCorrect, encodedExp) {
-    const card = btn.closest('.shift-q-card');
-    const itemId = card.getAttribute('data-shift-id');
-    const fb = card.querySelector('.feedback-box');
-    const allBtns = card.querySelectorAll('.shift-q-btn');
-    const exp = decodeURIComponent(encodedExp);
-
-    allBtns.forEach(b => b.disabled = true);
-
-    if (isCorrect) {
-      btn.classList.add('correct');
-      btn.innerHTML = `✓ ${btn.textContent.trim()}`;
-      fb.style.background = 'rgba(16, 185, 129, 0.2)';
-      fb.style.color = '#86efac';
-      fb.innerHTML = `<strong>✓ Spot On (+1 Mark):</strong> ${exp}`;
-      this.addMarks(itemId, 1);
-      this.announce(`Correct! 1 mark awarded. ${exp}`);
+    if (isExactMatch) {
+      if (input) {
+        input.style.borderColor = 'var(--green)';
+        input.style.color = 'var(--green-text)';
+      }
+      this.score += 2;
+      this.updateScoreDisplay();
+      if (fb) {
+        fb.className = 'feedback-box correct';
+        fb.innerHTML = `<strong>✓ Full Marks (+2/2):</strong> Excellent! <em>"${modelAnswer}"</em> — ${explanation}`;
+      }
+    } else if (isPartialMatch) {
+      if (input) {
+        input.style.borderColor = 'var(--amber)';
+        input.style.color = '#fde68a';
+      }
+      this.score += 1;
+      this.updateScoreDisplay();
+      if (fb) {
+        fb.className = 'feedback-box partial';
+        fb.innerHTML = `<strong>⚡ Partial Credit (+1/2):</strong> You used the right key word and idea! Full model answer: <strong>"${modelAnswer}"</strong>.<br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
+      }
     } else {
-      btn.classList.add('wrong');
-      btn.innerHTML = `✗ ${btn.textContent.trim()}`;
-      fb.style.background = 'rgba(239, 68, 68, 0.2)';
-      fb.style.color = '#fca5a5';
-      fb.innerHTML = `<strong>✗ Register Note:</strong> ${exp}`;
-      this.completedItems.add(itemId);
-      this.saveProgress();
-      this.announce(`Incorrect. ${exp}`);
+      if (input) {
+        input.style.borderColor = 'var(--red)';
+        input.style.color = 'var(--red-text)';
+      }
+      if (fb) {
+        fb.className = 'feedback-box wrong';
+        fb.innerHTML = `<strong>✗ Model Answer:</strong> <strong>"${modelAnswer}"</strong><br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
+      }
     }
-    fb.style.display = 'block';
   }
 
-  // 7. Section 5: Capstone Writing Self-Audit & Model Overlay
-  initCapstone(capstoneConfig) {
-    if (!capstoneConfig) return;
-    this.capstoneConfig = capstoneConfig;
-
-    const textarea = document.getElementById('capstone-input');
-    const wordCounter = document.getElementById('capstone-word-counter');
-    const auditInversion = document.getElementById('audit-inversion');
-    const auditArsenal = document.getElementById('audit-arsenal');
-    const auditParticiple = document.getElementById('audit-participle');
-
-    if (textarea) {
-      textarea.addEventListener('input', () => {
-        const text = textarea.value.trim();
-        const words = text ? text.split(/\s+/).length : 0;
-
-        // Word count verification
-        if (wordCounter) {
-          wordCounter.textContent = `${words} / 220–260 Words`;
-          wordCounter.className = 'word-counter-pill';
-          if (words >= 220 && words <= 260) {
-            wordCounter.classList.add('in-range');
-          } else if (words > 260) {
-            wordCounter.classList.add('over-limit');
-          }
-        }
-
-        // Live Syntactic Constraint 1: Inversion / Epistemic Modals / Clefts
-        if (auditInversion) {
-          const invRegex = capstoneConfig.invRegex || /(under\s+no\s+circumstances|scarcely\s+had|little\s+did|seldom|rarely|on\s+no\s+account|nowhere|hardly\s+had|not\s+only|had\s+i|were\s+we|much\s+as|must\s+have\s+been|cannot\s+have|could\s+not\s+have|might\s+conceivably\s+have|ought\s+to\s+have|it\s+was\s+only\s+when|what\s+precipitated)/i;
-          const match = text.match(invRegex);
-          const badge = auditInversion.querySelector('.audit-badge');
-          const note = auditInversion.querySelector('.audit-note');
-          if (match) {
-            badge.classList.add('passed');
-            badge.textContent = '✓';
-            if (note) note.textContent = `Detected target structure: "${match[0]}"`;
-          } else {
-            badge.classList.remove('passed');
-            badge.textContent = '○';
-            if (note) note.textContent = capstoneConfig.invHint || 'Include at least 1 target inversion or modal deduction structure.';
-          }
-        }
-
-        // Live Constraint 2: Participle / Nominalisation / Locative Opening
-        if (auditParticiple) {
-          const partRegex = capstoneConfig.partRegex || /(having\s+[a-z]+|steering|abandoned|shrouded|confronted|quivering|heaving|foreseeing|realising|struck|deprived|compounded\s+by|driven\s+by|concealed\s+behind|emerging\s+from|beyond\s+the|shrouded\s+in|far\s+from\s+being)/i;
-          const match = text.match(partRegex);
-          const badge = auditParticiple.querySelector('.audit-badge');
-          const note = auditParticiple.querySelector('.audit-note');
-          if (match) {
-            badge.classList.add('passed');
-            badge.textContent = '✓';
-            if (note) note.textContent = `Detected clause architecture: "${match[0]}"`;
-          } else {
-            badge.classList.remove('passed');
-            badge.textContent = '○';
-            if (note) note.textContent = capstoneConfig.partHint || 'Include at least 1 fronted participle, concessive, or locative clause.';
-          }
-        }
-
-        // Live Constraint 3: Arsenal Lexicon Detection (3 required)
-        if (auditArsenal && capstoneConfig.arsenalWords) {
-          const foundWords = [];
-          capstoneConfig.arsenalWords.forEach(w => {
-            const re = new RegExp(`\\b${w}`, 'i');
-            if (re.test(text)) foundWords.push(w);
-          });
-          const badge = auditArsenal.querySelector('.audit-badge');
-          const note = auditArsenal.querySelector('.audit-note');
-          if (badge) {
-            if (foundWords.length >= 3) {
-              badge.classList.add('passed');
-              badge.textContent = '✓';
-            } else {
-              badge.classList.remove('passed');
-              badge.textContent = `${foundWords.length}/3`;
-            }
-          }
-          if (note) {
-            note.textContent = foundWords.length > 0
-              ? `Detected (${foundWords.length}/3): ${foundWords.join(', ')}`
-              : 'Deploy at least 3 active Arsenal words from this trilogy.';
+  /**
+   * Keyboard support: Enter submits KWT input
+   */
+  bindKeyboardEvents() {
+    const inputs = document.querySelectorAll('.kwt-input');
+    inputs.forEach((input) => {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const card = input.closest('.kwt-card');
+          const btn = card ? card.querySelector('.btn-main') : null;
+          if (btn && !btn.disabled) {
+            btn.click();
           }
         }
       });
+    });
+  }
+
+  /**
+   * Section 5 (Unit 3s): Optional Writing Sandbox & Live Checklist
+   */
+  initCapstoneAudit() {
+    const textarea = document.getElementById('capstone-input');
+    if (!textarea) return;
+
+    const wordCounter = document.getElementById('capstone-word-counter');
+    const checkInversion = document.getElementById('audit-inversion');
+    const checkParticiple = document.getElementById('audit-participle');
+    const checkArsenal = document.getElementById('audit-arsenal');
+
+    const defaultInversionRegex = /(scarcely\s+had|hardly\s+had|no\s+sooner\s+had|under\s+no\s+circumstances|little\s+did|seldom\s+had|rarely\s+did|nowhere\s+could|nowhere\s+was|not\s+only\s+did|only\s+after|not\s+until|never\s+before\s+had|never\s+had|had\s+he\s+not|had\s+i\s+not|had\s+victor|had\s+holmes|had\s+we|were\s+he\s+to|were\s+it\s+not|much\s+as|so\s+[a-z]+\s+was|what\s+[a-z]+\s+most\s+was|it\s+was\s+only)/i;
+    const defaultParticipleRegex = /(having\s+[a-z]+ed|having\s+been|hemmed\s+in|shrouded\s+in|driven\s+by|deprived\s+of|ostracised\s+by|compounded\s+by|confronted\s+with|confronted\s+by|grounded\s+upon|lashed\s+to|What\s+struck|What\s+drove|What\s+exposed|It\s+was\s+the|beyond\s+the|out\s+of\s+the)/i;
+    const defaultArsenalList = [
+      'apprehensive', 'impenetrable', 'hemmed', 'sinister', 'formidable', 'trepidation',
+      'unaccountably', 'derelict', 'disclose', 'disclosed', 'catastrophe', 'convulsive',
+      'unquenchable', 'delineate', 'abhorrence', 'inexorable', 'insolent', 'malevolence',
+      'benevolence', 'ostracise', 'ostracised', 'repudiate', 'repudiation', 'juggernaut',
+      'detestable', 'callous', 'audacity', 'duplicity', 'facade', 'repugnance', 'cerebral',
+      'incongruous', 'depravity', 'abominable', 'imperious', 'extricate', 'pernicious',
+      'plausible', 'circumstantial', 'calamity', 'treacherous', 'quagmire', 'melancholy',
+      'desolate', 'corroborate', 'corroborated', 'fallacy', 'premeditated', 'audacious'
+    ];
+
+    const invRegex = (this.capstoneConfig && this.capstoneConfig.invRegex) || defaultInversionRegex;
+    const partRegex = (this.capstoneConfig && this.capstoneConfig.partRegex) || defaultParticipleRegex;
+    const arsenalWords = (this.capstoneConfig && this.capstoneConfig.arsenalWords) || defaultArsenalList;
+
+    textarea.addEventListener('input', () => {
+      const text = textarea.value.trim();
+      const words = text ? text.split(/\s+/).length : 0;
+
+      if (wordCounter) {
+        wordCounter.textContent = `${words} Words`;
+        if (words >= 150 && words <= 280) {
+          wordCounter.className = 'word-counter-pill optimal';
+        } else {
+          wordCounter.className = 'word-counter-pill';
+        }
+      }
+
+      if (checkInversion) {
+        const hasInv = invRegex.test(text);
+        this.toggleAuditItem(
+          checkInversion,
+          hasInv,
+          hasInv ? '✓ Target grammar structure spotted!' : 'Try using one of the unit grammar structures.'
+        );
+      }
+
+      if (checkParticiple) {
+        const hasPart = partRegex.test(text);
+        this.toggleAuditItem(
+          checkParticiple,
+          hasPart,
+          hasPart ? '✓ Second target structure spotted!' : 'Try adding a participle opener or emphasis structure.'
+        );
+      }
+
+      if (checkArsenal) {
+        const lower = text.toLowerCase();
+        const matched = arsenalWords.filter((w) => lower.includes(w));
+        const uniqueMatched = [...new Set(matched)];
+        const passed = uniqueMatched.length >= 2;
+        this.toggleAuditItem(
+          checkArsenal,
+          passed,
+          passed
+            ? `✓ C1/C2 vocabulary used (${uniqueMatched.slice(0, 4).join(', ')})`
+            : `C1/C2 words used: ${uniqueMatched.length}/2 (${uniqueMatched.join(', ') || 'none yet'})`
+        );
+      }
+    });
+  }
+
+  toggleAuditItem(el, passed, message) {
+    if (!el) return;
+    const badge = el.querySelector('.audit-badge');
+    const note = el.querySelector('.audit-note');
+    if (passed) {
+      el.classList.add('passed');
+      if (badge) badge.textContent = '✓';
+    } else {
+      el.classList.remove('passed');
+      if (badge) badge.textContent = '○';
+    }
+    if (note && message) {
+      note.textContent = message;
     }
   }
 
   toggleModelAnswer() {
     const panel = document.getElementById('capstone-model-panel');
-    if (panel) {
-      panel.classList.toggle('active');
-      if (panel.classList.contains('active')) {
-        panel.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    if (!panel) return;
+    panel.classList.toggle('active');
   }
 
-  showCriterion(criterionIdx) {
-    const buttons = document.querySelectorAll('.model-crit-btn');
-    buttons.forEach((b, i) => {
-      b.classList.toggle('active', i === criterionIdx);
+  showCriterion(critIdx) {
+    const tabs = document.querySelectorAll('.model-crit-btn');
+    const highlights = document.querySelectorAll('.hl-annotated');
+    const commentary = document.getElementById('criterion-commentary');
+
+    tabs.forEach((t, i) => t.classList.toggle('active', i === critIdx));
+    highlights.forEach((h) => {
+      const c = parseInt(h.getAttribute('data-criterion'), 10);
+      h.classList.toggle('active', c === critIdx);
     });
 
-    const spans = document.querySelectorAll('.hl-annotated');
-    spans.forEach(s => {
-      const crit = parseInt(s.getAttribute('data-criterion'), 10);
-      s.classList.toggle('active', crit === criterionIdx);
-    });
-
-    const commentaryBox = document.getElementById('criterion-commentary');
-    if (commentaryBox && this.capstoneConfig && this.capstoneConfig.rubrics) {
-      commentaryBox.innerHTML = this.capstoneConfig.rubrics[criterionIdx] || '';
+    if (commentary && this.capstoneConfig && this.capstoneConfig.rubrics) {
+      commentary.innerHTML = this.capstoneConfig.rubrics[critIdx] || '';
     }
   }
 
-  // 8. Conversion Funnel Card for Unit 1
-  initCompletionCard() {
-    this.renderCompletionCard();
-  }
-
-  renderCompletionCard() {
-    const card = document.getElementById('dynamic-completion-card');
-    if (!card) return;
-
-    const unlocked = DarkAcademiaGate.isUnlocked();
-    const metaMap = {
-      dracula_unit1: {
-        mastered: 'Participle Clauses at the Borgo Pass',
-        unit2Url: 'dracula-unit2-counts-hospitality.html',
-        unit2Title: "The Count's Hospitality",
-        nextFreeUrl: 'frankenstein-unit1-spark-of-being.html',
-        nextFreeTitle: 'Frankenstein Unit 1'
-      },
-      frankenstein_unit1: {
-        mastered: 'Inverted Conditionals at the Spark of Being',
-        unit2Url: 'frankenstein-unit2-sea-of-ice.html',
-        unit2Title: 'The Sea of Ice',
-        nextFreeUrl: 'jekyll-unit1-soho-threshold.html',
-        nextFreeTitle: 'Jekyll & Hyde Unit 1'
-      },
-      jekyll_unit1: {
-        mastered: 'Extreme Register Contrasts in Fog-Bound Soho',
-        unit2Url: 'jekyll-unit2-lanyons-narrative.html',
-        unit2Title: "Dr Lanyon's Narrative",
-        nextFreeUrl: 'baskerville-unit1-curse-of-the-moors.html',
-        nextFreeTitle: 'Hound of the Baskervilles Unit 1'
-      },
-      baskerville_unit1: {
-        mastered: 'Modals of Deduction at 221B Baker Street',
-        unit2Url: 'baskerville-unit2-grimpen-mire.html',
-        unit2Title: 'Grimpen Mire & Baskerville Hall',
-        nextFreeUrl: 'dracula-unit1-carpathian-threshold.html',
-        nextFreeTitle: 'Dracula Unit 1'
-      }
-    };
-
-    const meta = metaMap[this.unitId] || metaMap.dracula_unit1;
-
-    if (unlocked) {
-      card.innerHTML = `
-        <div class="da-completion-top">
-          <span class="da-score-callout">✓ Unit Practised • Your Score: ${this.currentScore} / ${this.totalMarks} Marks</span>
-          <span class="badge badge-verbatim">Archive Access: Unlocked</span>
-        </div>
-        <h3 class="da-completion-title">Stage 1 Complete — The Gate is Open</h3>
-        <p class="da-completion-body">
-          You have mastered ${meta.mastered}. Continue along the canonical roadmap into Stage 2.
-        </p>
-        <div class="da-completion-actions">
-          <a href="${meta.unit2Url}" class="btn-main" style="text-decoration:none;">
-            Enter Stage 2: ${meta.unit2Title} →
-          </a>
-          <a href="the-gothic-canon-c1-c2-compendium.html" class="dossier-pill-btn" target="_blank">
-            📑 View Offline Study Dossier
-          </a>
-        </div>
-      `;
-    } else {
-      card.innerHTML = `
-        <div class="da-completion-top">
-          <span class="da-score-callout">Stage 1 Complete • Your Score: ${this.currentScore} / ${this.totalMarks} Marks</span>
-          <span class="badge badge-canon-dracula">CEFR C1/C2 Archive</span>
-        </div>
-        <h3 class="da-completion-title">The Threshold is Crossed</h3>
-        <p class="da-completion-body">
-          You've mastered ${meta.mastered}. Unlock the full <strong>12-Unit Dark Academia Archive</strong> to access all advanced masterclasses across <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, and <em>The Hound of the Baskervilles</em>.
-        </p>
-        <div class="da-completion-perks">
-          <div class="da-perk-chip"><span>🗝️</span> 8 Advanced Locked Units</div>
-          <div class="da-perk-chip"><span>⚡</span> 40+ Extra Cambridge KWTs</div>
-          <div class="da-perk-chip"><span>🖋️</span> 4 Capstone Writing &amp; Model Overlays</div>
-          <div class="da-perk-chip"><span>📑</span> Printable C1/C2 Lexis &amp; Syntax Dossier</div>
-        </div>
-        <div class="da-completion-actions">
-          <button class="da-btn-stripe" style="max-width:340px;" onclick="DarkAcademiaGate.openModal('${this.unitId}')">
-            <span>Unlock Full 12-Unit Archive — £24</span>
-            <span aria-hidden="true">→</span>
-          </button>
-          <a href="${meta.nextFreeUrl}" class="da-link-secondary">
-            Or try ${meta.nextFreeTitle} for free first →
-          </a>
-        </div>
-      `;
-    }
-  }
-
-  // 9. Persistence: LocalStorage Auto-Save & Restore
   saveProgress() {
     try {
-      const data = {
-        score: this.currentScore,
-        completed: Array.from(this.completedItems),
-        timestamp: new Date().toISOString()
-      };
-      localStorage.setItem(this.storageKey, JSON.stringify(data));
-
-      const masterData = JSON.parse(localStorage.getItem('dark_academia_master') || '{}');
-      masterData[this.unitId] = { score: this.currentScore, total: this.totalMarks };
-      localStorage.setItem('dark_academia_master', JSON.stringify(masterData));
-    } catch (e) {}
+      localStorage.setItem(
+        `da_progress_${this.unitId}`,
+        JSON.stringify({
+          score: this.score,
+          total: this.totalMarks,
+          updatedAt: new Date().toISOString()
+        })
+      );
+    } catch (e) {
+      // Ignore storage quota errors
+    }
   }
 
-  restoreProgress() {
-    try {
-      const raw = localStorage.getItem(this.storageKey);
-      if (!raw) return;
-      const data = JSON.parse(raw);
-      if (data && typeof data.score === 'number') {
-        this.currentScore = data.score;
-        this.completedItems = new Set(data.completed || []);
-        this.updateScoreDisplay();
+  resetAll() {
+    this.score = 0;
+    this.updateScoreDisplay();
+
+    this.renderSortTask();
+    this.renderStyleShiftDrills();
+
+    document.querySelectorAll('.card:not(:has(#style-shift-drills)) .mc-block').forEach((block) => {
+      delete block.dataset.answered;
+      block.querySelectorAll('.mc-btn').forEach((btn) => {
+        btn.disabled = false;
+        btn.classList.remove('correct', 'wrong');
+      });
+      const fb = block.querySelector('.feedback-box');
+      if (fb) {
+        fb.className = 'feedback-box';
+        fb.innerHTML = '';
       }
-    } catch (e) {}
-  }
+    });
 
-  resetProgress() {
-    try {
-      localStorage.removeItem(this.storageKey);
-      const masterData = JSON.parse(localStorage.getItem('dark_academia_master') || '{}');
-      delete masterData[this.unitId];
-      localStorage.setItem('dark_academia_master', JSON.stringify(masterData));
-    } catch (e) {}
-    window.location.reload();
+    document.querySelectorAll('.kwt-card').forEach((card) => {
+      delete card.dataset.answered;
+      const input = card.querySelector('.kwt-input');
+      const btn = card.querySelector('.btn-main');
+      const fb = card.querySelector('.feedback-box');
+      if (input) {
+        input.value = '';
+        input.disabled = false;
+        input.style.borderColor = '';
+        input.style.color = '';
+      }
+      if (btn) btn.disabled = false;
+      if (fb) {
+        fb.className = 'feedback-box';
+        fb.innerHTML = '';
+      }
+    });
   }
 }
 
-// Global reset helper
-function resetAll() {
-  if (window.darkEngine) {
-    window.darkEngine.resetProgress();
-  } else {
-    window.location.reload();
-  }
-}
-
-// Initialize gates across all pages
-document.addEventListener('DOMContentLoaded', () => {
-  DarkAcademiaGate.checkUrlUnlock();
-  DarkAcademiaGate.syncUI();
-});
+window.DarkAcademiaEngine = DarkAcademiaEngine;
