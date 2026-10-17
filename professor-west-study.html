@@ -300,18 +300,19 @@
       border-color: #fff;
     }
 
-    /* ================= THE INTERACTIVE SVG STUDY SCENE ================= */
+    /* ================= THE INTERACTIVE PIXAR 3D STUDY SCENE ================= */
     .study-stage-wrapper {
       position: relative;
       width: 100%;
       min-width: 0;
       max-width: 100%;
-      background: var(--mahogany-mid);
-      border: 3px solid var(--brass-mid);
-      border-radius: 22px;
+      background: #120905;
+      border: 4px solid var(--brass-bright);
+      border-radius: 26px;
       box-shadow:
-        0 20px 50px rgba(0, 0, 0, 0.75),
-        inset 0 0 60px rgba(0, 0, 0, 0.65);
+        0 28px 65px rgba(0, 0, 0, 0.88),
+        0 0 42px rgba(245, 158, 11, 0.24),
+        inset 0 2px 0 rgba(254, 240, 138, 0.55);
       overflow: hidden;
     }
 
@@ -325,28 +326,39 @@
 
     .study-hotspot {
       cursor: pointer;
-      transition: filter 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: filter 0.28s ease, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
       transform-box: fill-box;
       transform-origin: center;
     }
 
+    .study-hotspot .hotspot-aura {
+      opacity: 0.22;
+      transition: opacity 0.28s ease;
+    }
+
     .study-hotspot:hover,
     .study-hotspot:focus-visible {
-      filter: drop-shadow(0 0 14px rgba(253, 230, 138, 0.85));
-      transform: scale(1.035);
+      filter: drop-shadow(0 0 18px rgba(253, 230, 138, 0.95)) drop-shadow(0 0 28px rgba(52, 211, 153, 0.55));
+      transform: scale(1.04);
       outline: none;
+    }
+
+    .study-hotspot:hover .hotspot-aura,
+    .study-hotspot:focus-visible .hotspot-aura {
+      opacity: 0.68;
     }
 
     .hotspot-label-pill {
       pointer-events: none;
-      transition: transform 0.25s ease;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.78));
+      transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .study-hotspot:hover .hotspot-label-pill {
-      transform: translateY(-3px);
+      transform: translateY(-4px) scale(1.03);
     }
 
-    /* Pencil Character Animations inside SVG */
+    /* Pencil Character Animations inside Pixar 3D Study SVG */
     #pencil-study-rig {
       cursor: pointer;
       transform-box: fill-box;
@@ -355,33 +367,33 @@
     }
 
     #pencil-study-rig:hover {
-      filter: drop-shadow(0 0 12px rgba(52, 211, 153, 0.8));
-      transform: scale(1.05);
+      filter: drop-shadow(0 0 18px rgba(52, 211, 153, 0.92)) drop-shadow(0 0 28px rgba(253, 230, 138, 0.65));
+      transform: scale(1.045);
     }
 
     @keyframes tailSwish {
-      0%, 100% { transform: rotate(-6deg); }
-      50% { transform: rotate(10deg); }
+      0%, 100% { transform: rotate(-4deg); }
+      50% { transform: rotate(7deg); }
     }
 
     @keyframes breatheBody {
       0%, 100% { transform: scaleY(1); }
-      50% { transform: scaleY(1.025); }
+      50% { transform: scaleY(1.02); }
     }
 
     @keyframes earTwitch {
       0%, 92%, 100% { transform: rotate(0deg); }
-      95% { transform: rotate(-8deg); }
+      95% { transform: rotate(-6deg); }
     }
 
     @keyframes lanternPulse {
-      0%, 100% { opacity: 0.72; }
-      50% { opacity: 0.95; }
+      0%, 100% { opacity: 0.55; }
+      50% { opacity: 0.88; }
     }
 
     #pencil-tail {
       transform-box: fill-box;
-      transform-origin: 15% 85%;
+      transform-origin: 50% 90%;
       animation: tailSwish 3.2s ease-in-out infinite;
     }
 
@@ -398,50 +410,56 @@
     }
 
     .lamp-cone-glow {
-      animation: lanternPulse 4s ease-in-out infinite;
+      animation: lanternPulse 3.6s ease-in-out infinite;
       pointer-events: none;
     }
 
-    /* ================= PENCIL'S SPEECH BUBBLE BAR ================= */
+    /* ================= PENCIL'S PIXAR 3D SPEECH BUBBLE BAR ================= */
     .pencil-dialogue-bar {
       position: relative;
-      background: linear-gradient(135deg, var(--parchment-light), var(--parchment-mid));
+      background: linear-gradient(180deg, #fffdf7 0%, #f5e6c4 100%);
       color: var(--parchment-ink);
-      border: 3px solid var(--brass-mid);
-      border-radius: 18px;
-      padding: 1rem 1.35rem;
+      border: 3px solid var(--brass-bright);
+      border-radius: 24px;
+      padding: 1.1rem 1.45rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1.15rem;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+      gap: 1.2rem;
+      box-shadow:
+        0 18px 40px rgba(0, 0, 0, 0.68),
+        0 5px 0 #78350f,
+        inset 0 2px 0 #ffffff;
     }
 
     .dialogue-left {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 1.1rem;
       flex: 1;
     }
 
     .pencil-avatar-badge {
-      width: 62px;
-      height: 62px;
+      width: 76px;
+      height: 76px;
       border-radius: 50%;
       background: var(--mahogany-mid) url('assets/pixar/act2_pencil.jpg') center 24% / 175% no-repeat;
-      border: 3px solid var(--brass-bright);
+      border: 4px solid var(--brass-bright);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
       cursor: pointer;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55), 0 0 12px rgba(52, 211, 153, 0.35);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.6),
+        0 0 16px rgba(52, 211, 153, 0.45),
+        inset 0 2px 4px rgba(255, 255, 255, 0.5);
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s ease;
     }
 
     .pencil-avatar-badge:hover {
-      transform: scale(1.08);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65), 0 0 18px rgba(253, 230, 138, 0.65);
+      transform: scale(1.09) rotate(-3deg);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7), 0 0 22px rgba(253, 230, 138, 0.85);
     }
 
     .dialogue-content {
@@ -451,142 +469,203 @@
     .dialogue-speaker-row {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.2rem;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-bottom: 0.25rem;
     }
 
     .dialogue-speaker-name {
       font-family: var(--font-serif);
       font-weight: 800;
-      font-size: 1.15rem;
-      color: var(--mahogany-warm);
+      font-size: 1.25rem;
+      color: #3b1d0f;
     }
 
     .dialogue-role-tag {
-      font-size: 0.72rem;
-      font-weight: 800;
-      background: rgba(217, 119, 6, 0.18);
-      color: var(--brass-dark);
-      padding: 0.12rem 0.55rem;
+      font-size: 0.74rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #fde68a, #f59e0b);
+      color: #291a10;
+      padding: 0.16rem 0.65rem;
       border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3);
     }
 
     .dialogue-text {
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: 1.03rem;
+      font-weight: 800;
       line-height: 1.45;
-      color: var(--parchment-ink);
+      color: #291a10;
     }
 
     .dialogue-actions {
       display: flex;
       align-items: center;
-      gap: 0.55rem;
+      gap: 0.6rem;
       flex-wrap: wrap;
     }
 
     .pet-pencil-btn {
-      background: var(--mahogany-warm);
+      background: linear-gradient(180deg, #5c321e 0%, #381d10 100%);
       color: var(--brass-glow);
-      border: 2px solid var(--brass-mid);
-      border-radius: 12px;
-      padding: 0.55rem 0.95rem;
+      border: 2px solid var(--brass-bright);
+      border-radius: 14px;
+      padding: 0.6rem 1.05rem;
       font-family: var(--font-sans);
-      font-size: 0.84rem;
-      font-weight: 800;
+      font-size: 0.85rem;
+      font-weight: 900;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      transition: all 0.2s;
+      box-shadow: 0 4px 0 #1e0f08, 0 8px 16px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      transition: all 0.18s ease;
     }
 
     .pet-pencil-btn:hover {
-      background: var(--brass-mid);
-      color: var(--mahogany-deep);
+      background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+      color: #1a0f0a;
       transform: translateY(-2px);
+      box-shadow: 0 6px 0 #78350f, 0 12px 22px rgba(245, 158, 11, 0.4);
     }
 
-    /* ================= QUICK-LAUNCH ACTIVITY CARDS GRID ================= */
+    .pet-pencil-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #78350f;
+    }
+
+    /* ================= PIXAR 3D ACTIVITY CARDS GRID ================= */
     .stations-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(305px, 1fr));
+      gap: 1.25rem;
     }
 
     .station-card {
-      background: linear-gradient(160deg, rgba(45, 24, 16, 0.95), rgba(26, 15, 10, 0.98));
-      border: 2px solid rgba(217, 119, 6, 0.42);
-      border-radius: 16px;
-      padding: 1.15rem;
+      background: linear-gradient(170deg, #381f14 0%, #1c0f09 100%);
+      border: 3px solid rgba(245, 158, 11, 0.58);
+      border-radius: 22px;
+      padding: 0.95rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 0.85rem;
+      gap: 0.9rem;
       cursor: pointer;
-      transition: all 0.22s ease;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
       text-align: left;
       color: var(--parchment-light);
+      box-shadow:
+        0 18px 38px rgba(0, 0, 0, 0.72),
+        0 5px 0 #0f0704,
+        inset 0 2px 0 rgba(254, 240, 138, 0.28);
+      overflow: hidden;
     }
 
     .station-card:hover {
-      border-color: var(--brass-glow);
-      transform: translateY(-4px);
-      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.55);
+      border-color: #fde68a;
+      transform: translateY(-6px);
+      box-shadow:
+        0 26px 48px rgba(0, 0, 0, 0.85),
+        0 7px 0 #78350f,
+        0 0 28px rgba(245, 158, 11, 0.35),
+        inset 0 2px 0 rgba(254, 240, 138, 0.55);
+    }
+
+    .station-pixar-banner {
+      position: relative;
+      width: 100%;
+      height: 146px;
+      border-radius: 15px;
+      overflow: hidden;
+      background-color: #120905;
+      background-size: cover;
+      background-position: center;
+      border: 2px solid rgba(253, 230, 138, 0.45);
+      box-shadow: inset 0 -36px 42px rgba(12, 6, 3, 0.82), 0 6px 16px rgba(0, 0, 0, 0.5);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0.65rem 0.8rem;
+      transition: transform 0.35s ease;
+    }
+
+    .station-card:hover .station-pixar-banner {
+      transform: scale(1.02);
     }
 
     .station-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 100%;
       gap: 0.5rem;
+      z-index: 2;
     }
 
     .station-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(253, 230, 138, 0.35);
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fde68a, #d97706);
+      border: 2px solid #fffbeb;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
-      color: var(--brass-glow);
+      font-size: 1.22rem;
+      color: #1a0f0a;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65);
     }
 
     .station-tag {
       font-size: 0.72rem;
-      font-weight: 800;
-      padding: 0.2rem 0.55rem;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--parchment-mid);
+      font-weight: 900;
+      padding: 0.26rem 0.68rem;
+      border-radius: 999px;
+      background: rgba(15, 8, 5, 0.86);
+      border: 1px solid rgba(253, 230, 138, 0.55);
+      color: #fde68a;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
 
     .station-card h2 {
       font-family: var(--font-serif);
-      font-size: 1.35rem;
+      font-size: 1.42rem;
       font-weight: 800;
-      color: var(--brass-glow);
-      margin-bottom: 0.25rem;
+      color: #fde68a;
+      margin-bottom: 0.3rem;
+      padding: 0 0.25rem;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
     }
 
     .station-card p {
-      font-size: 0.9rem;
-      color: var(--parchment-mid);
-      line-height: 1.45;
+      font-size: 0.92rem;
+      color: #f5e8cc;
+      line-height: 1.48;
+      padding: 0 0.25rem;
     }
 
     .station-cta {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 0.65rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 0.84rem;
-      font-weight: 800;
-      color: var(--emerald-glow);
+      padding: 0.62rem 0.95rem;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.32), rgba(6, 78, 59, 0.55));
+      border: 1.5px solid rgba(52, 211, 153, 0.55);
+      font-size: 0.86rem;
+      font-weight: 900;
+      color: #a7f3d0;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.2s ease;
+    }
+
+    .station-card:hover .station-cta {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #ffffff;
+      border-color: #fde68a;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
     }
 
     /* ================= PIXAR 3D CINEMA INTRO THEATRE MODAL ================= */
@@ -1661,70 +1740,53 @@
 
     <!-- ================= INTERACTIVE SVG ROOM: PROFESSOR WEST'S STUDY ================= -->
     <div class="study-stage-wrapper" id="study-stage">
-      <div class="mobile-study-swipe-hint">👆 Swipe left or right to look around the Study, or tap any game card below!</div>
-      <svg class="study-scene-svg" id="study-svg" viewBox="0 0 1200 620" role="img" aria-label="Interactive illustration of Professor West's study with his cat Pencil">
+      <div class="mobile-study-swipe-hint">👆 Swipe left or right to look around the 3D Study, or tap any game card below!</div>
+      <svg class="study-scene-svg" id="study-svg" viewBox="0 0 1200 675" role="img" aria-label="Interactive 3D Pixar illustration of Professor West's study with his cat Pencil">
         <defs>
-          <linearGradient id="wallGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#2c170f" />
-            <stop offset="75%" stop-color="#3c2116" />
-            <stop offset="100%" stop-color="#1e100a" />
-          </linearGradient>
-          <linearGradient id="floorGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#23120b" />
-            <stop offset="100%" stop-color="#120905" />
-          </linearGradient>
-          <linearGradient id="deskGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#5c321e" />
-            <stop offset="100%" stop-color="#381d10" />
-          </linearGradient>
-          <linearGradient id="parchmentGrad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#fef3c7" />
-            <stop offset="100%" stop-color="#d97706" />
-          </linearGradient>
-          <radialGradient id="lampCone" cx="50%" cy="20%" r="65%">
-            <stop offset="0%" stop-color="rgba(52, 211, 153, 0.45)" />
-            <stop offset="50%" stop-color="rgba(253, 230, 138, 0.18)" />
+          <radialGradient id="lampCone" cx="22%" cy="40%" r="45%">
+            <stop offset="0%" stop-color="rgba(52, 211, 153, 0.48)" />
+            <stop offset="55%" stop-color="rgba(16, 185, 129, 0.16)" />
             <stop offset="100%" stop-color="rgba(0, 0, 0, 0)" />
+          </radialGradient>
+          <radialGradient id="goldAura" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="rgba(254, 240, 138, 0.36)" />
+            <stop offset="55%" stop-color="rgba(245, 158, 11, 0.14)" />
+            <stop offset="100%" stop-color="rgba(245, 158, 11, 0)" />
+          </radialGradient>
+          <radialGradient id="emeraldAura" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stop-color="rgba(167, 243, 208, 0.36)" />
+            <stop offset="55%" stop-color="rgba(16, 185, 129, 0.14)" />
+            <stop offset="100%" stop-color="rgba(16, 185, 129, 0)" />
           </radialGradient>
         </defs>
 
-        <!-- Background Mahogany Study Wall & Wood Panels -->
-        <rect x="0" y="0" width="1200" height="450" fill="url(#wallGrad)" />
-        <g stroke="#4d2c1e" stroke-width="3" fill="#25130c">
-          <rect x="30" y="310" width="210" height="120" rx="6" />
-          <rect x="270" y="310" width="210" height="120" rx="6" />
-          <rect x="510" y="310" width="210" height="120" rx="6" />
-          <rect x="750" y="310" width="210" height="120" rx="6" />
-          <rect x="990" y="310" width="180" height="120" rx="6" />
+        <!-- Pixar 3D Study Interior Plate (populated instantly from #pixar-img-3 inline Data URI, with asset fallback) -->
+        <image id="study-main-pixar-bg" href="assets/pixar/act4_study.jpg" x="0" y="0" width="1200" height="675" preserveAspectRatio="xMidYMid slice" />
+
+        <!-- Subtle Day/Night Ambient Tint Overlay -->
+        <rect id="window-sky-fill" x="0" y="0" width="1200" height="675" fill="#090d16" opacity="0.12" pointer-events="none" />
+        <g id="window-night-celestial" opacity="0.9" pointer-events="none">
+          <circle id="moon-cutout" cx="232" cy="275" r="85" fill="url(#lampCone)" />
+          <circle cx="920" cy="245" r="95" fill="url(#goldAura)" />
+          <circle cx="1055" cy="260" r="85" fill="url(#goldAura)" />
         </g>
 
-        <!-- Study Floor & Red Rug -->
-        <rect x="0" y="445" width="1200" height="175" fill="url(#floorGrad)" />
-        <ellipse cx="600" cy="545" rx="460" ry="55" fill="#7f1d1d" stroke="#f59e0b" stroke-width="4" stroke-dasharray="10 6" />
-        <ellipse cx="600" cy="545" rx="410" ry="40" fill="#991b1b" stroke="#fde68a" stroke-width="1.5" />
+        <!-- Green Banker's Lamp Ambient Cone & Click-to-Toggle Day/Night -->
+        <g id="mahogany-desk-structure">
+          <ellipse class="lamp-cone-glow" cx="245" cy="340" rx="185" ry="145" fill="url(#lampCone)" pointer-events="none" />
+        </g>
 
-        <!-- ================= HOTSPOT 1: ARCHED STUDY WINDOW (PENCIL'S TORCH GAME) ================= -->
+        <!-- ================= HOTSPOT 1: BANKER'S LAMP & DARK RELIC CORNER (PENCIL'S TORCH GAME) ================= -->
         <g id="hotspot-window" class="study-hotspot" role="button" tabindex="0"
-           aria-label="Study Window: Play Pencil's Torch Game"
+           aria-label="Study Lamp &amp; Dark Corner: Play Pencil's Torch Game"
            onclick="StudyHub.openStation('night-watch')"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('night-watch');}"
            onmouseenter="StudyHub.previewHotspot('window')">
-          <path d="M80,275 L80,105 A85,85 0 0,1 250,105 L250,275 Z" fill="#0f172a" id="window-sky-fill" stroke="#b45309" stroke-width="10" />
-          <g id="window-night-celestial">
-            <circle cx="195" cy="95" r="22" fill="#fde68a" />
-            <circle cx="205" cy="88" r="18" fill="#0f172a" id="moon-cutout" />
-            <circle cx="120" cy="90" r="2.5" fill="#fff" />
-            <circle cx="145" cy="135" r="2" fill="#fde68a" />
-            <circle cx="115" cy="180" r="2.2" fill="#fff" />
-            <circle cx="215" cy="160" r="2.5" fill="#34d399" />
-            <polygon points="85,270 135,210 185,270" fill="#1e293b" />
-            <polygon points="155,270 205,220 245,270" fill="#0f172a" />
-          </g>
-          <line x1="165" y1="25" x2="165" y2="275" stroke="#92400e" stroke-width="6" />
-          <line x1="80" y1="165" x2="250" y2="165" stroke="#92400e" stroke-width="6" />
+          <rect class="hotspot-aura" x="115" y="235" width="220" height="235" rx="26" fill="url(#emeraldAura)" stroke="rgba(52, 211, 153, 0.55)" stroke-width="2.5" stroke-dasharray="8 6" />
+          <circle cx="228" cy="285" r="28" fill="rgba(16, 185, 129, 0.18)" stroke="#34d399" stroke-width="2" />
           <g class="hotspot-label-pill">
-            <rect x="75" y="282" width="180" height="28" rx="14" fill="#1a0f0a" stroke="#34d399" stroke-width="2" />
-            <text x="165" y="300" text-anchor="middle" fill="#a7f3d0" font-family="Nunito, sans-serif" font-size="12" font-weight="800">🔦 Pencil's Torch Game</text>
+            <rect x="133" y="238" width="190" height="32" rx="16" fill="#091512" stroke="#34d399" stroke-width="2.5" />
+            <text x="228" y="259" text-anchor="middle" fill="#a7f3d0" font-family="Nunito, sans-serif" font-size="13" font-weight="900">🔦 Pencil's Torch Game</text>
           </g>
         </g>
 
@@ -1734,21 +1796,13 @@
            onclick="StudyHub.openStation('expedition-map')"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('expedition-map');}"
            onmouseenter="StudyHub.previewHotspot('map')">
-          <rect x="330" y="38" width="440" height="14" rx="7" fill="#78350f" stroke="#f59e0b" stroke-width="2" />
-          <rect x="342" y="52" width="416" height="215" fill="#f5e8cc" stroke="#b45309" stroke-width="4" />
-          <rect x="330" y="265" width="440" height="14" rx="7" fill="#78350f" stroke="#f59e0b" stroke-width="2" />
-          <path d="M375,110 Q415,85 450,115 T495,155 Q460,195 410,175 Z" fill="#d97706" opacity="0.35" />
-          <path d="M535,95 Q610,75 670,115 T715,195 Q645,220 570,180 Z" fill="#b45309" opacity="0.35" />
-          <path d="M405,145 Q475,95 550,140 T685,155" fill="none" stroke="#dc2626" stroke-width="3.5" stroke-dasharray="8 6" />
-          <circle cx="405" cy="145" r="7" fill="#dc2626" stroke="#fff" stroke-width="2" />
-          <circle cx="550" cy="140" r="7" fill="#059669" stroke="#fff" stroke-width="2" />
-          <circle cx="685" cy="155" r="8" fill="#f59e0b" stroke="#1a0f0a" stroke-width="2" />
-          <circle cx="715" cy="95" r="22" fill="none" stroke="#92400e" stroke-width="2" />
-          <polygon points="715,70 721,95 715,120 709,95" fill="#b45309" />
-          <polygon points="690,95 715,89 740,95 715,101" fill="#92400e" />
+          <rect class="hotspot-aura" x="195" y="32" width="215" height="200" rx="22" fill="url(#goldAura)" stroke="rgba(251, 191, 36, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
+          <path d="M240,125 Q285,95 325,130 T370,145" fill="none" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="7 5" />
+          <circle cx="240" cy="125" r="6" fill="#ef4444" stroke="#fff" stroke-width="2" />
+          <circle cx="370" cy="145" r="7" fill="#fbbf24" stroke="#1a0f0a" stroke-width="2" />
           <g class="hotspot-label-pill">
-            <rect x="445" y="232" width="210" height="28" rx="14" fill="#1a0f0a" stroke="#f59e0b" stroke-width="2" />
-            <text x="550" y="250" text-anchor="middle" fill="#fde68a" font-family="Nunito, sans-serif" font-size="12" font-weight="800">🗺️ The World Treasure Map</text>
+            <rect x="192" y="198" width="220" height="32" rx="16" fill="#1a0f0a" stroke="#f59e0b" stroke-width="2.5" />
+            <text x="302" y="219" text-anchor="middle" fill="#fde68a" font-family="Nunito, sans-serif" font-size="13" font-weight="900">🗺️ The World Treasure Map</text>
           </g>
         </g>
 
@@ -1758,40 +1812,12 @@
            onclick="StudyHub.openStation('curio-cabinet')"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('curio-cabinet');}"
            onmouseenter="StudyHub.previewHotspot('curio')">
-          <rect x="835" y="48" width="310" height="250" rx="8" fill="#1e100a" stroke="#b45309" stroke-width="5" />
-          <line x1="840" y1="130" x2="1140" y2="130" stroke="#78350f" stroke-width="6" />
-          <line x1="840" y1="210" x2="1140" y2="210" stroke="#78350f" stroke-width="6" />
-          <ellipse cx="890" cy="105" rx="18" ry="14" fill="#fbbf24" stroke="#92400e" stroke-width="2" />
-          <path d="M970,115 Q990,82 1010,115 Z" fill="#fef3c7" stroke="#d97706" stroke-width="2.5" />
-          <rect x="962" y="113" width="56" height="6" rx="3" fill="#d97706" />
-          <rect x="1065" y="85" width="32" height="38" rx="6" fill="rgba(52, 211, 153, 0.35)" stroke="#34d399" stroke-width="2" />
-          <circle cx="895" cy="182" r="18" fill="#d6d3d1" stroke="#57534e" stroke-width="3" />
-          <path d="M895,182 Q905,172 902,190" fill="none" stroke="#57534e" stroke-width="2.5" />
-          <polygon points="990,158 1012,198 968,198" fill="#f59e0b" stroke="#fff" stroke-width="1.5" />
-          <rect x="1055" y="175" width="48" height="24" rx="5" fill="#38bdf8" stroke="#bae6fd" stroke-width="2" />
+          <rect class="hotspot-aura" x="985" y="28" width="200" height="190" rx="22" fill="url(#goldAura)" stroke="rgba(251, 191, 36, 0.6)" stroke-width="2.5" stroke-dasharray="8 6" />
+          <circle cx="1085" cy="115" r="24" fill="rgba(251, 191, 36, 0.2)" stroke="#fbbf24" stroke-width="2" />
+          <text x="1085" y="123" text-anchor="middle" font-size="22">🏆</text>
           <g class="hotspot-label-pill">
-            <rect x="880" y="262" width="220" height="28" rx="14" fill="#1a0f0a" stroke="#f59e0b" stroke-width="2" />
-            <text x="990" y="280" text-anchor="middle" fill="#fde68a" font-family="Nunito, sans-serif" font-size="12" font-weight="800">🏆 Treasure Shelf &amp; Hats</text>
-          </g>
-        </g>
-
-        <!-- ================= PROFESSOR WEST'S DESK ================= -->
-        <g id="mahogany-desk-structure">
-          <polygon class="lamp-cone-glow" points="435,295 270,460 720,460" fill="url(#lampCone)" />
-          <polygon points="270,395 850,395 890,435 230,435" fill="#5c321e" stroke="#b45309" stroke-width="3" />
-          <rect x="255" y="435" width="165" height="135" fill="url(#deskGrad)" stroke="#78350f" stroke-width="3" />
-          <rect x="700" y="435" width="165" height="135" fill="url(#deskGrad)" stroke="#78350f" stroke-width="3" />
-          <rect x="420" y="435" width="280" height="45" fill="#381d10" stroke="#78350f" stroke-width="2" />
-          <circle cx="337" cy="468" r="6" fill="#fbbf24" />
-          <circle cx="337" cy="520" r="6" fill="#fbbf24" />
-          <circle cx="782" cy="468" r="6" fill="#fbbf24" />
-          <circle cx="782" cy="520" r="6" fill="#fbbf24" />
-
-          <!-- Green Desk Lamp -->
-          <g style="cursor:pointer;" onclick="StudyHub.toggleDayNight()">
-            <rect x="315" y="380" width="54" height="14" rx="4" fill="#d97706" />
-            <rect x="337" y="320" width="10" height="62" fill="#f59e0b" />
-            <path d="M300,325 Q342,282 384,325 Z" fill="#059669" stroke="#34d399" stroke-width="2.5" />
+            <rect x="972" y="182" width="218" height="32" rx="16" fill="#1a0f0a" stroke="#f59e0b" stroke-width="2.5" />
+            <text x="1081" y="203" text-anchor="middle" fill="#fde68a" font-family="Nunito, sans-serif" font-size="13" font-weight="900">🏆 Treasure Shelf &amp; Hats</text>
           </g>
         </g>
 
@@ -1801,15 +1827,15 @@
            onclick="StudyHub.openStation('rosetta-cipher')"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('rosetta-cipher');}"
            onmouseenter="StudyHub.previewHotspot('rosetta')">
-          <path d="M430,398 L445,332 Q495,315 545,332 L560,398 Z" fill="#475569" stroke="#cbd5e1" stroke-width="3" />
-          <line x1="452" y1="350" x2="538" y2="350" stroke="#fde68a" stroke-width="2.5" stroke-dasharray="10 5" />
-          <line x1="448" y1="368" x2="542" y2="368" stroke="#fde68a" stroke-width="2.5" stroke-dasharray="14 6" />
-          <line x1="445" y1="384" x2="535" y2="384" stroke="#34d399" stroke-width="2.5" stroke-dasharray="8 4" />
-          <circle cx="545" cy="375" r="20" fill="rgba(186, 230, 253, 0.35)" stroke="#fbbf24" stroke-width="4" />
-          <line x1="560" y1="388" x2="582" y2="408" stroke="#b45309" stroke-width="6" stroke-linecap="round" />
+          <rect class="hotspot-aura" x="465" y="505" width="235" height="145" rx="22" fill="url(#goldAura)" stroke="rgba(251, 191, 36, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
+          <!-- Interactive Carved Stone Tablet & Magnifying Glass Overlay on Foreground Desk -->
+          <path d="M535,595 L548,532 Q588,518 628,532 L640,595 Z" fill="rgba(51, 65, 85, 0.88)" stroke="#fde68a" stroke-width="2.5" />
+          <line x1="556" y1="548" x2="620" y2="548" stroke="#fde68a" stroke-width="2" stroke-dasharray="8 4" />
+          <line x1="553" y1="564" x2="623" y2="564" stroke="#34d399" stroke-width="2" stroke-dasharray="10 4" />
+          <line x1="550" y1="580" x2="618" y2="580" stroke="#fde68a" stroke-width="2" stroke-dasharray="6 4" />
           <g class="hotspot-label-pill">
-            <rect x="405" y="405" width="185" height="28" rx="14" fill="#1a0f0a" stroke="#f59e0b" stroke-width="2" />
-            <text x="497" y="423" text-anchor="middle" fill="#fde68a" font-family="Nunito, sans-serif" font-size="12" font-weight="800">🪨 The Stone Puzzle</text>
+            <rect x="490" y="612" width="190" height="32" rx="16" fill="#1a0f0a" stroke="#f59e0b" stroke-width="2.5" />
+            <text x="585" y="633" text-anchor="middle" fill="#fde68a" font-family="Nunito, sans-serif" font-size="13" font-weight="900">🪨 The Stone Puzzle</text>
           </g>
         </g>
 
@@ -1819,12 +1845,10 @@
            onclick="StudyHub.openStation('field-journal')"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('field-journal');}"
            onmouseenter="StudyHub.previewHotspot('journal')">
-          <path d="M605,395 L615,342 Q650,335 680,348 Q710,335 745,342 L755,395 Q710,388 680,398 Q650,388 605,395 Z" fill="#fdf8ee" stroke="#92400e" stroke-width="3.5" />
-          <line x1="680" y1="348" x2="680" y2="398" stroke="#b45309" stroke-width="2.5" />
-          <path d="M742,365 Q765,320 790,315 Q775,348 748,370 Z" fill="#f59e0b" />
+          <rect class="hotspot-aura" x="148" y="478" width="305" height="158" rx="24" fill="url(#emeraldAura)" stroke="rgba(52, 211, 153, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
           <g class="hotspot-label-pill">
-            <rect x="598" y="405" width="185" height="28" rx="14" fill="#1a0f0a" stroke="#34d399" stroke-width="2" />
-            <text x="690" y="423" text-anchor="middle" fill="#a7f3d0" font-family="Nunito, sans-serif" font-size="12" font-weight="800">📖 Choose the Story</text>
+            <rect x="205" y="602" width="195" height="32" rx="16" fill="#091512" stroke="#34d399" stroke-width="2.5" />
+            <text x="302" y="623" text-anchor="middle" fill="#a7f3d0" font-family="Nunito, sans-serif" font-size="13" font-weight="900">📖 Choose the Story</text>
           </g>
         </g>
 
@@ -1834,16 +1858,12 @@
            onclick="StudyHub.openStation('field-logs')"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('field-logs');}"
            onmouseenter="StudyHub.previewHotspot('gramophone')">
-          <rect x="945" y="425" width="140" height="135" rx="6" fill="#462518" stroke="#b45309" stroke-width="3" />
-          <rect x="960" y="385" width="110" height="40" rx="6" fill="#78350f" stroke="#f59e0b" stroke-width="2.5" />
-          <ellipse cx="1015" cy="383" rx="44" ry="8" fill="#111827" stroke="#374151" stroke-width="2" />
-          <path d="M1035,380 Q1065,335 1010,305 L955,275 Q935,315 970,350 L1025,365 Z" fill="url(#parchmentGrad)" stroke="#b45309" stroke-width="3" />
-          <ellipse cx="962" cy="312" rx="18" ry="36" transform="rotate(-18 962 312)" fill="#92400e" stroke="#fde68a" stroke-width="3" />
-          <text x="920" y="295" fill="#fde68a" font-size="20" font-weight="900">♪</text>
-          <text x="900" y="325" fill="#34d399" font-size="16" font-weight="900">♫</text>
+          <rect class="hotspot-aura" x="975" y="218" width="205" height="198" rx="24" fill="url(#goldAura)" stroke="rgba(251, 191, 36, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
+          <text x="1015" y="255" fill="#fde68a" font-size="24" font-weight="900">♪</text>
+          <text x="1135" y="245" fill="#34d399" font-size="20" font-weight="900">♫</text>
           <g class="hotspot-label-pill">
-            <rect x="915" y="440" width="195" height="28" rx="14" fill="#1a0f0a" stroke="#f59e0b" stroke-width="2" />
-            <text x="1012" y="458" text-anchor="middle" fill="#fde68a" font-family="Nunito, sans-serif" font-size="12" font-weight="800">📻 Voice Messages</text>
+            <rect x="980" y="380" width="196" height="32" rx="16" fill="#1a0f0a" stroke="#f59e0b" stroke-width="2.5" />
+            <text x="1078" y="401" text-anchor="middle" fill="#fde68a" font-family="Nunito, sans-serif" font-size="13" font-weight="900">📻 Voice Messages</text>
           </g>
         </g>
 
@@ -1853,100 +1873,68 @@
            onclick="StudyHub.openStation('lexicon-dig')"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('lexicon-dig');}"
            onmouseenter="StudyHub.previewHotspot('crate')">
-          <rect x="65" y="425" width="165" height="145" rx="6" fill="#92400e" stroke="#f59e0b" stroke-width="3" />
-          <line x1="65" y1="468" x2="230" y2="468" stroke="#451a03" stroke-width="4" />
-          <line x1="65" y1="518" x2="230" y2="518" stroke="#451a03" stroke-width="4" />
-          <line x1="80" y1="435" x2="215" y2="555" stroke="#b45309" stroke-width="12" />
-          <rect x="92" y="478" width="110" height="32" rx="4" fill="#fef3c7" stroke="#451a03" stroke-width="2" />
-          <text x="147" y="499" text-anchor="middle" fill="#451a03" font-family="Nunito, sans-serif" font-size="12" font-weight="900">DIG BOX</text>
-          <path d="M85,422 L195,405 L210,418" fill="none" stroke="#cbd5e1" stroke-width="7" stroke-linecap="round" />
+          <rect class="hotspot-aura" x="885" y="428" width="265" height="218" rx="24" fill="url(#emeraldAura)" stroke="rgba(52, 211, 153, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
           <g class="hotspot-label-pill">
-            <rect x="52" y="575" width="190" height="28" rx="14" fill="#1a0f0a" stroke="#34d399" stroke-width="2" />
-            <text x="147" y="593" text-anchor="middle" fill="#a7f3d0" font-family="Nunito, sans-serif" font-size="12" font-weight="800">⛏️ The Word Dig</text>
+            <rect x="922" y="610" width="194" height="32" rx="16" fill="#091512" stroke="#34d399" stroke-width="2.5" />
+            <text x="1019" y="631" text-anchor="middle" fill="#a7f3d0" font-family="Nunito, sans-serif" font-size="13" font-weight="900">⛏️ The Word Dig</text>
           </g>
         </g>
 
-        <!-- ================= PENCIL THE CAT — RIGGED SVG CHARACTER ================= -->
+        <!-- ================= PENCIL THE CAT — PIXAR 3D INTERACTIVE RIG & LIVE ACCESSORIES ================= -->
         <g id="pencil-study-rig" role="button" tabindex="0"
            aria-label="Pencil the Cat. Click to pet Pencil or get a clue!"
            onclick="StudyHub.interactWithPencil()"
            onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.interactWithPencil();}">
-          <ellipse cx="815" cy="402" rx="46" ry="12" fill="rgba(0,0,0,0.45)" />
+          <!-- Invisible interactive hitbox covering Pencil on the desk -->
+          <rect x="385" y="215" width="205" height="275" rx="30" fill="rgba(255,255,255,0.001)" />
 
-          <!-- Swishing Tail with Pencil-Tip Markings -->
+          <!-- Swishing Pencil-Tip Tail Glow Overlay -->
           <g id="pencil-tail">
-            <path d="M845,388 Q895,365 888,315 Q884,295 870,305 Q872,348 835,375 Z" fill="#1f2937" stroke="#111827" stroke-width="2.5" />
-            <path d="M888,315 Q884,295 870,305 L877,322 Z" fill="#fde68a" />
-            <circle cx="882" cy="303" r="4.5" fill="#111827" />
+            <circle cx="404" cy="458" r="14" fill="rgba(254, 240, 138, 0.28)" />
+            <circle cx="401" cy="466" r="4.5" fill="#fde68a" />
           </g>
 
-          <!-- Breathing Torso & Paws -->
+          <!-- Breathing Torso & Live Collectible Accessories Mapped to 3D Pixar Pencil -->
           <g id="pencil-torso">
-            <ellipse cx="812" cy="364" rx="34" ry="40" fill="#1f2937" stroke="#111827" stroke-width="2.5" />
-            <ellipse cx="830" cy="355" rx="12" ry="18" fill="#d97706" opacity="0.65" />
-            <path d="M796,342 Q812,375 828,342 Z" fill="#fef3c7" />
-            <ellipse cx="797" cy="400" rx="11" ry="7" fill="#fef3c7" stroke="#111827" stroke-width="2" />
-            <ellipse cx="826" cy="400" rx="11" ry="7" fill="#fef3c7" stroke="#111827" stroke-width="2" />
-
             <!-- ACCESSORY 3: Golden Scarab Collar -->
             <g id="acc-collar-scarab">
-              <path d="M788,334 Q812,346 836,334" fill="none" stroke="#dc2626" stroke-width="5" stroke-linecap="round" />
-              <circle cx="812" cy="342" r="6.5" fill="#fbbf24" stroke="#059669" stroke-width="2" />
+              <path d="M476,352 Q506,368 536,352" fill="none" stroke="#dc2626" stroke-width="5.5" stroke-linecap="round" />
+              <circle cx="506" cy="363" r="8" fill="#fbbf24" stroke="#059669" stroke-width="2.5" />
             </g>
 
             <!-- ACCESSORY 4: Explorer Red Scarf -->
             <g id="acc-bandana-red" style="display:none;">
-              <polygon points="786,333 838,333 812,362" fill="#e11d48" stroke="#fde68a" stroke-width="1.5" />
+              <polygon points="472,350 540,350 506,388" fill="#e11d48" stroke="#fde68a" stroke-width="2" />
             </g>
 
-            <!-- Head & Ears -->
             <g id="pencil-head">
               <g id="pencil-ear-left">
-                <polygon points="780,305 786,266 808,292" fill="#1f2937" stroke="#111827" stroke-width="2.5" />
-                <polygon points="785,300 789,274 803,292" fill="#fda4af" />
+                <circle cx="464" cy="272" r="4" fill="rgba(253, 164, 175, 0.35)" />
               </g>
-              <polygon points="844,305 838,266 816,292" fill="#1f2937" stroke="#111827" stroke-width="2.5" />
-              <polygon points="839,300 835,274 821,292" fill="#fda4af" />
-              <circle cx="812" cy="312" r="28" fill="#1f2937" stroke="#111827" stroke-width="2.5" />
-              <path d="M812,285 Q828,288 825,304 Q812,298 812,285 Z" fill="#d97706" opacity="0.8" />
 
-              <!-- Eyes -->
-              <ellipse cx="800" cy="310" rx="8.5" ry="9.5" fill="#34d399" id="pencil-eye-l" stroke="#064e3b" stroke-width="1.5" />
-              <ellipse cx="824" cy="310" rx="8.5" ry="9.5" fill="#34d399" id="pencil-eye-r" stroke="#064e3b" stroke-width="1.5" />
-              <ellipse id="pencil-pupil-l" cx="800" cy="310" rx="3.2" ry="6.5" fill="#090d16" />
-              <ellipse id="pencil-pupil-r" cx="824" cy="310" rx="3.2" ry="6.5" fill="#090d16" />
-              <circle cx="797" cy="306" r="2" fill="#fff" />
-              <circle cx="821" cy="306" r="2" fill="#fff" />
+              <!-- Interactive Eye Catchlights & Cursor-Tracking Glints over Pixar 3D Eyes -->
+              <circle cx="486" cy="310" r="15" fill="rgba(52, 211, 153, 0.14)" id="pencil-eye-l" />
+              <circle cx="525" cy="308" r="15" fill="rgba(52, 211, 153, 0.14)" id="pencil-eye-r" />
+              <circle id="pencil-pupil-l" cx="486" cy="310" r="4.2" fill="#ffffff" opacity="0.92" />
+              <circle id="pencil-pupil-r" cx="525" cy="308" r="4.2" fill="#ffffff" opacity="0.92" />
 
-              <!-- Nose & Smile -->
-              <polygon points="808,320 816,320 812,325" fill="#fb7185" />
-              <path d="M812,325 Q806,331 801,327 M812,325 Q818,331 823,327" fill="none" stroke="#fef3c7" stroke-width="2" stroke-linecap="round" />
-
-              <!-- Whiskers -->
-              <line x1="786" y1="319" x2="764" y2="315" stroke="#fef3c7" stroke-width="1.5" />
-              <line x1="786" y1="324" x2="762" y2="325" stroke="#fef3c7" stroke-width="1.5" />
-              <line x1="838" y1="319" x2="860" y2="315" stroke="#fef3c7" stroke-width="1.5" />
-              <line x1="838" y1="324" x2="862" y2="325" stroke="#fef3c7" stroke-width="1.5" />
-
-              <!-- ACCESSORY 1: Tiny Explorer Hat -->
+              <!-- ACCESSORY 1: Tiny Explorer Hat Shimmer Badge -->
               <g id="acc-hat-pith">
-                <ellipse cx="812" cy="283" rx="32" ry="7" fill="#d97706" stroke="#78350f" stroke-width="2" />
-                <path d="M787,282 Q812,252 837,282 Z" fill="#fef3c7" stroke="#b45309" stroke-width="2" />
-                <rect x="792" y="274" width="40" height="5" rx="2" fill="#92400e" />
+                <path d="M474,264 Q504,254 532,264" fill="none" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round" />
               </g>
 
               <!-- ACCESSORY 2: Round Brass Glasses -->
               <g id="acc-glasses-brass" style="display:none;">
-                <circle cx="800" cy="310" r="10.5" fill="none" stroke="#fbbf24" stroke-width="2.5" />
-                <circle cx="824" cy="310" r="10.5" fill="none" stroke="#fbbf24" stroke-width="2.5" />
-                <line x1="810" y1="310" x2="814" y2="310" stroke="#fbbf24" stroke-width="2.5" />
+                <circle cx="486" cy="310" r="16" fill="rgba(254, 243, 199, 0.12)" stroke="#fbbf24" stroke-width="3.5" />
+                <circle cx="525" cy="308" r="16" fill="rgba(254, 243, 199, 0.12)" stroke="#fbbf24" stroke-width="3.5" />
+                <line x1="502" y1="309" x2="509" y2="309" stroke="#fbbf24" stroke-width="3.5" />
               </g>
             </g>
           </g>
 
           <g class="hotspot-label-pill">
-            <rect x="742" y="224" width="140" height="26" rx="13" fill="#064e3b" stroke="#34d399" stroke-width="2" />
-            <text x="812" y="241" text-anchor="middle" fill="#ecfdf5" font-family="Nunito, sans-serif" font-size="11.5" font-weight="800">🐾 Pencil (Click Me!)</text>
+            <rect x="424" y="202" width="164" height="30" rx="15" fill="#064e3b" stroke="#34d399" stroke-width="2.5" />
+            <text x="506" y="222" text-anchor="middle" fill="#ecfdf5" font-family="Nunito, sans-serif" font-size="12.5" font-weight="900">🐾 Pencil (Click Me!)</text>
           </g>
         </g>
       </svg>
@@ -1962,7 +1950,7 @@
             <span class="dialogue-role-tag" id="pencil-mood-badge">Purring &amp; Ready to Play</span>
           </div>
           <p class="dialogue-text" id="pencil-speech-text">
-            "Meow! Welcome to Professor West’s Study! Move your mouse over anything in the room—or click me for a surprise!"
+            "Meow! Welcome to Professor West’s 3D Study! Click any glowing spot in the room—or click me for a surprise!"
           </p>
         </div>
       </div>
@@ -1979,15 +1967,17 @@
       </div>
     </section>
 
-    <!-- ================= 6 KID-FRIENDLY ACTIVITY CARDS ================= -->
+    <!-- ================= 6 KID-FRIENDLY PIXAR 3D ACTIVITY CARDS ================= -->
     <section aria-label="Study Games" class="stations-grid">
       <!-- 1. The Word Dig -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('lexicon-dig')">
-        <div>
+        <div class="station-pixar-banner" data-pixar-plate="0" style="background-position: 28% 58%;">
           <div class="station-top">
             <div class="station-icon"><i class="fa-solid fa-trowel" aria-hidden="true"></i></div>
             <span class="station-tag">Wooden Crate • Spelling Game</span>
           </div>
+        </div>
+        <div class="station-body-copy">
           <h2>The Word Dig</h2>
           <p>Use the Heavy Pickaxe to break grey rocks and the Soft Brush to sweep yellow sand. Watch out—hitting sand with the pickaxe cracks the tile until you glue it back together!</p>
         </div>
@@ -1999,11 +1989,13 @@
 
       <!-- 2. The Stone Puzzle -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('rosetta-cipher')">
-        <div>
+        <div class="station-pixar-banner" data-pixar-plate="2" style="background-position: 70% 42%;">
           <div class="station-top">
             <div class="station-icon"><i class="fa-solid fa-scroll" aria-hidden="true"></i></div>
             <span class="station-tag">The Desk • Sentence Game</span>
           </div>
+        </div>
+        <div class="station-body-copy">
           <h2>The Stone Puzzle</h2>
           <p>Professor West found old stone tablets with a missing word! Pick the right word stone to finish the sentence and unlock the secret door.</p>
         </div>
@@ -2015,11 +2007,13 @@
 
       <!-- 3. Pencil's Torch Game -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('night-watch')">
-        <div>
+        <div class="station-pixar-banner" data-pixar-plate="1" style="background-position: 50% 30%;">
           <div class="station-top">
             <div class="station-icon"><i class="fa-solid fa-eye" aria-hidden="true"></i></div>
-            <span class="station-tag">Study Window • Find Objects</span>
+            <span class="station-tag">Study Lamp • Find Objects</span>
           </div>
+        </div>
+        <div class="station-body-copy">
           <h2>Pencil’s Torch Game</h2>
           <p>The lights are out! Move Pencil’s glowing flashlight circle around the dark room to find 4 hidden treasures before the battery runs out.</p>
         </div>
@@ -2031,11 +2025,13 @@
 
       <!-- 4. Choose the Story -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('field-journal')">
-        <div>
+        <div class="station-pixar-banner" data-pixar-plate="3" style="background-position: 32% 78%;">
           <div class="station-top">
             <div class="station-icon"><i class="fa-solid fa-book-open" aria-hidden="true"></i></div>
             <span class="station-tag">Story Book • Reading Game</span>
           </div>
+        </div>
+        <div class="station-body-copy">
           <h2>Choose the Story</h2>
           <p>Read an adventure story with Professor West and Pencil! Solve fun riddles, follow the compass, and choose polite answers to pass the Temple Guard.</p>
         </div>
@@ -2047,11 +2043,13 @@
 
       <!-- 5. Professor West's Voice Messages -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('field-logs')">
-        <div>
+        <div class="station-pixar-banner" data-pixar-plate="3" style="background-position: 86% 45%;">
           <div class="station-top">
             <div class="station-icon"><i class="fa-solid fa-record-vinyl" aria-hidden="true"></i></div>
             <span class="station-tag">Gramophone • Listening Game</span>
           </div>
+        </div>
+        <div class="station-body-copy">
           <h2>Voice Messages</h2>
           <p>Listen to Professor West’s recorded voice messages from the jungle and the desert, then answer 3 fun questions!</p>
         </div>
@@ -2063,11 +2061,13 @@
 
       <!-- 6. The World Treasure Map -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('expedition-map')">
-        <div>
+        <div class="station-pixar-banner" data-pixar-plate="0" style="background-position: 52% 28%;">
           <div class="station-top">
             <div class="station-icon"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i></div>
             <span class="station-tag">Wall Map • Adventure Board</span>
           </div>
+        </div>
+        <div class="station-body-copy">
           <h2>The World Treasure Map</h2>
           <p>Move Professor West and Pencil across 6 exciting places around the world as you play games or practise speaking with Gareth!</p>
         </div>
@@ -2263,46 +2263,44 @@
 
       let state = loadState();
 
-      // ================= WEB AUDIO SFX & CLASSICAL MUSIC SYNTHESIZER =================
+      // ================= REAL CLASSICAL MP3 & NEURAL STORYTELLER VOICE ENGINE =================
       let audioCtx = null;
       let musicPlaying = false;
       let musicTimer = null;
       let currentTrackIndex = 0;
       let currentNoteStep = 0;
+      let musicAudioEl = null;
+      let voiceAudioEl = null;
+      let introVoiceActive = false;
 
-      // 3 Classical Masterpieces arranged for Chamber Music Box / Harpsichord & Strings
+      // 3 Real Classical Masterpiece Recordings (.mp3) with Web Audio fallback
       const CLASSICAL_TRACKS = [
         {
           name: 'Bach: Minuet in G',
+          audioSrc: 'assets/audio/bach_minuet.mp3',
           tempoMs: 290,
-          // [melodyFreq, bassFreq]
           notes: [
             [587.33, 196.00], [392.00, 196.00], [440.00, 196.00], [493.88, 196.00], [523.25, 196.00], [587.33, 196.00],
             [392.00, 196.00], [392.00, 196.00], [659.25, 261.63], [523.25, 261.63], [587.33, 261.63], [659.25, 261.63],
-            [739.99, 261.63], [783.99, 196.00], [392.00, 196.00], [392.00, 196.00],
-            [523.25, 220.00], [587.33, 220.00], [523.25, 220.00], [493.88, 220.00], [440.00, 220.00],
-            [493.88, 196.00], [523.25, 196.00], [493.88, 196.00], [440.00, 196.00], [392.00, 196.00],
-            [369.99, 146.83], [392.00, 146.83], [440.00, 146.83], [493.88, 146.83], [392.00, 196.00], [440.00, 146.83]
+            [739.99, 261.63], [783.99, 196.00], [392.00, 196.00], [392.00, 196.00]
           ]
         },
         {
           name: 'Mozart: Nachtmusik',
+          audioSrc: 'assets/audio/mozart_nachtmusik.mp3',
           tempoMs: 250,
           notes: [
             [392.00, 196.00], [293.66, 146.83], [392.00, 196.00], [293.66, 146.83],
-            [392.00, 196.00], [293.66, 146.83], [392.00, 196.00], [493.88, 246.94], [587.33, 293.66],
-            [523.25, 146.83], [440.00, 220.00], [523.25, 146.83], [440.00, 220.00],
-            [523.25, 146.83], [440.00, 220.00], [369.99, 146.83], [440.00, 220.00], [293.66, 146.83]
+            [392.00, 196.00], [293.66, 146.83], [392.00, 196.00], [493.88, 246.94], [587.33, 293.66]
           ]
         },
         {
           name: 'Tchaikovsky: Sugar Plum',
+          audioSrc: 'assets/audio/tchaikovsky_sugarplum.mp3',
           tempoMs: 260,
           notes: [
             [659.25, 164.81], [587.33, 164.81], [659.25, 196.00], [587.33, 196.00],
-            [622.25, 185.00], [587.33, 196.00], [523.25, 164.81], [493.88, 164.81], [493.88, 164.81],
-            [466.16, 146.83], [493.88, 164.81], [440.00, 130.81], [392.00, 130.81],
-            [369.99, 146.83], [329.63, 164.81], [392.00, 196.00], [329.63, 164.81]
+            [622.25, 185.00], [587.33, 196.00], [523.25, 164.81], [493.88, 164.81], [493.88, 164.81]
           ]
         }
       ];
@@ -2311,6 +2309,63 @@
         if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
           const Ctx = window.AudioContext || window.webkitAudioContext;
           audioCtx = new Ctx();
+        }
+      }
+
+      function setMusicDucking(isDucked) {
+        if (musicAudioEl) {
+          musicAudioEl.volume = isDucked ? 0.08 : 0.28;
+        }
+      }
+
+      function stopVoiceAudio() {
+        try {
+          if (voiceAudioEl) {
+            voiceAudioEl.pause();
+            voiceAudioEl.currentTime = 0;
+          }
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+          }
+        } catch (e) {}
+        setMusicDucking(false);
+      }
+
+      function playVoiceMp3(audioSrc, fallbackText, onEndedCallback) {
+        stopVoiceAudio();
+        try {
+          if (!voiceAudioEl && typeof Audio !== 'undefined') {
+            voiceAudioEl = new Audio();
+            voiceAudioEl.preload = 'auto';
+          }
+          if (voiceAudioEl && audioSrc) {
+            voiceAudioEl.src = audioSrc;
+            voiceAudioEl.volume = 1.0;
+            setMusicDucking(true);
+            voiceAudioEl.onended = () => {
+              setMusicDucking(false);
+              if (typeof onEndedCallback === 'function') onEndedCallback();
+            };
+            voiceAudioEl.onerror = () => {
+              setMusicDucking(false);
+              if ('speechSynthesis' in window && fallbackText) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(fallbackText);
+                utter.lang = 'en-GB';
+                utter.rate = 0.96;
+                window.speechSynthesis.speak(utter);
+              }
+            };
+            const playPromise = voiceAudioEl.play();
+            if (playPromise && typeof playPromise.catch === 'function') {
+              playPromise.catch(() => {
+                setMusicDucking(false);
+              });
+            }
+            return;
+          }
+        } catch (e) {
+          setMusicDucking(false);
         }
       }
 
@@ -2326,38 +2381,48 @@
           currentNoteStep += 1;
 
           const now = audioCtx.currentTime;
-          // Melody voice (warm triangle flute/celesta)
           const oscMel = audioCtx.createOscillator();
           const gainMel = audioCtx.createGain();
           oscMel.type = 'triangle';
           oscMel.frequency.setValueAtTime(pair[0], now);
-          gainMel.gain.setValueAtTime(0.055, now);
+          gainMel.gain.setValueAtTime(0.045, now);
           gainMel.gain.exponentialRampToValueAtTime(0.001, now + (track.tempoMs / 1000) * 0.92);
           oscMel.connect(gainMel);
           gainMel.connect(audioCtx.destination);
           oscMel.start(now);
           oscMel.stop(now + (track.tempoMs / 1000));
-
-          // Bass accompaniment voice (soft sine cello)
-          const oscBass = audioCtx.createOscillator();
-          const gainBass = audioCtx.createGain();
-          oscBass.type = 'sine';
-          oscBass.frequency.setValueAtTime(pair[1], now);
-          gainBass.gain.setValueAtTime(0.035, now);
-          gainBass.gain.exponentialRampToValueAtTime(0.001, now + (track.tempoMs / 1000) * 0.95);
-          oscBass.connect(gainBass);
-          gainBass.connect(audioCtx.destination);
-          oscBass.start(now);
-          oscBass.stop(now + (track.tempoMs / 1000));
         } catch (e) {}
       }
 
       function startClassicalMusic() {
         musicPlaying = true;
-        if (musicTimer) clearInterval(musicTimer);
+        if (musicTimer) {
+          clearInterval(musicTimer);
+          musicTimer = null;
+        }
         const track = CLASSICAL_TRACKS[currentTrackIndex % CLASSICAL_TRACKS.length];
-        playClassicalStep();
-        musicTimer = setInterval(playClassicalStep, track.tempoMs);
+        try {
+          if (!musicAudioEl && typeof Audio !== 'undefined') {
+            musicAudioEl = new Audio();
+            musicAudioEl.loop = true;
+            musicAudioEl.preload = 'auto';
+          }
+          if (musicAudioEl && track.audioSrc) {
+            if (!musicAudioEl.src || !musicAudioEl.src.endsWith(track.audioSrc)) {
+              musicAudioEl.src = track.audioSrc;
+            }
+            musicAudioEl.volume = (voiceAudioEl && !voiceAudioEl.paused) ? 0.08 : 0.28;
+            const p = musicAudioEl.play();
+            if (p && typeof p.catch === 'function') {
+              p.catch(() => {
+                // Fallback if browser blocks HTML5 audio before interaction
+              });
+            }
+          }
+        } catch (e) {
+          playClassicalStep();
+          musicTimer = setInterval(playClassicalStep, track.tempoMs);
+        }
         syncMusicUI();
       }
 
@@ -2367,6 +2432,11 @@
           clearInterval(musicTimer);
           musicTimer = null;
         }
+        try {
+          if (musicAudioEl) {
+            musicAudioEl.pause();
+          }
+        } catch (e) {}
         syncMusicUI();
       }
 
@@ -2381,11 +2451,13 @@
       function nextClassicalTrack() {
         currentTrackIndex = (currentTrackIndex + 1) % CLASSICAL_TRACKS.length;
         currentNoteStep = 0;
-        if (musicPlaying) {
-          startClassicalMusic();
-        } else {
-          startClassicalMusic();
+        if (musicAudioEl) {
+          try {
+            musicAudioEl.pause();
+            musicAudioEl.currentTime = 0;
+          } catch (e) {}
         }
+        startClassicalMusic();
       }
 
       function syncMusicUI() {
@@ -2484,23 +2556,27 @@
       const INTRO_SCENES = [
         {
           actTitle: 'ACT I • THE GOLDEN SCARAB',
+          audioSrc: 'assets/audio/intro_act1.mp3',
           caption: '"Meet Professor West! He is a brave explorer who travels all over the world looking for lost treasures and ancient secrets!"'
         },
         {
           actTitle: 'ACT II • PENCIL THE CAT',
+          audioSrc: 'assets/audio/intro_act2.mp3',
           caption: '"And this is his clever cat, Pencil! Look at the end of her tail—it looks just like a sharp pencil! Her green eyes glow in the dark."'
         },
         {
           actTitle: 'ACT III • THE SECRET TEMPLE',
+          audioSrc: 'assets/audio/intro_act3.mp3',
           caption: '"Whenever Professor West finds a locked temple door or a mystery box, Pencil shines her glowing eyes to help solve the English word puzzles!"'
         },
         {
           actTitle: 'ACT IV • PROFESSOR WEST’S STUDY',
+          audioSrc: 'assets/audio/intro_act4.mp3',
           caption: '"Now welcome to Professor West’s Study! Click on the crate, the desk, the window, or Pencil to play games and win Golden Scarabs!"'
         }
       ];
 
-      const SCENE_DURATION_MS = 6800;
+      const SCENE_DURATION_MS = 9600;
       let introSceneIndex = 0;
       let prevIntroSceneIndex = 0;
       let introInterval = null;
@@ -2880,32 +2956,30 @@
         document.querySelectorAll('.scene-dot-btn').forEach(btn => {
           btn.classList.toggle('active', Number(btn.dataset.scene) === introSceneIndex);
         });
+        const scene = INTRO_SCENES[introSceneIndex];
         const actEl = document.getElementById('intro-act-badge');
-        if (actEl) actEl.textContent = INTRO_SCENES[introSceneIndex].actTitle;
+        if (actEl) actEl.textContent = scene.actTitle;
         const capEl = document.getElementById('intro-caption-text');
-        if (capEl) capEl.textContent = INTRO_SCENES[introSceneIndex].caption;
+        if (capEl) capEl.textContent = scene.caption;
         const fillEl = document.getElementById('intro-timeline-fill');
         if (fillEl) {
           fillEl.style.width = `${(((introSceneIndex + 0.15) / INTRO_SCENES.length) * 100).toFixed(1)}%`;
         }
+        if (introVoiceActive && scene.audioSrc) {
+          playVoiceMp3(scene.audioSrc, scene.caption.replace(/"/g, ''));
+        }
       }
 
       function playIntroWithAudio() {
+        introVoiceActive = true;
         if (!musicPlaying) startClassicalMusic();
         playSound('chime');
         setIntroScene(0);
         startIntroCycle();
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const fullText = INTRO_SCENES.map(s => s.caption.replace(/"/g, '')).join(' ');
-          const utter = new SpeechSynthesisUtterance(fullText);
-          utter.lang = 'en-GB';
-          utter.rate = 0.96;
-          window.speechSynthesis.speak(utter);
-        }
       }
 
       function closeIntroVideo() {
+        introVoiceActive = false;
         if (introInterval) {
           clearInterval(introInterval);
           introInterval = null;
@@ -2914,9 +2988,7 @@
           cancelAnimationFrame(introVfxRaf);
           introVfxRaf = null;
         }
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-        }
+        stopVoiceAudio();
         state.seenIntroVideo = true;
         saveState();
         const backdrop = document.getElementById('intro-video-backdrop');
@@ -3145,6 +3217,7 @@
           id: 'tikal',
           title: 'Message #1: The Rainy Jungle Temple',
           environment: 'Jungle Rain & Monkeys',
+          audioSrc: 'assets/audio/log_tikal.mp3',
           transcript: 'Hello explorers! Professor West speaking. It is raining hard here in the green jungle. Pencil is hiding under my coat so her ears stay dry! In front of us is a tall stone pyramid with three funny masks above the door. Tomorrow morning when the sun comes up, we will climb to the top!',
           questions: [
             {
@@ -3168,6 +3241,7 @@
           id: 'siwa',
           title: 'Message #2: The Desert Oasis Camp',
           environment: 'Desert Wind & Campfire',
+          audioSrc: 'assets/audio/log_siwa.mp3',
           transcript: 'Hello from the desert! Today we rode camels across the sandy hills for six hours. Pencil rode inside my brown leather bag wearing her round glasses! Tonight, a kind baker gave us warm bread and sweet dates by the palm trees, and Pencil dug up a shiny silver coin near the water well.',
           questions: [
             {
@@ -3918,13 +3992,7 @@
       function speakFieldLog() {
         if (!fieldLogState) return;
         playSound('purr');
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(fieldLogState.log.transcript);
-          utter.lang = 'en-GB';
-          utter.rate = 0.95;
-          window.speechSynthesis.speak(utter);
-        }
+        playVoiceMp3(fieldLogState.log.audioSrc, fieldLogState.log.transcript);
         const hintEl = document.getElementById('modal-pencil-hint-text');
         if (hintEl) hintEl.textContent = '"Listen carefully to Professor West’s voice message!"';
       }
@@ -4234,7 +4302,7 @@
 
       function closeModal() {
         state.activeStation = null;
-        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        stopVoiceAudio();
         const backdrop = document.getElementById('activity-modal-backdrop');
         if (backdrop) backdrop.classList.remove('open');
       }
@@ -4260,6 +4328,26 @@
         setPencilSpeech('"Fresh notebook ready! Let’s start our adventure!"', 'Fresh Start');
       }
 
+      function hydratePixarMainPageArt() {
+        const img3 = document.getElementById('pixar-img-3');
+        const img1 = document.getElementById('pixar-img-1');
+        const studyBg = document.getElementById('study-main-pixar-bg');
+        if (studyBg && img3 && img3.src) {
+          studyBg.setAttribute('href', img3.src);
+        }
+        const avatarBadge = document.querySelector('.pencil-avatar-badge');
+        if (avatarBadge && img1 && img1.src) {
+          avatarBadge.style.backgroundImage = `url("${img1.src}")`;
+        }
+        document.querySelectorAll('.station-pixar-banner[data-pixar-plate]').forEach(banner => {
+          const idx = banner.getAttribute('data-pixar-plate');
+          const plateEl = document.getElementById('pixar-img-' + idx);
+          if (plateEl && plateEl.src) {
+            banner.style.backgroundImage = `url("${plateEl.src}")`;
+          }
+        });
+      }
+
       function setupEyeTracking() {
         const svg = document.getElementById('study-svg');
         const pupilL = document.getElementById('pencil-pupil-l');
@@ -4271,12 +4359,12 @@
           if (!rect.width || !rect.height) return;
           const relX = (e.clientX - rect.left) / rect.width;
           const relY = (e.clientY - rect.top) / rect.height;
-          const dx = Math.max(-3.2, Math.min(3.2, (relX - 0.67) * 9));
-          const dy = Math.max(-2.5, Math.min(2.5, (relY - 0.5) * 7));
-          pupilL.setAttribute('cx', (800 + dx).toFixed(2));
+          const dx = Math.max(-4.5, Math.min(4.5, (relX - 0.42) * 10));
+          const dy = Math.max(-3.5, Math.min(3.5, (relY - 0.46) * 8));
+          pupilL.setAttribute('cx', (486 + dx).toFixed(2));
           pupilL.setAttribute('cy', (310 + dy).toFixed(2));
-          pupilR.setAttribute('cx', (824 + dx).toFixed(2));
-          pupilR.setAttribute('cy', (310 + dy).toFixed(2));
+          pupilR.setAttribute('cx', (525 + dx).toFixed(2));
+          pupilR.setAttribute('cy', (308 + dy).toFixed(2));
         });
 
         window.addEventListener('keydown', (e) => {
@@ -4301,6 +4389,18 @@
           return el && el.getAttribute('src') && el.getAttribute('src').startsWith('data:image/jpeg;base64,');
         });
         check('pixarInlinePlates', allInlinePlates);
+
+        // Verify Main Study Page uses Pixar 3D artwork & station card banners
+        const studyBg = document.getElementById('study-main-pixar-bg');
+        const bannersHydrated = document.querySelectorAll('.station-pixar-banner').length === 6;
+        check('pixarMainStudyHub', Boolean(studyBg && studyBg.getAttribute('href') && studyBg.getAttribute('href').startsWith('data:image/jpeg;base64,')) && bannersHydrated);
+
+        // Verify Real Audio MP3 sources configured for Classical Music & Neural Voiceover
+        const hasRealMp3Config = CLASSICAL_TRACKS.every(t => t.audioSrc && t.audioSrc.endsWith('.mp3')) &&
+          INTRO_SCENES.every(s => s.audioSrc && s.audioSrc.endsWith('.mp3')) &&
+          AUDIO_FIELD_LOGS.every(l => l.audioSrc && l.audioSrc.endsWith('.mp3'));
+        check('realMp3AudioConfigured', hasRealMp3Config);
+
         setIntroScene(2);
         check('introVideoScenes', introSceneIndex === 2);
         closeIntroVideo();
@@ -4367,6 +4467,7 @@
       }
 
       function init() {
+        hydratePixarMainPageArt();
         syncHUD();
         setupEyeTracking();
         // Auto-open the animated intro cartoon when entering the study!
