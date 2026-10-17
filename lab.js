@@ -347,24 +347,52 @@ const LabObservatory = (() => {
     }
   }
 
-  function unlockCoursePasskey() {
-    const input = document.getElementById('lab-da-passkey-input');
-    const feedback = document.getElementById('lab-da-passkey-feedback');
+  const VALID_CODE_HASHES = [
+    '76194e86377ca58a',
+    '69d0b37588c5f1d3',
+    '8c0169334cd13d01',
+    'ab0c08a56e1c455d',
+    'e3983fcdd03203a9',
+    '5a4f146356548ac3',
+    '420e8b810cc95303',
+    'ab0e473c6e1c45b8',
+    '3a90fcfd3df5fd99',
+    'df4050d2ac7e7818',
+    '87c6e97afd2f9576'
+  ];
+
+  function hashAccessCode(raw) {
+    const clean = String(raw || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!clean) return '';
+    let h1 = 0x811c9dc5;
+    let h2 = 5381;
+    for (let i = 0; i < clean.length; i++) {
+      const c = clean.charCodeAt(i);
+      h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
+      h2 = (Math.imul(h2, 33) ^ c) >>> 0;
+    }
+    return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
+  }
+
+  function unlockCourseAccessCode() {
+    const input = document.getElementById('lab-da-access-code-input') || document.getElementById('lab-da-passkey-input');
+    const feedback = document.getElementById('lab-da-access-code-feedback') || document.getElementById('lab-da-passkey-feedback');
     if (!input || !feedback) return;
-    const cleaned = input.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-    const validHashes = ['GOTHIC12', 'GARETHC2', 'DARKACADEMIA24', 'STOKER1897'];
-    if (validHashes.includes(cleaned)) {
+    const digest = hashAccessCode(input.value);
+    if (VALID_CODE_HASHES.includes(digest)) {
       try {
+        localStorage.setItem('da_archive_unlocked', 'true');
+        localStorage.setItem('da_canon_unlocked', 'true');
         localStorage.setItem('da_course_unlocked_v1', 'true');
       } catch (e) {}
       feedback.className = 'text-xs font-bold text-emerald-400 mt-1.5';
-      feedback.textContent = '✓ All 12 lessons unlocked! Opening Course Hub...';
+      feedback.textContent = '✓ Access code verified! All 12 lessons unlocked—opening Course Hub...';
       setTimeout(() => {
         window.location.href = 'dark-academia-index.html?unlocked=true';
       }, 450);
     } else {
       feedback.className = 'text-xs font-bold text-rose-400 mt-1.5';
-      feedback.textContent = '✗ Invalid passkey. Check your receipt email or contact Gareth.';
+      feedback.innerHTML = '✗ Invalid access code. Check your confirmation screen or <a href="index.html#enquiry-card" class="underline text-amber-300 hover:text-white">email Gareth your Stripe receipt</a>.';
     }
   }
 
@@ -504,12 +532,12 @@ const LabObservatory = (() => {
       });
     };
 
-    const passkeyInput = document.getElementById('lab-da-passkey-input');
-    if (passkeyInput) {
-      passkeyInput.addEventListener('keydown', (e) => {
+    const accessCodeInput = document.getElementById('lab-da-access-code-input') || document.getElementById('lab-da-passkey-input');
+    if (accessCodeInput) {
+      accessCodeInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          unlockCoursePasskey();
+          unlockCourseAccessCode();
         }
       });
     }
@@ -524,6 +552,7 @@ const LabObservatory = (() => {
     roll2d6Demo,
     hoverBlip,
     toggleSFX,
-    unlockCoursePasskey
+    unlockCourseAccessCode,
+    unlockCoursePasskey: unlockCourseAccessCode
   };
 })();

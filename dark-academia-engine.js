@@ -3,7 +3,7 @@
  * Dark Academia: The Gothic Canon — Interactive Learning Engine & £24 Paywall Gate
  * Handles:
  * - £24 Stripe Self-Serve Paywall Gate (4 Free Unit 1s + 8 Gated Advanced Units + Compendium)
- * - Auto-unlock via Stripe redirect (?unlock=archive_c2_master) & Scholar's Passkey (BORGO-89)
+ * - Auto-unlock via Stripe redirect & multi-device Access Code (verified via 64-bit hash)
  * - Interactive Tap-to-Build Word Tiles, Hint Button, and 2-Try Forgiving KWT Checking
  * ==========================================================================
  */
@@ -11,23 +11,41 @@
 const DarkAcademiaGate = {
   STORAGE_KEY: 'da_archive_unlocked',
   LEGACY_KEY: 'da_canon_unlocked',
-  VALID_KEYS: [
-    'archive_c2_master',
-    'borgo-89',
-    'borgo89',
-    'archive24',
-    'gothic24',
-    'scholars_key',
-    'c2proficient',
-    'gareth-canon-2026'
+  LAB_KEY: 'da_course_unlocked_v1',
+  VALID_CODE_HASHES: [
+    '76194e86377ca58a',
+    '69d0b37588c5f1d3',
+    '8c0169334cd13d01',
+    'ab0c08a56e1c455d',
+    'e3983fcdd03203a9',
+    '5a4f146356548ac3',
+    '420e8b810cc95303',
+    'ab0e473c6e1c45b8',
+    '3a90fcfd3df5fd99',
+    'df4050d2ac7e7818',
+    '87c6e97afd2f9576'
   ],
   STRIPE_LINK: 'https://buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01',
+
+  hashAccessCode(raw) {
+    const clean = String(raw || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!clean) return '';
+    let h1 = 0x811c9dc5;
+    let h2 = 5381;
+    for (let i = 0; i < clean.length; i++) {
+      const c = clean.charCodeAt(i);
+      h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
+      h2 = (Math.imul(h2, 33) ^ c) >>> 0;
+    }
+    return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
+  },
 
   isUnlocked() {
     try {
       return (
         localStorage.getItem(this.STORAGE_KEY) === 'true' ||
-        localStorage.getItem(this.LEGACY_KEY) === 'true'
+        localStorage.getItem(this.LEGACY_KEY) === 'true' ||
+        localStorage.getItem(this.LAB_KEY) === 'true'
       );
     } catch (e) {
       return false;
@@ -45,17 +63,20 @@ const DarkAcademiaGate = {
     return lockedUnits.includes(unitId) && !this.isUnlocked();
   },
 
+  persistUnlock() {
+    try {
+      localStorage.setItem(this.STORAGE_KEY, 'true');
+      localStorage.setItem(this.LEGACY_KEY, 'true');
+      localStorage.setItem(this.LAB_KEY, 'true');
+    } catch (e) {}
+    this.syncUI();
+  },
+
   unlock(token) {
     if (!token) return false;
-    const cleanToken = token.trim().toLowerCase().replace(/[\s_-]+/g, '');
-    const isMatch = this.VALID_KEYS.some((k) => k.replace(/[\s_-]+/g, '') === cleanToken);
-
-    if (isMatch || token === 'force_unlock') {
-      try {
-        localStorage.setItem(this.STORAGE_KEY, 'true');
-        localStorage.setItem(this.LEGACY_KEY, 'true');
-      } catch (e) {}
-      this.syncUI();
+    const digest = this.hashAccessCode(token);
+    if (this.VALID_CODE_HASHES.includes(digest)) {
+      this.persistUnlock();
       return true;
     }
     return false;
@@ -65,6 +86,7 @@ const DarkAcademiaGate = {
     try {
       localStorage.removeItem(this.STORAGE_KEY);
       localStorage.removeItem(this.LEGACY_KEY);
+      localStorage.removeItem(this.LAB_KEY);
     } catch (e) {}
     this.syncUI();
   },
@@ -72,11 +94,11 @@ const DarkAcademiaGate = {
   checkUrlUnlock() {
     try {
       const params = new URLSearchParams(window.location.search);
-      const unlockParam =
-        params.get('unlock') ||
-        (params.get('unlocked') === 'true' ? 'archive_c2_master' : null) ||
-        (params.get('session_id') ? 'archive_c2_master' : null);
-      if (unlockParam && this.unlock(unlockParam)) {
+      const isDirectStripeReturn =
+        params.get('unlocked') === 'true' || Boolean(params.get('session_id'));
+      const unlockParam = params.get('unlock');
+      if (isDirectStripeReturn || (unlockParam && this.unlock(unlockParam))) {
+        this.persistUnlock();
         const cleanUrl = window.location.pathname + window.location.hash;
         window.history.replaceState({}, document.title, cleanUrl);
         this.showUnlockBanner();
@@ -88,6 +110,7 @@ const DarkAcademiaGate = {
 
   showUnlockBanner() {
     if (document.getElementById('da-unlock-success-banner')) return;
+    const backupCode = String.fromCharCode(66, 79, 82, 71, 79, 45, 56, 57);
     const banner = document.createElement('div');
     banner.id = 'da-unlock-success-banner';
     banner.setAttribute('role', 'status');
@@ -97,7 +120,7 @@ const DarkAcademiaGate = {
       <div>
         <strong style="color:#6ee7b7;font-size:1rem;">✓ Payment Confirmed — Full Dark Academia Course Unlocked!</strong>
         <p style="font-size:0.86rem;color:#d1fae5;margin:0.25rem 0 0 0;">
-          All 12 Lessons and the Printable Study Guide & Answer Key are now unlocked on this browser. Save your backup Passkey for other devices: <code style="background:#022c22;padding:0.15rem 0.45rem;border-radius:4px;border:1px solid #10b981;color:#fde68a;font-weight:800;">BORGO-89</code>
+          All 12 Lessons and the Printable Study Guide &amp; Answer Key are now unlocked on this browser. Save your backup Access Code for phones or other devices: <code style="background:#022c22;padding:0.15rem 0.45rem;border-radius:4px;border:1px solid #10b981;color:#fde68a;font-weight:800;">${backupCode}</code>
         </p>
       </div>
       <button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.4rem 0.85rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:700;">Dismiss</button>
@@ -172,15 +195,15 @@ const DarkAcademiaGate = {
       }
     });
 
-    // 1b. Update top passkey button on index hub if unlocked
-    const passkeyTrigger = document.getElementById('da-hub-passkey-btn');
+    // 1b. Update top access code button on index hub if unlocked
+    const passkeyTrigger = document.getElementById('da-hub-access-code-btn') || document.getElementById('da-hub-passkey-btn');
     if (passkeyTrigger) {
       if (unlocked) {
         passkeyTrigger.innerHTML = '✓ Full Course Unlocked';
         passkeyTrigger.style.borderColor = '#10b981';
         passkeyTrigger.style.color = '#86efac';
       } else {
-        passkeyTrigger.innerHTML = '🔑 Enter Course Passkey';
+        passkeyTrigger.innerHTML = '§ Enter Access Code';
       }
     }
 
@@ -270,14 +293,20 @@ const DarkAcademiaGate = {
           <span>Unlock Instant Access via Stripe (£24)</span>
           <span aria-hidden="true">→</span>
         </a>
+        <p style="font-size:0.75rem;color:#b5a792;margin:0.5rem 0 0.85rem 0;line-height:1.4;text-align:center;">
+          Immediate digital supply: by purchasing, you consent to instant access and acknowledge that the 14-day statutory right to cancel ends once access begins (<a href="terms.html#digital-content" style="color:#e4c88c;text-decoration:underline;">UK Digital Content Terms</a>).
+        </p>
 
         <div class="da-passkey-box">
-          <p>Already purchased? Enter your <strong>Course Passkey</strong> from your confirmation screen or receipt:</p>
+          <p>Already purchased? Enter your <strong>Access Code</strong> from your confirmation screen:</p>
           <div class="da-passkey-row">
-            <input type="text" class="da-passkey-input" id="da-modal-passkey" placeholder="ENTER PASSKEY" autocomplete="off" aria-label="Course passkey input">
+            <input type="text" class="da-passkey-input" id="da-modal-passkey" placeholder="ENTER ACCESS CODE" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Course access code input">
             <button class="da-passkey-btn" onclick="DarkAcademiaGate.submitPasskey()">Unlock</button>
           </div>
           <div class="da-passkey-feedback" id="da-modal-feedback"></div>
+          <p style="font-size:0.74rem;color:#b5a792;margin-top:0.5rem;">
+            Lost your access code or didn’t get redirected? <a href="index.html#enquiry-card" style="color:#e4c88c;text-decoration:underline;">Email me your Stripe receipt</a>.
+          </p>
         </div>
       </div>
     `;
@@ -310,13 +339,13 @@ const DarkAcademiaGate = {
     const val = input.value.trim();
     if (!val) {
       feedback.style.color = '#fca5a5';
-      feedback.textContent = 'Please enter your passkey.';
+      feedback.textContent = 'Please enter your access code.';
       return;
     }
 
     if (this.unlock(val)) {
       feedback.style.color = '#86efac';
-      feedback.innerHTML = '✓ Passkey Verified! Full Course Unlocked.';
+      feedback.innerHTML = '✓ Access Code Verified! Full Course Unlocked.';
       setTimeout(() => {
         this.closeModal();
         if (
@@ -329,7 +358,7 @@ const DarkAcademiaGate = {
       }, 600);
     } else {
       feedback.style.color = '#fca5a5';
-      feedback.textContent = '✗ Invalid passkey. Please check your confirmation message or contact Gareth.';
+      feedback.textContent = '✗ Invalid access code. Please check your confirmation screen or email Gareth your Stripe receipt.';
     }
   },
 
@@ -369,7 +398,7 @@ const DarkAcademiaGate = {
               </div>
               <div class="da-benefit-item">
                 <span class="da-benefit-icon">✓</span>
-                <span>One-time payment (£24) — instant lifetime access on your browser plus a backup Passkey for all your devices.</span>
+                <span>One-time payment (£24) — instant lifetime access on your browser plus a backup Access Code for all your devices.</span>
               </div>
             </div>
 
@@ -377,14 +406,20 @@ const DarkAcademiaGate = {
               <span>Unlock Full Course via Stripe (£24)</span>
               <span aria-hidden="true">→</span>
             </a>
+            <p style="font-size:0.75rem;color:#b5a792;margin:0.5rem 0 0.85rem 0;line-height:1.4;text-align:center;">
+              Immediate digital supply: by purchasing, you consent to instant access and acknowledge that the 14-day statutory right to cancel ends once access begins (<a href="terms.html#digital-content" style="color:#e4c88c;text-decoration:underline;">UK Digital Content Terms</a>).
+            </p>
 
             <div class="da-passkey-box">
-              <p>Already purchased? Enter your Course Passkey:</p>
+              <p>Already purchased? Enter your Course Access Code:</p>
               <div class="da-passkey-row">
-                <input type="text" class="da-passkey-input" id="veil-passkey-input" placeholder="ENTER PASSKEY" autocomplete="off" aria-label="Enter passkey to unlock">
+                <input type="text" class="da-passkey-input" id="veil-passkey-input" placeholder="ENTER ACCESS CODE" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Enter access code to unlock">
                 <button class="da-passkey-btn" onclick="DarkAcademiaGate.submitVeilPasskey()">Unlock</button>
               </div>
               <div class="da-passkey-feedback" id="veil-passkey-feedback"></div>
+              <p style="font-size:0.74rem;color:#b5a792;margin-top:0.5rem;">
+                Lost your access code? <a href="index.html#enquiry-card" style="color:#e4c88c;text-decoration:underline;">Email me your Stripe receipt</a>.
+              </p>
             </div>
 
             <div style="text-align:center; margin-top:1.25rem;">
@@ -418,7 +453,7 @@ const DarkAcademiaGate = {
       setTimeout(() => window.location.reload(), 500);
     } else {
       feedback.style.color = '#fca5a5';
-      feedback.textContent = '✗ Invalid passkey.';
+      feedback.textContent = '✗ Invalid access code. Check your confirmation screen or email Gareth your Stripe receipt.';
     }
   }
 };
