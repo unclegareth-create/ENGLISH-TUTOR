@@ -33,26 +33,26 @@ const LabObservatory = (() => {
       ]
     },
     {
-      badge: 'Teens B1–B2 • PC-98 Visual Novel + 2d6',
-      title: 'CHRONICLE ’88: Neon Alibi 1989 & The Citadel of Echoes',
-      desc: 'Interrogate suspects using Past Perfect timelines, roll 2d6 Composure checks, and parry hits with B2 transforms.',
+      badge: 'Teens B1–B2 • 8-Bit PC-88 Visual Novel + 2d6',
+      title: 'CHRONICLE ’88: Neon Alibi 1989, Citadel of Echoes & Station Zero',
+      desc: 'Interrogate suspects with talking 8-bit character busts, roll 2d6 Composure checks, and parry damage with B2 Key Word Transformations in FM chiptune style.',
       img: 'assets/arcade/c88_neon_alibi.svg',
-      alt: 'Chronicle 88 Tape 01: Neon Alibi 1989 detective interrogation scene',
+      alt: 'Chronicle 88 Tape 01: Neon Alibi 1989 detective interrogation scene with Inspector Deck',
       url: 'chronicle-88.html',
       quizTag: '⚡ Live 5-Second Alibi Trap (B2 Narrative Tenses):',
       prompt: 'Which suspect was ALREADY out of the room when the 23:15 alarm went off?',
       options: [
         { text: 'A) “When the alarm went off, I left the vault.”', correct: false, explain: 'Past Simple (“I left”) means they left AFTER the alarm sounded—caught red-handed!' },
-        { text: 'B) “When the alarm went off, I had left the vault.”', correct: true, explain: 'Correct! Past Perfect (“had left”) proves the action finished BEFORE the 23:15 alarm.' }
+        { text: 'B) “When the alarm went off, I had already left the vault.”', correct: true, explain: 'Alibi confirmed! Past Perfect (“had already left”) proves the action was complete BEFORE the 23:15 alarm.' }
       ]
     },
     {
-      badge: 'Browser Arcade • 4 Games, 5 Modes',
-      title: 'Grammar Crypt (2D/3D), Phrasal Reactor & Word Factory',
-      desc: 'Slot C1/C2 syntax runes into order, stabilise phrasal verb particles, or negotiate in The Boardroom Pitch.',
+      badge: 'Browser Arcade • 25 Dungeon Floors • 2D & 3D WebGL',
+      title: 'Grammar Crypt (2D Classic & 3D Dungeon), Phrasal Reactor & Word Factory',
+      desc: 'Slot glowing ancient runes into 4-tier syntax vaults (2D + 3D WebGL mode), stabilise phrasal particles, or drill Cambridge Part 3 prefixes.',
       img: 'assets/arcade/grammar_crypt.svg',
-      alt: 'Grammar Crypt dungeon vault with glowing syntax runes and the Arch-Lich boss',
-      url: 'grammar-crypt.html',
+      alt: 'Grammar Crypt dungeon vault with glowing syntax runes, floating embers, and the Arch-Lich boss',
+      url: 'grammar-crypt-3d.html',
       quizTag: '⚡ Live Phrasal Reactor Check (C1 Collocations):',
       prompt: '“The new transport policy is expected to bring _______ a major drop in emissions.”',
       options: [
@@ -363,11 +363,21 @@ const LabObservatory = (() => {
     const d1 = 1 + Math.floor(Math.random() * 6);
     const d2 = 1 + Math.floor(Math.random() * 6);
     const sum = d1 + d2;
-    const passed = sum <= 9;
-    playTone(passed ? 740 : 280, 0.09, 'square', 0.04);
+    const passed = sum <= 7;
+    // Chiptune dice rattle
+    [0, 35, 70, 105].forEach((delay, i) => {
+      setTimeout(() => playTone(340 + Math.random() * 320, 0.025, 'square', 0.035), delay);
+    });
+    setTimeout(() => {
+      if (passed) {
+        [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 0.07, 'square', 0.04), i * 65));
+      } else {
+        playTone(220, 0.25, 'square', 0.05);
+      }
+    }, 140);
     const readout = document.getElementById('c88-dice-readout');
     if (readout) {
-      readout.textContent = `🎲 Rolled ${d1}+${d2}=${sum} (${passed ? 'PASS ≤9!' : 'PARRY!'})`;
+      readout.textContent = `🎲 Rolled ${d1}+${d2}=${sum} (${passed ? 'PASS ≤ 7: UNSCATHED!' : 'HAZARD HIT: TAP TO PARRY'})`;
     }
   }
 
@@ -580,3 +590,5 @@ const LabObservatory = (() => {
     unlockCoursePasskey: unlockCourseAccessCode
   };
 })();
+window.LabObservatory = LabObservatory;
+
