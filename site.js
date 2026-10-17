@@ -124,42 +124,130 @@
     }
 
     /* ---------- Pre-fill Package Intent on Inquiry Form ---------- */
-    document.querySelectorAll('[data-prefill-package]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const pkg = btn.getAttribute('data-prefill-package');
+    const applyPackagePrefill = (pkg) => {
+        const goalInput = document.getElementById('goal');
+        const messageInput = document.getElementById('message');
+        const subjectInput = document.querySelector('#contact-form input[name="_subject"]');
+        const nameInput = document.getElementById('name');
+        const formTitle = document.getElementById('enquiry-form-title');
+        const formSubtitle = document.getElementById('enquiry-form-subtitle');
+        const formBadge = document.getElementById('enquiry-form-badge');
+        const pkgBanner = document.getElementById('selected-package-banner');
+        const pkgNameEl = document.getElementById('selected-package-name');
+        const pkgNextStepEl = document.getElementById('selected-package-next-step');
+        const submitBtn = document.getElementById('contact-submit-btn');
+        const enquiryCard = document.getElementById('enquiry-card');
+
+        if (!pkg) return;
+
+        if (goalInput) {
+            goalInput.value = 'Selected Package: ' + pkg;
+            goalInput.classList.add('ring-2', 'ring-emerald-400', 'border-emerald-400');
+        }
+        if (subjectInput) {
+            subjectInput.value = 'Package Order / Enquiry: ' + pkg;
+        }
+        if (formTitle) {
+            formTitle.textContent = 'Requesting: ' + pkg;
+        }
+        if (formSubtitle) {
+            formSubtitle.textContent = pkg.includes('Async')
+                ? 'Complete your details below—I will reply immediately with your secure upload link and £39 Stripe checkout link.'
+                : 'Complete your details and preferred days/times below—I will reply within 24 hours with your direct Stripe/PayPal/Wise payment link and schedule.';
+        }
+        if (formBadge) {
+            formBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
+            formBadge.innerHTML = '<i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Package Reservation &amp; Checkout';
+        }
+        if (pkgBanner && pkgNameEl) {
+            pkgNameEl.textContent = pkg;
+            if (pkgNextStepEl) {
+                pkgNextStepEl.textContent = pkg.includes('Async')
+                    ? 'Enter your name and email below—I will send your secure Google Doc / voice-note upload link and £39 Stripe checkout link.'
+                    : 'Enter your name, email, and time zone below—I will reply personally within 24 hours with your Stripe/PayPal/Wise invoice and scheduling link.';
+            }
+            pkgBanner.classList.remove('hidden');
+        }
+        if (submitBtn) {
+            submitBtn.innerHTML = pkg.includes('Async')
+                ? 'Request 24h Async Audit (£39) &rarr;'
+                : 'Request Selected Package &rarr;';
+        }
+        if (enquiryCard) {
+            enquiryCard.classList.add('border-emerald-400/70', 'ring-2', 'ring-emerald-400/25');
+            enquiryCard.classList.remove('border-slate-700');
+        }
+        if (messageInput) {
+            messageInput.placeholder = pkg.includes('Async')
+                ? 'Tell me which exam (IELTS, C1, C2) or business task you are submitting, and I will reply with your secure upload & Stripe payment link...'
+                : 'Let me know your target exam or goal, your time zone, and the days/times that usually suit you best...';
+        }
+        setTimeout(() => {
+            if (enquiryCard) {
+                enquiryCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            if (nameInput) nameInput.focus({ preventScroll: true });
+        }, 250);
+    };
+
+    const clearPackageBtn = document.getElementById('clear-package-btn');
+    if (clearPackageBtn) {
+        clearPackageBtn.addEventListener('click', () => {
             const goalInput = document.getElementById('goal');
             const messageInput = document.getElementById('message');
             const subjectInput = document.querySelector('#contact-form input[name="_subject"]');
-            const nameInput = document.getElementById('name');
+            const formTitle = document.getElementById('enquiry-form-title');
+            const formSubtitle = document.getElementById('enquiry-form-subtitle');
+            const formBadge = document.getElementById('enquiry-form-badge');
+            const pkgBanner = document.getElementById('selected-package-banner');
+            const submitBtn = document.getElementById('contact-submit-btn');
+            const enquiryCard = document.getElementById('enquiry-card');
 
-            if (goalInput && pkg) {
-                goalInput.value = 'Selected Package: ' + pkg;
-                goalInput.classList.add('ring-2', 'ring-sky-400', 'border-sky-400');
+            if (goalInput) {
+                goalInput.value = '';
+                goalInput.classList.remove('ring-2', 'ring-emerald-400', 'border-emerald-400', 'ring-sky-400', 'border-sky-400');
             }
-            if (subjectInput && pkg) {
-                subjectInput.value = 'Package Order / Enquiry: ' + pkg;
+            if (subjectInput) subjectInput.value = 'New Student Enquiry (Website)';
+            if (formTitle) formTitle.textContent = 'Ask a Question or Reserve a Package';
+            if (formSubtitle) formSubtitle.textContent = 'Select a package above or let me know your goals below—I reply personally within 24 hours with next steps and payment links.';
+            if (formBadge) {
+                formBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-sky-500/15 text-sky-300 border border-sky-400/30 mb-2';
+                formBadge.innerHTML = '<i class="fa-regular fa-envelope" aria-hidden="true"></i> Direct Tutor Enquiry &amp; Package Booking';
             }
-            if (messageInput && pkg.includes('Async')) {
-                messageInput.placeholder = 'Tell me which exam (IELTS, C1, C2) or business task you are submitting, and I will reply with your secure upload & Stripe payment link...';
+            if (pkgBanner) pkgBanner.classList.add('hidden');
+            if (submitBtn) submitBtn.innerHTML = 'Send Message &rarr;';
+            if (enquiryCard) {
+                enquiryCard.classList.remove('border-emerald-400/70', 'ring-2', 'ring-emerald-400/25');
+                enquiryCard.classList.add('border-slate-700');
             }
-            setTimeout(() => {
-                if (nameInput) nameInput.focus({ preventScroll: true });
-            }, 450);
+            if (messageInput) {
+                messageInput.placeholder = 'Tell me a bit about your current level, goals, and time zone...';
+            }
+        });
+    }
+
+    document.querySelectorAll('[data-prefill-package]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const pkg = btn.getAttribute('data-prefill-package');
+            if (pkg) {
+                e.preventDefault();
+                applyPackagePrefill(pkg);
+            }
         });
     });
 })();
 
 /* === HOMEPAGE INTERACTIVE MODULES === */
 (() => {
-  if (document.getElementById('essay-display-area')) {
+  if (document.getElementById('essay-canvas-body') || document.getElementById('essay-display-area')) {
 const WRITING_SAMPLES = {
         "c1": {
-          "title": "Cambridge C1 Advanced (CAE) â€” Part 1 Essay",
+          "title": "Cambridge C1 Advanced (CAE) — Part 1 Essay",
           "prompt": "Discuss two ways governments can encourage people to use public transport instead of private cars, and evaluate which is more effective.",
-          "draftBadge": "Student Draft (Solid B2 â€” 172/210)",
+          "draftBadge": "Student Draft (Solid B2 — 172/210)",
           "markupBadge": "Gareth's Line-by-Line Markup",
-          "polishedBadge": "Polished C1/C2 Pass (204/210 â€” Grade A)",
-          "cefrShift": "CEFR B2 â†’ C1/C2",
+          "polishedBadge": "Polished C1/C2 Pass (204/210 — Grade A)",
+          "cefrShift": "CEFR B2 → C1/C2",
           "splitBeforeBadge": "CEFR B2 (172/210)",
           "splitAfterBadge": "C1/C2 (204/210)",
           "scorePills": [
@@ -213,12 +301,12 @@ const WRITING_SAMPLES = {
           ]
         },
         "ielts": {
-          "title": "IELTS Academic Writing Task 2 â€” Opinion Essay",
+          "title": "IELTS Academic Writing Task 2 — Opinion Essay",
           "prompt": "Some people believe universities should only offer places to students with high academic marks, while others think people of all ages and abilities should be admitted. Discuss both views and give your opinion.",
           "draftBadge": "Student Draft (Stuck at Band 6.5)",
           "markupBadge": "Gareth's Band 8.0+ Upgrade",
           "polishedBadge": "Polished Band 8.0+ Paragraph",
-          "cefrShift": "Band 6.5 â†’ Band 8.0+",
+          "cefrShift": "Band 6.5 → Band 8.0+",
           "splitBeforeBadge": "Band 6.5",
           "splitAfterBadge": "Band 8.0+",
           "scorePills": [
@@ -271,12 +359,12 @@ const WRITING_SAMPLES = {
           ]
         },
         "business": {
-          "title": "Business English â€” Stakeholder Delay Email",
+          "title": "Business English — Stakeholder Delay Email",
           "prompt": "Write an email to a senior client explaining that the November software rollout will be delayed by two weeks due to security testing, while maintaining trust.",
           "draftBadge": "Original Draft (Too Direct / Abrupt)",
           "markupBadge": "Gareth's Diplomatic Markup",
           "polishedBadge": "Polished Client Email",
-          "cefrShift": "Direct B2 â†’ Diplomatic C1/C2",
+          "cefrShift": "Direct B2 → Diplomatic C1/C2",
           "splitBeforeBadge": "Direct B2",
           "splitAfterBadge": "Diplomatic C1/C2",
           "scorePills": [
@@ -284,7 +372,7 @@ const WRITING_SAMPLES = {
             { "label": "Clarity & Impact", "before": "6/10", "after": "9.5/10" },
             { "label": "Client Confidence", "before": "Shaky", "after": "High" }
           ],
-          "verdict": "When writing in a second language under time pressure, it is easy to translate directlyâ€”which can accidentally sound blunt or defensive ('We have a problem', 'You will have to wait'). Here, we reframe the delay around client security and clear next steps.",
+          "verdict": "When writing in a second language under time pressure, it is easy to translate directly—which can accidentally sound blunt or defensive ('We have a problem', 'You will have to wait'). Here, we reframe the delay around client security and clear next steps.",
           "segments": [
             { "type": "text", "content": "Dear Sarah,<br><br>Following our review of the November rollout, I am writing to share a brief status update.<br><br>" },
             {
@@ -344,7 +432,7 @@ const WRITING_SAMPLES = {
         document.getElementById('doc-cefr-badge').textContent = sample.cefrShift;
 
         const pillsContainer = document.getElementById('score-pills-container');
-        pillsContainer.innerHTML = sample.scorePills.map(pill => `
+        pillsContainer.innerHTML = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-200/90 text-slate-700">Illustrative Example</span>` + sample.scorePills.map(pill => `
           <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200 shadow-sm text-xs">
             <span class="text-slate-500 font-medium">${pill.label}:</span>
             <span class="text-rose-600 line-through font-mono text-xs">${pill.before}</span>
@@ -405,7 +493,7 @@ const WRITING_SAMPLES = {
       function renderSplitView(sample) {
         const beforeHtml = renderParagraphSegments(sample.segments, 'draft');
         const afterHtml = renderParagraphSegments(sample.segments, 'polished');
-        const shiftParts = (sample.cefrShift || '').split(' â†’ ');
+        const shiftParts = (sample.cefrShift || '').split(' → ');
         const beforeBadge = sample.splitBeforeBadge || shiftParts[0] || 'B2';
         const afterBadge = sample.splitAfterBadge || shiftParts[1] || 'C1/C2';
         return `
@@ -456,11 +544,11 @@ const WRITING_SAMPLES = {
 
               <div class="bg-slate-50 rounded-lg p-3 mb-2.5 border border-slate-200/60 text-sm space-y-1.5">
                 <div class="flex items-start gap-1.5 text-rose-700">
-                  <span class="font-bold shrink-0">âœ—</span>
+                  <span class="font-bold shrink-0">✗</span>
                   <span class="line-through opacity-85">"${note.before}"</span>
                 </div>
                 <div class="flex items-start gap-1.5 text-emerald-800 font-medium">
-                  <span class="font-bold shrink-0">âœ“</span>
+                  <span class="font-bold shrink-0">✓</span>
                   <span>"${note.after}"</span>
                 </div>
               </div>
@@ -473,7 +561,7 @@ const WRITING_SAMPLES = {
         }).join('');
       }
 
-      function switchContext(contextKey) {
+      window.switchContext = function switchContext(contextKey) {
         currentContextKey = contextKey;
         activeAnnotationId = 1;
 
@@ -490,9 +578,9 @@ const WRITING_SAMPLES = {
 
         document.getElementById('writing-tabpanel').setAttribute('aria-labelledby', 'tab-' + contextKey);
         renderComponent();
-      }
+      };
 
-      function switchViewMode(mode) {
+      window.switchViewMode = function switchViewMode(mode) {
         currentViewMode = mode;
 
         ['draft', 'markup', 'polished', 'split'].forEach(m => {
@@ -510,12 +598,12 @@ const WRITING_SAMPLES = {
         });
 
         renderComponent();
-      }
+      };
 
       window.selectAnnotation = function selectAnnotation(id) {
         activeAnnotationId = id;
         updateHighlightStates(true);
-      }
+      };
 
       function updateHighlightStates(scrollCardIntoView) {
         document.querySelectorAll('[data-note-id]').forEach(el => {
@@ -582,11 +670,17 @@ window.filterLabs = function filterLabs(level, btn) {
               const fallbackCard = document.getElementById('cal-fallback-card');
               if (!calEl) return;
 
+              // Ensure container is always interactive
+              calEl.classList.remove('pointer-events-none');
+              calEl.classList.add('pointer-events-auto');
+
               let calLoaded = false;
 
               function initCalEmbed() {
                 if (calLoaded) return;
                 calLoaded = true;
+                calEl.classList.remove('pointer-events-none');
+                calEl.classList.add('pointer-events-auto');
 
                 (function (C, A, L) {
                   let p = function (a, ar) { a.q.push(ar); };
@@ -628,14 +722,14 @@ window.filterLabs = function filterLabs(level, btn) {
                 });
 
                 const checkState = function() {
-                  const iframe = calEl.querySelector('iframe');
-                  if (iframe) {
+                  const mountedEmbed = calEl.querySelector('iframe, cal-inline');
+                  if (mountedEmbed) {
                     calEl.classList.remove('pointer-events-none');
                     calEl.classList.add('pointer-events-auto');
                     if (fallbackCard) fallbackCard.style.display = 'none';
                   }
                   if (calEl.textContent && (calEl.textContent.includes('Something went wrong') || calEl.textContent.includes('enable JavaScript'))) {
-                    const existingIframe = calEl.querySelector('iframe');
+                    const existingIframe = calEl.querySelector('iframe, cal-inline');
                     if (!existingIframe && fallbackCard) {
                       calEl.innerHTML = '';
                       fallbackCard.style.display = 'flex';
