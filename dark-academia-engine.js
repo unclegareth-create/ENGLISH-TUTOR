@@ -1358,53 +1358,111 @@ const DarkAcademiaAtmosphere = (() => {
       bookKey: 'dracula',
       title: 'Book I • Bram Stoker’s Dracula (1897)',
       imgSrc: 'assets/gothic/dracula_carpathian.jpg',
+      museumCredit: 'Plate I — Caspar David Friedrich, Abbey in the Oakwood (1809–1810), Oil on canvas • Alte Nationalgalerie, Berlin',
       audioSrc: 'assets/audio/gothic_act1_dracula.mp3',
       quote: '"Soon we were hemmed in with trees, which in places arched right over the roadway till we passed as through a tunnel..."',
       grammarFocus: 'C1/C2 Target: Participle Clauses (Fearing..., Hemmed in by...), Negative Inversion (Little did Harker realise...) & Reporting Passives.',
       freeUrl: 'dracula-unit1-carpathian-threshold.html',
-      freeLabel: 'Play Free Dracula Lesson 1 →'
+      freeLabel: 'Read Free Lesson 1 →'
     },
     {
       bookKey: 'frankenstein',
       title: 'Book II • Mary Shelley’s Frankenstein (1818)',
       imgSrc: 'assets/gothic/frankenstein_lab.jpg',
+      museumCredit: 'Plate II — Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768), Oil on canvas • The National Gallery, London',
       audioSrc: 'assets/audio/gothic_act2_frankenstein.mp3',
       quote: '"It was on a dreary night of November that I beheld the accomplishment of my toils..."',
       grammarFocus: 'C1/C2 Target: Inverted Conditionals (Had he known..., Were we to...), Contrast Fronting (Bleak though it was...) & Cleft Sentences.',
       freeUrl: 'frankenstein-unit1-spark-of-being.html',
-      freeLabel: 'Play Free Frankenstein Lesson 4 →'
+      freeLabel: 'Read Free Lesson 4 →'
     },
     {
       bookKey: 'jekyll',
       title: 'Book III • R.L. Stevenson’s Dr Jekyll & Mr Hyde (1886)',
       imgSrc: 'assets/gothic/jekyll_apothecary.jpg',
+      museumCredit: 'Plate III — John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880), Oil on canvas • Leeds Art Gallery',
       audioSrc: 'assets/audio/gothic_act3_jekyll.mp3',
       quote: '"Much as Utterson wished to trust his old friend, the sinister connection to Mr Hyde filled him with repugnance..."',
       grammarFocus: 'C1/C2 Target: Concessive Clauses (Much as..., Shocking though...), Time Inversions (Not until... did...) & Evaluative C2 Lexis.',
       freeUrl: 'jekyll-unit1-soho-threshold.html',
-      freeLabel: 'Play Free Jekyll & Hyde Lesson 7 →'
+      freeLabel: 'Read Free Lesson 7 →'
     },
     {
       bookKey: 'baskerville',
       title: 'Book IV • Conan Doyle’s The Hound of the Baskervilles (1901)',
       imgSrc: 'assets/gothic/baskerville_moor.jpg',
+      museumCredit: 'Plate IV — Caspar David Friedrich, Two Men Contemplating the Moon (1819–1820), Oil on canvas • Galerie Neue Meister, Dresden',
       audioSrc: 'assets/audio/gothic_act4_baskerville.mp3',
       quote: '"Sir Charles must have been waiting at the moor-gate, yet no footprints could be seen upon the gravel..."',
       grammarFocus: 'C1/C2 Target: Past Modals of Deduction (must have been, can’t have, might well have), Place Inversion & Counterfactuals (But for...).',
       freeUrl: 'baskerville-unit1-curse-of-the-moors.html',
-      freeLabel: 'Play Free Baskervilles Lesson 10 →'
+      freeLabel: 'Read Free Lesson 10 →'
     }
   ];
 
+  const UNIT_PAINTINGS = {
+    dracula_unit1: {
+      src: 'assets/gothic/dracula_carpathian.jpg',
+      credit: 'Caspar David Friedrich, Abbey in the Oakwood (1809–1810) • Alte Nationalgalerie'
+    },
+    dracula_unit2: {
+      src: 'assets/gothic/dracula_unit2.jpg',
+      credit: 'Caspar David Friedrich, Ruins of Eldena (c. 1825) • Oil on canvas'
+    },
+    dracula_unit3: {
+      src: 'assets/gothic/dracula_unit3.jpg',
+      credit: 'Johan Christian Dahl, Shipwreck on the Coast (1832) • National Museum, Oslo'
+    },
+    frankenstein_unit1: {
+      src: 'assets/gothic/frankenstein_lab.jpg',
+      credit: 'Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768) • National Gallery'
+    },
+    frankenstein_unit2: {
+      src: 'assets/gothic/frankenstein_unit2.jpg',
+      credit: 'Caspar David Friedrich, The Sea of Ice (1824) • Hamburger Kunsthalle'
+    },
+    frankenstein_unit3: {
+      src: 'assets/gothic/frankenstein_unit3.jpg',
+      credit: 'Caspar David Friedrich, Wanderer above the Sea of Fog (c. 1818) • Hamburger Kunsthalle'
+    },
+    jekyll_unit1: {
+      src: 'assets/gothic/jekyll_apothecary.jpg',
+      credit: 'John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880) • Leeds Art Gallery'
+    },
+    jekyll_unit2: {
+      src: 'assets/gothic/jekyll_unit2.jpg',
+      credit: 'Joseph Wright of Derby, The Alchymist Discovering Phosphorus (1771) • Derby Museum'
+    },
+    jekyll_unit3: {
+      src: 'assets/gothic/jekyll_unit3.jpg',
+      credit: 'John Atkinson Grimshaw, Liverpool Quay by Moonlight (1887) • Tate Britain'
+    },
+    baskerville_unit1: {
+      src: 'assets/gothic/baskerville_moor.jpg',
+      credit: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819) • Galerie Neue Meister'
+    },
+    baskerville_unit2: {
+      src: 'assets/gothic/baskerville_unit2.jpg',
+      credit: 'Caspar David Friedrich, Megalithic Tomb in Autumn (c. 1820) • Galerie Neue Meister'
+    },
+    baskerville_unit3: {
+      src: 'assets/gothic/baskerville_unit3.jpg',
+      credit: 'Caspar David Friedrich, Moonrise by the Sea (1822) • Alte Nationalgalerie'
+    }
+  };
+
   const preloadedImages = {};
-  function getBookImage(bookKey) {
-    const map = {
+  function getBookImage(keyOrUnitId) {
+    const bookMap = {
       dracula: 'assets/gothic/dracula_carpathian.jpg',
       frankenstein: 'assets/gothic/frankenstein_lab.jpg',
       jekyll: 'assets/gothic/jekyll_apothecary.jpg',
       baskerville: 'assets/gothic/baskerville_moor.jpg'
     };
-    const src = map[bookKey] || map.dracula;
+    const src =
+      (UNIT_PAINTINGS[keyOrUnitId] && UNIT_PAINTINGS[keyOrUnitId].src) ||
+      bookMap[keyOrUnitId] ||
+      bookMap.dracula;
     if (!preloadedImages[src] && typeof Image !== 'undefined') {
       const img = new Image();
       img.src = src;
@@ -1799,18 +1857,17 @@ const DarkAcademiaAtmosphere = (() => {
     hud.innerHTML = `
       <div class="da-hud-left">
         <a href="lab.html" class="da-hud-pill" title="Return to The Gareth English Interactive Lab">
-          <span>🏛️</span>
           <span>← Interactive Lab</span>
         </a>
         ${
           !isHub
             ? `<a href="dark-academia-index.html" class="da-hud-pill" title="Return to Dark Academia Course Hub">
-                 <span>🕯️</span>
+                 <span>§</span>
                  <span>Course Hub (12 Lessons)</span>
                </a>`
-            : `<span class="da-hud-pill" style="cursor:default; border-color:rgba(245,158,11,0.45); color:#fde68a;">
-                 <span>🕯️</span>
-                 <span>The Gothic Canon • C1/C2 Conservatory</span>
+            : `<span class="da-hud-pill" style="cursor:default; border-color:rgba(197,160,89,0.45); color:#e6d3a7;">
+                 <span>✦</span>
+                 <span>The Gothic Canon • C1/C2 Literary Edition</span>
                </span>`
         }
       </div>
@@ -1818,22 +1875,21 @@ const DarkAcademiaAtmosphere = (() => {
       <div class="da-hud-right">
         <div class="da-hud-music-group" role="group" aria-label="Study Music Controls">
           <button type="button" id="da-hud-music-toggle" onclick="DarkAcademiaAtmosphere.toggleMusic()">
-            <span id="da-hud-music-icon">🎵</span>
+            <span id="da-hud-music-icon">♪</span>
             <span id="da-hud-music-status">Study Audio: Off</span>
           </button>
-          <button type="button" id="da-hud-music-next" onclick="DarkAcademiaAtmosphere.nextTrack()" title="Switch Classical / Gothic Track">
-            <span>⏭</span>
+          <button type="button" id="da-hud-music-next" onclick="DarkAcademiaAtmosphere.nextTrack()" title="Switch Classical Track">
+            <span>▸</span>
             <span id="da-hud-track-name">Midnight Rain &amp; Cello</span>
           </button>
         </div>
 
         <button type="button" id="da-hud-sfx-btn" class="da-hud-pill active-sound" onclick="DarkAcademiaAtmosphere.toggleSFX()">
-          <span>🖋️</span>
           <span id="da-hud-sfx-label">SFX: ON</span>
         </button>
 
         <button type="button" id="da-hud-theme-btn" class="da-hud-pill" onclick="DarkAcademiaAtmosphere.toggleParchmentMode()">
-          <span id="da-hud-theme-icon">🕯️</span>
+          <span id="da-hud-theme-icon">✦</span>
           <span id="da-hud-theme-label">Candlelight</span>
         </button>
       </div>
@@ -1861,183 +1917,53 @@ const DarkAcademiaAtmosphere = (() => {
 
     const isParchment = document.body.classList.contains('da-parchment-mode');
     if (themeLbl) themeLbl.textContent = isParchment ? 'Parchment' : 'Candlelight';
-    if (themeIcon) themeIcon.textContent = isParchment ? '📜' : '🕯️';
+    if (themeIcon) themeIcon.textContent = isParchment ? '§' : '✦';
   }
 
   /* ==============================================================
-     VOLUMETRIC CANVAS RENDERER (SHARED BY HUB CINEMA & 12 LESSONS)
+     CLASSICAL MUSEUM OIL PAINTING RENDERER (NO SYNTHETIC NEON VFX)
      ============================================================== */
-  const PARTICLES = Array.from({ length: 54 }, (_, i) => ({
-    x: ((i * 67) % 100) / 100,
-    y: ((i * 43) % 100) / 100,
-    z: 0.3 + ((i * 29) % 70) / 100,
-    r: 1.0 + (i % 4) * 0.9,
-    vx: (i % 2 === 0 ? 1 : -1) * (0.00018 + (i % 5) * 0.00008),
-    vy: -0.00028 - (i % 4) * 0.0001,
-    phase: (i * 0.52) % (Math.PI * 2)
-  }));
-
-  function drawAtmosphericCanvas(ctx, W, H, bookKey, timestamp, parallaxX = 0, parallaxY = 0) {
+  function drawAtmosphericCanvas(ctx, W, H, keyOrUnitId, timestamp, parallaxX = 0, parallaxY = 0) {
     const t = timestamp * 0.001;
     ctx.clearRect(0, 0, W, H);
 
-    // 1. Draw the bespoke chiaroscuro oil painting with gentle Ken Burns drift
-    const img = getBookImage(bookKey);
+    const img = getBookImage(keyOrUnitId);
     if (img && img.complete && img.naturalWidth > 0) {
-      const zoom = 1.04 + 0.025 * Math.sin(t * 0.35);
-      const dw = W * zoom;
-      const dh = H * zoom;
-      const dx = (W - dw) * 0.5 + Math.sin(t * 0.25) * 8 + parallaxX * 10;
-      const dy = (H - dh) * 0.5 + Math.cos(t * 0.2) * 5 + parallaxY * 6;
+      // Aspect-preserving cover crop with very subtle museum gallery drift
+      const imgAspect = img.naturalWidth / img.naturalHeight;
+      const canvasAspect = W / H;
+      let baseW, baseH;
+      if (imgAspect > canvasAspect) {
+        baseH = H;
+        baseW = H * imgAspect;
+      } else {
+        baseW = W;
+        baseH = W / imgAspect;
+      }
+      const zoom = 1.02 + 0.01 * Math.sin(t * 0.18);
+      const dw = baseW * zoom;
+      const dh = baseH * zoom;
+      const dx = (W - dw) * 0.5 + parallaxX * 6;
+      const dy = (H - dh) * 0.42 + parallaxY * 4;
       ctx.drawImage(img, dx, dy, dw, dh);
     } else {
       const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-      bgGrad.addColorStop(0, '#120914');
-      bgGrad.addColorStop(1, '#060a12');
+      bgGrad.addColorStop(0, '#16120f');
+      bgGrad.addColorStop(1, '#0c0a08');
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
     }
 
-    // 2. Book-Specific Volumetric Lighting & Weather VFX
-    ctx.save();
-    if (bookKey === 'dracula') {
-      // Moonbeam glow + carriage amber lantern pulse + Carpathian mist
-      const moonX = W * 0.385;
-      const moonY = H * 0.21;
-      const moonR = 65 + Math.sin(t * 2.1) * 8;
-      const mg = ctx.createRadialGradient(moonX, moonY, 4, moonX, moonY, moonR);
-      mg.addColorStop(0, 'rgba(254, 243, 199, 0.38)');
-      mg.addColorStop(0.5, 'rgba(248, 113, 113, 0.14)');
-      mg.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = mg;
-      ctx.beginPath();
-      ctx.arc(moonX, moonY, moonR, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Carriage lantern flicker
-      const lanX = W * 0.355;
-      const lanY = H * 0.675;
-      const lanR = 48 + Math.sin(t * 7.5) * 7;
-      const lg = ctx.createRadialGradient(lanX, lanY, 2, lanX, lanY, lanR);
-      lg.addColorStop(0, 'rgba(254, 240, 138, 0.65)');
-      lg.addColorStop(0.5, 'rgba(245, 158, 11, 0.25)');
-      lg.addColorStop(1, 'rgba(245, 158, 11, 0)');
-      ctx.fillStyle = lg;
-      ctx.beginPath();
-      ctx.arc(lanX, lanY, lanR, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (bookKey === 'frankenstein') {
-      // Rain streaks on the Gothic window + galvanic teal arc flash + candle flicker
-      ctx.strokeStyle = 'rgba(186, 230, 253, 0.22)';
-      ctx.lineWidth = 1.1;
-      for (let r = 0; r < 24; r++) {
-        const rx = ((r * 47 + t * 110) % (W * 0.42)) + W * 0.08;
-        const ry = ((r * 83 + t * 260) % (H * 0.62)) + H * 0.05;
-        ctx.beginPath();
-        ctx.moveTo(rx, ry);
-        ctx.lineTo(rx - 5, ry + 16);
-        ctx.stroke();
-      }
-
-      // Galvanic spark between brass coils
-      const sparkX = W * 0.55;
-      const sparkY = H * 0.58;
-      const pulse = 0.25 + 0.2 * Math.sin(t * 9.0);
-      const sg = ctx.createRadialGradient(sparkX, sparkY, 3, sparkX, sparkY, 70);
-      sg.addColorStop(0, `rgba(153, 246, 228, ${pulse * 1.6})`);
-      sg.addColorStop(0.5, `rgba(20, 184, 166, ${pulse * 0.7})`);
-      sg.addColorStop(1, 'rgba(20, 184, 166, 0)');
-      ctx.fillStyle = sg;
-      ctx.beginPath();
-      ctx.arc(sparkX, sparkY, 70, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (bookKey === 'jekyll') {
-      // Candelabra warm bloom + cyan/amber chemical vapour shimmer
-      const candX = W * 0.16;
-      const candY = H * 0.46;
-      const cg = ctx.createRadialGradient(candX, candY, 4, candX, candY, 75 + Math.sin(t * 6.2) * 8);
-      cg.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
-      cg.addColorStop(0.5, 'rgba(245, 158, 11, 0.18)');
-      cg.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = cg;
-      ctx.beginPath();
-      ctx.arc(candX, candY, 80, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Cyan & Amber Elixir Glow
-      const vialX = W * 0.56;
-      const vialY = H * 0.72;
-      const vg = ctx.createRadialGradient(vialX, vialY, 4, vialX, vialY, 82);
-      vg.addColorStop(0, 'rgba(34, 211, 238, 0.42)');
-      vg.addColorStop(0.55, 'rgba(245, 158, 11, 0.18)');
-      vg.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = vg;
-      ctx.beginPath();
-      ctx.arc(vialX, vialY, 82, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (bookKey === 'baskerville') {
-      // Storm lantern warm glow + phosphor emerald moorland mist
-      const lanX = W * 0.695;
-      const lanY = H * 0.61;
-      const lg = ctx.createRadialGradient(lanX, lanY, 4, lanX, lanY, 85 + Math.sin(t * 5.4) * 7);
-      lg.addColorStop(0, 'rgba(254, 240, 138, 0.58)');
-      lg.addColorStop(0.5, 'rgba(234, 179, 8, 0.22)');
-      lg.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = lg;
-      ctx.beginPath();
-      ctx.arc(lanX, lanY, 88, 0, Math.PI * 2);
-      ctx.fill();
-
-      const moorX = W * 0.42 + Math.sin(t * 0.8) * 20;
-      const moorY = H * 0.56;
-      const mg = ctx.createRadialGradient(moorX, moorY, 6, moorX, moorY, 110);
-      mg.addColorStop(0, 'rgba(163, 230, 53, 0.28)');
-      mg.addColorStop(0.6, 'rgba(16, 185, 129, 0.12)');
-      mg.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = mg;
-      ctx.beginPath();
-      ctx.arc(moorX, moorY, 110, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // 3. Floating Candlelight Dust Motes & Bokeh
-    PARTICLES.forEach((p, idx) => {
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.y < -0.05) p.y = 1.05;
-      if (p.x < -0.05) p.x = 1.05;
-      if (p.x > 1.05) p.x = -0.05;
-
-      const px = p.x * W;
-      const py = p.y * H;
-      const twinkle = 0.3 + 0.7 * Math.abs(Math.sin(t * 2.1 + p.phase));
-      const rad = p.r * (0.9 + p.z * 1.2);
-      const g = ctx.createRadialGradient(px, py, 0.4, px, py, rad * 2.4);
-
-      if (bookKey === 'frankenstein' && idx % 3 === 0) {
-        g.addColorStop(0, `rgba(153, 246, 228, ${(twinkle * 0.85).toFixed(2)})`);
-        g.addColorStop(1, 'rgba(45, 212, 191, 0)');
-      } else if (bookKey === 'jekyll' && idx % 3 === 0) {
-        g.addColorStop(0, `rgba(165, 243, 252, ${(twinkle * 0.85).toFixed(2)})`);
-        g.addColorStop(1, 'rgba(6, 182, 212, 0)');
-      } else if (bookKey === 'baskerville' && idx % 3 === 0) {
-        g.addColorStop(0, `rgba(217, 249, 157, ${(twinkle * 0.85).toFixed(2)})`);
-        g.addColorStop(1, 'rgba(132, 204, 22, 0)');
-      } else {
-        g.addColorStop(0, `rgba(254, 243, 199, ${(twinkle * 0.85).toFixed(2)})`);
-        g.addColorStop(1, 'rgba(245, 158, 11, 0)');
-      }
-
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(px, py, rad * 2.4, 0, Math.PI * 2);
-      ctx.fill();
-    });
-    ctx.restore();
+    // Subtle classical museum frame vignette (no artificial coloured circles or neon bokeh)
+    const vig = ctx.createRadialGradient(W * 0.5, H * 0.5, Math.min(W, H) * 0.28, W * 0.5, H * 0.5, Math.max(W, H) * 0.72);
+    vig.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    vig.addColorStop(1, 'rgba(10, 8, 6, 0.52)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, W, H);
   }
 
   /* ==============================================================
-     HUB SHOWCASE: 4-ACT GOTHIC CINEMA & ILLUSTRATED CARDS
+      HUB SHOWCASE: 4-PLATE FINE ART GALLERY & ILLUSTRATED CARDS
      ============================================================== */
   let hubCinemaIdx = 0;
   let hubParallax = { x: 0, y: 0 };
@@ -2046,27 +1972,28 @@ const DarkAcademiaAtmosphere = (() => {
     const hero = document.querySelector('.portal-hero');
     if (!hero || document.getElementById('da-cinema-stage')) return;
 
-    // Preload all 4 book paintings
+    // Preload all 4 book paintings and 12 unit paintings
     ['dracula', 'frankenstein', 'jekyll', 'baskerville'].forEach(getBookImage);
+    Object.keys(UNIT_PAINTINGS).forEach(getBookImage);
 
     const stage = document.createElement('section');
     stage.id = 'da-cinema-stage';
     stage.className = 'da-cinema-stage';
-    stage.setAttribute('aria-label', 'Interactive 4-Book Gothic Conservatory Preview');
+    stage.setAttribute('aria-label', '19th-Century Fine Art & Audio Plate Gallery');
 
     stage.innerHTML = `
       <div class="da-cinema-topbar">
         <span class="da-cinema-eyebrow">
-          <span>🎬</span>
-          <span>Interactive 4-Book Audio &amp; Visual Preview</span>
+          <span>✦</span>
+          <span>19th-Century Fine Art Plates &amp; Dramatic Readings</span>
         </span>
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
           <button type="button" class="da-hud-pill" onclick="DarkAcademiaAtmosphere.playCurrentBookOverview(this)">
-            <span>🔊</span>
+            <span>♪</span>
             <span class="da-reader-btn-label">Listen to Book Overview</span>
           </button>
           <button type="button" class="da-hud-pill" onclick="DarkAcademiaAtmosphere.toggleMusic()">
-            <span>🕯️</span>
+            <span>✦</span>
             <span>Toggle Study Ambience</span>
           </button>
         </div>
@@ -2075,24 +2002,25 @@ const DarkAcademiaAtmosphere = (() => {
       <div class="da-cinema-tabs" role="tablist" aria-label="Select a Classic Gothic Novel">
         <button type="button" class="da-cinema-tab active" data-act-idx="0" onclick="DarkAcademiaAtmosphere.setCinemaAct(0, true)">
           <strong>I. Dracula (1897)</strong>
-          <span>Participles &amp; Inversion</span>
+          <span>Caspar David Friedrich (1810)</span>
         </button>
         <button type="button" class="da-cinema-tab" data-act-idx="1" onclick="DarkAcademiaAtmosphere.setCinemaAct(1, true)">
           <strong>II. Frankenstein (1818)</strong>
-          <span>Conditionals &amp; Clefts</span>
+          <span>Joseph Wright of Derby (1768)</span>
         </button>
         <button type="button" class="da-cinema-tab" data-act-idx="2" onclick="DarkAcademiaAtmosphere.setCinemaAct(2, true)">
           <strong>III. Jekyll &amp; Hyde (1886)</strong>
-          <span>Concessive Contrast</span>
+          <span>John Atkinson Grimshaw (1880)</span>
         </button>
         <button type="button" class="da-cinema-tab" data-act-idx="3" onclick="DarkAcademiaAtmosphere.setCinemaAct(3, true)">
           <strong>IV. Baskervilles (1901)</strong>
-          <span>Modals of Deduction</span>
+          <span>Caspar David Friedrich (1819)</span>
         </button>
       </div>
 
       <div class="da-cinema-viewport" id="da-cinema-viewport">
         <canvas id="da-cinema-canvas" class="da-cinema-canvas" width="960" height="492"></canvas>
+        <div class="da-museum-plaque" id="da-cinema-museum-credit">${BOOK_CINEMA_ACTS[0].museumCredit}</div>
         <div class="da-cinema-overlay">
           <div class="da-cinema-caption-box">
             <span class="da-cinema-book-tag" id="da-cinema-book-tag">${BOOK_CINEMA_ACTS[0].title}</span>
@@ -2120,20 +2048,16 @@ const DarkAcademiaAtmosphere = (() => {
       });
     }
 
-    // Add illustrated art strips to unit cards on the Hub
-    const bookArtMap = {
-      dracula: 'assets/gothic/dracula_carpathian.jpg',
-      frankenstein: 'assets/gothic/frankenstein_lab.jpg',
-      jekyll: 'assets/gothic/jekyll_apothecary.jpg',
-      baskerville: 'assets/gothic/baskerville_moor.jpg'
-    };
-
+    // Assign each of the 12 unit cards its own distinct 18th/19th-century oil painting
     document.querySelectorAll('.unit-card').forEach((card) => {
       if (card.querySelector('.unit-art-strip')) return;
+      const rawId = (card.id || '').replace(/^card-/, '') || card.getAttribute('data-unit-id') || '';
       const bKey = ['dracula', 'frankenstein', 'jekyll', 'baskerville'].find((k) => card.classList.contains(k)) || 'dracula';
+      const plate = UNIT_PAINTINGS[rawId] || UNIT_PAINTINGS[`${bKey}_unit1`];
       const strip = document.createElement('div');
       strip.className = 'unit-art-strip';
-      strip.style.backgroundImage = `url('${bookArtMap[bKey]}')`;
+      strip.style.backgroundImage = `url('${plate.src}')`;
+      strip.innerHTML = `<span class="unit-art-credit">${plate.credit}</span>`;
       card.insertBefore(strip, card.firstChild);
     });
 
@@ -2162,10 +2086,12 @@ const DarkAcademiaAtmosphere = (() => {
     const quoteEl = document.getElementById('da-cinema-quote');
     const gramEl = document.getElementById('da-cinema-grammar');
     const ctaEl = document.getElementById('da-cinema-cta');
+    const creditEl = document.getElementById('da-cinema-museum-credit');
 
     if (tagEl) tagEl.textContent = act.title;
     if (quoteEl) quoteEl.textContent = act.quote;
     if (gramEl) gramEl.textContent = act.grammarFocus;
+    if (creditEl && act.museumCredit) creditEl.textContent = act.museumCredit;
     if (ctaEl) {
       ctaEl.href = act.freeUrl;
       ctaEl.textContent = act.freeLabel;
@@ -2185,14 +2111,16 @@ const DarkAcademiaAtmosphere = (() => {
   }
 
   /* ==============================================================
-     LESSON PAGE UPGRADE: PAINTED SCENE VFX + AUDIO READER + PRONOUNCE
+     LESSON PAGE UPGRADE: MUSEUM OIL PAINTING PLATE + AUDIO READER
      ============================================================== */
   function initLesson(unitId) {
     injectScholarHUD();
     const bookKey = detectBookKey(unitId);
-    getBookImage(bookKey);
+    const paintKey = UNIT_PAINTINGS[unitId] ? unitId : bookKey;
+    const plateInfo = UNIT_PAINTINGS[unitId] || UNIT_PAINTINGS[`${bookKey}_unit1`];
+    getBookImage(paintKey);
 
-    // 1. Upgrade .scene-illustration-frame with painted chiaroscuro artwork + live VFX canvas
+    // 1. Upgrade .scene-illustration-frame with museum oil painting plate
     const sceneFrame = document.querySelector('.scene-illustration-frame');
     if (sceneFrame && !sceneFrame.classList.contains('has-painted-vfx')) {
       const origSvg = sceneFrame.querySelector('svg');
@@ -2204,9 +2132,16 @@ const DarkAcademiaAtmosphere = (() => {
 
       const canvas = document.createElement('canvas');
       canvas.className = 'da-lesson-vfx-canvas';
-      canvas.width = 560;
-      canvas.height = 240;
+      canvas.width = 640;
+      canvas.height = 270;
       stage.appendChild(canvas);
+
+      if (plateInfo && plateInfo.credit) {
+        const plaque = document.createElement('div');
+        plaque.className = 'da-museum-plaque';
+        plaque.textContent = plateInfo.credit;
+        stage.appendChild(plaque);
+      }
 
       if (origSvg) {
         origSvg.classList.add('original-scene-svg');
@@ -2217,7 +2152,7 @@ const DarkAcademiaAtmosphere = (() => {
       controls.className = 'da-scene-controls-overlay';
       controls.innerHTML = `
         <button type="button" class="da-scene-mini-btn" onclick="DarkAcademiaAtmosphere.toggleSceneBlueprint(this)">
-          📐 Switch to Diagram View
+          § View Structural Diagram
         </button>
       `;
       stage.appendChild(controls);
@@ -2227,7 +2162,7 @@ const DarkAcademiaAtmosphere = (() => {
       if (canvas.getContext) {
         const ctx = canvas.getContext('2d');
         const renderLessonCanvas = (ts) => {
-          drawAtmosphericCanvas(ctx, canvas.width, canvas.height, bookKey, ts, 0, 0);
+          drawAtmosphericCanvas(ctx, canvas.width, canvas.height, paintKey, ts, 0, 0);
           requestAnimationFrame(renderLessonCanvas);
         };
         requestAnimationFrame(renderLessonCanvas);
@@ -2248,15 +2183,15 @@ const DarkAcademiaAtmosphere = (() => {
       readerBar.innerHTML = `
         <div style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
           <button type="button" class="da-reader-btn" data-default-label="Listen to Original Novel Extract">
-            <span>🔊</span>
+            <span>♪</span>
             <span class="da-reader-btn-label">Listen to Original Novel Extract</span>
           </button>
           <div class="da-waveform" aria-hidden="true">
             <span></span><span></span><span></span><span></span><span></span>
           </div>
         </div>
-        <span style="font-size:0.76rem; color:#fde68a; font-weight:600;">
-          🕯️ British English Dramatic Reading &bull; Watch the highlighted grammar clauses pulse!
+        <span style="font-size:0.78rem; color:#d8cfc0; font-style:italic; font-family:var(--serif);">
+          British English Dramatic Reading — Highlighted clauses illuminate in sequence
         </span>
       `;
 
@@ -2326,7 +2261,7 @@ const DarkAcademiaAtmosphere = (() => {
     if (!frame) return;
     const showingBlueprint = frame.classList.toggle('show-blueprint-svg');
     playSFX('page');
-    btnEl.textContent = showingBlueprint ? '🎨 Switch to Painted Scene' : '📐 Switch to Diagram View';
+    btnEl.textContent = showingBlueprint ? '✦ View Oil Painting Plate' : '§ View Structural Diagram';
   }
 
   function initGlobal() {
