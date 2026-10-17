@@ -63,31 +63,34 @@
     }
 
     if (urlParams.get('subscribed') === 'true') {
-        const cheatSheetSection = document.getElementById('cheat-sheet');
-        const cheatSheetForm = cheatSheetSection ? cheatSheetSection.querySelector('form') : null;
+        const hashId = (window.location.hash || '').replace('#', '');
+        const targetSection = (hashId && document.getElementById(hashId)) || document.getElementById('cheat-sheet') || document.getElementById('arcade-signup');
+        const targetForm = targetSection ? targetSection.querySelector('form') : null;
 
         const createSubAlertBox = () => {
             const div = document.createElement('div');
+            div.setAttribute('role', 'status');
+            div.setAttribute('aria-live', 'polite');
             div.className = 'bg-emerald-500/20 border border-emerald-400 text-emerald-100 px-5 py-4 rounded-xl mb-4 text-sm shadow-sm text-left max-w-lg mx-auto space-y-2.5';
             div.innerHTML =
                 '<div class="flex items-center gap-2.5 font-bold text-emerald-300">' +
-                '<i class="fa-solid fa-circle-check text-emerald-400 text-lg shrink-0"></i>' +
+                '<i class="fa-solid fa-circle-check text-emerald-400 text-lg shrink-0" aria-hidden="true"></i>' +
                 '<span>Check your inbox! You can also access your guides &amp; PDF immediately below:</span>' +
                 '</div>' +
                 '<div class="flex flex-wrap gap-2 pt-1 text-xs font-semibold">' +
                 '<a href="cpe-inversion.html" class="px-3 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-white border border-emerald-400/40 transition">C1/C2 Inversion Guide &rarr;</a>' +
                 '<a href="c1-c2-common-mistakes.html" class="px-3 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-white border border-emerald-400/40 transition">10 Common C1 Mistakes &rarr;</a>' +
-                '<a href="ielts-7-syllabus.pdf" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-indigo-500/40 hover:bg-indigo-500/60 text-white border border-indigo-400/40 transition"><i class="fa-solid fa-file-pdf mr-1"></i>Download Study Syllabus PDF</a>' +
+                '<a href="ielts-7-syllabus.pdf" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-indigo-500/40 hover:bg-indigo-500/60 text-white border border-indigo-400/40 transition"><i class="fa-solid fa-file-pdf mr-1" aria-hidden="true"></i>Download Study Syllabus PDF</a>' +
                 '</div>';
             return div;
         };
 
-        if (cheatSheetForm && cheatSheetForm.parentNode) {
-            cheatSheetForm.parentNode.insertBefore(createSubAlertBox(), cheatSheetForm);
+        if (targetForm && targetForm.parentNode) {
+            targetForm.parentNode.insertBefore(createSubAlertBox(), targetForm);
         }
 
         setTimeout(() => {
-            if (cheatSheetSection) cheatSheetSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (targetSection) targetSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 150);
 
         // Clean up the URL
@@ -152,7 +155,7 @@
         }
         if (formSubtitle) {
             formSubtitle.textContent = pkg.includes('Async')
-                ? 'Complete your details below—I will reply immediately with your secure upload link and £39 Stripe checkout link.'
+                ? 'Complete your details below—I will reply immediately with your secure upload link and £29 Stripe checkout link.'
                 : 'Complete your details and preferred days/times below—I will reply within 24 hours with your direct Stripe/PayPal/Wise payment link and schedule.';
         }
         if (formBadge) {
@@ -163,14 +166,14 @@
             pkgNameEl.textContent = pkg;
             if (pkgNextStepEl) {
                 pkgNextStepEl.textContent = pkg.includes('Async')
-                    ? 'Enter your name and email below—I will send your secure Google Doc / voice-note upload link and £39 Stripe checkout link.'
+                    ? 'Enter your name and email below—I will send your secure Google Doc / voice-note upload link and £29 Stripe checkout link.'
                     : 'Enter your name, email, and time zone below—I will reply personally within 24 hours with your Stripe/PayPal/Wise invoice and scheduling link.';
             }
             pkgBanner.classList.remove('hidden');
         }
         if (submitBtn) {
             submitBtn.innerHTML = pkg.includes('Async')
-                ? 'Request 24h Async Audit (£39) &rarr;'
+                ? 'Request 24h Async Audit (£29) &rarr;'
                 : 'Request Selected Package &rarr;';
         }
         if (enquiryCard) {
@@ -179,7 +182,7 @@
         }
         if (messageInput) {
             messageInput.placeholder = pkg.includes('Async')
-                ? 'Tell me which exam (IELTS, C1, C2) or business task you are submitting, and I will reply with your secure upload & Stripe payment link...'
+                ? 'Tell me which exam (IELTS, C1, C2) or business task you are submitting, and I will reply with your secure upload & £29 Stripe payment link...'
                 : 'Let me know your target exam or goal, your time zone, and the days/times that usually suit you best...';
         }
         setTimeout(() => {
@@ -189,6 +192,11 @@
             if (nameInput) nameInput.focus({ preventScroll: true });
         }, 250);
     };
+
+    const urlPkg = urlParams.get('package');
+    if (urlPkg) {
+        applyPackagePrefill(urlPkg);
+    }
 
     const clearPackageBtn = document.getElementById('clear-package-btn');
     if (clearPackageBtn) {

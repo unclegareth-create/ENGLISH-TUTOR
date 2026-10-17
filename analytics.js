@@ -9,10 +9,19 @@
 (() => {
     'use strict';
 
+    // UK ICO Children's Code (Age-Appropriate Design Code) Guard:
+    // Never load external analytics or store attribution trails on Young Learners pages (ages 6-12).
+    const currentPath = (window.location.pathname || '').toLowerCase();
+    if (currentPath.includes('professor-west-study')) {
+        window.trackFunnelEvent = function () {};
+        window.showDiagnosticGate = function () {};
+        return;
+    }
+
     const GOATCOUNTER_CODE = 'garethenglish';   // <-- Registered GoatCounter site code
 
     if (GOATCOUNTER_CODE) {
-        // Load the GoatCounter counter script.
+        // Load the GoatCounter counter script (cookieless, privacy-friendly).
         const s = document.createElement('script');
         s.async = true;
         s.src = 'https://gc.zgo.at/count.js';
@@ -47,7 +56,7 @@
                 send('booking-external: cal.com');
             } else if (/(^|\/)(fce-friendship-conditionals|cae-essay-builder|cpe-psychometrics-passives|ielts-essay-masterclass)\.html/.test(href)) {
                 send(`exam-lab: ${page(href)}`);
-            } else if (/(^|\/)(grammar-crypt(?:-3d)?|professor-west-study|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch)\.html/.test(href)) {
+            } else if (/(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch)\.html/.test(href)) {
                 send(`game: ${page(href)}`);
             } else if (a.closest('[data-track="articles"]')) {
                 send(`article: ${page(href)}`);
@@ -58,7 +67,7 @@
         document.addEventListener('submit', (e) => {
             const form = e.target;
             if (!form) return;
-            if (form.closest('#cheat-sheet')) {
+            if (form.closest('#cheat-sheet') || form.closest('#arcade-signup')) {
                 send('lead-magnet: cheat-sheet-download');
             } else if (form.id === 'contact-form' || form.id === 'lead-form') {
                 send('contact-form: enquiry-sent');
@@ -133,37 +142,37 @@
             if (existing) existing.remove();
 
             const modalHtml = `
-              <div id="gm-diag-overlay" role="dialog" aria-modal="true" aria-label="Clinical Telemetry" style="position:fixed;inset:0;background:rgba(10,15,28,0.88);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;">
+              <div id="gm-diag-overlay" role="dialog" aria-modal="true" aria-label="Your Practice Score" style="position:fixed;inset:0;background:rgba(10,15,28,0.88);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;">
                 <div style="background:#111827;border:1px solid #374151;border-radius:16px;max-width:540px;width:100%;padding:28px;color:#f9fafb;box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);box-sizing:border-box;">
                   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                     <span style="background:#1e3a8a;color:#93c5fd;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:0.05em;">
-                      Clinical Telemetry &bull; ${gameName}
+                      Your Practice Score &bull; ${gameName}
                     </span>
                     <button id="gm-diag-close" type="button" aria-label="Close" style="background:none;border:none;color:#9ca3af;font-size:24px;line-height:1;cursor:pointer;padding:4px;">&times;</button>
                   </div>
                   <h3 style="font-size:22px;font-weight:800;margin:0 0 8px 0;color:#ffffff;line-height:1.2;">
-                    Your Reflex Score: ${score}/${maxScore} (${pct}%)
+                    Your Score: ${score}/${maxScore} (${pct}%)
                   </h3>
                   <p style="margin:0 0 16px 0;font-size:14px;color:#d1d5db;">
-                    Estimated Execution Band: <strong style="color:#fbbf24;">${cefrEstimate}</strong>
+                    Estimated Level: <strong style="color:#fbbf24;">${cefrEstimate}</strong>
                   </p>
                   <div style="background:#1f2937;border-left:4px solid #f59e0b;padding:14px;border-radius:8px;margin-bottom:20px;font-size:14px;line-height:1.5;">
-                    <strong style="color:#fcd34d;display:block;margin-bottom:4px;">⚠️ Diagnosed Bottleneck: ${weakArea}</strong>
+                    <strong style="color:#fcd34d;display:block;margin-bottom:4px;">💡 Focus Area: ${weakArea}</strong>
                     <span style="color:#e5e7eb;">${examImpact}</span>
                   </div>
                   <p style="font-size:14px;color:#d1d5db;margin-bottom:18px;line-height:1.5;">
-                    Want me to pinpoint exactly where this shows up in your actual speaking and writing? Choose how you want to fix it:
+                    Want personal feedback on your actual speaking and writing? Choose what suits you best:
                   </p>
                   <div style="display:grid;gap:10px;">
                     <a href="index.html#book-diagnostic"
                        onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'trial_20', pct: ${pct} })"
                        style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:14px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 4px 6px -1px rgba(37,99,235,0.4);">
-                      Book a 30-Min Live Diagnostic with Gareth (£20) &rarr;
+                      Book a 30-Min 1-to-1 Trial with Gareth (£20) &rarr;
                     </a>
-                    <a href="ielts-7-syllabus.html"
-                       onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'view_syllabus', pct: ${pct} })"
+                    <a href="index.html?package=24h+Async+Writing+%26+Speaking+Audit+(%C2%A329)#contact"
+                       onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'async_audit_29', pct: ${pct} })"
                        style="display:block;text-align:center;background:#1f2937;border:1px solid #4b5563;color:#e5e7eb;font-weight:600;padding:12px;border-radius:10px;text-decoration:none;font-size:14px;">
-                      See My 6-Week Intensive Syllabus &amp; Sample Markup
+                      Get a 24h Async Writing &amp; Speaking Audit (£29) &rarr;
                     </a>
                   </div>
                   <button id="gm-diag-replay" type="button" style="margin-top:14px;width:100%;background:none;border:none;color:#9ca3af;font-size:13px;cursor:pointer;text-decoration:underline;">

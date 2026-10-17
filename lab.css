@@ -1,0 +1,520 @@
+/* ==========================================================================
+   Gareth English Interactive Lab — Stylesheet (lab.css)
+   ========================================================================== */
+:root {
+  --lab-bg: #050814;
+  --lab-surface: #0b1124;
+  --lab-card: rgba(15, 23, 42, 0.78);
+  --lab-border: rgba(148, 163, 184, 0.16);
+  --lab-cyan: #38bdf8;
+  --lab-gold: #f59e0b;
+  --lab-emerald: #10b981;
+  --lab-violet: #a855f7;
+  --lab-crimson: #ef4444;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-serif: 'Playfair Display', Georgia, serif;
+}
+
+body.lab-observatory {
+  background-color: var(--lab-bg);
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(56, 189, 248, 0.12), transparent 38%),
+    radial-gradient(circle at 88% 14%, rgba(245, 158, 11, 0.10), transparent 40%),
+    radial-gradient(circle at 50% 52%, rgba(99, 102, 241, 0.08), transparent 48%),
+    linear-gradient(180deg, #050814 0%, #090e1f 50%, #050814 100%);
+}
+
+/* Subtle architectural coordinate grid overlay */
+.lab-grid-backdrop {
+  background-size: 44px 44px;
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+}
+
+/* Sticky Dark Glass Header */
+.lab-navbar {
+  background: rgba(5, 8, 20, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+/* Hidden below md (768px) so header never overflows at 360px */
+.lab-brand-badge {
+  display: none;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(99, 102, 241, 0.18));
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #7dd3fc;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.15);
+}
+
+@media (min-width: 768px) {
+  .lab-brand-badge {
+    display: inline-flex;
+  }
+}
+
+.lab-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: labPulse 2s infinite ease-in-out;
+}
+
+@keyframes labPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.55; }
+}
+
+.lab-nav-link {
+  color: #cbd5e1;
+  font-size: 0.83rem;
+  font-weight: 600;
+  padding: 0.4rem 0.65rem;
+  border-radius: 0.6rem;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.lab-nav-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lab-sfx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.72rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  color: #cbd5e1;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.lab-sfx-btn:hover,
+.lab-sfx-btn.sfx-on {
+  border-color: rgba(56, 189, 248, 0.55);
+  color: #bae6fd;
+  background: rgba(14, 165, 233, 0.14);
+}
+
+/* Hero Gradient Text */
+.lab-hero-gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #bae6fd 45%, #fde68a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Wing Selector Toggle Pills */
+.wing-pill-bar {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0.4rem;
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  backdrop-filter: blur(12px);
+}
+.wing-pill {
+  padding: 0.5rem 0.95rem;
+  border-radius: 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+.wing-pill:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.05);
+}
+.wing-pill.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.85), rgba(79, 70, 229, 0.85));
+  border-color: rgba(125, 211, 252, 0.5);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.3);
+}
+
+/* Interactive Live Taste-Tester Console (Hero Right Column) */
+.holodeck-shell {
+  position: relative;
+  border-radius: 1.5rem;
+  background: linear-gradient(165deg, rgba(15, 23, 42, 0.95) 0%, rgba(7, 11, 25, 0.98) 100%);
+  border: 1px solid rgba(125, 211, 252, 0.28);
+  box-shadow:
+    0 25px 60px -15px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(14, 165, 233, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.holodeck-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.1rem;
+  background: rgba(2, 6, 23, 0.9);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.holodeck-dots {
+  display: flex;
+  gap: 0.4rem;
+}
+.holodeck-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* 2x2 grid on phones so labels never truncate; 4 columns on sm+ */
+.holodeck-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem;
+  padding: 0.55rem 0.75rem;
+  background: rgba(9, 14, 30, 0.95);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+}
+@media (min-width: 640px) {
+  .holodeck-tabs {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.holodeck-tab {
+  padding: 0.5rem 0.5rem;
+  border-radius: 0.65rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.holodeck-tab:hover {
+  color: #ffffff;
+  border-color: rgba(148, 163, 184, 0.35);
+}
+.holodeck-tab.active {
+  color: #ffffff;
+  background: rgba(14, 165, 233, 0.22);
+  border-color: #38bdf8;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.holodeck-screen {
+  position: relative;
+  height: 245px;
+  overflow: hidden;
+  background: #040711;
+}
+.holodeck-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease, opacity 0.3s ease;
+}
+.holodeck-screen:hover img {
+  transform: scale(1.04);
+}
+.holodeck-screen-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 7, 17, 0.18) 0%, rgba(4, 7, 17, 0.6) 55%, rgba(4, 7, 17, 0.96) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.15rem;
+}
+
+/* Live Mini-Challenge Box inside Hero Console */
+.holodeck-quiz-box {
+  padding: 1rem 1.15rem;
+  background: rgba(11, 17, 36, 0.96);
+  border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+.holodeck-choice-btn {
+  padding: 0.52rem 0.8rem;
+  border-radius: 0.6rem;
+  background: rgba(30, 41, 59, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #e2e8f0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.holodeck-choice-btn:hover {
+  background: rgba(51, 65, 85, 0.9);
+  border-color: #7dd3fc;
+  transform: translateY(-1px);
+}
+.holodeck-choice-btn.correct {
+  background: rgba(16, 185, 129, 0.22);
+  border-color: #10b981;
+  color: #a7f3d0;
+}
+.holodeck-choice-btn.wrong {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: #ef4444;
+  color: #fecaca;
+}
+
+/* Quick-Jump Portal Bento Cards */
+.portal-bento-card {
+  position: relative;
+  border-radius: 1.1rem;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.55rem;
+  text-decoration: none;
+}
+.portal-bento-card:hover {
+  transform: translateY(-4px);
+  background: rgba(30, 41, 59, 0.88);
+  box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.6);
+}
+.portal-bento-card.gold:hover { border-color: #f59e0b; box-shadow: 0 12px 28px -8px rgba(245, 158, 11, 0.28); }
+.portal-bento-card.cyan:hover { border-color: #38bdf8; box-shadow: 0 12px 28px -8px rgba(56, 189, 248, 0.28); }
+.portal-bento-card.violet:hover { border-color: #a855f7; box-shadow: 0 12px 28px -8px rgba(168, 85, 247, 0.28); }
+.portal-bento-card.emerald:hover { border-color: #10b981; box-shadow: 0 12px 28px -8px rgba(16, 185, 129, 0.28); }
+.portal-bento-card.rose:hover { border-color: #f43f5e; box-shadow: 0 12px 28px -8px rgba(244, 63, 94, 0.28); }
+
+/* Unified Thumbnail Active State (.is-active) for Dark Academia & Professor West */
+.da-book-thumb,
+.pw-act-thumb {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  opacity: 0.72;
+  transition: all 0.2s ease;
+}
+.da-book-thumb:hover,
+.pw-act-thumb:hover {
+  opacity: 0.95;
+}
+.da-book-thumb.is-active,
+.pw-act-thumb.is-active {
+  border: 2px solid #f59e0b !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.38);
+}
+
+/* Arcade Cabinet Cards */
+.arcade-cabinet {
+  border-radius: 1.35rem;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.94) 0%, rgba(9, 13, 28, 0.98) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.65);
+}
+.arcade-cabinet:hover {
+  transform: translateY(-6px);
+  border-color: rgba(168, 85, 247, 0.55);
+  box-shadow: 0 22px 44px -12px rgba(0, 0, 0, 0.8), 0 0 28px rgba(139, 92, 246, 0.2);
+}
+
+.arcade-viewport {
+  position: relative;
+  height: 172px;
+  padding: 0;
+  display: block;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  background: #060913;
+}
+
+.arcade-viewport img,
+.cassette-art-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.arcade-cabinet:hover .arcade-viewport img,
+.cassette-card:hover .cassette-art-screen img {
+  transform: scale(1.045);
+}
+
+/* Exam Lab Blueprint Cards */
+.exam-blueprint-card {
+  border-radius: 1.35rem;
+  background: rgba(15, 23, 42, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.24s ease;
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.55);
+}
+.exam-blueprint-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.75), 0 0 25px rgba(56, 189, 248, 0.16);
+}
+.exam-blueprint-header {
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.7));
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* Chronicle '88 Cassette Styling */
+.cassette-card {
+  border-radius: 1.25rem;
+  background: #050a14;
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.22s ease;
+  text-decoration: none;
+  box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.75);
+}
+.cassette-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -12px rgba(16, 185, 129, 0.25);
+}
+.cassette-art-screen {
+  height: 168px;
+  padding: 0;
+  display: block;
+  overflow: hidden;
+  position: relative;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  background: #040812;
+  font-family: var(--font-mono);
+}
+
+/* Section visibility when filtering by Wing */
+.lab-wing-section {
+  transition: opacity 0.25s ease;
+}
+.lab-wing-section.wing-hidden {
+  display: none !important;
+}
+
+/* Guaranteed off-screen Honeypot utility */
+.-left-\[9999px\],
+.honeypot-field {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Compiled Tailwind Utilities for Lab Layout & Folio Grids */
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.col-span-2 { grid-column: span 2 / span 2; }
+.aspect-video { aspect-ratio: 16 / 9; }
+.h-60 { height: 15rem; }
+.h-96 { height: 24rem; }
+.w-96 { width: 24rem; }
+.gap-9 { gap: 2.25rem; }
+.gap-10 { gap: 2.5rem; }
+.py-14 { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+.mt-2\.5 { margin-top: 0.625rem; }
+.justify-end { justify-content: flex-end; }
+.leading-snug { line-height: 1.375; }
+.leading-\[1\.08\] { line-height: 1.08; }
+.opacity-65 { opacity: 0.65; }
+.opacity-75 { opacity: 0.75; }
+.opacity-80 { opacity: 0.8; }
+.opacity-90 { opacity: 0.9; }
+.hover\:opacity-100:hover { opacity: 1; }
+.hover\:scale-105:hover { transform: scale(1.05); }
+.bg-\[\#080604\] { background-color: #080604; }
+.bg-\[\#0c0907\] { background-color: #0c0907; }
+.bg-\[\#0c0907\]\/85 { background-color: rgba(12, 9, 7, 0.85); }
+.bg-\[\#140e0a\] { background-color: #140e0a; }
+.bg-\[\#16100b\] { background-color: #16100b; }
+.bg-\[\#7f1d1d\] { background-color: #7f1d1d; }
+.bg-\[\#c5a059\]\/15 { background-color: rgba(197, 160, 89, 0.15); }
+.bg-black\/85 { background-color: rgba(0, 0, 0, 0.85); }
+.bg-slate-950\/65 { background-color: rgba(2, 6, 23, 0.65); }
+.bg-slate-950\/80 { background-color: rgba(2, 6, 23, 0.80); }
+.bg-purple-500\/15 { background-color: rgba(168, 85, 247, 0.15); }
+.bg-teal-500\/15 { background-color: rgba(20, 184, 166, 0.15); }
+.bg-amber-500\/25 { background-color: rgba(245, 158, 11, 0.25); }
+.hover\:bg-\[\#1a1612\]:hover { background-color: #1a1612; }
+.hover\:bg-\[\#211811\]:hover { background-color: #211811; }
+.hover\:bg-\[\#241612\]:hover { background-color: #241612; }
+.hover\:bg-\[\#991b1b\]:hover { background-color: #991b1b; }
+.hover\:bg-\[\#c5a059\]\/25:hover { background-color: rgba(197, 160, 89, 0.25); }
+.hover\:bg-cyan-400:hover { background-color: #22d3ee; }
+.hover\:bg-indigo-400:hover { background-color: #818cf8; }
+.hover\:bg-purple-500\/25:hover { background-color: rgba(168, 85, 247, 0.25); }
+.border-\[\#c5a059\] { border-color: #c5a059; }
+.border-\[\#c5a059\]\/25 { border-color: rgba(197, 160, 89, 0.25); }
+.border-\[\#c5a059\]\/30 { border-color: rgba(197, 160, 89, 0.30); }
+.border-\[\#c5a059\]\/40 { border-color: rgba(197, 160, 89, 0.40); }
+.border-\[\#c5a059\]\/45 { border-color: rgba(197, 160, 89, 0.45); }
+.border-\[\#c5a059\]\/50 { border-color: rgba(197, 160, 89, 0.50); }
+.border-stone-700 { border-color: #44403c; }
+.border-amber-500\/35 { border-color: rgba(245, 158, 11, 0.35); }
+.border-emerald-400\/35 { border-color: rgba(52, 211, 153, 0.35); }
+.border-emerald-500\/40 { border-color: rgba(16, 185, 129, 0.40); }
+.border-purple-400\/40 { border-color: rgba(192, 132, 252, 0.40); }
+.text-\[\#b5a792\] { color: #b5a792; }
+.text-\[\#c5a059\] { color: #c5a059; }
+.text-\[\#d6cbb8\] { color: #d6cbb8; }
+.text-\[\#e4c88c\] { color: #e4c88c; }
+.text-\[\#e8dec8\] { color: #e8dec8; }
+.text-\[\#f4ecd8\] { color: #f4ecd8; }
+.text-purple-400 { color: #c084fc; }
+.text-rose-400 { color: #fb7185; }
+.hover\:text-sky-300:hover { color: #7dd3fc; }
+.hover\:text-purple-300:hover { color: #d8b4fe; }
+.group:hover .group-hover\:text-cyan-300 { color: #67e8f9; }
+@media (min-width: 640px) {
+  .sm\:h-64 { height: 16rem; }
+  .sm\:p-11 { padding: 2.75rem; }
+}
+@media (min-width: 1024px) {
+  .lg\:text-\[3\.35rem\] { font-size: 3.35rem; }
+}
