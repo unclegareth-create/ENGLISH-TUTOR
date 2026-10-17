@@ -3,7 +3,7 @@
    Enables 100% offline play and PWA installation.
    ========================================================== */
 
-const CACHE_NAME = 'grammar-crypt-v1';
+const CACHE_NAME = 'grammar-crypt-v2';
 const PRECACHE_ASSETS = [
     './grammar-crypt.html',
     './crypt.css',
@@ -43,7 +43,23 @@ self.addEventListener('fetch', (event) => {
 
     const url = new URL(event.request.url);
 
-    // Stale-while-revalidate for local assets; Network-first for Google Fonts / CDN
+    // Network-first for HTML pages so updates are always live immediately on mobile
+    if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname === '/') {
+        event.respondWith(
+            fetch(event.request)
+                .then((networkResponse) => {
+                    if (networkResponse && networkResponse.status === 200) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+                    }
+                    return networkResponse;
+                })
+                .catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
+    // Stale-while-revalidate for static assets
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             const fetchPromise = fetch(event.request)
