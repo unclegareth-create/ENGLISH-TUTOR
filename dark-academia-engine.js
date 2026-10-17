@@ -449,6 +449,9 @@ class DarkAcademiaEngine {
     this.renderCompletionBanner();
     this.updateScoreDisplay();
     DarkAcademiaGate.syncUI();
+    if (window.DarkAcademiaAtmosphere) {
+      window.DarkAcademiaAtmosphere.initLesson(this.unitId);
+    }
 
     window.resetAll = () => this.resetAll();
   }
@@ -864,12 +867,14 @@ class DarkAcademiaEngine {
       btnElement.classList.add('correct');
       this.score += 1;
       this.updateScoreDisplay();
+      if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('seal');
       if (fb) {
         fb.textContent = `✓ Correct! ${item.exp}`;
         fb.style.color = 'var(--green-text)';
       }
     } else {
       btnElement.classList.add('wrong');
+      if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('miss');
       if (fb) {
         fb.textContent = `✗ Not quite. ${item.exp}`;
         fb.style.color = 'var(--red-text)';
@@ -895,12 +900,14 @@ class DarkAcademiaEngine {
       btn.classList.add('correct');
       this.score += 1;
       this.updateScoreDisplay();
+      if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('seal');
       if (fb) {
         fb.className = 'feedback-box correct';
         fb.innerHTML = `<strong>✓ Correct (+1 Mark):</strong> ${explanation}`;
       }
     } else {
       btn.classList.add('wrong');
+      if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('miss');
       if (buttons[correctIndex]) {
         buttons[correctIndex].classList.add('correct');
       }
@@ -1027,6 +1034,7 @@ class DarkAcademiaEngine {
       }
       this.score += 2;
       this.updateScoreDisplay();
+      if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('seal');
       if (fb) {
         fb.className = 'feedback-box correct';
         fb.innerHTML = `<strong>✓ Full Marks (+2/2):</strong> Excellent! <em>"${modelAnswer}"</em> — ${explanation}`;
@@ -1039,6 +1047,7 @@ class DarkAcademiaEngine {
       if (input) {
         input.style.borderColor = 'var(--amber)';
       }
+      if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('quill');
       if (fb) {
         fb.className = 'feedback-box partial';
         fb.innerHTML = `<strong>⚡ Almost there! Try once more:</strong> Start with <strong>"${firstTwo}..."</strong> (${modelWords.length} words total). Tap the word tiles or adjust your answer and click <strong>Check</strong> again!`;
@@ -1055,6 +1064,7 @@ class DarkAcademiaEngine {
       }
       this.score += 1;
       this.updateScoreDisplay();
+      if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('quill');
       if (fb) {
         fb.className = 'feedback-box partial';
         fb.innerHTML = `<strong>⚡ Partial Credit (+1/2):</strong> Good effort using the key word! Full answer: <strong>"${modelAnswer}"</strong>.<br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
@@ -1064,6 +1074,7 @@ class DarkAcademiaEngine {
         input.style.borderColor = 'var(--red)';
         input.style.color = 'var(--red-text)';
       }
+      if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('miss');
       if (fb) {
         fb.className = 'feedback-box wrong';
         fb.innerHTML = `<strong>✗ Model Answer:</strong> <strong>"${modelAnswer}"</strong><br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
@@ -1266,7 +1277,1083 @@ class DarkAcademiaEngine {
 
 window.DarkAcademiaEngine = DarkAcademiaEngine;
 
+/**
+ * ==========================================================================
+ * DarkAcademiaAtmosphere — Volumetric Canvas VFX, Classical/Gothic Soundscape
+ * & British Dramatic Excerpt Narration Engine (Hub + All 12 Lessons)
+ * ==========================================================================
+ */
+const DarkAcademiaAtmosphere = (() => {
+  let audioCtx = null;
+  let musicAudioEl = null;
+  let voiceAudioEl = null;
+  let synthTimer = null;
+  let noiseNode = null;
+  let noiseGain = null;
+  let musicPlaying = false;
+  let sfxEnabled = true;
+  let currentTrackIdx = 0;
+  let synthStep = 0;
+  let clauseTimer = null;
+
+  const SOUNDSCAPE_TRACKS = [
+    {
+      id: 'rain_hearth',
+      name: 'Midnight Rain & Cello',
+      type: 'procedural_rain',
+      tempoMs: 420,
+      notes: [
+        [146.83, 220.00], [164.81, 246.94], [174.61, 261.63], [164.81, 246.94],
+        [130.81, 196.00], [146.83, 220.00], [110.00, 220.00], [138.59, 207.65]
+      ]
+    },
+    {
+      id: 'bach_minuet',
+      name: 'Bach: Minuet in G',
+      type: 'mp3',
+      src: 'assets/audio/bach_minuet.mp3',
+      tempoMs: 280,
+      notes: [
+        [587.33, 196.00], [392.00, 196.00], [440.00, 196.00], [493.88, 196.00],
+        [523.25, 196.00], [587.33, 196.00], [392.00, 196.00], [392.00, 196.00]
+      ]
+    },
+    {
+      id: 'mozart_nacht',
+      name: 'Mozart: Nachtmusik',
+      type: 'mp3',
+      src: 'assets/audio/mozart_nachtmusik.mp3',
+      tempoMs: 250,
+      notes: [
+        [392.00, 196.00], [293.66, 146.83], [392.00, 196.00], [293.66, 146.83],
+        [392.00, 196.00], [293.66, 146.83], [392.00, 196.00], [493.88, 246.94], [587.33, 293.66]
+      ]
+    },
+    {
+      id: 'tchaikovsky_nocturne',
+      name: 'Tchaikovsky: Nocturne',
+      type: 'mp3',
+      src: 'assets/audio/tchaikovsky_sugarplum.mp3',
+      tempoMs: 270,
+      notes: [
+        [659.25, 164.81], [587.33, 164.81], [659.25, 196.00], [587.33, 196.00],
+        [622.25, 185.00], [587.33, 196.00], [523.25, 164.81], [493.88, 164.81]
+      ]
+    },
+    {
+      id: 'carpathian_harpsichord',
+      name: 'Carpathian Harpsichord',
+      type: 'procedural_harpsichord',
+      tempoMs: 240,
+      notes: [
+        [220.00, 440.00], [261.63, 523.25], [329.63, 659.25], [261.63, 523.25],
+        [246.94, 493.88], [293.66, 587.33], [349.23, 698.46], [329.63, 659.25],
+        [207.65, 415.30], [246.94, 493.88], [329.63, 659.25], [220.00, 440.00]
+      ]
+    }
+  ];
+
+  const BOOK_CINEMA_ACTS = [
+    {
+      bookKey: 'dracula',
+      title: 'Book I • Bram Stoker’s Dracula (1897)',
+      imgSrc: 'assets/gothic/dracula_carpathian.jpg',
+      audioSrc: 'assets/audio/gothic_act1_dracula.mp3',
+      quote: '"Soon we were hemmed in with trees, which in places arched right over the roadway till we passed as through a tunnel..."',
+      grammarFocus: 'C1/C2 Target: Participle Clauses (Fearing..., Hemmed in by...), Negative Inversion (Little did Harker realise...) & Reporting Passives.',
+      freeUrl: 'dracula-unit1-carpathian-threshold.html',
+      freeLabel: 'Play Free Dracula Lesson 1 →'
+    },
+    {
+      bookKey: 'frankenstein',
+      title: 'Book II • Mary Shelley’s Frankenstein (1818)',
+      imgSrc: 'assets/gothic/frankenstein_lab.jpg',
+      audioSrc: 'assets/audio/gothic_act2_frankenstein.mp3',
+      quote: '"It was on a dreary night of November that I beheld the accomplishment of my toils..."',
+      grammarFocus: 'C1/C2 Target: Inverted Conditionals (Had he known..., Were we to...), Contrast Fronting (Bleak though it was...) & Cleft Sentences.',
+      freeUrl: 'frankenstein-unit1-spark-of-being.html',
+      freeLabel: 'Play Free Frankenstein Lesson 4 →'
+    },
+    {
+      bookKey: 'jekyll',
+      title: 'Book III • R.L. Stevenson’s Dr Jekyll & Mr Hyde (1886)',
+      imgSrc: 'assets/gothic/jekyll_apothecary.jpg',
+      audioSrc: 'assets/audio/gothic_act3_jekyll.mp3',
+      quote: '"Much as Utterson wished to trust his old friend, the sinister connection to Mr Hyde filled him with repugnance..."',
+      grammarFocus: 'C1/C2 Target: Concessive Clauses (Much as..., Shocking though...), Time Inversions (Not until... did...) & Evaluative C2 Lexis.',
+      freeUrl: 'jekyll-unit1-soho-threshold.html',
+      freeLabel: 'Play Free Jekyll & Hyde Lesson 7 →'
+    },
+    {
+      bookKey: 'baskerville',
+      title: 'Book IV • Conan Doyle’s The Hound of the Baskervilles (1901)',
+      imgSrc: 'assets/gothic/baskerville_moor.jpg',
+      audioSrc: 'assets/audio/gothic_act4_baskerville.mp3',
+      quote: '"Sir Charles must have been waiting at the moor-gate, yet no footprints could be seen upon the gravel..."',
+      grammarFocus: 'C1/C2 Target: Past Modals of Deduction (must have been, can’t have, might well have), Place Inversion & Counterfactuals (But for...).',
+      freeUrl: 'baskerville-unit1-curse-of-the-moors.html',
+      freeLabel: 'Play Free Baskervilles Lesson 10 →'
+    }
+  ];
+
+  const preloadedImages = {};
+  function getBookImage(bookKey) {
+    const map = {
+      dracula: 'assets/gothic/dracula_carpathian.jpg',
+      frankenstein: 'assets/gothic/frankenstein_lab.jpg',
+      jekyll: 'assets/gothic/jekyll_apothecary.jpg',
+      baskerville: 'assets/gothic/baskerville_moor.jpg'
+    };
+    const src = map[bookKey] || map.dracula;
+    if (!preloadedImages[src] && typeof Image !== 'undefined') {
+      const img = new Image();
+      img.src = src;
+      preloadedImages[src] = img;
+    }
+    return preloadedImages[src];
+  }
+
+  function detectBookKey(unitId) {
+    const u = (unitId || window.location.pathname || '').toLowerCase();
+    if (u.includes('frankenstein')) return 'frankenstein';
+    if (u.includes('jekyll')) return 'jekyll';
+    if (u.includes('baskerville')) return 'baskerville';
+    return 'dracula';
+  }
+
+  function ensureAudio() {
+    if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new Ctx();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function startRainNoise() {
+    stopRainNoise();
+    try {
+      ensureAudio();
+      if (!audioCtx) return;
+      const bufferSize = audioCtx.sampleRate * 2;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = buffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.03;
+        b6 = white * 0.115926;
+      }
+      noiseNode = audioCtx.createBufferSource();
+      noiseNode.buffer = buffer;
+      noiseNode.loop = true;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(950, audioCtx.currentTime);
+
+      noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.09, audioCtx.currentTime);
+
+      noiseNode.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+      noiseNode.start();
+    } catch (e) {}
+  }
+
+  function stopRainNoise() {
+    try {
+      if (noiseNode) {
+        noiseNode.stop();
+        noiseNode.disconnect();
+        noiseNode = null;
+      }
+    } catch (e) {}
+  }
+
+  function playSynthStep() {
+    if (!musicPlaying) return;
+    try {
+      ensureAudio();
+      if (!audioCtx) return;
+      const track = SOUNDSCAPE_TRACKS[currentTrackIdx % SOUNDSCAPE_TRACKS.length];
+      const pair = track.notes[synthStep % track.notes.length];
+      synthStep += 1;
+
+      const now = audioCtx.currentTime;
+      const isHarpsichord = track.type === 'procedural_harpsichord';
+      const dur = (track.tempoMs / 1000) * (isHarpsichord ? 0.9 : 1.35);
+
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = isHarpsichord ? 'sawtooth' : 'triangle';
+      osc1.frequency.setValueAtTime(pair[0], now);
+      gain1.gain.setValueAtTime(isHarpsichord ? 0.025 : 0.035, now);
+      gain1.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc1.start(now);
+      osc1.stop(now + dur);
+
+      if (pair[1]) {
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(pair[1], now);
+        gain2.gain.setValueAtTime(0.024, now);
+        gain2.gain.exponentialRampToValueAtTime(0.0008, now + dur);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start(now);
+        osc2.stop(now + dur);
+      }
+    } catch (e) {}
+  }
+
+  function startMusic() {
+    stopMusic(false);
+    musicPlaying = true;
+    const track = SOUNDSCAPE_TRACKS[currentTrackIdx % SOUNDSCAPE_TRACKS.length];
+
+    if (track.type === 'mp3' && track.src && typeof Audio !== 'undefined') {
+      try {
+        if (!musicAudioEl) {
+          musicAudioEl = new Audio();
+          musicAudioEl.loop = true;
+          musicAudioEl.preload = 'auto';
+        }
+        musicAudioEl.src = track.src;
+        musicAudioEl.volume = 0.28;
+        const p = musicAudioEl.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {
+            synthTimer = setInterval(playSynthStep, track.tempoMs);
+          });
+        }
+      } catch (e) {
+        synthTimer = setInterval(playSynthStep, track.tempoMs);
+      }
+    } else {
+      if (track.type === 'procedural_rain') {
+        startRainNoise();
+      }
+      playSynthStep();
+      synthTimer = setInterval(playSynthStep, track.tempoMs);
+    }
+    syncHUD();
+  }
+
+  function stopMusic(updateUI = true) {
+    musicPlaying = false;
+    if (synthTimer) {
+      clearInterval(synthTimer);
+      synthTimer = null;
+    }
+    stopRainNoise();
+    try {
+      if (musicAudioEl) {
+        musicAudioEl.pause();
+      }
+    } catch (e) {}
+    if (updateUI) syncHUD();
+  }
+
+  function toggleMusic() {
+    if (musicPlaying) {
+      stopMusic(true);
+    } else {
+      startMusic();
+    }
+  }
+
+  function nextTrack() {
+    currentTrackIdx = (currentTrackIdx + 1) % SOUNDSCAPE_TRACKS.length;
+    synthStep = 0;
+    startMusic();
+  }
+
+  function toggleSFX() {
+    sfxEnabled = !sfxEnabled;
+    if (sfxEnabled) playSFX('quill');
+    syncHUD();
+  }
+
+  function toggleParchmentMode() {
+    const isParchment = document.body.classList.toggle('da-parchment-mode');
+    try {
+      localStorage.setItem('da_parchment_mode', isParchment ? '1' : '0');
+    } catch (e) {}
+    playSFX('page');
+    syncHUD();
+  }
+
+  function playSFX(type) {
+    if (!sfxEnabled) return;
+    try {
+      ensureAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+
+      if (type === 'seal') {
+        // Warm wax-seal thud + golden C1/C2 chord chime
+        [440.0, 554.37, 659.25, 880.0].forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+          gain.gain.setValueAtTime(0.075, now + idx * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.06 + 0.34);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + idx * 0.06);
+          osc.stop(now + idx * 0.06 + 0.35);
+        });
+      } else if (type === 'quill') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(680, now);
+        osc.frequency.exponentialRampToValueAtTime(920, now + 0.06);
+        gain.gain.setValueAtTime(0.045, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.075);
+      } else if (type === 'page') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(340, now);
+        osc.frequency.exponentialRampToValueAtTime(520, now + 0.11);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.13);
+      } else if (type === 'miss') {
+        [246.94, 196.0].forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+          gain.gain.setValueAtTime(0.065, now + idx * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.09 + 0.22);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + idx * 0.09);
+          osc.stop(now + idx * 0.09 + 0.24);
+        });
+      }
+    } catch (e) {}
+  }
+
+  function setMusicDucking(ducked) {
+    if (musicAudioEl) {
+      musicAudioEl.volume = ducked ? 0.07 : 0.28;
+    }
+    if (noiseGain && audioCtx) {
+      try {
+        noiseGain.gain.setValueAtTime(ducked ? 0.025 : 0.09, audioCtx.currentTime);
+      } catch (e) {}
+    }
+  }
+
+  function stopNarration() {
+    if (clauseTimer) {
+      clearInterval(clauseTimer);
+      clauseTimer = null;
+    }
+    document.querySelectorAll('.highlight-clause.clause-speaking-now').forEach((el) => {
+      el.classList.remove('clause-speaking-now');
+    });
+    document.querySelectorAll('.da-reader-btn.speaking').forEach((btn) => {
+      btn.classList.remove('speaking');
+      const lbl = btn.querySelector('.da-reader-btn-label');
+      if (lbl && btn.dataset.defaultLabel) lbl.textContent = btn.dataset.defaultLabel;
+    });
+    document.querySelectorAll('.da-waveform.active').forEach((w) => {
+      w.classList.remove('active');
+    });
+    try {
+      if (voiceAudioEl) {
+        voiceAudioEl.pause();
+        voiceAudioEl.currentTime = 0;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    } catch (e) {}
+    setMusicDucking(false);
+  }
+
+  function playDramaticExtract(mp3Src, fallbackText, btnEl, waveformEl, clausesNodeList) {
+    if (btnEl && btnEl.classList.contains('speaking')) {
+      stopNarration();
+      return;
+    }
+    stopNarration();
+
+    if (btnEl) {
+      btnEl.classList.add('speaking');
+      const lbl = btnEl.querySelector('.da-reader-btn-label');
+      if (lbl) lbl.textContent = '⏹ Stop Reading';
+    }
+    if (waveformEl) waveformEl.classList.add('active');
+    setMusicDucking(true);
+
+    // Highlight clauses sequentially while reading
+    if (clausesNodeList && clausesNodeList.length > 0) {
+      let cIdx = 0;
+      clausesNodeList[0].classList.add('clause-speaking-now');
+      clauseTimer = setInterval(() => {
+        clausesNodeList.forEach((c) => c.classList.remove('clause-speaking-now'));
+        cIdx = (cIdx + 1) % clausesNodeList.length;
+        clausesNodeList[cIdx].classList.add('clause-speaking-now');
+      }, 3600);
+    }
+
+    const speakFallback = () => {
+      if ('speechSynthesis' in window && fallbackText) {
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(fallbackText);
+          utter.lang = 'en-GB';
+          utter.rate = 0.94;
+          utter.onend = () => stopNarration();
+          utter.onerror = () => stopNarration();
+          window.speechSynthesis.speak(utter);
+          return;
+        } catch (e) {}
+      }
+      setTimeout(() => stopNarration(), 4000);
+    };
+
+    if (mp3Src && typeof Audio !== 'undefined') {
+      try {
+        if (!voiceAudioEl) {
+          voiceAudioEl = new Audio();
+          voiceAudioEl.preload = 'auto';
+        }
+        voiceAudioEl.src = mp3Src;
+        voiceAudioEl.volume = 1.0;
+        voiceAudioEl.onended = () => stopNarration();
+        voiceAudioEl.onerror = () => speakFallback();
+        const p = voiceAudioEl.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => speakFallback());
+        }
+        return;
+      } catch (e) {}
+    }
+    speakFallback();
+  }
+
+  function pronounceText(text) {
+    if (!text) return;
+    stopNarration();
+    playSFX('quill');
+    try {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'en-GB';
+        utter.rate = 0.93;
+        window.speechSynthesis.speak(utter);
+      }
+    } catch (e) {}
+  }
+
+  /* ==============================================================
+     PERSISTENT SCHOLAR'S ATMOSPHERIC HUD BAR
+     ============================================================== */
+  function injectScholarHUD() {
+    if (document.getElementById('da-scholar-hud')) return;
+    const container =
+      document.querySelector('.container') ||
+      document.querySelector('.compendium-container');
+    if (!container) return;
+
+    try {
+      if (localStorage.getItem('da_parchment_mode') === '1') {
+        document.body.classList.add('da-parchment-mode');
+      }
+    } catch (e) {}
+
+    const isHub = Boolean(document.querySelector('.portal-hero'));
+    const hud = document.createElement('div');
+    hud.id = 'da-scholar-hud';
+    hud.className = 'da-scholar-hud';
+    hud.setAttribute('role', 'region');
+    hud.setAttribute('aria-label', 'Dark Academia Atmosphere & Sound Controls');
+
+    hud.innerHTML = `
+      <div class="da-hud-left">
+        <a href="lab.html" class="da-hud-pill" title="Return to The Gareth English Interactive Lab">
+          <span>🏛️</span>
+          <span>← Interactive Lab</span>
+        </a>
+        ${
+          !isHub
+            ? `<a href="dark-academia-index.html" class="da-hud-pill" title="Return to Dark Academia Course Hub">
+                 <span>🕯️</span>
+                 <span>Course Hub (12 Lessons)</span>
+               </a>`
+            : `<span class="da-hud-pill" style="cursor:default; border-color:rgba(245,158,11,0.45); color:#fde68a;">
+                 <span>🕯️</span>
+                 <span>The Gothic Canon • C1/C2 Conservatory</span>
+               </span>`
+        }
+      </div>
+
+      <div class="da-hud-right">
+        <div class="da-hud-music-group" role="group" aria-label="Study Music Controls">
+          <button type="button" id="da-hud-music-toggle" onclick="DarkAcademiaAtmosphere.toggleMusic()">
+            <span id="da-hud-music-icon">🎵</span>
+            <span id="da-hud-music-status">Study Audio: Off</span>
+          </button>
+          <button type="button" id="da-hud-music-next" onclick="DarkAcademiaAtmosphere.nextTrack()" title="Switch Classical / Gothic Track">
+            <span>⏭</span>
+            <span id="da-hud-track-name">Midnight Rain &amp; Cello</span>
+          </button>
+        </div>
+
+        <button type="button" id="da-hud-sfx-btn" class="da-hud-pill active-sound" onclick="DarkAcademiaAtmosphere.toggleSFX()">
+          <span>🖋️</span>
+          <span id="da-hud-sfx-label">SFX: ON</span>
+        </button>
+
+        <button type="button" id="da-hud-theme-btn" class="da-hud-pill" onclick="DarkAcademiaAtmosphere.toggleParchmentMode()">
+          <span id="da-hud-theme-icon">🕯️</span>
+          <span id="da-hud-theme-label">Candlelight</span>
+        </button>
+      </div>
+    `;
+
+    container.insertBefore(hud, container.firstChild);
+    syncHUD();
+  }
+
+  function syncHUD() {
+    const toggleBtn = document.getElementById('da-hud-music-toggle');
+    const statusEl = document.getElementById('da-hud-music-status');
+    const trackEl = document.getElementById('da-hud-track-name');
+    const sfxBtn = document.getElementById('da-hud-sfx-btn');
+    const sfxLbl = document.getElementById('da-hud-sfx-label');
+    const themeLbl = document.getElementById('da-hud-theme-label');
+    const themeIcon = document.getElementById('da-hud-theme-icon');
+
+    const track = SOUNDSCAPE_TRACKS[currentTrackIdx % SOUNDSCAPE_TRACKS.length];
+    if (toggleBtn) toggleBtn.classList.toggle('playing', musicPlaying);
+    if (statusEl) statusEl.textContent = musicPlaying ? 'Playing' : 'Study Audio: Off';
+    if (trackEl && track) trackEl.textContent = track.name;
+    if (sfxBtn) sfxBtn.classList.toggle('active-sound', sfxEnabled);
+    if (sfxLbl) sfxLbl.textContent = sfxEnabled ? 'SFX: ON' : 'SFX: OFF';
+
+    const isParchment = document.body.classList.contains('da-parchment-mode');
+    if (themeLbl) themeLbl.textContent = isParchment ? 'Parchment' : 'Candlelight';
+    if (themeIcon) themeIcon.textContent = isParchment ? '📜' : '🕯️';
+  }
+
+  /* ==============================================================
+     VOLUMETRIC CANVAS RENDERER (SHARED BY HUB CINEMA & 12 LESSONS)
+     ============================================================== */
+  const PARTICLES = Array.from({ length: 54 }, (_, i) => ({
+    x: ((i * 67) % 100) / 100,
+    y: ((i * 43) % 100) / 100,
+    z: 0.3 + ((i * 29) % 70) / 100,
+    r: 1.0 + (i % 4) * 0.9,
+    vx: (i % 2 === 0 ? 1 : -1) * (0.00018 + (i % 5) * 0.00008),
+    vy: -0.00028 - (i % 4) * 0.0001,
+    phase: (i * 0.52) % (Math.PI * 2)
+  }));
+
+  function drawAtmosphericCanvas(ctx, W, H, bookKey, timestamp, parallaxX = 0, parallaxY = 0) {
+    const t = timestamp * 0.001;
+    ctx.clearRect(0, 0, W, H);
+
+    // 1. Draw the bespoke chiaroscuro oil painting with gentle Ken Burns drift
+    const img = getBookImage(bookKey);
+    if (img && img.complete && img.naturalWidth > 0) {
+      const zoom = 1.04 + 0.025 * Math.sin(t * 0.35);
+      const dw = W * zoom;
+      const dh = H * zoom;
+      const dx = (W - dw) * 0.5 + Math.sin(t * 0.25) * 8 + parallaxX * 10;
+      const dy = (H - dh) * 0.5 + Math.cos(t * 0.2) * 5 + parallaxY * 6;
+      ctx.drawImage(img, dx, dy, dw, dh);
+    } else {
+      const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+      bgGrad.addColorStop(0, '#120914');
+      bgGrad.addColorStop(1, '#060a12');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // 2. Book-Specific Volumetric Lighting & Weather VFX
+    ctx.save();
+    if (bookKey === 'dracula') {
+      // Moonbeam glow + carriage amber lantern pulse + Carpathian mist
+      const moonX = W * 0.385;
+      const moonY = H * 0.21;
+      const moonR = 65 + Math.sin(t * 2.1) * 8;
+      const mg = ctx.createRadialGradient(moonX, moonY, 4, moonX, moonY, moonR);
+      mg.addColorStop(0, 'rgba(254, 243, 199, 0.38)');
+      mg.addColorStop(0.5, 'rgba(248, 113, 113, 0.14)');
+      mg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = mg;
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, moonR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Carriage lantern flicker
+      const lanX = W * 0.355;
+      const lanY = H * 0.675;
+      const lanR = 48 + Math.sin(t * 7.5) * 7;
+      const lg = ctx.createRadialGradient(lanX, lanY, 2, lanX, lanY, lanR);
+      lg.addColorStop(0, 'rgba(254, 240, 138, 0.65)');
+      lg.addColorStop(0.5, 'rgba(245, 158, 11, 0.25)');
+      lg.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = lg;
+      ctx.beginPath();
+      ctx.arc(lanX, lanY, lanR, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (bookKey === 'frankenstein') {
+      // Rain streaks on the Gothic window + galvanic teal arc flash + candle flicker
+      ctx.strokeStyle = 'rgba(186, 230, 253, 0.22)';
+      ctx.lineWidth = 1.1;
+      for (let r = 0; r < 24; r++) {
+        const rx = ((r * 47 + t * 110) % (W * 0.42)) + W * 0.08;
+        const ry = ((r * 83 + t * 260) % (H * 0.62)) + H * 0.05;
+        ctx.beginPath();
+        ctx.moveTo(rx, ry);
+        ctx.lineTo(rx - 5, ry + 16);
+        ctx.stroke();
+      }
+
+      // Galvanic spark between brass coils
+      const sparkX = W * 0.55;
+      const sparkY = H * 0.58;
+      const pulse = 0.25 + 0.2 * Math.sin(t * 9.0);
+      const sg = ctx.createRadialGradient(sparkX, sparkY, 3, sparkX, sparkY, 70);
+      sg.addColorStop(0, `rgba(153, 246, 228, ${pulse * 1.6})`);
+      sg.addColorStop(0.5, `rgba(20, 184, 166, ${pulse * 0.7})`);
+      sg.addColorStop(1, 'rgba(20, 184, 166, 0)');
+      ctx.fillStyle = sg;
+      ctx.beginPath();
+      ctx.arc(sparkX, sparkY, 70, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (bookKey === 'jekyll') {
+      // Candelabra warm bloom + cyan/amber chemical vapour shimmer
+      const candX = W * 0.16;
+      const candY = H * 0.46;
+      const cg = ctx.createRadialGradient(candX, candY, 4, candX, candY, 75 + Math.sin(t * 6.2) * 8);
+      cg.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
+      cg.addColorStop(0.5, 'rgba(245, 158, 11, 0.18)');
+      cg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = cg;
+      ctx.beginPath();
+      ctx.arc(candX, candY, 80, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cyan & Amber Elixir Glow
+      const vialX = W * 0.56;
+      const vialY = H * 0.72;
+      const vg = ctx.createRadialGradient(vialX, vialY, 4, vialX, vialY, 82);
+      vg.addColorStop(0, 'rgba(34, 211, 238, 0.42)');
+      vg.addColorStop(0.55, 'rgba(245, 158, 11, 0.18)');
+      vg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = vg;
+      ctx.beginPath();
+      ctx.arc(vialX, vialY, 82, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (bookKey === 'baskerville') {
+      // Storm lantern warm glow + phosphor emerald moorland mist
+      const lanX = W * 0.695;
+      const lanY = H * 0.61;
+      const lg = ctx.createRadialGradient(lanX, lanY, 4, lanX, lanY, 85 + Math.sin(t * 5.4) * 7);
+      lg.addColorStop(0, 'rgba(254, 240, 138, 0.58)');
+      lg.addColorStop(0.5, 'rgba(234, 179, 8, 0.22)');
+      lg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = lg;
+      ctx.beginPath();
+      ctx.arc(lanX, lanY, 88, 0, Math.PI * 2);
+      ctx.fill();
+
+      const moorX = W * 0.42 + Math.sin(t * 0.8) * 20;
+      const moorY = H * 0.56;
+      const mg = ctx.createRadialGradient(moorX, moorY, 6, moorX, moorY, 110);
+      mg.addColorStop(0, 'rgba(163, 230, 53, 0.28)');
+      mg.addColorStop(0.6, 'rgba(16, 185, 129, 0.12)');
+      mg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = mg;
+      ctx.beginPath();
+      ctx.arc(moorX, moorY, 110, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // 3. Floating Candlelight Dust Motes & Bokeh
+    PARTICLES.forEach((p, idx) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.y < -0.05) p.y = 1.05;
+      if (p.x < -0.05) p.x = 1.05;
+      if (p.x > 1.05) p.x = -0.05;
+
+      const px = p.x * W;
+      const py = p.y * H;
+      const twinkle = 0.3 + 0.7 * Math.abs(Math.sin(t * 2.1 + p.phase));
+      const rad = p.r * (0.9 + p.z * 1.2);
+      const g = ctx.createRadialGradient(px, py, 0.4, px, py, rad * 2.4);
+
+      if (bookKey === 'frankenstein' && idx % 3 === 0) {
+        g.addColorStop(0, `rgba(153, 246, 228, ${(twinkle * 0.85).toFixed(2)})`);
+        g.addColorStop(1, 'rgba(45, 212, 191, 0)');
+      } else if (bookKey === 'jekyll' && idx % 3 === 0) {
+        g.addColorStop(0, `rgba(165, 243, 252, ${(twinkle * 0.85).toFixed(2)})`);
+        g.addColorStop(1, 'rgba(6, 182, 212, 0)');
+      } else if (bookKey === 'baskerville' && idx % 3 === 0) {
+        g.addColorStop(0, `rgba(217, 249, 157, ${(twinkle * 0.85).toFixed(2)})`);
+        g.addColorStop(1, 'rgba(132, 204, 22, 0)');
+      } else {
+        g.addColorStop(0, `rgba(254, 243, 199, ${(twinkle * 0.85).toFixed(2)})`);
+        g.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      }
+
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(px, py, rad * 2.4, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.restore();
+  }
+
+  /* ==============================================================
+     HUB SHOWCASE: 4-ACT GOTHIC CINEMA & ILLUSTRATED CARDS
+     ============================================================== */
+  let hubCinemaIdx = 0;
+  let hubParallax = { x: 0, y: 0 };
+
+  function initHubShowcase() {
+    const hero = document.querySelector('.portal-hero');
+    if (!hero || document.getElementById('da-cinema-stage')) return;
+
+    // Preload all 4 book paintings
+    ['dracula', 'frankenstein', 'jekyll', 'baskerville'].forEach(getBookImage);
+
+    const stage = document.createElement('section');
+    stage.id = 'da-cinema-stage';
+    stage.className = 'da-cinema-stage';
+    stage.setAttribute('aria-label', 'Interactive 4-Book Gothic Conservatory Preview');
+
+    stage.innerHTML = `
+      <div class="da-cinema-topbar">
+        <span class="da-cinema-eyebrow">
+          <span>🎬</span>
+          <span>Interactive 4-Book Audio &amp; Visual Preview</span>
+        </span>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <button type="button" class="da-hud-pill" onclick="DarkAcademiaAtmosphere.playCurrentBookOverview(this)">
+            <span>🔊</span>
+            <span class="da-reader-btn-label">Listen to Book Overview</span>
+          </button>
+          <button type="button" class="da-hud-pill" onclick="DarkAcademiaAtmosphere.toggleMusic()">
+            <span>🕯️</span>
+            <span>Toggle Study Ambience</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="da-cinema-tabs" role="tablist" aria-label="Select a Classic Gothic Novel">
+        <button type="button" class="da-cinema-tab active" data-act-idx="0" onclick="DarkAcademiaAtmosphere.setCinemaAct(0, true)">
+          <strong>I. Dracula (1897)</strong>
+          <span>Participles &amp; Inversion</span>
+        </button>
+        <button type="button" class="da-cinema-tab" data-act-idx="1" onclick="DarkAcademiaAtmosphere.setCinemaAct(1, true)">
+          <strong>II. Frankenstein (1818)</strong>
+          <span>Conditionals &amp; Clefts</span>
+        </button>
+        <button type="button" class="da-cinema-tab" data-act-idx="2" onclick="DarkAcademiaAtmosphere.setCinemaAct(2, true)">
+          <strong>III. Jekyll &amp; Hyde (1886)</strong>
+          <span>Concessive Contrast</span>
+        </button>
+        <button type="button" class="da-cinema-tab" data-act-idx="3" onclick="DarkAcademiaAtmosphere.setCinemaAct(3, true)">
+          <strong>IV. Baskervilles (1901)</strong>
+          <span>Modals of Deduction</span>
+        </button>
+      </div>
+
+      <div class="da-cinema-viewport" id="da-cinema-viewport">
+        <canvas id="da-cinema-canvas" class="da-cinema-canvas" width="960" height="492"></canvas>
+        <div class="da-cinema-overlay">
+          <div class="da-cinema-caption-box">
+            <span class="da-cinema-book-tag" id="da-cinema-book-tag">${BOOK_CINEMA_ACTS[0].title}</span>
+            <div class="da-cinema-quote" id="da-cinema-quote">${BOOK_CINEMA_ACTS[0].quote}</div>
+            <div class="da-cinema-grammar-note" id="da-cinema-grammar">${BOOK_CINEMA_ACTS[0].grammarFocus}</div>
+          </div>
+          <div class="da-cinema-controls">
+            <a href="${BOOK_CINEMA_ACTS[0].freeUrl}" id="da-cinema-cta" class="da-btn-gold" style="text-decoration:none; font-size:0.86rem; padding:0.65rem 1.1rem;">
+              ${BOOK_CINEMA_ACTS[0].freeLabel}
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+
+    hero.insertAdjacentElement('afterend', stage);
+
+    const vp = document.getElementById('da-cinema-viewport');
+    if (vp) {
+      vp.addEventListener('mousemove', (e) => {
+        const rect = vp.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        hubParallax.x = (e.clientX - rect.left) / rect.width - 0.5;
+        hubParallax.y = (e.clientY - rect.top) / rect.height - 0.5;
+      });
+    }
+
+    // Add illustrated art strips to unit cards on the Hub
+    const bookArtMap = {
+      dracula: 'assets/gothic/dracula_carpathian.jpg',
+      frankenstein: 'assets/gothic/frankenstein_lab.jpg',
+      jekyll: 'assets/gothic/jekyll_apothecary.jpg',
+      baskerville: 'assets/gothic/baskerville_moor.jpg'
+    };
+
+    document.querySelectorAll('.unit-card').forEach((card) => {
+      if (card.querySelector('.unit-art-strip')) return;
+      const bKey = ['dracula', 'frankenstein', 'jekyll', 'baskerville'].find((k) => card.classList.contains(k)) || 'dracula';
+      const strip = document.createElement('div');
+      strip.className = 'unit-art-strip';
+      strip.style.backgroundImage = `url('${bookArtMap[bKey]}')`;
+      card.insertBefore(strip, card.firstChild);
+    });
+
+    const canvas = document.getElementById('da-cinema-canvas');
+    if (canvas && canvas.getContext) {
+      const ctx = canvas.getContext('2d');
+      const loop = (ts) => {
+        const act = BOOK_CINEMA_ACTS[hubCinemaIdx % BOOK_CINEMA_ACTS.length];
+        drawAtmosphericCanvas(ctx, canvas.width, canvas.height, act.bookKey, ts, hubParallax.x, hubParallax.y);
+        requestAnimationFrame(loop);
+      };
+      requestAnimationFrame(loop);
+    }
+  }
+
+  function setCinemaAct(idx, autoSpeak = false) {
+    hubCinemaIdx = idx % BOOK_CINEMA_ACTS.length;
+    const act = BOOK_CINEMA_ACTS[hubCinemaIdx];
+    playSFX('page');
+
+    document.querySelectorAll('.da-cinema-tab').forEach((tab, i) => {
+      tab.classList.toggle('active', i === hubCinemaIdx);
+    });
+
+    const tagEl = document.getElementById('da-cinema-book-tag');
+    const quoteEl = document.getElementById('da-cinema-quote');
+    const gramEl = document.getElementById('da-cinema-grammar');
+    const ctaEl = document.getElementById('da-cinema-cta');
+
+    if (tagEl) tagEl.textContent = act.title;
+    if (quoteEl) quoteEl.textContent = act.quote;
+    if (gramEl) gramEl.textContent = act.grammarFocus;
+    if (ctaEl) {
+      ctaEl.href = act.freeUrl;
+      ctaEl.textContent = act.freeLabel;
+    }
+
+    if (autoSpeak) {
+      playDramaticExtract(act.audioSrc, `${act.title}. ${act.quote} ${act.grammarFocus}`, null, null, null);
+    }
+  }
+
+  function playCurrentBookOverview(btnEl) {
+    const act = BOOK_CINEMA_ACTS[hubCinemaIdx % BOOK_CINEMA_ACTS.length];
+    if (btnEl && !btnEl.dataset.defaultLabel) {
+      btnEl.dataset.defaultLabel = 'Listen to Book Overview';
+    }
+    playDramaticExtract(act.audioSrc, `${act.title}. ${act.quote} ${act.grammarFocus}`, btnEl, null, null);
+  }
+
+  /* ==============================================================
+     LESSON PAGE UPGRADE: PAINTED SCENE VFX + AUDIO READER + PRONOUNCE
+     ============================================================== */
+  function initLesson(unitId) {
+    injectScholarHUD();
+    const bookKey = detectBookKey(unitId);
+    getBookImage(bookKey);
+
+    // 1. Upgrade .scene-illustration-frame with painted chiaroscuro artwork + live VFX canvas
+    const sceneFrame = document.querySelector('.scene-illustration-frame');
+    if (sceneFrame && !sceneFrame.classList.contains('has-painted-vfx')) {
+      const origSvg = sceneFrame.querySelector('svg');
+      const captionBar = sceneFrame.querySelector('.scene-caption-bar');
+      sceneFrame.classList.add('has-painted-vfx');
+
+      const stage = document.createElement('div');
+      stage.className = 'da-scene-stage';
+
+      const canvas = document.createElement('canvas');
+      canvas.className = 'da-lesson-vfx-canvas';
+      canvas.width = 560;
+      canvas.height = 240;
+      stage.appendChild(canvas);
+
+      if (origSvg) {
+        origSvg.classList.add('original-scene-svg');
+        stage.appendChild(origSvg);
+      }
+
+      const controls = document.createElement('div');
+      controls.className = 'da-scene-controls-overlay';
+      controls.innerHTML = `
+        <button type="button" class="da-scene-mini-btn" onclick="DarkAcademiaAtmosphere.toggleSceneBlueprint(this)">
+          📐 Switch to Diagram View
+        </button>
+      `;
+      stage.appendChild(controls);
+
+      sceneFrame.insertBefore(stage, captionBar || sceneFrame.firstChild);
+
+      if (canvas.getContext) {
+        const ctx = canvas.getContext('2d');
+        const renderLessonCanvas = (ts) => {
+          drawAtmosphericCanvas(ctx, canvas.width, canvas.height, bookKey, ts, 0, 0);
+          requestAnimationFrame(renderLessonCanvas);
+        };
+        requestAnimationFrame(renderLessonCanvas);
+      }
+    }
+
+    // 2. Inject Dramatic British Audio Reader Bar inside .reading-frame
+    const readingFrame = document.querySelector('.reading-frame');
+    if (readingFrame && !readingFrame.querySelector('.da-audio-reader-bar')) {
+      const clauses = readingFrame.querySelectorAll('.highlight-clause');
+      const clone = readingFrame.cloneNode(true);
+      clone.querySelectorAll('div, cite').forEach((n) => n.remove());
+      const cleanExtractText = clone.textContent.replace(/\s+/g, ' ').trim();
+      const mp3Src = `assets/audio/extract_${unitId}.mp3`;
+
+      const readerBar = document.createElement('div');
+      readerBar.className = 'da-audio-reader-bar';
+      readerBar.innerHTML = `
+        <div style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
+          <button type="button" class="da-reader-btn" data-default-label="Listen to Original Novel Extract">
+            <span>🔊</span>
+            <span class="da-reader-btn-label">Listen to Original Novel Extract</span>
+          </button>
+          <div class="da-waveform" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+        <span style="font-size:0.76rem; color:#fde68a; font-weight:600;">
+          🕯️ British English Dramatic Reading &bull; Watch the highlighted grammar clauses pulse!
+        </span>
+      `;
+
+      const playBtn = readerBar.querySelector('.da-reader-btn');
+      const waveEl = readerBar.querySelector('.da-waveform');
+      playBtn.addEventListener('click', () => {
+        playDramaticExtract(mp3Src, cleanExtractText, playBtn, waveEl, clauses);
+      });
+
+      readingFrame.insertBefore(readerBar, readingFrame.firstChild);
+    }
+
+    // 3. Add "🔊 Listen" buttons to Victorian vs. Modern C1/C2 Style-Shift panes
+    document.querySelectorAll('.shift-pane').forEach((pane) => {
+      const labelEl = pane.querySelector('.shift-label');
+      const textEl = pane.querySelector('.shift-text');
+      if (!labelEl || !textEl || labelEl.querySelector('.da-pronounce-btn')) return;
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'da-pronounce-btn';
+      btn.innerHTML = '🔊 Listen';
+      btn.addEventListener('click', () => {
+        pronounceText(textEl.textContent.replace(/\s+/g, ' ').trim());
+      });
+      labelEl.appendChild(btn);
+    });
+
+    // 4. Add "🔊" pronunciation buttons to every .lex-item and .sort-word
+    document.querySelectorAll('.lex-item strong').forEach((strongEl) => {
+      if (strongEl.parentElement.querySelector('.da-pronounce-btn')) return;
+      const word = strongEl.textContent.trim();
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'da-pronounce-btn';
+      btn.title = `Hear British pronunciation of "${word}"`;
+      btn.innerHTML = '🔊';
+      btn.addEventListener('click', () => pronounceText(word));
+      strongEl.insertAdjacentElement('afterend', btn);
+    });
+
+    document.querySelectorAll('.sort-word').forEach((wordEl) => {
+      if (wordEl.querySelector('.da-pronounce-btn')) return;
+      const firstNode = wordEl.childNodes[0];
+      const word = firstNode ? firstNode.textContent.trim() : '';
+      if (!word) return;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'da-pronounce-btn';
+      btn.title = `Hear pronunciation of "${word}"`;
+      btn.innerHTML = '🔊';
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        pronounceText(word);
+      });
+      const spanEl = wordEl.querySelector('span');
+      if (spanEl) {
+        wordEl.insertBefore(btn, spanEl);
+      } else {
+        wordEl.appendChild(btn);
+      }
+    });
+  }
+
+  function toggleSceneBlueprint(btnEl) {
+    const frame = btnEl.closest('.scene-illustration-frame');
+    if (!frame) return;
+    const showingBlueprint = frame.classList.toggle('show-blueprint-svg');
+    playSFX('page');
+    btnEl.textContent = showingBlueprint ? '🎨 Switch to Painted Scene' : '📐 Switch to Diagram View';
+  }
+
+  function initGlobal() {
+    injectScholarHUD();
+    initHubShowcase();
+  }
+
+  return {
+    initGlobal,
+    initLesson,
+    toggleMusic,
+    nextTrack,
+    toggleSFX,
+    toggleParchmentMode,
+    playSFX,
+    setCinemaAct,
+    playCurrentBookOverview,
+    toggleSceneBlueprint,
+    pronounceText
+  };
+})();
+
+window.DarkAcademiaAtmosphere = DarkAcademiaAtmosphere;
+
 document.addEventListener('DOMContentLoaded', () => {
   DarkAcademiaGate.checkUrlUnlock();
   DarkAcademiaGate.syncUI();
+  DarkAcademiaAtmosphere.initGlobal();
 });
+
