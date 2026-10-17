@@ -14,6 +14,7 @@ const LabObservatory = (() => {
   let audioCtx = null;
   let sampleAudio = null;
   let currentGothicIdx = 0;
+  let currentProfWestIdx = 3;
 
   const HOLODECK_WORLDS = [
     {
@@ -108,18 +109,26 @@ const LabObservatory = (() => {
 
   const PROF_WEST_ACTS = [
     {
+      tag: 'Act 1 of 4 • The Egyptian Desert Excavation',
+      title: 'Professor West & Pencil Unearth the Golden Scarab',
       img: 'assets/study/act1_desert.jpg',
       alt: 'Act 1: Professor West and Pencil the Cat at the Egyptian Desert Excavation at sunset'
     },
     {
+      tag: 'Act 2 of 4 • Pencil the Cat Spots the Clue',
+      title: 'Decoding the Ancient Hieroglyphs by Lantern Light',
       img: 'assets/study/act2_pencil.jpg',
       alt: 'Act 2: Close-up of Pencil the Cat wearing her explorer hat and spotting a golden clue'
     },
     {
+      tag: 'Act 3 of 4 • Inside the Hidden Cavern',
+      title: 'Unlocking the Secret Vault of Forgotten Words',
       img: 'assets/study/act3_cavern.jpg',
       alt: 'Act 3: Professor West holding up a brass lantern inside the ancient hieroglyphic cavern'
     },
     {
+      tag: 'Act 4 of 4 • Inside the 3D Study',
+      title: 'Watch 4-Act Intro & Launch 3D Interactive Room',
       img: 'assets/study/act4_study.jpg',
       alt: 'Act 4: Professor West and Pencil the Cat inside the interactive 3D Study'
     }
@@ -320,14 +329,29 @@ const LabObservatory = (() => {
   }
 
   function selectProfWestAct(idx, src) {
-    const safeIdx = idx % PROF_WEST_ACTS.length;
+    const parsedIdx = Number(idx);
+    const safeIdx = Number.isFinite(parsedIdx) && parsedIdx >= 0
+      ? parsedIdx % PROF_WEST_ACTS.length
+      : 0;
+    currentProfWestIdx = safeIdx;
     const act = PROF_WEST_ACTS[safeIdx];
     playTone(520 + safeIdx * 65, 0.05, 'triangle', 0.035);
+
     const img = document.getElementById('pw-spotlight-img');
+    const tag = document.getElementById('pw-spotlight-tag');
+    const title = document.getElementById('pw-spotlight-title');
+
     if (img) {
       img.src = src || act.img;
       img.alt = act.alt;
     }
+    if (tag && act.tag) {
+      tag.textContent = act.tag;
+    }
+    if (title && act.title) {
+      title.textContent = act.title;
+    }
+
     document.querySelectorAll('.pw-act-thumb').forEach((t, i) => {
       const active = i === safeIdx;
       t.classList.toggle('is-active', active);
