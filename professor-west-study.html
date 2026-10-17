@@ -810,6 +810,59 @@
       pointer-events: none;
     }
 
+    /* Shown only when the browser blocks autoplay-with-sound: one big, obvious tap target */
+    .intro-play-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: radial-gradient(circle at center, rgba(12, 7, 4, 0.35), rgba(12, 7, 4, 0.72));
+      border: 0;
+      cursor: pointer;
+      color: #fff;
+      font-family: var(--font-sans);
+    }
+    .intro-play-overlay.show {
+      display: flex;
+    }
+    .intro-play-circle {
+      width: clamp(64px, 14vw, 104px);
+      height: clamp(64px, 14vw, 104px);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981, #047857);
+      border: 4px solid #fde68a;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+      box-shadow: 0 10px 40px rgba(5, 150, 105, 0.7);
+      animation: introPlayPulse 1.6s ease-in-out infinite;
+    }
+    .intro-play-label {
+      background: rgba(12, 7, 4, 0.82);
+      border: 1px solid rgba(253, 230, 138, 0.55);
+      color: #fde68a;
+      font-weight: 900;
+      font-size: clamp(0.82rem, 2.6vw, 1.05rem);
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+    }
+    .intro-play-overlay:hover .intro-play-circle,
+    .intro-play-overlay:focus-visible .intro-play-circle {
+      transform: scale(1.08);
+    }
+    @keyframes introPlayPulse {
+      0%, 100% { box-shadow: 0 10px 40px rgba(5, 150, 105, 0.7), 0 0 0 0 rgba(253, 230, 138, 0.55); }
+      50% { box-shadow: 0 10px 40px rgba(5, 150, 105, 0.7), 0 0 0 18px rgba(253, 230, 138, 0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .intro-play-circle { animation: none; }
+    }
+
     .intro-scene-layer {
       position: absolute;
       top: 0;
@@ -2503,6 +2556,12 @@
 
         <!-- Mobile Tap / Swipe Hint Badge -->
         <div class="intro-tap-hint" aria-hidden="true">👆 Tap or Swipe Scene</div>
+
+        <!-- Appears only if the browser blocks autoplay with sound -->
+        <button type="button" class="intro-play-overlay" id="intro-play-overlay" onclick="event.stopPropagation(); StudyHub.playIntroWithAudio()" aria-label="Play the movie with voice and music">
+          <span class="intro-play-circle"><i class="fa-solid fa-play" aria-hidden="true"></i></span>
+          <span class="intro-play-label">Tap to play with sound</span>
+        </button>
       </div>
 
       <!-- Animated Story Subtitle Strip (sits below the 16:9 screen so it never blocks the movie on mobile!) -->
@@ -2576,6 +2635,7 @@
   <script>
     const StudyHub = (() => {
       const STORAGE_KEY = 'prof_west_study_v5';
+      const INTRO_SESSION_KEY = 'prof_west_intro_shown_session';
       try {
         if ('caches' in window) {
           caches.keys().then(keys => keys.forEach(k => {
@@ -2705,8 +2765,9 @@
             };
             const playPromise = voiceAudioEl.play();
             if (playPromise && typeof playPromise.catch === 'function') {
-              playPromise.catch(() => {
+              playPromise.catch((err) => {
                 setMusicDucking(false);
+                if (err && err.name === 'NotAllowedError' && introVoiceActive) showIntroPlayOverlay();
               });
             }
             return;
@@ -2761,8 +2822,13 @@
             musicAudioEl.volume = (voiceAudioEl && !voiceAudioEl.paused) ? 0.08 : 0.28;
             const p = musicAudioEl.play();
             if (p && typeof p.catch === 'function') {
-              p.catch(() => {
-                // Fallback if browser blocks HTML5 audio before interaction
+              p.catch((err) => {
+                // Browser blocked HTML5 audio before any interaction: don't claim music is playing.
+                if (err && err.name === 'NotAllowedError') {
+                  musicPlaying = false;
+                  syncMusicUI();
+                  if (introVoiceActive) showIntroPlayOverlay();
+                }
               });
             }
           }
@@ -3271,12 +3337,28 @@
       function openIntroVideo() {
         const backdrop = document.getElementById('intro-video-backdrop');
         if (backdrop) backdrop.classList.add('open');
+        try { sessionStorage.setItem(INTRO_SESSION_KEY, '1'); } catch (e) {}
         initPixarStageParallax();
+        // Try to play with voice + music immediately. Browsers that block autoplay will
+        // reject the audio, which reveals the big "Tap to play with sound" overlay instead.
+        introVoiceActive = true;
+        hideIntroPlayOverlay();
         setIntroScene(0);
         startIntroCycle();
+        if (!musicPlaying) startClassicalMusic();
         if (!introVfxRaf) {
           introVfxRaf = requestAnimationFrame(renderPixarVFXFrame);
         }
+      }
+
+      function showIntroPlayOverlay() {
+        const el = document.getElementById('intro-play-overlay');
+        if (el) el.classList.add('show');
+      }
+
+      function hideIntroPlayOverlay() {
+        const el = document.getElementById('intro-play-overlay');
+        if (el) el.classList.remove('show');
       }
 
       function startIntroCycle() {
@@ -3322,7 +3404,8 @@
 
       function playIntroWithAudio() {
         introVoiceActive = true;
-        if (!musicPlaying) startClassicalMusic();
+        hideIntroPlayOverlay();
+        startClassicalMusic();
         playSound('chime');
         setIntroScene(0);
         startIntroCycle();
@@ -3330,6 +3413,7 @@
 
       function closeIntroVideo() {
         introVoiceActive = false;
+        hideIntroPlayOverlay();
         if (introInterval) {
           clearInterval(introInterval);
           introInterval = null;
@@ -5508,8 +5592,12 @@
         hydratePixarMainPageArt();
         syncHUD();
         setupEyeTracking();
-        // Auto-open the animated intro cartoon when entering the study!
-        if (!state.seenIntroVideo) {
+        // Auto-open the animated intro cartoon on each new visit (once per browser session),
+        // and always when the link says ?intro=1 (used by the homepage "Watch 3D Intro" links).
+        let introShownThisSession = false;
+        try { introShownThisSession = sessionStorage.getItem(INTRO_SESSION_KEY) === '1'; } catch (e) {}
+        const forceIntro = /[?&]intro=1(?:&|$)/.test((window.location && window.location.search) || '');
+        if (forceIntro || !introShownThisSession) {
           openIntroVideo();
         }
         if (window.location && window.location.search && window.location.search.includes('autotest=1')) {
