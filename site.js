@@ -154,12 +154,12 @@
   if (document.getElementById('essay-display-area')) {
 const WRITING_SAMPLES = {
         "c1": {
-          "title": "Cambridge C1 Advanced (CAE) — Part 1 Essay",
+          "title": "Cambridge C1 Advanced (CAE) â€” Part 1 Essay",
           "prompt": "Discuss two ways governments can encourage people to use public transport instead of private cars, and evaluate which is more effective.",
-          "draftBadge": "Student Draft (Solid B2 — 172/210)",
+          "draftBadge": "Student Draft (Solid B2 â€” 172/210)",
           "markupBadge": "Gareth's Line-by-Line Markup",
-          "polishedBadge": "Polished C1/C2 Pass (204/210 — Grade A)",
-          "cefrShift": "CEFR B2 → C1/C2",
+          "polishedBadge": "Polished C1/C2 Pass (204/210 â€” Grade A)",
+          "cefrShift": "CEFR B2 â†’ C1/C2",
           "splitBeforeBadge": "CEFR B2 (172/210)",
           "splitAfterBadge": "C1/C2 (204/210)",
           "scorePills": [
@@ -213,12 +213,12 @@ const WRITING_SAMPLES = {
           ]
         },
         "ielts": {
-          "title": "IELTS Academic Writing Task 2 — Opinion Essay",
+          "title": "IELTS Academic Writing Task 2 â€” Opinion Essay",
           "prompt": "Some people believe universities should only offer places to students with high academic marks, while others think people of all ages and abilities should be admitted. Discuss both views and give your opinion.",
           "draftBadge": "Student Draft (Stuck at Band 6.5)",
           "markupBadge": "Gareth's Band 8.0+ Upgrade",
           "polishedBadge": "Polished Band 8.0+ Paragraph",
-          "cefrShift": "Band 6.5 → Band 8.0+",
+          "cefrShift": "Band 6.5 â†’ Band 8.0+",
           "splitBeforeBadge": "Band 6.5",
           "splitAfterBadge": "Band 8.0+",
           "scorePills": [
@@ -271,12 +271,12 @@ const WRITING_SAMPLES = {
           ]
         },
         "business": {
-          "title": "Business English — Stakeholder Delay Email",
+          "title": "Business English â€” Stakeholder Delay Email",
           "prompt": "Write an email to a senior client explaining that the November software rollout will be delayed by two weeks due to security testing, while maintaining trust.",
           "draftBadge": "Original Draft (Too Direct / Abrupt)",
           "markupBadge": "Gareth's Diplomatic Markup",
           "polishedBadge": "Polished Client Email",
-          "cefrShift": "Direct B2 → Diplomatic C1/C2",
+          "cefrShift": "Direct B2 â†’ Diplomatic C1/C2",
           "splitBeforeBadge": "Direct B2",
           "splitAfterBadge": "Diplomatic C1/C2",
           "scorePills": [
@@ -284,7 +284,7 @@ const WRITING_SAMPLES = {
             { "label": "Clarity & Impact", "before": "6/10", "after": "9.5/10" },
             { "label": "Client Confidence", "before": "Shaky", "after": "High" }
           ],
-          "verdict": "When writing in a second language under time pressure, it is easy to translate directly—which can accidentally sound blunt or defensive ('We have a problem', 'You will have to wait'). Here, we reframe the delay around client security and clear next steps.",
+          "verdict": "When writing in a second language under time pressure, it is easy to translate directlyâ€”which can accidentally sound blunt or defensive ('We have a problem', 'You will have to wait'). Here, we reframe the delay around client security and clear next steps.",
           "segments": [
             { "type": "text", "content": "Dear Sarah,<br><br>Following our review of the November rollout, I am writing to share a brief status update.<br><br>" },
             {
@@ -405,7 +405,7 @@ const WRITING_SAMPLES = {
       function renderSplitView(sample) {
         const beforeHtml = renderParagraphSegments(sample.segments, 'draft');
         const afterHtml = renderParagraphSegments(sample.segments, 'polished');
-        const shiftParts = (sample.cefrShift || '').split(' → ');
+        const shiftParts = (sample.cefrShift || '').split(' â†’ ');
         const beforeBadge = sample.splitBeforeBadge || shiftParts[0] || 'B2';
         const afterBadge = sample.splitAfterBadge || shiftParts[1] || 'C1/C2';
         return `
@@ -456,11 +456,11 @@ const WRITING_SAMPLES = {
 
               <div class="bg-slate-50 rounded-lg p-3 mb-2.5 border border-slate-200/60 text-sm space-y-1.5">
                 <div class="flex items-start gap-1.5 text-rose-700">
-                  <span class="font-bold shrink-0">✗</span>
+                  <span class="font-bold shrink-0">âœ—</span>
                   <span class="line-through opacity-85">"${note.before}"</span>
                 </div>
                 <div class="flex items-start gap-1.5 text-emerald-800 font-medium">
-                  <span class="font-bold shrink-0">✓</span>
+                  <span class="font-bold shrink-0">âœ“</span>
                   <span>"${note.after}"</span>
                 </div>
               </div>
@@ -665,28 +665,3 @@ window.filterLabs = function filterLabs(level, btn) {
                 link.addEventListener('click', initCalEmbed, { once: true });
               });
             })();
-
-// Auto-prefill #contact-form when any [data-prefill-package] pricing CTA is clicked
-            document.querySelectorAll('[data-prefill-package]').forEach(function(btn) {
-              btn.addEventListener('click', function() {
-                const pkg = btn.getAttribute('data-prefill-package');
-                const goalInput = document.getElementById('goal');
-                const messageInput = document.getElementById('message');
-                const subjectInput = document.querySelector('#contact-form input[name="_subject"]');
-                const nameInput = document.getElementById('name');
-
-                if (goalInput && pkg) {
-                  goalInput.value = 'Selected Package: ' + pkg;
-                  goalInput.classList.add('ring-2', 'ring-sky-400', 'border-sky-400');
-                }
-                if (subjectInput && pkg) {
-                  subjectInput.value = 'Package Order / Enquiry: ' + pkg;
-                }
-                if (messageInput && pkg.includes('Async')) {
-                  messageInput.placeholder = 'Tell me which exam (IELTS, C1, C2) or business task you are submitting, and I will reply with your secure upload & Stripe payment link...';
-                }
-                setTimeout(function() {
-                  if (nameInput) nameInput.focus({ preventScroll: true });
-                }, 450);
-              });
-            });
