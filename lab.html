@@ -407,34 +407,26 @@
 
     .arcade-viewport {
       position: relative;
-      height: 156px;
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      height: 172px;
+      padding: 0;
+      display: block;
       overflow: hidden;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+      background: #060913;
     }
 
-    .arcade-viewport.crypt-bg {
-      background:
-        radial-gradient(circle at 50% 25%, rgba(245, 158, 11, 0.28), transparent 60%),
-        linear-gradient(160deg, #1a0f2e 0%, #090614 100%);
+    .arcade-viewport img,
+    .cassette-art-screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .arcade-viewport.reactor-bg {
-      background:
-        radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.32), transparent 62%),
-        linear-gradient(160deg, #062235 0%, #040d1a 100%);
-    }
-    .arcade-viewport.factory-bg {
-      background:
-        radial-gradient(circle at 50% 35%, rgba(245, 158, 11, 0.28), transparent 60%),
-        linear-gradient(160deg, #271709 0%, #0c0a09 100%);
-    }
-    .arcade-viewport.boardroom-bg {
-      background:
-        radial-gradient(circle at 75% 25%, rgba(16, 185, 129, 0.28), transparent 60%),
-        linear-gradient(160deg, #06241f 0%, #050f19 100%);
+
+    .arcade-cabinet:hover .arcade-viewport img,
+    .cassette-card:hover .cassette-art-screen img {
+      transform: scale(1.045);
     }
 
     .rune-pill {
@@ -506,13 +498,13 @@
       box-shadow: 0 20px 40px -12px rgba(16, 185, 129, 0.25);
     }
     .cassette-art-screen {
-      height: 128px;
-      padding: 0.9rem 1rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      height: 168px;
+      padding: 0;
+      display: block;
+      overflow: hidden;
       position: relative;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+      background: #040812;
       font-family: var(--font-mono);
     }
 
@@ -964,29 +956,17 @@
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
           <!-- Cabinet 1: Grammar Crypt (2D & 3D) -->
-          <div class="arcade-cabinet" onmouseenter="LabObservatory.hoverBlip()">
+          <div class="arcade-cabinet group" onmouseenter="LabObservatory.hoverBlip()">
             <div>
-              <div class="arcade-viewport crypt-bg">
-                <div class="flex items-center justify-between">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30">
-                    25 Floors &bull; 5 Bosses
-                  </span>
-                  <span class="text-[10px] font-mono text-purple-300">2D + 3D WebGL</span>
-                </div>
-                <div class="my-auto flex flex-wrap gap-1.5 justify-center py-2">
-                  <span class="rune-pill bg-amber-500/25 text-amber-200 border border-amber-400/50">SCARCELY</span>
-                  <span class="rune-pill bg-purple-500/25 text-purple-200 border border-purple-400/50">HAD</span>
-                  <span class="rune-pill bg-slate-800 text-slate-200 border border-slate-600">WE</span>
-                  <span class="rune-pill bg-emerald-500/25 text-emerald-200 border border-emerald-400/50">ENTERED</span>
-                </div>
-                <div class="flex items-center justify-between text-[10px] font-mono text-slate-400">
-                  <span>🕯️ C1/C2 Syntax Runes</span>
-                  <span class="text-amber-400">BOSS: ARCH-LICH</span>
-                </div>
+              <div class="arcade-viewport">
+                <img src="assets/arcade/grammar_crypt.svg" alt="Grammar Crypt dungeon vault with glowing syntax runes and the Arch-Lich boss" width="640" height="360" loading="lazy" />
               </div>
 
               <div class="p-5">
-                <h3 class="font-extrabold text-white text-lg mb-1.5">Grammar Crypt</h3>
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                  <h3 class="font-extrabold text-white text-lg group-hover:text-amber-300 transition">Grammar Crypt</h3>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30">25 Floors</span>
+                </div>
                 <p class="text-slate-300 text-xs leading-relaxed">
                   Slot ancient word runes into order to survive 25 dungeon floors of inversions, clefts, and conditionals. Play the fast-paced 2D edition or explore the 3D WebGL dungeon.
                 </p>
@@ -1004,115 +984,88 @@
           </div>
 
           <!-- Cabinet 2: Phrasal Reactor -->
-          <a href="phrasal-reactor.html" class="arcade-cabinet group" onmouseenter="LabObservatory.hoverBlip()">
+          <div class="arcade-cabinet group" onmouseenter="LabObservatory.hoverBlip()">
             <div>
-              <div class="arcade-viewport reactor-bg">
-                <div class="flex items-center justify-between">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-extrabold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">
-                    Phrasal Verbs
-                  </span>
-                  <span class="text-[10px] font-mono text-cyan-300">CORE: 98.4%</span>
-                </div>
-                <div class="my-auto flex items-center justify-center gap-2 py-2">
-                  <span class="rune-pill bg-cyan-500/25 text-cyan-100 border border-cyan-400/50">BRING</span>
-                  <span class="text-cyan-400 font-mono font-bold text-xs">+</span>
-                  <span class="rune-pill bg-sky-500/30 text-white border border-sky-300">ABOUT</span>
-                  <span class="text-emerald-400 text-xs font-mono font-bold">✓</span>
-                </div>
-                <div class="flex items-center justify-between text-[10px] font-mono text-slate-400">
-                  <span>⚛️ Particle Stabiliser</span>
-                  <span class="text-cyan-300">B2–C2 COLLOCATIONS</span>
-                </div>
-              </div>
+              <a href="reactor.html" class="arcade-viewport block" aria-label="Play Phrasal Reactor">
+                <img src="assets/arcade/phrasal_reactor.svg" alt="Phrasal Reactor tokamak containment core with particle injectors" width="640" height="360" loading="lazy" />
+              </a>
 
               <div class="p-5">
-                <h3 class="font-extrabold text-white text-lg mb-1.5 group-hover:text-cyan-300 transition">Phrasal Reactor</h3>
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                  <h3 class="font-extrabold text-white text-lg group-hover:text-cyan-300 transition">Phrasal Reactor</h3>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-extrabold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-400/30">B2–C2 Verbs</span>
+                </div>
                 <p class="text-slate-300 text-xs leading-relaxed">
-                  Stabilise the plasma core by firing the exact phrasal verb particle into high-level context sentences before the containment timer hits zero.
+                  Stabilise the plasma core by firing the exact phrasal verb particle into high-level context definitions before the containment timer hits zero.
                 </p>
               </div>
             </div>
 
-            <div class="px-5 pb-5 pt-2">
-              <span class="w-full rounded-xl bg-cyan-500/15 group-hover:bg-cyan-500 group-hover:text-slate-950 text-cyan-300 border border-cyan-400/40 text-xs font-extrabold px-4 py-2.5 transition flex items-center justify-between">
-                <span>Launch Reactor</span>
-                <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
-              </span>
+            <div class="px-5 pb-5 pt-2 grid grid-cols-3 gap-2">
+              <a href="reactor.html" class="col-span-2 text-center rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-extrabold px-3 py-2.5 transition shadow-md">
+                ⚛️ Launch Reactor &rarr;
+              </a>
+              <a href="phrasal-reactor.html" class="text-center rounded-xl border border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-300 text-xs font-bold px-2 py-2.5 transition">
+                Guide
+              </a>
             </div>
-          </a>
+          </div>
 
           <!-- Cabinet 3: Word Factory -->
-          <a href="word-factory.html" class="arcade-cabinet group" onmouseenter="LabObservatory.hoverBlip()">
+          <div class="arcade-cabinet group" onmouseenter="LabObservatory.hoverBlip()">
             <div>
-              <div class="arcade-viewport factory-bg">
-                <div class="flex items-center justify-between">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30">
-                    Use of English Part 3
-                  </span>
-                  <span class="text-[10px] font-mono text-amber-300">GEAR: MORPHOLOGY</span>
-                </div>
-                <div class="my-auto flex items-center justify-center gap-1 py-2">
-                  <span class="rune-pill bg-rose-500/25 text-rose-200 border border-rose-400/40">UN-</span>
-                  <span class="rune-pill bg-slate-800 text-white border border-slate-600">PRECEDENT</span>
-                  <span class="rune-pill bg-amber-500/25 text-amber-200 border border-amber-400/40">-ED</span>
-                </div>
-                <div class="flex items-center justify-between text-[10px] font-mono text-slate-400">
-                  <span>⚙️ Prefix &amp; Suffix Press</span>
-                  <span class="text-amber-300">NOUNS • ADVERBS</span>
-                </div>
-              </div>
+              <a href="factory.html" class="arcade-viewport block" aria-label="Play Word Factory">
+                <img src="assets/arcade/word_factory.svg" alt="Word Formation Factory steampunk stamping press and conveyor belt" width="640" height="360" loading="lazy" />
+              </a>
 
               <div class="p-5">
-                <h3 class="font-extrabold text-white text-lg mb-1.5 group-hover:text-amber-300 transition">Word Factory</h3>
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                  <h3 class="font-extrabold text-white text-lg group-hover:text-amber-300 transition">Word Factory</h3>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-400/30">Part 3 Press</span>
+                </div>
                 <p class="text-slate-300 text-xs leading-relaxed">
                   Master Cambridge Reading &amp; Use of English Part 3 by stamping root words with negative prefixes, noun endings, and adverbial suffixes on the assembly line.
                 </p>
               </div>
             </div>
 
-            <div class="px-5 pb-5 pt-2">
-              <span class="w-full rounded-xl bg-amber-500/15 group-hover:bg-amber-500 group-hover:text-slate-950 text-amber-300 border border-amber-400/40 text-xs font-extrabold px-4 py-2.5 transition flex items-center justify-between">
-                <span>Start Assembly Line</span>
-                <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
-              </span>
+            <div class="px-5 pb-5 pt-2 grid grid-cols-3 gap-2">
+              <a href="factory.html" class="col-span-2 text-center rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-extrabold px-3 py-2.5 transition shadow-md">
+                ⚙️ Start Factory &rarr;
+              </a>
+              <a href="word-factory.html" class="text-center rounded-xl border border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-300 text-xs font-bold px-2 py-2.5 transition">
+                Guide
+              </a>
             </div>
-          </a>
+          </div>
 
           <!-- Cabinet 4: The Boardroom Pitch -->
-          <a href="boardroom-pitch.html" class="arcade-cabinet group" onmouseenter="LabObservatory.hoverBlip()">
+          <div class="arcade-cabinet group" onmouseenter="LabObservatory.hoverBlip()">
             <div>
-              <div class="arcade-viewport boardroom-bg">
-                <div class="flex items-center justify-between">
-                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                    Executive C1/C2
-                  </span>
-                  <span class="text-[10px] font-mono text-emerald-300">TACT: +94%</span>
-                </div>
-                <div class="my-auto space-y-1 text-left bg-slate-950/75 p-2 rounded-lg border border-emerald-500/30">
-                  <div class="text-[10px] font-mono text-rose-300 line-through">“Your deadline is impossible.”</div>
-                  <div class="text-[10px] font-mono text-emerald-300 font-bold">“May we revisit the timeline scope?”</div>
-                </div>
-                <div class="flex items-center justify-between text-[10px] font-mono text-slate-400">
-                  <span>🏢 Stakeholder Diplomacy</span>
-                  <span class="text-emerald-300">HEDGING • REGISTER</span>
-                </div>
-              </div>
+              <a href="boardroom.html" class="arcade-viewport block" aria-label="Play The Boardroom Pitch">
+                <img src="assets/arcade/boardroom_pitch.svg" alt="The Boardroom Pitch London Canary Wharf executive negotiation simulation" width="640" height="360" loading="lazy" />
+              </a>
 
               <div class="p-5">
-                <h3 class="font-extrabold text-white text-lg mb-1.5 group-hover:text-emerald-300 transition">The Boardroom Pitch</h3>
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                  <h3 class="font-extrabold text-white text-lg group-hover:text-emerald-300 transition">The Boardroom Pitch</h3>
+                  <span class="px-2 py-0.5 rounded text-[10px] font-mono font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">Exec C1/C2</span>
+                </div>
                 <p class="text-slate-300 text-xs leading-relaxed">
                   Transform blunt thoughts into diplomatic C1/C2 executive English across high-stakes stakeholder meetings, client pushback, and salary negotiations.
                 </p>
               </div>
             </div>
 
-            <div class="px-5 pb-5 pt-2">
-              <span class="w-full rounded-xl bg-emerald-500/15 group-hover:bg-emerald-500 group-hover:text-slate-950 text-emerald-300 border border-emerald-400/40 text-xs font-extrabold px-4 py-2.5 transition flex items-center justify-between">
-                <span>Enter Boardroom</span>
-                <span class="group-hover:translate-x-1 transition-transform">&rarr;</span>
-              </span>
+            <div class="px-5 pb-5 pt-2 grid grid-cols-3 gap-2">
+              <a href="boardroom.html" class="col-span-2 text-center rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold px-3 py-2.5 transition shadow-md">
+                🏢 Enter Boardroom &rarr;
+              </a>
+              <a href="boardroom-pitch.html" class="text-center rounded-xl border border-slate-700 bg-slate-900/90 hover:bg-slate-800 text-slate-300 text-xs font-bold px-2 py-2.5 transition">
+                Guide
+              </a>
             </div>
-          </a>
+          </div>
 
         </div>
       </div>
@@ -1293,18 +1246,8 @@
             <!-- Tape 01 -->
             <a href="chronicle-88.html?tape=1" class="cassette-card group" onmouseenter="LabObservatory.hoverBlip()">
               <div>
-                <div class="cassette-art-screen crt-scanlines" style="background: radial-gradient(circle at 80% 20%, rgba(245,158,11,0.28), transparent 60%), linear-gradient(160deg, #1b112c 0%, #070b19 100%);">
-                  <div class="flex items-center justify-between text-[10px]">
-                    <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold">TAPE 01 // CYBERPUNK</span>
-                    <span class="text-amber-300">23:15 HRS</span>
-                  </div>
-                  <div class="my-auto text-xs text-amber-100 bg-black/55 p-2 rounded border border-amber-500/30">
-                    <span class="text-amber-400 font-bold">DET. KIRA:</span> “When the alarm rang, he <span class="underline decoration-amber-400">had already wiped</span> the drive...”
-                  </div>
-                  <div class="flex items-center justify-between text-[10px] text-slate-400">
-                    <span>COMPOSURE: 10</span>
-                    <span class="text-emerald-400">B1/B2 ALIBI ENGINE</span>
-                  </div>
+                <div class="cassette-art-screen">
+                  <img src="assets/arcade/c88_neon_alibi.svg" alt="Chronicle 88 Tape 01: Neon Alibi 1989 cyberpunk interrogation scene" width="640" height="360" loading="lazy" />
                 </div>
                 <div class="p-6">
                   <h3 class="text-lg font-extrabold text-white group-hover:text-amber-300 transition mb-2">Neon Alibi 1989</h3>
@@ -1322,18 +1265,8 @@
             <!-- Tape 02 -->
             <a href="chronicle-88.html?tape=2" class="cassette-card group" onmouseenter="LabObservatory.hoverBlip()">
               <div>
-                <div class="cassette-art-screen crt-scanlines" style="background: radial-gradient(circle at 20% 25%, rgba(16,185,129,0.28), transparent 60%), linear-gradient(160deg, #09221c 0%, #060b14 100%);">
-                  <div class="flex items-center justify-between text-[10px]">
-                    <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 font-bold">TAPE 02 // DUNGEON</span>
-                    <span class="text-emerald-300">2D6 FANTASY</span>
-                  </div>
-                  <div class="my-auto text-xs text-emerald-100 bg-black/55 p-2 rounded border border-emerald-500/30">
-                    <span class="text-emerald-400 font-bold">RUNE TRAP:</span> “Pull the lever <span class="underline decoration-emerald-400">which glows blue</span> (defining clause only!)”
-                  </div>
-                  <div class="flex items-center justify-between text-[10px] text-slate-400">
-                    <span>LUCK: 9</span>
-                    <span class="text-emerald-400">RIDDLE &amp; PARRY</span>
-                  </div>
+                <div class="cassette-art-screen">
+                  <img src="assets/arcade/c88_citadel.svg" alt="Chronicle 88 Tape 02: The Citadel of Echoes dungeon levers and 2d6 dice" width="640" height="360" loading="lazy" />
                 </div>
                 <div class="p-6">
                   <h3 class="text-lg font-extrabold text-white group-hover:text-emerald-300 transition mb-2">The Citadel of Echoes</h3>
@@ -1351,18 +1284,8 @@
             <!-- Tape 03 -->
             <a href="chronicle-88.html?tape=3" class="cassette-card group" onmouseenter="LabObservatory.hoverBlip()">
               <div>
-                <div class="cassette-art-screen crt-scanlines" style="background: radial-gradient(circle at 80% 25%, rgba(56,189,248,0.28), transparent 60%), linear-gradient(160deg, #081c30 0%, #050a14 100%);">
-                  <div class="flex items-center justify-between text-[10px]">
-                    <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-400/40 font-bold">TAPE 03 // ORBITAL SCI-FI</span>
-                    <span class="text-sky-300">STATION ZERO</span>
-                  </div>
-                  <div class="my-auto text-xs text-sky-100 bg-black/55 p-2 rounded border border-sky-500/30">
-                    <span class="text-sky-400 font-bold">MOTHER-88:</span> “Airlock 4 <span class="underline decoration-sky-400">is being pressurised</span>. Have the hull welded.”
-                  </div>
-                  <div class="flex items-center justify-between text-[10px] text-slate-400">
-                    <span>OXYGEN: 92%</span>
-                    <span class="text-sky-400">AI PROTOCOL</span>
-                  </div>
+                <div class="cassette-art-screen">
+                  <img src="assets/arcade/c88_station_zero.svg" alt="Chronicle 88 Tape 03: Signal Lost at Station Zero orbital mainframe" width="640" height="360" loading="lazy" />
                 </div>
                 <div class="p-6">
                   <h3 class="text-lg font-extrabold text-white group-hover:text-sky-300 transition mb-2">Signal Lost at Station Zero</h3>
@@ -1663,7 +1586,7 @@
           badge: 'Teens B1–B2 • PC-98 Visual Novel + 2d6',
           title: 'CHRONICLE ’88: Neon Alibi 1989 & The Citadel of Echoes',
           desc: 'Interrogate suspects using Past Perfect timelines, roll 2d6 Composure checks, and parry hits with B2 transforms.',
-          img: 'assets/gothic/jekyll_apothecary.jpg',
+          img: 'assets/arcade/c88_neon_alibi.svg',
           url: 'chronicle-88.html',
           quizTag: '⚡ Live 5-Second Alibi Trap (B2 Narrative Tenses):',
           prompt: 'Which suspect was ALREADY out of the room when the 23:15 alarm went off?',
@@ -1676,7 +1599,7 @@
           badge: 'Browser Arcade • 5 Fast-Paced Games',
           title: 'Grammar Crypt (2D/3D), Phrasal Reactor & Word Factory',
           desc: 'Slot C1/C2 syntax runes into order, stabilise phrasal verb particles, or negotiate in The Boardroom Pitch.',
-          img: 'assets/gothic/frankenstein_lab.jpg',
+          img: 'assets/arcade/grammar_crypt.svg',
           url: 'grammar-crypt.html',
           quizTag: '⚡ Live Phrasal Reactor Check (C1 Collocations):',
           prompt: '“The new transport policy is expected to bring _______ a major drop in emissions.”',

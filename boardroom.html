@@ -1,14 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redirecting to Boardroom Pitch | Gareth's Classroom</title>
-  <link rel="canonical" href="https://garethenglish.com/boardroom-pitch.html">
-  <meta http-equiv="refresh" content="0; url=boardroom-pitch.html">
-  <script>window.location.replace("boardroom-pitch.html" + window.location.search + window.location.hash);</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Boardroom Pitch | Gareth Montgomery</title>
+    <meta name="description" content="A Business English simulation game. Navigate high-stakes corporate conversations.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="boardroom.css">
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4576939732610828"
+     crossorigin="anonymous"></script>
 </head>
-<body style="background:#090d16;color:#f8fafc;font-family:system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;">
-  <p>Redirecting to <a href="boardroom-pitch.html" style="color:#10b981;font-weight:700;">Boardroom Pitch →</a></p>
+<body>
+
+    <!-- Intro Screen -->
+    <div id="intro-screen" class="modal open">
+        <div class="modal-content">
+            <img src="assets/arcade/boardroom_pitch.svg" alt="The Boardroom Pitch executive negotiation" width="640" height="360" style="width:100%; max-width:360px; height:auto; border-radius:10px; border:1px solid rgba(16,185,129,0.45); margin:0 auto 12px; display:block;" />
+            <h1>THE BOARDROOM PITCH</h1>
+            <p>You are pitching a high-stakes project to the CEO. You must translate your blunt thoughts into diplomatic, C1-level Business English. One wrong phrase could ruin the deal.</p>
+            <p style="margin-top: 8px;"><a href="boardroom-pitch.html" style="color: #10b981; text-decoration: underline; font-size: 0.85rem;">How to play &amp; what you'll learn &rarr;</a></p>
+            <input type="text" id="player-name" placeholder="Your Name..." maxlength="15" autocomplete="off">
+            <input type="email" id="player-email" placeholder="Your Work Email..." autocomplete="email">
+            <button id="btn-start" disabled>ENTER THE MEETING</button>
+        </div>
+    </div>
+
+    <!-- Game Over / Lead Capture Screen -->
+    <div id="end-screen" class="modal">
+        <div class="modal-content">
+            <h1 id="end-title">MEETING CONCLUDED</h1>
+            <p id="end-desc">The Board has made a decision regarding your pitch.</p>
+            <p style="font-size: 1.25rem; font-weight: 800; margin: 10px 0;">Final Reputation: <span id="final-score" style="color: #10b981;">0</span>%</p>
+            
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 14px; margin: 14px 0; text-align: left;">
+                <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px;"><strong>Diagnostic Next Step:</strong> In our 1-to-1 Business English sessions, we roleplay your real upcoming meetings and practice spontaneous, diplomatic phrasing so you command authority with international clients.</p>
+                <a href="index.html#book-diagnostic" data-track="boardroom_book_diagnostic" data-tier="trial_live_20" style="display: block; text-align: center; background: #10b981; color: #022c22; font-weight: 800; padding: 10px 16px; border-radius: 9999px; text-decoration: none; font-size: 0.85rem; margin-top: 6px;">Book a £20 Diagnostic Trial &rarr;</a>
+            </div>
+
+            <form action="https://formsubmit.co/de094039c8f01c6fa3862b3a6a060db1" method="POST" id="lead-form">
+                <input type="hidden" name="_subject" value="Boardroom Pitch Lead!">
+                <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact">
+                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none">
+                <input type="hidden" name="name" id="lead-name">
+                <input type="hidden" name="score" id="lead-score" value="">
+                <input type="hidden" name="email" id="lead-email" required>
+                <label style="display:block; font-size:0.75rem; color:#94a3b8; margin:8px 0; text-align:left;">
+                    <input type="checkbox" id="lead-consent" required> I agree to receive executive English debrief notes.
+                </label>
+                <button type="submit" id="btn-claim" style="font-size: 0.8rem; opacity: 0.9;">SEND PITCH LOGS FOR FEEDBACK</button>
+            </form>
+            <button id="btn-restart" class="secondary">SCHEDULE ANOTHER MEETING</button>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <header>
+            <div class="brand">EXECUTIVE SUITE</div>
+            <div>
+                <a href="boardroom-pitch.html" class="exit-link" style="margin-right: 12px;">RULES</a>
+                <a href="index.html" class="exit-link">LEAVE MEETING</a>
+            </div>
+        </header>
+
+        <main>
+            <div class="ceo-panel">
+                <div class="ceo-avatar">💼</div>
+                <div class="patience-wrapper">
+                    <div class="patience-label">CEO PATIENCE</div>
+                    <div class="patience-bar-bg">
+                        <div id="patience-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scenario-panel">
+                <div class="scenario-label">YOUR INTERNAL THOUGHT:</div>
+                <div id="scenario-thought" class="thought">"Their idea is completely terrible and won't work."</div>
+            </div>
+
+            <div class="options-panel">
+                <div class="options-label">CHOOSE YOUR RESPONSE:</div>
+                <div id="options-container">
+                    <!-- Buttons injected via JS -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="analytics-funnel.js"></script>
+    <script src="boardroom.js"></script>
 </body>
 </html>
