@@ -1,435 +1,280 @@
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CHRONICLE '88 | B1–B2 Teen Visual Novel &amp; Fighting Fantasy Grammar Game | Gareth English</title>
-  <meta name="description" content="Play CHRONICLE '88: an 80s PC-98 visual novel and Fighting Fantasy 2d6 choose-your-own-adventure game for B1 Preliminary (PET) and B2 First (FCE) teens. Use narrative tenses, conditionals, modals of deduction, and passives to solve mysteries and survive!" />
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#07080f" />
-  <link rel="canonical" href="https://garethenglish.com/chronicle-88.html" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='6'%20fill='%2307080f'%20stroke='%2300f5d4'%20stroke-width='2'/%3E%3Ctext%20x='16'%20y='22'%20font-family='monospace'%20font-size='15'%20font-weight='900'%20text-anchor='middle'%20fill='%2300f5d4'%3E88%3C/text%3E%3C/svg%3E" />
-
-  <!-- Fonts: Press Start 2P (pixel headers), Plus Jakarta Sans (ultra-clear student reading), JetBrains Mono -->
+  <title>Chronicle '88 | Interactive B1–B2 Visual Novel — Gareth's English Lab</title>
+  <meta name="description" content="Play Chronicle '88: three streamlined retro visual novel adventures where B1–B2 English grammar clues solve the mystery." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
   <style>
     :root {
-      --bg-void: #06070d;
-      --bg-frame: #0f1322;
-      --bg-panel: #151b30;
-      --bg-card: #1b233d;
-      --border-dim: #2e3b61;
-      --border-bright: #495d94;
-      --cyan: #00f5d4;
-      --amber: #ffbe0b;
-      --magenta: #ff2a85;
-      --emerald: #2ec4b6;
-      --green: #38e54d;
-      --red: #ff3864;
-      --purple: #9b5de5;
-      --text-white: #f8fafc;
-      --text-light: #e2e8f0;
+      --bg-page: #0b0f19;
+      --bg-card: #111827;
+      --bg-elevated: #1e293b;
+      --bg-subtle: rgba(30, 41, 59, 0.55);
+      --border-soft: rgba(255, 255, 255, 0.09);
+      --border-hover: rgba(245, 158, 11, 0.45);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --sky: #38bdf8;
+      --sky-soft: rgba(56, 189, 248, 0.12);
+      --green: #10b981;
+      --green-soft: rgba(16, 185, 129, 0.14);
+      --red: #f43f5e;
+      --red-soft: rgba(244, 63, 94, 0.14);
+      --text-main: #f8fafc;
+      --text-secondary: #cbd5e1;
       --text-muted: #94a3b8;
-      --font-pixel: 'Press Start 2P', monospace;
-      --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
+      --font-pixel: 'Press Start 2P', monospace;
     }
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
-      padding: 0;
-      background-color: var(--bg-void);
-      background-image:
-        radial-gradient(circle at 12% 10%, rgba(0, 245, 212, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at 88% 85%, rgba(255, 42, 133, 0.09) 0%, transparent 42%),
-        linear-gradient(180deg, #06070d 0%, #0b0e1a 100%);
-      color: var(--text-white);
+      background-color: var(--bg-page);
+      background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.07), transparent 55%);
+      color: var(--text-main);
       font-family: var(--font-sans);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
+      line-height: 1.6;
+      padding-bottom: 3rem;
     }
 
-    /* Subtle CRT Scanline Overlay */
-    .crt-overlay {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 95;
-      background: linear-gradient(
-        rgba(18, 16, 16, 0) 50%,
-        rgba(0, 0, 0, 0.18) 50%
-      );
-      background-size: 100% 4px;
-      opacity: 0.45;
-    }
-
-    /* ================= TOP SYSTEM BAR ================= */
-    .topbar {
-      background: rgba(11, 14, 26, 0.96);
-      backdrop-filter: blur(8px);
-      border-bottom: 2px solid var(--border-dim);
-      padding: 0.65rem 1.25rem;
+    /* ==========================================================================
+       1. COMPACT TOP NAVIGATION & EPISODE BAR
+       ========================================================================== */
+    .top-bar {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 1rem 1.25rem 0.75rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
       flex-wrap: wrap;
-      position: sticky;
-      top: 0;
-      z-index: 60;
     }
 
     .brand-group {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
+      gap: 0.85rem;
     }
 
-    .brand-link {
+    .back-link {
       display: inline-flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.45rem;
+      color: var(--text-muted);
       text-decoration: none;
-      color: #fff;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-soft);
+      transition: all 0.15s ease;
     }
 
-    .pixel-logo {
-      font-family: var(--font-pixel);
-      font-size: 0.68rem;
-      padding: 0.4rem 0.6rem;
-      background: #141a2e;
-      color: var(--cyan);
-      border: 2px solid var(--cyan);
-      box-shadow: 3px 3px 0 var(--magenta);
+    .back-link:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     .brand-title {
       font-family: var(--font-pixel);
       font-size: 0.75rem;
-      letter-spacing: 0.04em;
-      color: #fff;
-    }
-
-    .level-pill {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 700;
       color: var(--amber);
-      background: rgba(255, 190, 11, 0.12);
-      border: 1px solid rgba(255, 190, 11, 0.4);
-      padding: 0.22rem 0.6rem;
-      border-radius: 6px;
+      letter-spacing: 0.04em;
     }
 
-    .audio-controls {
+    .hud-controls {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       flex-wrap: wrap;
     }
 
-    .retro-btn {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      font-weight: 700;
-      background: var(--bg-panel);
-      color: var(--text-light);
-      border: 2px solid var(--border-dim);
-      padding: 0.45rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.14s ease;
-      text-decoration: none;
+    .stat-pill {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
-      box-shadow: 2px 2px 0 #000;
+      gap: 0.4rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
     }
 
-    .retro-btn:hover,
-    .retro-btn:focus-visible {
-      border-color: var(--cyan);
-      color: var(--cyan);
-      transform: translate(-1px, -1px);
-      box-shadow: 3px 3px 0 #000;
-      outline: none;
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
     }
 
-    .retro-btn.bgm-active {
-      border-color: var(--green);
-      color: var(--green);
-      background: rgba(56, 229, 77, 0.12);
+    .icon-btn:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
-    .retro-btn.amber-btn {
-      border-color: var(--amber);
+    .icon-btn.active {
       color: var(--amber);
-      background: rgba(255, 190, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.4);
+      background: var(--amber-soft);
     }
 
-    /* ================= MAIN CONTAINER ================= */
-    .shell {
-      max-width: 1280px;
-      width: 100%;
-      margin: 0.85rem auto 2.5rem;
-      padding: 0 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
+    /* Episode Switcher Pills */
+    .episode-nav {
+      max-width: 780px;
+      margin: 0 auto 1rem;
+      padding: 0 1.25rem;
     }
 
-    /* ================= STUDENT ONBOARDING: 3-STEP HOW TO PLAY BAR ================= */
-    .how-to-play-bar {
-      background: linear-gradient(90deg, rgba(21, 27, 48, 0.95), rgba(27, 35, 61, 0.95));
-      border: 2px solid var(--border-bright);
-      border-radius: 10px;
-      padding: 0.7rem 1rem;
+    .episode-tabs {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      background: var(--bg-card);
+      padding: 0.35rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .episode-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .episode-tab:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .episode-tab.active {
+      background: var(--bg-elevated);
+      color: var(--amber);
+      border-color: rgba(245, 158, 11, 0.3);
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       2. SINGLE UNIFIED STORY CARD
+       ========================================================================== */
+    .story-container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    .story-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Scene Progress Header */
+    .scene-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.35rem;
+      border-bottom: 1px solid var(--border-soft);
+      background: rgba(15, 23, 42, 0.6);
       gap: 0.75rem;
-      box-shadow: 4px 4px 0 #000;
+      flex-wrap: wrap;
     }
 
-    @media (max-width: 860px) {
-      .how-to-play-bar {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-      }
-    }
-
-    .step-pill {
+    .scene-progress {
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      padding: 0.45rem 0.65rem;
-      border-radius: 8px;
-      background: rgba(10, 13, 24, 0.65);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.2s ease;
     }
 
-    .step-pill.active-step {
-      border-color: var(--cyan);
-      background: rgba(0, 245, 212, 0.1);
-      box-shadow: 0 0 12px rgba(0, 245, 212, 0.15);
+    .scene-step-text {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    .step-num-badge {
-      font-family: var(--font-pixel);
-      font-size: 0.58rem;
-      background: var(--cyan);
-      color: #06070d;
-      padding: 0.32rem 0.45rem;
-      border-radius: 4px;
-      flex-shrink: 0;
-    }
-
-    .step-pill:nth-child(2) .step-num-badge {
-      background: var(--amber);
-    }
-
-    .step-pill:nth-child(3) .step-num-badge {
-      background: var(--magenta);
-      color: #fff;
-    }
-
-    .step-text-title {
-      font-weight: 800;
-      font-size: 0.8rem;
-      color: #fff;
-      display: block;
-    }
-
-    .step-text-sub {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      display: block;
-    }
-
-    /* ================= CASSETTE SELECTOR TABS ================= */
-    .cassette-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.75rem;
-    }
-
-    @media (max-width: 860px) {
-      .cassette-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .tape-card {
-      background: var(--bg-frame);
-      border: 2px solid var(--border-dim);
-      border-radius: 10px;
-      padding: 0.75rem 1rem;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.16s ease;
+    .progress-dots {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      box-shadow: 4px 4px 0 #000;
-      color: var(--text-white);
-    }
-
-    .tape-card:hover {
-      border-color: var(--cyan);
-      transform: translateY(-2px);
-    }
-
-    .tape-card.active {
-      border-color: var(--amber);
-      background: linear-gradient(135deg, rgba(255, 190, 11, 0.16) 0%, rgba(21, 27, 48, 0.98) 100%);
-      box-shadow: 0 0 18px rgba(255, 190, 11, 0.22), 4px 4px 0 #000;
-    }
-
-    .tape-label {
-      font-family: var(--font-pixel);
-      font-size: 0.56rem;
-      color: var(--cyan);
-      display: block;
-      margin-bottom: 0.28rem;
-    }
-
-    .tape-card.active .tape-label {
-      color: var(--amber);
-    }
-
-    .tape-title {
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: #fff;
-      display: block;
-    }
-
-    .tape-sub {
-      font-size: 0.74rem;
-      color: var(--text-muted);
-      margin-top: 0.15rem;
-      display: block;
-    }
-
-    .tape-icon-box {
-      width: 42px;
-      height: 42px;
-      border-radius: 8px;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-
-    /* ================= WORKSTATION 2-COLUMN LAYOUT ================= */
-    .workstation-grid {
-      display: grid;
-      grid-template-columns: 1fr 360px;
-      gap: 1rem;
-      align-items: start;
-    }
-
-    @media (max-width: 1024px) {
-      .workstation-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .pc98-window {
-      background: var(--bg-frame);
-      border: 3px solid var(--border-bright);
-      border-radius: 12px;
-      box-shadow:
-        inset 0 0 0 2px #080a14,
-        6px 6px 0 #000;
-      padding: 1rem;
-      position: relative;
-    }
-
-    .window-titlebar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      border-bottom: 2px solid var(--border-dim);
-      padding-bottom: 0.6rem;
-      margin-bottom: 0.85rem;
-      flex-wrap: wrap;
-    }
-
-    .window-title-left {
-      display: flex;
-      align-items: center;
-      gap: 0.55rem;
-      font-family: var(--font-pixel);
-      font-size: 0.62rem;
-      color: var(--cyan);
-    }
-
-    .window-dots {
-      display: inline-flex;
-      gap: 4px;
-    }
-
-    .window-dots span {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-      display: inline-block;
-    }
-
-    .scene-progress-pills {
-      display: flex;
-      align-items: center;
       gap: 0.35rem;
     }
 
-    .scene-pip {
-      width: 22px;
-      height: 8px;
-      border-radius: 3px;
-      background: #1e293b;
-      border: 1px solid var(--border-dim);
-      transition: all 0.2s;
+    .progress-dot {
+      width: 20px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      transition: background 0.2s;
     }
 
-    .scene-pip.done {
+    .progress-dot.done {
       background: var(--green);
-      border-color: var(--green);
     }
 
-    .scene-pip.current {
+    .progress-dot.current {
       background: var(--amber);
-      border-color: var(--amber);
-      box-shadow: 0 0 8px var(--amber);
     }
 
-    /* ================= PIXEL ART VIEWPORT ================= */
-    .viewport-frame {
+    .grammar-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--sky);
+      background: var(--sky-soft);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+    }
+
+    /* Pixel Canvas Stage */
+    .canvas-stage {
       position: relative;
       width: 100%;
-      aspect-ratio: 16 / 8.5;
-      background: #05060b;
-      border: 3px solid #2b395e;
-      border-radius: 8px;
+      height: 230px;
+      background: #070913;
+      border-bottom: 1px solid var(--border-soft);
       overflow: hidden;
-      margin-bottom: 0.85rem;
-      box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.8);
     }
 
     #pixel-canvas {
@@ -437,544 +282,494 @@
       height: 100%;
       display: block;
       image-rendering: pixelated;
-      image-rendering: crisp-edges;
+      object-fit: cover;
     }
 
-    .viewport-top-hud {
+    .location-pill {
       position: absolute;
-      top: 10px;
-      left: 10px;
-      right: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.5rem;
-      pointer-events: none;
-    }
-
-    .hud-location-tag {
-      background: rgba(8, 11, 22, 0.88);
-      border: 2px solid var(--cyan);
-      color: var(--cyan);
-      font-family: var(--font-pixel);
-      font-size: 0.54rem;
-      padding: 0.35rem 0.6rem;
-      border-radius: 4px;
-      box-shadow: 2px 2px 0 #000;
-    }
-
-    .hud-grammar-tag {
-      background: rgba(8, 11, 22, 0.9);
-      border: 2px solid var(--amber);
-      color: var(--amber);
+      bottom: 0.75rem;
+      left: 1rem;
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
       font-family: var(--font-mono);
-      font-weight: 800;
       font-size: 0.72rem;
-      padding: 0.25rem 0.6rem;
-      border-radius: 4px;
-      box-shadow: 2px 2px 0 #000;
+      color: var(--text-secondary);
     }
 
-    /* ================= STEP 1: VISUAL CLUE BOARD / TIMELINE ================= */
-    .clue-board {
-      background: linear-gradient(180deg, #11182c 0%, #0d1324 100%);
-      border: 2px solid var(--cyan);
-      border-radius: 10px;
-      padding: 0.8rem 1rem;
-      margin-bottom: 0.85rem;
-      box-shadow: 0 4px 14px rgba(0, 245, 212, 0.08);
+    /* Story Body */
+    .story-body {
+      padding: 1.5rem 1.5rem 1.75rem;
     }
 
-    .clue-board-header {
+    .speaker-line {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 0.5rem;
-      margin-bottom: 0.55rem;
+      margin-bottom: 0.65rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--amber);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .speaker-role {
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: none;
+    }
+
+    .narrative-text {
+      font-size: 1.04rem;
+      line-height: 1.65;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+    }
+
+    .narrative-text strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* Compact 2-Column Clue Strip */
+    .clue-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.65rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .clue-item {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-soft);
+      border-left: 3px solid var(--sky);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+    }
+
+    .clue-item.key-clue {
+      border-left-color: var(--amber);
+      background: rgba(245, 158, 11, 0.06);
+    }
+
+    .clue-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--sky);
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+
+    .clue-item.key-clue .clue-label {
+      color: var(--amber);
+    }
+
+    .clue-text {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* Question Prompt + Hint Toggle */
+    .question-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.85rem;
       flex-wrap: wrap;
     }
 
-    .clue-board-badge {
-      font-family: var(--font-pixel);
-      font-size: 0.55rem;
-      color: #06070d;
-      background: var(--cyan);
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
+    .question-prompt {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--text-main);
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .hint-toggle-btn {
+      background: transparent;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--sky);
+      border-radius: 999px;
+      padding: 0.3rem 0.75rem;
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
     }
 
-    .timeline-visual {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 0.55rem;
+    .hint-toggle-btn:hover {
+      background: var(--sky-soft);
     }
 
-    .timeline-node {
-      background: rgba(6, 9, 18, 0.85);
-      border: 1px solid rgba(0, 245, 212, 0.35);
-      border-left: 4px solid var(--cyan);
-      border-radius: 6px;
-      padding: 0.5rem 0.65rem;
-    }
-
-    .timeline-node.highlight-node {
-      border-left-color: var(--amber);
-      border-color: rgba(255, 190, 11, 0.5);
-      background: rgba(255, 190, 11, 0.08);
-    }
-
-    .timeline-time {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--cyan);
-      display: block;
-    }
-
-    .timeline-node.highlight-node .timeline-time {
-      color: var(--amber);
-    }
-
-    .timeline-desc {
-      font-size: 0.8rem;
-      color: var(--text-white);
-      font-weight: 600;
-      margin-top: 0.15rem;
-      display: block;
-    }
-
-    /* ================= CHARACTER DIALOGUE & MISSION PROMPT ================= */
-    .vn-dialogue-card {
-      background: #0b0f1d;
-      border: 2px solid var(--border-bright);
-      border-radius: 10px;
-      padding: 0.95rem 1.1rem;
-      margin-bottom: 0.85rem;
-      position: relative;
-    }
-
-    .speaker-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      margin-bottom: 0.6rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      flex-wrap: wrap;
-    }
-
-    .speaker-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.55rem;
-    }
-
-    .speaker-avatar-mini {
-      width: 34px;
-      height: 34px;
-      border-radius: 6px;
-      background: var(--bg-card);
-      border: 2px solid var(--amber);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--amber);
-      font-size: 1rem;
-    }
-
-    .speaker-name-tag {
-      font-family: var(--font-pixel);
-      font-size: 0.6rem;
-      color: var(--amber);
-      display: block;
-    }
-
-    .speaker-sub-tag {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      display: block;
-    }
-
-    .story-narrative {
-      font-size: 0.95rem;
-      line-height: 1.65;
-      color: var(--text-light);
-      margin: 0 0 0.8rem 0;
-    }
-
-    .story-narrative strong {
-      color: #fff;
-      font-weight: 800;
-    }
-
-    .story-narrative em {
-      color: var(--cyan);
-      font-style: normal;
-      font-weight: 700;
-    }
-
-    /* Clear Student Task Box inside Dialogue Card */
-    .student-mission-box {
-      background: rgba(56, 229, 77, 0.1);
-      border: 2px solid rgba(56, 229, 77, 0.5);
-      border-radius: 8px;
-      padding: 0.65rem 0.85rem;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .mission-text {
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #d9f99d;
-      line-height: 1.45;
-      flex: 1;
-      min-width: 220px;
-    }
-
-    .mission-badge {
-      font-family: var(--font-pixel);
-      font-size: 0.54rem;
-      color: #052e16;
-      background: var(--green);
-      padding: 0.22rem 0.45rem;
-      border-radius: 4px;
-      margin-right: 0.45rem;
-      vertical-align: middle;
-    }
-
-    /* Collapsible Grammar Cheat-Sheet Tip */
-    .grammar-helper-drawer {
+    .hint-drawer {
       display: none;
-      margin-top: 0.65rem;
-      background: rgba(255, 190, 11, 0.12);
-      border: 1px dashed var(--amber);
-      border-radius: 8px;
-      padding: 0.65rem 0.85rem;
-      font-size: 0.83rem;
-      color: #fef3c7;
-      line-height: 1.5;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
     }
 
-    .grammar-helper-drawer.open {
+    .hint-drawer.open {
       display: block;
-      animation: popIn 0.18s ease-out;
     }
 
-    /* ================= STEP 2: PLAYER CHOICES ================= */
-    .choices-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.55rem;
-      flex-wrap: wrap;
-      gap: 0.5rem;
+    .hint-drawer strong {
+      color: var(--sky);
     }
 
-    .choices-label {
-      font-family: var(--font-pixel);
-      font-size: 0.58rem;
-      color: var(--amber);
-    }
-
-    .choices-stack {
+    /* Clean Choice Buttons */
+    .choices-list {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
+      gap: 0.65rem;
     }
 
-    .choice-option-btn {
+    .choice-btn {
       width: 100%;
       text-align: left;
-      background: var(--bg-panel);
-      border: 2px solid var(--border-dim);
+      background: var(--bg-elevated);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 10px;
-      color: var(--text-white);
-      padding: 0.8rem 1rem;
+      padding: 0.9rem 1.1rem;
+      color: var(--text-main);
       font-family: var(--font-sans);
-      font-size: 0.92rem;
-      font-weight: 600;
-      line-height: 1.45;
+      font-size: 0.95rem;
+      line-height: 1.5;
       cursor: pointer;
-      transition: all 0.14s ease;
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
-      box-shadow: 3px 3px 0 #000;
+      gap: 0.85rem;
+      transition: all 0.15s ease;
     }
 
-    .choice-option-btn:hover:not(:disabled),
-    .choice-option-btn:focus-visible:not(:disabled) {
-      border-color: var(--cyan);
-      background: rgba(0, 245, 212, 0.11);
-      transform: translateX(4px);
-      outline: none;
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--border-hover);
+      background: rgba(30, 41, 59, 0.95);
+      transform: translateY(-1px);
     }
 
-    .choice-option-btn.selected-correct {
-      border-color: var(--green);
-      background: rgba(56, 229, 77, 0.16);
-    }
-
-    .choice-option-btn.selected-wrong {
-      border-color: var(--red);
-      background: rgba(255, 56, 100, 0.16);
-    }
-
-    .choice-option-btn:disabled {
+    .choice-btn:disabled {
       cursor: default;
-      opacity: 0.82;
+      opacity: 0.75;
     }
 
     .choice-letter {
-      font-family: var(--font-pixel);
-      font-size: 0.62rem;
-      background: #090c18;
-      color: var(--amber);
-      border: 2px solid var(--amber);
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
-      padding: 0.3rem 0.45rem;
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--amber);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
-      margin-top: 0.05rem;
+      margin-top: 0.1rem;
     }
 
     .grammar-highlight {
-      color: var(--cyan);
+      color: var(--amber);
+      font-weight: 700;
       text-decoration: underline;
-      text-decoration-color: rgba(0, 245, 212, 0.5);
       text-underline-offset: 3px;
-      font-weight: 800;
     }
 
-    /* ================= FEEDBACK & NEXT ACTION PANEL ================= */
-    .result-banner {
-      display: none;
-      margin-top: 0.9rem;
-      border-radius: 10px;
-      padding: 1rem 1.15rem;
-      border: 2px solid var(--cyan);
-      box-shadow: 4px 4px 0 #000;
-    }
-
-    .result-banner.show {
-      display: block;
-      animation: popIn 0.2s ease-out;
-    }
-
-    .result-banner.win {
-      background: rgba(16, 48, 32, 0.95);
+    .choice-btn.correct {
+      background: var(--green-soft);
       border-color: var(--green);
+      opacity: 1;
     }
 
-    .result-banner.lose {
-      background: rgba(54, 16, 30, 0.95);
+    .choice-btn.correct .choice-letter {
+      background: var(--green);
+      color: #06281e;
+    }
+
+    .choice-btn.wrong {
+      background: var(--red-soft);
       border-color: var(--red);
+      opacity: 1;
     }
 
-    .result-header {
-      font-family: var(--font-pixel);
-      font-size: 0.64rem;
-      margin-bottom: 0.5rem;
+    .choice-btn.wrong .choice-letter {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* Inline Feedback & Contextual Dice Banner */
+    .feedback-box {
+      display: none;
+      margin-top: 1.15rem;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box.win {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .feedback-box.lose {
+      border-color: rgba(244, 63, 94, 0.45);
+      background: rgba(244, 63, 94, 0.08);
+    }
+
+    .feedback-title {
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-bottom: 0.35rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 0.5rem;
+    }
+
+    .feedback-box.win .feedback-title {
+      color: var(--green);
+    }
+
+    .feedback-box.lose .feedback-title {
+      color: var(--red);
+    }
+
+    .feedback-explanation {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 1rem;
+    }
+
+    /* Contextual Inline 2d6 Dice Bar */
+    .inline-dice-bar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      background: rgba(11, 15, 25, 0.75);
+      border: 1px solid rgba(245, 158, 11, 0.3);
       flex-wrap: wrap;
     }
 
-    .result-explanation {
-      font-size: 0.9rem;
-      line-height: 1.55;
-      color: #f8fafc;
-      margin-bottom: 0.85rem;
+    .inline-dice-bar.show {
+      display: flex;
     }
 
-    .result-cta-row {
+    .dice-pair {
       display: flex;
       align-items: center;
       gap: 0.65rem;
-      flex-wrap: wrap;
     }
 
-    /* ================= RIGHT SIDEBAR: FIGHTING FANTASY ADVENTURE SHEET ================= */
-    .sheet-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-    }
-
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
-    }
-
-    .stat-card {
-      background: #0b0f1d;
-      border: 2px solid var(--border-dim);
-      border-radius: 8px;
-      padding: 0.6rem 0.45rem;
-      text-align: center;
-    }
-
-    .stat-name {
-      font-family: var(--font-pixel);
-      font-size: 0.48rem;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 0.3rem;
-    }
-
-    .stat-number {
-      font-family: var(--font-mono);
-      font-size: 1.55rem;
-      font-weight: 800;
-      line-height: 1;
-      display: block;
-    }
-
-    .stat-caption {
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      margin-top: 0.2rem;
-      display: block;
-    }
-
-    .stat-bar {
-      height: 7px;
-      background: #060811;
-      border-radius: 4px;
-      margin-top: 0.35rem;
-      overflow: hidden;
-    }
-
-    .stat-bar-fill {
-      height: 100%;
-      transition: width 0.3s ease;
-    }
-
-    /* 2d6 Dice Box */
-    .dice-box {
-      background: #0b0f1d;
-      border: 2px solid var(--border-dim);
-      border-radius: 10px;
-      padding: 0.85rem;
-      text-align: center;
-    }
-
-    .dice-stage {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin: 0.65rem 0;
-    }
-
-    .pixel-die {
-      width: 54px;
-      height: 54px;
+    .die-face {
+      width: 42px;
+      height: 42px;
       background: #f8fafc;
-      border: 3px solid var(--cyan);
       border-radius: 8px;
-      box-shadow: 4px 4px 0 #000;
+      padding: 6px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(3, 1fr);
-      padding: 6px;
-      gap: 3px;
-      transition: transform 0.15s;
+      gap: 2px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
     }
 
-    .pixel-die.rolling {
-      animation: shakeDie 0.3s infinite;
-      background: var(--amber);
-      border-color: #fff;
+    .die-face.rolling {
+      animation: rollShake 0.25s infinite;
+    }
+
+    @keyframes rollShake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-10deg) scale(1.05); }
+      75% { transform: rotate(10deg) scale(1.05); }
     }
 
     .pip-dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: transparent;
-      align-self: center;
-      justify-self: center;
+      place-self: center;
     }
 
     .pip-dot.on {
       background: #0f172a;
     }
 
-    /* Rewind Parry Modal with Tap-to-Build Word Tiles */
-    .modal-overlay {
+    .dice-status-text {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .feedback-actions {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 0.6rem 1.15rem;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.15s ease;
+    }
+
+    .action-btn.primary {
+      background: var(--amber);
+      color: #0b0f19;
+    }
+
+    .action-btn.primary:hover {
+      background: #fbbf24;
+    }
+
+    .action-btn.secondary {
+      background: var(--bg-elevated);
+      color: var(--text-main);
+      border-color: var(--border-soft);
+    }
+
+    .action-btn.secondary:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ==========================================================================
+       3. TAP-TO-BUILD REWIND PARRY MODAL
+       ========================================================================== */
+    .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(5, 7, 15, 0.88);
-      backdrop-filter: blur(4px);
-      z-index: 120;
+      background: rgba(7, 10, 18, 0.85);
+      backdrop-filter: blur(6px);
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 1.25rem;
+      z-index: 1000;
     }
 
-    .modal-overlay.open {
+    .modal-backdrop.open {
       display: flex;
     }
 
-    .parry-dialog {
-      max-width: 620px;
+    .parry-card {
+      max-width: 540px;
       width: 100%;
-      background: var(--bg-frame);
-      border: 3px solid var(--amber);
-      border-radius: 12px;
-      box-shadow: 8px 8px 0 #000;
-      padding: 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65);
     }
 
-    .tile-slot-zone {
-      min-height: 52px;
-      background: #080b16;
-      border: 2px dashed var(--cyan);
-      border-radius: 8px;
-      padding: 0.5rem;
+    .parry-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--amber);
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .parry-subtitle {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .parry-prompt-box {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.92rem;
+    }
+
+    .parry-keyword {
+      display: inline-block;
+      margin-top: 0.45rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 6px;
+      background: var(--amber-soft);
+      color: var(--amber);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .parry-slot-zone {
+      min-height: 50px;
+      padding: 0.6rem;
+      border-radius: 10px;
+      border: 1px dashed rgba(245, 158, 11, 0.45);
+      background: rgba(11, 15, 25, 0.6);
       display: flex;
       flex-wrap: wrap;
       gap: 0.45rem;
       align-items: center;
-      margin: 0.65rem 0;
+      margin: 0.55rem 0 1rem;
     }
 
-    .word-bank-zone {
+    .parry-bank-zone {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.45rem;
-      margin: 0.65rem 0 1rem;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
     }
 
     .word-tile {
+      padding: 0.45rem 0.8rem;
+      border-radius: 8px;
+      background: var(--bg-elevated);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: var(--text-main);
       font-family: var(--font-mono);
-      font-size: 0.85rem;
-      font-weight: 700;
-      background: var(--bg-card);
-      color: #fff;
-      border: 2px solid var(--amber);
-      border-radius: 6px;
-      padding: 0.4rem 0.7rem;
+      font-size: 0.84rem;
+      font-weight: 600;
       cursor: pointer;
-      box-shadow: 2px 2px 0 #000;
-      transition: all 0.12s;
+      transition: all 0.12s ease;
     }
 
     .word-tile:hover {
       background: var(--amber);
-      color: #06070d;
-      transform: translateY(-2px);
+      color: #0b0f19;
     }
 
     .word-tile.used {
@@ -982,372 +777,199 @@
       pointer-events: none;
     }
 
-    @keyframes shakeDie {
-      0% { transform: rotate(-10deg) scale(1.06); }
-      50% { transform: rotate(10deg) scale(0.95); }
-      100% { transform: rotate(-10deg) scale(1.06); }
-    }
-
-    @keyframes popIn {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
+    @media (max-width: 640px) {
+      .episode-tabs {
+        grid-template-columns: 1fr;
+      }
+      .canvas-stage {
+        height: 195px;
+      }
+      .story-body {
+        padding: 1.15rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="crt-overlay" aria-hidden="true"></div>
 
-  <!-- ================= TOP SYSTEM BAR ================= -->
-  <header class="topbar">
+  <!-- 1. COMPACT TOP BAR -->
+  <header class="top-bar">
     <div class="brand-group">
-      <a href="lab.html" class="brand-link" title="Back to The Gareth English Interactive Lab">
-        <span class="pixel-logo">PC-98</span>
-        <span class="brand-title">CHRONICLE ’88</span>
+      <a href="lab.html" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Interactive Lab
       </a>
-      <span class="level-pill">CEFR B1–B2 Teen Grammar Adventure &bull; Fighting Fantasy 2d6</span>
+      <span class="brand-title">CHRONICLE '88</span>
     </div>
 
-    <div class="audio-controls">
-      <button type="button" id="bgm-btn" class="retro-btn" onclick="Chronicle88.toggleBGM()">
-        <i class="fa-solid fa-music" id="bgm-icon" aria-hidden="true"></i>
-        <span id="bgm-label">8-Bit Music: OFF (Click to Play)</span>
+    <div class="hud-controls">
+      <span class="stat-pill" title="Stamina">
+        <i class="fa-solid fa-heart" style="color:var(--red);"></i>
+        <span id="ui-stat-stamina">20</span>
+      </span>
+      <span class="stat-pill" title="Rewind Tokens">
+        <i class="fa-solid fa-rotate-left" style="color:var(--amber);"></i>
+        <span id="ui-stat-tokens">3</span>
+      </span>
+      <button type="button" class="icon-btn" id="bgm-btn" onclick="Chronicle88.toggleBGM()">
+        <i class="fa-solid fa-music"></i>
+        <span id="bgm-label">Music</span>
       </button>
-      <button type="button" id="sfx-btn" class="retro-btn bgm-active" onclick="Chronicle88.toggleSFX()">
-        <i class="fa-solid fa-volume-high" id="sfx-icon" aria-hidden="true"></i>
-        <span id="sfx-label">SFX: ON</span>
+      <button type="button" class="icon-btn active" id="sfx-btn" onclick="Chronicle88.toggleSFX()">
+        <i class="fa-solid fa-volume-high" id="sfx-icon"></i>
+        <span id="sfx-label">SFX</span>
       </button>
-      <button type="button" class="retro-btn" onclick="Chronicle88.restartCurrentTape()">
-        <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
-        <span>Restart Tape</span>
-      </button>
-      <a href="lab.html" class="retro-btn">
-        <i class="fa-solid fa-flask" aria-hidden="true"></i>
-        <span>&larr; Interactive Lab</span>
-      </a>
     </div>
   </header>
 
-  <!-- ================= MAIN GAME SHELL ================= -->
-  <main class="shell">
+  <!-- 2. EPISODE SWITCHER -->
+  <nav class="episode-nav" aria-label="Choose Episode">
+    <div class="episode-tabs">
+      <button type="button" class="episode-tab active" id="tape-tab-1" onclick="Chronicle88.loadTape(1)">
+        1. Neon Alibi (Narrative Tenses)
+      </button>
+      <button type="button" class="episode-tab" id="tape-tab-2" onclick="Chronicle88.loadTape(2)">
+        2. Citadel of Echoes (Modals &amp; Conditionals)
+      </button>
+      <button type="button" class="episode-tab" id="tape-tab-3" onclick="Chronicle88.loadTape(3)">
+        3. Station Zero (Passive &amp; Causative)
+      </button>
+    </div>
+  </nav>
 
-    <!-- STUDENT ONBOARDING: CLEAR 3-STEP HOW TO PLAY TRACKER -->
-    <section aria-label="How to play in 3 steps" class="how-to-play-bar">
-      <div class="step-pill active-step" id="guide-step-1">
-        <span class="step-num-badge">STEP 1</span>
-        <div>
-          <span class="step-text-title">Check the Clue Timeline</span>
-          <span class="step-text-sub">Read the timestamps &amp; facts under the picture.</span>
+  <!-- 3. SINGLE UNIFIED STORY CARD -->
+  <main class="story-container">
+    <article class="story-card">
+
+      <!-- Scene Progress Strip -->
+      <div class="scene-header">
+        <div class="scene-progress">
+          <span class="scene-step-text" id="ui-scene-label">SCENE 1 OF 4</span>
+          <div class="progress-dots" id="ui-progress-pips"></div>
         </div>
+        <span class="grammar-badge" id="ui-grammar-tag">Past Perfect vs. Past Simple</span>
       </div>
 
-      <div class="step-pill" id="guide-step-2">
-        <span class="step-num-badge">STEP 2</span>
-        <div>
-          <span class="step-text-title">Pick the Matching Grammar</span>
-          <span class="step-text-sub">Choose the sentence whose tense matches the clues!</span>
-        </div>
+      <!-- Animated Pixel Art Stage -->
+      <div class="canvas-stage">
+        <canvas id="pixel-canvas" width="384" height="204" aria-label="16-bit scene illustration"></canvas>
+        <span class="location-pill" id="ui-location-tag">Sector 1 • CyberCorp Vault</span>
       </div>
 
-      <div class="step-pill" id="guide-step-3">
-        <span class="step-num-badge">STEP 3</span>
-        <div>
-          <span class="step-text-title">Roll 2d6 or Rewind Parry</span>
-          <span class="step-text-sub">Pass 2d6 hazard checks or tap word tiles to block damage!</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3 CASSETTE SELECTOR TABS -->
-    <section aria-label="Choose your adventure cassette" class="cassette-grid">
-      <button type="button" class="tape-card active" id="tape-tab-1" onclick="Chronicle88.loadTape(1)">
-        <div>
-          <span class="tape-label">CASSETTE 01 // CYBERPUNK DETECTIVE</span>
-          <span class="tape-title">Neon Alibi 1989</span>
-          <span class="tape-sub">Past Perfect vs Simple &bull; Reported Speech &bull; Question Tags</span>
-        </div>
-        <div class="tape-icon-box" style="color: var(--amber);">
-          <i class="fa-solid fa-user-secret" aria-hidden="true"></i>
-        </div>
-      </button>
-
-      <button type="button" class="tape-card" id="tape-tab-2" onclick="Chronicle88.loadTape(2)">
-        <div>
-          <span class="tape-label">CASSETTE 02 // DARK DUNGEON</span>
-          <span class="tape-title">The Citadel of Echoes</span>
-          <span class="tape-sub">Modals of Deduction &bull; Relative Clauses &bull; Conditionals</span>
-        </div>
-        <div class="tape-icon-box" style="color: var(--cyan);">
-          <i class="fa-solid fa-dungeon" aria-hidden="true"></i>
-        </div>
-      </button>
-
-      <button type="button" class="tape-card" id="tape-tab-3" onclick="Chronicle88.loadTape(3)">
-        <div>
-          <span class="tape-label">CASSETTE 03 // SCI-FI SURVIVAL</span>
-          <span class="tape-title">Signal Lost at Station Zero</span>
-          <span class="tape-sub">Passive Voice &bull; Causative Have/Get &bull; Future Forms</span>
-        </div>
-        <div class="tape-icon-box" style="color: var(--magenta);">
-          <i class="fa-solid fa-satellite" aria-hidden="true"></i>
-        </div>
-      </button>
-    </section>
-
-    <!-- MAIN 2-COLUMN WORKSTATION -->
-    <div class="workstation-grid">
-
-      <!-- LEFT COLUMN: PIXEL SCENE + CLUE TIMELINE + DIALOGUE + CHOICES -->
-      <section class="pc98-window" aria-label="Visual Novel Screen">
-        <div class="window-titlebar">
-          <div class="window-title-left">
-            <div class="window-dots" aria-hidden="true">
-              <span style="background: var(--red);"></span>
-              <span style="background: var(--amber);"></span>
-              <span style="background: var(--green);"></span>
-            </div>
-            <span id="ui-tape-header">TAPE 01: NEON ALIBI 1989</span>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 0.65rem;">
-            <span id="ui-scene-label" style="font-family: var(--font-pixel); font-size: 0.56rem; color: var(--amber);">SCENE 1 OF 4</span>
-            <div class="scene-progress-pills" id="ui-progress-pips"></div>
-          </div>
+      <!-- Story, Clues & Choices -->
+      <div class="story-body">
+        <div class="speaker-line">
+          <i class="fa-solid fa-user-secret" id="ui-speaker-icon"></i>
+          <span id="ui-speaker-name">INSPECTOR DECK</span>
+          <span class="speaker-role" id="ui-speaker-role">• Vault Loading Bay</span>
         </div>
 
-        <!-- 16-BIT PIXEL ART CANVAS VIEWPORT -->
-        <div class="viewport-frame">
-          <canvas id="pixel-canvas" width="384" height="204" aria-label="Animated retro pixel-art scene"></canvas>
-          <div class="viewport-top-hud">
-            <span class="hud-location-tag" id="ui-location-tag">SECTOR 1 // CYBERCORP VAULT</span>
-            <span class="hud-grammar-tag" id="ui-grammar-tag">GRAMMAR: PAST PERFECT vs PAST SIMPLE</span>
-          </div>
-        </div>
+        <div class="narrative-text" id="ui-story-text"></div>
 
-        <!-- STEP 1: VISUAL CLUE TIMELINE BOARD -->
-        <div class="clue-board" id="ui-clue-board">
-          <div class="clue-board-header">
-            <span class="clue-board-badge">
-              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-              <span>STEP 1: READ THE EVIDENCE TIMELINE</span>
-            </span>
-            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Compare these facts with what the character says below!</span>
-          </div>
-          <div class="timeline-visual" id="ui-timeline-nodes"></div>
-        </div>
+        <!-- Compact 2-Pill Clue Strip -->
+        <div class="clue-strip" id="ui-timeline-nodes"></div>
 
-        <!-- CHARACTER SPEECH BUBBLE & CLEAR STUDENT MISSION -->
-        <div class="vn-dialogue-card">
-          <div class="speaker-bar">
-            <div class="speaker-chip">
-              <div class="speaker-avatar-mini" id="ui-speaker-icon">
-                <i class="fa-solid fa-user-secret" aria-hidden="true"></i>
-              </div>
-              <div>
-                <span class="speaker-name-tag" id="ui-speaker-name">INSPECTOR DECK</span>
-                <span class="speaker-sub-tag" id="ui-speaker-role">Lead Cyber-Investigator</span>
-              </div>
-            </div>
-
-            <button type="button" class="retro-btn amber-btn" onclick="Chronicle88.toggleGrammarTip()">
-              <i class="fa-solid fa-lightbulb" aria-hidden="true"></i>
-              <span id="tip-btn-label">Show Grammar Tip (Free)</span>
-            </button>
-          </div>
-
-          <p class="story-narrative" id="ui-story-text" aria-live="polite"></p>
-
-          <!-- Green Student Mission Box -->
-          <div class="student-mission-box">
-            <div class="mission-text" id="ui-mission-prompt"></div>
-          </div>
-
-          <!-- Optional Collapsible Grammar Formula Helper -->
-          <div class="grammar-helper-drawer" id="ui-grammar-drawer"></div>
-        </div>
-
-        <!-- STEP 2: PLAYER CHOICES -->
-        <div>
-          <div class="choices-header">
-            <span class="choices-label">STEP 2: CHOOSE THE CORRECT GRAMMAR OPTION BELOW</span>
-            <span id="ui-streak-badge" style="font-family: var(--font-mono); font-size: 0.76rem; font-weight: 800; color: var(--cyan);">SYNTAX STREAK: 0</span>
-          </div>
-          <div class="choices-stack" id="ui-choices-list"></div>
-        </div>
-
-        <!-- STEP 3: FEEDBACK & NEXT SCENE / DICE CHECK BANNER -->
-        <div class="result-banner" id="ui-result-banner" role="region" aria-live="polite">
-          <div class="result-header" id="ui-result-header"></div>
-          <div class="result-explanation" id="ui-result-explanation"></div>
-          <div class="result-cta-row" id="ui-result-actions"></div>
-        </div>
-      </section>
-
-      <!-- RIGHT COLUMN: FIGHTING FANTASY 2D6 ADVENTURE SHEET -->
-      <aside class="pc98-window sheet-stack" aria-label="Adventure Sheet & Dice Roller">
-        <div class="window-titlebar" style="margin-bottom: 0.2rem;">
-          <div class="window-title-left">
-            <i class="fa-solid fa-scroll" style="color: var(--amber);" aria-hidden="true"></i>
-            <span>ADVENTURE SHEET</span>
-          </div>
-          <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--amber); font-weight: 700;">2D6 RULES</span>
-        </div>
-
-        <!-- 3 CORE STATS -->
-        <div class="stats-row">
-          <div class="stat-card">
-            <span class="stat-name">STAMINA</span>
-            <span class="stat-number" id="ui-stat-stamina" style="color: var(--green);">20</span>
-            <span class="stat-caption">Health (Max 20)</span>
-            <div class="stat-bar">
-              <div class="stat-bar-fill" id="ui-bar-stamina" style="width: 100%; background: var(--green);"></div>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <span class="stat-name">COMPOSURE</span>
-            <span class="stat-number" id="ui-stat-composure" style="color: var(--cyan);">9</span>
-            <span class="stat-caption">Roll 2d6 &le; This</span>
-            <div class="stat-bar">
-              <div class="stat-bar-fill" id="ui-bar-composure" style="width: 75%; background: var(--cyan);"></div>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <span class="stat-name">LUCK</span>
-            <span class="stat-number" id="ui-stat-luck" style="color: var(--amber);">10</span>
-            <span class="stat-caption">Free Hints</span>
-            <div class="stat-bar">
-              <div class="stat-bar-fill" id="ui-bar-luck" style="width: 83%; background: var(--amber);"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- INTERACTIVE 8-BIT 2D6 DICE ARENA -->
-        <div class="dice-box">
-          <div style="font-family: var(--font-pixel); font-size: 0.54rem; color: var(--amber);">
-            2D6 DICE ROLLER (ROLL &le; COMPOSURE)
-          </div>
-
-          <div class="dice-stage">
-            <div class="pixel-die" id="die-box-1" aria-label="First die"></div>
-            <div class="pixel-die" id="die-box-2" aria-label="Second die"></div>
-          </div>
-
-          <div id="ui-dice-message" style="font-size: 0.78rem; color: var(--text-light); min-height: 2.2em; line-height: 1.4;">
-            Every right answer boosts your <strong>Composure</strong> so you can beat 2d6 traps!
-          </div>
-
-          <button type="button" class="retro-btn amber-btn" style="width: 100%; justify-content: center; margin-top: 0.5rem;" onclick="Chronicle88.rollLuckForHint()">
-            <i class="fa-solid fa-dice" aria-hidden="true"></i>
-            <span>Roll 2d6 "Test Your Luck" for Clue</span>
+        <!-- Question + Optional Hint Toggle -->
+        <div class="question-header">
+          <p class="question-prompt" id="ui-mission-prompt"></p>
+          <button type="button" class="hint-toggle-btn" onclick="Chronicle88.toggleGrammarTip()">
+            <i class="fa-regular fa-lightbulb"></i>
+            <span id="tip-btn-label">Grammar Hint</span>
           </button>
         </div>
 
-        <!-- REWIND PARRY TOKENS -->
-        <div style="background: #0b0f1d; border: 2px solid var(--border-dim); border-radius: 10px; padding: 0.75rem;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
-            <span style="font-family: var(--font-pixel); font-size: 0.52rem; color: var(--amber);">REWIND PARRY TOKENS</span>
-            <div id="ui-tokens-icons" style="display: flex; gap: 0.4rem; color: var(--amber); font-size: 1rem;"></div>
-          </div>
-          <p style="font-size: 0.74rem; color: var(--text-muted); margin: 0; line-height: 1.4;">
-            Made a mistake? Spend 1 Cassette Token to build a <strong>B2 Key Word Transformation</strong> with word tiles and heal your lost Stamina!
-          </p>
-        </div>
+        <!-- Collapsible Hint Drawer -->
+        <div class="hint-drawer" id="ui-grammar-drawer"></div>
 
-        <!-- TAPE GRAMMAR CHEAT SHEET -->
-        <div style="background: #0b0f1d; border: 2px solid var(--border-dim); border-radius: 10px; padding: 0.75rem;">
-          <div style="font-family: var(--font-pixel); font-size: 0.52rem; color: var(--cyan); margin-bottom: 0.5rem;">
-            TAPE GRAMMAR CHEAT-SHEET
-          </div>
-          <div id="ui-cheat-sheet-list" style="display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.76rem; color: var(--text-light); line-height: 1.45;"></div>
-        </div>
-      </aside>
+        <!-- Clean Choice Options -->
+        <div class="choices-list" id="ui-choices-list"></div>
 
-    </div>
+        <!-- Contextual Feedback & Inline 2d6 Dice Check -->
+        <div class="feedback-box" id="ui-result-banner">
+          <div class="feedback-title" id="ui-result-header"></div>
+          <div class="feedback-explanation" id="ui-result-explanation"></div>
+
+          <!-- Appears only on scenes with a 2d6 hazard check -->
+          <div class="inline-dice-bar" id="ui-dice-bar">
+            <div class="dice-pair">
+              <div class="die-face" id="die-box-1"></div>
+              <div class="die-face" id="die-box-2"></div>
+            </div>
+            <div class="dice-status-text" id="ui-dice-message">
+              Roll <strong>2d6 &le; 9</strong> to dodge the hazard cleanly!
+            </div>
+          </div>
+
+          <div class="feedback-actions" id="ui-result-actions"></div>
+        </div>
+      </div>
+
+    </article>
   </main>
 
-  <!-- ================= TAP-TO-BUILD REWIND PARRY MODAL ================= -->
-  <div class="modal-overlay" id="parry-modal" role="dialog" aria-modal="true" aria-labelledby="parry-title">
-    <div class="parry-dialog">
-      <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-dim); padding-bottom: 0.65rem; margin-bottom: 0.85rem;">
-        <span id="parry-title" style="font-family: var(--font-pixel); font-size: 0.64rem; color: var(--amber);">
-          <i class="fa-solid fa-shield-halved" aria-hidden="true"></i> REWIND PARRY // TAP TILES TO HEAL +3 STAMINA
-        </span>
-        <button type="button" class="retro-btn" onclick="Chronicle88.closeParryModal()" style="padding: 0.25rem 0.55rem;">&times;</button>
+  <!-- 4. TAP-TO-BUILD REWIND PARRY MODAL -->
+  <div class="modal-backdrop" id="parry-modal" role="dialog" aria-modal="true" aria-labelledby="parry-modal-title">
+    <div class="parry-card">
+      <div class="parry-title" id="parry-modal-title">
+        <i class="fa-solid fa-rotate-left"></i> Rewind &amp; Heal (+3 Stamina)
       </div>
-
-      <p style="font-size: 0.86rem; color: var(--text-light); margin: 0 0 0.75rem;">
-        <strong>How to Parry:</strong> Tap the yellow word tiles in the right order so the second sentence means the same as the first sentence!
+      <p class="parry-subtitle">
+        Tap the word tiles in order to complete the B2 Key Word Transformation:
       </p>
 
-      <div style="background: #090d1a; border: 2px solid var(--border-dim); border-radius: 8px; padding: 0.85rem;">
-        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Original Sentence:</div>
-        <div id="parry-original" style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0.25rem 0 0.65rem;"></div>
-
-        <div style="font-family: var(--font-pixel); font-size: 0.58rem; color: var(--amber); margin-bottom: 0.55rem;">
-          KEY WORD: <span id="parry-key"></span>
-        </div>
-
-        <div style="font-size: 0.92rem; color: var(--cyan); font-weight: 700;">
-          <span id="parry-before"></span>
-          <div class="tile-slot-zone" id="parry-slot-zone" aria-label="Selected words"></div>
-          <span id="parry-after"></span>
-        </div>
+      <div class="parry-prompt-box">
+        <div id="parry-original" style="color:var(--text-main);font-weight:600;"></div>
+        <span class="parry-keyword" id="parry-key"></span>
       </div>
 
-      <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.65rem;">Tap tiles to add them (tap a placed tile to remove it):</div>
-      <div class="word-bank-zone" id="parry-bank-zone"></div>
+      <div style="font-size:0.9rem;color:var(--text-secondary);">
+        <span id="parry-before"></span>
+        <div class="parry-slot-zone" id="parry-slot-zone"></div>
+        <span id="parry-after"></span>
+      </div>
 
-      <div id="parry-status-msg" style="font-size: 0.84rem; font-weight: 700; min-height: 1.4em; margin-bottom: 0.75rem;"></div>
+      <div class="parry-bank-zone" id="parry-bank-zone"></div>
+      <div id="parry-status-msg" style="font-size:0.86rem;font-weight:700;margin-bottom:0.85rem;"></div>
 
-      <div style="display: flex; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap;">
-        <button type="button" class="retro-btn" onclick="Chronicle88.clearParryTiles()">
-          <i class="fa-solid fa-eraser" aria-hidden="true"></i> Clear Tiles
+      <div class="feedback-actions">
+        <button type="button" class="action-btn primary" onclick="Chronicle88.checkParryTiles()">
+          <i class="fa-solid fa-check"></i> Check Answer
         </button>
-        <div style="display: flex; gap: 0.5rem;">
-          <button type="button" class="retro-btn" onclick="Chronicle88.closeParryModal()">Cancel</button>
-          <button type="button" class="retro-btn amber-btn" onclick="Chronicle88.checkParryTiles()">
-            <i class="fa-solid fa-bolt" aria-hidden="true"></i> Execute Parry!
-          </button>
-        </div>
+        <button type="button" class="action-btn secondary" onclick="Chronicle88.clearParryTiles()">
+          Reset Tiles
+        </button>
+        <button type="button" class="action-btn secondary" onclick="Chronicle88.closeParryModal()">
+          Cancel
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- ================= CHRONICLE '88 ENGINE (VISUALS + WEBAUDIO SYNTH + GAMEPLAY) ================= -->
   <script>
     const Chronicle88 = (() => {
       /* ==============================================================
-         1. MULTI-CHANNEL WEBAUDIO CHIPTUNE SEQUENCER & VOICE BLEEPS
+         1. WEB AUDIO SYNTHESIZER (8-BIT BGM & SFX)
          ============================================================== */
       let audioCtx = null;
-      let sfxOn = true;
       let bgmOn = false;
+      let sfxOn = true;
       let bgmTimer = null;
       let bgmStep = 0;
 
-      // 3 Distinct 8-Bit Chiptune Loops (Frequencies in Hz)
       const BGM_TRACKS = {
         1: {
-          // Tape 1: Cyberpunk D-Minor Synthwave Arpeggio (115 BPM)
-          tempoMs: 180,
-          bass: [146.83, 146.83, 116.54, 116.54, 130.81, 130.81, 110.00, 138.59],
-          lead: [293.66, 349.23, 440.00, 587.33, 523.25, 440.00, 349.23, 329.63,
-                 293.66, 349.23, 466.16, 587.33, 659.25, 587.33, 440.00, 349.23]
+          tempoMs: 220,
+          lead: [220, 0, 261.63, 293.66, 329.63, 0, 293.66, 261.63, 246.94, 0, 196.00, 220, 0, 0, 196.00, 0],
+          bass: [110, 110, 87.31, 87.31, 98.00, 98.00, 82.41, 98.00]
         },
         2: {
-          // Tape 2: Dark Dungeon Baroque Minor Harpsichord (105 BPM)
-          tempoMs: 200,
-          bass: [110.00, 110.00, 146.83, 146.83, 164.81, 164.81, 110.00, 103.83],
-          lead: [440.00, 523.25, 659.25, 523.25, 587.33, 698.46, 587.33, 493.88,
-                 415.30, 493.88, 659.25, 493.88, 440.00, 329.63, 440.00, 0]
+          tempoMs: 250,
+          lead: [146.83, 174.61, 220, 0, 207.65, 174.61, 146.83, 0, 130.81, 164.81, 196, 0, 146.83, 0, 0, 0],
+          bass: [73.42, 73.42, 65.41, 65.41, 58.27, 58.27, 65.41, 73.42]
         },
         3: {
-          // Tape 3: Orbital Station Zero Sci-Fi Pulsar (98 BPM)
-          tempoMs: 210,
-          bass: [82.41, 82.41, 98.00, 98.00, 110.00, 110.00, 73.42, 82.41],
-          lead: [329.63, 0, 493.88, 392.00, 0, 659.25, 587.33, 493.88,
-                 329.63, 392.00, 493.88, 0, 783.99, 659.25, 493.88, 392.00]
+          tempoMs: 200,
+          lead: [329.63, 0, 392.00, 440.00, 0, 493.88, 392.00, 0, 349.23, 0, 293.66, 329.63, 0, 0, 246.94, 0],
+          bass: [82.41, 82.41, 98.00, 98.00, 110.00, 110.00, 73.42, 82.41]
         }
       };
 
@@ -1361,41 +983,39 @@
         }
       }
 
-      function playSynthNote(freq, duration, wave = 'square', volume = 0.035) {
-        if (!freq || freq <= 0) return;
-        try {
-          ensureAudio();
-          if (!audioCtx) return;
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = wave;
-          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-          gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.0008, audioCtx.currentTime + duration);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          osc.stop(audioCtx.currentTime + duration);
-        } catch (e) {}
+      function playSynthNote(freq, duration, wave = 'square', gainVal = 0.03) {
+        if (!audioCtx || freq <= 0) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = wave;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0008, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
       }
 
       function playSFX(type) {
         if (!sfxOn) return;
+        ensureAudio();
+        if (!audioCtx) return;
+
         if (type === 'blip') {
-          playSynthNote(540 + (Math.random() * 140), 0.03, 'square', 0.018);
+          playSynthNote(620, 0.035, 'square', 0.02);
         } else if (type === 'correct') {
-          [523.25, 659.25, 783.99, 1046.5].forEach((f, i) =>
-            setTimeout(() => playSynthNote(f, 0.14, 'square', 0.045), i * 55)
-          );
+          playSynthNote(523.25, 0.09, 'square', 0.04);
+          setTimeout(() => playSynthNote(659.25, 0.09, 'square', 0.04), 80);
+          setTimeout(() => playSynthNote(783.99, 0.16, 'square', 0.045), 160);
         } else if (type === 'wrong') {
-          [220, 185, 146.83].forEach((f, i) =>
-            setTimeout(() => playSynthNote(f, 0.18, 'sawtooth', 0.05), i * 75)
-          );
+          playSynthNote(185, 0.14, 'sawtooth', 0.045);
+          setTimeout(() => playSynthNote(135, 0.22, 'sawtooth', 0.045), 120);
         } else if (type === 'dice') {
-          playSynthNote(300 + Math.random() * 350, 0.045, 'triangle', 0.04);
+          playSynthNote(300 + Math.random() * 420, 0.04, 'triangle', 0.03);
         } else if (type === 'tape') {
-          playSynthNote(180, 0.07, 'sawtooth', 0.04);
-          setTimeout(() => playSynthNote(420, 0.09, 'square', 0.035), 70);
+          playSynthNote(240, 0.06, 'triangle', 0.035);
+          setTimeout(() => playSynthNote(480, 0.09, 'square', 0.035), 65);
         }
       }
 
@@ -1408,8 +1028,8 @@
           if (!bgmOn) return;
           const leadNote = track.lead[bgmStep % track.lead.length];
           const bassNote = track.bass[Math.floor(bgmStep / 2) % track.bass.length];
-          if (leadNote > 0) playSynthNote(leadNote, 0.14, 'square', 0.018);
-          if (bgmStep % 2 === 0 && bassNote > 0) playSynthNote(bassNote, 0.26, 'triangle', 0.028);
+          if (leadNote > 0) playSynthNote(leadNote, 0.14, 'square', 0.015);
+          if (bgmStep % 2 === 0 && bassNote > 0) playSynthNote(bassNote, 0.25, 'triangle', 0.022);
           bgmStep++;
         }, track.tempoMs);
       }
@@ -1427,12 +1047,12 @@
         const label = document.getElementById('bgm-label');
         if (bgmOn) {
           ensureAudio();
-          btn.classList.add('bgm-active');
-          label.textContent = '8-Bit Music: ON';
+          btn.classList.add('active');
+          label.textContent = 'Music: ON';
           startBGM();
         } else {
-          btn.classList.remove('bgm-active');
-          label.textContent = '8-Bit Music: OFF';
+          btn.classList.remove('active');
+          label.textContent = 'Music';
           stopBGM();
         }
       }
@@ -1440,26 +1060,18 @@
       function toggleSFX() {
         sfxOn = !sfxOn;
         const btn = document.getElementById('sfx-btn');
-        const label = document.getElementById('sfx-label');
         const icon = document.getElementById('sfx-icon');
-        btn.classList.toggle('bgm-active', sfxOn);
-        label.textContent = sfxOn ? 'SFX: ON' : 'SFX: OFF';
+        btn.classList.toggle('active', sfxOn);
         icon.className = sfxOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
       }
 
       /* ==============================================================
-         2. THREE PLAYABLE ANTHOLOGY TAPES (CRYSTAL-CLEAR STUDENT DATA)
+         2. THREE PLAYABLE EPISODES (STREAMLINED CLUES & NARRATIVE)
          ============================================================== */
       const TAPES = {
         1: {
           id: 1,
-          header: "TAPE 01: NEON ALIBI 1989",
           title: "Neon Alibi 1989",
-          cheatSheet: [
-            "<div><strong style='color:var(--cyan)'>1. Past Perfect (had + V3):</strong> Shows which of two past actions happened <strong>EARLIER</strong> (e.g. <em>\"When the alarm rang at 23:15, I <u>had already locked</u> the vault [at 23:05].\"</em>)</div>",
-            "<div><strong style='color:var(--amber)'>2. Past Simple (V2):</strong> After <em>When...</em>, Past Simple + Past Simple means the second action happened <strong>AT or RIGHT AFTER</strong> that moment!</div>",
-            "<div><strong style='color:var(--magenta)'>3. Reported Speech:</strong> Shift 1 step into the past: <em>am/is &rarr; was</em>, <em>will/won't &rarr; would/wouldn't</em>.</div>"
-          ],
           parries: [
             {
               original: "Vance checked the vault before the 23:15 alarm went off.",
@@ -1481,155 +1093,151 @@
           scenes: [
             {
               num: 1,
-              location: "SECTOR 1 // CYBERCORP VAULT",
-              grammarTag: "PAST PERFECT vs PAST SIMPLE",
-              speaker: "INSPECTOR DECK & TWO SUSPECTS",
-              role: "Vault Loading Bay — 23:40",
+              location: "Sector 1 • CyberCorp Vault",
+              grammarTag: "Past Perfect vs. Past Simple",
+              speaker: "INSPECTOR DECK",
+              role: "• Vault Loading Bay (23:40)",
               icon: "fa-user-secret",
               sceneType: "cyber_vault",
               timeline: [
-                { time: "23:05 (EARLIER)", desc: "Innocent guard finished checking the vault & left." },
-                { time: "23:15 (ALARM!)", desc: "The thief opened the vault & triggered the alarm!", highlight: true },
-                { time: "GRAMMAR CLUE", desc: "HAD + V3 = before 23:15. Checked (V2) = AT 23:15!" }
+                { time: "23:05 • Security Log", desc: "The innocent guard finished checking the vault and left early." },
+                { time: "23:15 • Vault Alarm", desc: "The thief opened the vault AT 23:15 and triggered the alarm.", highlight: true }
               ],
-              story: "Acid rain falls outside CyberCorp Tower. At **23:15**, someone stole the Omega Chip!\n\nYou question Guard Vance and Technician Kael. Remember: the innocent person checked the vault **BEFORE** the 23:15 alarm, while the thief opened the vault **AT** 23:15.",
-              mission: "Look at the two alibis below. Which suspect's grammar accidentally confesses that they opened the vault AT 23:15 when the alarm rang?",
-              grammarTip: "<strong>Formula:</strong><br>&bull; <em>\"When the alarm rang, I <strong>had checked</strong> the vault\"</em> (Past Perfect) = I finished checking it <strong>BEFORE 23:15</strong> (Innocent!).<br>&bull; <em>\"When the alarm rang, I <strong>checked</strong> the vault\"</em> (Past Simple) = I opened it <strong>AT 23:15</strong> when the alarm rang (The Thief!).",
+              story: "Acid rain falls outside CyberCorp Tower. At **23:15**, someone stole the Omega Chip. You question Suspect Kael and Guard Vance.",
+              mission: "Which suspect's tense accidentally confesses that they opened the vault AT 23:15 when the alarm rang?",
+              grammarTip: "<strong>Past Simple</strong> (<em>\"When the alarm rang, I checked...\"</em>) means the action happened <strong>AT 23:15</strong>. <strong>Past Perfect</strong> (<em>\"I had already checked...\"</em>) means it happened <strong>BEFORE 23:15</strong>.",
               choices: [
                 {
                   letter: "A",
                   html: "Arrest Kael: \"When the alarm rang at 23:15, I <span class='grammar-highlight'>checked</span> the vault.\"",
                   correct: true,
-                  title: "BINGO! KAEL CONFESSED TO BEING THERE AT 23:15! (+1 COMPOSURE)",
-                  explanation: "Because Kael used <strong>Past Simple</strong> (<em>\"When the alarm rang, I checked the vault\"</em>), his action happened <strong>at 23:15</strong>! Vance used the <strong>Past Perfect</strong> (<em>\"had already checked\"</em>), proving Vance finished at 23:05."
+                  title: "Correct! Kael confessed to being there at 23:15!",
+                  explanation: "Because Kael used <strong>Past Simple</strong> (<em>\"When the alarm rang, I checked the vault\"</em>), his action happened <strong>at 23:15</strong>. Vance used <strong>Past Perfect</strong> (<em>\"had already checked\"</em>), proving Vance finished earlier at 23:05."
                 },
                 {
                   letter: "B",
                   html: "Arrest Vance: \"When the alarm rang at 23:15, I <span class='grammar-highlight'>had already checked</span> the vault and gone downstairs.\"",
                   correct: false,
-                  title: "WRONG SUSPECT! VANCE'S ALIBI IS SOLID! (-3 STAMINA)",
-                  explanation: "Vance used the <strong>Past Perfect</strong> (<em>\"had already checked\"</em>), which means he completed his check <strong>before 23:15</strong> (matching the 23:05 security log!). Kael is the one who used Past Simple (<em>\"checked\"</em>) for 23:15."
+                  title: "Wrong suspect — Vance's alibi is solid!",
+                  explanation: "Vance used the <strong>Past Perfect</strong> (<em>\"had already checked\"</em>), which means he finished his check <strong>before 23:15</strong>. Kael is the one who used Past Simple (<em>\"checked\"</em>) for 23:15."
                 },
                 {
                   letter: "C",
                   html: "Let both go: \"checked\" and \"had checked\" mean the exact same time.",
                   correct: false,
-                  title: "THE THIEF ESCAPES! (-3 STAMINA)",
-                  explanation: "In B1–B2 English, changing <em>checked</em> (Past Simple) to <em>had checked</em> (Past Perfect) completely changes the timeline from <strong>at 23:15</strong> to <strong>before 23:15</strong>!"
+                  title: "The thief escapes!",
+                  explanation: "In B1–B2 English, changing <em>checked</em> (Past Simple) to <em>had checked</em> (Past Perfect) changes the timeline from <strong>at 23:15</strong> to <strong>before 23:15</strong>."
                 }
               ]
             },
             {
               num: 2,
-              location: "SECTOR 2 // MAGLEV TUNNEL",
-              grammarTag: "REPORTED SPEECH (BACKSHIFT)",
-              speaker: "CHIEF MORALES (RADIO)",
-              role: "Police Drone Command",
+              location: "Sector 2 • MagLev Tunnel",
+              grammarTag: "Reported Speech",
+              speaker: "CHIEF MORALES",
+              role: "• Police Drone Radio",
               icon: "fa-walkie-talkie",
               sceneType: "cyber_tunnel",
               timeline: [
-                { time: "KAEL'S LIVE AUDIO", desc: "\"I am hiding in Sector 4, and I won't surrender!\"", highlight: true },
-                { time: "RULE 1", desc: "\"am hiding\" (Present) -> \"was hiding\" (Past)" },
-                { time: "RULE 2", desc: "\"won't\" (will not) -> \"wouldn't\" (would not)" }
+                { time: "Kael's Voice Recording", desc: "\"I am hiding in Sector 4, and I won't surrender!\"", highlight: true },
+                { time: "Radio Request", desc: "Report Kael's exact statement to Chief Morales." }
               ],
-              story: "Kael sprints down the neon MagLev tunnel! Your scanner records his voice message:\n**\"I am hiding in Sector 4, and I won't surrender!\"**\n\nChief Morales calls your radio: *\"Inspector, what did Kael say in that recording? Tell me so I can send the police drones!\"*",
-              mission: "Report Kael's exact words to Chief Morales using correct B1–B2 Reported Speech (shift the verbs one step into the past):",
-              grammarTip: "<strong>Reported Speech Backshift Formula:</strong><br>&bull; <em>\"I <strong>am hiding</strong>\"</em> &rarr; He said he <strong>was hiding</strong>.<br>&bull; <em>\"I <strong>won't surrender</strong>\"</em> &rarr; He said he <strong>wouldn't surrender</strong>.",
+              story: "Kael sprints down the MagLev tunnel! Your scanner captures his voice message. Chief Morales radios in: *\"Inspector, what did Kael just say?\"*",
+              mission: "Report Kael's words using accurate B1–B2 Reported Speech:",
+              grammarTip: "Shift the verbs one step into the past: <strong>am hiding &rarr; was hiding</strong>, and <strong>won't surrender &rarr; wouldn't surrender</strong>.",
               choices: [
                 {
                   letter: "A",
                   html: "\"Kael said that he <span class='grammar-highlight'>was hiding</span> in Sector 4 and that he <span class='grammar-highlight'>wouldn't surrender</span>.\"",
                   correct: true,
-                  title: "PERFECT TRANSMISSION! DRONES DEPLOYED! (+1 COMPOSURE)",
-                  explanation: "Spot on! You shifted <em>am hiding &rarr; was hiding</em> and <em>won't surrender &rarr; wouldn't surrender</em>. Chief Morales seals the Sector 4 blast doors!"
+                  title: "Transmission confirmed! Drones deployed to Sector 4.",
+                  explanation: "Spot on! You shifted <em>am hiding &rarr; was hiding</em> and <em>won't surrender &rarr; wouldn't surrender</em>."
                 },
                 {
                   letter: "B",
                   html: "\"Kael said that he <span class='grammar-highlight'>is hiding</span> in Sector 4 and he <span class='grammar-highlight'>wouldn't surrendered</span>.\"",
                   correct: false,
-                  title: "RADIO SYNTAX ERROR! (-3 STAMINA)",
+                  title: "Radio syntax error!",
                   explanation: "After modal verbs like <em>wouldn't</em>, always use the base verb (<strong>surrender</strong>, never <em>surrendered</em>), and shift <em>is hiding</em> to <strong>was hiding</strong>."
                 },
                 {
                   letter: "C",
                   html: "\"Kael <span class='grammar-highlight'>told that</span> he had hiding in Sector 4.\"",
                   correct: false,
-                  title: "REPORTING VERB TRAP! (-3 STAMINA)",
-                  explanation: "Remember: <strong>say</strong> doesn't need a person (<em>\"Kael said that...\"</em>), whereas <strong>tell</strong> MUST have a person after it (<em>\"Kael told me that...\"</em>)!"
+                  title: "Reporting verb trap!",
+                  explanation: "Remember: <strong>say</strong> doesn't need an object (<em>\"Kael said that...\"</em>), whereas <strong>tell</strong> must have a person after it (<em>\"Kael told me that...\"</em>)."
                 }
               ]
             },
             {
               num: 3,
-              location: "SECTOR 4 // NOODLE BAR 88",
-              grammarTag: "QUESTION TAGS",
-              speaker: "KAEL VEX (CORNERED)",
-              role: "2d6 Turret Hazard Scene",
+              location: "Sector 4 • Noodle Bar 88",
+              grammarTag: "Question Tags",
+              speaker: "INSPECTOR DECK",
+              role: "• 2d6 Turret Hazard Encounter",
               icon: "fa-bolt",
               sceneType: "cyber_bar",
               requiresDiceCheck: true,
               timeline: [
-                { time: "FACT 1", desc: "\"You'd (You HAD) never entered Sector 4...\"", highlight: true },
-                { time: "NEGATIVE WORD", desc: "\"never\" makes the sentence NEGATIVE!" },
-                { time: "TAG RULE", desc: "Negative sentence -> POSITIVE tag (\"...had you?\")" }
+                { time: "Your Statement", desc: "\"You'd (You HAD) never entered Sector 4 before tonight...\"", highlight: true },
+                { time: "Watch Out", desc: "The word \"never\" makes the statement NEGATIVE." }
               ],
-              story: "You corner Kael inside a smoky neon noodle bar! Above you, a hacked laser turret charges up for a **2d6 Composure Check**.\n\nPress Kael into dropping his weapon with a sharp **B2 Question Tag**:",
-              mission: "Complete your interrogation line: \"You'd never entered Sector 4 before tonight, _________?\"",
-              grammarTip: "<strong>Question Tag Secret:</strong><br>1. In <em>\"You'd never entered\"</em>, <strong>'d</strong> = <strong>had</strong> (because <em>entered</em> is V3).<br>2. The word <strong>never</strong> makes the sentence <strong>negative</strong>, so the question tag at the end MUST be <strong>positive</strong>: <strong>had you?</strong>",
+              story: "You corner Kael inside a smoky neon noodle bar while a ceiling laser turret powers up overhead.",
+              mission: "Complete the interrogation line: \"You'd never entered Sector 4 before tonight, _________?\"",
+              grammarTip: "In <em>\"You'd never entered\"</em>, <strong>'d = had</strong>. Because <strong>never</strong> makes the sentence negative, the question tag must be positive: <strong>had you?</strong>",
               choices: [
                 {
                   letter: "A",
                   html: "\"You'd never entered Sector 4 before tonight, <span class='grammar-highlight'>had you</span>?\"",
                   correct: true,
-                  title: "BULLSEYE! KAEL DROPS HIS LASER PISTOL! (+1 COMPOSURE)",
-                  explanation: "Awesome B2 grammar! Because <strong>never</strong> makes the statement negative and <strong>'d = had</strong>, the tag is positive: <strong>had you?</strong> Now roll 2d6 to dodge the ceiling turret!"
+                  title: "Bullseye! Kael drops his weapon!",
+                  explanation: "Because <strong>never</strong> makes the clause negative and <strong>'d = had</strong>, the question tag is positive: <strong>had you?</strong>"
                 },
                 {
                   letter: "B",
                   html: "\"You'd never entered Sector 4 before tonight, <span class='grammar-highlight'>hadn't you</span>?\"",
                   correct: false,
-                  title: "DOUBLE NEGATIVE TRAP! (-3 STAMINA)",
-                  explanation: "Watch out! The word <strong>never</strong> already makes the sentence negative. A negative sentence always takes a <strong>positive</strong> question tag: <strong>had you?</strong>"
+                  title: "Double negative trap!",
+                  explanation: "The word <strong>never</strong> already makes the sentence negative, so it requires a <strong>positive</strong> tag: <strong>had you?</strong>"
                 },
                 {
                   letter: "C",
                   html: "\"You'd never entered Sector 4 before tonight, <span class='grammar-highlight'>would you</span>?\"",
                   correct: false,
-                  title: "WRONG AUXILIARY VERB! (-3 STAMINA)",
-                  explanation: "Before a past participle (<em>entered</em>), <strong>'d</strong> stands for <strong>had</strong>, not <em>would</em>!"
+                  title: "Wrong auxiliary verb!",
+                  explanation: "Before a past participle (<em>entered</em>), <strong>'d</strong> stands for <strong>had</strong>, not <em>would</em>."
                 }
               ]
             },
             {
               num: 4,
-              location: "ROOFTOP // DRONE LAUNCHPAD",
-              grammarTag: "MODALS OF DEDUCTION (PAST)",
+              location: "Rooftop • Drone Launchpad",
+              grammarTag: "Past Modals of Deduction",
               speaker: "INSPECTOR DECK",
-              role: "Final Case Deduction",
+              role: "• Final Case Deduction",
               icon: "fa-microchip",
               sceneType: "cyber_roof",
               timeline: [
-                { time: "CLUE 1 (IMPOSSIBLE)", desc: "The stairs door is welded shut from the inside." },
-                { time: "CLUE 2 (CERTAIN)", desc: "A courier drone launcher on the balcony is still hot!", highlight: true },
-                { time: "FORMULA", desc: "can't have + V3 (Impossible) | must have + V3 (Certain)" }
+                { time: "Clue 1 • Stairs", desc: "The stairwell door is welded shut from the inside (Impossible)." },
+                { time: "Clue 2 • Balcony", desc: "A courier-drone launcher on the rail is still glowing hot (Certain).", highlight: true }
               ],
-              story: "Kael is in handcuffs, but the Omega Chip isn't in his coat! You check the room: the stairs door is welded shut from the inside, while a courier-drone catapult on the balcony is still glowing hot.",
+              story: "Kael is in handcuffs, but the Omega Chip isn't in his pockets! You inspect the rooftop exit.",
               mission: "Use Past Modals of Deduction to explain how Kael sent the chip away:",
-              grammarTip: "<strong>Past Modals of Deduction:</strong><br>&bull; <strong>can't have + V3</strong> = 100% sure it did NOT happen (impossible).<br>&bull; <strong>must have + V3</strong> = 100% sure it DID happen (logical certainty).<br><em>(Warning: Never use \"mustn't have\" for deduction!)</em>",
+              grammarTip: "Use <strong>can't have + V3</strong> when you are certain something was impossible, and <strong>must have + V3</strong> when you are certain it happened.",
               choices: [
                 {
                   letter: "A",
                   html: "\"He <span class='grammar-highlight'>can't have used</span> the stairs—he <span class='grammar-highlight'>must have launched</span> the chip by drone!\"",
                   correct: true,
-                  title: "OMEGA CHIP RECOVERED! CASE CLOSED! (+1 COMPOSURE)",
-                  explanation: "Flawless! <strong>can't have used</strong> rules out the impossible stairs, and <strong>must have launched</strong> states the only logical conclusion. You jam the drone and catch the chip!"
+                  title: "Omega Chip recovered! Case closed!",
+                  explanation: "Flawless! <strong>can't have used</strong> rules out the impossible stairs, and <strong>must have launched</strong> states the logical certainty."
                 },
                 {
                   letter: "B",
                   html: "\"He <span class='grammar-highlight'>mustn't have used</span> the stairs—he <span class='grammar-highlight'>should have launched</span> the drone!\"",
                   correct: false,
-                  title: "MODAL VERB TRAP! (-3 STAMINA)",
-                  explanation: "In English, we never say <em>mustn't have</em> to mean 'impossible'—always use <strong>can't have + V3</strong>!"
+                  title: "Modal verb trap!",
+                  explanation: "In English, we never use <em>mustn't have</em> for past deduction—always use <strong>can't have + V3</strong>."
                 }
               ]
             }
@@ -1638,13 +1246,7 @@
 
         2: {
           id: 2,
-          header: "TAPE 02: THE CITADEL OF ECHOES",
           title: "The Citadel of Echoes",
-          cheatSheet: [
-            "<div><strong style='color:var(--cyan)'>1. Past Modals of Deduction:</strong> <em>must have + V3</em> (sure it happened) vs. <em>can't have + V3</em> (impossible).</div>",
-            "<div><strong style='color:var(--amber)'>2. Relative Clauses:</strong> No commas = identifies WHICH ONE out of many; Commas = extra info when there's only one.</div>",
-            "<div><strong style='color:var(--magenta)'>3. 3rd &amp; Mixed Conditionals:</strong> <em>If + Past Perfect (had + V3)</em> in the If-clause! Never put <em>would</em> in the If-clause.</div>"
-          ],
           parries: [
             {
               original: "I didn't read the warning rune, so I stepped on the trap.",
@@ -1658,102 +1260,98 @@
           scenes: [
             {
               num: 1,
-              location: "FLOOR B1 // THE THREE LEVERS",
-              grammarTag: "MODALS OF DEDUCTION",
-              speaker: "TORCHLIGHT INSPECTION",
-              role: "Citadel Gatehouse",
+              location: "Floor B1 • The Three Levers",
+              grammarTag: "Modals of Deduction",
+              speaker: "DUNGEON GATEHOUSE",
+              role: "• Torchlight Inspection",
               icon: "fa-dungeon",
               sceneType: "dungeon_levers",
               timeline: [
-                { time: "LEVER 1", desc: "Covered in thick, unbroken 100-year cobwebs." },
-                { time: "LEVER 2", desc: "Fresh muddy footprints & warm oil on the handle!", highlight: true },
-                { time: "FORMULA", desc: "can't have been (Impossible) | must have pulled (Certain)" }
+                { time: "Lever 1", desc: "Covered in thick, unbroken 100-year cobwebs." },
+                { time: "Lever 2", desc: "Fresh muddy footprints and warm oil on the handle!", highlight: true }
               ],
-              story: "You stand before three iron levers in the Citadel of Echoes. Two release poison gas; only the lever pulled by the Goblin Scout five minutes ago opens the stone gate.",
-              mission: "Look at the clues for Lever 1 and Lever 2 above. Which deduction opens the gate safely?",
-              grammarTip: "<strong>Rule:</strong> Use <strong>can't have been touched</strong> for Lever 1 (cobwebs = impossible), and <strong>must have pulled</strong> for Lever 2 (fresh footprints = certain).",
+              story: "Three iron levers stand before the stone gate. Two release poison gas; only the lever pulled by the Goblin Scout five minutes ago opens the passage.",
+              mission: "Which deduction safely opens the gate?",
+              grammarTip: "Use <strong>can't have been touched</strong> for Lever 1 (impossible), and <strong>must have pulled</strong> for Lever 2 (logical certainty).",
               choices: [
                 {
                   letter: "A",
                   html: "Pull Lever 2: \"Lever 1 <span class='grammar-highlight'>can't have been touched</span>, so the scout <span class='grammar-highlight'>must have pulled</span> Lever 2!\"",
                   correct: true,
-                  title: "STONE GATE UNLOCKED! (+1 COMPOSURE)",
-                  explanation: "Exact B2 deduction! <strong>can't have been touched</strong> + <strong>must have pulled</strong> opens the secret passage."
+                  title: "The stone gate rumbles open!",
+                  explanation: "Exact B2 deduction! <strong>can't have been touched</strong> + <strong>must have pulled</strong> unlocks the passage."
                 },
                 {
                   letter: "B",
                   html: "Pull Lever 1: \"The scout <span class='grammar-highlight'>mustn't have pulled</span> Lever 2, so he <span class='grammar-highlight'>can have pulled</span> Lever 1.\"",
                   correct: false,
-                  title: "POISON GAS TRAP! (-3 STAMINA)",
-                  explanation: "Remember: we never use <em>mustn't have</em> or <em>can have</em> for past deductions! Always use <strong>can't have + V3</strong> and <strong>must have + V3</strong>."
+                  title: "Poison gas trap triggered!",
+                  explanation: "Never use <em>mustn't have</em> or <em>can have</em> for past deductions—use <strong>can't have + V3</strong> and <strong>must have + V3</strong>."
                 }
               ]
             },
             {
               num: 2,
-              location: "FLOOR B2 // HALL OF MIRRORS",
-              grammarTag: "DEFINING vs NON-DEFINING CLAUSES",
+              location: "Floor B2 • Hall of Mirrors",
+              grammarTag: "Defining vs. Non-Defining Clauses",
               speaker: "THE WARDEN'S GHOST",
-              role: "Punctuation Puzzle Chamber",
+              role: "• Punctuation Riddle",
               icon: "fa-wand-sparkles",
               sceneType: "dungeon_mirrors",
               timeline: [
-                { time: "NORTH WALL (3 MIRRORS)", desc: "1 reflects Blue fire, 1 Green, 1 White.", highlight: true },
-                { time: "SOUTH WALL (1 MIRROR)", desc: "Only 1 lone mirror (reflects Red fire)." },
-                { time: "COMMA RULE", desc: "No commas = tells you WHICH ONE of the 3!" }
+                { time: "North Wall (3 Mirrors)", desc: "One reflects Blue fire, one Green, one White.", highlight: true },
+                { time: "South Wall (1 Mirror)", desc: "Only one lone mirror (reflects Red fire)." }
               ],
-              story: "The inscription reads:\n1. **\"Touch the mirror which reflects the blue flame to find the key.\"** (NO commas)\n2. **\"Do not touch the south mirror, which is cursed.\"** (WITH comma)",
-              mission: "Why does Sentence 1 have NO commas around \"which reflects the blue flame\"?",
-              grammarTip: "<strong>Defining vs. Non-Defining Relative Clauses:</strong><br>&bull; <strong>No Commas (Defining):</strong> Essential info that tells us <em>which one out of several</em> (which of the 3 north mirrors).<br>&bull; <strong>With Commas (Non-Defining):</strong> Extra info when we already know which one (there is only 1 south mirror).",
+              story: "A carved riddle reads: **\"Touch the mirror which reflects the blue flame to find the key.\"** Notice there are **no commas** around *\"which reflects the blue flame\"*.",
+              mission: "Why are there NO commas in that sentence?",
+              grammarTip: "<strong>No commas (Defining Relative Clause)</strong> = essential information that identifies <em>which one out of several</em> (the 3 mirrors on the North Wall).",
               choices: [
                 {
                   letter: "A",
-                  html: "Because there are 3 mirrors on the north wall, so the clause is <span class='grammar-highlight'>defining</span> (it identifies which one of the three to touch).",
+                  html: "Because there are 3 mirrors on the north wall, so the clause is <span class='grammar-highlight'>defining</span> (it tells us which of the three to touch).",
                   correct: true,
-                  title: "THE MIRROR SLIDES OPEN! (+1 COMPOSURE)",
-                  feedbackText: "",
-                  explanation: "Spot on! Without commas, a defining relative clause narrows down a group of items to the exact one you need."
+                  title: "The blue mirror slides open!",
+                  explanation: "Spot on! Without commas, a defining relative clause narrows down several items to the exact one you need."
                 },
                 {
                   letter: "B",
                   html: "Commas are completely optional in relative clauses and never change the meaning.",
                   correct: false,
-                  title: "CURSED MIRROR SHOCK! (-3 STAMINA)",
-                  explanation: "In B1–B2 grammar, commas completely change whether there is only ONE object (non-defining, with commas) or SEVERAL objects (defining, no commas)!"
+                  title: "Cursed mirror shock!",
+                  explanation: "Commas change whether there is only ONE object (non-defining, with commas) or SEVERAL objects (defining, no commas)."
                 }
               ]
             },
             {
               num: 3,
-              location: "FLOOR B3 // THE ABYSS BRIDGE",
-              grammarTag: "3RD & MIXED CONDITIONALS",
+              location: "Floor B3 • The Abyss Bridge",
+              grammarTag: "Mixed Conditionals",
               speaker: "OBSIDIAN GUARDIAN",
-              role: "2d6 Boss Encounter",
+              role: "• 2d6 Boss Encounter",
               icon: "fa-shield-halved",
               sceneType: "dungeon_boss",
               requiresDiceCheck: true,
               timeline: [
-                { time: "PAST FACT", desc: "You did NOT bring the Silver Key yesterday." },
-                { time: "PRESENT RESULT", desc: "So the bridge is NOT lowered right now.", highlight: true },
-                { time: "FORMULA", desc: "If + Past Perfect (had brought), would + V1 (now)" }
+                { time: "Past Mistake (Yesterday)", desc: "You did NOT bring the Silver Key yesterday." },
+                { time: "Present Result (Now)", desc: "So the drawbridge is NOT lowered right now.", highlight: true }
               ],
-              story: "A giant Obsidian Guardian blocks the bridge (`2d6 <= COMPOSURE` boss roll incoming!).\n\nIt booms: *\"Speak the Mixed Conditional connecting your past mistake yesterday to your present trap right now!\"*",
-              mission: "Choose the grammatically accurate Mixed Conditional to lower the bridge:",
-              grammarTip: "<strong>Golden Rule of Conditionals:</strong> Never put <em>would</em> inside the <em>If</em>-part! Use <strong>If + Past Perfect</strong> (<em>If I had brought...</em>) + <strong>would be</strong> (for a present result right now).",
+              story: "An Obsidian Guardian blocks the chasm and demands a **Mixed Conditional** connecting your past mistake yesterday to your present situation right now.",
+              mission: "Choose the grammatically accurate Mixed Conditional:",
+              grammarTip: "Never put <em>would</em> in the <em>If</em>-clause! Use <strong>If + Past Perfect</strong> (<em>If I had brought...</em>) + <strong>would be</strong> (present result now).",
               choices: [
                 {
                   letter: "A",
                   html: "\"<span class='grammar-highlight'>If I had brought</span> the Silver Key yesterday, the bridge <span class='grammar-highlight'>would be</span> lowered right now!\"",
                   correct: true,
-                  title: "THE BRIDGE LOWERS! (+1 COMPOSURE)",
-                  explanation: "Brilliant Mixed Conditional! <strong>If I had brought</strong> (unreal past) + <strong>would be lowered right now</strong> (present result). Now roll 2d6 to cross the bridge!"
+                  title: "The drawbridge lowers across the chasm!",
+                  explanation: "Brilliant Mixed Conditional! <strong>If I had brought</strong> (unreal past) + <strong>would be lowered right now</strong> (present result)."
                 },
                 {
                   letter: "B",
                   html: "\"<span class='grammar-highlight'>If I would have brought</span> the Silver Key yesterday, the bridge would be lowered now!\"",
                   correct: false,
-                  title: "GUARDIAN SWORD STRIKE! (-3 STAMINA)",
-                  explanation: "Classic exam trap: NEVER put <em>would have</em> inside the <em>If</em>-clause! Always use <strong>If + had + V3</strong>."
+                  title: "Guardian sword strike!",
+                  explanation: "Classic exam trap: never put <em>would have</em> inside the <em>If</em>-clause! Always use <strong>If + had + V3</strong>."
                 }
               ]
             }
@@ -1762,13 +1360,7 @@
 
         3: {
           id: 3,
-          header: "TAPE 03: SIGNAL LOST AT STATION ZERO",
           title: "Signal Lost at Station Zero",
-          cheatSheet: [
-            "<div><strong style='color:var(--cyan)'>1. Passive Voice:</strong> <em>is being + V3</em> (happening right now) vs. <em>has/have been + V3</em> (already completed).</div>",
-            "<div><strong style='color:var(--amber)'>2. Causative Have/Get:</strong> <em>have + [object] + [past participle]</em> (e.g. <em>have the hull welded</em>) when ordering a bot/person to do a job.</div>",
-            "<div><strong style='color:var(--magenta)'>3. Future Perfect:</strong> <em>will have + V3</em> for an action finished <strong>BY</strong> a future deadline.</div>"
-          ],
           parries: [
             {
               original: "Drone-9 is welding the outer hull breach for us right now.",
@@ -1782,101 +1374,98 @@
           scenes: [
             {
               num: 1,
-              location: "DECK A // AIRLOCK TERMINAL",
-              grammarTag: "PASSIVE VOICE TENSES",
-              speaker: "MOTHER-88 AI MAINFRAME",
-              role: "Orbital Station Diagnostics",
+              location: "Deck A • Airlock Terminal",
+              grammarTag: "Passive Voice Tenses",
+              speaker: "MOTHER-88 MAINFRAME",
+              role: "• Station Diagnostics",
               icon: "fa-satellite",
               sceneType: "scifi_airlock",
               timeline: [
-                { time: "BAY 1 (NOW)", desc: "Bots are still repairing the leak right now." },
-                { time: "BAY 2 (FINISHED)", desc: "Airlock seals were replaced 10 mins ago (SAFE!).", highlight: true },
-                { time: "PASSIVE FORMULA", desc: "is being + V3 (Now) | have been + V3 (Finished)" }
+                { time: "Bay 1 • In Progress Now", desc: "Maintenance bots are still repairing the leak right now." },
+                { time: "Bay 2 • Completed", desc: "Airlock seals were replaced 10 minutes ago (Safe!).", highlight: true }
               ],
-              story: "Oxygen is dropping on Station Zero! To open the safe corridor, `MOTHER-88` requires a status log using **Present Continuous Passive** for Bay 1 and **Present Perfect Passive** for Bay 2.",
-              mission: "Select the command with accurate Passive Voice grammar:",
-              grammarTip: "<strong>Passive Voice Check:</strong><br>&bull;Happening right now = <strong>is being repaired</strong>.<br>&bull;Already completed = <strong>have been replaced</strong>.",
+              story: "Oxygen is dropping on Station Zero! To unlock the corridor, `MOTHER-88` requires a status log using **Present Continuous Passive** for Bay 1 and **Present Perfect Passive** for Bay 2.",
+              mission: "Select the status log with accurate Passive Voice grammar:",
+              grammarTip: "Happening right now = <strong>is being repaired</strong>. Already completed = <strong>have been replaced</strong>.",
               choices: [
                 {
                   letter: "A",
                   html: "\"Bay 1 <span class='grammar-highlight'>is being repaired</span> right now, while Bay 2's seals <span class='grammar-highlight'>have already been replaced</span>.\"",
                   correct: true,
-                  title: "AIRLOCK 2 UNLOCKED! (+1 COMPOSURE)",
+                  title: "Airlock 2 unlocked!",
                   explanation: "Spot on! <strong>is being repaired</strong> (Present Continuous Passive) + <strong>have been replaced</strong> (Present Perfect Passive)."
                 },
                 {
                   letter: "B",
                   html: "\"Bay 1 <span class='grammar-highlight'>is repairing</span> right now, while Bay 2's seals <span class='grammar-highlight'>have replaced</span>.\"",
                   correct: false,
-                  title: "AIRLOCK ERROR ALARM! (-3 STAMINA)",
-                  explanation: "Bays and seals don't repair themselves! You must use the <strong>Passive Voice</strong> (<em>is being repaired / have been replaced</em>)."
+                  title: "Airlock error alarm!",
+                  explanation: "Bays and seals don't repair themselves! Use the <strong>Passive Voice</strong> (<em>is being repaired / have been replaced</em>)."
                 }
               ]
             },
             {
               num: 2,
-              location: "DECK B // HULL BREACH CONTROL",
-              grammarTag: "CAUSATIVE (HAVE SOMETHING DONE)",
+              location: "Deck B • Hull Breach Control",
+              grammarTag: "Causative (Have Something Done)",
               speaker: "ENGINEERING CONSOLE",
-              role: "2d6 Meteoroid Shockwave Check",
+              role: "• 2d6 Shockwave Check",
               icon: "fa-robot",
               sceneType: "scifi_core",
               requiresDiceCheck: true,
               timeline: [
-                { time: "DANGER", desc: "Radiation outside is too high for humans." },
-                { time: "SOLUTION", desc: "Arrange for Drone-9 to weld the hull breach.", highlight: true },
-                { time: "CAUSATIVE RULE", desc: "have + [THE OBJECT] + [PAST PARTICIPLE]" }
+                { time: "Hazard Alert", desc: "Radiation outside is too high for a human crew member." },
+                { time: "Command Needed", desc: "Order the system to have Drone-9 weld the hull breach.", highlight: true }
               ],
-              story: "A meteoroid cracks the outer hull (`2d6 <= COMPOSURE` shockwave check incoming!). You cannot go outside yourself—you must order the system to **have Drone-9 weld the hull breach**.",
-              mission: "Pick the sentence with the correct B2 Causative word order:",
-              grammarTip: "<strong>Causative Word Order:</strong><br>Put the object <strong>BETWEEN</strong> <em>have</em> and the <em>past participle</em>:<br>✅ <strong>have + [the hull breach] + [welded]</strong> (Someone else does it for you).<br>❌ <em>have welded the hull breach</em> (Means YOU did it yourself!).",
+              story: "A meteoroid cracks the outer hull! You cannot go outside yourself—you must arrange for **Drone-9** to weld the breach for you.",
+              mission: "Pick the command with the correct B2 Causative word order:",
+              grammarTip: "Put the object <strong>between</strong> <em>have</em> and the <em>past participle</em>: <strong>have + [the hull breach] + [welded]</strong>.",
               choices: [
                 {
                   letter: "A",
                   html: "\"MOTHER-88, we must <span class='grammar-highlight'>have the hull breach welded</span> by Drone-9 immediately!\"",
                   correct: true,
-                  title: "DRONE-9 SEALS THE HULL! (+1 COMPOSURE)",
-                  explanation: "Perfect causative syntax: <strong>have + object (the hull breach) + past participle (welded)</strong>! Now roll 2d6 to brace against the shockwave!"
+                  title: "Drone-9 seals the outer hull!",
+                  explanation: "Perfect causative syntax: <strong>have + object (the hull breach) + past participle (welded)</strong>."
                 },
                 {
                   letter: "B",
                   html: "\"MOTHER-88, we must <span class='grammar-highlight'>have welded the hull breach</span> by Drone-9 immediately!\"",
                   correct: false,
-                  title: "WORD ORDER REJECTED! (-3 STAMINA)",
-                  explanation: "Remember: <em>have + object + V3</em> (<strong>have the hull breach welded</strong>) is required when arranging for someone/something else to do the task!"
+                  title: "Command rejected!",
+                  explanation: "Use <em>have + object + V3</em> (<strong>have the hull breach welded</strong>) when arranging for someone or something else to do the job."
                 }
               ]
             },
             {
               num: 3,
-              location: "DECK C // ESCAPE POD DOCK",
-              grammarTag: "FUTURE PERFECT vs CONTINUOUS",
+              location: "Deck C • Escape Pod Dock",
+              grammarTag: "Future Perfect vs. Continuous",
               speaker: "ESCAPE POD TELEMETRY",
-              role: "Final Launch Window",
+              role: "• Final Launch Window (06:00)",
               icon: "fa-shuttle-space",
               sceneType: "scifi_dock",
               timeline: [
-                { time: "05:50 (BEFORE 06:00)", desc: "Life-support finishes booting up.", highlight: true },
-                { time: "06:00 (LAUNCH TIME)", desc: "Rescue Cruiser arrives!" },
-                { time: "05:55 TO 06:15", desc: "Solar storm is in progress during 06:00." }
+                { time: "05:50 (Before 06:00)", desc: "Life-support finishes booting up completely.", highlight: true },
+                { time: "05:55 to 06:15", desc: "The solar storm is still passing outside at 06:00." }
               ],
-              story: "You jump into the Escape Pod! The Rescue Cruiser arrives at **06:00**. Check the schedule above and lock in the telemetry for **06:00**:",
-              mission: "Use Future Perfect (will have + V3) for what finishes BEFORE 06:00, and Future Continuous (will be + -ing) for what is in progress AT 06:00:",
-              grammarTip: "<strong>Future Forms at 06:00:</strong><br>&bull; Life-support finishes at 05:50 &rarr; By 06:00, it <strong>will have booted</strong> (Future Perfect).<br>&bull; Solar storm runs 05:55–06:15 &rarr; At 06:00, it <strong>will still be passing</strong> (Future Continuous).",
+              story: "You strap into the Escape Pod! The Rescue Cruiser arrives at **06:00**. Lock in the telemetry report for **06:00**:",
+              mission: "Use Future Perfect for what finishes BEFORE 06:00, and Future Continuous for what is in progress AT 06:00:",
+              grammarTip: "Finished by 06:00 = <strong>will have booted</strong> (Future Perfect). In progress at 06:00 = <strong>will still be passing</strong> (Future Continuous).",
               choices: [
                 {
                   letter: "A",
                   html: "\"By 06:00, life-support <span class='grammar-highlight'>will have booted</span> up, and the solar storm <span class='grammar-highlight'>will still be passing</span>.\"",
                   correct: true,
-                  title: "ESCAPE POD LAUNCHED! MISSION COMPLETE! (+1 COMPOSURE)",
+                  title: "Escape Pod launched! Mission complete!",
                   explanation: "Textbook B2 Future forms! <strong>will have booted</strong> (completed before 06:00) + <strong>will still be passing</strong> (in progress at 06:00)."
                 },
                 {
                   letter: "B",
                   html: "\"By 06:00, life-support <span class='grammar-highlight'>will be booting</span> up, and the solar storm <span class='grammar-highlight'>will have passed</span>.\"",
                   correct: false,
-                  title: "TELEMETRY MISMATCH! (-3 STAMINA)",
-                  explanation: "Look at the timeline: life-support finishes at 05:50 (so by 06:00 it <strong>will have booted</strong>), and the storm lasts until 06:15 (so at 06:00 it <strong>will still be passing</strong>)!"
+                  title: "Telemetry mismatch!",
+                  explanation: "Life-support finishes at 05:50 (so by 06:00 it <strong>will have booted</strong>), and the storm lasts until 06:15 (so at 06:00 it <strong>will still be passing</strong>)."
                 }
               ]
             }
@@ -1885,7 +1474,7 @@
       };
 
       /* ==============================================================
-         3. DETAILED 16-BIT PC-98 PIXEL ART SCENE & SPRITE RENDERER
+         3. 16-BIT PIXEL ART SCENE RENDERER
          ============================================================== */
       const canvas = document.getElementById('pixel-canvas');
       const ctx = canvas ? canvas.getContext('2d') : null;
@@ -1904,31 +1493,23 @@
       }
 
       function drawPixelSpriteCharacter(x, y, coatColor, visorColor, talking) {
-        // Shadow
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
         ctx.fillRect(x - 4, y + 50, 36, 6);
-        // Legs
         ctx.fillStyle = '#1e293b';
         ctx.fillRect(x + 4, y + 34, 8, 18);
         ctx.fillRect(x + 16, y + 34, 8, 18);
-        // Trenchcoat / Armor Torso
         ctx.fillStyle = coatColor;
         ctx.fillRect(x, y + 14, 28, 24);
         ctx.fillStyle = '#0f172a';
         ctx.fillRect(x + 11, y + 14, 6, 22);
-        // Collar
         ctx.fillStyle = coatColor;
         ctx.fillRect(x - 2, y + 10, 32, 6);
-        // Head
         ctx.fillStyle = '#fcd34d';
         ctx.fillRect(x + 5, y - 4, 18, 15);
-        // Hair / Helmet
         ctx.fillStyle = '#1e1b4b';
         ctx.fillRect(x + 3, y - 8, 22, 6);
-        // Cyber Visor / Eyes
         ctx.fillStyle = visorColor;
         ctx.fillRect(x + 8, y, 13, 4);
-        // Talking Mouth
         ctx.fillStyle = '#0f172a';
         ctx.fillRect(x + 11, y + 7, 6, talking ? 3 : 1);
       }
@@ -1936,14 +1517,12 @@
       function drawSceneCanvas() {
         if (!ctx) return;
         animTick++;
-        const talking = (animTick % 12 < 6);
+        const talking = (animTick % 14 < 7);
 
         if (currentSceneType.startsWith('cyber')) {
-          // Cyberpunk PC-98 Scene
           drawDitherSky(0, 75, '#070916', '#131836');
-          drawDitherSky(75, 140, '#131836', '#24174a');
+          drawDitherSky(75, 140, '#131836', '#1e1b4b');
 
-          // Distant Neon City Skyline
           const buildings = [
             { x: 8, y: 22, w: 58, h: 120 },
             { x: 72, y: 10, w: 70, h: 132 },
@@ -1954,116 +1533,100 @@
           buildings.forEach((b, idx) => {
             ctx.fillStyle = (idx % 2 === 0) ? '#0b1024' : '#101733';
             ctx.fillRect(b.x, b.y, b.w, b.h);
-            ctx.strokeStyle = '#2d3c73';
+            ctx.strokeStyle = '#1e293b';
             ctx.strokeRect(b.x, b.y, b.w, b.h);
             for (let wy = b.y + 8; wy < b.y + b.h - 14; wy += 9) {
               for (let wx = b.x + 6; wx < b.x + b.w - 10; wx += 8) {
                 if ((wx + wy + idx) % 4 === 0) {
-                  ctx.fillStyle = ((wx * wy) % 5 === 0) ? '#ff2a85' : '#00f5d4';
+                  ctx.fillStyle = ((wx * wy) % 5 === 0) ? '#f59e0b' : '#38bdf8';
                   ctx.fillRect(wx, wy, 4, 4);
                 }
               }
             }
           });
 
-          // Glowing Neon Signboards + Visual Clock HUD on Wall
-          ctx.fillStyle = '#140b29';
+          ctx.fillStyle = '#0f172a';
           ctx.fillRect(145, 42, 94, 34);
-          ctx.strokeStyle = (animTick % 20 < 18) ? '#00f5d4' : '#ff2a85';
+          ctx.strokeStyle = '#38bdf8';
           ctx.lineWidth = 2;
           ctx.strokeRect(145, 42, 94, 34);
-          ctx.fillStyle = '#ffbe0b';
+          ctx.fillStyle = '#f59e0b';
           ctx.font = 'bold 10px monospace';
           ctx.fillText('ALARM 23:15', 155, 57);
-          ctx.fillStyle = '#00f5d4';
+          ctx.fillStyle = '#38bdf8';
           ctx.fillText('LOG: 23:05', 158, 69);
 
-          // Wet Neon Street Reflections
-          drawDitherSky(140, 204, '#080b18', '#111b36');
-          ctx.fillStyle = 'rgba(0, 245, 212, 0.22)';
-          ctx.fillRect(40, 165, 110, 4);
-          ctx.fillStyle = 'rgba(255, 42, 133, 0.25)';
-          ctx.fillRect(210, 174, 120, 4);
+          drawDitherSky(140, 204, '#080b18', '#0f172a');
+          drawPixelSpriteCharacter(82, 112, '#0284c7', '#38bdf8', talking);
+          drawPixelSpriteCharacter(268, 112, '#6366f1', '#f59e0b', !talking);
 
-          // Draw Inspector Deck (Left) & Suspect Kael (Right)
-          drawPixelSpriteCharacter(82, 112, '#00b4d8', '#00f5d4', talking);
-          drawPixelSpriteCharacter(268, 112, '#9b5de5', '#ff2a85', !talking);
-
-          // Falling Neon Rain
-          ctx.fillStyle = 'rgba(0, 245, 212, 0.5)';
-          for (let i = 0; i < 34; i++) {
-            const rx = (i * 41 + animTick * 4) % 384;
-            const ry = (i * 29 + animTick * 8) % 200;
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+          for (let i = 0; i < 26; i++) {
+            const rx = (i * 41 + animTick * 3) % 384;
+            const ry = (i * 29 + animTick * 7) % 200;
             ctx.fillRect(rx, ry, 1, 7);
           }
         } else if (currentSceneType.startsWith('dungeon')) {
-          // Fighting Fantasy Stone Dungeon Scene
-          drawDitherSky(0, 145, '#130e1c', '#211730');
-          drawDitherSky(145, 204, '#0e0a14', '#1a1326');
+          drawDitherSky(0, 145, '#110e1b', '#1c162b');
+          drawDitherSky(145, 204, '#0c0a14', '#151122');
 
-          // Stone Archway
           ctx.fillStyle = '#07050a';
           ctx.fillRect(122, 36, 140, 110);
-          ctx.strokeStyle = '#ffbe0b';
-          ctx.lineWidth = 3;
+          ctx.strokeStyle = '#f59e0b';
+          ctx.lineWidth = 2;
           ctx.strokeRect(122, 36, 140, 110);
 
-          // Three Levers / Mirrors inside Archway with Labels
           ['1', '2', '3'].forEach((lbl, i) => {
             const lx = 152 + i * 38;
-            ctx.fillStyle = (i === 1) ? '#00f5d4' : '#64748b';
+            ctx.fillStyle = (i === 1) ? '#38bdf8' : '#64748b';
             ctx.fillRect(lx, 76, 8, 42);
-            ctx.fillStyle = (i === 1) ? '#ffbe0b' : '#94a3b8';
+            ctx.fillStyle = (i === 1) ? '#f59e0b' : '#94a3b8';
             ctx.fillRect(lx - 4, 70, 16, 10);
             ctx.font = 'bold 10px monospace';
             ctx.fillText('#' + lbl, lx - 3, 64);
           });
 
-          // Animated Flickering Wall Torches
-          const flame = (animTick % 8 < 4) ? 14 : 10;
+          const flame = (animTick % 8 < 4) ? 13 : 10;
           [75, 305].forEach(tx => {
             ctx.fillStyle = '#78350f';
             ctx.fillRect(tx, 76, 8, 22);
-            ctx.fillStyle = '#ffbe0b';
+            ctx.fillStyle = '#f59e0b';
             ctx.fillRect(tx - 3, 76 - flame, 14, flame);
-            ctx.fillStyle = '#ff3864';
+            ctx.fillStyle = '#f43f5e';
             ctx.fillRect(tx, 78 - flame, 8, 6);
           });
 
-          drawPixelSpriteCharacter(68, 114, '#d97706', '#00f5d4', talking);
-          drawPixelSpriteCharacter(292, 114, '#475569', '#ff3864', !talking);
+          drawPixelSpriteCharacter(68, 114, '#d97706', '#38bdf8', talking);
+          drawPixelSpriteCharacter(292, 114, '#475569', '#f43f5e', !talking);
         } else {
-          // Sci-Fi Orbital Station Zero Scene
           drawDitherSky(0, 140, '#060c1a', '#0f1e38');
-          drawDitherSky(140, 204, '#111827', '#1f2937');
+          drawDitherSky(140, 204, '#111827', '#1e293b');
 
-          // Space Window with Stars & Earth Horizon
           ctx.fillStyle = '#02040a';
           ctx.fillRect(82, 22, 220, 82);
-          ctx.strokeStyle = '#00f5d4';
+          ctx.strokeStyle = '#38bdf8';
           ctx.lineWidth = 2;
           ctx.strokeRect(82, 22, 220, 82);
-          for (let s = 0; s < 25; s++) {
-            ctx.fillStyle = (s % 3 === 0) ? '#00f5d4' : '#fff';
+          for (let s = 0; s < 22; s++) {
+            ctx.fillStyle = (s % 3 === 0) ? '#38bdf8' : '#fff';
             ctx.fillRect(90 + ((s * 31) % 200), 28 + ((s * 19) % 55), 2, 2);
           }
           drawDitherSky(84, 102, '#0284c7', '#0369a1');
 
-          // MOTHER-88 AI Core
-          ctx.fillStyle = (animTick % 14 < 7) ? '#ff3864' : '#ffbe0b';
+          ctx.fillStyle = (animTick % 14 < 7) ? '#f59e0b' : '#38bdf8';
           ctx.fillRect(180, 112, 24, 24);
-          ctx.strokeStyle = '#00f5d4';
+          ctx.strokeStyle = '#38bdf8';
           ctx.strokeRect(175, 107, 34, 34);
 
-          drawPixelSpriteCharacter(80, 114, '#0ea5e9', '#38e54d', talking);
-          drawPixelSpriteCharacter(284, 114, '#6366f1', '#ffbe0b', !talking);
+          drawPixelSpriteCharacter(80, 114, '#0ea5e9', '#10b981', talking);
+          drawPixelSpriteCharacter(284, 114, '#6366f1', '#f59e0b', !talking);
         }
       }
 
-      setInterval(drawSceneCanvas, 90);
+      setInterval(drawSceneCanvas, 100);
 
       /* ==============================================================
-         4. PIXEL DICE PIP RENDERER (REAL 6-SIDED DICE DOTS)
+         4. 6-SIDED DICE PIP RENDERER
          ============================================================== */
       const DIE_PIPS = {
         1: [4],
@@ -2086,83 +1649,53 @@
       }
 
       /* ==============================================================
-         5. CORE GAMEPLAY STATE & STEP-BY-STEP UI CONTROLLER
+         5. CORE GAMEPLAY STATE & CLEAN UI CONTROLLER
          ============================================================== */
       let state = {
         tapeId: 1,
         sceneIdx: 0,
         stamina: 20,
         composure: 9,
-        luck: 10,
         tokens: 3,
-        streak: 0,
         parryIdx: 0,
         selectedTiles: []
       };
 
-      function setHighlightStep(stepNum) {
-        [1, 2, 3].forEach(n => {
-          const el = document.getElementById('guide-step-' + n);
-          if (el) el.classList.toggle('active-step', n === stepNum);
-        });
-      }
-
-      function updateSidebarUI() {
+      function updateHUD() {
         document.getElementById('ui-stat-stamina').textContent = state.stamina;
-        document.getElementById('ui-stat-composure').textContent = state.composure;
-        document.getElementById('ui-stat-luck').textContent = state.luck;
-
-        document.getElementById('ui-bar-stamina').style.width = Math.max(0, (state.stamina / 20) * 100) + '%';
-        document.getElementById('ui-bar-composure').style.width = Math.max(0, (state.composure / 12) * 100) + '%';
-        document.getElementById('ui-bar-luck').style.width = Math.max(0, (state.luck / 12) * 100) + '%';
-
-        document.getElementById('ui-streak-badge').textContent = 'SYNTAX STREAK: ' + state.streak;
-
-        let tokHtml = '';
-        for (let i = 0; i < 3; i++) {
-          tokHtml += `<i class="fa-solid fa-compact-disc" style="opacity:${i < state.tokens ? '1' : '0.22'}"></i>`;
-        }
-        document.getElementById('ui-tokens-icons').innerHTML = tokHtml;
+        document.getElementById('ui-stat-tokens').textContent = state.tokens;
       }
 
-      let typeTimer = null;
-      function typewriterText(element, rawText) {
-        if (typeTimer) clearInterval(typeTimer);
-        const formatted = rawText
+      function formatText(rawText) {
+        return rawText
           .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
           .replace(/\*(.+?)\*/g, '<em>$1</em>')
           .replace(/\n/g, '<br>');
-
-        // Type out cleanly while preserving HTML tags
-        element.innerHTML = formatted;
-        playSFX('blip');
       }
 
       function renderCurrentScene() {
         const tape = TAPES[state.tapeId];
         const scene = tape.scenes[state.sceneIdx];
 
-        // Update Cassette Tabs
         [1, 2, 3].forEach(id => {
           const tab = document.getElementById('tape-tab-' + id);
           if (tab) tab.classList.toggle('active', id === state.tapeId);
         });
 
-        // Update Cheat Sheet
-        document.getElementById('ui-cheat-sheet-list').innerHTML = tape.cheatSheet.join('');
-
-        // Reset Result Banner & Grammar Drawer
+        // Reset feedback, dice bar, and hint drawer
         const resBanner = document.getElementById('ui-result-banner');
-        resBanner.className = 'result-banner';
+        resBanner.className = 'feedback-box';
+        document.getElementById('ui-dice-bar').classList.remove('show');
+
         const drawer = document.getElementById('ui-grammar-drawer');
         drawer.classList.remove('open');
-        document.getElementById('tip-btn-label').textContent = 'Show Grammar Tip (Free)';
+        document.getElementById('tip-btn-label').textContent = 'Grammar Hint';
 
-        // Progress Pips
+        // Progress dots
         let pipsHtml = '';
-        tape.scenes.forEach((s, idx) => {
+        tape.scenes.forEach((_, idx) => {
           const cls = idx < state.sceneIdx ? 'done' : (idx === state.sceneIdx ? 'current' : '');
-          pipsHtml += `<span class="scene-pip ${cls}"></span>`;
+          pipsHtml += `<span class="progress-dot ${cls}"></span>`;
         });
         document.getElementById('ui-progress-pips').innerHTML = pipsHtml;
 
@@ -2171,40 +1704,37 @@
           return;
         }
 
-        setHighlightStep(1);
         currentSceneType = scene.sceneType;
         drawSceneCanvas();
 
-        document.getElementById('ui-tape-header').textContent = tape.header;
         document.getElementById('ui-scene-label').textContent = `SCENE ${scene.num} OF ${tape.scenes.length}`;
         document.getElementById('ui-location-tag').textContent = scene.location;
-        document.getElementById('ui-grammar-tag').textContent = `GRAMMAR: ${scene.grammarTag}`;
+        document.getElementById('ui-grammar-tag').textContent = scene.grammarTag;
 
-        // Render Step 1 Visual Timeline Nodes
+        // Speaker & Narrative
+        document.getElementById('ui-speaker-name').textContent = scene.speaker;
+        document.getElementById('ui-speaker-role').textContent = scene.role;
+        document.getElementById('ui-speaker-icon').className = `fa-solid ${scene.icon}`;
+        document.getElementById('ui-story-text').innerHTML = formatText(scene.story);
+
+        // Compact 2-Pill Clue Strip
         document.getElementById('ui-timeline-nodes').innerHTML = scene.timeline.map(node => `
-          <div class="timeline-node ${node.highlight ? 'highlight-node' : ''}">
-            <span class="timeline-time">${node.time}</span>
-            <span class="timeline-desc">${node.desc}</span>
+          <div class="clue-item ${node.highlight ? 'key-clue' : ''}">
+            <span class="clue-label">${node.time}</span>
+            <div class="clue-text">${node.desc}</div>
           </div>
         `).join('');
 
-        // Speaker & Story
-        document.getElementById('ui-speaker-name').textContent = scene.speaker;
-        document.getElementById('ui-speaker-role').textContent = scene.role;
-        document.getElementById('ui-speaker-icon').innerHTML = `<i class="fa-solid ${scene.icon}" aria-hidden="true"></i>`;
-        typewriterText(document.getElementById('ui-story-text'), scene.story);
-
-        document.getElementById('ui-mission-prompt').innerHTML =
-          `<span class="mission-badge">YOUR TASK</span> ${scene.mission}`;
+        document.getElementById('ui-mission-prompt').textContent = scene.mission;
         drawer.innerHTML = scene.grammarTip;
 
-        // Render Step 2 Choices
+        // Choices
         const choicesList = document.getElementById('ui-choices-list');
         choicesList.innerHTML = '';
         scene.choices.forEach((ch, idx) => {
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'choice-option-btn';
+          btn.className = 'choice-btn';
           btn.innerHTML = `
             <span class="choice-letter">${ch.letter}</span>
             <span>${ch.html}</span>
@@ -2213,14 +1743,14 @@
           choicesList.appendChild(btn);
         });
 
-        updateSidebarUI();
+        updateHUD();
       }
 
       function toggleGrammarTip() {
         const drawer = document.getElementById('ui-grammar-drawer');
         const label = document.getElementById('tip-btn-label');
         const isOpen = drawer.classList.toggle('open');
-        label.textContent = isOpen ? 'Hide Grammar Tip' : 'Show Grammar Tip (Free)';
+        label.textContent = isOpen ? 'Hide Hint' : 'Grammar Hint';
         playSFX('blip');
       }
 
@@ -2229,63 +1759,66 @@
         const scene = tape.scenes[state.sceneIdx];
         const choice = scene.choices[choiceIdx];
 
-        document.querySelectorAll('.choice-option-btn').forEach(b => { b.disabled = true; });
-        setHighlightStep(3);
+        document.querySelectorAll('.choice-btn').forEach(b => { b.disabled = true; });
 
         const resBanner = document.getElementById('ui-result-banner');
         const resHeader = document.getElementById('ui-result-header');
         const resExp = document.getElementById('ui-result-explanation');
         const resAct = document.getElementById('ui-result-actions');
+        const diceBar = document.getElementById('ui-dice-bar');
 
         if (choice.correct) {
-          clickedBtn.classList.add('selected-correct');
+          clickedBtn.classList.add('correct');
           playSFX('correct');
-          state.streak++;
           state.composure = Math.min(12, state.composure + 1);
 
-          resBanner.className = 'result-banner show win';
-          resHeader.innerHTML = `<span style="color:var(--green)"><i class="fa-solid fa-circle-check"></i> ${choice.title}</span><span>STREAK x${state.streak}</span>`;
+          resBanner.className = 'feedback-box show win';
+          resHeader.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${choice.title}</span>`;
           resExp.innerHTML = choice.explanation;
 
           if (scene.requiresDiceCheck) {
+            diceBar.classList.add('show');
+            document.getElementById('ui-dice-message').innerHTML =
+              `Hazard Check: Roll <strong>2d6 &le; ${state.composure}</strong> to dodge cleanly!`;
             resAct.innerHTML = `
-              <button type="button" class="retro-btn amber-btn" onclick="Chronicle88.rollHazardCheck()">
-                <i class="fa-solid fa-dice"></i> Roll 2d6 Hazard Check (Need &le; ${state.composure} Composure)
+              <button type="button" class="action-btn primary" onclick="Chronicle88.rollHazardCheck()">
+                <i class="fa-solid fa-dice"></i> Roll 2d6 Hazard Check
               </button>
             `;
           } else {
+            diceBar.classList.remove('show');
             resAct.innerHTML = `
-              <button type="button" class="retro-btn bgm-active" onclick="Chronicle88.advanceScene()">
-                <span>Next Scene &rarr;</span>
+              <button type="button" class="action-btn primary" onclick="Chronicle88.advanceScene()">
+                Continue <i class="fa-solid fa-arrow-right"></i>
               </button>
             `;
           }
         } else {
-          clickedBtn.classList.add('selected-wrong');
+          clickedBtn.classList.add('wrong');
           playSFX('wrong');
-          state.streak = 0;
           state.stamina = Math.max(0, state.stamina - 3);
 
-          resBanner.className = 'result-banner show lose';
-          resHeader.innerHTML = `<span style="color:var(--red)"><i class="fa-solid fa-triangle-exclamation"></i> ${choice.title}</span><span>-3 STAMINA</span>`;
+          resBanner.className = 'feedback-box show lose';
+          resHeader.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>${choice.title} (-3 Stamina)</span>`;
           resExp.innerHTML = choice.explanation;
+          diceBar.classList.remove('show');
 
           let btns = `
-            <button type="button" class="retro-btn" onclick="Chronicle88.retryScene()">
-              <i class="fa-solid fa-rotate-left"></i> Try Scene Again
+            <button type="button" class="action-btn secondary" onclick="Chronicle88.retryScene()">
+              <i class="fa-solid fa-rotate-right"></i> Try Again
             </button>
           `;
           if (state.tokens > 0) {
             btns += `
-              <button type="button" class="retro-btn amber-btn" onclick="Chronicle88.openParryModal()">
-                <i class="fa-solid fa-shield-halved"></i> Rewind Parry: Tap Word Tiles to Heal +3 Stamina!
+              <button type="button" class="action-btn primary" onclick="Chronicle88.openParryModal()">
+                <i class="fa-solid fa-rotate-left"></i> Rewind &amp; Heal (+3 ❤️)
               </button>
             `;
           }
           resAct.innerHTML = btns;
         }
 
-        updateSidebarUI();
+        updateHUD();
       }
 
       function animate2d6(onComplete) {
@@ -2319,39 +1852,23 @@
         animate2d6((total) => {
           if (total <= state.composure) {
             playSFX('correct');
-            msg.innerHTML = `<span style="color:var(--green);font-weight:800;">ROLLED ${total} (&le; ${state.composure} COMPOSURE) — DODGED CLEANLY!</span>`;
+            msg.innerHTML = `<span style="color:var(--green);font-weight:700;">Rolled ${total} (&le; ${state.composure}) — Dodged cleanly!</span>`;
           } else {
             playSFX('wrong');
             state.stamina = Math.max(0, state.stamina - 2);
-            updateSidebarUI();
-            msg.innerHTML = `<span style="color:var(--red);font-weight:800;">ROLLED ${total} (&gt; ${state.composure} COMPOSURE) — GRAZED (-2 STAMINA)!</span>`;
+            updateHUD();
+            msg.innerHTML = `<span style="color:var(--amber);font-weight:700;">Rolled ${total} (&gt; ${state.composure}) — Grazed by hazard (-2 Stamina).</span>`;
           }
           resAct.innerHTML = `
-            <button type="button" class="retro-btn bgm-active" onclick="Chronicle88.advanceScene()">
-              <span>Continue to Next Scene &rarr;</span>
+            <button type="button" class="action-btn primary" onclick="Chronicle88.advanceScene()">
+              Continue <i class="fa-solid fa-arrow-right"></i>
             </button>
           `;
         });
       }
 
-      function rollLuckForHint() {
-        const tape = TAPES[state.tapeId];
-        const scene = tape.scenes[state.sceneIdx];
-        if (!scene) return;
-        const msg = document.getElementById('ui-dice-message');
-
-        animate2d6((total) => {
-          state.luck = Math.max(4, state.luck - 1);
-          updateSidebarUI();
-          const drawer = document.getElementById('ui-grammar-drawer');
-          drawer.classList.add('open');
-          document.getElementById('tip-btn-label').textContent = 'Hide Grammar Tip';
-          msg.innerHTML = `<span style="color:var(--amber);font-weight:800;">Rolled ${total}! Grammar Tip unlocked below the story!</span>`;
-        });
-      }
-
       /* ==============================================================
-         6. TAP-TO-BUILD WORD TILE PARRY MODAL
+         6. TAP-TO-BUILD REWIND PARRY MODAL
          ============================================================== */
       function openParryModal() {
         if (state.tokens <= 0) return;
@@ -2360,7 +1877,7 @@
         state.selectedTiles = [];
 
         document.getElementById('parry-original').textContent = parry.original;
-        document.getElementById('parry-key').textContent = parry.keyword;
+        document.getElementById('parry-key').textContent = 'KEY WORD: ' + parry.keyword;
         document.getElementById('parry-before').textContent = parry.before;
         document.getElementById('parry-after').textContent = parry.after;
         document.getElementById('parry-status-msg').innerHTML = '';
@@ -2378,7 +1895,7 @@
         const bankZone = document.getElementById('parry-bank-zone');
 
         if (state.selectedTiles.length === 0) {
-          slotZone.innerHTML = `<span style="font-size:0.78rem;color:var(--text-muted);">Tap yellow word tiles below to build the answer here...</span>`;
+          slotZone.innerHTML = `<span style="font-size:0.8rem;color:var(--text-muted);">Tap word tiles below to build the missing phrase...</span>`;
         } else {
           slotZone.innerHTML = state.selectedTiles.map((item, sIdx) => `
             <button type="button" class="word-tile" onclick="Chronicle88.removeParryTile(${sIdx})">${item.word}</button>
@@ -2418,15 +1935,15 @@
           state.tokens = Math.max(0, state.tokens - 1);
           state.stamina = Math.min(20, state.stamina + 3);
           state.parryIdx++;
-          updateSidebarUI();
-          statusEl.innerHTML = `<span style="color:var(--green)">PARRY SUCCESSFUL! +3 Stamina restored!</span>`;
+          updateHUD();
+          statusEl.innerHTML = `<span style="color:var(--green);">Correct! +3 Stamina restored.</span>`;
           setTimeout(() => {
             closeParryModal();
             retryScene();
-          }, 850);
+          }, 750);
         } else {
           playSFX('wrong');
-          statusEl.innerHTML = `<span style="color:var(--amber)">Not quite! Tap the tiles to form: <strong>"${state.currentParryTarget.join(' ')}"</strong></span>`;
+          statusEl.innerHTML = `<span style="color:var(--amber);">Not quite — build: "${state.currentParryTarget.join(' ')}"</span>`;
         }
       }
 
@@ -2436,21 +1953,21 @@
 
       function renderTapeVictory(tape) {
         playSFX('correct');
-        document.getElementById('ui-scene-label').textContent = 'CASSETTE COMPLETE!';
+        document.getElementById('ui-scene-label').textContent = 'EPISODE COMPLETE';
+        document.getElementById('ui-grammar-tag').textContent = 'Mission Clear';
+        document.getElementById('ui-timeline-nodes').innerHTML = '';
         document.getElementById('ui-story-text').innerHTML =
-          `<strong>🎉 CONGRATULATIONS! YOU BEAT ${tape.title.toUpperCase()}!</strong><br><br>` +
-          `Final Score — Stamina: <strong>${state.stamina}/20</strong> | Composure: <strong>${state.composure}/12</strong> | Luck: <strong>${state.luck}</strong>.<br>` +
-          `Ready for the next cassette? Pick another adventure below!`;
-        document.getElementById('ui-mission-prompt').innerHTML =
-          `<span class="mission-badge">MISSION CLEAR</span> Choose your next cassette below:`;
+          `<strong>Episode Complete: ${tape.title}!</strong><br>` +
+          `You finished with <strong>${state.stamina}/20 Stamina</strong>. Ready for the next episode?`;
+        document.getElementById('ui-mission-prompt').textContent = 'Choose your next episode:';
 
         const nextId = (state.tapeId % 3) + 1;
         document.getElementById('ui-choices-list').innerHTML = `
-          <button type="button" class="choice-option-btn" onclick="Chronicle88.loadTape(${nextId})">
+          <button type="button" class="choice-btn" onclick="Chronicle88.loadTape(${nextId})">
             <span class="choice-letter">&rarr;</span>
-            <span>Play Next Cassette: <strong>${TAPES[nextId].title}</strong></span>
+            <span>Play Next Episode: <strong>${TAPES[nextId].title}</strong></span>
           </button>
-          <button type="button" class="choice-option-btn" onclick="Chronicle88.loadTape(${state.tapeId})">
+          <button type="button" class="choice-btn" onclick="Chronicle88.loadTape(${state.tapeId})">
             <span class="choice-letter">R</span>
             <span>Replay <strong>${tape.title}</strong></span>
           </button>
@@ -2464,9 +1981,7 @@
         state.sceneIdx = 0;
         state.stamina = 20;
         state.composure = 9;
-        state.luck = 10;
         state.tokens = 3;
-        state.streak = 0;
         if (bgmOn) startBGM();
         renderCurrentScene();
       }
@@ -2478,10 +1993,6 @@
 
       function retryScene() {
         renderCurrentScene();
-      }
-
-      function restartCurrentTape() {
-        loadTape(state.tapeId);
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -2496,10 +2007,8 @@
         loadTape,
         advanceScene,
         retryScene,
-        restartCurrentTape,
         toggleGrammarTip,
         rollHazardCheck,
-        rollLuckForHint,
         openParryModal,
         closeParryModal,
         addParryTile,
