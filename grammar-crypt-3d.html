@@ -23,6 +23,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <!-- WebAssembly + WebGL High-Performance Physics Kernel -->
+  <script src="wasm-webgl-engine.js"></script>
 
   <style>
     :root {
@@ -1462,6 +1464,7 @@
         triggerVictory();
       } else {
         AudioEngine.playError();
+        if (window.WasmWebGLCore) window.WasmWebGLCore.burst(0.0, 0.0, 2.2, -1.0);
         torch1.color.setHex(0xef4444);
         torch2.color.setHex(0xef4444);
         setTimeout(() => {
@@ -1475,6 +1478,7 @@
       isCurrentLevelSolved = true;
       AudioEngine.playVictory();
       AudioEngine.playGateRumble();
+      if (window.WasmWebGLCore) window.WasmWebGLCore.burst(0.0, 0.2, 2.5, 1.0);
 
       // Confetti burst
       try {
@@ -1620,13 +1624,71 @@
     });
 
     /* ==========================================================
-       8. ANIMATION LOOP & STARTUP
+       8. WEBASSEMBLY + WEBGL 3D SOUL EMBER PARTICLE STREAM & LOOP
        ========================================================== */
+    const WASM_EMBER_COUNT = 2048;
+    const wasmEmberGeo = new THREE.BufferGeometry();
+    const wasmEmberPositions = new Float32Array(WASM_EMBER_COUNT * 3);
+    const wasmEmberColors = new Float32Array(WASM_EMBER_COUNT * 3);
+    for (let i = 0; i < WASM_EMBER_COUNT; i++) {
+      wasmEmberPositions[i * 3 + 0] = (Math.random() - 0.5) * 14;
+      wasmEmberPositions[i * 3 + 1] = Math.random() * 6.5;
+      wasmEmberPositions[i * 3 + 2] = (Math.random() - 0.5) * 22;
+      wasmEmberColors[i * 3 + 0] = 0.66;
+      wasmEmberColors[i * 3 + 1] = 0.33;
+      wasmEmberColors[i * 3 + 2] = 0.97;
+    }
+    const wasmPosAttr = new THREE.BufferAttribute(wasmEmberPositions, 3);
+    wasmPosAttr.setUsage(THREE.DynamicDrawUsage);
+    const wasmColAttr = new THREE.BufferAttribute(wasmEmberColors, 3);
+    wasmColAttr.setUsage(THREE.DynamicDrawUsage);
+    wasmEmberGeo.setAttribute('position', wasmPosAttr);
+    wasmEmberGeo.setAttribute('color', wasmColAttr);
+
+    const wasmEmberMat = new THREE.PointsMaterial({
+      size: 0.11,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+    const wasmEmberPoints = new THREE.Points(wasmEmberGeo, wasmEmberMat);
+    scene.add(wasmEmberPoints);
+
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
       const time = clock.getElapsedTime();
+
+      // Stream 2,048 particle coordinates & energies directly from WebAssembly Linear Memory
+      if (window.WasmWebGLCore) {
+        const view = window.WasmWebGLCore.getParticleView();
+        if (view && view.length >= WASM_EMBER_COUNT * 8) {
+          for (let i = 0; i < WASM_EMBER_COUNT; i++) {
+            const b = i * 8;
+            const i3 = i * 3;
+            wasmEmberPositions[i3 + 0] = view[b + 0] * 5.2;
+            wasmEmberPositions[i3 + 1] = (view[b + 1] + 1.15) * 2.8;
+            wasmEmberPositions[i3 + 2] = view[b + 2] * 10.0 - 2.0;
+
+            const life = view[b + 6];
+            const energy = view[b + 7];
+            if (isCurrentLevelSolved) {
+              wasmEmberColors[i3 + 0] = 0.22 * life;
+              wasmEmberColors[i3 + 1] = (0.74 + 0.25 * energy) * life;
+              wasmEmberColors[i3 + 2] = 0.98 * life;
+            } else {
+              wasmEmberColors[i3 + 0] = (0.66 + 0.34 * energy) * life;
+              wasmEmberColors[i3 + 1] = (0.28 + 0.52 * energy) * life;
+              wasmEmberColors[i3 + 2] = (0.96 - 0.55 * energy) * life;
+            }
+          }
+          wasmPosAttr.needsUpdate = true;
+          wasmColAttr.needsUpdate = true;
+        }
+      }
 
       // Torch flame flicker
       torch1.intensity = 2.2 + Math.sin(time * 12) * 0.35 + Math.cos(time * 7) * 0.2;
