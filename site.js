@@ -208,11 +208,10 @@
                 goalInput.classList.remove('ring-2', 'ring-emerald-400', 'border-emerald-400', 'ring-sky-400', 'border-sky-400');
             }
             if (subjectInput) subjectInput.value = 'New Student Enquiry (Website)';
-            if (formTitle) formTitle.textContent = 'Ask a Question or Reserve a Package';
-            if (formSubtitle) formSubtitle.textContent = 'Select a package above or let me know your goals below—I reply personally within 24 hours with next steps and payment links.';
+            if (formTitle) formTitle.textContent = 'Ask a Question or Reserve a Lesson Pack';
+            if (formSubtitle) formSubtitle.textContent = 'Select a lesson pack above or let me know your goals below—I reply personally within 24 hours with next steps and payment links.';
             if (formBadge) {
-                formBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-sky-500/15 text-sky-300 border border-sky-400/30 mb-2';
-                formBadge.innerHTML = '<i class="fa-regular fa-envelope" aria-hidden="true"></i> Direct Tutor Enquiry &amp; Package Booking';
+                formBadge.className = 'hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
             }
             if (pkgBanner) pkgBanner.classList.add('hidden');
             if (submitBtn) submitBtn.innerHTML = 'Send Message &rarr;';
@@ -647,21 +646,66 @@ const WRITING_SAMPLES = {
 })();
 
 (() => {
-window.filterLabs = function filterLabs(level, btn) {
-          // Update active tab style
-          document.querySelectorAll('#exam-lab .filter-btn').forEach(function(b) { b.classList.remove('active'); });
-          btn.classList.add('active');
+  window.switchResourceTab = function switchResourceTab(tabKey) {
+    const keys = ['modules', 'games', 'guides'];
+    keys.forEach((key) => {
+      const btn = document.getElementById('res-tab-' + key);
+      const panel = document.getElementById('res-panel-' + key);
+      const isActive = key === tabKey;
+      if (btn) {
+        btn.setAttribute('aria-selected', String(isActive));
+        btn.className = isActive
+          ? 'res-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-slate-900 shadow-sm cursor-pointer'
+          : 'res-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
+      }
+      if (panel) {
+        panel.classList.toggle('hidden', !isActive);
+      }
+    });
+  };
 
-          // Filter cards
-          document.querySelectorAll('#exam-lab .lab-card').forEach(function(card) {
-            var cardLevel = card.getAttribute('data-level') || '';
-            if (level === 'all' || cardLevel === level || cardLevel.indexOf(level) !== -1) {
-              card.style.display = 'flex';
-            } else {
-              card.style.display = 'none';
-            }
-          });
-        }
+  window.filterLabs = function filterLabs(level, btn) {
+    document.querySelectorAll('.lab-filter-btn, #exam-lab .filter-btn').forEach(function(b) {
+      b.classList.remove('active', 'bg-brand-600', 'text-white', 'shadow-sm');
+      if (b.classList.contains('lab-filter-btn')) {
+        b.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+      }
+    });
+    if (btn) {
+      btn.classList.add('active');
+      if (btn.classList.contains('lab-filter-btn')) {
+        btn.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+        btn.classList.add('bg-brand-600', 'text-white', 'shadow-sm');
+      }
+    }
+
+    document.querySelectorAll('.lab-card').forEach(function(card) {
+      var cardLevel = card.getAttribute('data-level') || '';
+      if (level === 'all' || cardLevel === level || cardLevel.indexOf(level) !== -1) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  };
+
+  // Automatically switch to the matching tab when navigating to #exam-lab or #interactive-tools
+  document.querySelectorAll('a[href="#exam-lab"]').forEach(function(link) {
+    link.addEventListener('click', function() {
+      if (typeof window.switchResourceTab === 'function') window.switchResourceTab('modules');
+    });
+  });
+  document.querySelectorAll('a[href="#interactive-tools"]').forEach(function(link) {
+    link.addEventListener('click', function() {
+      if (typeof window.switchResourceTab === 'function') window.switchResourceTab('games');
+    });
+  });
+
+  if (window.location.hash === '#interactive-tools') {
+    window.switchResourceTab('games');
+  } else if (window.location.hash === '#study-guides') {
+    window.switchResourceTab('guides');
+  }
 })();
 
 // Lazy-load Cal.com only when #contact approaches the viewport
