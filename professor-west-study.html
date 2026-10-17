@@ -2823,11 +2823,22 @@
             const p = musicAudioEl.play();
             if (p && typeof p.catch === 'function') {
               p.catch((err) => {
-                // Browser blocked HTML5 audio before any interaction: don't claim music is playing.
+                // Browser blocked HTML5 audio before any interaction: don't claim music is playing,
+                // and arm a one-shot gesture listener if not in the intro modal.
                 if (err && err.name === 'NotAllowedError') {
                   musicPlaying = false;
                   syncMusicUI();
-                  if (introVoiceActive) showIntroPlayOverlay();
+                  if (introVoiceActive) {
+                    showIntroPlayOverlay();
+                  } else {
+                    const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
+                    const unlockMusic = (e) => {
+                      if (e && e.target && e.target.closest && e.target.closest('#music-toggle-btn')) return;
+                      unlockEvents.forEach((ev) => document.removeEventListener(ev, unlockMusic, true));
+                      if (!musicPlaying) startClassicalMusic();
+                    };
+                    unlockEvents.forEach((ev) => document.addEventListener(ev, unlockMusic, { capture: true, passive: true }));
+                  }
                 }
               });
             }
@@ -5599,6 +5610,8 @@
         const forceIntro = /[?&]intro=1(?:&|$)/.test((window.location && window.location.search) || '');
         if (forceIntro || !introShownThisSession) {
           openIntroVideo();
+        } else {
+          startClassicalMusic();
         }
         if (window.location && window.location.search && window.location.search.includes('autotest=1')) {
           runAutotest();

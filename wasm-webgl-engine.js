@@ -324,10 +324,157 @@
     function burst(nx = 0.0, ny = 0.0, power = 1.35, kind = 1.0) {
       if (!wasm) return;
       wasm.trigger_burst(nx, ny, power, kind);
+      if (power >= 1.3) {
+        playArcadeSFX(kind > 0 ? 'success' : 'error');
+      }
     }
 
     function setIntensity(val) {
       intensity = Math.max(0.0, Math.min(1.5, Number(val) || 0.0));
+    }
+
+    // =======================================================================
+    // PROCEDURAL WEB AUDIO SOUNDTRACK FOR STANDALONE ARCADE GAMES
+    // (Mode 0: Tokamak Plasma, Mode 1: Forge Physics, Mode 3: Exec Wavefield)
+    // =======================================================================
+    let audioCtx = null;
+    let bgmEnabled = true;
+    let bgmTimer = null;
+    let bgmStep = 0;
+
+    const ARCADE_TRACKS = {
+      // Mode 0: Phrasal Reactor — Cybernetic Tokamak Synthwave (A Minor)
+      0: {
+        tempoMs: 210,
+        leadWave: 'sawtooth',
+        bassWave: 'triangle',
+        leadGain: 0.016,
+        bassGain: 0.028,
+        lead: [220.00, 0, 261.63, 329.63, 440.00, 392.00, 329.63, 261.63, 246.94, 0, 293.66, 349.23, 392.00, 329.63, 293.66, 246.94],
+        bass: [110.00, 110.00, 87.31, 87.31, 130.81, 130.81, 98.00, 98.00]
+      },
+      // Mode 1: The Formation Factory — Industrial Electro-Forge (D Dorian)
+      1: {
+        tempoMs: 225,
+        leadWave: 'square',
+        bassWave: 'sawtooth',
+        leadGain: 0.014,
+        bassGain: 0.025,
+        lead: [146.83, 220.00, 293.66, 0, 261.63, 220.00, 174.61, 0, 164.81, 246.94, 329.63, 0, 293.66, 246.94, 220.00, 0],
+        bass: [73.42, 73.42, 65.41, 73.42, 82.41, 82.41, 98.00, 82.41]
+      },
+      // Mode 3: The Boardroom Pitch — Canary Wharf Executive Pulse (C Minor 9th)
+      3: {
+        tempoMs: 280,
+        leadWave: 'triangle',
+        bassWave: 'sine',
+        leadGain: 0.024,
+        bassGain: 0.032,
+        lead: [261.63, 311.13, 392.00, 466.16, 392.00, 311.13, 293.66, 0, 233.08, 293.66, 349.23, 440.00, 392.00, 349.23, 311.13, 0],
+        bass: [130.81, 130.81, 103.83, 103.83, 116.54, 116.54, 98.00, 98.00]
+      }
+    };
+
+    function shouldManageArcadeBGM() {
+      const p = (window.location.pathname || '').toLowerCase();
+      if (p.includes('chronicle') || p.includes('crypt')) return false;
+      return mode === 0 || mode === 1 || mode === 3;
+    }
+
+    function ensureArcadeAudio() {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (AC) audioCtx = new AC();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
+    }
+
+    function playArcadeTone(freq, durationSec, wave, gainVal) {
+      if (!audioCtx || audioCtx.state !== 'running' || freq <= 0) return;
+      try {
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const filter = audioCtx.createBiquadFilter();
+        const gain = audioCtx.createGain();
+        osc.type = wave || 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1600, now);
+        gain.gain.setValueAtTime(0.0005, now);
+        gain.gain.linearRampToValueAtTime(gainVal, now + 0.018);
+        gain.gain.exponentialRampToValueAtTime(0.0005, now + durationSec);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + durationSec + 0.02);
+      } catch (_) {}
+    }
+
+    function playArcadeSFX(type) {
+      if (!bgmEnabled || !shouldManageArcadeBGM()) return;
+      ensureArcadeAudio();
+      if (!audioCtx || audioCtx.state !== 'running') return;
+      if (type === 'success') {
+        playArcadeTone(523.25, 0.11, 'triangle', 0.035);
+        setTimeout(() => playArcadeTone(659.25, 0.12, 'triangle', 0.035), 75);
+        setTimeout(() => playArcadeTone(783.99, 0.20, 'triangle', 0.04), 150);
+      } else if (type === 'error') {
+        playArcadeTone(164.81, 0.16, 'sawtooth', 0.035);
+        setTimeout(() => playArcadeTone(123.47, 0.24, 'sawtooth', 0.035), 110);
+      }
+    }
+
+    function startArcadeBGM() {
+      if (!shouldManageArcadeBGM() || !bgmEnabled) return;
+      if (bgmTimer) {
+        clearInterval(bgmTimer);
+        bgmTimer = null;
+      }
+      ensureArcadeAudio();
+      const track = ARCADE_TRACKS[mode] || ARCADE_TRACKS[0];
+      bgmStep = 0;
+      bgmTimer = setInterval(() => {
+        if (!bgmEnabled || paused) return;
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(() => {});
+        }
+        const leadNote = track.lead[bgmStep % track.lead.length];
+        const bassNote = track.bass[Math.floor(bgmStep / 2) % track.bass.length];
+        if (leadNote > 0) {
+          playArcadeTone(leadNote, (track.tempoMs / 1000) * 0.85, track.leadWave, track.leadGain);
+        }
+        if (bgmStep % 2 === 0 && bassNote > 0) {
+          playArcadeTone(bassNote, (track.tempoMs / 1000) * 1.7, track.bassWave, track.bassGain);
+        }
+        bgmStep++;
+      }, track.tempoMs);
+    }
+
+    function stopArcadeBGM() {
+      if (bgmTimer) {
+        clearInterval(bgmTimer);
+        bgmTimer = null;
+      }
+    }
+
+    function armArcadeAudioUnlock() {
+      if (!shouldManageArcadeBGM()) return;
+      startArcadeBGM();
+      const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
+      const unlockHandler = (e) => {
+        if (e && e.target && e.target.closest && e.target.closest('#wasm-bgm-toggle')) return;
+        if (bgmEnabled) {
+          ensureArcadeAudio();
+          if (!bgmTimer) startArcadeBGM();
+        }
+        if (audioCtx && audioCtx.state === 'running') {
+          unlockEvents.forEach((ev) => document.removeEventListener(ev, unlockHandler, true));
+        }
+      };
+      unlockEvents.forEach((ev) => document.addEventListener(ev, unlockHandler, { capture: true, passive: true }));
     }
 
     function injectTelemetryHUD(modeName, isThreeShared = false) {
@@ -482,16 +629,33 @@
       `;
       document.head.appendChild(style);
 
+      const hasBgmBtn = shouldManageArcadeBGM();
       const hud = document.createElement('div');
       hud.id = 'wasm-webgl-hud';
       hud.className = 'wasm-webgl-hud';
       hud.innerHTML = `
         <span class="wasm-webgl-dot" id="wasm-hud-dot"></span>
         <span id="wasm-hud-text">WASM+WebGL2 • ${modeName} • ${particleCount} Particles</span>
+        ${hasBgmBtn ? '<button type="button" class="wasm-webgl-btn" id="wasm-bgm-toggle" title="Toggle Arcade Music" aria-pressed="true">🔊 Music: ON</button>' : ''}
         <button type="button" class="wasm-webgl-btn" id="wasm-hud-toggle" title="Cycle High-Performance (4,096) / Eco (1,024) / Pause">4K GPU</button>
       `;
       document.body.appendChild(hud);
       hudBadgeEl = hud.querySelector('#wasm-hud-text');
+
+      const bgmBtn = hud.querySelector('#wasm-bgm-toggle');
+      if (bgmBtn) {
+        bgmBtn.addEventListener('click', () => {
+          bgmEnabled = !bgmEnabled;
+          bgmBtn.setAttribute('aria-pressed', String(bgmEnabled));
+          bgmBtn.textContent = bgmEnabled ? '🔊 Music: ON' : '🔇 Music: OFF';
+          if (bgmEnabled) {
+            ensureArcadeAudio();
+            startArcadeBGM();
+          } else {
+            stopArcadeBGM();
+          }
+        });
+      }
 
       const toggleBtn = hud.querySelector('#wasm-hud-toggle');
       const dotEl = hud.querySelector('#wasm-hud-dot');
@@ -712,6 +876,7 @@
       initMemoryViews();
       injectTelemetryHUD(modeNames[mode] || 'WASM Sim', false);
       bindGameplayReactivity();
+      armArcadeAudioUnlock();
 
       const bgProg = createProgram(gl, BG_VERT_300, BG_FRAG_300);
       const ptProg = createProgram(gl, PARTICLE_VERT_300, PARTICLE_FRAG_300);

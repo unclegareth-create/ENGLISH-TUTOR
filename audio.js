@@ -17,8 +17,13 @@
 
     let ctx = null;
     let master = null;
-    let enabled = false;
+    let enabled = true;
+    let userMuted = false;
     let bgm = null;
+    let bgmStepTimer = null;
+    let bgmStep = 0;
+
+    const GOTHIC_ARPEGGIO = [146.83, 174.61, 220.00, 233.08, 220.00, 174.61, 164.81, 138.59];
 
     function ensureContext() {
         if (ctx) return;
@@ -30,6 +35,7 @@
 
     // One enveloped note. A tiny attack and a ramp to ~0 avoid clicks at start and end.
     function tone(freq, type, dur, vol, delay = 0) {
+        if (!ctx) return;
         const t = ctx.currentTime + delay;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -71,24 +77,23 @@
         if (fn) fn(arg);
     }
 
-    /* ---- Background drone: low, slightly detuned pair with slow tremolo ---- */
+    /* ---- Background soundtrack: Gothic D-minor arpeggio + deep subterranean drone ---- */
     function startBGM() {
-        if (bgm) return;
+        if (bgm || !ctx) return;
         const out = ctx.createGain();
         out.gain.setValueAtTime(0.0001, ctx.currentTime);
-        out.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 2);   // fade in
+        out.gain.linearRampToValueAtTime(0.045, ctx.currentTime + 1.5);
         out.connect(master);
 
         const lfo = ctx.createOscillator();
         const lfoDepth = ctx.createGain();
-        lfo.frequency.value = 0.15;
-        lfoDepth.gain.value = 0.015;
+        lfo.frequency.value = 0.18;
+        lfoDepth.gain.value = 0.012;
         lfo.connect(lfoDepth);
         lfoDepth.connect(out.gain);
         lfo.start();
 
-        // 55 Hz alone is inaudible on laptop speakers, so add its octave for body.
-        const oscs = [[55, 1], [55.4, 1], [110, 0.35]].map(([f, level]) => {
+        const oscs = [[73.42, 0.9], [73.8, 0.85], [146.83, 0.35]].map(([f, level]) => {
             const o = ctx.createOscillator();
             const g = ctx.createGain();
             o.type = 'sine';
@@ -99,39 +104,81 @@
             o.start();
             return o;
         });
+
+        bgmStep = 0;
+        if (bgmStepTimer) clearInterval(bgmStepTimer);
+        bgmStepTimer = setInterval(() => {
+            if (!enabled || !ctx || ctx.state !== 'running') return;
+            const note = GOTHIC_ARPEGGIO[bgmStep % GOTHIC_ARPEGGIO.length];
+            bgmStep++;
+            tone(note, 'triangle', 0.36, 0.032, 0);
+            if (bgmStep % 4 === 1) {
+                tone(note * 1.5, 'sine', 0.48, 0.018, 0.04);
+            }
+        }, 420);
+
         bgm = { out, lfo, oscs };
     }
 
     function stopBGM() {
+        if (bgmStepTimer) {
+            clearInterval(bgmStepTimer);
+            bgmStepTimer = null;
+        }
         if (!bgm) return;
         const { out, lfo, oscs } = bgm;
         bgm = null;
         const t = ctx.currentTime;
         out.gain.cancelScheduledValues(t);
         out.gain.setValueAtTime(Math.max(out.gain.value, 0.0001), t);
-        out.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);        // fade out
+        out.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
         [lfo, ...oscs].forEach(o => o.stop(t + 0.6));
     }
 
-    function setEnabled(on) {
+    function setEnabled(on, fromUserToggle = false) {
         enabled = on;
+        if (fromUserToggle) userMuted = !on;
         if (btn) {
             btn.setAttribute('aria-pressed', String(on));
             btn.textContent = on ? '🔊 Sound On' : '🔈 Sound Off';
         }
         if (on) {
-            ensureContext();                       // must happen inside a user gesture
-            const go = () => { startBGM(); play('grab'); };
-            if (ctx.state === 'suspended') ctx.resume().then(go); else go();
+            ensureContext();
+            const go = () => { startBGM(); };
+            if (ctx.state === 'suspended') {
+                ctx.resume().then(go).catch(() => {});
+            } else {
+                go();
+            }
         } else {
             stopBGM();
         }
     }
 
     if (btn) {
-        btn.setAttribute('aria-pressed', 'false');
-        btn.addEventListener('click', () => setEnabled(!enabled));
+        btn.setAttribute('aria-pressed', 'true');
+        btn.textContent = '🔊 Sound On';
+        btn.addEventListener('click', () => setEnabled(!enabled, true));
     }
+
+    // Auto-start music immediately on page load + unlock on first gesture if browser suspended AudioContext
+    setEnabled(true, false);
+    const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
+    const unlockOnGesture = (e) => {
+        if (e && e.target && e.target.closest && e.target.closest('#audio-toggle')) return;
+        if (!userMuted && enabled) {
+            ensureContext();
+            if (ctx && ctx.state === 'suspended') {
+                ctx.resume().then(() => startBGM()).catch(() => {});
+            } else {
+                startBGM();
+            }
+        }
+        if (ctx && ctx.state === 'running') {
+            unlockEvents.forEach(ev => window.removeEventListener(ev, unlockOnGesture, true));
+        }
+    };
+    unlockEvents.forEach(ev => window.addEventListener(ev, unlockOnGesture, { capture: true, passive: true }));
 
     // Be polite: silence when the tab is in the background.
     document.addEventListener('visibilitychange', () => {

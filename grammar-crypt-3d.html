@@ -860,19 +860,27 @@
       let master = null;
       let enabled = true;
       let bgmGain = null;
+      let bgmInterval = null;
+      let bgmStep = 0;
+      const GOTHIC_ARPEGGIO = [146.83, 174.61, 220.00, 233.08, 220.00, 174.61, 164.81, 138.59];
 
       function init() {
-        if (ctx) return;
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        ctx = new AudioCtx();
-        master = ctx.createGain();
-        master.gain.value = 0.85;
-        master.connect(ctx.destination);
-        startDungeonDrone();
+        if (!AudioCtx) return;
+        if (!ctx) {
+          ctx = new AudioCtx();
+          master = ctx.createGain();
+          master.gain.value = enabled ? 0.85 : 0;
+          master.connect(ctx.destination);
+          startDungeonDrone();
+        }
+        if (ctx.state === 'suspended' && enabled) {
+          ctx.resume().catch(() => {});
+        }
       }
 
       function tone(freq, type, dur, vol, delay = 0) {
-        if (!enabled || !ctx) return;
+        if (!enabled || !ctx || ctx.state !== 'running') return;
         const t = ctx.currentTime + delay;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -888,13 +896,13 @@
       }
 
       function startDungeonDrone() {
-        if (bgmGain) return;
+        if (bgmGain || !ctx) return;
         bgmGain = ctx.createGain();
         bgmGain.gain.setValueAtTime(0.0001, ctx.currentTime);
-        bgmGain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 2);
+        bgmGain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 1.5);
         bgmGain.connect(master);
 
-        [55, 55.4, 110].forEach((freq, idx) => {
+        [73.42, 73.8, 146.83].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sine';
@@ -904,13 +912,39 @@
           gain.connect(bgmGain);
           osc.start();
         });
+
+        bgmStep = 0;
+        if (bgmInterval) clearInterval(bgmInterval);
+        bgmInterval = setInterval(() => {
+          if (!enabled || !ctx || ctx.state !== 'running') return;
+          const note = GOTHIC_ARPEGGIO[bgmStep % GOTHIC_ARPEGGIO.length];
+          bgmStep++;
+          tone(note, 'triangle', 0.36, 0.032, 0);
+          if (bgmStep % 4 === 1) {
+            tone(note * 1.5, 'sine', 0.48, 0.018, 0.04);
+          }
+        }, 420);
       }
+
+      // Auto-start immediately + unlock on first gesture if browser suspended AudioContext
+      setTimeout(() => init(), 10);
+      const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
+      const onFirstGesture = (e) => {
+        if (e && e.target && e.target.closest && e.target.closest('#audioToggle')) return;
+        if (enabled) init();
+        if (ctx && ctx.state === 'running') {
+          unlockEvents.forEach((ev) => window.removeEventListener(ev, onFirstGesture, true));
+        }
+      };
+      unlockEvents.forEach((ev) => window.addEventListener(ev, onFirstGesture, { capture: true, passive: true }));
 
       return {
         init,
         toggle: () => {
           enabled = !enabled;
+          if (!ctx) init();
           if (master) master.gain.value = enabled ? 0.85 : 0;
+          if (enabled && ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
           return enabled;
         },
         playGrab: () => tone(320, 'triangle', 0.1, 0.08),

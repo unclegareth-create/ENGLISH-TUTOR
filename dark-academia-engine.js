@@ -1291,22 +1291,14 @@ const DarkAcademiaAtmosphere = (() => {
   let noiseNode = null;
   let noiseGain = null;
   let musicPlaying = false;
+  let userMutedMusic = false;
+  let autoplayUnlockArmed = false;
   let sfxEnabled = true;
   let currentTrackIdx = 0;
   let synthStep = 0;
   let clauseTimer = null;
 
   const SOUNDSCAPE_TRACKS = [
-    {
-      id: 'rain_hearth',
-      name: 'Midnight Rain & Cello',
-      type: 'procedural_rain',
-      tempoMs: 420,
-      notes: [
-        [146.83, 220.00], [164.81, 246.94], [174.61, 261.63], [164.81, 246.94],
-        [130.81, 196.00], [146.83, 220.00], [110.00, 220.00], [138.59, 207.65]
-      ]
-    },
     {
       id: 'bach_minuet',
       name: 'Bach: Minuet in G',
@@ -1338,6 +1330,16 @@ const DarkAcademiaAtmosphere = (() => {
       notes: [
         [659.25, 164.81], [587.33, 164.81], [659.25, 196.00], [587.33, 196.00],
         [622.25, 185.00], [587.33, 196.00], [523.25, 164.81], [493.88, 164.81]
+      ]
+    },
+    {
+      id: 'rain_hearth',
+      name: 'Midnight Rain & Cello',
+      type: 'procedural_rain',
+      tempoMs: 420,
+      notes: [
+        [146.83, 220.00], [164.81, 246.94], [174.61, 261.63], [164.81, 246.94],
+        [130.81, 196.00], [146.83, 220.00], [110.00, 220.00], [138.59, 207.65]
       ]
     },
     {
@@ -1576,6 +1578,30 @@ const DarkAcademiaAtmosphere = (() => {
     } catch (e) {}
   }
 
+  function armAutoplayUnlock() {
+    if (autoplayUnlockArmed) return;
+    autoplayUnlockArmed = true;
+    const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
+    const onFirstGesture = (e) => {
+      if (e && e.target && e.target.closest && e.target.closest('#da-hud-music-toggle')) {
+        return;
+      }
+      unlockEvents.forEach((ev) => window.removeEventListener(ev, onFirstGesture, true));
+      autoplayUnlockArmed = false;
+      if (!userMutedMusic) {
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(() => {});
+        }
+        if (musicAudioEl && musicAudioEl.paused && musicPlaying) {
+          musicAudioEl.play().catch(() => {});
+        } else if (!musicPlaying) {
+          startMusic();
+        }
+      }
+    };
+    unlockEvents.forEach((ev) => window.addEventListener(ev, onFirstGesture, { capture: true, passive: true }));
+  }
+
   function startMusic() {
     stopMusic(false);
     musicPlaying = true;
@@ -1588,16 +1614,18 @@ const DarkAcademiaAtmosphere = (() => {
           musicAudioEl.loop = true;
           musicAudioEl.preload = 'auto';
         }
-        musicAudioEl.src = track.src;
+        if (!musicAudioEl.src || !musicAudioEl.src.endsWith(track.src)) {
+          musicAudioEl.src = track.src;
+        }
         musicAudioEl.volume = 0.28;
         const p = musicAudioEl.play();
         if (p && typeof p.catch === 'function') {
           p.catch(() => {
-            synthTimer = setInterval(playSynthStep, track.tempoMs);
+            armAutoplayUnlock();
           });
         }
       } catch (e) {
-        synthTimer = setInterval(playSynthStep, track.tempoMs);
+        armAutoplayUnlock();
       }
     } else {
       if (track.type === 'procedural_rain') {
@@ -1605,6 +1633,9 @@ const DarkAcademiaAtmosphere = (() => {
       }
       playSynthStep();
       synthTimer = setInterval(playSynthStep, track.tempoMs);
+      if (audioCtx && audioCtx.state === 'suspended') {
+        armAutoplayUnlock();
+      }
     }
     syncHUD();
   }
@@ -1626,8 +1657,10 @@ const DarkAcademiaAtmosphere = (() => {
 
   function toggleMusic() {
     if (musicPlaying) {
+      userMutedMusic = true;
       stopMusic(true);
     } else {
+      userMutedMusic = false;
       startMusic();
     }
   }
@@ -2312,6 +2345,13 @@ const DarkAcademiaAtmosphere = (() => {
   function initLesson(unitId) {
     injectScholarHUD();
     const bookKey = detectBookKey(unitId);
+    const bookTrackMap = { dracula: 2, frankenstein: 0, jekyll: 1, baskerville: 2 };
+    if (typeof bookTrackMap[bookKey] === 'number' && !musicPlaying) {
+      currentTrackIdx = bookTrackMap[bookKey];
+    }
+    if (!musicPlaying && !userMutedMusic) {
+      startMusic();
+    }
     const paintKey = UNIT_PAINTINGS[unitId] ? unitId : bookKey;
     const plateInfo = UNIT_PAINTINGS[unitId] || UNIT_PAINTINGS[`${bookKey}_unit1`];
     getBookImage(paintKey);
@@ -2466,6 +2506,14 @@ const DarkAcademiaAtmosphere = (() => {
   function initGlobal() {
     injectScholarHUD();
     initHubShowcase();
+    const bookKey = detectBookKey();
+    const bookTrackMap = { dracula: 2, frankenstein: 0, jekyll: 1, baskerville: 2 };
+    if (typeof bookTrackMap[bookKey] === 'number') {
+      currentTrackIdx = bookTrackMap[bookKey];
+    }
+    if (!musicPlaying && !userMutedMusic) {
+      startMusic();
+    }
   }
 
   return {

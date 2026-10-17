@@ -810,9 +810,9 @@
         <i class="fa-solid fa-rotate-left" style="color:var(--amber);"></i>
         <span id="ui-stat-tokens">3</span>
       </span>
-      <button type="button" class="icon-btn" id="bgm-btn" onclick="Chronicle88.toggleBGM()">
+      <button type="button" class="icon-btn active" id="bgm-btn" onclick="Chronicle88.toggleBGM()">
         <i class="fa-solid fa-music"></i>
-        <span id="bgm-label">Music</span>
+        <span id="bgm-label">Music: ON</span>
       </button>
       <button type="button" class="icon-btn active" id="sfx-btn" onclick="Chronicle88.toggleSFX()">
         <i class="fa-solid fa-volume-high" id="sfx-icon"></i>
@@ -950,7 +950,7 @@
          1. WEB AUDIO SYNTHESIZER (8-BIT BGM & SFX)
          ============================================================== */
       let audioCtx = null;
-      let bgmOn = false;
+      let bgmOn = true;
       let sfxOn = true;
       let bgmTimer = null;
       let bgmStep = 0;
@@ -979,12 +979,12 @@
           if (AC) audioCtx = new AC();
         }
         if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume();
+          audioCtx.resume().catch(() => {});
         }
       }
 
       function playSynthNote(freq, duration, wave = 'square', gainVal = 0.03) {
-        if (!audioCtx || freq <= 0) return;
+        if (!audioCtx || audioCtx.state !== 'running' || freq <= 0) return;
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = wave;
@@ -1022,10 +1022,14 @@
       function startBGM() {
         stopBGM();
         if (!bgmOn) return;
+        ensureAudio();
         const track = BGM_TRACKS[state.tapeId] || BGM_TRACKS[1];
         bgmStep = 0;
         bgmTimer = setInterval(() => {
           if (!bgmOn) return;
+          if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
+          }
           const leadNote = track.lead[bgmStep % track.lead.length];
           const bassNote = track.bass[Math.floor(bgmStep / 2) % track.bass.length];
           if (leadNote > 0) playSynthNote(leadNote, 0.14, 'square', 0.015);
@@ -2001,6 +2005,19 @@
         const params = new URLSearchParams(window.location.search);
         const t = parseInt(params.get('tape') || '1', 10);
         loadTape(t);
+
+        const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
+        const unlockAudio = (e) => {
+          if (e && e.target && e.target.closest && e.target.closest('#bgm-btn')) return;
+          if (bgmOn) {
+            ensureAudio();
+            if (!bgmTimer) startBGM();
+          }
+          if (audioCtx && audioCtx.state === 'running') {
+            unlockEvents.forEach((ev) => document.removeEventListener(ev, unlockAudio, true));
+          }
+        };
+        unlockEvents.forEach((ev) => document.addEventListener(ev, unlockAudio, { capture: true, passive: true }));
       });
 
       return {
