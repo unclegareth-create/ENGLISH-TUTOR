@@ -1359,7 +1359,7 @@ const DarkAcademiaAtmosphere = (() => {
       title: 'Book I • Bram Stoker’s Dracula (1897)',
       imgSrc: 'assets/gothic/dracula_carpathian.jpg',
       museumCredit: 'Plate I — Caspar David Friedrich, Abbey in the Oakwood (1809–1810), Oil on canvas • Alte Nationalgalerie, Berlin',
-      audioSrc: 'assets/audio/gothic_act1_dracula.mp3',
+      audioSrc: 'assets/audio/gothic_act1_dracula.mp3?v=2',
       quote: '"Soon we were hemmed in with trees, which in places arched right over the roadway till we passed as through a tunnel..."',
       grammarFocus: 'C1/C2 Target: Participle Clauses (Fearing..., Hemmed in by...), Negative Inversion (Little did Harker realise...) & Reporting Passives.',
       freeUrl: 'dracula-unit1-carpathian-threshold.html',
@@ -1370,7 +1370,7 @@ const DarkAcademiaAtmosphere = (() => {
       title: 'Book II • Mary Shelley’s Frankenstein (1818)',
       imgSrc: 'assets/gothic/frankenstein_lab.jpg',
       museumCredit: 'Plate II — Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768), Oil on canvas • The National Gallery, London',
-      audioSrc: 'assets/audio/gothic_act2_frankenstein.mp3',
+      audioSrc: 'assets/audio/gothic_act2_frankenstein.mp3?v=2',
       quote: '"It was on a dreary night of November that I beheld the accomplishment of my toils..."',
       grammarFocus: 'C1/C2 Target: Inverted Conditionals (Had he known..., Were we to...), Contrast Fronting (Bleak though it was...) & Cleft Sentences.',
       freeUrl: 'frankenstein-unit1-spark-of-being.html',
@@ -1381,7 +1381,7 @@ const DarkAcademiaAtmosphere = (() => {
       title: 'Book III • R.L. Stevenson’s Dr Jekyll & Mr Hyde (1886)',
       imgSrc: 'assets/gothic/jekyll_apothecary.jpg',
       museumCredit: 'Plate III — John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880), Oil on canvas • Leeds Art Gallery',
-      audioSrc: 'assets/audio/gothic_act3_jekyll.mp3',
+      audioSrc: 'assets/audio/gothic_act3_jekyll.mp3?v=2',
       quote: '"Much as Utterson wished to trust his old friend, the sinister connection to Mr Hyde filled him with repugnance..."',
       grammarFocus: 'C1/C2 Target: Concessive Clauses (Much as..., Shocking though...), Time Inversions (Not until... did...) & Evaluative C2 Lexis.',
       freeUrl: 'jekyll-unit1-soho-threshold.html',
@@ -1392,7 +1392,7 @@ const DarkAcademiaAtmosphere = (() => {
       title: 'Book IV • Conan Doyle’s The Hound of the Baskervilles (1901)',
       imgSrc: 'assets/gothic/baskerville_moor.jpg',
       museumCredit: 'Plate IV — Caspar David Friedrich, Two Men Contemplating the Moon (1819–1820), Oil on canvas • Galerie Neue Meister, Dresden',
-      audioSrc: 'assets/audio/gothic_act4_baskerville.mp3',
+      audioSrc: 'assets/audio/gothic_act4_baskerville.mp3?v=2',
       quote: '"Sir Charles must have been waiting at the moor-gate, yet no footprints could be seen upon the gravel..."',
       grammarFocus: 'C1/C2 Target: Past Modals of Deduction (must have been, can’t have, might well have), Place Inversion & Counterfactuals (But for...).',
       freeUrl: 'baskerville-unit1-curse-of-the-moors.html',
@@ -1726,6 +1726,33 @@ const DarkAcademiaAtmosphere = (() => {
     }
   }
 
+  function selectBestBritishVoice() {
+    if (!('speechSynthesis' in window)) return null;
+    try {
+      const voices = window.speechSynthesis.getVoices() || [];
+      if (!voices.length) return null;
+      const gbVoices = voices.filter((v) => /^en[-_](GB|UK)/i.test(v.lang || '') || /Great Britain|United Kingdom|UK/i.test(v.name || ''));
+      const pool = gbVoices.length ? gbVoices : voices.filter((v) => /^en/i.test(v.lang || ''));
+      if (!pool.length) return null;
+
+      const scoreVoice = (v) => {
+        const name = (v.name || '').toLowerCase();
+        let s = 0;
+        if (name.includes('natural') || name.includes('neural')) s += 100;
+        if (name.includes('online')) s += 60;
+        if (name.includes('ryan') || name.includes('thomas') || name.includes('sonia') || name.includes('libby')) s += 50;
+        if (name.includes('google uk english')) s += 45;
+        if (name.includes('daniel') || name.includes('oliver') || name.includes('serena') || name.includes('arthur')) s += 35;
+        if (name.includes('hazel') || name.includes('desktop')) s -= 40;
+        return s;
+      };
+
+      return [...pool].sort((a, b) => scoreVoice(b) - scoreVoice(a))[0] || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   function stopNarration() {
     if (clauseTimer) {
       clearInterval(clauseTimer);
@@ -1744,6 +1771,7 @@ const DarkAcademiaAtmosphere = (() => {
     });
     try {
       if (voiceAudioEl) {
+        voiceAudioEl.ontimeupdate = null;
         voiceAudioEl.pause();
         voiceAudioEl.currentTime = 0;
       }
@@ -1752,6 +1780,28 @@ const DarkAcademiaAtmosphere = (() => {
       }
     } catch (e) {}
     setMusicDucking(false);
+  }
+
+  function computeClauseWindows(fullText, clausesNodeList) {
+    if (!fullText || !clausesNodeList || !clausesNodeList.length) return [];
+    const normFull = fullText.replace(/\s+/g, ' ').trim();
+    const totalLen = Math.max(1, normFull.length);
+    let searchFrom = 0;
+
+    return Array.from(clausesNodeList).map((el, idx) => {
+      const clauseText = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      let pos = normFull.indexOf(clauseText, searchFrom);
+      if (pos === -1) pos = normFull.indexOf(clauseText);
+      if (pos !== -1) {
+        searchFrom = pos + clauseText.length;
+        const startRatio = Math.max(0, (pos - 12) / totalLen);
+        const endRatio = Math.min(1, (pos + clauseText.length + 18) / totalLen);
+        return { el, startRatio, endRatio };
+      }
+      const fallbackStart = idx / clausesNodeList.length;
+      const fallbackEnd = (idx + 1) / clausesNodeList.length;
+      return { el, startRatio: fallbackStart, endRatio: fallbackEnd };
+    });
   }
 
   function playDramaticExtract(mp3Src, fallbackText, btnEl, waveformEl, clausesNodeList) {
@@ -1769,24 +1819,30 @@ const DarkAcademiaAtmosphere = (() => {
     if (waveformEl) waveformEl.classList.add('active');
     setMusicDucking(true);
 
-    // Highlight clauses sequentially while reading
-    if (clausesNodeList && clausesNodeList.length > 0) {
-      let cIdx = 0;
-      clausesNodeList[0].classList.add('clause-speaking-now');
-      clauseTimer = setInterval(() => {
-        clausesNodeList.forEach((c) => c.classList.remove('clause-speaking-now'));
-        cIdx = (cIdx + 1) % clausesNodeList.length;
-        clausesNodeList[cIdx].classList.add('clause-speaking-now');
-      }, 3600);
-    }
+    const clauseWindows = computeClauseWindows(fallbackText, clausesNodeList);
+
+    const startFallbackClauseTimer = () => {
+      if (clausesNodeList && clausesNodeList.length > 0 && !clauseTimer) {
+        let cIdx = 0;
+        clausesNodeList[0].classList.add('clause-speaking-now');
+        clauseTimer = setInterval(() => {
+          clausesNodeList.forEach((c) => c.classList.remove('clause-speaking-now'));
+          cIdx = (cIdx + 1) % clausesNodeList.length;
+          clausesNodeList[cIdx].classList.add('clause-speaking-now');
+        }, 3800);
+      }
+    };
 
     const speakFallback = () => {
+      startFallbackClauseTimer();
       if ('speechSynthesis' in window && fallbackText) {
         try {
           window.speechSynthesis.cancel();
           const utter = new SpeechSynthesisUtterance(fallbackText);
           utter.lang = 'en-GB';
-          utter.rate = 0.94;
+          const bestVoice = selectBestBritishVoice();
+          if (bestVoice) utter.voice = bestVoice;
+          utter.rate = 0.95;
           utter.onend = () => stopNarration();
           utter.onerror = () => stopNarration();
           window.speechSynthesis.speak(utter);
@@ -1804,6 +1860,14 @@ const DarkAcademiaAtmosphere = (() => {
         }
         voiceAudioEl.src = mp3Src;
         voiceAudioEl.volume = 1.0;
+        voiceAudioEl.ontimeupdate = () => {
+          if (!clauseWindows.length || !voiceAudioEl.duration) return;
+          const progress = voiceAudioEl.currentTime / voiceAudioEl.duration;
+          clauseWindows.forEach((w) => {
+            const active = progress >= w.startRatio && progress <= w.endRatio;
+            w.el.classList.toggle('clause-speaking-now', active);
+          });
+        };
         voiceAudioEl.onended = () => stopNarration();
         voiceAudioEl.onerror = () => speakFallback();
         const p = voiceAudioEl.play();
@@ -1816,16 +1880,148 @@ const DarkAcademiaAtmosphere = (() => {
     speakFallback();
   }
 
+  const VOCAB_SPRITE_SRC = 'assets/audio/da_vocab_lexicon.mp3?v=2';
+  const VOCAB_SPRITE_INDEX = {
+    'abhor': [0.0, 1.872],
+    'abhorrence': [1.872, 3.744],
+    'albeit': [3.744, 5.616],
+    'apprehensive': [5.616, 7.488],
+    'audacious': [7.488, 9.36],
+    'audacity': [9.36, 11.232],
+    'beetling / frowning crags': [11.232, 13.944],
+    'beetling crags': [13.944, 15.816],
+    'begone!': [15.816, 17.688],
+    'benevolence': [17.688, 19.56],
+    'benevolent': [19.56, 21.432],
+    'bight': [21.432, 23.304],
+    'brougham': [23.304, 25.176],
+    'bulwark': [25.176, 27.048],
+    'calamity': [27.048, 28.44],
+    'callous': [28.44, 30.312],
+    'calèche': [30.312, 32.184],
+    'catastrophe': [32.184, 34.056],
+    'catastrophic': [34.056, 35.928],
+    'charnel-house': [35.928, 37.8],
+    'cheval-glass': [37.8, 39.672],
+    'circumstantial': [39.672, 41.544],
+    'corroborate': [41.544, 43.416],
+    'corroboration': [43.416, 45.288],
+    'countenance': [45.288, 47.16],
+    'coxswain': [47.16, 49.032],
+    'cromlech': [49.032, 50.904],
+    'daemon / fiend': [50.904, 52.944],
+    'delineate': [52.944, 54.816],
+    'depravity': [54.816, 56.688],
+    'derelict': [56.688, 58.56],
+    'desolate': [58.56, 60.432],
+    'detestable': [60.432, 62.304],
+    'dewlap': [62.304, 64.176],
+    'disclose': [64.176, 66.048],
+    'draught': [66.048, 67.92],
+    'duplicity': [67.92, 69.792],
+    'extricate': [69.792, 71.664],
+    'extricate (oneself from)': [71.664, 74.352],
+    'facade': [74.352, 76.224],
+    'faggot': [76.224, 78.096],
+    'fallacy': [78.096, 79.968],
+    'formidable': [79.968, 81.84],
+    'hansom': [81.84, 83.712],
+    'hemmed in (by)': [83.712, 85.584],
+    'hovel': [85.584, 87.456],
+    'impenetrable': [87.456, 89.328],
+    'imperious': [89.328, 91.2],
+    'implausible': [91.2, 93.072],
+    'incongruous': [93.072, 94.944],
+    'inexorable': [94.944, 96.816],
+    'inexorably': [96.816, 98.688],
+    'jowl / muzzle': [98.688, 100.584],
+    'juggernaut': [100.584, 102.456],
+    'link-boy': [102.456, 104.328],
+    'manifold': [104.328, 106.2],
+    'melancholy': [106.2, 108.072],
+    'minim': [108.072, 109.944],
+    'moor-gate / wicket-gate': [109.944, 112.44],
+    'nay': [112.44, 114.312],
+    'ostracise': [114.312, 116.184],
+    'ostracism': [116.184, 118.056],
+    'perforce': [118.056, 119.928],
+    'pernicious': [119.928, 121.8],
+    'phial': [121.8, 123.672],
+    'plausible': [123.672, 125.544],
+    'premeditated': [125.544, 127.416],
+    'quagmire': [127.416, 129.288],
+    'repudiate': [129.288, 131.16],
+    'repugnance': [131.16, 133.032],
+    'repugnant': [133.032, 134.904],
+    'sawbones': [134.904, 136.776],
+    'scion': [136.776, 138.648],
+    'sinister': [138.648, 140.52],
+    'spectral': [140.52, 142.392],
+    'spurn': [142.392, 144.264],
+    'succour': [144.264, 146.136],
+    'thou / thee / thy / wilt': [146.136, 149.568],
+    'thou / thy': [149.568, 151.44],
+    'toils': [151.44, 153.312],
+    'treacherous': [153.312, 155.184],
+    'trepidation': [155.184, 157.056],
+    'ulster': [157.056, 158.928],
+    'unaccountably': [158.928, 160.8],
+    'unquenchable': [160.8, 162.672],
+    'wagonette': [162.672, 164.544],
+    'wicket-gate': [164.544, 166.416],
+    'wretch': [166.416, 167.448],
+    'yonder': [167.448, 168.6]
+  };
+
   function pronounceText(text) {
     if (!text) return;
     stopNarration();
-    playSFX('quill');
+    const key = text.replace(/\s+/g, ' ').trim().toLowerCase();
+    const range = VOCAB_SPRITE_INDEX[key];
+
+    if (range && typeof Audio !== 'undefined') {
+      try {
+        if (!voiceAudioEl) {
+          voiceAudioEl = new Audio();
+          voiceAudioEl.preload = 'auto';
+        }
+        const [startSec, endSec] = range;
+        const startPlayback = () => {
+          try {
+            voiceAudioEl.currentTime = startSec;
+            voiceAudioEl.ontimeupdate = () => {
+              if (voiceAudioEl.currentTime >= endSec - 0.04) {
+                voiceAudioEl.ontimeupdate = null;
+                voiceAudioEl.pause();
+              }
+            };
+            const p = voiceAudioEl.play();
+            if (p && typeof p.catch === 'function') {
+              p.catch(() => {});
+            }
+          } catch (e) {}
+        };
+
+        if (!voiceAudioEl.src || !voiceAudioEl.src.includes('da_vocab_lexicon.mp3')) {
+          voiceAudioEl.src = VOCAB_SPRITE_SRC;
+          voiceAudioEl.volume = 1.0;
+          voiceAudioEl.addEventListener('loadedmetadata', startPlayback, { once: true });
+          voiceAudioEl.load();
+        } else {
+          startPlayback();
+        }
+        return;
+      } catch (e) {}
+    }
+
     try {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = 'en-GB';
-        utter.rate = 0.93;
+        const bestVoice = selectBestBritishVoice();
+        if (bestVoice) utter.voice = bestVoice;
+        utter.rate = 0.94;
         window.speechSynthesis.speak(utter);
       }
     } catch (e) {}
@@ -2176,7 +2372,7 @@ const DarkAcademiaAtmosphere = (() => {
       const clone = readingFrame.cloneNode(true);
       clone.querySelectorAll('div, cite').forEach((n) => n.remove());
       const cleanExtractText = clone.textContent.replace(/\s+/g, ' ').trim();
-      const mp3Src = `assets/audio/extract_${unitId}.mp3`;
+      const mp3Src = `assets/audio/extract_${unitId}.mp3?v=2`;
 
       const readerBar = document.createElement('div');
       readerBar.className = 'da-audio-reader-bar';
@@ -2204,18 +2400,21 @@ const DarkAcademiaAtmosphere = (() => {
       readingFrame.insertBefore(readerBar, readingFrame.firstChild);
     }
 
-    // 3. Add "🔊 Listen" buttons to Victorian vs. Modern C1/C2 Style-Shift panes
-    document.querySelectorAll('.shift-pane').forEach((pane) => {
+    // 3. Add "🔊 Listen" buttons to Victorian vs. Modern C1/C2 Style-Shift panes (backed by Neural MP3s)
+    document.querySelectorAll('.shift-pane').forEach((pane, idx) => {
       const labelEl = pane.querySelector('.shift-label');
       const textEl = pane.querySelector('.shift-text');
       if (!labelEl || !textEl || labelEl.querySelector('.da-pronounce-btn')) return;
 
+      const shiftMp3 = `assets/audio/shift_${unitId}_${idx}.mp3?v=2`;
+      const cleanShiftText = textEl.textContent.replace(/\s+/g, ' ').trim();
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'da-pronounce-btn';
-      btn.innerHTML = '🔊 Listen';
+      btn.className = 'da-pronounce-btn da-reader-btn';
+      btn.dataset.defaultLabel = '🔊 Listen';
+      btn.innerHTML = '<span class="da-reader-btn-label">🔊 Listen</span>';
       btn.addEventListener('click', () => {
-        pronounceText(textEl.textContent.replace(/\s+/g, ' ').trim());
+        playDramaticExtract(shiftMp3, cleanShiftText, btn, null, null);
       });
       labelEl.appendChild(btn);
     });
