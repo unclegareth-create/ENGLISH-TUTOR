@@ -479,6 +479,10 @@
 
     function injectTelemetryHUD(modeName, isThreeShared = false) {
       if (document.getElementById('wasm-webgl-hud')) return;
+      // Developer telemetry is hidden unless ?debug is in the URL. Pages that use the pill
+      // for their music toggle keep just that button.
+      const debugHud = /[?&]debug\b/.test(window.location.search || '');
+      if (!debugHud && !shouldManageArcadeBGM()) return;
       const style = document.createElement('style');
       style.textContent = `
         .wasm-webgl-hud {
@@ -640,7 +644,13 @@
         <button type="button" class="wasm-webgl-btn" id="wasm-hud-toggle" title="Cycle High-Performance (4,096) / Eco (1,024) / Pause">4K GPU</button>
       `;
       document.body.appendChild(hud);
-      hudBadgeEl = hud.querySelector('#wasm-hud-text');
+      if (!debugHud) {
+        ['#wasm-hud-dot', '#wasm-hud-text', '#wasm-hud-toggle'].forEach((sel) => {
+          const el = hud.querySelector(sel);
+          if (el) el.style.display = 'none';
+        });
+      }
+      hudBadgeEl = debugHud ? hud.querySelector('#wasm-hud-text') : null;
 
       const bgmBtn = hud.querySelector('#wasm-bgm-toggle');
       if (bgmBtn) {

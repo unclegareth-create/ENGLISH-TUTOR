@@ -7,2037 +7,1787 @@
   <meta name="description" content="Play Chronicle '88: three streamlined retro visual novel adventures where B1–B2 English grammar clues solve the mystery." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet" />
 
   <style>
+    /* ==========================================================================
+       PC-8801 presentation: strict 8-colour digital palette only.
+       #000 #00F #F00 #F0F #0F0 #0FF #FF0 #FFF
+       ========================================================================== */
     :root {
-      --bg-page: #0b0f19;
-      --bg-card: #111827;
-      --bg-elevated: #1e293b;
-      --bg-subtle: rgba(30, 41, 59, 0.55);
-      --border-soft: rgba(255, 255, 255, 0.09);
-      --border-hover: rgba(245, 158, 11, 0.45);
-      --amber: #f59e0b;
-      --amber-soft: rgba(245, 158, 11, 0.14);
-      --sky: #38bdf8;
-      --sky-soft: rgba(56, 189, 248, 0.12);
-      --green: #10b981;
-      --green-soft: rgba(16, 185, 129, 0.14);
-      --red: #f43f5e;
-      --red-soft: rgba(244, 63, 94, 0.14);
-      --text-main: #f8fafc;
-      --text-secondary: #cbd5e1;
-      --text-muted: #94a3b8;
-      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-      --font-pixel: 'Press Start 2P', monospace;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background-color: var(--bg-page);
-      background-image: radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.07), transparent 55%);
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      min-height: 100vh;
-      line-height: 1.6;
-      padding-bottom: 3rem;
-    }
-
-    /* ==========================================================================
-       1. COMPACT TOP NAVIGATION & EPISODE BAR
-       ========================================================================== */
-    .top-bar {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 1rem 1.25rem 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .brand-group {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-    }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.84rem;
-      font-weight: 600;
-      padding: 0.4rem 0.75rem;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-soft);
-      transition: all 0.15s ease;
-    }
-
-    .back-link:hover {
-      color: var(--text-main);
-      border-color: rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .brand-title {
-      font-family: var(--font-pixel);
-      font-size: 0.75rem;
-      color: var(--amber);
-      letter-spacing: 0.04em;
-    }
-
-    .hud-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .stat-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.7rem;
-      border-radius: 999px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-    }
-
-    .icon-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.35rem 0.7rem;
-      border-radius: 999px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      color: var(--text-muted);
-      font-family: var(--font-sans);
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .icon-btn:hover {
-      color: var(--text-main);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    .icon-btn.active {
-      color: var(--amber);
-      border-color: rgba(245, 158, 11, 0.4);
-      background: var(--amber-soft);
-    }
-
-    /* Episode Switcher Pills */
-    .episode-nav {
-      max-width: 780px;
-      margin: 0 auto 1rem;
-      padding: 0 1.25rem;
-    }
-
-    .episode-tabs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
-      background: var(--bg-card);
-      padding: 0.35rem;
-      border-radius: 12px;
-      border: 1px solid var(--border-soft);
-    }
-
-    .episode-tab {
-      background: transparent;
-      border: 1px solid transparent;
-      border-radius: 8px;
-      padding: 0.55rem 0.75rem;
-      color: var(--text-muted);
-      font-family: var(--font-sans);
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.15s ease;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .episode-tab:hover {
-      color: var(--text-main);
-      background: rgba(255, 255, 255, 0.03);
-    }
-
-    .episode-tab.active {
-      background: var(--bg-elevated);
-      color: var(--amber);
-      border-color: rgba(245, 158, 11, 0.3);
-      font-weight: 700;
-    }
-
-    /* ==========================================================================
-       2. SINGLE UNIFIED STORY CARD
-       ========================================================================== */
-    .story-container {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 0 1.25rem;
-    }
-
-    .story-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-soft);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
-    }
-
-    /* Scene Progress Header */
-    .scene-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.85rem 1.35rem;
-      border-bottom: 1px solid var(--border-soft);
-      background: rgba(15, 23, 42, 0.6);
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .scene-progress {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
-
-    .scene-step-text {
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .progress-dots {
-      display: flex;
-      gap: 0.35rem;
-    }
-
-    .progress-dot {
-      width: 20px;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.12);
-      transition: background 0.2s;
-    }
-
-    .progress-dot.done {
-      background: var(--green);
-    }
-
-    .progress-dot.current {
-      background: var(--amber);
-    }
-
-    .grammar-badge {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--sky);
-      background: var(--sky-soft);
-      padding: 0.25rem 0.65rem;
-      border-radius: 999px;
-    }
-
-    /* Pixel Canvas Stage */
-    .canvas-stage {
-      position: relative;
-      width: 100%;
-      height: 230px;
-      background: #070913;
-      border-bottom: 1px solid var(--border-soft);
-      overflow: hidden;
-    }
-
-    #pixel-canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      image-rendering: pixelated;
-      object-fit: cover;
-    }
-
-    .location-pill {
-      position: absolute;
-      bottom: 0.75rem;
-      left: 1rem;
-      background: rgba(11, 15, 25, 0.85);
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 0.25rem 0.65rem;
-      border-radius: 6px;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--text-secondary);
-    }
-
-    /* Story Body */
-    .story-body {
-      padding: 1.5rem 1.5rem 1.75rem;
-    }
-
-    .speaker-line {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.65rem;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--amber);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .speaker-role {
-      color: var(--text-muted);
-      font-weight: 500;
-      text-transform: none;
-    }
-
-    .narrative-text {
-      font-size: 1.04rem;
-      line-height: 1.65;
-      color: var(--text-main);
-      margin-bottom: 1.25rem;
-    }
-
-    .narrative-text strong {
-      color: #fff;
-      font-weight: 700;
-    }
-
-    /* Compact 2-Column Clue Strip */
-    .clue-strip {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 0.65rem;
-      margin-bottom: 1.35rem;
-    }
-
-    .clue-item {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-soft);
-      border-left: 3px solid var(--sky);
-      border-radius: 8px;
-      padding: 0.65rem 0.85rem;
-    }
-
-    .clue-item.key-clue {
-      border-left-color: var(--amber);
-      background: rgba(245, 158, 11, 0.06);
-    }
-
-    .clue-label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--sky);
-      text-transform: uppercase;
-      margin-bottom: 0.2rem;
-    }
-
-    .clue-item.key-clue .clue-label {
-      color: var(--amber);
-    }
-
-    .clue-text {
-      font-size: 0.88rem;
-      color: var(--text-secondary);
-      line-height: 1.4;
-    }
-
-    /* Question Prompt + Hint Toggle */
-    .question-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-bottom: 0.85rem;
-      flex-wrap: wrap;
-    }
-
-    .question-prompt {
-      font-size: 0.96rem;
-      font-weight: 700;
-      color: var(--text-main);
-      flex: 1;
-      min-width: 240px;
-    }
-
-    .hint-toggle-btn {
-      background: transparent;
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      color: var(--sky);
-      border-radius: 999px;
-      padding: 0.3rem 0.75rem;
-      font-family: var(--font-sans);
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      transition: all 0.15s ease;
-      flex-shrink: 0;
-    }
-
-    .hint-toggle-btn:hover {
-      background: var(--sky-soft);
-    }
-
-    .hint-drawer {
-      display: none;
-      background: rgba(56, 189, 248, 0.08);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: 10px;
-      padding: 0.85rem 1rem;
-      margin-bottom: 1rem;
-      font-size: 0.88rem;
-      color: var(--text-secondary);
-      line-height: 1.55;
-    }
-
-    .hint-drawer.open {
-      display: block;
-    }
-
-    .hint-drawer strong {
-      color: var(--sky);
-    }
-
-    /* Clean Choice Buttons */
-    .choices-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-
-    .choice-btn {
-      width: 100%;
-      text-align: left;
-      background: var(--bg-elevated);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      padding: 0.9rem 1.1rem;
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      font-size: 0.95rem;
-      line-height: 1.5;
-      cursor: pointer;
-      display: flex;
-      align-items: flex-start;
-      gap: 0.85rem;
-      transition: all 0.15s ease;
-    }
-
-    .choice-btn:hover:not(:disabled) {
-      border-color: var(--border-hover);
-      background: rgba(30, 41, 59, 0.95);
-      transform: translateY(-1px);
-    }
-
-    .choice-btn:disabled {
-      cursor: default;
-      opacity: 0.75;
-    }
-
-    .choice-letter {
-      width: 26px;
-      height: 26px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.07);
-      color: var(--amber);
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 0.1rem;
-    }
-
-    .grammar-highlight {
-      color: var(--amber);
-      font-weight: 700;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-
-    .choice-btn.correct {
-      background: var(--green-soft);
-      border-color: var(--green);
-      opacity: 1;
-    }
-
-    .choice-btn.correct .choice-letter {
-      background: var(--green);
-      color: #06281e;
-    }
-
-    .choice-btn.wrong {
-      background: var(--red-soft);
-      border-color: var(--red);
-      opacity: 1;
-    }
-
-    .choice-btn.wrong .choice-letter {
-      background: var(--red);
-      color: #fff;
-    }
-
-    /* Inline Feedback & Contextual Dice Banner */
-    .feedback-box {
-      display: none;
-      margin-top: 1.15rem;
-      padding: 1.1rem 1.25rem;
-      border-radius: 12px;
-      border: 1px solid var(--border-soft);
-      background: rgba(15, 23, 42, 0.85);
-    }
-
-    .feedback-box.show {
-      display: block;
-    }
-
-    .feedback-box.win {
-      border-color: rgba(16, 185, 129, 0.45);
-      background: rgba(16, 185, 129, 0.08);
-    }
-
-    .feedback-box.lose {
-      border-color: rgba(244, 63, 94, 0.45);
-      background: rgba(244, 63, 94, 0.08);
-    }
-
-    .feedback-title {
-      font-weight: 800;
-      font-size: 0.95rem;
-      margin-bottom: 0.35rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .feedback-box.win .feedback-title {
-      color: var(--green);
-    }
-
-    .feedback-box.lose .feedback-title {
-      color: var(--red);
-    }
-
-    .feedback-explanation {
-      font-size: 0.9rem;
-      color: var(--text-secondary);
-      line-height: 1.55;
-      margin-bottom: 1rem;
-    }
-
-    /* Contextual Inline 2d6 Dice Bar */
-    .inline-dice-bar {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 0.85rem 1rem;
-      margin-bottom: 1rem;
-      border-radius: 10px;
-      background: rgba(11, 15, 25, 0.75);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      flex-wrap: wrap;
-    }
-
-    .inline-dice-bar.show {
-      display: flex;
-    }
-
-    .dice-pair {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-    }
-
-    .die-face {
-      width: 42px;
-      height: 42px;
-      background: #f8fafc;
-      border-radius: 8px;
-      padding: 6px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-      gap: 2px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
-    }
-
-    .die-face.rolling {
-      animation: rollShake 0.25s infinite;
-    }
-
-    @keyframes rollShake {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(-10deg) scale(1.05); }
-      75% { transform: rotate(10deg) scale(1.05); }
-    }
-
-    .pip-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: transparent;
-      place-self: center;
-    }
-
-    .pip-dot.on {
-      background: #0f172a;
-    }
-
-    .dice-status-text {
-      font-size: 0.86rem;
-      color: var(--text-secondary);
-      flex: 1;
-      min-width: 180px;
-    }
-
-    .feedback-actions {
-      display: flex;
-      gap: 0.65rem;
-      flex-wrap: wrap;
-    }
-
-    .action-btn {
-      padding: 0.6rem 1.15rem;
-      border-radius: 8px;
-      font-family: var(--font-sans);
-      font-size: 0.88rem;
-      font-weight: 700;
-      cursor: pointer;
-      border: 1px solid transparent;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      transition: all 0.15s ease;
-    }
-
-    .action-btn.primary {
-      background: var(--amber);
-      color: #0b0f19;
-    }
-
-    .action-btn.primary:hover {
-      background: #fbbf24;
-    }
-
-    .action-btn.secondary {
-      background: var(--bg-elevated);
-      color: var(--text-main);
-      border-color: var(--border-soft);
-    }
-
-    .action-btn.secondary:hover {
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-
-    /* ==========================================================================
-       3. TAP-TO-BUILD REWIND PARRY MODAL
-       ========================================================================== */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(7, 10, 18, 0.85);
-      backdrop-filter: blur(6px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 1.25rem;
-      z-index: 1000;
-    }
-
-    .modal-backdrop.open {
-      display: flex;
-    }
-
-    .parry-card {
-      max-width: 540px;
-      width: 100%;
-      background: var(--bg-card);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      border-radius: 16px;
-      padding: 1.5rem;
-      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65);
-    }
-
-    .parry-title {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--amber);
-      margin-bottom: 0.35rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .parry-subtitle {
-      font-size: 0.86rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-    }
-
-    .parry-prompt-box {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-soft);
-      border-radius: 10px;
-      padding: 0.9rem 1rem;
-      margin-bottom: 1rem;
-      font-size: 0.92rem;
-    }
-
-    .parry-keyword {
-      display: inline-block;
-      margin-top: 0.45rem;
-      padding: 0.15rem 0.55rem;
-      border-radius: 6px;
-      background: var(--amber-soft);
-      color: var(--amber);
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      font-weight: 700;
-    }
-
-    .parry-slot-zone {
-      min-height: 50px;
-      padding: 0.6rem;
-      border-radius: 10px;
-      border: 1px dashed rgba(245, 158, 11, 0.45);
-      background: rgba(11, 15, 25, 0.6);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem;
-      align-items: center;
-      margin: 0.55rem 0 1rem;
-    }
-
-    .parry-bank-zone {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .word-tile {
-      padding: 0.45rem 0.8rem;
-      border-radius: 8px;
-      background: var(--bg-elevated);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      color: var(--text-main);
-      font-family: var(--font-mono);
-      font-size: 0.84rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.12s ease;
-    }
-
-    .word-tile:hover {
-      background: var(--amber);
-      color: #0b0f19;
-    }
-
-    .word-tile.used {
-      opacity: 0.25;
-      pointer-events: none;
-    }
+      --k: #000000; --b: #0000ff; --r: #ff0000; --m: #ff00ff;
+      --g: #00ff00; --c: #00ffff; --y: #ffff00; --w: #ffffff;
+      --font: 'DotGothic16', ui-monospace, 'MS Gothic', 'Osaka-Mono', 'Courier New', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: var(--k); }
+    body { color: var(--w); font-family: var(--font); font-size: 16px; line-height: 1.6; min-height: 100vh; padding-bottom: 2.5rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--y); outline-offset: 2px; }
+
+    /* 1. Top bar */
+    .top-bar { max-width: 840px; margin: 0 auto; padding: .9rem 1rem .6rem; display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap; }
+    .brand-group { display: flex; align-items: center; gap: .8rem; }
+    .back-link { color: var(--c); text-decoration: none; border: 2px solid var(--b); padding: .15rem .6rem; }
+    .back-link:hover, .back-link:focus-visible { color: var(--k); background: var(--c); border-color: var(--c); }
+    .brand-title { color: var(--y); letter-spacing: .12em; font-size: 1.1rem; }
+    .hud { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+    .stat { border: 2px solid var(--b); padding: 0 .5rem; }
+    .stat b { color: var(--y); font-weight: normal; }
+    .stat.low b { color: var(--r); }
+    .toggle { border: 2px solid var(--w); padding: 0 .5rem; }
+    .toggle:hover { background: var(--w); color: var(--k); }
+    .toggle[aria-pressed="true"] { color: var(--g); border-color: var(--g); }
+
+    /* 2. Tape tabs */
+    .episode-nav { max-width: 840px; margin: 0 auto .6rem; padding: 0 1rem; }
+    .episode-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; }
+    .episode-tab { border: 2px solid var(--b); padding: .3rem .5rem; text-align: left; color: var(--c); font-size: .85rem; line-height: 1.35; }
+    .episode-tab[aria-selected="true"] { background: var(--b); color: var(--w); border-color: var(--w); }
+    .badge { display: block; color: var(--g); font-size: .75rem; min-height: 1.1em; }
+
+    /* 3. The monitor: CG window / text window / command menu */
+    .pc88 { max-width: 840px; margin: 0 auto; padding: 0 1rem; }
+    .monitor { border: 2px solid var(--w); box-shadow: inset 0 0 0 2px var(--k), inset 0 0 0 4px var(--b); padding: 4px; }
+    .statusline { display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; background: var(--b); color: var(--w); padding: 0 .6rem; font-size: .85rem; }
+    .statusline #ui-grammar-tag { color: var(--y); }
+    .cg { position: relative; border-top: 2px solid var(--w); border-bottom: 2px solid var(--w); background: var(--k); }
+    .cg canvas { display: block; width: 100%; height: auto; aspect-ratio: 640 / 400; image-rendering: crisp-edges; image-rendering: pixelated; }
+    .cg::after { content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(to bottom, transparent 0, transparent 50%, rgba(0,0,0,.42) 50%, rgba(0,0,0,.42) 100%);
+      background-size: 100% calc(100% / 200); }
+    .loc { position: absolute; left: 8px; top: 8px; z-index: 1; background: var(--k); color: var(--y); border: 2px solid var(--y); padding: 0 .45rem; font-size: .8rem; }
+    .lower { display: grid; grid-template-columns: 1fr 210px; min-height: 200px; }
+    .lower.wide { grid-template-columns: 1fr; }
+    .textwin { position: relative; padding: .55rem .8rem 1.5rem; border-right: 2px solid var(--w); cursor: pointer; min-height: 180px; }
+    .lower.wide .textwin { border-right: 0; border-bottom: 2px solid var(--w); min-height: 0; }
+    .speaker { color: var(--c); }
+    .speaker:not(:empty)::before { content: '『'; }
+    .speaker:not(:empty)::after { content: '』'; }
+    .txt { min-height: 3.2em; }
+    .hl { color: var(--y); }
+    em { color: var(--c); font-style: normal; }
+    code { color: var(--g); font-family: inherit; }
+    .cursor { position: absolute; right: .8rem; bottom: .25rem; color: var(--y); animation: blink 1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .result { margin-top: .6rem; border-top: 2px dashed var(--b); padding-top: .45rem; }
+    #ui-result-header { font-size: 1.05rem; }
+    #ui-result-header.ok { color: var(--g); }
+    #ui-result-header.bad { color: var(--r); }
+    #ui-result-explanation { color: var(--w); }
+    .dice { display: flex; align-items: center; gap: .5rem; margin-top: .5rem; flex-wrap: wrap; }
+    .die { width: 2.2rem; height: 2.2rem; border: 2px solid var(--w); display: inline-flex; align-items: center; justify-content: center; color: var(--y); font-size: 1.25rem; }
+    .cmdwin { padding: .45rem .35rem; }
+    .cmd-title { color: var(--m); padding: 0 .4rem .3rem; font-size: .9rem; }
+    .menu { display: flex; flex-direction: column; gap: 2px; }
+    .cmd { display: flex; gap: .45rem; text-align: left; padding: .2rem .4rem .2rem 1.45rem; position: relative; color: var(--w); line-height: 1.45; }
+    .cmd::before { content: '▶'; position: absolute; left: .3rem; color: var(--y); visibility: hidden; }
+    .cmd:hover, .cmd:focus-visible { background: var(--b); outline: none; }
+    .cmd:hover::before, .cmd:focus-visible::before { visibility: visible; }
+    .cmd .k { color: var(--y); min-width: 1.2em; }
+    .cmd.accent { color: var(--y); }
+    .cmd:disabled { color: var(--m); cursor: not-allowed; text-decoration: line-through; }
+
+    /* Evidence notebook */
+    .notebook { margin-top: .8rem; border: 2px solid var(--b); padding: .55rem .8rem; }
+    .notebook h2 { font-size: .95rem; color: var(--m); font-weight: normal; }
+    #ui-notes li { list-style: none; padding-left: 1.2em; position: relative; }
+    #ui-notes li::before { content: '◆'; position: absolute; left: 0; color: var(--c); font-size: .7em; top: .4em; }
+    #ui-notes .empty { color: var(--c); }
+    #ui-notes .empty::before { content: none; }
+    .keys { color: var(--c); font-size: .8rem; margin-top: .5rem; }
+
+    .shake { animation: shake .3s steps(2); }
+    @keyframes shake { 0%, 100% { transform: none; } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+    /* 4. Rewind (parry) modal */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,.88); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 50; }
+    .modal[hidden] { display: none; }
+    .parry { background: var(--k); border: 2px solid var(--w); box-shadow: inset 0 0 0 2px var(--k), inset 0 0 0 4px var(--b); padding: 1rem 1.1rem; max-width: 580px; width: 100%; }
+    .parry h2 { color: var(--y); font-weight: normal; font-size: 1.05rem; }
+    .parry p { color: var(--c); font-size: .9rem; }
+    .p-orig { color: var(--w); margin: .5rem 0 .2rem; }
+    .p-key { display: inline-block; border: 2px solid var(--m); color: var(--m); padding: 0 .5rem; }
+    .slot { min-height: 2.4rem; border: 2px dashed var(--y); padding: .15rem; margin: .4rem 0; display: flex; flex-wrap: wrap; align-items: center; }
+    .bank { display: flex; flex-wrap: wrap; margin: .3rem 0 .6rem; }
+    .tile { border: 2px solid var(--c); padding: 0 .55rem; margin: .15rem; color: var(--w); }
+    .tile:hover, .tile:focus-visible { background: var(--b); }
+    .tile:disabled { border-color: var(--b); color: var(--b); cursor: default; }
+    .p-status { min-height: 1.6em; margin-bottom: .5rem; }
+    .p-status.ok { color: var(--g); }
+    .p-status.bad { color: var(--r); }
+    .p-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+
+    #selftest { white-space: pre-wrap; max-width: 840px; margin: 1rem auto; padding: .8rem; border: 2px solid var(--g); color: var(--g); font-family: ui-monospace, monospace; font-size: .8rem; }
+    #selftest[data-pass="false"] { border-color: var(--r); color: var(--r); }
 
     @media (max-width: 640px) {
-      .episode-tabs {
-        grid-template-columns: 1fr;
-      }
-      .canvas-stage {
-        height: 195px;
-      }
-      .story-body {
-        padding: 1.15rem;
-      }
+      .lower { grid-template-columns: 1fr; }
+      .textwin { border-right: 0; border-bottom: 2px solid var(--w); }
+      .episode-tabs { grid-template-columns: 1fr; }
+      .menu { flex-direction: row; flex-wrap: wrap; }
+      .lower.wide .menu { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .cursor, .shake { animation: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. COMPACT TOP BAR -->
+  <!-- 1. TOP BAR -->
   <header class="top-bar">
     <div class="brand-group">
-      <a href="lab.html" class="back-link">
-        <i class="fa-solid fa-arrow-left"></i> Interactive Lab
-      </a>
+      <a href="lab.html" class="back-link">◀ Interactive Lab</a>
       <span class="brand-title">CHRONICLE '88</span>
     </div>
-
-    <div class="hud-controls">
-      <span class="stat-pill" title="Stamina">
-        <i class="fa-solid fa-heart" style="color:var(--red);"></i>
-        <span id="ui-stat-stamina">20</span>
-      </span>
-      <span class="stat-pill" title="Rewind Tokens">
-        <i class="fa-solid fa-rotate-left" style="color:var(--amber);"></i>
-        <span id="ui-stat-tokens">3</span>
-      </span>
-      <button type="button" class="icon-btn active" id="bgm-btn" onclick="Chronicle88.toggleBGM()">
-        <i class="fa-solid fa-music"></i>
-        <span id="bgm-label">Music: ON</span>
-      </button>
-      <button type="button" class="icon-btn active" id="sfx-btn" onclick="Chronicle88.toggleSFX()">
-        <i class="fa-solid fa-volume-high" id="sfx-icon"></i>
-        <span id="sfx-label">SFX</span>
-      </button>
+    <div class="hud" aria-label="Status">
+      <span class="stat" id="stat-sta" title="Stamina: a wrong deduction costs 3. At 0 the case fails.">STA <b id="ui-stat-stamina">12</b>/12</span>
+      <span class="stat" title="Composure: your target for 2d6 hazard rolls. +1 per right answer, −2 per wrong one.">CMP <b id="ui-stat-composure">7</b></span>
+      <span class="stat" title="Rewind tokens: spend one on a word-tile rewind to recover stamina.">TOK <b id="ui-stat-tokens">3</b></span>
+      <button type="button" class="toggle" id="bgm-btn" aria-pressed="true">MUSIC: ON</button>
+      <button type="button" class="toggle" id="sfx-btn" aria-pressed="true">SFX: ON</button>
+      <button type="button" class="toggle" id="speed-btn" title="Text speed">TEXT: NORMAL</button>
     </div>
   </header>
 
-  <!-- 2. EPISODE SWITCHER -->
-  <nav class="episode-nav" aria-label="Choose Episode">
-    <div class="episode-tabs">
-      <button type="button" class="episode-tab active" id="tape-tab-1" onclick="Chronicle88.loadTape(1)">
-        1. Neon Alibi (Narrative Tenses)
+  <h1 class="sr-only">Chronicle '88: a B1–B2 English grammar detective adventure in 8-bit PC-88 style</h1>
+
+  <!-- 2. TAPE SWITCHER -->
+  <nav class="episode-nav" aria-label="Choose tape">
+    <div class="episode-tabs" role="tablist" aria-label="Tapes">
+      <button type="button" class="episode-tab" role="tab" id="tape-tab-1" data-tape="1" aria-controls="game" aria-selected="true">
+        1. Neon Alibi — Past Tenses, Reported Speech &amp; Tags<span class="badge"></span>
       </button>
-      <button type="button" class="episode-tab" id="tape-tab-2" onclick="Chronicle88.loadTape(2)">
-        2. Citadel of Echoes (Modals &amp; Conditionals)
+      <button type="button" class="episode-tab" role="tab" id="tape-tab-2" data-tape="2" aria-controls="game" aria-selected="false" tabindex="-1">
+        2. Citadel of Echoes — Deduction, Relative Clauses &amp; Conditionals<span class="badge"></span>
       </button>
-      <button type="button" class="episode-tab" id="tape-tab-3" onclick="Chronicle88.loadTape(3)">
-        3. Station Zero (Passive &amp; Causative)
+      <button type="button" class="episode-tab" role="tab" id="tape-tab-3" data-tape="3" aria-controls="game" aria-selected="false" tabindex="-1">
+        3. Station Zero — Passive, Causative &amp; Future Forms<span class="badge"></span>
       </button>
     </div>
   </nav>
 
-  <!-- 3. SINGLE UNIFIED STORY CARD -->
-  <main class="story-container">
-    <article class="story-card">
-
-      <!-- Scene Progress Strip -->
-      <div class="scene-header">
-        <div class="scene-progress">
-          <span class="scene-step-text" id="ui-scene-label">SCENE 1 OF 4</span>
-          <div class="progress-dots" id="ui-progress-pips"></div>
-        </div>
-        <span class="grammar-badge" id="ui-grammar-tag">Past Perfect vs. Past Simple</span>
+  <!-- 3. PC-88 MONITOR -->
+  <main class="pc88" id="game" role="tabpanel" aria-labelledby="tape-tab-1">
+    <div class="monitor" id="monitor">
+      <div class="statusline">
+        <span id="ui-scene-label">TAPE 1 · SCENE 1/4</span>
+        <span id="ui-grammar-tag"></span>
       </div>
-
-      <!-- Animated Pixel Art Stage -->
-      <div class="canvas-stage">
-        <canvas id="pixel-canvas" width="384" height="204" aria-label="16-bit scene illustration"></canvas>
-        <span class="location-pill" id="ui-location-tag">Sector 1 • CyberCorp Vault</span>
+      <div class="cg">
+        <canvas id="pixel-canvas" width="640" height="200" role="img" aria-label="8-bit PC-88-style scene illustration"></canvas>
+        <span class="loc" id="ui-location-tag"></span>
       </div>
-
-      <!-- Story, Clues & Choices -->
-      <div class="story-body">
-        <div class="speaker-line">
-          <i class="fa-solid fa-user-secret" id="ui-speaker-icon"></i>
-          <span id="ui-speaker-name">INSPECTOR DECK</span>
-          <span class="speaker-role" id="ui-speaker-role">• Vault Loading Bay</span>
-        </div>
-
-        <div class="narrative-text" id="ui-story-text"></div>
-
-        <!-- Compact 2-Pill Clue Strip -->
-        <div class="clue-strip" id="ui-timeline-nodes"></div>
-
-        <!-- Question + Optional Hint Toggle -->
-        <div class="question-header">
-          <p class="question-prompt" id="ui-mission-prompt"></p>
-          <button type="button" class="hint-toggle-btn" onclick="Chronicle88.toggleGrammarTip()">
-            <i class="fa-regular fa-lightbulb"></i>
-            <span id="tip-btn-label">Grammar Hint</span>
-          </button>
-        </div>
-
-        <!-- Collapsible Hint Drawer -->
-        <div class="hint-drawer" id="ui-grammar-drawer"></div>
-
-        <!-- Clean Choice Options -->
-        <div class="choices-list" id="ui-choices-list"></div>
-
-        <!-- Contextual Feedback & Inline 2d6 Dice Check -->
-        <div class="feedback-box" id="ui-result-banner">
-          <div class="feedback-title" id="ui-result-header"></div>
-          <div class="feedback-explanation" id="ui-result-explanation"></div>
-
-          <!-- Appears only on scenes with a 2d6 hazard check -->
-          <div class="inline-dice-bar" id="ui-dice-bar">
-            <div class="dice-pair">
-              <div class="die-face" id="die-box-1"></div>
-              <div class="die-face" id="die-box-2"></div>
-            </div>
-            <div class="dice-status-text" id="ui-dice-message">
-              Roll <strong>2d6 &le; 9</strong> to dodge the hazard cleanly!
+      <div class="lower" id="lower">
+        <section class="textwin" id="textwin" aria-label="Story text (click, Enter or Space to continue)">
+          <div class="speaker" id="ui-speaker-name"></div>
+          <div class="txt" id="ui-story-text"></div>
+          <span class="cursor" id="ui-cursor" aria-hidden="true" hidden>▼</span>
+          <div class="result" id="ui-result" aria-live="polite" hidden>
+            <div id="ui-result-header"></div>
+            <div id="ui-result-explanation"></div>
+            <div class="dice" id="ui-dice" hidden>
+              <span class="die" id="die-1" aria-hidden="true">?</span>
+              <span class="die" id="die-2" aria-hidden="true">?</span>
+              <span id="ui-dice-message" aria-live="polite"></span>
             </div>
           </div>
-
-          <div class="feedback-actions" id="ui-result-actions"></div>
-        </div>
+        </section>
+        <nav class="cmdwin" aria-label="Commands">
+          <div class="cmd-title" id="ui-cmd-title">COMMAND</div>
+          <div class="menu" id="ui-menu" role="group" aria-labelledby="ui-cmd-title"></div>
+        </nav>
       </div>
+    </div>
 
-    </article>
+    <section class="notebook" aria-labelledby="notes-title">
+      <h2 id="notes-title">EVIDENCE NOTEBOOK</h2>
+      <ul id="ui-notes"></ul>
+      <p class="keys">Keys: Space/Enter = continue · ↑↓ + Enter = menu · 1–4 or A–D = choose · H = hint · Esc = close</p>
+    </section>
+    <div class="sr-only" id="sr-live" aria-live="polite"></div>
   </main>
 
-  <!-- 4. TAP-TO-BUILD REWIND PARRY MODAL -->
-  <div class="modal-backdrop" id="parry-modal" role="dialog" aria-modal="true" aria-labelledby="parry-modal-title">
-    <div class="parry-card">
-      <div class="parry-title" id="parry-modal-title">
-        <i class="fa-solid fa-rotate-left"></i> Rewind &amp; Heal (+3 Stamina)
-      </div>
-      <p class="parry-subtitle">
-        Tap the word tiles in order to complete the B2 Key Word Transformation:
-      </p>
-
-      <div class="parry-prompt-box">
-        <div id="parry-original" style="color:var(--text-main);font-weight:600;"></div>
-        <span class="parry-keyword" id="parry-key"></span>
-      </div>
-
-      <div style="font-size:0.9rem;color:var(--text-secondary);">
+  <!-- 4. REWIND (PARRY) MODAL -->
+  <div class="modal" id="parry-modal" role="dialog" aria-modal="true" aria-labelledby="parry-title" hidden>
+    <div class="parry">
+      <h2 id="parry-title">◀◀ REWIND: +3 STA if you rebuild the line</h2>
+      <p>Tap the word tiles in order to complete the B2 key word transformation.</p>
+      <div class="p-orig" id="parry-original"></div>
+      <span class="p-key" id="parry-key"></span>
+      <div style="margin-top:.5rem;">
         <span id="parry-before"></span>
-        <div class="parry-slot-zone" id="parry-slot-zone"></div>
+        <div class="slot" id="parry-slot" aria-label="Your answer"></div>
         <span id="parry-after"></span>
       </div>
-
-      <div class="parry-bank-zone" id="parry-bank-zone"></div>
-      <div id="parry-status-msg" style="font-size:0.86rem;font-weight:700;margin-bottom:0.85rem;"></div>
-
-      <div class="feedback-actions">
-        <button type="button" class="action-btn primary" onclick="Chronicle88.checkParryTiles()">
-          <i class="fa-solid fa-check"></i> Check Answer
-        </button>
-        <button type="button" class="action-btn secondary" onclick="Chronicle88.clearParryTiles()">
-          Reset Tiles
-        </button>
-        <button type="button" class="action-btn secondary" onclick="Chronicle88.closeParryModal()">
-          Cancel
-        </button>
+      <div class="bank" id="parry-bank" aria-label="Word tiles"></div>
+      <div class="p-status" id="parry-status" aria-live="polite"></div>
+      <div class="p-actions">
+        <button type="button" class="toggle" id="parry-check">CHECK</button>
+        <button type="button" class="toggle" id="parry-clear">RESET TILES</button>
+        <button type="button" class="toggle" id="parry-cancel">CANCEL (Esc)</button>
       </div>
     </div>
   </div>
 
   <script>
-    const Chronicle88 = (() => {
-      /* ==============================================================
-         1. WEB AUDIO SYNTHESIZER (8-BIT BGM & SFX)
-         ============================================================== */
-      let audioCtx = null;
-      let bgmOn = true;
-      let sfxOn = true;
-      let bgmTimer = null;
-      let bgmStep = 0;
+  (function () {
+    'use strict';
 
-      const BGM_TRACKS = {
-        1: {
-          tempoMs: 220,
-          lead: [220, 0, 261.63, 293.66, 329.63, 0, 293.66, 261.63, 246.94, 0, 196.00, 220, 0, 0, 196.00, 0],
-          bass: [110, 110, 87.31, 87.31, 98.00, 98.00, 82.41, 98.00]
-        },
-        2: {
-          tempoMs: 250,
-          lead: [146.83, 174.61, 220, 0, 207.65, 174.61, 146.83, 0, 130.81, 164.81, 196, 0, 146.83, 0, 0, 0],
-          bass: [73.42, 73.42, 65.41, 65.41, 58.27, 58.27, 65.41, 73.42]
-        },
-        3: {
-          tempoMs: 200,
-          lead: [329.63, 0, 392.00, 440.00, 0, 493.88, 392.00, 0, 349.23, 0, 293.66, 329.63, 0, 0, 246.94, 0],
-          bass: [82.41, 82.41, 98.00, 98.00, 110.00, 110.00, 73.42, 82.41]
+    /* ================================================================
+       0. CONSTANTS
+       ================================================================ */
+    const PAL = { K: '#000000', B: '#0000ff', R: '#ff0000', M: '#ff00ff', G: '#00ff00', C: '#00ffff', Y: '#ffff00', W: '#ffffff' };
+    const PAL_SET = new Set(Object.values(PAL).map(h => parseInt(h.slice(1), 16)));
+    const SELFTEST = /[?&]selftest=1(?:&|$)/.test(location.search);
+    const REDUCED = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const MAX_STA = 12, START_CMP = 7, MAX_CMP = 11, MIN_CMP = 2, START_TOK = 3;
+    const WRONG_STA = 3, WRONG_CMP = 2, DICE_STA = 2;
+    const STORE_KEY = 'chronicle88.v1';
+    const LETTERS = 'ABCD';
+    const VERBS = ['LOOK', 'TALK', 'EXAMINE'];
+
+    /* ================================================================
+       1. TAPE DATA
+       Markup: **x** = highlight, *x* = emphasis, \n = line break.
+       Every choice: text, correct, error (wrong only: names the error
+       type WITHOUT giving the answer), why (full explanation, shown
+       after a correct answer or a second miss).
+       ================================================================ */
+    const TAPES = {
+      1: {
+        id: 1, title: 'Neon Alibi 1989',
+        outro: 'The harbour drone net snags a tiny courier drone. Inside: the Omega Chip, exactly where your deduction said it would be. Kael has nothing left to say.',
+        parries: [
+          { original: 'Vance locked the vault before the 23:15 alarm went off.', keyword: 'ALREADY', before: 'When the 23:15 alarm went off, Vance', after: 'the vault.', answer: ['had', 'already', 'locked'], distractors: ['has', 'locking', 'was'] },
+          { original: '“I won\'t hand over the chip!” shouted Kael.', keyword: 'WOULD', before: 'Kael shouted that he', after: 'over the chip.', answer: ['would', 'not', 'hand'], distractors: ['will', 'handing', 'had'] },
+          { original: 'It\'s impossible that Kael used the stairs.', keyword: 'HAVE', before: 'Kael', after: 'the stairs.', answer: ['can\'t', 'have', 'used'], distractors: ['mustn\'t', 'use', 'had'] }
+        ],
+        scenes: [
+          {
+            location: 'SECTOR 1 • CYBERCORP VAULT', tag: 'Past Simple vs Past Perfect', speaker: 'INSPECTOR DECK',
+            sceneType: 'cyber_vault', deduceLabel: 'ACCUSE',
+            intro: [
+              'Acid rain hammers CyberCorp Tower. At **23:15** the vault alarm screamed, and the Omega Chip vanished.',
+              'Two people were on this floor tonight: Guard **Vance** and courier **Kael**. One of them was at the vault when its door opened. Investigate, then ACCUSE.'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'door', label: 'VAULT DOOR', text: 'The vault door hangs open. A red lamp pulses above it: ALARM 23:15.' },
+                { id: 'floor', label: 'FLOOR', text: 'Wet bootprints lead out of the vault towards the loading bay.' }
+              ],
+              TALK: [
+                { id: 'vance', label: 'GUARD VANCE', who: 'VANCE', key: true, clue: 'Vance: “When the alarm went off, I had already locked the vault.”', text: '“I did my round early. When the alarm went off, I **had already locked** the vault. I was down in the lobby by then — check the cameras.”' },
+                { id: 'kael', label: 'COURIER KAEL', who: 'KAEL', key: true, clue: 'Kael: “When the alarm went off, I left the vault.”', text: '“I was only dropping off a parcel, Inspector. When the alarm went off, I **left** the vault and went straight to the loading bay. Nothing to do with me.”' }
+              ],
+              EXAMINE: [
+                { id: 'log', label: 'SECURITY LOG', key: true, clue: 'Log: 23:05 vault locked (Vance). 23:15 door opened → alarm.', text: 'SECURITY LOG\n23:05  VAULT LOCKED — VANCE\n23:15  VAULT DOOR OPENED — ALARM\nThe alarm sounds the moment the door opens.' },
+                { id: 'cctv', label: 'LOBBY CCTV', clue: 'CCTV: Vance at the lobby desk from 23:10.', text: 'Lobby camera, 23:10 onwards: Guard Vance at the front desk, eating noodles. He never leaves the frame.' }
+              ]
+            },
+            mission: 'Whose tense places them AT the vault when its door opened at 23:15?',
+            hint: 'Picture each statement on a timeline. One verb form describes something already finished before the alarm; the other describes something that happened as the alarm rang, or just after it. So who was still inside at 23:15?',
+            key: 'Kael',
+            failTitle: 'Wrong suspect! The real thief edges towards the exit.',
+            choices: [
+              { correct: true, text: 'Accuse **Kael**: “I **left the vault**” means he left when the alarm went off, so he was inside at 23:15.', title: 'KAEL CRACKS: his parcel was a decoy!', why: '*When + Past Simple, Past Simple* shows one action following the other: the alarm went off, *then* Kael left. So he was in the vault when the door opened. Vance\'s *had already locked* (Past Perfect) puts his action *before* 23:15, and the log agrees: 23:05.' },
+              { correct: false, text: 'Accuse **Vance**: “had already locked” means he was locking the vault as the alarm rang.', error: 'Timeline error: you read the Past Perfect as if it happened at the same moment as the alarm.', why: 'The Past Perfect (*had locked*) shows an action finished **before** another past moment. Vance locked up before 23:15; the log says 23:05.' },
+              { correct: false, text: 'Let them both go: “left” and “had left” refer to exactly the same time.', error: 'Meaning error: you treated two different past tenses as interchangeable.', why: '*When the alarm went off, I left* = after the alarm. *When the alarm went off, I had left* = before it. The tense changes the order of events.' },
+              { correct: false, text: 'Accuse **Vance**: in a story, the Past Perfect always shows the most recent action.', error: 'Rule reversed: you have the order of the two past tenses back to front.', why: 'The Past Perfect looks **further back**: it is the *earlier* of two past actions, not the most recent one.' }
+            ],
+            lesson: '**Past Simple** after *when* = the second action follows the first (*When the alarm went off, I left*). **Past Perfect** = already completed before that moment (*When the alarm went off, I had already locked it*).'
+          },
+          {
+            location: 'SECTOR 2 • MAGLEV TUNNEL', tag: 'Reported Speech', speaker: 'INSPECTOR DECK',
+            sceneType: 'cyber_tunnel', deduceLabel: 'REPORT',
+            intro: [
+              'Kael slips his cuffs and sprints into the MagLev tunnel! Your scanner catches a burst of his voice before the signal dies.',
+              'Chief Morales is on the radio. The whole squad is listening, so your report must be precise.'
+            ],
+            cmds: {
+              LOOK: [{ id: 'tunnel', label: 'TUNNEL', text: 'The rails hum. Sector signs flash past in yellow: SECTOR 3... SECTOR 4.' }],
+              TALK: [{ id: 'morales', label: 'CHIEF MORALES', who: 'MORALES', key: true, clue: 'Morales wants Kael\'s words reported, not played back.', text: '“Inspector, what did Kael just say? Don\'t play me the tape — report it. Properly.”' }],
+              EXAMINE: [
+                { id: 'scanner', label: 'SCANNER', key: true, clue: 'Kael (recorded): “I\'m hiding in Sector 4 and I won\'t surrender!”', text: 'PLAYBACK:\n“I\'m hiding in Sector 4 and I won\'t surrender!”' },
+                { id: 'rail', label: 'RAIL', text: 'A torn strip of magenta jacket is caught on the rail. He definitely came this way.' }
+              ]
+            },
+            mission: 'Report Kael\'s words to Chief Morales:',
+            hint: 'Check two things. Which reporting verb must have a person straight after it, and which one must not? And after a modal verb such as will or would, what form does the main verb take?',
+            key: 'wouldn\'t surrender',
+            failTitle: 'Static on the line. Morales sends the drones the wrong way.',
+            choices: [
+              { correct: true, text: '“Kael **said he was hiding** in Sector 4 and that he **wouldn\'t surrender**.”', title: 'Transmission clear. Drones converge on Sector 4!', why: '*Say* needs no object before its *that*-clause, and *won\'t → wouldn\'t* keeps the base form *surrender* after the modal. *Am hiding → was hiding* is the usual backshift.' },
+              { correct: false, text: '“Kael said he was hiding in Sector 4 and that he **wouldn\'t surrendered**.”', error: 'Verb form error after a modal.', why: 'After a modal (*would*, *wouldn\'t*) we use the base form: *wouldn\'t surrender*, never *surrendered*.' },
+              { correct: false, text: '“Kael **told that** he was hiding in Sector 4 and that he wouldn\'t surrender.”', error: 'Reporting verb missing its object.', why: '*Tell* needs a person as its object: *Kael told **us** (that)...* Without an object, use *say*.' },
+              { correct: false, text: '“Kael **said me** he was hiding in Sector 4 and that he wouldn\'t surrender.”', error: 'Object after the wrong reporting verb.', why: '*Say* doesn\'t take a person directly: use *said **to me*** or *told me*.' }
+            ],
+            lesson: 'Reported speech: *say (that)* / *tell someone (that)*. Tenses usually move back (*am hiding → was hiding*, *won\'t → wouldn\'t*). If the situation is still true now, keeping the present (*he is hiding*) is also acceptable, but the verb after a modal is always the base form.'
+          },
+          {
+            location: 'SECTOR 4 • NOODLE BAR 88', tag: 'Question Tags', speaker: 'INSPECTOR DECK',
+            sceneType: 'cyber_bar', deduceLabel: 'CHALLENGE', dice: true,
+            hazardOk: 'The turret swivels and fires... into the noodle pot. You are untouched!',
+            hazardBad: 'A laser bolt grazes your shoulder.',
+            intro: [
+              'Sector 4, Noodle Bar 88. Steam, neon, and a ceiling turret slowly powering up.',
+              'Kael is hunched over a bowl at the counter. One sharp question could break him, but that turret reacts to raised voices.'
+            ],
+            cmds: {
+              LOOK: [{ id: 'turret', label: 'TURRET', text: 'A security turret tracks the room. Its red eye blinks faster every minute.' }],
+              TALK: [
+                { id: 'kael3', label: 'KAEL', who: 'KAEL', key: true, clue: 'Kael claims he\'d never been to Sector 4 before tonight.', text: '“Sector 4? Never set foot here before tonight. I\'m a stranger here, Inspector.”' },
+                { id: 'cook', label: 'COOK', who: 'COOK', text: '“Him? Spicy ramen, extra egg. Same seat every Friday.”' }
+              ],
+              EXAMINE: [{ id: 'card', label: 'LOYALTY CARD', key: true, clue: 'Kael\'s Noodle Bar 88 loyalty card: nine stamps.', text: 'Kael\'s wallet holds a NOODLE BAR 88 loyalty card with **nine** stamps on it.' }]
+            },
+            mission: 'Challenge his lie: “You\'d never entered Sector 4 before tonight, ______?”',
+            hint: 'What does \'d stand for when a past participle follows it? Is a sentence containing never positive or negative? A question tag repeats the auxiliary and usually takes the opposite polarity.',
+            key: 'had you',
+            failTitle: 'Kael smirks. The turret\'s eye turns towards you.',
+            choices: [
+              { correct: true, text: '“You\'d never entered Sector 4 before tonight, **had you**?”', title: 'Kael drops his chopsticks. The lie is over.', why: '*\'d* + past participle (*entered*) = *had*. *Never* makes the statement negative, so the tag is positive.' },
+              { correct: false, text: '“You\'d never entered Sector 4 before tonight, **hadn\'t you**?”', error: 'Tag polarity error: you missed what "never" does to the statement.', why: '*Never* is a negative word, so the statement is already negative and the tag must be positive. *Hadn\'t you?* would follow a positive statement.' },
+              { correct: false, text: '“You\'d never entered Sector 4 before tonight, **would you**?”', error: 'Wrong auxiliary: you misread the contraction \'d.', why: 'Before a past participle, *\'d* = *had*. *\'d* = *would* only before a base form (*You\'d enter*).' },
+              { correct: false, text: '“You\'d never entered Sector 4 before tonight, **did you**?”', error: 'Auxiliary does not match the tense of the statement.', why: 'The tag repeats the statement\'s auxiliary. The statement is Past Perfect (*had entered*), so *did* is wrong.' }
+            ],
+            lesson: 'Question tags copy the auxiliary (*had*) and flip the polarity. Negative words such as *never*, *hardly* and *no one* make the statement negative, so the tag is positive: *You\'d never been here, had you?*'
+          },
+          {
+            location: 'ROOFTOP • DRONE LAUNCHPAD', tag: 'Past Modals of Deduction', speaker: 'INSPECTOR DECK',
+            sceneType: 'cyber_roof', deduceLabel: 'DEDUCE',
+            intro: [
+              'The rooftop. Rain slants through the neon glow. Kael is in cuffs, but his parcel is empty: the Omega Chip is gone.',
+              'There are only two ways off this roof. Work out which one the chip took.'
+            ],
+            cmds: {
+              LOOK: [{ id: 'sky', label: 'SKY', text: 'Far off, a tiny courier drone blinks yellow as it heads for the harbour.' }],
+              TALK: [{ id: 'kael4', label: 'KAEL', who: 'KAEL', text: '“You\'ll never prove a thing. I came up here for the view.”' }],
+              EXAMINE: [
+                { id: 'stairs', label: 'STAIRWELL DOOR', key: true, clue: 'Stairwell door: welded shut from the inside; the weld is cold.', text: 'The stairwell door is welded shut from the inside. The weld is cold and old.' },
+                { id: 'launcher', label: 'DRONE LAUNCHER', key: true, clue: 'Drone launcher: barrel still hot, one slot empty.', text: 'A courier-drone launcher on the rail. Its barrel is still glowing hot, and one slot is empty.' }
+              ]
+            },
+            mission: 'Explain how the chip left the roof:',
+            hint: 'One clue makes something impossible; the other makes something certain. Which past modal expresses impossibility, which expresses certainty, and what form must the verb take after have?',
+            key: 'must have launched',
+            failTitle: 'Your theory collapses. The drone blinks further away.',
+            choices: [
+              { correct: true, text: '“He **can\'t have used** the stairs. He **must have launched** the chip by drone!”', title: 'Harbour patrol locks on to the drone!', why: '*Can\'t have + past participle* = certain it did **not** happen; *must have + past participle* = certain it **did** happen. Both clues point to the drone.' },
+              { correct: false, text: '“He can\'t have used the stairs. He **should have launched** the chip by drone!”', error: 'Meaning error: this modal criticises or advises; it doesn\'t deduce.', why: '*Should have launched* means it would have been the right thing to do (but perhaps didn\'t happen). For a confident deduction, use *must have*.' },
+              { correct: false, text: '“He **can\'t use** the stairs. He **must launch** the chip by drone!”', error: 'Time error: these modals talk about the present or future, not the past.', why: 'Present modals (*can\'t use*, *must launch*) describe now. For a past deduction, add *have + past participle*.' },
+              { correct: false, text: '“He **can\'t have use** the stairs. He must have launched the chip by drone!”', error: 'Form error after "have".', why: 'After *have* in a past modal, the verb must be a past participle: *can\'t have **used***.' }
+            ],
+            lesson: 'Past deduction: **must have + past participle** (certainly yes), **can\'t/couldn\'t have + past participle** (certainly not), **might/may/could have + past participle** (possibly). British English and exams prefer *can\'t have* for the negative; American English also uses *must not have*.'
+          }
+        ]
+      },
+
+      2: {
+        id: 2, title: 'The Citadel of Echoes',
+        outro: 'The drawbridge thunders down across the abyss. Beyond it, the Citadel\'s heart glows, and the echoes finally fall silent.',
+        parries: [
+          { original: 'I didn\'t read the warning rune, so I stepped on the trap.', keyword: 'HAD', before: 'If I', after: 'the warning rune, I wouldn\'t have stepped on the trap.', answer: ['had', 'read'], distractors: ['would', 'have', 'reading'] },
+          { original: 'I\'m sure somebody pulled Lever 2 recently.', keyword: 'BEEN', before: 'Lever 2', after: 'recently.', answer: ['must', 'have', 'been', 'pulled'], distractors: ['can\'t', 'pulling', 'had'] },
+          { original: 'The south mirror reflects the red flame. It is cursed.', keyword: 'WHICH', before: 'The south mirror,', after: 'the red flame, is cursed.', answer: ['which', 'reflects'], distractors: ['that', 'reflecting', 'who'] }
+        ],
+        scenes: [
+          {
+            location: 'FLOOR B1 • THE THREE LEVERS', tag: 'Passive Modals of Deduction', speaker: 'THE CITADEL',
+            sceneType: 'dungeon_levers', deduceLabel: 'DEDUCE',
+            intro: [
+              'The Citadel of Echoes, Floor B1. Three iron levers stand before a sealed stone gate.',
+              'Two of them release poison gas. Only the lever a goblin scout pulled five minutes ago opens the way.'
+            ],
+            cmds: {
+              LOOK: [{ id: 'gate', label: 'STONE GATE', text: 'Runes on the gate glow faintly: ONLY TRUTH OPENS THE WAY.' }],
+              TALK: [{ id: 'echo', label: 'THE ECHO', who: 'ECHO', text: '“Reason carefully, traveller... carefully... carefully...”' }],
+              EXAMINE: [
+                { id: 'l1', label: 'LEVER 1', key: true, clue: 'Lever 1: thick, unbroken cobwebs.', text: 'Lever 1 is wrapped in thick, unbroken cobwebs. Dust lies on it like snow.' },
+                { id: 'l2', label: 'LEVER 2', key: true, clue: 'Lever 2: fresh muddy footprints; warm oil on the handle.', text: 'Fresh muddy footprints stop in front of Lever 2. Its handle is slick with warm oil.' },
+                { id: 'l3', label: 'LEVER 3', key: true, clue: 'Lever 3: rusted solid into its socket.', text: 'Lever 3 is rusted solid into its socket. It would take a giant to shift it.' }
+              ]
+            },
+            mission: 'Which deduction tells you which lever to pull?',
+            hint: 'Levers don\'t act on their own; something is done to them, so you need the passive. How is a passive past deduction built: modal + have + ___ + past participle? And which modals express certainty and impossibility?',
+            key: 'must have been pulled',
+            failTitle: 'A hiss of green gas leaks from the walls!',
+            choices: [
+              { correct: true, text: '“Lever 1 **can\'t have been touched**, so Lever 2 **must have been pulled** by the scout.”', title: 'The stone gate grinds open!', why: 'Passive past deduction = *modal + have been + past participle*. *Can\'t have been touched* (impossible) and *must have been pulled* (certain) match the cobwebs and the oil.' },
+              { correct: false, text: '“Lever 1 **can\'t have touched**, so Lever 2 **must have pulled** by the scout.”', error: 'Voice error: the sentence is active, but the levers receive the action.', why: 'Levers don\'t touch or pull anything. You need the passive: *have **been** touched / pulled*.' },
+              { correct: false, text: '“Lever 1 can\'t have been touched, so Lever 2 **must be pulled** by the scout.”', error: 'Time error: this modal phrase refers to now, or to an obligation.', why: '*Must be pulled* = it is necessary now. The scout acted five minutes ago, so the deduction must be about the past.' },
+              { correct: false, text: '“Lever 1 **might have been touched**, so Lever 2 **can have been pulled** by the scout.”', error: 'Modal choice error: wrong degree of certainty, and a modal that isn\'t used this way.', why: '*Might have* shows only possibility, but the cobwebs prove certainty. *Can have + past participle* isn\'t used for past possibility; use *could/may/might have*.' }
+            ],
+            lesson: 'Passive deduction about the past: **must have been + past participle** (certain), **can\'t have been + past participle** (impossible), **might/could have been + past participle** (possible).'
+          },
+          {
+            location: 'FLOOR B2 • HALL OF MIRRORS', tag: 'Defining vs Non-defining Clauses', speaker: 'THE CITADEL',
+            sceneType: 'dungeon_mirrors', deduceLabel: 'DEDUCE',
+            intro: [
+              'Floor B2, the Hall of Mirrors. Four mirrors, four coloured flames, and one carved riddle.',
+              'Touch the wrong mirror and it shatters into a storm of glass.'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'north', label: 'NORTH WALL', key: true, clue: 'North wall: three mirrors with blue, green and white flames.', text: 'The north wall holds **three** mirrors. Their flames burn blue, green and white.' },
+                { id: 'south', label: 'SOUTH WALL', key: true, clue: 'South wall: one mirror with a red flame.', text: 'The south wall holds just **one** mirror, glowing with a red flame.' }
+              ],
+              TALK: [{ id: 'ghost', label: 'WARDEN\'S GHOST', who: 'GHOST', text: '“Mind the punctuation, traveller. The carver was very particular about commas.”' }],
+              EXAMINE: [{ id: 'riddle', label: 'RIDDLE', key: true, clue: 'Riddle (no commas): “Touch the mirror which reflects the blue flame.”', text: 'Carved in stone, with no commas anywhere:\n“TOUCH THE MIRROR WHICH REFLECTS THE BLUE FLAME.”' }]
+            },
+            mission: 'The riddle has no commas. What does that tell you?',
+            hint: 'Imagine a room with only one mirror: would you need extra words to say which mirror you mean? Now count the mirrors in this hall. What job does a relative clause without commas do?',
+            key: 'picks out one mirror',
+            failTitle: 'CRACK! A mirror splinters beside your head.',
+            choices: [
+              { correct: true, text: 'It\'s a **defining** clause: it **picks out one mirror from several**, the north-wall mirror with the blue flame.', title: 'The blue mirror swings open like a door!', why: 'No commas = defining relative clause: essential information that tells us *which one*. With three mirrors on the north wall, *which reflects the blue flame* identifies the right one.' },
+              { correct: false, text: 'It\'s a non-defining clause: it just adds extra detail about the only mirror in the hall.', error: 'Clause type error: you linked missing commas to the wrong clause type.', why: 'Non-defining clauses add extra information about something already identified, and they are separated by commas. There are four mirrors here, and no commas.' },
+              { correct: false, text: 'Nothing. Commas in relative clauses are optional and never change the meaning.', error: 'Punctuation error: you assumed commas don\'t affect meaning.', why: 'Commas change the meaning: *The mirror, which reflects the blue flame, ...* implies there is only one mirror.' },
+              { correct: false, text: 'It\'s a trap: without commas you must use *that*, so *which* is a mistake.', error: 'Over-applied rule: you treated a style preference as a grammar rule.', why: 'In British English, *which* is perfectly acceptable in defining clauses. *That* is simply more common there; the riddle is grammatical.' }
+            ],
+            lesson: '**Defining** (no commas) identifies *which one*: *the mirror which/that reflects the blue flame*. **Non-defining** (commas) adds extra information about something already identified: *The south mirror, which reflects the red flame, is cursed.* *That* cannot introduce a non-defining clause.'
+          },
+          {
+            location: 'FLOOR B3 • THE ABYSS BRIDGE', tag: 'Mixed Conditionals', speaker: 'THE CITADEL',
+            sceneType: 'dungeon_boss', deduceLabel: 'ANSWER', dice: true,
+            hazardOk: 'The Guardian\'s sword sweeps past, a hair\'s breadth from your helmet!',
+            hazardBad: 'The flat of the obsidian blade sends you sprawling.',
+            intro: [
+              'Floor B3. A raised drawbridge hangs over a bottomless abyss. Its lock is shaped like a silver key.',
+              'The Obsidian Guardian rises, sword drawn: “Speak the truth of your past and your present, or fall.”'
+            ],
+            cmds: {
+              LOOK: [{ id: 'bridge', label: 'DRAWBRIDGE', key: true, clue: 'Now: the drawbridge is still raised.', text: 'The drawbridge is raised high. It won\'t come down without the Silver Key.' }],
+              TALK: [{ id: 'guardian', label: 'GUARDIAN', who: 'GUARDIAN', text: '“One sentence. A past that did not happen, and the present it would have made.”' }],
+              EXAMINE: [{ id: 'pack', label: 'YOUR PACK', key: true, clue: 'Yesterday: you left the Silver Key on the inn table.', text: 'You search your pack. The Silver Key isn\'t there: you left it on the inn table **yesterday**.' }]
+            },
+            mission: 'Answer the Guardian with a correct mixed conditional:',
+            hint: 'Which part of your story is in the past and can\'t be changed, and which part is about right now? Each clause needs a form that matches its own time. And does would belong in the if-clause?',
+            key: 'If I had brought',
+            failTitle: 'The Guardian raises its blade higher.',
+            choices: [
+              { correct: true, text: '“**If I had brought** the Silver Key yesterday, the bridge **would be down now**.”', title: 'The Guardian bows and steps aside.', why: 'Mixed conditional: *If + Past Perfect* (unreal past: *had brought*) + *would + base form* (present result: *would be down now*).' },
+              { correct: false, text: '“**If I would have brought** the Silver Key yesterday, the bridge would be down now.”', error: 'If-clause error: a modal has slipped into the condition.', why: 'We don\'t use *would have* in the if-clause. The unreal past needs the Past Perfect there.' },
+              { correct: false, text: '“If I had brought the Silver Key yesterday, the bridge **will be down now**.”', error: 'Result-clause error: a real-future modal clashes with an unreal past condition.', why: '*Will be* is used for real future results (first conditional). An unreal present result of a past condition needs *would be down now*.' },
+              { correct: false, text: '“**If I brought** the Silver Key yesterday, the bridge would be down now.”', error: 'If-clause error: this tense doesn\'t express an unreal past.', why: '*If I brought* is used for unreal present or future situations (second conditional) and clashes with *yesterday*.' }
+            ],
+            lesson: 'Mixed conditional (past cause → present result): **If + had + past participle, ... would + base form + now**. Never put *would* in the if-clause.'
+          }
+        ]
+      },
+
+      3: {
+        id: 3, title: 'Signal Lost at Station Zero',
+        outro: 'The escape pod drops clear of Station Zero as the rescue cruiser\'s searchlights sweep across the stars. Signal restored.',
+        parries: [
+          { original: 'Drone-9 is welding the hull breach for us right now.', keyword: 'WELDED', before: 'We are', after: 'by Drone-9 right now.', answer: ['having', 'the', 'hull', 'breach', 'welded'], distractors: ['welding', 'had', 'been'] },
+          { original: 'Technicians have just replaced the seals.', keyword: 'BEEN', before: 'The seals', after: 'by technicians.', answer: ['have', 'just', 'been', 'replaced'], distractors: ['has', 'replacing', 'being'] },
+          { original: 'Life-support will finish booting before 06:00.', keyword: 'HAVE', before: 'By 06:00, life-support', after: 'booting.', answer: ['will', 'have', 'finished'], distractors: ['is', 'finishing', 'had'] }
+        ],
+        scenes: [
+          {
+            location: 'DECK A • AIRLOCK TERMINAL', tag: 'Passive: Present Continuous & Present Perfect', speaker: 'COMMANDER YUKI',
+            sceneType: 'scifi_airlock', deduceLabel: 'REPORT',
+            intro: [
+              'Station Zero. Oxygen is falling. The corridor stays sealed until you file a status log with the station AI, MOTHER-88.',
+              'MOTHER-88 only accepts reports in accurate English. Check both bays first.'
+            ],
+            cmds: {
+              LOOK: [{ id: 'window', label: 'WINDOW', text: 'Earth turns slowly below. A warning strip flashes yellow: O2 82%... 81%...' }],
+              TALK: [{ id: 'mother', label: 'MOTHER-88', who: 'MOTHER-88', key: true, clue: 'MOTHER-88: start each sentence with the bay or its seals, not the workers.', text: '“STATUS LOG REQUIRED. BEGIN EACH SENTENCE WITH THE BAY OR ITS SEALS, NOT THE WORKERS.”' }],
+              EXAMINE: [
+                { id: 'bay1', label: 'BAY 1', key: true, clue: 'Bay 1: repair bots still sealing the leak (IN PROGRESS).', text: 'BAY 1 STATUS: IN PROGRESS.\nRepair bots are still sealing the leak as you watch.' },
+                { id: 'bay2', label: 'BAY 2', key: true, clue: 'Bay 2: new seals fitted (COMPLETED just now).', text: 'BAY 2 STATUS: COMPLETED (just now).\nTechnicians have fitted brand-new seals.' }
+              ]
+            },
+            mission: 'File the status log:',
+            hint: 'Bots and technicians do the work, so the bay and its seals receive it. Which voice is that? Then: which bay is mid-process and which is finished? Finally, is seals singular or plural?',
+            key: 'is being repaired',
+            failTitle: 'LOG REJECTED. The oxygen gauge ticks down.',
+            choices: [
+              { correct: true, text: '“Bay 1 **is being repaired** right now, and Bay 2\'s seals **have just been replaced**.”', title: 'LOG ACCEPTED. The corridor door slides open.', why: '*is being + past participle* = passive, in progress now; *have (just) been + past participle* = passive, recently completed. *Seals* is plural, so *have*.' },
+              { correct: false, text: '“Bay 1 **is repairing** right now, and Bay 2\'s seals **have just replaced**.”', error: 'Voice error: these verbs are active, so the bays seem to do the repairing.', why: 'The bay doesn\'t repair anything; something is done to it. Both verbs need the passive.' },
+              { correct: false, text: '“Bay 1 **is repaired** right now, and Bay 2\'s seals have just been replaced.”', error: 'Aspect error: the first verb doesn\'t show an action in progress.', why: '*Is repaired* is the present simple passive: a state or a routine. For work happening now, add *being*.' },
+              { correct: false, text: '“Bay 1 is being repaired right now, and Bay 2\'s seals **has just been replaced**.”', error: 'Agreement error: the auxiliary doesn\'t match its subject.', why: 'The subject is *seals* (plural), so the auxiliary must be *have*.' }
+            ],
+            lesson: 'Passive = *be* (in the right tense) + past participle. In progress now: **is/are being + past participle**. Just completed: **has/have (just) been + past participle**.'
+          },
+          {
+            location: 'DECK B • HULL BREACH CONTROL', tag: 'Causative: have something done', speaker: 'COMMANDER YUKI',
+            sceneType: 'scifi_core', deduceLabel: 'COMMAND', dice: true,
+            hazardOk: 'The shockwave rolls past as you grab a handrail. Drone-9 launches!',
+            hazardBad: 'The shockwave slams you into a bulkhead.',
+            intro: [
+              'A meteoroid strikes! The outer hull cracks with a sound like thunder.',
+              'Radiation outside is far too high for a human. You will have to get someone, or something, else to fix it.'
+            ],
+            cmds: {
+              LOOK: [{ id: 'crack', label: 'HULL CRACK', key: true, clue: 'Hull breach: must be welded from outside.', text: 'A jagged crack runs across the hull plate. It must be welded from outside.' }],
+              TALK: [{ id: 'mother2', label: 'MOTHER-88', who: 'MOTHER-88', text: '“AWAITING COMMAND. STATE WHAT YOU NEED DONE, AND BY WHOM.”' }],
+              EXAMINE: [
+                { id: 'rad', label: 'RAD METER', key: true, clue: 'Radiation outside: lethal for humans.', text: 'RADIATION: 9.4 Sv/h.\nLethal for humans within minutes.' },
+                { id: 'drone', label: 'DRONE BAY', key: true, clue: 'Drone-9: welding drone, ready to launch.', text: 'Drone-9, a welding drone, sits in its cradle. STATUS: READY.' }
+              ]
+            },
+            mission: 'Give MOTHER-88 the repair order:',
+            hint: 'You aren\'t doing the job yourself. In this structure, does the thing being repaired go before or after the past participle? And if you put the worker straight after have instead, what form does the verb take?',
+            key: 'have the hull breach welded',
+            failTitle: 'COMMAND NOT UNDERSTOOD. The crack widens.',
+            choices: [
+              { correct: true, text: '“We must **have the hull breach welded** by Drone-9 immediately!”', title: 'Drone-9 launches and seals the breach!', why: 'Causative: *have + object + past participle* (*have the hull breach welded*) = arrange for someone else to do it. You can also name the worker first: *have + agent + base form*, as in *have Drone-9 weld the hull breach*.' },
+              { correct: false, text: '“We must **have welded** the hull breach by Drone-9 immediately!”', error: 'Word order error that changes the meaning completely.', why: '*Must have welded* is a past deduction (*surely we welded it*). It is grammatical, but it isn\'t an order, and it clashes with *by Drone-9 immediately*.' },
+              { correct: false, text: '“We must have **Drone-9 welded** the hull breach immediately!”', error: 'Mixed structure: two causative patterns have been blended.', why: 'After *have + agent* (Drone-9), use the base form: *have Drone-9 **weld** the hull breach*.' },
+              { correct: false, text: '“We must have the hull breach **weld** by Drone-9 immediately!”', error: 'Form error: the verb after the object is in the wrong form.', why: 'After *have + object*, use the past participle: *have the hull breach **welded***.' }
+            ],
+            lesson: 'Causative: **have + object + past participle** (*have the hull breach welded*, focus on the job) or **have + agent + base form** (*have Drone-9 weld the breach*, focus on the worker). Compare *must have welded* = past deduction.'
+          },
+          {
+            location: 'DECK C • ESCAPE POD DOCK', tag: 'Future Perfect vs Future Continuous', speaker: 'COMMANDER YUKI',
+            sceneType: 'scifi_dock', deduceLabel: 'TRANSMIT',
+            intro: [
+              'Deck C. You strap into the escape pod. A rescue cruiser will reach the station at exactly **06:00**.',
+              'The cruiser needs a telemetry report about 06:00 before it will dock.'
+            ],
+            cmds: {
+              LOOK: [{ id: 'porthole', label: 'PORTHOLE', text: 'Magenta auroras ripple across the dark. The storm is coming.' }],
+              TALK: [{ id: 'cruiser', label: 'RESCUE CRUISER', who: 'CRUISER', key: true, clue: 'Cruiser: what will be finished by 06:00, and what will be going on at 06:00?', text: '“Station Zero, report status for 06:00: what will be finished by then, and what will be going on at that moment?”' }],
+              EXAMINE: [
+                { id: 'ls', label: 'LIFE-SUPPORT', key: true, clue: 'Life-support boot sequence: complete at 05:50.', text: 'LIFE-SUPPORT BOOT SEQUENCE: COMPLETE AT 05:50.' },
+                { id: 'storm', label: 'STORM RADAR', key: true, clue: 'Solar storm: 05:55 to 06:15.', text: 'SOLAR STORM: 05:55 TO 06:15.\nExpect heavy interference.' }
+              ]
+            },
+            mission: 'Transmit the 06:00 telemetry report:',
+            hint: 'Look at the timeline: one process finishes before the deadline; the other is still going on at it. Which future form looks back from a future point, and which shows an action in progress at that point?',
+            key: 'will have booted up',
+            failTitle: 'TELEMETRY MISMATCH. The cruiser holds position.',
+            choices: [
+              { correct: true, text: '“By 06:00, life-support **will have booted up**, and at 06:00 the solar storm **will still be passing**.”', title: 'Docking clamps engage. You\'re going home!', why: '*Will have + past participle* = completed before a future time (05:50 is before 06:00). *Will be + -ing* = in progress at a future time (the storm lasts until 06:15).' },
+              { correct: false, text: '“By 06:00, life-support **will be booting up**, and at 06:00 the solar storm **will have passed**.”', error: 'Aspect swap: the two future forms are attached to the wrong events.', why: 'Life-support finishes at 05:50, so it is complete by 06:00; the storm lasts until 06:15, so it is still in progress at 06:00.' },
+              { correct: false, text: '“By 06:00, life-support **will have boot up**, and at 06:00 the solar storm will still be passing.”', error: 'Form error: the future perfect needs a different verb form.', why: 'The future perfect is *will have + past participle*: *booted*, not *boot*.' },
+              { correct: false, text: '“By 06:00, life-support **has booted up**, and at 06:00 the solar storm will still be passing.”', error: 'Time error: this tense can\'t look back from a future deadline.', why: 'The present perfect looks back from **now**. To look back from 06:00 in the future, use the future perfect.' }
+            ],
+            lesson: '**Future perfect** (*will have + past participle*) = completed before a future time: *By 06:00 it will have booted up*. **Future continuous** (*will be + -ing*) = in progress at a future time: *At 06:00 the storm will still be passing*. *By* goes with completion.'
+          }
+        ]
+      }
+    };
+
+    /* ================================================================
+       2. PERSISTENCE  (localStorage "chronicle88.v1")
+       ================================================================ */
+    function loadStore() {
+      const d = { tapesCleared: [], bestRank: {}, settings: { music: true, musicUserSet: false, sfx: true, speed: 'normal' } };
+      try {
+        const raw = localStorage.getItem(STORE_KEY);
+        if (raw) {
+          const o = JSON.parse(raw);
+          if (o && typeof o === 'object') {
+            if (Array.isArray(o.tapesCleared)) d.tapesCleared = o.tapesCleared.map(Number).filter(n => TAPES[n]);
+            if (o.bestRank && typeof o.bestRank === 'object') d.bestRank = o.bestRank;
+            if (o.settings && typeof o.settings === 'object') Object.assign(d.settings, o.settings);
+          }
         }
+      } catch (e) { /* storage unavailable: play without saving */ }
+      if (!['slow', 'normal', 'instant'].includes(d.settings.speed)) d.settings.speed = 'normal';
+      d.settings.music = d.settings.musicUserSet ? !!d.settings.music : true;
+      d.settings.sfx = d.settings.sfx !== false;
+      return d;
+    }
+    const STORE = loadStore();
+    function saveStore() {
+      if (SELFTEST) return;
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(STORE)); } catch (e) { /* ignore */ }
+    }
+
+    /* ================================================================
+       3. HELPERS: timers, shuffle, rich text (DOM-built, never innerHTML)
+       ================================================================ */
+    const timers = new Set();
+    function later(fn, ms) { const id = setTimeout(() => { timers.delete(id); fn(); }, ms); timers.add(id); return id; }
+    function cancel(id) { if (id) { clearTimeout(id); timers.delete(id); } }
+    function clearTimers() { timers.forEach(id => clearTimeout(id)); timers.clear(); }
+
+    function shuffle(arr, rng) {
+      const a = arr.slice(); rng = rng || Math.random;
+      for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; }
+      return a;
+    }
+
+    const RICH_RE = /(\*\*[^*]+\*\*|\*[^*\n]+\*|`[^`\n]+`|\n)/;
+    function segs(str) {
+      const out = [];
+      String(str == null ? '' : str).split(RICH_RE).forEach(p => {
+        if (!p) return;
+        if (p === '\n') out.push({ br: true });
+        else if (p.length > 4 && p.startsWith('**') && p.endsWith('**')) out.push({ t: p.slice(2, -2), c: 'hl' });
+        else if (p.length > 2 && p[0] === '*' && p.endsWith('*')) out.push({ t: p.slice(1, -1), c: 'em' });
+        else if (p.length > 2 && p[0] === '`' && p.endsWith('`')) out.push({ t: p.slice(1, -1), c: 'code' });
+        else out.push({ t: p, c: null });
+      });
+      return out;
+    }
+    function segEl(s) {
+      const e = document.createElement(s.c === 'em' ? 'em' : s.c === 'code' ? 'code' : 'span');
+      if (s.c === 'hl') e.className = 'hl';
+      return e;
+    }
+    function rich(str) {
+      const f = document.createDocumentFragment();
+      segs(str).forEach(s => {
+        if (s.br) { f.appendChild(document.createElement('br')); return; }
+        if (!s.c) { f.appendChild(document.createTextNode(s.t)); return; }
+        const e = segEl(s); e.textContent = s.t; f.appendChild(e);
+      });
+      return f;
+    }
+    function plain(str) { return segs(str).map(s => s.br ? ' ' : s.t).join(''); }
+    function highlights(str) { return segs(str).filter(s => s.c === 'hl').map(s => s.t); }
+    function track(name, data) {
+      if (SELFTEST) return;
+      try { if (typeof window.trackFunnelEvent === 'function') window.trackFunnelEvent(name, data || {}); } catch (e) { /* ignore */ }
+    }
+
+    /* ================================================================
+       4. STATE
+       ================================================================ */
+    let S = null, P = null, el = {};
+    function freshState(tapeId) {
+      return {
+        tapeId, sceneIdx: 0, stamina: MAX_STA, composure: START_CMP, tokens: START_TOK, parryIdx: 0,
+        phase: 'investigate', busy: false, attempts: 0, found: {}, order: [], hintUsed: false,
+        checkpoint: null, rolls: 0, inputLockUntil: 0, rng: Math.random, rank: null,
+        stats: { firstTry: 0, wrong: 0, hints: 0, retries: 0, diceFails: 0, missed: {} }
       };
+    }
+    function freshParry() { return { open: false, locked: false, item: null, sel: [], bank: [], fails: 0, checked: false, prevFocus: null }; }
+    const tape = () => TAPES[S.tapeId];
+    const curScene = () => { const sc = tape().scenes; return sc[Math.min(S.sceneIdx, sc.length - 1)]; };
+    const keyTargets = sc => VERBS.flatMap(v => (sc.cmds[v] || []).filter(t => t.key).map(t => ({ v, t })));
 
-      function ensureAudio() {
-        if (!audioCtx) {
-          const AC = window.AudioContext || window.webkitAudioContext;
-          if (AC) audioCtx = new AC();
+    /* ================================================================
+       5. AUDIO: SSG-style square blips + 2-operator FM lead (YM2203 feel)
+       Music ON by default; starts immediately if allowed or on first gesture.
+       ================================================================ */
+    let AC = null, master = null, unlocked = false;
+    function audio() {
+      if (SELFTEST || !unlocked) return null;
+      if (!AC) {
+        try {
+          AC = new (window.AudioContext || window.webkitAudioContext)();
+          master = AC.createGain(); master.gain.value = 0.5; master.connect(AC.destination);
+        } catch (e) { AC = null; return null; }
+      }
+      if (AC.state === 'suspended' && !document.hidden) AC.resume().catch(() => {});
+      return AC;
+    }
+    function tone(freq, dur, type, vol, t0, slideTo) {
+      const a = audio(); if (!a) return;
+      const t = t0 || a.currentTime;
+      const o = a.createOscillator(), g = a.createGain();
+      o.type = type || 'square';
+      o.frequency.setValueAtTime(freq, t);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+      g.gain.setValueAtTime(vol || 0.05, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.02);
+    }
+    function sfx(kind) {
+      if (!STORE.settings.sfx) return;
+      const a = audio(); if (!a) return;
+      const t = a.currentTime;
+      switch (kind) {
+        case 'blip': tone(1320, 0.018, 'square', 0.022, t); break;
+        case 'select': tone(880, 0.05, 'square', 0.045, t); break;
+        case 'clue': tone(1047, 0.06, 'square', 0.04, t); tone(1568, 0.09, 'square', 0.04, t + 0.06); break;
+        case 'ok': [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.09, 'square', 0.045, t + i * 0.07)); break;
+        case 'bad': tone(220, 0.3, 'square', 0.06, t, 110); break;
+        case 'dice': tone(300 + Math.random() * 400, 0.03, 'square', 0.035, t); break;
+        case 'fail': [392, 330, 262, 196].forEach((f, i) => tone(f, 0.22, 'square', 0.055, t + i * 0.2)); break;
+      }
+    }
+    const SONGS = {
+      1: { lead: [69, 0, 72, 74, 76, 0, 74, 72, 69, 0, 67, 69, 72, 0, 0, 0], bass: [45, 45, 57, 45, 48, 48, 60, 48, 43, 43, 55, 43, 45, 45, 57, 45] },
+      2: { lead: [62, 65, 69, 0, 67, 65, 64, 0, 62, 0, 60, 62, 65, 0, 64, 0], bass: [38, 0, 50, 38, 36, 0, 48, 36, 34, 0, 46, 34, 36, 0, 48, 36] },
+      3: { lead: [76, 0, 79, 0, 81, 79, 76, 0, 74, 0, 72, 74, 76, 0, 0, 0], bass: [40, 52, 40, 52, 45, 57, 45, 57, 43, 55, 43, 55, 40, 52, 40, 52] }
+    };
+    const STEP = 60 / 132 / 2;
+    const mus = { on: false, timer: null, next: 0, step: 0 };
+    const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+    function fmNote(a, t, freq, dur) {
+      const car = a.createOscillator(), mod = a.createOscillator(), mg = a.createGain(), env = a.createGain();
+      car.type = 'sine'; mod.type = 'sine';
+      car.frequency.value = freq; mod.frequency.value = freq * 2;
+      mg.gain.setValueAtTime(freq * 2.2, t); mg.gain.exponentialRampToValueAtTime(freq * 0.3, t + dur);
+      mod.connect(mg); mg.connect(car.frequency);
+      env.gain.setValueAtTime(0.0001, t); env.gain.linearRampToValueAtTime(0.06, t + 0.01); env.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      car.connect(env); env.connect(master);
+      car.start(t); mod.start(t); car.stop(t + dur + 0.02); mod.stop(t + dur + 0.02);
+    }
+    function schedule() {
+      if (!AC || !mus.on || AC.state !== 'running') return;
+      const song = SONGS[S.tapeId] || SONGS[1];
+      if (mus.next < AC.currentTime) mus.next = AC.currentTime + 0.05;
+      while (mus.next < AC.currentTime + 0.12) {
+        const i = mus.step % 16, l = song.lead[i], b = song.bass[i];
+        if (l) fmNote(AC, mus.next, mtof(l), STEP * 1.8);
+        if (b) tone(mtof(b), STEP * 0.9, 'square', 0.022, mus.next);
+        mus.next += STEP; mus.step++;
+      }
+    }
+    function startMusic() {
+      const a = audio(); if (!a) return;
+      mus.on = true; mus.next = a.currentTime + 0.05; mus.step = 0;
+      clearInterval(mus.timer); mus.timer = setInterval(schedule, 25);
+    }
+    function stopMusic() { mus.on = false; clearInterval(mus.timer); mus.timer = null; }
+    const UNLOCK_EVENTS = ['pointerdown', 'keydown', 'touchstart', 'click'];
+    function unlockAudio(e) {
+      if (SELFTEST) return;
+      if (e && e.target && e.target.closest && e.target.closest('#bgm-btn')) return;
+      unlocked = true;
+      if (STORE.settings.music && !mus.on) startMusic();
+      else if (AC && AC.state === 'suspended' && !document.hidden) AC.resume().catch(() => {});
+      if (AC && AC.state === 'running') {
+        UNLOCK_EVENTS.forEach(ev => window.removeEventListener(ev, unlockAudio, true));
+      }
+    }
+
+    /* ================================================================
+       6. CANVAS: 640x200, 8 digital colours, ordered dithering, 3x5 ROM-ish font
+       ================================================================ */
+    let cx = null;
+    const K = PAL.K, B = PAL.B, Rd = PAL.R, M = PAL.M, G = PAL.G, C = PAL.C, Y = PAL.Y, W = PAL.W;
+    function R(x, y, w, h, c) { cx.fillStyle = c; cx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
+    const patCache = {};
+    function pat(c1, c2, kind) {
+      const k = (c1 || 'none') + c2 + kind;
+      if (patCache[k]) return patCache[k];
+      const p = document.createElement('canvas'); p.width = 4; p.height = 4;
+      const g = p.getContext('2d');
+      if (c1) { g.fillStyle = c1; g.fillRect(0, 0, 4, 4); }
+      g.fillStyle = c2;
+      for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) {
+        const on = kind === 'check' ? (x + y) % 2 === 0
+          : kind === 'sparse' ? (x % 2 === 0 && y % 2 === 0)
+          : kind === 'rows' ? y % 2 === 0
+          : kind === 'dense' ? !(x % 2 === 0 && y % 2 === 0) : false;
+        if (on) g.fillRect(x, y, 1, 1);
+      }
+      return (patCache[k] = cx.createPattern(p, 'repeat'));
+    }
+    function D(x, y, w, h, c1, c2, kind) { R(x, y, w, h, pat(c1, c2, kind || 'check')); }
+    function disc(x0, y0, rx, ry, c) {
+      for (let dy = -ry; dy <= ry; dy++) {
+        const w = Math.round(rx * Math.sqrt(Math.max(0, 1 - (dy * dy) / (ry * ry))));
+        R(x0 - w, y0 + dy, w * 2 + 1, 1, c);
+      }
+    }
+    const FONT = {
+      A: '010101111101101', B: '110101110101110', C: '011100100100011', D: '110101101101110', E: '111100110100111',
+      F: '111100110100100', G: '011100101101011', H: '101101111101101', I: '111010010010111', J: '001001001101010',
+      K: '101101110101101', L: '100100100100111', M: '101111111101101', N: '110101101101101', O: '010101101101010',
+      P: '110101110100100', Q: '010101101110011', R: '110101110101101', S: '011100010001110', T: '111010010010010',
+      U: '101101101101111', V: '101101101101010', W: '101101111111101', X: '101101010101101', Y: '101101010010010',
+      Z: '111001010100111', 0: '111101101101111', 1: '010110010010111', 2: '110001010100111', 3: '110001010001110',
+      4: '101101111001001', 5: '111100110001110', 6: '011100111101111', 7: '111001010010010', 8: '111101111101111',
+      9: '111101111001110', ':': '000010000010000', '-': '000000111000000', '.': '000000000000010', '!': '010010010000010', '%': '101001010100101'
+    };
+    function txt(s, x, y, c, sc) {
+      sc = sc || 1;
+      for (const ch of String(s).toUpperCase()) {
+        const g = FONT[ch];
+        if (g) for (let i = 0; i < 15; i++) if (g[i] === '1') R(x + (i % 3) * 2 * sc, y + ((i / 3) | 0) * sc, 2 * sc, sc, c);
+        x += 8 * sc;
+      }
+    }
+    function person(x, fy, coat, hair, legs) {
+      R(x - 1, fy - 54, 18, 6, hair);
+      R(x - 3, fy - 50, 4, 8, hair); R(x + 15, fy - 50, 4, 8, hair);
+      D(x + 1, fy - 48, 14, 11, Y, Rd, 'sparse');
+      R(x + 3, fy - 44, 3, 2, K); R(x + 10, fy - 44, 3, 2, K);
+      R(x + 6, fy - 40, 4, 1, Rd);
+      R(x - 3, fy - 37, 22, 21, coat);
+      R(x + 5, fy - 37, 6, 9, W); R(x + 7, fy - 35, 2, 11, Rd);
+      R(x - 7, fy - 35, 4, 16, coat); R(x + 19, fy - 35, 4, 16, coat);
+      R(x - 7, fy - 19, 4, 3, Y); R(x + 19, fy - 19, 4, 3, Y);
+      R(x, fy - 16, 6, 16, legs || B); R(x + 10, fy - 16, 6, 16, legs || B);
+      R(x - 2, fy - 2, 8, 2, W); R(x + 10, fy - 2, 8, 2, W);
+    }
+    function consoleBank(x, y, w, h, f, accent) {
+      R(x, y, w, h, W); R(x + 2, y + 2, w - 4, h - 4, K);
+      D(x + 4, y + 4, w - 8, h - 18, K, accent || B, 'sparse');
+      for (let ry = y + 8; ry < y + h - 18; ry += 6) R(x + 8, ry, ((ry * 13 + f * 5) % (w - 24)) + 8, 2, C);
+      for (let lx = x + 6; lx < x + w - 8; lx += 10) R(lx, y + h - 10, 6, 4, ((lx + f) % 3 === 0) ? Rd : (((lx + f) % 2) ? G : Y));
+    }
+    function drawPortrait(key, f) {
+      if (key === 'failed' || key === 'victory') return;
+      const rawWho = String((el && el.speaker && el.speaker.textContent) || (S && curScene && curScene().speaker) || 'DECK').toUpperCase();
+      const px = 510, py = 10, pw = 118, ph = 118;
+      const isSci = key.startsWith('scifi_'), isDng = key.startsWith('dungeon_');
+      const borderCol = isSci ? C : isDng ? Y : M;
+      const bgCol = isSci ? B : isDng ? M : B;
+      R(px - 2, py - 2, pw + 4, ph + 4, K);
+      R(px, py, pw, ph, borderCol); R(px + 2, py + 2, pw - 4, ph - 4, W);
+      R(px + 4, py + 4, pw - 8, ph - 20, K);
+      D(px + 4, py + 4, pw - 8, ph - 20, K, bgCol, 'sparse');
+      for (let y = py + 8; y < py + ph - 20; y += 8) R(px + 6, y, pw - 12, 1, K);
+
+      // Character-specific styling (strictly 8-colour PAL)
+      let coat = B, hair = C, trim = Y, visor = null, hood = false, robot = false, short = 'DECK';
+      if (rawWho.includes('VANCE') || rawWho.includes('GUARD')) { coat = B; hair = W; trim = C; visor = Rd; short = 'VANCE'; }
+      else if (rawWho.includes('KAEL')) { coat = M; hair = G; trim = Y; visor = C; short = 'KAEL'; }
+      else if (rawWho.includes('MORALES')) { coat = W; hair = M; trim = C; short = 'MORALES'; }
+      else if (rawWho.includes('COOK')) { coat = W; hair = Y; trim = Rd; short = 'COOK'; }
+      else if (rawWho.includes('ALDRIC')) { coat = C; hair = Y; trim = W; hood = true; short = 'ALDRIC'; }
+      else if (rawWho.includes('GHOST')) { coat = B; hair = C; trim = W; hood = true; short = 'GHOST'; }
+      else if (rawWho.includes('ECHO')) { coat = M; hair = W; trim = C; hood = true; short = 'ECHO'; }
+      else if (rawWho.includes('GUARDIAN')) { coat = Rd; hair = Y; trim = W; visor = Rd; hood = true; short = 'GUARDIAN'; }
+      else if (rawWho.includes('YUKI')) { coat = W; hair = C; trim = Rd; visor = G; short = 'CMDR YUKI'; }
+      else if (rawWho.includes('MOTHER') || rawWho.includes('AI')) { coat = C; hair = G; trim = Y; robot = true; short = 'MOTHER-88'; }
+      else if (rawWho.includes('CRUISER')) { coat = G; hair = Y; trim = W; visor = Y; short = 'CRUISER'; }
+      else if (rawWho.includes('NOTEBOOK')) { coat = M; hair = Y; trim = C; short = 'NOTEBOOK'; }
+      else { coat = B; hair = M; trim = Y; short = 'INSP. DECK'; }
+
+      const cx0 = px + 59;
+      if (robot) {
+        R(cx0 - 30, py + 22, 60, 68, W); R(cx0 - 26, py + 26, 52, 60, K);
+        D(cx0 - 24, py + 28, 48, 56, K, G, 'sparse');
+        disc(cx0, py + 52, 16, 16, f % 2 ? G : C);
+        disc(cx0, py + 52, 8, 8, (TW.typing && f % 2 === 0) ? Y : Rd);
+        for (let i = 0; i < 6; i++) R(cx0 - 22 + i * 8, py + 76, 6, 4, (i + f) % 2 ? Y : G);
+      } else {
+        // Shoulders & lapels
+        R(cx0 - 42, py + 74, 84, 24, coat);
+        D(cx0 - 38, py + 76, 76, 22, coat, K, 'check');
+        R(cx0 - 16, py + 74, 32, 24, W);
+        R(cx0 - 6, py + 76, 12, 22, trim);
+        // Neck & head
+        R(cx0 - 10, py + 64, 20, 14, Y);
+        if (hood) {
+          disc(cx0, py + 44, 30, 26, coat);
+          R(cx0 - 30, py + 44, 60, 30, coat);
         }
-        if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume().catch(() => {});
-        }
-      }
-
-      function playSynthNote(freq, duration, wave = 'square', gainVal = 0.03) {
-        if (!audioCtx || audioCtx.state !== 'running' || freq <= 0) return;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = wave;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(gainVal, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0008, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      }
-
-      function playSFX(type) {
-        if (!sfxOn) return;
-        ensureAudio();
-        if (!audioCtx) return;
-
-        if (type === 'blip') {
-          playSynthNote(620, 0.035, 'square', 0.02);
-        } else if (type === 'correct') {
-          playSynthNote(523.25, 0.09, 'square', 0.04);
-          setTimeout(() => playSynthNote(659.25, 0.09, 'square', 0.04), 80);
-          setTimeout(() => playSynthNote(783.99, 0.16, 'square', 0.045), 160);
-        } else if (type === 'wrong') {
-          playSynthNote(185, 0.14, 'sawtooth', 0.045);
-          setTimeout(() => playSynthNote(135, 0.22, 'sawtooth', 0.045), 120);
-        } else if (type === 'dice') {
-          playSynthNote(300 + Math.random() * 420, 0.04, 'triangle', 0.03);
-        } else if (type === 'tape') {
-          playSynthNote(240, 0.06, 'triangle', 0.035);
-          setTimeout(() => playSynthNote(480, 0.09, 'square', 0.035), 65);
-        }
-      }
-
-      function startBGM() {
-        stopBGM();
-        if (!bgmOn) return;
-        ensureAudio();
-        const track = BGM_TRACKS[state.tapeId] || BGM_TRACKS[1];
-        bgmStep = 0;
-        bgmTimer = setInterval(() => {
-          if (!bgmOn) return;
-          if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume().catch(() => {});
-          }
-          const leadNote = track.lead[bgmStep % track.lead.length];
-          const bassNote = track.bass[Math.floor(bgmStep / 2) % track.bass.length];
-          if (leadNote > 0) playSynthNote(leadNote, 0.14, 'square', 0.015);
-          if (bgmStep % 2 === 0 && bassNote > 0) playSynthNote(bassNote, 0.25, 'triangle', 0.022);
-          bgmStep++;
-        }, track.tempoMs);
-      }
-
-      function stopBGM() {
-        if (bgmTimer) {
-          clearInterval(bgmTimer);
-          bgmTimer = null;
-        }
-      }
-
-      function toggleBGM() {
-        bgmOn = !bgmOn;
-        const btn = document.getElementById('bgm-btn');
-        const label = document.getElementById('bgm-label');
-        if (bgmOn) {
-          ensureAudio();
-          btn.classList.add('active');
-          label.textContent = 'Music: ON';
-          startBGM();
+        // Hair back
+        disc(cx0, py + 38, 25, 22, hair);
+        // Face (PC-88 skin dither: Y + Rd sparse)
+        R(cx0 - 18, py + 30, 36, 34, Y);
+        D(cx0 - 18, py + 30, 36, 34, Y, Rd, 'sparse');
+        R(cx0 - 14, py + 62, 28, 4, Y);
+        // Hair bangs & sideburns
+        R(cx0 - 22, py + 20, 44, 12, hair);
+        R(cx0 - 22, py + 28, 6, 24, hair); R(cx0 + 16, py + 28, 6, 24, hair);
+        R(cx0 - 10, py + 28, 8, 6, hair); R(cx0 + 4, py + 28, 8, 6, hair);
+        R(cx0 - 14, py + 22, 12, 2, W);
+        // Eyes or Cyber-Visor
+        const blink = (f % 13 === 0);
+        if (visor) {
+          R(cx0 - 18, py + 39, 36, 8, K);
+          R(cx0 - 16, py + 41, 32, 4, visor);
+          R(cx0 - 12 + ((f * 4) % 20), py + 41, 6, 2, W);
+        } else if (blink) {
+          R(cx0 - 13, py + 43, 8, 2, K); R(cx0 + 5, py + 43, 8, 2, K);
         } else {
-          btn.classList.remove('active');
-          label.textContent = 'Music';
-          stopBGM();
+          R(cx0 - 14, py + 38, 10, 2, K); R(cx0 + 4, py + 38, 10, 2, K);
+          R(cx0 - 13, py + 41, 8, 5, W); R(cx0 + 5, py + 41, 8, 5, W);
+          R(cx0 - 11, py + 41, 5, 5, B); R(cx0 + 7, py + 41, 5, 5, B);
+          R(cx0 - 10, py + 41, 2, 2, W); R(cx0 + 8, py + 41, 2, 2, W);
+        }
+        // Nose & animated mouth
+        R(cx0 - 1, py + 48, 2, 5, Rd);
+        const talking = TW && TW.typing && (f % 2 === 0);
+        if (talking) {
+          R(cx0 - 6, py + 56, 12, 5, K);
+          R(cx0 - 4, py + 57, 8, 3, Rd);
+        } else {
+          R(cx0 - 5, py + 57, 10, 2, K);
         }
       }
-
-      function toggleSFX() {
-        sfxOn = !sfxOn;
-        const btn = document.getElementById('sfx-btn');
-        const icon = document.getElementById('sfx-icon');
-        btn.classList.toggle('active', sfxOn);
-        icon.className = sfxOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+      // Nameplate bar
+      R(px + 2, py + ph - 16, pw - 4, 14, K);
+      R(px + 2, py + ph - 16, pw - 4, 2, borderCol);
+      txt(short, px + 8, py + ph - 11, Y, 1);
+      R(px + pw - 12, py + ph - 10, 4, 4, (TW && TW.typing && f % 2 === 0) ? G : borderCol);
+    }
+    function stars(seed, n, f, maxY) {
+      for (let i = 0; i < n; i++) {
+        const x = (i * 97 + seed * 31) % 640, y = (i * 53 + seed * 7) % (maxY || 120);
+        if ((i + f) % 9 !== 0) R(x, y, 1, 1, i % 5 === 0 ? Y : W);
       }
+    }
+    function rain(f, col) { for (let i = 0; i < 70; i++) R((i * 37 + f * 5) % 640, (i * 71 + f * 11) % 200, 1, 4, col); }
 
-      /* ==============================================================
-         2. THREE PLAYABLE EPISODES (STREAMLINED CLUES & NARRATIVE)
-         ============================================================== */
-      const TAPES = {
-        1: {
-          id: 1,
-          title: "Neon Alibi 1989",
-          parries: [
-            {
-              original: "Vance checked the vault before the 23:15 alarm went off.",
-              keyword: "ALREADY",
-              before: "When the 23:15 alarm went off, Vance",
-              after: "the vault.",
-              answer: ["had", "already", "checked"],
-              distractors: ["has", "checking", "was"]
-            },
-            {
-              original: "\"I won't hand over the neural chip!\" shouted Kael.",
-              keyword: "WOULD",
-              before: "Kael shouted that he",
-              after: "over the neural chip.",
-              answer: ["would", "not", "hand"],
-              distractors: ["will", "handing", "had"]
-            }
-          ],
-          scenes: [
-            {
-              num: 1,
-              location: "Sector 1 • CyberCorp Vault",
-              grammarTag: "Past Perfect vs. Past Simple",
-              speaker: "INSPECTOR DECK",
-              role: "• Vault Loading Bay (23:40)",
-              icon: "fa-user-secret",
-              sceneType: "cyber_vault",
-              timeline: [
-                { time: "23:05 • Security Log", desc: "The innocent guard finished checking the vault and left early." },
-                { time: "23:15 • Vault Alarm", desc: "The thief opened the vault AT 23:15 and triggered the alarm.", highlight: true }
-              ],
-              story: "Acid rain falls outside CyberCorp Tower. At **23:15**, someone stole the Omega Chip. You question Suspect Kael and Guard Vance.",
-              mission: "Which suspect's tense accidentally confesses that they opened the vault AT 23:15 when the alarm rang?",
-              grammarTip: "<strong>Past Simple</strong> (<em>\"When the alarm rang, I checked...\"</em>) means the action happened <strong>AT 23:15</strong>. <strong>Past Perfect</strong> (<em>\"I had already checked...\"</em>) means it happened <strong>BEFORE 23:15</strong>.",
-              choices: [
-                {
-                  letter: "A",
-                  html: "Arrest Kael: \"When the alarm rang at 23:15, I <span class='grammar-highlight'>checked</span> the vault.\"",
-                  correct: true,
-                  title: "Correct! Kael confessed to being there at 23:15!",
-                  explanation: "Because Kael used <strong>Past Simple</strong> (<em>\"When the alarm rang, I checked the vault\"</em>), his action happened <strong>at 23:15</strong>. Vance used <strong>Past Perfect</strong> (<em>\"had already checked\"</em>), proving Vance finished earlier at 23:05."
-                },
-                {
-                  letter: "B",
-                  html: "Arrest Vance: \"When the alarm rang at 23:15, I <span class='grammar-highlight'>had already checked</span> the vault and gone downstairs.\"",
-                  correct: false,
-                  title: "Wrong suspect — Vance's alibi is solid!",
-                  explanation: "Vance used the <strong>Past Perfect</strong> (<em>\"had already checked\"</em>), which means he finished his check <strong>before 23:15</strong>. Kael is the one who used Past Simple (<em>\"checked\"</em>) for 23:15."
-                },
-                {
-                  letter: "C",
-                  html: "Let both go: \"checked\" and \"had checked\" mean the exact same time.",
-                  correct: false,
-                  title: "The thief escapes!",
-                  explanation: "In B1–B2 English, changing <em>checked</em> (Past Simple) to <em>had checked</em> (Past Perfect) changes the timeline from <strong>at 23:15</strong> to <strong>before 23:15</strong>."
-                }
-              ]
-            },
-            {
-              num: 2,
-              location: "Sector 2 • MagLev Tunnel",
-              grammarTag: "Reported Speech",
-              speaker: "CHIEF MORALES",
-              role: "• Police Drone Radio",
-              icon: "fa-walkie-talkie",
-              sceneType: "cyber_tunnel",
-              timeline: [
-                { time: "Kael's Voice Recording", desc: "\"I am hiding in Sector 4, and I won't surrender!\"", highlight: true },
-                { time: "Radio Request", desc: "Report Kael's exact statement to Chief Morales." }
-              ],
-              story: "Kael sprints down the MagLev tunnel! Your scanner captures his voice message. Chief Morales radios in: *\"Inspector, what did Kael just say?\"*",
-              mission: "Report Kael's words using accurate B1–B2 Reported Speech:",
-              grammarTip: "Shift the verbs one step into the past: <strong>am hiding &rarr; was hiding</strong>, and <strong>won't surrender &rarr; wouldn't surrender</strong>.",
-              choices: [
-                {
-                  letter: "A",
-                  html: "\"Kael said that he <span class='grammar-highlight'>was hiding</span> in Sector 4 and that he <span class='grammar-highlight'>wouldn't surrender</span>.\"",
-                  correct: true,
-                  title: "Transmission confirmed! Drones deployed to Sector 4.",
-                  explanation: "Spot on! You shifted <em>am hiding &rarr; was hiding</em> and <em>won't surrender &rarr; wouldn't surrender</em>."
-                },
-                {
-                  letter: "B",
-                  html: "\"Kael said that he <span class='grammar-highlight'>is hiding</span> in Sector 4 and he <span class='grammar-highlight'>wouldn't surrendered</span>.\"",
-                  correct: false,
-                  title: "Radio syntax error!",
-                  explanation: "After modal verbs like <em>wouldn't</em>, always use the base verb (<strong>surrender</strong>, never <em>surrendered</em>), and shift <em>is hiding</em> to <strong>was hiding</strong>."
-                },
-                {
-                  letter: "C",
-                  html: "\"Kael <span class='grammar-highlight'>told that</span> he had hiding in Sector 4.\"",
-                  correct: false,
-                  title: "Reporting verb trap!",
-                  explanation: "Remember: <strong>say</strong> doesn't need an object (<em>\"Kael said that...\"</em>), whereas <strong>tell</strong> must have a person after it (<em>\"Kael told me that...\"</em>)."
-                }
-              ]
-            },
-            {
-              num: 3,
-              location: "Sector 4 • Noodle Bar 88",
-              grammarTag: "Question Tags",
-              speaker: "INSPECTOR DECK",
-              role: "• 2d6 Turret Hazard Encounter",
-              icon: "fa-bolt",
-              sceneType: "cyber_bar",
-              requiresDiceCheck: true,
-              timeline: [
-                { time: "Your Statement", desc: "\"You'd (You HAD) never entered Sector 4 before tonight...\"", highlight: true },
-                { time: "Watch Out", desc: "The word \"never\" makes the statement NEGATIVE." }
-              ],
-              story: "You corner Kael inside a smoky neon noodle bar while a ceiling laser turret powers up overhead.",
-              mission: "Complete the interrogation line: \"You'd never entered Sector 4 before tonight, _________?\"",
-              grammarTip: "In <em>\"You'd never entered\"</em>, <strong>'d = had</strong>. Because <strong>never</strong> makes the sentence negative, the question tag must be positive: <strong>had you?</strong>",
-              choices: [
-                {
-                  letter: "A",
-                  html: "\"You'd never entered Sector 4 before tonight, <span class='grammar-highlight'>had you</span>?\"",
-                  correct: true,
-                  title: "Bullseye! Kael drops his weapon!",
-                  explanation: "Because <strong>never</strong> makes the clause negative and <strong>'d = had</strong>, the question tag is positive: <strong>had you?</strong>"
-                },
-                {
-                  letter: "B",
-                  html: "\"You'd never entered Sector 4 before tonight, <span class='grammar-highlight'>hadn't you</span>?\"",
-                  correct: false,
-                  title: "Double negative trap!",
-                  explanation: "The word <strong>never</strong> already makes the sentence negative, so it requires a <strong>positive</strong> tag: <strong>had you?</strong>"
-                },
-                {
-                  letter: "C",
-                  html: "\"You'd never entered Sector 4 before tonight, <span class='grammar-highlight'>would you</span>?\"",
-                  correct: false,
-                  title: "Wrong auxiliary verb!",
-                  explanation: "Before a past participle (<em>entered</em>), <strong>'d</strong> stands for <strong>had</strong>, not <em>would</em>."
-                }
-              ]
-            },
-            {
-              num: 4,
-              location: "Rooftop • Drone Launchpad",
-              grammarTag: "Past Modals of Deduction",
-              speaker: "INSPECTOR DECK",
-              role: "• Final Case Deduction",
-              icon: "fa-microchip",
-              sceneType: "cyber_roof",
-              timeline: [
-                { time: "Clue 1 • Stairs", desc: "The stairwell door is welded shut from the inside (Impossible)." },
-                { time: "Clue 2 • Balcony", desc: "A courier-drone launcher on the rail is still glowing hot (Certain).", highlight: true }
-              ],
-              story: "Kael is in handcuffs, but the Omega Chip isn't in his pockets! You inspect the rooftop exit.",
-              mission: "Use Past Modals of Deduction to explain how Kael sent the chip away:",
-              grammarTip: "Use <strong>can't have + V3</strong> when you are certain something was impossible, and <strong>must have + V3</strong> when you are certain it happened.",
-              choices: [
-                {
-                  letter: "A",
-                  html: "\"He <span class='grammar-highlight'>can't have used</span> the stairs—he <span class='grammar-highlight'>must have launched</span> the chip by drone!\"",
-                  correct: true,
-                  title: "Omega Chip recovered! Case closed!",
-                  explanation: "Flawless! <strong>can't have used</strong> rules out the impossible stairs, and <strong>must have launched</strong> states the logical certainty."
-                },
-                {
-                  letter: "B",
-                  html: "\"He <span class='grammar-highlight'>mustn't have used</span> the stairs—he <span class='grammar-highlight'>should have launched</span> the drone!\"",
-                  correct: false,
-                  title: "Modal verb trap!",
-                  explanation: "In English, we never use <em>mustn't have</em> for past deduction—always use <strong>can't have + V3</strong>."
-                }
-              ]
-            }
-          ]
-        },
-
-        2: {
-          id: 2,
-          title: "The Citadel of Echoes",
-          parries: [
-            {
-              original: "I didn't read the warning rune, so I stepped on the trap.",
-              keyword: "HAD",
-              before: "If I",
-              after: "the warning rune, I wouldn't have stepped on the trap.",
-              answer: ["had", "read"],
-              distractors: ["would", "have", "reading"]
-            }
-          ],
-          scenes: [
-            {
-              num: 1,
-              location: "Floor B1 • The Three Levers",
-              grammarTag: "Modals of Deduction",
-              speaker: "DUNGEON GATEHOUSE",
-              role: "• Torchlight Inspection",
-              icon: "fa-dungeon",
-              sceneType: "dungeon_levers",
-              timeline: [
-                { time: "Lever 1", desc: "Covered in thick, unbroken 100-year cobwebs." },
-                { time: "Lever 2", desc: "Fresh muddy footprints and warm oil on the handle!", highlight: true }
-              ],
-              story: "Three iron levers stand before the stone gate. Two release poison gas; only the lever pulled by the Goblin Scout five minutes ago opens the passage.",
-              mission: "Which deduction safely opens the gate?",
-              grammarTip: "Use <strong>can't have been touched</strong> for Lever 1 (impossible), and <strong>must have pulled</strong> for Lever 2 (logical certainty).",
-              choices: [
-                {
-                  letter: "A",
-                  html: "Pull Lever 2: \"Lever 1 <span class='grammar-highlight'>can't have been touched</span>, so the scout <span class='grammar-highlight'>must have pulled</span> Lever 2!\"",
-                  correct: true,
-                  title: "The stone gate rumbles open!",
-                  explanation: "Exact B2 deduction! <strong>can't have been touched</strong> + <strong>must have pulled</strong> unlocks the passage."
-                },
-                {
-                  letter: "B",
-                  html: "Pull Lever 1: \"The scout <span class='grammar-highlight'>mustn't have pulled</span> Lever 2, so he <span class='grammar-highlight'>can have pulled</span> Lever 1.\"",
-                  correct: false,
-                  title: "Poison gas trap triggered!",
-                  explanation: "Never use <em>mustn't have</em> or <em>can have</em> for past deductions—use <strong>can't have + V3</strong> and <strong>must have + V3</strong>."
-                }
-              ]
-            },
-            {
-              num: 2,
-              location: "Floor B2 • Hall of Mirrors",
-              grammarTag: "Defining vs. Non-Defining Clauses",
-              speaker: "THE WARDEN'S GHOST",
-              role: "• Punctuation Riddle",
-              icon: "fa-wand-sparkles",
-              sceneType: "dungeon_mirrors",
-              timeline: [
-                { time: "North Wall (3 Mirrors)", desc: "One reflects Blue fire, one Green, one White.", highlight: true },
-                { time: "South Wall (1 Mirror)", desc: "Only one lone mirror (reflects Red fire)." }
-              ],
-              story: "A carved riddle reads: **\"Touch the mirror which reflects the blue flame to find the key.\"** Notice there are **no commas** around *\"which reflects the blue flame\"*.",
-              mission: "Why are there NO commas in that sentence?",
-              grammarTip: "<strong>No commas (Defining Relative Clause)</strong> = essential information that identifies <em>which one out of several</em> (the 3 mirrors on the North Wall).",
-              choices: [
-                {
-                  letter: "A",
-                  html: "Because there are 3 mirrors on the north wall, so the clause is <span class='grammar-highlight'>defining</span> (it tells us which of the three to touch).",
-                  correct: true,
-                  title: "The blue mirror slides open!",
-                  explanation: "Spot on! Without commas, a defining relative clause narrows down several items to the exact one you need."
-                },
-                {
-                  letter: "B",
-                  html: "Commas are completely optional in relative clauses and never change the meaning.",
-                  correct: false,
-                  title: "Cursed mirror shock!",
-                  explanation: "Commas change whether there is only ONE object (non-defining, with commas) or SEVERAL objects (defining, no commas)."
-                }
-              ]
-            },
-            {
-              num: 3,
-              location: "Floor B3 • The Abyss Bridge",
-              grammarTag: "Mixed Conditionals",
-              speaker: "OBSIDIAN GUARDIAN",
-              role: "• 2d6 Boss Encounter",
-              icon: "fa-shield-halved",
-              sceneType: "dungeon_boss",
-              requiresDiceCheck: true,
-              timeline: [
-                { time: "Past Mistake (Yesterday)", desc: "You did NOT bring the Silver Key yesterday." },
-                { time: "Present Result (Now)", desc: "So the drawbridge is NOT lowered right now.", highlight: true }
-              ],
-              story: "An Obsidian Guardian blocks the chasm and demands a **Mixed Conditional** connecting your past mistake yesterday to your present situation right now.",
-              mission: "Choose the grammatically accurate Mixed Conditional:",
-              grammarTip: "Never put <em>would</em> in the <em>If</em>-clause! Use <strong>If + Past Perfect</strong> (<em>If I had brought...</em>) + <strong>would be</strong> (present result now).",
-              choices: [
-                {
-                  letter: "A",
-                  html: "\"<span class='grammar-highlight'>If I had brought</span> the Silver Key yesterday, the bridge <span class='grammar-highlight'>would be</span> lowered right now!\"",
-                  correct: true,
-                  title: "The drawbridge lowers across the chasm!",
-                  explanation: "Brilliant Mixed Conditional! <strong>If I had brought</strong> (unreal past) + <strong>would be lowered right now</strong> (present result)."
-                },
-                {
-                  letter: "B",
-                  html: "\"<span class='grammar-highlight'>If I would have brought</span> the Silver Key yesterday, the bridge would be lowered now!\"",
-                  correct: false,
-                  title: "Guardian sword strike!",
-                  explanation: "Classic exam trap: never put <em>would have</em> inside the <em>If</em>-clause! Always use <strong>If + had + V3</strong>."
-                }
-              ]
-            }
-          ]
-        },
-
-        3: {
-          id: 3,
-          title: "Signal Lost at Station Zero",
-          parries: [
-            {
-              original: "Drone-9 is welding the outer hull breach for us right now.",
-              keyword: "WELDED",
-              before: "We are",
-              after: "by Drone-9 right now.",
-              answer: ["having", "the", "hull", "welded"],
-              distractors: ["welding", "had", "been"]
-            }
-          ],
-          scenes: [
-            {
-              num: 1,
-              location: "Deck A • Airlock Terminal",
-              grammarTag: "Passive Voice Tenses",
-              speaker: "MOTHER-88 MAINFRAME",
-              role: "• Station Diagnostics",
-              icon: "fa-satellite",
-              sceneType: "scifi_airlock",
-              timeline: [
-                { time: "Bay 1 • In Progress Now", desc: "Maintenance bots are still repairing the leak right now." },
-                { time: "Bay 2 • Completed", desc: "Airlock seals were replaced 10 minutes ago (Safe!).", highlight: true }
-              ],
-              story: "Oxygen is dropping on Station Zero! To unlock the corridor, `MOTHER-88` requires a status log using **Present Continuous Passive** for Bay 1 and **Present Perfect Passive** for Bay 2.",
-              mission: "Select the status log with accurate Passive Voice grammar:",
-              grammarTip: "Happening right now = <strong>is being repaired</strong>. Already completed = <strong>have been replaced</strong>.",
-              choices: [
-                {
-                  letter: "A",
-                  html: "\"Bay 1 <span class='grammar-highlight'>is being repaired</span> right now, while Bay 2's seals <span class='grammar-highlight'>have already been replaced</span>.\"",
-                  correct: true,
-                  title: "Airlock 2 unlocked!",
-                  explanation: "Spot on! <strong>is being repaired</strong> (Present Continuous Passive) + <strong>have been replaced</strong> (Present Perfect Passive)."
-                },
-                {
-                  letter: "B",
-                  html: "\"Bay 1 <span class='grammar-highlight'>is repairing</span> right now, while Bay 2's seals <span class='grammar-highlight'>have replaced</span>.\"",
-                  correct: false,
-                  title: "Airlock error alarm!",
-                  explanation: "Bays and seals don't repair themselves! Use the <strong>Passive Voice</strong> (<em>is being repaired / have been replaced</em>)."
-                }
-              ]
-            },
-            {
-              num: 2,
-              location: "Deck B • Hull Breach Control",
-              grammarTag: "Causative (Have Something Done)",
-              speaker: "ENGINEERING CONSOLE",
-              role: "• 2d6 Shockwave Check",
-              icon: "fa-robot",
-              sceneType: "scifi_core",
-              requiresDiceCheck: true,
-              timeline: [
-                { time: "Hazard Alert", desc: "Radiation outside is too high for a human crew member." },
-                { time: "Command Needed", desc: "Order the system to have Drone-9 weld the hull breach.", highlight: true }
-              ],
-              story: "A meteoroid cracks the outer hull! You cannot go outside yourself—you must arrange for **Drone-9** to weld the breach for you.",
-              mission: "Pick the command with the correct B2 Causative word order:",
-              grammarTip: "Put the object <strong>between</strong> <em>have</em> and the <em>past participle</em>: <strong>have + [the hull breach] + [welded]</strong>.",
-              choices: [
-                {
-                  letter: "A",
-                  html: "\"MOTHER-88, we must <span class='grammar-highlight'>have the hull breach welded</span> by Drone-9 immediately!\"",
-                  correct: true,
-                  title: "Drone-9 seals the outer hull!",
-                  explanation: "Perfect causative syntax: <strong>have + object (the hull breach) + past participle (welded)</strong>."
-                },
-                {
-                  letter: "B",
-                  html: "\"MOTHER-88, we must <span class='grammar-highlight'>have welded the hull breach</span> by Drone-9 immediately!\"",
-                  correct: false,
-                  title: "Command rejected!",
-                  explanation: "Use <em>have + object + V3</em> (<strong>have the hull breach welded</strong>) when arranging for someone or something else to do the job."
-                }
-              ]
-            },
-            {
-              num: 3,
-              location: "Deck C • Escape Pod Dock",
-              grammarTag: "Future Perfect vs. Continuous",
-              speaker: "ESCAPE POD TELEMETRY",
-              role: "• Final Launch Window (06:00)",
-              icon: "fa-shuttle-space",
-              sceneType: "scifi_dock",
-              timeline: [
-                { time: "05:50 (Before 06:00)", desc: "Life-support finishes booting up completely.", highlight: true },
-                { time: "05:55 to 06:15", desc: "The solar storm is still passing outside at 06:00." }
-              ],
-              story: "You strap into the Escape Pod! The Rescue Cruiser arrives at **06:00**. Lock in the telemetry report for **06:00**:",
-              mission: "Use Future Perfect for what finishes BEFORE 06:00, and Future Continuous for what is in progress AT 06:00:",
-              grammarTip: "Finished by 06:00 = <strong>will have booted</strong> (Future Perfect). In progress at 06:00 = <strong>will still be passing</strong> (Future Continuous).",
-              choices: [
-                {
-                  letter: "A",
-                  html: "\"By 06:00, life-support <span class='grammar-highlight'>will have booted</span> up, and the solar storm <span class='grammar-highlight'>will still be passing</span>.\"",
-                  correct: true,
-                  title: "Escape Pod launched! Mission complete!",
-                  explanation: "Textbook B2 Future forms! <strong>will have booted</strong> (completed before 06:00) + <strong>will still be passing</strong> (in progress at 06:00)."
-                },
-                {
-                  letter: "B",
-                  html: "\"By 06:00, life-support <span class='grammar-highlight'>will be booting</span> up, and the solar storm <span class='grammar-highlight'>will have passed</span>.\"",
-                  correct: false,
-                  title: "Telemetry mismatch!",
-                  explanation: "Life-support finishes at 05:50 (so by 06:00 it <strong>will have booted</strong>), and the storm lasts until 06:15 (so at 06:00 it <strong>will still be passing</strong>)."
-                }
-              ]
-            }
-          ]
+    const SCENES = {
+      cyber_vault(f) {
+        R(0, 0, 640, 200, K); D(0, 0, 640, 150, K, B, 'sparse');
+        for (let x = 0; x < 500; x += 64) { R(x, 0, 6, 150, B); R(x + 6, 0, 2, 150, C); }
+        R(0, 16, 500, 4, B); R(0, 146, 640, 4, C);
+        R(0, 150, 640, 50, K);
+        for (let x = 0; x < 640; x += 32) R(x, 150, 2, 50, M);
+        [150, 158, 168, 182, 196].forEach(y => R(0, y, 640, 1, M));
+        consoleBank(16, 32, 116, 86, f, B);
+        disc(280, 82, 78, 42, W); disc(280, 82, 72, 38, pat(K, B, 'check'));
+        disc(314, 84, 56, 30, W); disc(314, 84, 52, 27, pat(B, C, 'sparse'));
+        R(311, 60, 6, 48, W); R(268, 82, 92, 4, W); disc(314, 84, 10, 6, Y);
+        R(260, 6, 44, 8, f % 4 < 2 ? Rd : K);
+        txt('ALARM', 392, 24, Rd, 2); txt('23:15', 392, 42, f % 4 < 2 ? Y : Rd, 2);
+        consoleBank(390, 62, 98, 60, f, M);
+        for (let i = 0; i < 6; i++) R(360 + i * 20, 168 + (i % 2) * 6, 8, 3, C);
+        person(156, 168, B, W, C); person(436, 168, M, G, Rd);
+      },
+      cyber_tunnel(f) {
+        R(0, 0, 640, 200, K);
+        for (let i = 0; i < 6; i++) {
+          const w = 620 - i * 96, h = 190 - i * 28;
+          const x0 = 260 - w / 2, y0 = 100 - h / 2;
+          R(x0, y0, w, 2, B); R(x0, y0 + h, w, 2, B); R(x0, y0, 3, h, B); R(x0 + w, y0, 3, h + 2, B);
         }
+        for (let k = 0; k < 8; k++) {
+          const t = ((k * 8 + f * 2) % 64) / 64, e = t * t;
+          R(260 + e * 230, 100 - e * 86, 3 + t * 6, 2 + t * 2, Y);
+          R(260 - e * 230 - (3 + t * 6), 100 - e * 86, 3 + t * 6, 2 + t * 2, Y);
+        }
+        for (let y = 100; y < 200; y++) { const t = (y - 100) / 100; R(238 - t * 190, y, 3, 1, C); R(280 + t * 190, y, 3, 1, C); }
+        for (let k = 0; k < 7; k++) { const t = ((k * 14 + f * 3) % 98) / 98, y = 100 + t * t * 100; R(240 - t * t * 190, y, 40 + t * t * 380, 2, B); }
+        consoleBank(14, 118, 88, 66, f, B);
+        person(252, 148, M, Y, C);
+        if (f % 6 < 4) txt('SECTOR 4', 196, 18, Y, 2);
+      },
+      cyber_bar(f) {
+        R(0, 0, 640, 200, K); D(0, 0, 640, 130, K, M, 'sparse');
+        for (let x = 20; x < 500; x += 80) R(x, 0, 4, 130, M);
+        consoleBank(18, 22, 128, 92, f, M);
+        R(170, 10, 248, 44, M); R(174, 14, 240, 36, K);
+        txt('NOODLE 88', 188, 22, f % 7 === 0 ? B : Y, 2);
+        for (let i = 0; i < 5; i++) { R(180 + i * 44, 62, 28, 36, B); R(182 + i * 44, 64, 24, 32, K); R(186 + i * 44, 72, 16, 6, i % 2 ? C : M); }
+        person(270, 130, M, G, Rd); person(430, 130, W, Y, B);
+        R(0, 130, 640, 6, W); R(0, 136, 640, 4, C); D(0, 140, 640, 60, B, K, 'check');
+        disc(294, 126, 18, 5, W); disc(294, 127, 14, 3, Rd);
+        for (let i = 0; i < 4; i++) R(288 + ((f + i) % 3) * 3, 112 - i * 6, 4, 3, W);
+        R(456, 0, 8, 18, W); D(436, 18, 48, 16, W, B, 'check');
+        R(454, 28, 12, 4, f % 2 ? Rd : Y);
+        if (f % 10 === 0) R(459, 34, 2, 96, Rd);
+      },
+      cyber_roof(f) {
+        R(0, 0, 640, 200, K); D(0, 0, 640, 60, K, B, 'sparse'); stars(3, 50, f, 60);
+        [[0, 60, 75], [64, 54, 105], [124, 76, 68], [206, 46, 114], [258, 86, 84], [350, 62, 122], [418, 72, 76]].forEach(([x, w, h]) => {
+          D(x, 156 - h, w, h, K, B, 'check'); R(x, 156 - h, w, 2, C);
+          for (let wy = 162 - h; wy < 152; wy += 8) for (let wx = x + 4; wx < x + w - 4; wx += 8) if ((wx * 7 + wy * 3) % 5 === 0) R(wx, wy, 3, 3, (wx + wy) % 2 ? Y : C);
+        });
+        R(0, 156, 640, 44, K); R(0, 156, 640, 3, W); D(0, 160, 640, 40, K, B, 'sparse');
+        consoleBank(24, 88, 96, 68, f, C);
+        R(390, 126, 96, 18, W); D(394, 114, 72, 14, C, B, 'check'); R(458, 118, 28, 8, f % 2 ? Rd : Y);
+        R((360 + f * 3) % 490, 28, 8, 3, Y);
+        person(180, 186, B, M, C); person(280, 186, M, G, Rd);
+        rain(f, C);
+      },
+      dungeon_levers(f) {
+        R(0, 0, 640, 200, K);
+        for (let y = 0; y < 148; y += 12) for (let x = ((y / 12) % 2) * 20 - 20; x < 640; x += 40) D(x, y, 38, 10, B, K, 'check');
+        D(0, 148, 640, 52, K, B, 'sparse'); R(0, 148, 640, 2, W);
+        R(190, 18, 164, 130, W); R(194, 22, 156, 126, K);
+        for (let x = 206; x < 346; x += 16) R(x, 22, 4, 126, C);
+        txt('TRUTH', 232, 32, f % 8 < 4 ? C : Y, 2);
+        [110, 272, 430].forEach((x, i) => {
+          R(x - 14, 136, 28, 12, W); R(x - 12, 138, 24, 8, B);
+          R(x - 2, 94, 4, 42, i === 2 ? Rd : W);
+          disc(x, 92, 6, 4, i === 2 ? M : Rd);
+          if (i === 0) D(x - 18, 84, 36, 52, null, W, 'sparse');
+          if (i === 1) { for (let k = 0; k < 4; k++) R(x - 14 + k * 8, 162 + (k % 2) * 8, 6, 3, Rd); R(x + 2, 104 + (f % 4) * 6, 2, 3, Y); }
+          if (i === 2) D(x - 4, 94, 8, 42, null, Rd, 'check');
+        });
+        [28, 476].forEach(x => { R(x, 56, 8, 24, W); disc(x + 4, 48, 7 + (f % 2), 6, Y); disc(x + 4, 50, 4, 3, Rd); });
+        person(56, 178, C, Y, W);
+      },
+      dungeon_mirrors(f) {
+        R(0, 0, 640, 200, K); D(0, 0, 640, 142, K, B, 'sparse');
+        for (let y = 142; y < 200; y += 10) for (let x = ((y / 10) % 2) * 32; x < 640; x += 64) R(x, y, 32, 10, B);
+        [[96, B, 'I'], [236, G, 'II'], [376, W, 'III']].forEach(([x, col, num]) => {
+          R(x - 36, 20, 72, 110, Y); R(x - 32, 24, 64, 102, W); R(x - 30, 26, 60, 98, K);
+          D(x - 28, 28, 56, 94, null, C, 'sparse');
+          txt(num, x - 8, 34, Y, 1);
+          disc(x, 96, 10, 12, col); disc(x, 80 - (f % 2) * 2, 6, 7, col);
+        });
+        R(452, 118, 42, 62, Y); R(456, 122, 34, 54, K);
+        disc(473, 156, 6, 8, Rd); disc(473, 146 - (f % 2), 4, 5, Rd);
+        person(32, 184, C, Y, W);
+      },
+      dungeon_boss(f) {
+        R(0, 0, 640, 200, K); D(0, 0, 640, 96, K, B, 'sparse');
+        for (let x = 20; x < 480; x += 90) { R(x, 0, 14, 140, B); D(x + 2, 0, 10, 140, B, K, 'check'); }
+        D(0, 140, 170, 60, B, K, 'check'); D(350, 140, 290, 60, B, K, 'check');
+        R(0, 140, 170, 3, W); R(350, 140, 290, 3, W);
+        D(170, 152, 180, 48, K, Rd, 'sparse');
+        R(330, 26, 14, 114, W); D(344, 26, 12, 114, Y, Rd, 'check');
+        for (let y = 16; y < 56; y += 4) R(290 + (y - 16), y, 4, 2, W);
+        D(396, 54, 68, 86, Rd, K, 'check'); R(410, 30, 40, 26, W); R(414, 34, 32, 20, K);
+        const blink = f % 12 === 0;
+        R(418, 42, 7, 4, blink ? K : Rd); R(433, 42, 7, 4, blink ? K : Rd);
+        R(472, 22 + (f % 4 < 2 ? 0 : 2), 5, 98, W); R(464, 88, 20, 5, Y);
+        person(96, 140, C, Y, W);
+      },
+      scifi_airlock(f) {
+        R(0, 0, 640, 200, K); stars(5, 60, f, 200);
+        D(0, 0, 640, 156, null, B, 'sparse');
+        R(0, 156, 640, 44, K); D(0, 158, 640, 42, B, K, 'check'); R(0, 156, 640, 2, C);
+        [[36, 'BAY 1', Y], [216, 'BAY 2', G]].forEach(([x, label, col], i) => {
+          R(x, 32, 154, 124, W); D(x + 4, 36, 146, 116, B, K, 'check');
+          for (let k = 0; k < 9; k++) R(x + 6 + k * 16, 144, 8, 6, Y);
+          txt(label, x + 36, 50, col, 2);
+          R(x + 64, 84, 26, 12, i === 0 ? (f % 2 ? Rd : Y) : G);
+          if (i === 0 && f % 3 === 0) R(x + 20 + (f * 7) % 100, 118, 3, 3, W);
+        });
+        consoleBank(392, 52, 102, 96, f, C);
+        txt('O2 81%', 406, 22, f % 2 ? Rd : Y, 2);
+      },
+      scifi_core(f) {
+        R(0, 0, 640, 200, K);
+        R(0, 158, 640, 42, K); D(0, 160, 640, 40, B, K, 'check'); R(0, 158, 640, 2, C);
+        R(18, 18, 196, 104, W); R(20, 20, 192, 100, K); stars(9, 25, f, 90);
+        R(28 + (f * 4) % 170, 62, 10, 5, Y);
+        consoleBank(18, 128, 196, 28, f, B);
+        D(256, 0, 56, 158, C, B, f % 2 ? 'check' : 'rows');
+        R(244, 36 + (f * 4) % 108, 80, 6, W); R(248, 38 + (f * 4) % 108, 72, 2, Y);
+        consoleBank(348, 36, 142, 114, f, M);
+        txt('RAD 9.4', 362, 16, f % 2 ? Rd : Y, 2);
+        person(224, 178, W, C, B);
+      },
+      scifi_dock(f) {
+        R(0, 0, 640, 200, K); stars(7, 45, f, 150);
+        disc(340, 88, 114, 56, W); disc(340, 88, 108, 52, pat(K, M, f % 2 ? 'sparse' : 'check'));
+        R(296, 80, 72, 12, W); R(340, 72, 26, 8, C); R(280, 84, 16, 4, f % 2 ? Y : Rd);
+        consoleBank(24, 72, 124, 88, f, C);
+        D(0, 160, 640, 40, B, K, 'sparse'); R(0, 160, 640, 3, W);
+        txt('06:00', 28, 20, f % 2 ? Y : W, 3);
+        for (let i = 0; i < 8; i++) R(180 + i * 28, 174, 12, 5, (i + f) % 4 ? G : Y);
+        person(168, 184, W, C, B);
+      },
+      failed(f) {
+        for (let y = 0; y < 200; y += 4) {
+          const c = (y * 7 + f * 13) % 11 < 3 ? Rd : ((y * 3 + f) % 17 < 2 ? M : K);
+          R(((y * 13 + f * 29) % 9) - 4, y, 648, 4, c);
+        }
+        R(170, 72, 300, 46, K);
+        txt('CASE FAILED', 192, 84, Rd, 3); txt('CASE FAILED', 190, 82, W, 3);
+      },
+      victory(f) {
+        R(0, 0, 640, 200, K); stars(11, 90, f, 200);
+        for (let y = 140; y < 200; y += 6) R(0, y, 640, 2, (y / 6 + f) % 4 ? B : C);
+        R(170, 62, 300, 50, B); R(174, 66, 292, 42, K);
+        txt('CASE CLOSED', 190, 76, f % 4 < 2 ? Y : W, 3);
+      }
+    };
+    function drawScene(key, f) {
+      const k = SCENES[key] ? key : 'cyber_vault';
+      SCENES[k](f | 0);
+      drawPortrait(k, f | 0);
+    }
+
+    let frame = 0, lastDraw = 0, rafId = 0, wipeAt = 0;
+    function sceneKey() { return S.phase === 'failed' ? 'failed' : S.phase === 'victory' ? 'victory' : curScene().sceneType; }
+    function drawWipe(now) {
+      if (!wipeAt) return;
+      const p = (now - wipeAt) / 450;
+      if (p >= 1) { wipeAt = 0; return; }
+      const h = Math.ceil(10 * (1 - p));
+      for (let y = 0; y < 200; y += 10) R(0, y, 640, h, K);
+    }
+    function drawFrame() { const now = performance.now(); drawScene(sceneKey(), REDUCED ? 0 : frame); drawWipe(now); }
+    function startWipe() { if (!REDUCED && !SELFTEST) wipeAt = performance.now(); drawFrame(); }
+    function loop(ts) {
+      rafId = requestAnimationFrame(loop);
+      if (document.hidden) return;
+      if (!wipeAt && ts - lastDraw < 110) return;
+      lastDraw = ts; frame++; drawFrame();
+    }
+    function startLoop() { if (!REDUCED && !rafId) rafId = requestAnimationFrame(loop); }
+    function stopLoop() { if (rafId) cancelAnimationFrame(rafId); rafId = 0; }
+
+    /* ================================================================
+       7. TEXT WINDOW: typewriter crawl, ▼ cursor, click/Enter/Space
+       ================================================================ */
+    const TW = { queue: [], typing: false, nodes: [], si: 0, ci: 0, timer: 0, blips: 0 };
+    function cps() { return SELFTEST ? 0 : ({ slow: 18, normal: 45, instant: 0 })[STORE.settings.speed]; }
+    function say(pages, who) {
+      if (who !== undefined) { el.speaker.textContent = who; drawFrame(); }
+      TW.queue = (Array.isArray(pages) ? pages : [pages]).slice();
+      nextPage();
+    }
+    function nextPage() { if (!TW.queue.length) return false; typePage(TW.queue.shift()); return true; }
+    function typePage(str) {
+      stopTyping();
+      el.text.textContent = '';
+      el.srLive.textContent = plain(str);
+      TW.nodes = [];
+      segs(str).forEach(s => {
+        if (s.br) { el.text.appendChild(document.createElement('br')); return; }
+        const e = segEl(s); el.text.appendChild(e); TW.nodes.push({ e, t: s.t });
+      });
+      TW.si = 0; TW.ci = 0; TW.typing = true; updCursor();
+      if (!cps()) { completeTyping(); return; }
+      tick();
+    }
+    function tick() {
+      if (!TW.typing) return;
+      const speed = cps();
+      if (!speed) { completeTyping(); return; }
+      let node = TW.nodes[TW.si];
+      while (node && TW.ci >= node.t.length) { TW.si++; TW.ci = 0; node = TW.nodes[TW.si]; }
+      if (!node) { finishTyping(); return; }
+      TW.ci++;
+      node.e.textContent = node.t.slice(0, TW.ci);
+      if (node.t[TW.ci - 1] !== ' ' && (++TW.blips % 2 === 0)) sfx('blip');
+      TW.timer = later(tick, 1000 / speed);
+    }
+    function stopTyping() { TW.typing = false; cancel(TW.timer); TW.timer = 0; }
+    function finishTyping() { stopTyping(); updCursor(); }
+    function completeTyping() { if (!TW.typing) return; TW.nodes.forEach(n => { n.e.textContent = n.t; }); finishTyping(); }
+    function advanceText() { if (TW.typing) { completeTyping(); return true; } return nextPage(); }
+    function updCursor() { el.cursor.hidden = TW.typing || !TW.queue.length; }
+
+    /* ================================================================
+       8. UI: HUD, tabs, notebook, result panel, command menu
+       ================================================================ */
+    function hud() {
+      el.sta.textContent = S.stamina; el.cmp.textContent = S.composure; el.tok.textContent = S.tokens;
+      el.staWrap.classList.toggle('low', S.stamina <= 3);
+    }
+    function renderTabs() {
+      [1, 2, 3].forEach(id => {
+        const b = document.getElementById('tape-tab-' + id), on = id === S.tapeId;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+        b.tabIndex = on ? 0 : -1;
+        b.querySelector('.badge').textContent = STORE.tapesCleared.includes(id) ? '✓ CLEARED · BEST RANK ' + (STORE.bestRank[id] || '?') : '';
+      });
+      el.game.setAttribute('aria-labelledby', 'tape-tab-' + S.tapeId);
+    }
+    function clearNotes() {
+      el.notes.textContent = '';
+      const li = document.createElement('li'); li.className = 'empty'; li.textContent = 'No evidence yet. Use LOOK, TALK and EXAMINE.';
+      el.notes.appendChild(li);
+    }
+    function addNote(s) {
+      const e = el.notes.querySelector('.empty'); if (e) e.remove();
+      const li = document.createElement('li'); li.appendChild(rich(s)); el.notes.appendChild(li);
+    }
+    function showResult(kind, title, body) {
+      el.result.hidden = false;
+      el.resHead.className = kind; el.resHead.textContent = title;
+      el.resBody.textContent = ''; el.resBody.appendChild(rich(body));
+      el.dice.hidden = true;
+      if (el.result.scrollIntoView && !SELFTEST) el.result.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
+    }
+    function hideResult() { el.result.hidden = true; el.dice.hidden = true; el.resHead.textContent = ''; el.resBody.textContent = ''; }
+    function shake() {
+      if (REDUCED) return;
+      el.monitor.classList.remove('shake'); void el.monitor.offsetWidth; el.monitor.classList.add('shake');
+    }
+    function menu(title, items, wide) {
+      const hadFocus = el.menu.contains(document.activeElement);
+      el.cmdTitle.textContent = title;
+      el.lower.classList.toggle('wide', !!wide);
+      el.menu.textContent = '';
+      items.forEach(it => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'cmd' + (it.cls ? ' ' + it.cls : '');
+        if (it.key) { const k = document.createElement('span'); k.className = 'k'; k.textContent = it.key + '.'; b.appendChild(k); }
+        const lab = document.createElement('span'); lab.appendChild(rich(it.label)); b.appendChild(lab);
+        if (it.disabled) b.disabled = true;
+        b.addEventListener('click', () => { if (performance.now() < S.inputLockUntil) return; it.act(); });
+        el.menu.appendChild(b);
+      });
+      if (hadFocus) { const f = el.menu.querySelector('button:not([disabled])'); if (f) f.focus({ preventScroll: true }); }
+    }
+
+    /* ================================================================
+       9. GAME FLOW
+       ================================================================ */
+    function rootMenu() {
+      const sc = curScene(), items = [];
+      VERBS.forEach(v => {
+        const list = sc.cmds[v];
+        if (!list || !list.length) return;
+        const done = list.filter(t => S.found[t.id]).length;
+        const tag = done === list.length ? '✓ ' + v + ' ▸' : v + ' (' + done + '/' + list.length + ') ▸';
+        items.push({ label: tag, act: () => { sfx('select'); subMenu(v); } });
+      });
+      items.push({ label: 'HINT (rank −)', act: hint });
+      const keys = keyTargets(sc), foundKeys = keys.filter(k => S.found[k.t.id]).length;
+      const dedLabel = foundKeys >= keys.length ? '★ ' + sc.deduceLabel : sc.deduceLabel + ' (' + foundKeys + '/' + keys.length + ')';
+      items.push({ label: dedLabel, cls: 'accent', act: deduce });
+      menu('COMMAND', items);
+    }
+    function subMenu(v) {
+      const sc = curScene();
+      const items = sc.cmds[v].map((tg, i) => ({ label: (S.found[tg.id] ? '✓ ' : '') + tg.label, act: () => investigate(v, i) }));
+      items.push({ label: '◀ BACK', act: () => { sfx('select'); rootMenu(); } });
+      menu(v + ' ▸ WHAT?', items);
+    }
+    function investigate(v, i) {
+      if (S.phase !== 'investigate') return false;
+      const sc = curScene(), tg = sc.cmds[v] && sc.cmds[v][i];
+      if (!tg) return false;
+      const isNew = !S.found[tg.id];
+      S.found[tg.id] = true;
+      if (tg.clue && isNew) { addNote(tg.clue); sfx('clue'); } else sfx('select');
+      say(tg.text, tg.who || sc.speaker);
+      subMenu(v);
+      return true;
+    }
+    function deduce() {
+      if (S.phase !== 'investigate') return false;
+      const sc = curScene();
+      const missing = keyTargets(sc).filter(k => !S.found[k.t.id]);
+      if (missing.length) {
+        sfx('select');
+        const verbs = Array.from(new Set(missing.map(m => m.v))).join(' / ');
+        say(`You can't do that yet. ${missing.length} key lead${missing.length > 1 ? 's' : ''} still to check: try ${verbs}.`, 'NOTEBOOK');
+        return false;
+      }
+      S.phase = 'deduce';
+      sfx('select');
+      say(sc.mission, sc.speaker);
+      renderChoices();
+      return true;
+    }
+    function renderChoices() {
+      const sc = curScene();
+      const items = S.order.map((ci, pos) => ({ key: LETTERS[pos], label: sc.choices[ci].text, act: () => selectChoice(pos) }));
+      items.push({ label: 'HINT (rank −)', act: hint });
+      items.push({ label: '◀ BACK TO INVESTIGATION', act: () => { if (S.phase !== 'deduce') return; S.phase = 'investigate'; sfx('select'); rootMenu(); } });
+      menu(plain(sc.mission), items, true);
+    }
+    function setbackMenu() {
+      menu('SETBACK', [
+        { label: 'TRY AGAIN', cls: 'accent', act: retryDeduce },
+        { label: `REWIND (${S.tokens} TOK LEFT)`, disabled: S.tokens <= 0 || S.stamina >= MAX_STA, act: openParry },
+        { label: 'HINT (rank −)', act: hint }
+      ]);
+    }
+
+    /** Pick the choice shown at display position `pos`. Returns true only if state changed. */
+    function selectChoice(pos) {
+      if (S.phase !== 'deduce' || S.busy) return false;
+      const sc = curScene(), ci = S.order[pos];
+      const ch = sc.choices[ci];
+      if (!ch) return false;
+      S.busy = true;
+      stopTyping(); TW.queue = []; updCursor();
+      if (ch.correct) {
+        if (S.attempts === 0) S.stats.firstTry++;
+        S.composure = Math.min(MAX_CMP, S.composure + 1);
+        sfx('ok');
+        showResult('ok', '✓ ' + ch.title, ch.why + '\n\nRULE: ' + sc.lesson);
+        if (sc.dice) {
+          S.phase = 'dice';
+          el.dice.hidden = false; el.die1.textContent = '?'; el.die2.textContent = '?';
+          el.diceMsg.textContent = `HAZARD! Roll 2d6 ≤ ${S.composure} (your composure) to escape unharmed.`;
+          menu('HAZARD', [{ label: 'ROLL 2D6', cls: 'accent', act: rollHazardCheck }]);
+        } else {
+          S.phase = 'result_ok';
+          menu('CASE', [{ label: 'CONTINUE ▶', cls: 'accent', act: advanceScene }]);
+        }
+      } else {
+        S.attempts++; S.stats.wrong++;
+        S.stats.missed[sc.tag] = (S.stats.missed[sc.tag] || 0) + 1;
+        S.stamina = Math.max(0, S.stamina - WRONG_STA);
+        S.composure = Math.max(MIN_CMP, S.composure - WRONG_CMP);
+        sfx('bad'); shake();
+        if (S.stamina <= 0) { hud(); S.busy = false; fail(); return true; }
+        S.phase = 'result_bad';
+        let body = `ERROR TYPE: ${ch.error}\n−${WRONG_STA} STA, −${WRONG_CMP} CMP.`;
+        body += S.attempts >= 2
+          ? '\n\n' + ch.why + '\n\nRULE: ' + sc.lesson
+          : '\n\nThink it through and try again. The options will be reshuffled. A second miss reveals the full explanation.';
+        showResult('bad', '✗ ' + sc.failTitle, body);
+        setbackMenu();
+      }
+      hud();
+      S.busy = false;
+      return true;
+    }
+    function retryDeduce() {
+      if (S.phase !== 'result_bad' || S.busy) return false;
+      hideResult();
+      S.order = shuffle(curScene().choices.map((_, i) => i), S.rng);
+      S.phase = 'deduce';
+      say(curScene().mission, curScene().speaker);
+      renderChoices();
+      return true;
+    }
+    function rollHazardCheck() {
+      if (S.phase !== 'dice' || S.busy) return false;
+      S.busy = true; S.rolls++;
+      el.menu.querySelectorAll('button').forEach(b => { b.disabled = true; });
+      const d1 = 1 + Math.floor(S.rng() * 6), d2 = 1 + Math.floor(S.rng() * 6);
+      const resolve = () => {
+        const sc = curScene(), total = d1 + d2, ok = total <= S.composure;
+        el.die1.textContent = d1; el.die2.textContent = d2;
+        if (!ok) { S.stamina = Math.max(0, S.stamina - DICE_STA); S.stats.diceFails++; }
+        el.diceMsg.textContent = `Rolled ${d1} + ${d2} = ${total} vs ${S.composure}. ` + (ok ? sc.hazardOk : `${sc.hazardBad} −${DICE_STA} STA.`);
+        sfx(ok ? 'ok' : 'bad'); if (!ok) shake();
+        hud(); S.busy = false;
+        if (S.stamina <= 0) { fail(); return; }
+        S.phase = 'dice_done';
+        menu('HAZARD', [{ label: 'CONTINUE ▶', cls: 'accent', act: advanceScene }]);
       };
-
-      /* ==============================================================
-         3. 16-BIT PIXEL ART SCENE RENDERER
-         ============================================================== */
-      const canvas = document.getElementById('pixel-canvas');
-      const ctx = canvas ? canvas.getContext('2d') : null;
-      let animTick = 0;
-      let currentSceneType = 'cyber_vault';
-
-      function drawDitherSky(yStart, yEnd, c1, c2) {
-        ctx.fillStyle = c1;
-        ctx.fillRect(0, yStart, 384, yEnd - yStart);
-        ctx.fillStyle = c2;
-        for (let y = yStart; y < yEnd; y += 2) {
-          for (let x = (y % 4 === 0 ? 0 : 2); x < 384; x += 4) {
-            ctx.fillRect(x, y, 2, 2);
-          }
-        }
-      }
-
-      function drawPixelSpriteCharacter(x, y, coatColor, visorColor, talking) {
-        ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.fillRect(x - 4, y + 50, 36, 6);
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(x + 4, y + 34, 8, 18);
-        ctx.fillRect(x + 16, y + 34, 8, 18);
-        ctx.fillStyle = coatColor;
-        ctx.fillRect(x, y + 14, 28, 24);
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(x + 11, y + 14, 6, 22);
-        ctx.fillStyle = coatColor;
-        ctx.fillRect(x - 2, y + 10, 32, 6);
-        ctx.fillStyle = '#fcd34d';
-        ctx.fillRect(x + 5, y - 4, 18, 15);
-        ctx.fillStyle = '#1e1b4b';
-        ctx.fillRect(x + 3, y - 8, 22, 6);
-        ctx.fillStyle = visorColor;
-        ctx.fillRect(x + 8, y, 13, 4);
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(x + 11, y + 7, 6, talking ? 3 : 1);
-      }
-
-      function drawSceneCanvas() {
-        if (!ctx) return;
-        animTick++;
-        const talking = (animTick % 14 < 7);
-
-        if (currentSceneType.startsWith('cyber')) {
-          drawDitherSky(0, 75, '#070916', '#131836');
-          drawDitherSky(75, 140, '#131836', '#1e1b4b');
-
-          const buildings = [
-            { x: 8, y: 22, w: 58, h: 120 },
-            { x: 72, y: 10, w: 70, h: 132 },
-            { x: 150, y: 28, w: 62, h: 114 },
-            { x: 220, y: 14, w: 78, h: 128 },
-            { x: 306, y: 24, w: 68, h: 118 }
-          ];
-          buildings.forEach((b, idx) => {
-            ctx.fillStyle = (idx % 2 === 0) ? '#0b1024' : '#101733';
-            ctx.fillRect(b.x, b.y, b.w, b.h);
-            ctx.strokeStyle = '#1e293b';
-            ctx.strokeRect(b.x, b.y, b.w, b.h);
-            for (let wy = b.y + 8; wy < b.y + b.h - 14; wy += 9) {
-              for (let wx = b.x + 6; wx < b.x + b.w - 10; wx += 8) {
-                if ((wx + wy + idx) % 4 === 0) {
-                  ctx.fillStyle = ((wx * wy) % 5 === 0) ? '#f59e0b' : '#38bdf8';
-                  ctx.fillRect(wx, wy, 4, 4);
-                }
-              }
-            }
-          });
-
-          ctx.fillStyle = '#0f172a';
-          ctx.fillRect(145, 42, 94, 34);
-          ctx.strokeStyle = '#38bdf8';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(145, 42, 94, 34);
-          ctx.fillStyle = '#f59e0b';
-          ctx.font = 'bold 10px monospace';
-          ctx.fillText('ALARM 23:15', 155, 57);
-          ctx.fillStyle = '#38bdf8';
-          ctx.fillText('LOG: 23:05', 158, 69);
-
-          drawDitherSky(140, 204, '#080b18', '#0f172a');
-          drawPixelSpriteCharacter(82, 112, '#0284c7', '#38bdf8', talking);
-          drawPixelSpriteCharacter(268, 112, '#6366f1', '#f59e0b', !talking);
-
-          ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
-          for (let i = 0; i < 26; i++) {
-            const rx = (i * 41 + animTick * 3) % 384;
-            const ry = (i * 29 + animTick * 7) % 200;
-            ctx.fillRect(rx, ry, 1, 7);
-          }
-        } else if (currentSceneType.startsWith('dungeon')) {
-          drawDitherSky(0, 145, '#110e1b', '#1c162b');
-          drawDitherSky(145, 204, '#0c0a14', '#151122');
-
-          ctx.fillStyle = '#07050a';
-          ctx.fillRect(122, 36, 140, 110);
-          ctx.strokeStyle = '#f59e0b';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(122, 36, 140, 110);
-
-          ['1', '2', '3'].forEach((lbl, i) => {
-            const lx = 152 + i * 38;
-            ctx.fillStyle = (i === 1) ? '#38bdf8' : '#64748b';
-            ctx.fillRect(lx, 76, 8, 42);
-            ctx.fillStyle = (i === 1) ? '#f59e0b' : '#94a3b8';
-            ctx.fillRect(lx - 4, 70, 16, 10);
-            ctx.font = 'bold 10px monospace';
-            ctx.fillText('#' + lbl, lx - 3, 64);
-          });
-
-          const flame = (animTick % 8 < 4) ? 13 : 10;
-          [75, 305].forEach(tx => {
-            ctx.fillStyle = '#78350f';
-            ctx.fillRect(tx, 76, 8, 22);
-            ctx.fillStyle = '#f59e0b';
-            ctx.fillRect(tx - 3, 76 - flame, 14, flame);
-            ctx.fillStyle = '#f43f5e';
-            ctx.fillRect(tx, 78 - flame, 8, 6);
-          });
-
-          drawPixelSpriteCharacter(68, 114, '#d97706', '#38bdf8', talking);
-          drawPixelSpriteCharacter(292, 114, '#475569', '#f43f5e', !talking);
-        } else {
-          drawDitherSky(0, 140, '#060c1a', '#0f1e38');
-          drawDitherSky(140, 204, '#111827', '#1e293b');
-
-          ctx.fillStyle = '#02040a';
-          ctx.fillRect(82, 22, 220, 82);
-          ctx.strokeStyle = '#38bdf8';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(82, 22, 220, 82);
-          for (let s = 0; s < 22; s++) {
-            ctx.fillStyle = (s % 3 === 0) ? '#38bdf8' : '#fff';
-            ctx.fillRect(90 + ((s * 31) % 200), 28 + ((s * 19) % 55), 2, 2);
-          }
-          drawDitherSky(84, 102, '#0284c7', '#0369a1');
-
-          ctx.fillStyle = (animTick % 14 < 7) ? '#f59e0b' : '#38bdf8';
-          ctx.fillRect(180, 112, 24, 24);
-          ctx.strokeStyle = '#38bdf8';
-          ctx.strokeRect(175, 107, 34, 34);
-
-          drawPixelSpriteCharacter(80, 114, '#0ea5e9', '#10b981', talking);
-          drawPixelSpriteCharacter(284, 114, '#6366f1', '#f59e0b', !talking);
-        }
-      }
-
-      setInterval(drawSceneCanvas, 100);
-
-      /* ==============================================================
-         4. 6-SIDED DICE PIP RENDERER
-         ============================================================== */
-      const DIE_PIPS = {
-        1: [4],
-        2: [0, 8],
-        3: [0, 4, 8],
-        4: [0, 2, 6, 8],
-        5: [0, 2, 4, 6, 8],
-        6: [0, 2, 3, 5, 6, 8]
+      if (SELFTEST || REDUCED) { resolve(); return true; }
+      let n = 0;
+      const spin = () => {
+        if (n++ < 7) { el.die1.textContent = 1 + Math.floor(Math.random() * 6); el.die2.textContent = 1 + Math.floor(Math.random() * 6); sfx('dice'); later(spin, 60); }
+        else resolve();
       };
-
-      function renderDieFace(elId, value) {
-        const el = document.getElementById(elId);
-        if (!el) return;
-        const active = DIE_PIPS[value] || DIE_PIPS[1];
-        let html = '';
-        for (let i = 0; i < 9; i++) {
-          html += `<span class="pip-dot ${active.includes(i) ? 'on' : ''}"></span>`;
-        }
-        el.innerHTML = html;
+      spin();
+      return true;
+    }
+    function advanceScene() {
+      if (!(S.phase === 'result_ok' || S.phase === 'dice_done') || S.busy) return false;
+      S.busy = true;
+      try {
+        S.sceneIdx++;
+        if (S.sceneIdx >= tape().scenes.length) victory(); else renderScene();
+      } finally { S.busy = false; }
+      return true;
+    }
+    function renderScene() {
+      const sc = curScene(), n = tape().scenes.length;
+      closeParryModal(true);
+      S.phase = 'investigate'; S.busy = false; S.attempts = 0; S.found = {}; S.hintUsed = false;
+      S.order = shuffle(sc.choices.map((_, i) => i), S.rng);
+      S.checkpoint = { stamina: S.stamina, composure: S.composure };
+      S.inputLockUntil = performance.now() + 250;
+      hideResult(); clearNotes();
+      el.loc.textContent = sc.location;
+      el.sceneLabel.textContent = `TAPE ${S.tapeId} · SCENE ${S.sceneIdx + 1}/${n}`;
+      el.tag.textContent = sc.tag;
+      el.canvas.setAttribute('aria-label', '8-bit PC-88-style illustration: ' + plain(sc.location));
+      hud(); startWipe();
+      say(sc.intro, sc.speaker);
+      rootMenu();
+    }
+    function hint() {
+      if (!['investigate', 'deduce', 'result_bad'].includes(S.phase)) return false;
+      const sc = curScene();
+      if (!S.hintUsed) { S.hintUsed = true; S.stats.hints++; }
+      sfx('select');
+      say('HINT (this lowers your rank): ' + sc.hint, 'NOTEBOOK');
+      return true;
+    }
+    function calcRank() {
+      const s = S.stats;
+      const pts = 100 - 12 * s.wrong - 5 * s.hints - 10 * s.retries - 4 * s.diceFails;
+      return pts >= 90 ? 'S' : pts >= 75 ? 'A' : pts >= 55 ? 'B' : 'C';
+    }
+    function fail() {
+      S.phase = 'failed'; S.busy = false;
+      closeParryModal(true);
+      el.loc.textContent = 'CASE FAILED';
+      el.canvas.setAttribute('aria-label', '8-bit PC-88-style illustration: CASE FAILED');
+      showResult('bad', 'CASE FAILED', 'Your stamina has run out. Retry from the start of this scene (stamina restored to at least 6; counts against your rank), or restart the whole tape.');
+      startWipe();
+      say('Your vision blurs. The trail goes cold... but a good detective never quits.', 'CASE FILE');
+      menu('GAME OVER', [
+        { label: 'RETRY FROM CHECKPOINT', cls: 'accent', act: retryCheckpoint },
+        { label: 'RESTART TAPE', act: () => loadTape(S.tapeId) }
+      ]);
+      sfx('fail');
+      track('chronicle88_case_failed', { tape: S.tapeId, scene: S.sceneIdx + 1 });
+    }
+    function retryCheckpoint() {
+      if (S.phase !== 'failed') return false;
+      S.stats.retries++;
+      S.stamina = Math.max(S.checkpoint.stamina, 6);
+      S.composure = S.checkpoint.composure;
+      renderScene();
+      return true;
+    }
+    function victory() {
+      S.phase = 'victory';
+      const t = tape(), n = t.scenes.length, rank = calcRank(), st = S.stats;
+      S.rank = rank;
+      if (!STORE.tapesCleared.includes(t.id)) STORE.tapesCleared.push(t.id);
+      const order = 'SABC', prev = STORE.bestRank[t.id];
+      if (!prev || order.indexOf(rank) < order.indexOf(prev)) STORE.bestRank[t.id] = rank;
+      saveStore(); renderTabs();
+      el.loc.textContent = 'CASE CLOSED';
+      el.sceneLabel.textContent = `TAPE ${t.id} · COMPLETE`;
+      el.tag.textContent = 'RANK ' + rank;
+      el.canvas.setAttribute('aria-label', '8-bit PC-88-style illustration: CASE CLOSED');
+      clearNotes();
+      showResult('ok', `CASE CLOSED · RANK ${rank}`,
+        `First-try solves: ${st.firstTry}/${n}\nMistakes: ${st.wrong} · Hints: ${st.hints} · Checkpoint retries: ${st.retries} · Failed hazard rolls: ${st.diceFails}\nStamina left: ${S.stamina}/${MAX_STA}`);
+      startWipe();
+      say(t.outro, 'CASE FILE');
+      const items = [];
+      if (t.id < 3) items.push({ label: 'NEXT TAPE ▶', cls: 'accent', act: () => loadTape(t.id + 1) });
+      items.push({ label: 'REPLAY THIS TAPE', act: () => loadTape(t.id) });
+      if (t.id === 3) items.push({ label: 'BACK TO TAPE 1', act: () => loadTape(1) });
+      menu('CASE CLOSED', items);
+      sfx('ok');
+      track('chronicle88_tape_cleared', { tape: t.id, rank, firstTry: st.firstTry, scenes: n, wrong: st.wrong, hints: st.hints });
+      if (!SELFTEST && typeof window.showDiagnosticGate === 'function') {
+        const missed = Object.entries(st.missed).sort((a, b) => b[1] - a[1])[0];
+        const tapeId = t.id;
+        later(() => {
+          try {
+            window.showDiagnosticGate({
+              gameName: "Chronicle '88: " + t.title, score: st.firstTry, maxScore: n,
+              weakArea: missed ? missed[0] : 'Accuracy under pressure across B2 grammar structures',
+              onReplay: () => loadTape(tapeId)
+            });
+          } catch (e) { /* ignore */ }
+        }, 2500);
       }
+    }
+    function loadTape(id) {
+      id = Number(id);
+      if (!TAPES[id]) return false;
+      clearTimers(); stopTyping(); TW.queue = [];
+      closeParryModal(true);
+      const rng = S ? S.rng : Math.random;
+      S = freshState(id); S.rng = rng;
+      P = freshParry();
+      if (mus.on) mus.step = 0;
+      renderTabs();
+      renderScene();
+      track('chronicle88_tape_loaded', { tape: id });
+      return true;
+    }
 
-      /* ==============================================================
-         5. CORE GAMEPLAY STATE & CLEAN UI CONTROLLER
-         ============================================================== */
-      let state = {
-        tapeId: 1,
-        sceneIdx: 0,
-        stamina: 20,
-        composure: 9,
-        tokens: 3,
-        parryIdx: 0,
-        selectedTiles: []
+    /* ================================================================
+       10. REWIND / PARRY (word tiles)
+       ================================================================ */
+    function openParry() {
+      if (S.phase !== 'result_bad' || P.open || S.tokens <= 0 || S.busy) return false;
+      const t = tape(), item = t.parries[S.parryIdx % t.parries.length];
+      S.parryIdx++; S.tokens--; hud();
+      P = freshParry();
+      P.open = true; P.item = item;
+      P.bank = shuffle(item.answer.concat(item.distractors).map((w, i) => ({ w, i, used: false })), S.rng);
+      P.prevFocus = document.activeElement;
+      el.pOrig.textContent = item.original; el.pKey.textContent = item.keyword;
+      el.pBefore.textContent = item.before; el.pAfter.textContent = item.after;
+      setPStatus('', '');
+      renderParry();
+      el.modal.hidden = false;
+      const f = el.modal.querySelector('.tile:not([disabled]), button'); if (f) f.focus();
+      sfx('select');
+      return true;
+    }
+    function renderParry() {
+      el.pSlot.textContent = ''; el.pBank.textContent = '';
+      P.sel.forEach((i, pos) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'tile';
+        b.textContent = P.bank.find(x => x.i === i).w; b.disabled = P.locked;
+        b.setAttribute('aria-label', 'Remove ' + b.textContent);
+        b.addEventListener('click', () => untapTile(pos));
+        el.pSlot.appendChild(b);
+      });
+      P.bank.forEach(x => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'tile';
+        b.textContent = x.w; b.disabled = x.used || P.locked;
+        b.addEventListener('click', () => tapTile(x.i));
+        el.pBank.appendChild(b);
+      });
+    }
+    function tapTile(i) {
+      if (!P.open || P.locked) return;
+      const x = P.bank.find(b => b.i === i); if (!x || x.used) return;
+      x.used = true; P.sel.push(i); sfx('select'); renderParry();
+      const next = el.pBank.querySelector('.tile:not([disabled])') || el.check; next.focus();
+    }
+    function untapTile(pos) {
+      if (!P.open || P.locked) return;
+      const i = P.sel.splice(pos, 1)[0], x = P.bank.find(b => b.i === i); if (x) x.used = false;
+      renderParry();
+    }
+    function clearParryTiles() {
+      if (!P.open || P.locked) return;
+      P.sel = []; P.bank.forEach(b => { b.used = false; }); renderParry(); setPStatus('', '');
+    }
+    function setPStatus(kind, msg) { el.pStatus.className = 'p-status ' + kind; el.pStatus.textContent = msg; }
+    /** Locks immediately; only the first call in a check cycle changes state. */
+    function checkParryTiles() {
+      if (!P.open || P.locked) return false;
+      P.locked = true; P.checked = true;
+      const words = P.sel.map(i => P.bank.find(b => b.i === i).w);
+      const ok = words.join(' ').toLowerCase() === P.item.answer.join(' ').toLowerCase();
+      if (ok) {
+        S.stamina = Math.min(MAX_STA, S.stamina + 3);
+        S.composure = Math.min(MAX_CMP, S.composure + 1);
+        hud(); renderParry();
+        setPStatus('ok', '✓ REWIND COMPLETE: +3 STA, +1 CMP');
+        sfx('ok');
+        if (SELFTEST) closeParryModal(); else later(() => closeParryModal(), 900);
+      } else {
+        P.fails++; sfx('bad');
+        if (P.fails >= 2) {
+          renderParry();
+          setPStatus('bad', 'Tape jammed. The answer was: ' + P.item.before + ' ' + P.item.answer.join(' ') + ' ' + P.item.after + ' No healing this time.');
+          if (SELFTEST) closeParryModal(); else later(() => closeParryModal(), 3200);
+        } else {
+          P.sel = []; P.bank.forEach(b => { b.used = false; });
+          P.locked = false; renderParry();
+          setPStatus('bad', 'Not quite. Check the word order and the form of each word. One more try.');
+        }
+      }
+      return true;
+    }
+    function closeParryModal(silent) {
+      if (!P || !P.open) { if (el.modal) el.modal.hidden = true; return; }
+      if (!P.checked) { S.tokens++; S.parryIdx = Math.max(0, S.parryIdx - 1); hud(); }
+      P.open = false; P.locked = false;
+      el.modal.hidden = true;
+      if (silent) return;
+      if (S.phase === 'result_bad') setbackMenu();
+      const back = P.prevFocus && document.contains(P.prevFocus) ? P.prevFocus : el.menu.querySelector('button:not([disabled])');
+      if (back) back.focus();
+    }
+
+    /* ================================================================
+       11. INPUT
+       ================================================================ */
+    function onKey(e) {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const k = e.key;
+      if (P.open) {
+        if (k === 'Escape') { e.preventDefault(); if (!P.locked) closeParryModal(); return; }
+        if (k === 'Tab') {
+          const f = Array.from(el.modal.querySelectorAll('button:not([disabled])'));
+          if (!f.length) return;
+          const first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+          else if (!el.modal.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+        }
+        return;
+      }
+      const t = e.target, onBtn = t && t.closest && t.closest('button, a, input, select, textarea');
+      const locked = performance.now() < S.inputLockUntil;
+      if (k === 'Enter' || k === ' ') {
+        if (locked) { e.preventDefault(); return; }
+        if (TW.typing) { e.preventDefault(); completeTyping(); return; }
+        if (onBtn) return;
+        if (TW.queue.length) { e.preventDefault(); nextPage(); return; }
+        if (S.phase === 'result_ok' || S.phase === 'dice_done') { e.preventDefault(); advanceScene(); return; }
+        if (S.phase === 'dice') { e.preventDefault(); rollHazardCheck(); }
+        return;
+      }
+      if (t && t.closest && t.closest('[role="tablist"]') && (k === 'ArrowLeft' || k === 'ArrowRight')) {
+        e.preventDefault();
+        const id = ((S.tapeId - 1 + (k === 'ArrowRight' ? 1 : 2)) % 3) + 1;
+        loadTape(id); document.getElementById('tape-tab-' + id).focus();
+        return;
+      }
+      if (k === 'ArrowDown' || k === 'ArrowUp') {
+        const list = Array.from(el.menu.querySelectorAll('button:not([disabled])'));
+        if (!list.length) return;
+        e.preventDefault();
+        const i = list.indexOf(document.activeElement);
+        const n = i < 0 ? 0 : (i + (k === 'ArrowDown' ? 1 : list.length - 1)) % list.length;
+        list[n].focus();
+        return;
+      }
+      if (k === 'h' || k === 'H') { hint(); return; }
+      if (S.phase === 'deduce' && k.length === 1) {
+        let pos = '1234'.indexOf(k); if (pos < 0) pos = 'abcd'.indexOf(k.toLowerCase());
+        if (pos >= 0 && pos < S.order.length) { e.preventDefault(); if (!locked) selectChoice(pos); }
+      }
+    }
+    function renderSettings() {
+      const s = STORE.settings;
+      el.bgm.textContent = 'MUSIC: ' + (s.music ? 'ON' : 'OFF'); el.bgm.setAttribute('aria-pressed', String(s.music));
+      el.sfxBtn.textContent = 'SFX: ' + (s.sfx ? 'ON' : 'OFF'); el.sfxBtn.setAttribute('aria-pressed', String(s.sfx));
+      el.speed.textContent = 'TEXT: ' + s.speed.toUpperCase();
+    }
+
+    /* ================================================================
+       12. INIT
+       ================================================================ */
+    function init() {
+      const $ = id => document.getElementById(id);
+      el = {
+        game: $('game'), monitor: $('monitor'), lower: $('lower'), canvas: $('pixel-canvas'), loc: $('ui-location-tag'),
+        sceneLabel: $('ui-scene-label'), tag: $('ui-grammar-tag'), speaker: $('ui-speaker-name'), text: $('ui-story-text'),
+        cursor: $('ui-cursor'), textwin: $('textwin'), result: $('ui-result'), resHead: $('ui-result-header'), resBody: $('ui-result-explanation'),
+        dice: $('ui-dice'), die1: $('die-1'), die2: $('die-2'), diceMsg: $('ui-dice-message'),
+        cmdTitle: $('ui-cmd-title'), menu: $('ui-menu'), notes: $('ui-notes'), srLive: $('sr-live'),
+        sta: $('ui-stat-stamina'), cmp: $('ui-stat-composure'), tok: $('ui-stat-tokens'), staWrap: $('stat-sta'),
+        bgm: $('bgm-btn'), sfxBtn: $('sfx-btn'), speed: $('speed-btn'),
+        modal: $('parry-modal'), pOrig: $('parry-original'), pKey: $('parry-key'), pBefore: $('parry-before'), pAfter: $('parry-after'),
+        pSlot: $('parry-slot'), pBank: $('parry-bank'), pStatus: $('parry-status'), check: $('parry-check')
       };
+      cx = el.canvas.getContext('2d');
+      cx.imageSmoothingEnabled = false;
 
-      function updateHUD() {
-        document.getElementById('ui-stat-stamina').textContent = state.stamina;
-        document.getElementById('ui-stat-tokens').textContent = state.tokens;
-      }
-
-      function formatText(rawText) {
-        return rawText
-          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-          .replace(/\*(.+?)\*/g, '<em>$1</em>')
-          .replace(/\n/g, '<br>');
-      }
-
-      function renderCurrentScene() {
-        const tape = TAPES[state.tapeId];
-        const scene = tape.scenes[state.sceneIdx];
-
-        [1, 2, 3].forEach(id => {
-          const tab = document.getElementById('tape-tab-' + id);
-          if (tab) tab.classList.toggle('active', id === state.tapeId);
-        });
-
-        // Reset feedback, dice bar, and hint drawer
-        const resBanner = document.getElementById('ui-result-banner');
-        resBanner.className = 'feedback-box';
-        document.getElementById('ui-dice-bar').classList.remove('show');
-
-        const drawer = document.getElementById('ui-grammar-drawer');
-        drawer.classList.remove('open');
-        document.getElementById('tip-btn-label').textContent = 'Grammar Hint';
-
-        // Progress dots
-        let pipsHtml = '';
-        tape.scenes.forEach((_, idx) => {
-          const cls = idx < state.sceneIdx ? 'done' : (idx === state.sceneIdx ? 'current' : '');
-          pipsHtml += `<span class="progress-dot ${cls}"></span>`;
-        });
-        document.getElementById('ui-progress-pips').innerHTML = pipsHtml;
-
-        if (!scene) {
-          renderTapeVictory(tape);
-          return;
-        }
-
-        currentSceneType = scene.sceneType;
-        drawSceneCanvas();
-
-        document.getElementById('ui-scene-label').textContent = `SCENE ${scene.num} OF ${tape.scenes.length}`;
-        document.getElementById('ui-location-tag').textContent = scene.location;
-        document.getElementById('ui-grammar-tag').textContent = scene.grammarTag;
-
-        // Speaker & Narrative
-        document.getElementById('ui-speaker-name').textContent = scene.speaker;
-        document.getElementById('ui-speaker-role').textContent = scene.role;
-        document.getElementById('ui-speaker-icon').className = `fa-solid ${scene.icon}`;
-        document.getElementById('ui-story-text').innerHTML = formatText(scene.story);
-
-        // Compact 2-Pill Clue Strip
-        document.getElementById('ui-timeline-nodes').innerHTML = scene.timeline.map(node => `
-          <div class="clue-item ${node.highlight ? 'key-clue' : ''}">
-            <span class="clue-label">${node.time}</span>
-            <div class="clue-text">${node.desc}</div>
-          </div>
-        `).join('');
-
-        document.getElementById('ui-mission-prompt').textContent = scene.mission;
-        drawer.innerHTML = scene.grammarTip;
-
-        // Choices
-        const choicesList = document.getElementById('ui-choices-list');
-        choicesList.innerHTML = '';
-        scene.choices.forEach((ch, idx) => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'choice-btn';
-          btn.innerHTML = `
-            <span class="choice-letter">${ch.letter}</span>
-            <span>${ch.html}</span>
-          `;
-          btn.addEventListener('click', () => selectChoice(idx, btn));
-          choicesList.appendChild(btn);
-        });
-
-        updateHUD();
-      }
-
-      function toggleGrammarTip() {
-        const drawer = document.getElementById('ui-grammar-drawer');
-        const label = document.getElementById('tip-btn-label');
-        const isOpen = drawer.classList.toggle('open');
-        label.textContent = isOpen ? 'Hide Hint' : 'Grammar Hint';
-        playSFX('blip');
-      }
-
-      function selectChoice(choiceIdx, clickedBtn) {
-        const tape = TAPES[state.tapeId];
-        const scene = tape.scenes[state.sceneIdx];
-        const choice = scene.choices[choiceIdx];
-
-        document.querySelectorAll('.choice-btn').forEach(b => { b.disabled = true; });
-
-        const resBanner = document.getElementById('ui-result-banner');
-        const resHeader = document.getElementById('ui-result-header');
-        const resExp = document.getElementById('ui-result-explanation');
-        const resAct = document.getElementById('ui-result-actions');
-        const diceBar = document.getElementById('ui-dice-bar');
-
-        if (choice.correct) {
-          clickedBtn.classList.add('correct');
-          playSFX('correct');
-          state.composure = Math.min(12, state.composure + 1);
-
-          resBanner.className = 'feedback-box show win';
-          resHeader.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${choice.title}</span>`;
-          resExp.innerHTML = choice.explanation;
-
-          if (scene.requiresDiceCheck) {
-            diceBar.classList.add('show');
-            document.getElementById('ui-dice-message').innerHTML =
-              `Hazard Check: Roll <strong>2d6 &le; ${state.composure}</strong> to dodge cleanly!`;
-            resAct.innerHTML = `
-              <button type="button" class="action-btn primary" onclick="Chronicle88.rollHazardCheck()">
-                <i class="fa-solid fa-dice"></i> Roll 2d6 Hazard Check
-              </button>
-            `;
-          } else {
-            diceBar.classList.remove('show');
-            resAct.innerHTML = `
-              <button type="button" class="action-btn primary" onclick="Chronicle88.advanceScene()">
-                Continue <i class="fa-solid fa-arrow-right"></i>
-              </button>
-            `;
-          }
-        } else {
-          clickedBtn.classList.add('wrong');
-          playSFX('wrong');
-          state.stamina = Math.max(0, state.stamina - 3);
-
-          resBanner.className = 'feedback-box show lose';
-          resHeader.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>${choice.title} (-3 Stamina)</span>`;
-          resExp.innerHTML = choice.explanation;
-          diceBar.classList.remove('show');
-
-          let btns = `
-            <button type="button" class="action-btn secondary" onclick="Chronicle88.retryScene()">
-              <i class="fa-solid fa-rotate-right"></i> Try Again
-            </button>
-          `;
-          if (state.tokens > 0) {
-            btns += `
-              <button type="button" class="action-btn primary" onclick="Chronicle88.openParryModal()">
-                <i class="fa-solid fa-rotate-left"></i> Rewind &amp; Heal (+3 ❤️)
-              </button>
-            `;
-          }
-          resAct.innerHTML = btns;
-        }
-
-        updateHUD();
-      }
-
-      function animate2d6(onComplete) {
-        const d1 = document.getElementById('die-box-1');
-        const d2 = document.getElementById('die-box-2');
-        d1.classList.add('rolling');
-        d2.classList.add('rolling');
-
-        let count = 0;
-        const timer = setInterval(() => {
-          count++;
-          renderDieFace('die-box-1', Math.floor(Math.random() * 6) + 1);
-          renderDieFace('die-box-2', Math.floor(Math.random() * 6) + 1);
-          playSFX('dice');
-          if (count >= 7) {
-            clearInterval(timer);
-            d1.classList.remove('rolling');
-            d2.classList.remove('rolling');
-            const v1 = Math.floor(Math.random() * 6) + 1;
-            const v2 = Math.floor(Math.random() * 6) + 1;
-            renderDieFace('die-box-1', v1);
-            renderDieFace('die-box-2', v2);
-            onComplete(v1 + v2);
-          }
-        }, 55);
-      }
-
-      function rollHazardCheck() {
-        const msg = document.getElementById('ui-dice-message');
-        const resAct = document.getElementById('ui-result-actions');
-        animate2d6((total) => {
-          if (total <= state.composure) {
-            playSFX('correct');
-            msg.innerHTML = `<span style="color:var(--green);font-weight:700;">Rolled ${total} (&le; ${state.composure}) — Dodged cleanly!</span>`;
-          } else {
-            playSFX('wrong');
-            state.stamina = Math.max(0, state.stamina - 2);
-            updateHUD();
-            msg.innerHTML = `<span style="color:var(--amber);font-weight:700;">Rolled ${total} (&gt; ${state.composure}) — Grazed by hazard (-2 Stamina).</span>`;
-          }
-          resAct.innerHTML = `
-            <button type="button" class="action-btn primary" onclick="Chronicle88.advanceScene()">
-              Continue <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          `;
-        });
-      }
-
-      /* ==============================================================
-         6. TAP-TO-BUILD REWIND PARRY MODAL
-         ============================================================== */
-      function openParryModal() {
-        if (state.tokens <= 0) return;
-        const tape = TAPES[state.tapeId];
-        const parry = tape.parries[state.parryIdx % tape.parries.length];
-        state.selectedTiles = [];
-
-        document.getElementById('parry-original').textContent = parry.original;
-        document.getElementById('parry-key').textContent = 'KEY WORD: ' + parry.keyword;
-        document.getElementById('parry-before').textContent = parry.before;
-        document.getElementById('parry-after').textContent = parry.after;
-        document.getElementById('parry-status-msg').innerHTML = '';
-
-        const allWords = [...parry.answer, ...parry.distractors].sort(() => Math.random() - 0.5);
-        state.currentParryWords = allWords;
-        state.currentParryTarget = parry.answer;
-
-        renderParryTilesUI();
-        document.getElementById('parry-modal').classList.add('open');
-      }
-
-      function renderParryTilesUI() {
-        const slotZone = document.getElementById('parry-slot-zone');
-        const bankZone = document.getElementById('parry-bank-zone');
-
-        if (state.selectedTiles.length === 0) {
-          slotZone.innerHTML = `<span style="font-size:0.8rem;color:var(--text-muted);">Tap word tiles below to build the missing phrase...</span>`;
-        } else {
-          slotZone.innerHTML = state.selectedTiles.map((item, sIdx) => `
-            <button type="button" class="word-tile" onclick="Chronicle88.removeParryTile(${sIdx})">${item.word}</button>
-          `).join('');
-        }
-
-        bankZone.innerHTML = state.currentParryWords.map((word, bIdx) => {
-          const isUsed = state.selectedTiles.some(t => t.bankIdx === bIdx);
-          return `<button type="button" class="word-tile ${isUsed ? 'used' : ''}" onclick="Chronicle88.addParryTile(${bIdx})">${word}</button>`;
-        }).join('');
-      }
-
-      function addParryTile(bankIdx) {
-        playSFX('blip');
-        state.selectedTiles.push({ bankIdx, word: state.currentParryWords[bankIdx] });
-        renderParryTilesUI();
-      }
-
-      function removeParryTile(slotIdx) {
-        playSFX('blip');
-        state.selectedTiles.splice(slotIdx, 1);
-        renderParryTilesUI();
-      }
-
-      function clearParryTiles() {
-        state.selectedTiles = [];
-        renderParryTilesUI();
-      }
-
-      function checkParryTiles() {
-        const built = state.selectedTiles.map(t => t.word).join(' ').toLowerCase();
-        const target = state.currentParryTarget.join(' ').toLowerCase();
-        const statusEl = document.getElementById('parry-status-msg');
-
-        if (built === target) {
-          playSFX('correct');
-          state.tokens = Math.max(0, state.tokens - 1);
-          state.stamina = Math.min(20, state.stamina + 3);
-          state.parryIdx++;
-          updateHUD();
-          statusEl.innerHTML = `<span style="color:var(--green);">Correct! +3 Stamina restored.</span>`;
-          setTimeout(() => {
-            closeParryModal();
-            retryScene();
-          }, 750);
-        } else {
-          playSFX('wrong');
-          statusEl.innerHTML = `<span style="color:var(--amber);">Not quite — build: "${state.currentParryTarget.join(' ')}"</span>`;
-        }
-      }
-
-      function closeParryModal() {
-        document.getElementById('parry-modal').classList.remove('open');
-      }
-
-      function renderTapeVictory(tape) {
-        playSFX('correct');
-        document.getElementById('ui-scene-label').textContent = 'EPISODE COMPLETE';
-        document.getElementById('ui-grammar-tag').textContent = 'Mission Clear';
-        document.getElementById('ui-timeline-nodes').innerHTML = '';
-        document.getElementById('ui-story-text').innerHTML =
-          `<strong>Episode Complete: ${tape.title}!</strong><br>` +
-          `You finished with <strong>${state.stamina}/20 Stamina</strong>. Ready for the next episode?`;
-        document.getElementById('ui-mission-prompt').textContent = 'Choose your next episode:';
-
-        const nextId = (state.tapeId % 3) + 1;
-        document.getElementById('ui-choices-list').innerHTML = `
-          <button type="button" class="choice-btn" onclick="Chronicle88.loadTape(${nextId})">
-            <span class="choice-letter">&rarr;</span>
-            <span>Play Next Episode: <strong>${TAPES[nextId].title}</strong></span>
-          </button>
-          <button type="button" class="choice-btn" onclick="Chronicle88.loadTape(${state.tapeId})">
-            <span class="choice-letter">R</span>
-            <span>Replay <strong>${tape.title}</strong></span>
-          </button>
-        `;
-      }
-
-      function loadTape(tapeId) {
-        if (!TAPES[tapeId]) tapeId = 1;
-        playSFX('tape');
-        state.tapeId = tapeId;
-        state.sceneIdx = 0;
-        state.stamina = 20;
-        state.composure = 9;
-        state.tokens = 3;
-        if (bgmOn) startBGM();
-        renderCurrentScene();
-      }
-
-      function advanceScene() {
-        state.sceneIdx++;
-        renderCurrentScene();
-      }
-
-      function retryScene() {
-        renderCurrentScene();
-      }
-
-      document.addEventListener('DOMContentLoaded', () => {
-        renderDieFace('die-box-1', 4);
-        renderDieFace('die-box-2', 3);
-        const params = new URLSearchParams(window.location.search);
-        const t = parseInt(params.get('tape') || '1', 10);
-        loadTape(t);
-
-        const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
-        const unlockAudio = (e) => {
-          if (e && e.target && e.target.closest && e.target.closest('#bgm-btn')) return;
-          if (bgmOn) {
-            ensureAudio();
-            if (!bgmTimer) startBGM();
-          }
-          if (audioCtx && audioCtx.state === 'running') {
-            unlockEvents.forEach((ev) => document.removeEventListener(ev, unlockAudio, true));
-          }
-        };
-        unlockEvents.forEach((ev) => document.addEventListener(ev, unlockAudio, { capture: true, passive: true }));
+      document.querySelectorAll('.episode-tab').forEach(b => b.addEventListener('click', () => loadTape(b.dataset.tape)));
+      el.textwin.addEventListener('click', e => { if (e.target.closest('button, a')) return; if (performance.now() < S.inputLockUntil) return; advanceText(); });
+      el.check.addEventListener('click', checkParryTiles);
+      $('parry-clear').addEventListener('click', clearParryTiles);
+      $('parry-cancel').addEventListener('click', () => { if (!P.locked) closeParryModal(); });
+      el.bgm.addEventListener('click', () => {
+        unlocked = true;
+        STORE.settings.music = !STORE.settings.music;
+        STORE.settings.musicUserSet = true;
+        saveStore(); renderSettings();
+        if (STORE.settings.music) startMusic(); else stopMusic();
+      });
+      el.sfxBtn.addEventListener('click', () => { STORE.settings.sfx = !STORE.settings.sfx; saveStore(); renderSettings(); sfx('select'); });
+      el.speed.addEventListener('click', () => {
+        const order = ['slow', 'normal', 'instant'];
+        STORE.settings.speed = order[(order.indexOf(STORE.settings.speed) + 1) % 3]; saveStore(); renderSettings();
+      });
+      document.addEventListener('keydown', onKey);
+      UNLOCK_EVENTS.forEach(ev => window.addEventListener(ev, unlockAudio, true));
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) { stopLoop(); if (AC) AC.suspend().catch(() => {}); }
+        else { startLoop(); if (AC && unlocked) AC.resume().then(() => { if (mus.on) mus.next = AC.currentTime + 0.05; }).catch(() => {}); }
       });
 
-      return {
-        loadTape,
-        advanceScene,
-        retryScene,
-        toggleGrammarTip,
-        rollHazardCheck,
-        openParryModal,
-        closeParryModal,
-        addParryTile,
-        removeParryTile,
-        clearParryTiles,
-        checkParryTiles,
-        toggleBGM,
-        toggleSFX
-      };
-    })();
+      renderSettings();
+      S = freshState(1); P = freshParry();
+      renderTabs();
+      renderScene();
+      startLoop();
+      if (!SELFTEST && STORE.settings.music) unlockAudio();
+      if (SELFTEST) runSelfTest();
+    }
+
+    /* ================================================================
+       13. SELF-TEST  (?selftest=1) → <pre id="selftest" data-pass>
+       ================================================================ */
+    function allScenes() { const out = []; Object.values(TAPES).forEach(t => t.scenes.forEach((sc, i) => out.push({ t: t.id, i, sc }))); return out; }
+    function revealAll() { const sc = curScene(); VERBS.forEach(v => (sc.cmds[v] || []).forEach(tg => { S.found[tg.id] = true; })); }
+    function gotoScene(tapeId, idx) { loadTape(tapeId); S.sceneIdx = idx; renderScene(); S.inputLockUntil = 0; }
+    function runSelfTest() {
+      const lines = []; let pass = true;
+      const check = (name, cond, detail) => { lines.push((cond ? 'PASS ' : 'FAIL ') + name + (detail ? ' :: ' + detail : '')); if (!cond) pass = false; };
+      const norm = s => s.toLowerCase().replace(/[’']/g, "'");
+      try {
+        // (b) structure
+        allScenes().forEach(({ t, i, sc }) => {
+          const n = sc.choices.length, k = sc.choices.filter(c => c.correct).length;
+          const wrongOk = sc.choices.every(c => c.correct || (c.error && c.why));
+          check(`b T${t}S${i + 1} ${n} choices, ${k} correct, every distractor has an error type`, n >= 3 && n <= 4 && k === 1 && wrongOk);
+        });
+        // (a) display position of the correct answer, via the real render path
+        allScenes().forEach(({ t, i, sc }) => {
+          gotoScene(t, i);
+          const correctText = plain(sc.choices.find(c => c.correct).text);
+          const counts = new Array(sc.choices.length).fill(0);
+          for (let r = 0; r < 200; r++) {
+            S.phase = 'investigate'; S.order = shuffle(sc.choices.map((_, j) => j), S.rng); revealAll(); deduce();
+            const btns = Array.from(el.menu.querySelectorAll('button')).slice(0, sc.choices.length);
+            const pos = btns.findIndex(b => b.textContent.replace(/^[A-D]\./, '') === correctText);
+            if (pos >= 0) counts[pos]++;
+          }
+          const used = counts.filter(c => c > 0).length;
+          check(`a T${t}S${i + 1} correct answer shown at ${used}/${sc.choices.length} positions in 200 renders [${counts.join(',')}]`, used === sc.choices.length && counts.reduce((a, b) => a + b, 0) === 200);
+        });
+        // (c) hints never contain the answer's key phrase or any highlighted answer fragment; error labels don't either
+        allScenes().forEach(({ t, i, sc }) => {
+          const cor = sc.choices.find(c => c.correct);
+          const phrases = [sc.key].concat(highlights(cor.text));
+          const h = norm(plain(sc.hint));
+          const leak = phrases.filter(p => h.includes(norm(p)));
+          const errLeak = sc.choices.filter(c => !c.correct && norm(c.error).includes(norm(sc.key)));
+          check(`c T${t}S${i + 1} hint/error labels leak none of [${phrases.join(' | ')}]`, leak.length === 0 && errLeak.length === 0, leak.join(','));
+        });
+        // (d) re-entrancy
+        gotoScene(1, 0); revealAll(); deduce();
+        let sc = curScene();
+        let wrongPos = S.order.findIndex(ci => !sc.choices[ci].correct);
+        const st0 = S.stamina;
+        const s1 = selectChoice(wrongPos), s2 = selectChoice(wrongPos);
+        check('d selectChoice called twice changes state once', s1 === true && s2 === false && S.stamina === st0 - WRONG_STA && S.attempts === 1 && S.stats.wrong === 1, `stamina ${st0}→${S.stamina}, attempts ${S.attempts}`);
+        const tok0 = S.tokens, sta1 = S.stamina;
+        openParry();
+        P.item.answer.forEach(w => { const b = P.bank.find(x => x.w === w && !x.used); tapTile(b.i); });
+        const c1 = checkParryTiles(), c2 = checkParryTiles();
+        check('d checkParryTiles called twice changes state once', c1 === true && c2 === false && S.tokens === tok0 - 1 && S.stamina === Math.min(MAX_STA, sta1 + 3) && S.parryIdx === 1 && !P.open && el.modal.hidden, `tokens ${tok0}→${S.tokens}, stamina ${sta1}→${S.stamina}`);
+        gotoScene(1, 2); revealAll(); deduce();
+        sc = curScene();
+        selectChoice(S.order.findIndex(ci => sc.choices[ci].correct));
+        const realRng = S.rng; S.rng = () => 0.99;
+        const stD = S.stamina;
+        const r1 = rollHazardCheck(), r2 = rollHazardCheck();
+        check('d rollHazardCheck called twice changes state once', r1 === true && r2 === false && S.rolls === 1 && S.stamina === stD - DICE_STA && S.phase === 'dice_done', `rolls ${S.rolls}, stamina ${stD}→${S.stamina}`);
+        S.rng = realRng;
+        const idx0 = S.sceneIdx, a1 = advanceScene(), a2 = advanceScene();
+        check('d advanceScene called twice advances once', a1 === true && a2 === false && S.sceneIdx === idx0 + 1);
+        // (e) loadTape resets everything
+        gotoScene(1, 1); revealAll(); deduce(); sc = curScene();
+        selectChoice(S.order.findIndex(ci => !sc.choices[ci].correct));
+        openParry(); later(() => { window.__chronicleStaleTimer = true; }, 60000);
+        S.composure = 2; S.parryIdx = 5;
+        const wasOpen = P.open;
+        loadTape(2);
+        const tab2 = document.getElementById('tape-tab-2').getAttribute('aria-selected') === 'true';
+        check('e loadTape resets state, modal, timers, result panel and tabs',
+          wasOpen && S.tapeId === 2 && S.sceneIdx === 0 && S.stamina === MAX_STA && S.composure === START_CMP && S.tokens === START_TOK &&
+          S.parryIdx === 0 && S.phase === 'investigate' && S.stats.wrong === 0 && !P.open && el.modal.hidden && timers.size === 0 &&
+          el.result.hidden && !!el.notes.querySelector('.empty') && tab2,
+          `phase=${S.phase} timers=${timers.size} modalHidden=${el.modal.hidden}`);
+        // (f) stamina 0 → CASE FAILED, checkpoint retry works
+        gotoScene(3, 1); revealAll(); deduce(); sc = curScene();
+        S.stamina = WRONG_STA;
+        selectChoice(S.order.findIndex(ci => !sc.choices[ci].correct));
+        const menuTxt = el.menu.textContent;
+        check('f stamina 0 triggers CASE FAILED', S.phase === 'failed' && S.stamina === 0 && /RETRY FROM CHECKPOINT/.test(menuTxt) && el.resHead.textContent === 'CASE FAILED');
+        const rc = retryCheckpoint();
+        check('f checkpoint retry restores the scene', rc && S.phase === 'investigate' && S.sceneIdx === 1 && S.stamina >= 6 && S.stats.retries === 1);
+        // integration: perfect run through every tape → victory, rank S, progress saved in memory
+        [1, 2, 3].forEach(id => {
+          loadTape(id); S.rng = () => 0;
+          tape().scenes.forEach(() => {
+            S.inputLockUntil = 0; revealAll(); deduce(); const s = curScene();
+            selectChoice(S.order.findIndex(ci => s.choices[ci].correct));
+            if (S.phase === 'dice') rollHazardCheck();
+            advanceScene();
+          });
+          check(`i Tape ${id} perfect run reaches victory with rank S`, S.phase === 'victory' && S.rank === 'S' && STORE.tapesCleared.includes(id));
+          S.rng = Math.random;
+        });
+        // escaping: authored markup can never inject elements
+        const frag = document.createElement('div'); frag.appendChild(rich('<img src=x onerror="window.__xss=1"> **ok** `c`'));
+        check('x rich() builds text nodes only (no injected elements)', !frag.querySelector('img') && frag.querySelectorAll('span.hl').length === 1);
+        // (g) canvas uses only the 8 PC-88 colours (every pixel, several frames, every scene + wipe)
+        Object.keys(SCENES).forEach(key => {
+          let bad = 0, sample = '';
+          [0, 1, 3, 7].forEach(f => {
+            drawScene(key, f);
+            if (f === 3) { wipeAt = performance.now() - 200; drawWipe(performance.now()); wipeAt = 0; }
+            const d = cx.getImageData(0, 0, 640, 200).data;
+            for (let p = 0; p < d.length; p += 4) {
+              const rgb = (d[p] << 16) | (d[p + 1] << 8) | d[p + 2];
+              if (d[p + 3] !== 255 || !PAL_SET.has(rgb)) { if (!bad) sample = `rgba(${d[p]},${d[p + 1]},${d[p + 2]},${d[p + 3]}) @${(p / 4) % 640},${Math.floor(p / 4 / 640)}`; bad++; }
+            }
+          });
+          check(`g palette ${key}: ${bad} off-palette pixels in 4 frames`, bad === 0, sample);
+        });
+      } catch (e) {
+        check('exception during self-test', false, (e && (e.stack || e.message)) || String(e));
+      }
+      STORE.tapesCleared = []; STORE.bestRank = {};
+      loadTape(1);
+      const total = lines.length, failed = lines.filter(l => l.startsWith('FAIL')).length;
+      const pre = document.createElement('pre');
+      pre.id = 'selftest'; pre.setAttribute('data-pass', String(pass));
+      pre.textContent = `CHRONICLE '88 SELFTEST: ${pass ? 'ALL PASS' : 'FAILURES'} (${total - failed}/${total})\n` + lines.join('\n');
+      document.body.appendChild(pre);
+      try { console.log(pre.textContent); } catch (e) { /* ignore */ }
+    }
+
+    window.Chronicle88 = {
+      loadTape, selectChoice, rollHazardCheck, advanceScene, checkParryTiles, openParry, closeParryModal, hint, deduce,
+      get state() { return S; }
+    };
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+  })();
   </script>
-  <script src="wasm-webgl-engine.js"></script>
   <script src="analytics.js" defer></script>
 </body>
 </html>

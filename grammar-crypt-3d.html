@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grammar Crypt 3D: The Full 25-Floor Gothic Syntax Crawl</title>
   <meta name="description" content="Master Cambridge C1/C2 syntax, inversions, and cleft sentences in full 3D. 25 procedural floors, 5 boss battles, and legendary relics in Three.js WebGL.">
   <meta name="theme-color" content="#090514">
@@ -19,11 +19,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous">
 
-  <!-- Three.js (r128) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Three.js (r128). If the CDN is unreachable, fall back to the classic 2D crypt. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" onerror="if(!/[?&]selftest=1/.test(location.search))location.replace('grammar-crypt.html')"></script>
   <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
-  <!-- WebAssembly + WebGL High-Performance Physics Kernel -->
+  <!-- Shared curriculum, checker and save store (also used by the 2D crypt) -->
+  <script src="crypt-levels.js"></script>
+  <!-- WebAssembly ember simulation (telemetry pill only with ?debug) -->
   <script src="wasm-webgl-engine.js"></script>
 
   <style>
@@ -44,6 +46,9 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+    /* Only game controls are non-selectable; text stays selectable for accessibility. */
+    #webgl-canvas, .rune-chip, .btn-hud, .cam-btn, .slot-btn {
       user-select: none;
       -webkit-user-select: none;
     }
@@ -273,10 +278,6 @@
       flex-wrap: wrap;
       justify-content: center;
     }
-      color: #c084fc;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
 
     /* Bottom Control Tray */
     .bottom-tray {
@@ -359,13 +360,14 @@
       box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4);
     }
     .rune-chip.placed {
-      opacity: 0.35;
-      pointer-events: none;
-      transform: scale(0.9);
+      opacity: 0.45;
+      transform: scale(0.92);
       border-color: #475569;
+      text-decoration: line-through;
     }
-    .rune-chip.decoy {
-      border-color: rgba(239, 68, 68, 0.6);
+    .rune-chip:focus-visible, .btn-hud:focus-visible, .cam-btn:focus-visible, .slot-btn:focus-visible, .btn-next-level:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
     }
 
     /* Action Buttons */
@@ -662,22 +664,132 @@
         padding: 0.6rem 0.75rem;
       }
     }
+    /* ---------- Added: feedback, slots, boss HP, modals, overlays ---------- */
+    .feedback-strip {
+      align-self: center;
+      max-width: 680px;
+      width: 100%;
+      min-height: 1.6rem;
+      text-align: center;
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: #e9d5ff;
+      background: rgba(15, 8, 26, 0.78);
+      border: 1px solid rgba(147, 51, 234, 0.3);
+      border-radius: 10px;
+      padding: 0.35rem 0.8rem;
+      pointer-events: auto;
+    }
+    .feedback-strip:empty { visibility: hidden; }
+    .feedback-strip.error { color: #fecaca; border-color: rgba(239, 68, 68, 0.6); }
+    .feedback-strip.near { color: #fef08a; border-color: rgba(251, 191, 36, 0.6); }
+    .feedback-strip.success { color: #a7f3d0; border-color: rgba(16, 185, 129, 0.6); }
+    .feedback-strip.hint { color: #bae6fd; border-color: rgba(56, 189, 248, 0.6); }
+    .slot-btn {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px dashed rgba(192, 132, 252, 0.6);
+      color: #c084fc;
+      font-family: inherit;
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .slot-btn.filled { border-style: solid; color: #fff; border-color: rgba(251, 191, 36, 0.6); }
+    .slot-btn.targeted { background: rgba(147, 51, 234, 0.45); color: #fff; }
+    .slot-btn.wrong { border-color: var(--crimson); color: #fecaca; background: rgba(127, 29, 29, 0.5); }
+    .boss-hp {
+      height: 8px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(239, 68, 68, 0.6);
+      border-radius: 99px;
+      margin: 0.3rem auto 0.15rem;
+      max-width: 320px;
+      overflow: hidden;
+    }
+    .boss-hp > div { height: 100%; width: 100%; background: linear-gradient(90deg, #ef4444, #f59e0b); transition: width 0.4s ease; }
+    .boss-lives { font-size: 0.8rem; color: #fecaca; font-weight: 800; }
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 1, 8, 0.55);
+      z-index: 90;
+    }
+    .modal-backdrop.open { display: block; }
+    .victory-modal .explain-box {
+      font-size: 0.86rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.04);
+      border-left: 3px solid var(--gold);
+      border-radius: 6px;
+      padding: 0.55rem 0.75rem;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    .victory-modal .reward-line { font-size: 0.85rem; color: #fde68a; margin-bottom: 1rem; }
+    .end-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.25rem; text-align: left; font-size: 0.9rem; }
+    .end-stats div { background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 0.5rem 0.7rem; }
+    .fade-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+      z-index: 80;
+    }
+    .fade-overlay.on { opacity: 1; pointer-events: auto; }
+    .gl-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(7, 4, 13, 0.94);
+      color: #e9d5ff;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+      padding: 2rem;
+      font-size: 1rem;
+    }
+    .gl-overlay.open { display: flex; }
+    .gl-overlay a { color: var(--gold); font-weight: 900; }
+    #selftest {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      overflow: auto;
+      margin: 0;
+      padding: 1rem;
+      background: #000;
+      color: #4ade80;
+      font: 12px/1.4 monospace;
+      white-space: pre-wrap;
+      user-select: text;
+    }
+    #selftest[data-pass="false"] { color: #f87171; }
+    @media (prefers-reduced-motion: reduce) {
+      .fade-overlay { transition: none; }
+      .victory-modal { animation: none; }
+    }
   </style>
 </head>
 <body>
 
   <!-- WebGL 3D Canvas -->
-  <canvas id="webgl-canvas"></canvas>
-  <div class="aim-reticle" id="reticle"></div>
+  <canvas id="webgl-canvas" role="img" aria-label="3D crypt: an altar with sentence slots and floating word runes. Use the rune buttons and slot buttons below to play with a keyboard or screen reader."></canvas>
 
   <!-- UI Overlay -->
   <div class="game-overlay">
-    <!-- Top HUD Container (Docked cleanly at the top, leaving the 3D crypt open) -->
     <div class="top-hud-container">
       <header class="top-hud">
         <div class="crypt-title-box interactive-element">
           <a href="dark-academia-index.html" class="back-nav-link" title="Return to Dark Academia Archive">
-            <i class="fa-solid fa-arrow-left"></i> Archive
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Archive
           </a>
           <h1>Grammar Crypt 3D</h1>
           <span class="level-badge" id="hudFloor">Floor 1 / 25</span>
@@ -687,198 +799,167 @@
         </div>
 
         <div class="hud-metrics">
-          <div class="hud-pill interactive-element" title="Gold Acquired">
-            <i class="fa-solid fa-coins"></i> <span id="hudGold">0</span>
+          <div class="hud-pill interactive-element" title="Gold">
+            <i class="fa-solid fa-coins" aria-hidden="true"></i> <span id="hudGold">0</span>
           </div>
-          <div class="hud-pill interactive-element" title="Experience Points">
-            <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="hudXP">0 / 100 XP</span>
+          <div class="hud-pill interactive-element" title="Experience and rank">
+            <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> <span id="hudXP">0 / 100 XP</span>
           </div>
-          <div class="hud-pill interactive-element" title="Current Winning Streak">
-            <i class="fa-solid fa-fire"></i> <span id="hudStreak">0</span>
+          <div class="hud-pill interactive-element" title="Winning streak">
+            <i class="fa-solid fa-fire" aria-hidden="true"></i> <span id="hudStreak">0</span>
           </div>
-          <button type="button" class="btn-hud interactive-element" id="btnRelics">
-            <i class="fa-solid fa-trophy"></i> <span>Relics</span>
+          <button type="button" class="btn-hud interactive-element" id="btnRelics" aria-haspopup="dialog">
+            <i class="fa-solid fa-trophy" aria-hidden="true"></i> <span>Relics</span>
           </button>
-          <button type="button" class="btn-hud interactive-element" id="audioToggle">
-            <i class="fa-solid fa-volume-high"></i> <span>Audio: ON</span>
+          <button type="button" class="btn-hud interactive-element" id="audioToggle" aria-pressed="true">
+            <i class="fa-solid fa-volume-high" aria-hidden="true"></i> <span>Audio: ON</span>
           </button>
-          <button type="button" class="btn-hud interactive-element" id="toggleInstructionsBtn" title="Hide/Show Syntax Objective">
-            <i class="fa-solid fa-eye-slash" id="instructionToggleIcon"></i> <span>Hide</span>
+          <button type="button" class="btn-hud interactive-element" id="toggleInstructionsBtn" title="Hide/Show Syntax Objective" aria-controls="questBanner" aria-expanded="true">
+            <i class="fa-solid fa-eye-slash" id="instructionToggleIcon" aria-hidden="true"></i> <span>Hide</span>
           </button>
         </div>
       </header>
 
-      <!-- Boss Arena Active Notice -->
+      <!-- Boss Arena Notice -->
       <div class="boss-arena-hud interactive-element" id="bossArenaHud">
-        <div class="boss-name" id="bossName">👹 Boss Encounter</div>
-        <div class="boss-taunt" id="bossTaunt">"Taunt goes here..."</div>
+        <div class="boss-name" id="bossName">Boss Encounter</div>
+        <div class="boss-taunt" id="bossTaunt"></div>
+        <div class="boss-hp" role="progressbar" aria-label="Boss health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="bossHpBar"><div id="bossHpFill"></div></div>
+        <div class="boss-lives" id="bossLives"></div>
       </div>
 
-      <!-- Quest Objective Strip (Docked to top, slim, never blocks central 3D view) -->
-      <section class="quest-banner interactive-element" id="questBanner">
+      <!-- Quest Objective: title + one button per altar slot -->
+      <section class="quest-banner interactive-element" id="questBanner" aria-label="Floor objective">
         <div class="quest-header-compact">
-          <h2 id="questTitle"><i class="fa-solid fa-scroll"></i> L1: A Simple Inquiry</h2>
-          <div class="syntax-formula" id="syntaxFormula">
-            <!-- Rendered dynamically per floor -->
-          </div>
+          <h2 id="questTitle"><i class="fa-solid fa-scroll" aria-hidden="true"></i> Floor 1</h2>
+          <div class="syntax-formula" id="syntaxFormula" role="group" aria-label="Altar slots: choose a slot, then a rune"></div>
         </div>
       </section>
+
+      <div class="feedback-strip" id="feedback" role="status" aria-live="polite"></div>
     </div>
 
     <!-- Bottom Tray -->
     <footer class="bottom-tray">
-      <!-- Camera View Controls -->
-      <div class="camera-switcher interactive-element">
-        <button class="cam-btn active" data-cam="altar"><i class="fa-solid fa-gem"></i> Altar</button>
-        <button class="cam-btn" data-cam="room"><i class="fa-solid fa-eye"></i> Hall</button>
-        <button class="cam-btn" data-cam="gate"><i class="fa-solid fa-dungeon"></i> Gate</button>
+      <div class="camera-switcher interactive-element" role="group" aria-label="Camera">
+        <button type="button" class="cam-btn active" data-cam="altar" aria-pressed="true"><i class="fa-solid fa-gem" aria-hidden="true"></i> Altar</button>
+        <button type="button" class="cam-btn" data-cam="room" aria-pressed="false"><i class="fa-solid fa-eye" aria-hidden="true"></i> Hall</button>
+        <button type="button" class="cam-btn" data-cam="gate" aria-pressed="false"><i class="fa-solid fa-dungeon" aria-hidden="true"></i> Gate</button>
       </div>
 
-      <!-- Quick Rune Tray (Click to Slot Directly) -->
       <div class="rune-selector-panel interactive-element">
-        <span>Available Inscribed Runes (Click to Slot)</span>
-        <div class="rune-tokens-row" id="runeTokensRow">
-          <!-- Populated by JS -->
-        </div>
+        <span id="runeTrayLabel">Runes: tap to place, tap again to recall</span>
+        <div class="rune-tokens-row" id="runeTokensRow" role="group" aria-labelledby="runeTrayLabel"></div>
       </div>
 
-      <!-- Action Group -->
       <div class="action-group interactive-element">
-        <button type="button" class="btn-hud" id="btnHint"><i class="fa-solid fa-lightbulb"></i> Hint</button>
-        <button type="button" class="btn-hud" id="btnReset"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+        <button type="button" class="btn-hud" id="btnHint"><i class="fa-solid fa-lightbulb" aria-hidden="true"></i> <span>Hint</span></button>
+        <button type="button" class="btn-hud" id="btnReset"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> <span>Reset</span></button>
       </div>
     </footer>
   </div>
 
-  <!-- Victory / Level Complete Modal -->
-  <div class="victory-modal" id="victoryModal">
+  <div class="fade-overlay" id="fadeOverlay" aria-hidden="true"></div>
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <!-- Victory Modal -->
+  <div class="victory-modal" id="victoryModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDesc" hidden>
     <h2 id="modalTitle">FLOOR PURGED!</h2>
-    <p id="modalDesc">The sentence has unlocked the ancient seal.</p>
-    
+    <p id="modalDesc"></p>
+    <div class="explain-box" id="modalExplain"></div>
+    <div class="reward-line" id="modalReward"></div>
     <div class="loot-card" id="modalLootCard">
-      <div class="loot-icon" id="modalLootIcon"><i class="fa-solid fa-award"></i></div>
+      <div class="loot-icon" id="modalLootIcon" aria-hidden="true"><i class="fa-solid fa-award"></i></div>
       <div class="loot-info">
-        <strong id="modalLootName">Dusty Syntax Cobweb</strong>
-        <span id="modalLootType">Common Relic</span>
+        <strong id="modalLootName"></strong>
+        <span id="modalLootType"></span>
       </div>
     </div>
-
-    <div class="diagnostic-lead-box">
-      <strong>Cambridge C1/C2 Grammar Coaching:</strong> Former Belfast Met lecturer Gareth Montgomery provides 1-to-1 syntax diagnostics. 
+    <div class="diagnostic-lead-box" id="coachingAd">
+      <strong>Cambridge C1/C2 Grammar Coaching:</strong> Former Belfast Met lecturer Gareth Montgomery provides 1-to-1 syntax diagnostics.
       <a href="index.html#book-diagnostic" style="color:var(--gold); font-weight:700; text-decoration:underline;">Book a £20 Trial Lesson &rarr;</a>
     </div>
-
     <button type="button" class="btn-next-level" id="btnNextFloor">Descend to Next Floor &rarr;</button>
   </div>
 
-  <!-- Relics Drawer Modal -->
-  <div class="relics-modal" id="relicsModal">
-    <h2>Vault of Relics</h2>
-    <div class="relics-grid" id="relicsGrid">
-      <!-- Populated dynamically -->
+  <!-- End-of-run Modal -->
+  <div class="victory-modal" id="endModal" role="dialog" aria-modal="true" aria-labelledby="endTitle" hidden>
+    <h2 id="endTitle">THE CRYPT IS CONQUERED</h2>
+    <p>You have climbed out of all 25 floors, from B1 questions to C2 clefts and inversion.</p>
+    <div class="end-stats" id="endStats"></div>
+    <div class="diagnostic-lead-box">
+      <strong>Ready for C1/C2 exams?</strong> Get a 1-to-1 syntax diagnostic with Gareth Montgomery.
+      <a href="index.html#book-diagnostic" style="color:var(--gold); font-weight:700; text-decoration:underline;">Book a £20 Trial Lesson &rarr;</a>
     </div>
-    <button type="button" class="btn-hud" style="width:100%; justify-content:center; padding:0.75rem;" onclick="document.getElementById('relicsModal').style.display='none';">Close Vault</button>
+    <button type="button" class="btn-next-level" id="btnNewRun">Start a New Run &#8635;</button>
   </div>
 
-  <!-- Full 25-Level Curriculum & Game Logic -->
-  <script>
-    /* ==========================================================
-       1. COMPLETE 25-LEVEL GRAMMAR CRYPT CURRICULUM DATA
-       (Directly integrated from crypt.js)
-       ========================================================== */
-    const TYPES = { w: 'wh-word', a: 'aux', s: 'subject', v: 'verb', o: 'object', p: 'punctuation', d: 'decoy', adv: 'adverb' };
+  <!-- Relics Modal -->
+  <div class="relics-modal" id="relicsModal" role="dialog" aria-modal="true" aria-labelledby="relicsTitle" hidden>
+    <h2 id="relicsTitle">Vault of Relics</h2>
+    <div class="relics-grid" id="relicsGrid"></div>
+    <button type="button" class="btn-hud" id="btnCloseRelics" style="width:100%; justify-content:center; padding:0.75rem;">Close Vault</button>
+  </div>
 
-    function createLevel(title, patternArr, blocksArr) {
-      const pattern = patternArr.map(p => ({ type: TYPES[p[0]], label: p[1] }));
-      const blocks  = blocksArr.map(b => ({ type: TYPES[b[0]], text: b[1] }));
-      const answer  = blocks.filter(b => b.type !== TYPES.d);
-      return { title, pattern, blocks, answer };
+  <!-- WebGL failure / context loss -->
+  <div class="gl-overlay" id="glOverlay" role="alertdialog" aria-live="assertive">
+    <p id="glOverlayMsg">The 3D view was interrupted.</p>
+    <p><a href="grammar-crypt.html">Play the classic 2D Grammar Crypt instead &rarr;</a></p>
+  </div>
+
+  <script>
+  (() => {
+    'use strict';
+    const L = window.CRYPT_LEVELS;
+    const SELFTEST = /[?&]selftest=1\b/.test(location.search);
+    const $ = (id) => document.getElementById(id);
+    const LAST = L.floors.length - 1;
+
+    function showOverlay(msg) { $('glOverlayMsg').textContent = msg; $('glOverlay').classList.add('open'); }
+    function hideOverlay() { $('glOverlay').classList.remove('open'); }
+    function writeSelftest(lines, pass) {
+      let pre = $('selftest');
+      if (!pre) { pre = document.createElement('pre'); pre.id = 'selftest'; document.body.appendChild(pre); }
+      pre.textContent = lines.join('\n');
+      pre.setAttribute('data-pass', pass ? 'true' : 'false');
     }
 
-    const LEVELS = [
-      createLevel("L1: A Simple Inquiry",        [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','What'], ['a','Did'], ['s','She'], ['v','Say'], ['p','?'], ['d','Said']]),
-      createLevel("L2: The Direct Approach",     [['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','They'], ['v','Win'], ['o','The Game'], ['p','?']]),
-      createLevel("L3: Location Assessment",     [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','Where'], ['a','Did'], ['s','He'], ['v','Hide'], ['p','?'], ['d','Hid']]),
-      createLevel("L4: Temporal Inquiry",        [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','When'], ['a','Did'], ['s','We'], ['v','Agree'], ['p','?']]),
-      // Floor 5 - Boss 1 & Prize 1
-      createLevel("L5: Ongoing Past Action",     [['a','Aux'], ['s','Sub'], ['v','V-ing'], ['p','?']], [['a','Were'], ['s','They'], ['v','Arguing'], ['p','?'], ['d','Argued']]),
-      createLevel("L6: Continuous State",        [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','V-ing'], ['p','?']], [['w','Why'], ['a','Was'], ['s','He'], ['v','Running'], ['p','?']]),
-      createLevel("L7: Professional Scrutiny",   [['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Manager'], ['v','Approve'], ['o','The Budget'], ['p','?']]),
-      createLevel("L8: Past Perfect Check",      [['a','Aux'], ['s','Sub'], ['v','V-PastPart'], ['adv','Adv'], ['p','?']], [['a','Had'], ['s','The Patient'], ['v','Recovered'], ['adv','Fully'], ['p','?']]),
-      createLevel("L9: Corporate Strategy",      [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['p','?']], [['w','Why'], ['a','Did'], ['s','The Executive'], ['v','Resign'], ['p','?']]),
-      // Floor 10 - Boss 2 & Prize 2
-      createLevel("L10: Duration of Action",     [['w','Wh'], ['a','Aux'], ['s','Sub'], ['a','Been'], ['v','V-ing'], ['p','?']], [['w','How Long'], ['a','Had'], ['s','You'], ['a','Been'], ['v','Waiting'], ['p','?']]),
-      createLevel("L11: Medical Assessment",     [['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Specialist'], ['adv','Quickly'], ['v','Review'], ['o','The Chart'], ['p','?']]),
-      createLevel("L12: The Modal Past",         [['w','Wh'], ['a','Aux'], ['s','Sub'], ['a','Have'], ['v','V-PastPart'], ['p','?']], [['w','What'], ['a','Could'], ['s','They'], ['a','Have'], ['v','Done'], ['p','?']]),
-      createLevel("L13: Conditional Speculation",[['a','Aux'], ['s','Sub'], ['a','Have'], ['v','V-PastPart'], ['adv','Adv'], ['p','?']], [['a','Would'], ['s','She'], ['a','Have'], ['v','Survived'], ['adv','Otherwise'], ['p','?']]),
-      createLevel("L14: Past Perfect Passive",   [['a','Aux'], ['s','Sub'], ['a','Been'], ['v','V-PastPart'], ['p','?']], [['a','Had'], ['s','The Ledger'], ['a','Been'], ['v','Updated'], ['p','?'], ['d','Update']]),
-      // Floor 15 - Boss 3 & Prize 3
-      createLevel("L15: Avoiding Consequences",  [['a','Aux'], ['s','Sub'], ['v','Verb'], ['adv','Lest'], ['s','Sub2'], ['v','Verb2'], ['p','?']], [['a','Did'], ['s','He'], ['v','Flee'], ['adv','Lest'], ['s','He'], ['v','Be Caught'], ['p','?']]),
-      createLevel("L16: Analyzing Assets",       [['w','Wh'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','?']], [['w','How'], ['a','Did'], ['s','Sony'], ['v','Value'], ['o','The Catalog'], ['p','?']]),
-      createLevel("L17: Inversion Preview",      [['a','Had'], ['s','Sub'], ['v','V-PastPart'], ['o','Obj'], ['p','?']], [['a','Had'], ['s','The Board'], ['v','Realized'], ['o','The Error'], ['p','?']]),
-      createLevel("L18: C1 Level Nuance",        [['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','The Counsel'], ['adv','Deliberately'], ['v','Mislead'], ['o','The Jury'], ['p','?']]),
-      createLevel("L19: C2 Proficiency Trial",   [['w','Wh'], ['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['w','Whom'], ['a','Did'], ['s','The Director'], ['adv','Ultimately'], ['v','Appoint'], ['o','As Successor'], ['p','?']]),
-      // Floor 20 - Boss 4 & Prize 4
-      createLevel("L20: The Master's Final Test",[['a','Aux'], ['s','Sub'], ['adv','Adv'], ['v','Verb'], ['o','Obj'], ['p','?']], [['a','Did'], ['s','They'], ['adv','Scrupulously'], ['v','Examine'], ['o','The Transcript'], ['p','?']]),
-      createLevel("L21: Negative Inversion (C1)",[['adv','Neg Adv'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['o','Obj'], ['p','.']], [['adv','Never'], ['a','Had'], ['s','I'], ['v','Seen'], ['o','Such Chaos'], ['p','.'], ['d','Saw']]),
-      createLevel("L22: Conditionals Without If",[['a','Aux'], ['s','Sub'], ['v','V-PastPart'], ['o','Obj'], ['adv','Result'], ['p','.']], [['a','Had'], ['s','He'], ['v','Known'], ['o','The Truth'], ['adv','He Would Have Fled'], ['p','.'], ['d','If']]),
-      createLevel("L23: Only After Inversion",   [['adv','Only After'], ['s','Sub'], ['v','Verb'], ['a','Aux'], ['s','Sub2'], ['v','Verb2'], ['p','.']], [['adv','Only After'], ['s','She'], ['v','Left'], ['a','Did'], ['s','We'], ['v','Speak'], ['p','.']]),
-      createLevel("L24: Cleft Sentence (C2)",    [['s','It'], ['v','Be'], ['adv','Phrase'], ['w','That'], ['s','Sub'], ['v','Verb'], ['p','.']], [['s','It'], ['v','Was'], ['adv','With Reluctance'], ['w','That'], ['s','They'], ['v','Agreed'], ['p','.']]),
-      // Floor 25 - Boss 5 & Crown of Fluency
-      createLevel("L25: The Ultimate Syntax",    [['adv','Not Only'], ['a','Aux'], ['s','Sub'], ['v','Verb'], ['adv','But'], ['s','Sub2'], ['adv','Also'], ['v','Verb2'], ['p','.']], [['adv','Not Only'], ['a','Did'], ['s','He'], ['v','Fail'], ['adv','But'], ['s','He'], ['adv','Also'], ['v','Lied'], ['p','.']])
-    ];
-
-    const BOSSES = {
-      4:  { name: "The Goblin of Gerunds", emoji: "👺", taunt: "You'll never untangle these participles, mortal!" },
-      9:  { name: "Phantom of the Past Perfect", emoji: "👻", taunt: "I had already won before you even drew breath!" },
-      14: { name: "Vampire of the Passive Voice", emoji: "🧛", taunt: "Your active sentences will be drained of life!" },
-      19: { name: "Inquisitor of Inversion", emoji: "🧙‍♂️", taunt: "Seldom have I seen such fragile syntax!" },
-      24: { name: "The Syntax Dragon (C2)", emoji: "🐉", taunt: "Only absolute perfection will pierce my scales." }
-    };
-
-    const MILESTONES = {
-      4:  { name: "Goblet of Huel Stamina", emoji: "🍷", desc: "Dark sustenance for endless midnight tutoring sessions." },
-      9:  { name: "Trezor Vault of Souls", emoji: "🗄️", desc: "A cryptographically secure phylactery for your assets." },
-      14: { name: "Obsidian Phantom Carriage", emoji: "🦇", desc: "A sleek E220d ghost coupe to traverse the foggy moors." },
-      19: { name: "Pencil the Shadow Familiar", emoji: "🐈‍⬛", desc: "A void-feline that purrs at the sight of C2-level syntax." },
-      24: { name: "The Crown of Fluency", emoji: "👑", desc: "You have mastered the Crypt. C2 Proficiency is yours." }
-    };
-
-    const LOOT_DROPS = [
-      { name: "Dusty Syntax Cobweb", rarity: "Common" },
-      { name: "Vial of Red Ink", rarity: "Uncommon" },
-      { name: "C1 Advanced Grimoire", rarity: "Rare" },
-      { name: "Tome of Mottola", rarity: "Epic" },
-      { name: "Golden Chalk of Inversion", rarity: "Legendary" }
-    ];
+    if (!window.THREE || !L) {
+      if (SELFTEST) writeSelftest(['FAIL: three.js or crypt-levels.js missing'], false);
+      else location.replace('grammar-crypt.html');
+      return;
+    }
 
     /* ==========================================================
-       2. SYNTHESIZED PROCEDURAL WEB AUDIO ENGINE
+       1. GAME STATE (single source of truth for input gating)
+       ========================================================== */
+    const GS = Object.freeze({ PLAYING: 'PLAYING', SOLVED: 'SOLVED', TRANSITION: 'TRANSITION', MODAL: 'MODAL' });
+    let gameState = GS.TRANSITION;
+    const canPlay = () => gameState === GS.PLAYING;
+
+    let state = L.store.load();          // shared, versioned save (grammarCrypt.v2), migrates old gc3d_* keys
+    function saveState() { if (!SELFTEST) L.store.save(state); }
+
+    /* ==========================================================
+       2. PROCEDURAL WEB AUDIO (starts on the first user gesture)
        ========================================================== */
     const AudioEngine = (() => {
-      let ctx = null;
-      let master = null;
-      let enabled = true;
-      let bgmGain = null;
-      let bgmInterval = null;
-      let bgmStep = 0;
-      const GOTHIC_ARPEGGIO = [146.83, 174.61, 220.00, 233.08, 220.00, 174.61, 164.81, 138.59];
+      let ctx = null, master = null, enabled = true, bgmGain = null, bgmInterval = null, bgmStep = 0;
+      const ARP = [146.83, 174.61, 220.00, 233.08, 220.00, 174.61, 164.81, 138.59];
 
       function init() {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
+        if (SELFTEST) return;
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
         if (!ctx) {
-          ctx = new AudioCtx();
+          try { ctx = new AC(); } catch (_) { return; }
           master = ctx.createGain();
           master.gain.value = enabled ? 0.85 : 0;
           master.connect(ctx.destination);
-          startDungeonDrone();
+          startDrone();
         }
-        if (ctx.state === 'suspended' && enabled) {
-          ctx.resume().catch(() => {});
-        }
+        if (ctx.state === 'suspended' && enabled && !document.hidden) ctx.resume().catch(() => {});
       }
-
       function tone(freq, type, dur, vol, delay = 0) {
         if (!enabled || !ctx || ctx.state !== 'running') return;
         const t = ctx.currentTime + delay;
@@ -894,14 +975,12 @@
         osc.start(t);
         osc.stop(t + dur + 0.05);
       }
-
-      function startDungeonDrone() {
+      function startDrone() {
         if (bgmGain || !ctx) return;
         bgmGain = ctx.createGain();
         bgmGain.gain.setValueAtTime(0.0001, ctx.currentTime);
         bgmGain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 1.5);
         bgmGain.connect(master);
-
         [73.42, 73.8, 146.83].forEach((freq, idx) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -912,857 +991,1108 @@
           gain.connect(bgmGain);
           osc.start();
         });
-
         bgmStep = 0;
         if (bgmInterval) clearInterval(bgmInterval);
         bgmInterval = setInterval(() => {
           if (!enabled || !ctx || ctx.state !== 'running') return;
-          const note = GOTHIC_ARPEGGIO[bgmStep % GOTHIC_ARPEGGIO.length];
+          const note = ARP[bgmStep % ARP.length];
           bgmStep++;
           tone(note, 'triangle', 0.36, 0.032, 0);
-          if (bgmStep % 4 === 1) {
-            tone(note * 1.5, 'sine', 0.48, 0.018, 0.04);
-          }
+          if (bgmStep % 4 === 1) tone(note * 1.5, 'sine', 0.48, 0.018, 0.04);
         }, 420);
       }
-
-      // Auto-start immediately + unlock on first gesture if browser suspended AudioContext
-      setTimeout(() => init(), 10);
       const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
       const onFirstGesture = (e) => {
         if (e && e.target && e.target.closest && e.target.closest('#audioToggle')) return;
         if (enabled) init();
-        if (ctx && ctx.state === 'running') {
-          unlockEvents.forEach((ev) => window.removeEventListener(ev, onFirstGesture, true));
-        }
+        if (ctx && ctx.state === 'running') unlockEvents.forEach((ev) => window.removeEventListener(ev, onFirstGesture, true));
       };
       unlockEvents.forEach((ev) => window.addEventListener(ev, onFirstGesture, { capture: true, passive: true }));
+      if (!SELFTEST && enabled) init();
 
       return {
         init,
-        toggle: () => {
+        toggle() {
           enabled = !enabled;
           if (!ctx) init();
           if (master) master.gain.value = enabled ? 0.85 : 0;
           if (enabled && ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
           return enabled;
         },
+        suspend() { if (ctx && ctx.state === 'running') ctx.suspend().catch(() => {}); },
+        resume() { if (ctx && enabled && ctx.state === 'suspended') ctx.resume().catch(() => {}); },
         playGrab: () => tone(320, 'triangle', 0.1, 0.08),
-        playSlot: () => {
-          tone(140, 'square', 0.12, 0.09);
-          tone(220, 'sine', 0.18, 0.06, 0.02);
-        },
-        playError: () => {
-          tone(130, 'sawtooth', 0.25, 0.12);
-          tone(115, 'sawtooth', 0.25, 0.12, 0.1);
-        },
-        playVictory: () => {
-          [261.6, 311.1, 392.0, 523.2, 622.2].forEach((f, i) => {
-            tone(f, 'sine', 0.8, 0.12, i * 0.12);
-          });
-        },
-        playBossDefeat: () => {
-          [130.8, 164.8, 196.0, 261.6, 329.6, 392.0, 523.2].forEach((f, i) => {
-            tone(f, 'triangle', 1.2, 0.14, i * 0.15);
-          });
-        },
-        playGateRumble: () => {
-          tone(45, 'sawtooth', 2.5, 0.15);
-          tone(55, 'square', 2.0, 0.12, 0.1);
-        }
+        playSlot: () => { tone(140, 'square', 0.12, 0.09); tone(220, 'sine', 0.18, 0.06, 0.02); },
+        playNear: () => { tone(392, 'sine', 0.2, 0.07); tone(349.2, 'sine', 0.25, 0.06, 0.12); },
+        playError: () => { tone(130, 'sawtooth', 0.25, 0.12); tone(115, 'sawtooth', 0.25, 0.12, 0.1); },
+        playVictory: () => { [261.6, 311.1, 392.0, 523.2, 622.2].forEach((f, i) => tone(f, 'sine', 0.8, 0.12, i * 0.12)); },
+        playBossDefeat: () => { [130.8, 164.8, 196.0, 261.6, 329.6, 392.0, 523.2].forEach((f, i) => tone(f, 'triangle', 1.2, 0.14, i * 0.15)); },
+        playGateRumble: () => { tone(45, 'sawtooth', 2.5, 0.15); tone(55, 'square', 2.0, 0.12, 0.1); }
       };
     })();
 
     /* ==========================================================
-       3. THREE.JS 3D SCENE & PERSISTENT DUNGEON WORLD
+       3. RENDERER + PERSISTENT DUNGEON (built once, shared resources)
        ========================================================== */
-    const canvas = document.getElementById('webgl-canvas');
+    const canvas = $('webgl-canvas');
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+    } catch (err) {
+      if (SELFTEST) writeSelftest(['FAIL: WebGL renderer could not be created: ' + (err && err.message)], false);
+      showOverlay('Your browser could not start the 3D view (WebGL unavailable).');
+      return;
+    }
+    const MAX_DPR = Math.min(window.devicePixelRatio || 1, 2);
+    let dpr = MAX_DPR;
+    renderer.setPixelRatio(dpr);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = false;   // point-light shadows were 6 extra passes per light per frame
+    const maxAniso = renderer.capabilities.getMaxAnisotropy();
+
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x06030c);
     scene.fog = new THREE.FogExp2(0x06030c, 0.038);
-
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    // Persistent Player State & Level Tracking
-    const playerState = {
-      level: parseInt(localStorage.getItem('gc3d_level') || '0', 10),
-      gold: parseInt(localStorage.getItem('gc3d_gold') || '0', 10),
-      xp: parseInt(localStorage.getItem('gc3d_xp') || '0', 10),
-      streak: parseInt(localStorage.getItem('gc3d_streak') || '0', 10),
-      relics: JSON.parse(localStorage.getItem('gc3d_relics') || '[]')
-    };
+    // Act palettes: 5 acts x 5 floors
+    const ACTS = [
+      { torch: 0xf59e0b, amb: 0x281242, gate: 0xa855f7 },   // I   B1 questions
+      { torch: 0x84cc16, amb: 0x16241a, gate: 0x22c55e },   // II  perfect / modal / passive
+      { torch: 0xfb7185, amb: 0x2a0f18, gate: 0xdc2626 },   // III negative inversion
+      { torch: 0x818cf8, amb: 0x141a3a, gate: 0x6366f1 },   // IV  conditional + so/such
+      { torch: 0xfbbf24, amb: 0x0f2a22, gate: 0x10b981 }    // V   clefts + fronting
+    ];
+    const actOf = (f) => ACTS[Math.min(4, Math.floor(f / 5))];
 
-    function saveState() {
-      localStorage.setItem('gc3d_level', playerState.level);
-      localStorage.setItem('gc3d_gold', playerState.gold);
-      localStorage.setItem('gc3d_xp', playerState.xp);
-      localStorage.setItem('gc3d_streak', playerState.streak);
-      localStorage.setItem('gc3d_relics', JSON.stringify(playerState.relics));
-    }
-
-    let currentLevelIndex = Math.min(Math.max(0, playerState.level || 0), (typeof LEVELS !== 'undefined' ? LEVELS.length - 1 : 0));
-    let isCurrentLevelSolved = false;
-
-    const cameraPresets = {
-      altar: { pos: new THREE.Vector3(0, 3.8, 4.8), lookAt: new THREE.Vector3(0, 1.1, 0) },
-      room:  { pos: new THREE.Vector3(0, 5.8, 9.0), lookAt: new THREE.Vector3(0, 1.8, -2) },
-      gate:  { pos: new THREE.Vector3(0, 3.2, -4.5), lookAt: new THREE.Vector3(0, 3.5, -12) }
-    };
-    let currentCamTarget = cameraPresets.altar;
-    let cameraOrbitOffset = { x: 0, y: 0 };
-
-    function updateCameraForViewport() {
-      const isPortrait = window.innerWidth < window.innerHeight;
-      const aspect = window.innerWidth / window.innerHeight;
-      camera.aspect = aspect;
-
-      const lvl = (typeof LEVELS !== 'undefined' && LEVELS[currentLevelIndex]) ? LEVELS[currentLevelIndex] : null;
-      const slotCount = (lvl && lvl.pattern) ? lvl.pattern.length : 5;
-      const altarWidth = Math.max(6.2, slotCount * 1.15 + 0.6);
-
-      if (isPortrait) {
-        camera.fov = Math.max(68, Math.min(84, 46 / Math.max(0.38, aspect)));
-        const requiredZ = Math.max(7.2, altarWidth * 1.05);
-        cameraPresets.altar.pos.set(0, 4.8, requiredZ);
-        cameraPresets.altar.lookAt.set(0, 1.1, 0);
-        cameraPresets.room.pos.set(0, 7.5, 12.5);
-        cameraPresets.gate.pos.set(0, 3.8, -3.2);
-      } else {
-        camera.fov = 60;
-        cameraPresets.altar.pos.set(0, 3.8, 4.8);
-        cameraPresets.altar.lookAt.set(0, 1.1, 0);
-        cameraPresets.room.pos.set(0, 5.8, 9.0);
-        cameraPresets.gate.pos.set(0, 3.2, -4.5);
-      }
-      camera.updateProjectionMatrix();
-    }
-    updateCameraForViewport();
-
-    camera.position.copy(currentCamTarget.pos);
-    let cameraLookAt = currentCamTarget.lookAt.clone();
-
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0x281242, 0.5);
+    const ambientLight = new THREE.AmbientLight(0x281242, 0.55);
     scene.add(ambientLight);
-
     const torch1 = new THREE.PointLight(0xf59e0b, 2.2, 14, 2);
     torch1.position.set(-3.5, 3.2, 0);
-    torch1.castShadow = true;
     scene.add(torch1);
-
     const torch2 = new THREE.PointLight(0xf59e0b, 2.2, 14, 2);
     torch2.position.set(3.5, 3.2, 0);
-    torch2.castShadow = true;
     scene.add(torch2);
-
     const gateTorch = new THREE.PointLight(0xa855f7, 2.8, 16, 2);
     gateTorch.position.set(0, 4.2, -10);
     scene.add(gateTorch);
 
-    // Procedural Stone Texture Canvas Generator
+    const shared = new Set();
+    const share = (o) => { shared.add(o); return o; };
+
     function createStoneTexture() {
       const cvs = document.createElement('canvas');
-      cvs.width = 512;
-      cvs.height = 512;
-      const ctx = cvs.getContext('2d');
-      ctx.fillStyle = '#171124';
-      ctx.fillRect(0, 0, 512, 512);
-
-      ctx.strokeStyle = '#0b0713';
-      ctx.lineWidth = 6;
+      cvs.width = 512; cvs.height = 512;
+      const g = cvs.getContext('2d');
+      g.fillStyle = '#171124';
+      g.fillRect(0, 0, 512, 512);
+      g.strokeStyle = '#0b0713';
+      g.lineWidth = 6;
       for (let y = 0; y < 512; y += 64) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(512, y);
-        ctx.stroke();
-
+        g.beginPath(); g.moveTo(0, y); g.lineTo(512, y); g.stroke();
         const offset = (y / 64) % 2 === 0 ? 0 : 40;
-        for (let x = offset; x < 512; x += 80) {
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.lineTo(x, y + 64);
-          ctx.stroke();
-        }
+        for (let x = offset; x < 512; x += 80) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 64); g.stroke(); }
       }
-
       for (let i = 0; i < 8000; i++) {
-        const x = Math.random() * 512;
-        const y = Math.random() * 512;
         const shade = Math.floor(Math.random() * 40);
-        ctx.fillStyle = `rgba(${shade}, ${shade}, ${shade + 10}, 0.25)`;
-        ctx.fillRect(x, y, 2, 2);
+        g.fillStyle = `rgba(${shade}, ${shade}, ${shade + 10}, 0.25)`;
+        g.fillRect(Math.random() * 512, Math.random() * 512, 2, 2);
       }
-
       const tex = new THREE.CanvasTexture(cvs);
-      tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.RepeatWrapping;
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+      tex.anisotropy = maxAniso;
       return tex;
     }
-
     const stoneTex = createStoneTexture();
     stoneTex.repeat.set(4, 8);
 
-    const floorMat = new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 0.85, metalness: 0.15 });
-    const floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(16, 28), floorMat);
+    const floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(16, 28), new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 0.85, metalness: 0.15 }));
     floorMesh.rotation.x = -Math.PI / 2;
-    floorMesh.receiveShadow = true;
     scene.add(floorMesh);
-
     const wallMat = new THREE.MeshStandardMaterial({ map: stoneTex, roughness: 0.9, color: 0x221833 });
-    const ceilingMesh = new THREE.Mesh(new THREE.PlaneGeometry(16, 28), wallMat);
-    ceilingMesh.position.y = 7.5;
-    ceilingMesh.rotation.x = Math.PI / 2;
-    scene.add(ceilingMesh);
+    const longWallGeo = new THREE.PlaneGeometry(28, 8), shortWallGeo = new THREE.PlaneGeometry(16, 8);
+    const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(16, 28), wallMat);
+    ceiling.position.y = 7.5; ceiling.rotation.x = Math.PI / 2; scene.add(ceiling);
+    [[-8, Math.PI / 2], [8, -Math.PI / 2]].forEach(([x, ry]) => { const w = new THREE.Mesh(longWallGeo, wallMat); w.position.set(x, 3.75, 0); w.rotation.y = ry; scene.add(w); });
+    [[14, Math.PI], [-14, 0]].forEach(([z, ry]) => { const w = new THREE.Mesh(shortWallGeo, wallMat); w.position.set(0, 3.75, z); w.rotation.y = ry; scene.add(w); });
 
-    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(28, 8), wallMat);
-    leftWall.position.set(-8, 3.75, 0);
-    leftWall.rotation.y = Math.PI / 2;
-    scene.add(leftWall);
-
-    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(28, 8), wallMat);
-    rightWall.position.set(8, 3.75, 0);
-    rightWall.rotation.y = -Math.PI / 2;
-    scene.add(rightWall);
-
-    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(16, 8), wallMat);
-    backWall.position.set(0, 3.75, 14);
-    backWall.rotation.y = Math.PI;
-    scene.add(backWall);
-
-    const farWall = new THREE.Mesh(new THREE.PlaneGeometry(16, 8), wallMat);
-    farWall.position.set(0, 3.75, -14);
-    scene.add(farWall);
-
-    // Nave Pillars
+    // Pillars and portcullis: one geometry each, instanced
     const pillarMat = new THREE.MeshStandardMaterial({ color: 0x181024, roughness: 0.7 });
-    for (let z = -10; z <= 10; z += 5) {
-      [-5.5, 5.5].forEach(x => {
-        const pillar = new THREE.Mesh(new THREE.BoxGeometry(0.8, 7.5, 0.8), pillarMat);
-        pillar.position.set(x, 3.75, z);
-        pillar.castShadow = true;
-        pillar.receiveShadow = true;
-        scene.add(pillar);
-      });
-    }
+    const pillars = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 7.5, 0.8), pillarMat, 10);
+    const m4 = new THREE.Matrix4();
+    let pi = 0;
+    for (let z = -10; z <= 10; z += 5) [-5.5, 5.5].forEach((x) => { m4.makeTranslation(x, 3.75, z); pillars.setMatrixAt(pi++, m4); });
+    scene.add(pillars);
 
-    // Portcullis Iron Gate
     const gateGroup = new THREE.Group();
     const ironMat = new THREE.MeshStandardMaterial({ color: 0x0f0b17, roughness: 0.5, metalness: 0.85 });
-    for (let x = -3.2; x <= 3.2; x += 0.5) {
-      const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 6, 8), ironMat);
-      bar.position.set(x, 3, 0);
-      gateGroup.add(bar);
-    }
-    for (let y = 1.2; y <= 5.2; y += 1.3) {
-      const cross = new THREE.Mesh(new THREE.BoxGeometry(6.6, 0.12, 0.12), ironMat);
-      cross.position.set(0, y, 0);
-      gateGroup.add(cross);
-    }
+    const barXs = [];
+    for (let x = -3.2; x <= 3.21; x += 0.5) barXs.push(x);
+    const bars = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.06, 0.06, 6, 8), ironMat, barXs.length);
+    barXs.forEach((x, i) => { m4.makeTranslation(x, 3, 0); bars.setMatrixAt(i, m4); });
+    gateGroup.add(bars);
+    const crossYs = [1.2, 2.5, 3.8, 5.1];
+    const crosses = new THREE.InstancedMesh(new THREE.BoxGeometry(6.6, 0.12, 0.12), ironMat, crossYs.length);
+    crossYs.forEach((y, i) => { m4.makeTranslation(0, y, 0); crosses.setMatrixAt(i, m4); });
+    gateGroup.add(crosses);
     gateGroup.position.set(0, 0, -11.5);
     scene.add(gateGroup);
 
-    // Glowing Boss Eyes in the Shadow
-    const eyeGeo = new THREE.SphereGeometry(0.1, 8, 8);
-    const eyeMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
-    const eye1 = new THREE.Mesh(eyeGeo, eyeMat);
-    eye1.position.set(-0.35, 2.4, -12.8);
-    scene.add(eye1);
-    const eye2 = new THREE.Mesh(eyeGeo, eyeMat);
-    eye2.position.set(0.35, 2.4, -12.8);
-    scene.add(eye2);
+    const eyeGeo = share(new THREE.SphereGeometry(0.1, 8, 8));
+    const eyeMat = share(new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+    [-0.35, 0.35].forEach((x) => { const e = new THREE.Mesh(eyeGeo, eyeMat); e.position.set(x, 2.4, -12.8); scene.add(e); });
 
-    /* ==========================================================
-       4. DYNAMIC 3D ALTAR & RUNES SYSTEM (SUPPORTING 25 LEVELS)
-       ========================================================== */
-    const altarGroup = new THREE.Group();
-    scene.add(altarGroup);
-
-    let activeSlotMeshes = [];
-    let activeRuneMeshes = [];
-    let activeInteractiveObjects = [];
-
-    function createRuneTexture(text, isDecoy = false) {
-      const cvs = document.createElement('canvas');
-      cvs.width = 256;
-      cvs.height = 256;
-      const ctx = cvs.getContext('2d');
-
-      ctx.fillStyle = isDecoy ? '#261313' : '#1e1136';
-      ctx.fillRect(0, 0, 256, 256);
-
-      ctx.strokeStyle = isDecoy ? '#ef4444' : '#fbbf24';
-      ctx.lineWidth = 10;
-      ctx.strokeRect(12, 12, 232, 232);
-
-      // Inscribed text with dynamic font scaling for long words
-      ctx.fillStyle = '#ffffff';
-      const fontSize = text.length > 8 ? 36 : (text.length > 5 ? 44 : 54);
-      ctx.font = `bold ${fontSize}px Nunito, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(text, 128, 128);
-
-      ctx.font = '22px sans-serif';
-      ctx.fillStyle = isDecoy ? '#f87171' : '#c084fc';
-      ctx.fillText('ᚠ ᚢ ᚦ', 128, 44);
-      ctx.fillText('ᚨ ᚱ ᚲ', 128, 212);
-
-      return new THREE.CanvasTexture(cvs);
-    }
-
-    function loadFloor(lvlIdx) {
-      if (lvlIdx >= LEVELS.length) lvlIdx = 0;
-      currentLevelIndex = lvlIdx;
-      isCurrentLevelSolved = false;
-
-      // Reset torch colours
-      torch1.color.setHex(0xf59e0b);
-      torch2.color.setHex(0xf59e0b);
-      ambientLight.color.setHex(0x281242);
-      gateGroup.position.y = 0; // Close gate
-
-      const level = LEVELS[lvlIdx];
-
-      // Update HUD
-      document.getElementById('hudFloor').textContent = `Floor ${lvlIdx + 1} / 25`;
-      document.getElementById('hudGold').textContent = playerState.gold;
-      document.getElementById('hudXP').textContent = `${playerState.xp} / 100 XP`;
-      document.getElementById('hudStreak').textContent = `${playerState.streak} 🔥`;
-      document.getElementById('questTitle').innerHTML = `<i class="fa-solid fa-scroll"></i> ${level.title}`;
-
-      // Boss Display
-      const bossHud = document.getElementById('bossArenaHud');
-      if (BOSSES[lvlIdx]) {
-        bossHud.style.display = 'block';
-        document.getElementById('bossName').textContent = `${BOSSES[lvlIdx].emoji} ${BOSSES[lvlIdx].name}`;
-        document.getElementById('bossTaunt').textContent = `"${BOSSES[lvlIdx].taunt}"`;
-        eyeMat.color.setHex(0xf87171);
-      } else {
-        bossHud.style.display = 'none';
-        eyeMat.color.setHex(0x551111);
+    // Shared per-floor resources (never disposed)
+    const SH = {
+      runeGeo: share(new THREE.BoxGeometry(0.72, 0.42, 0.72)),
+      runeSide: share(new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 })),
+      slotGeo: share(new THREE.CylinderGeometry(0.38, 0.40, 0.12, 20)),
+      altarGeo: share(new THREE.BoxGeometry(1, 0.7, 1.8)),
+      stepGeo: share(new THREE.BoxGeometry(1, 0.2, 2.8)),
+      altarMat: share(new THREE.MeshStandardMaterial({ color: 0x160f24, roughness: 0.6, metalness: 0.2 })),
+      bossBody: share(new THREE.ConeGeometry(0.9, 2.2, 7)),
+      bossHead: share(new THREE.SphereGeometry(0.55, 16, 12)),
+      hpGeo: share(new THREE.PlaneGeometry(1, 0.14)),
+      hpBg: share(new THREE.MeshBasicMaterial({ color: 0x1f0a0a })),
+      hpFg: share(new THREE.MeshBasicMaterial({ color: 0xef4444 })),
+      slotMat: {
+        idle:   share(new THREE.MeshStandardMaterial({ color: 0x2e1065, emissive: 0x3b0764, emissiveIntensity: 0.4, roughness: 0.4 })),
+        target: share(new THREE.MeshStandardMaterial({ color: 0x6d28d9, emissive: 0xa855f7, emissiveIntensity: 0.9, roughness: 0.4 })),
+        hint:   share(new THREE.MeshStandardMaterial({ color: 0x075985, emissive: 0x38bdf8, emissiveIntensity: 0.9, roughness: 0.4 })),
+        wrong:  share(new THREE.MeshStandardMaterial({ color: 0x7f1d1d, emissive: 0xef4444, emissiveIntensity: 1.1, roughness: 0.4 })),
+        solved: share(new THREE.MeshStandardMaterial({ color: 0x065f46, emissive: 0x10b981, emissiveIntensity: 0.9, roughness: 0.4 }))
       }
+    };
 
-      // Syntax formula chips
-      const formulaContainer = document.getElementById('syntaxFormula');
-      formulaContainer.innerHTML = level.pattern.map(p => `<span>[${p.label}]</span>`).join(' &rarr; ');
-
-      // Clear existing 3D altar objects & runes
-      while (altarGroup.children.length > 0) {
-        altarGroup.remove(altarGroup.children[0]);
-      }
-      activeRuneMeshes.forEach(m => scene.remove(m));
-      activeRuneMeshes = [];
-      activeSlotMeshes = [];
-      activeInteractiveObjects = [];
-
-      // Rebuild Dynamic Altar Platform based on slot count
-      const slotCount = level.pattern.length;
-      updateCameraForViewport();
-      const altarWidth = Math.max(6.2, slotCount * 1.15 + 0.6);
-      
-      const altarMat = new THREE.MeshStandardMaterial({ color: 0x160f24, roughness: 0.6, metalness: 0.2 });
-      const altarBase = new THREE.Mesh(new THREE.BoxGeometry(altarWidth, 0.7, 1.8), altarMat);
-      altarBase.position.y = 0.35;
-      altarBase.castShadow = true;
-      altarBase.receiveShadow = true;
-      altarGroup.add(altarBase);
-
-      const stepMesh = new THREE.Mesh(new THREE.BoxGeometry(altarWidth + 1.0, 0.2, 2.8), altarMat);
-      stepMesh.position.y = 0.1;
-      stepMesh.receiveShadow = true;
-      altarGroup.add(stepMesh);
-
-      // Generate Altar Pedestal Slots
-      const slotSpacing = altarWidth / (slotCount + 1);
-      const startX = -(altarWidth / 2) + slotSpacing;
-
-      level.pattern.forEach((slotData, i) => {
-        const slotX = startX + i * slotSpacing;
-        const slotGeo = new THREE.CylinderGeometry(0.38, 0.40, 0.12, 16);
-        const slotMat = new THREE.MeshStandardMaterial({
-          color: 0x2e1065,
-          emissive: 0x3b0764,
-          emissiveIntensity: 0.4,
-          roughness: 0.4
+    /** Dispose geometries, materials and textures under obj (except shared ones) and detach it. */
+    function disposeObject(obj) {
+      obj.traverse((o) => {
+        if (o.geometry && !shared.has(o.geometry)) o.geometry.dispose();
+        const mats = Array.isArray(o.material) ? o.material : (o.material ? [o.material] : []);
+        mats.forEach((m) => {
+          if (shared.has(m)) return;
+          ['map', 'emissiveMap', 'alphaMap'].forEach((k) => { if (m[k] && !shared.has(m[k])) m[k].dispose(); });
+          m.dispose();
         });
-        const mesh = new THREE.Mesh(slotGeo, slotMat);
-        mesh.position.set(slotX, 0.75, 0);
-        mesh.receiveShadow = true;
-        mesh.userData = { isSlot: true, slotIndex: i, expected: level.answer[i] ? level.answer[i].text : '', filled: null };
-        altarGroup.add(mesh);
-        activeSlotMeshes.push(mesh);
       });
+      if (obj.parent) obj.parent.remove(obj);
+    }
 
-      // Clear & Populate Bottom Rune Tray
-      const tokensContainer = document.getElementById('runeTokensRow');
-      tokensContainer.innerHTML = '';
+    /** Rune face: text fitted with measureText (one or two lines), natural case, no decoy styling. */
+    function createRuneTexture(text) {
+      const S = 256, cvs = document.createElement('canvas');
+      cvs.width = cvs.height = S;
+      const g = cvs.getContext('2d');
+      g.fillStyle = '#1e1136';
+      g.fillRect(0, 0, S, S);
+      g.strokeStyle = '#fbbf24';
+      g.lineWidth = 10;
+      g.strokeRect(12, 12, S - 24, S - 24);
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.font = '22px sans-serif';
+      g.fillStyle = '#c084fc';
+      g.fillText('ᚠ ᚢ ᚦ', S / 2, 40);
+      g.fillText('ᚨ ᚱ ᚲ', S / 2, S - 40);
+      const FAM = 'Nunito, "Segoe UI", sans-serif', MAXW = 206;
+      const fits = (ls, sz) => { g.font = `900 ${sz}px ${FAM}`; return ls.every((l) => g.measureText(l).width <= MAXW); };
+      let lines = [text], size = 64;
+      while (size > 24 && !fits(lines, size)) size -= 2;
+      const words = text.split(' ');
+      if (words.length > 1 && size < 44) {
+        for (let k = 1; k < words.length; k++) {
+          const ls = [words.slice(0, k).join(' '), words.slice(k).join(' ')];
+          let s = 52;
+          while (s > 24 && !fits(ls, s)) s -= 2;
+          if (s > size) { size = s; lines = ls; }
+        }
+      }
+      g.font = `900 ${size}px ${FAM}`;
+      g.fillStyle = '#ffffff';
+      const lh = size * 1.05;
+      lines.forEach((l, i) => g.fillText(l, S / 2, S / 2 + (i - (lines.length - 1) / 2) * lh));
+      const tex = new THREE.CanvasTexture(cvs);
+      tex.anisotropy = maxAniso;
+      return tex;
+    }
 
-      // Shuffle blocks for physical spawn on plinths
-      const shuffledBlocks = [...level.blocks].sort(() => Math.random() - 0.5);
-      const runeCount = shuffledBlocks.length;
-      const runeSpacing = Math.min(1.2, 6.5 / (runeCount || 1));
-      const runeStartX = -((runeCount - 1) * runeSpacing) / 2;
+    /* ==========================================================
+       4. CAMERA
+       ========================================================== */
+    const cameraPresets = {
+      altar:   { pos: new THREE.Vector3(0, 3.9, 5.4), lookAt: new THREE.Vector3(0, 1.2, -0.6) },
+      room:    { pos: new THREE.Vector3(0, 5.8, 9.0), lookAt: new THREE.Vector3(0, 1.8, -2) },
+      gate:    { pos: new THREE.Vector3(0, 3.2, -4.5), lookAt: new THREE.Vector3(0, 3.5, -12) },
+      through: { pos: new THREE.Vector3(0, 3.0, -13.2), lookAt: new THREE.Vector3(0, 3.0, -20) }
+    };
+    let currentCamTarget = cameraPresets.altar;
+    const orbit = { x: 0, y: 0 };
+    const cameraLookAt = new THREE.Vector3();
+    const ALTAR_DIR = new THREE.Vector3(0, 2.7, 6.0).normalize();
+    let sceneHalfWidth = 3.6;
 
-      shuffledBlocks.forEach((block, idx) => {
-        const isDecoy = block.type === TYPES.d;
-        const initialPos = new THREE.Vector3(runeStartX + idx * runeSpacing, 1.1, 2.4 + (idx % 2 === 0 ? 0 : 0.6));
+    function updateCameraForViewport() {
+      const aspect = window.innerWidth / Math.max(1, window.innerHeight);
+      camera.aspect = aspect;
+      camera.fov = aspect < 1 ? Math.max(62, Math.min(80, 44 / Math.max(0.4, aspect))) : 60;
+      const halfV = THREE.MathUtils.degToRad(camera.fov / 2);
+      const need = (sceneHalfWidth + 0.5) / (Math.tan(halfV) * aspect);
+      const dist = Math.min(18, Math.max(6.4, need * 1.05));
+      cameraPresets.altar.pos.copy(cameraPresets.altar.lookAt).addScaledVector(ALTAR_DIR, dist);
+      cameraPresets.room.pos.set(0, aspect < 1 ? 7.5 : 5.8, aspect < 1 ? 12.5 : 9.0);
+      camera.updateProjectionMatrix();
+    }
 
-        // Create 3D Mesh
-        const runeGeo = new THREE.BoxGeometry(0.72, 0.42, 0.72);
-        const runeFaceTex = createRuneTexture(block.text, isDecoy);
-        const materials = [
-          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 }),
-          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 }),
-          new THREE.MeshStandardMaterial({ map: runeFaceTex, roughness: 0.3, metalness: 0.1 }),
-          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 }),
-          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 }),
-          new THREE.MeshStandardMaterial({ color: 0x1a112c, roughness: 0.7 })
-        ];
+    /* ==========================================================
+       5. FLOOR BUILD (pool item -> altar, slots, runes, boss)
+       ========================================================== */
+    let floorIdx = 0, item = null, floorGroup = null;
+    let slots = [], runes = [];
+    let targetSlot = -1, wrongSlot = -1, hintSlot = -1;
+    let hintsUsed = 0, mistakes = 0, lives = 3, bossHP = 1, boss = null;
+    let torchTimer = 0, gateAnim = null, solvedGlow = false;
 
-        const runeMesh = new THREE.Mesh(runeGeo, materials);
-        runeMesh.position.copy(initialPos);
-        runeMesh.castShadow = true;
-        runeMesh.receiveShadow = true;
-        runeMesh.userData = {
-          isRune: true,
-          id: `${block.text}-${idx}`,
-          text: block.text,
-          isDecoy: isDecoy,
-          initialPos: initialPos.clone(),
-          targetPos: initialPos.clone(),
-          currentSlot: null
-        };
+    function setTorches(hex) { torch1.color.setHex(hex); torch2.color.setHex(hex); }
 
-        scene.add(runeMesh);
-        activeRuneMeshes.push(runeMesh);
-        activeInteractiveObjects.push(runeMesh);
+    function buildFloor(idx, forcedItem) {
+      floorIdx = Math.max(0, Math.min(LAST, idx | 0));
+      const fl = L.floors[floorIdx];
+      item = forcedItem || L.pickItem(floorIdx, item && item.id);
+      if (floorGroup) disposeObject(floorGroup);
+      floorGroup = new THREE.Group();
+      scene.add(floorGroup);
+      slots = []; runes = [];
+      targetSlot = wrongSlot = hintSlot = -1;
+      hintsUsed = 0; mistakes = 0; lives = 3; bossHP = 1; boss = null; solvedGlow = false;
+      clearTimeout(torchTimer);
+      gateAnim = null;
+      gateGroup.position.y = 0;
 
-        // Add to UI tray
+      const act = actOf(floorIdx);
+      setTorches(act.torch);
+      ambientLight.color.setHex(act.amb);
+      gateTorch.color.setHex(act.gate);
+      eyeMat.color.setHex(fl.boss ? 0xf87171 : 0x551111);
+
+      const n = item.tokens.length;
+      const w = Math.max(6.2, n * 1.0 + 0.8);
+      const altar = new THREE.Mesh(SH.altarGeo, SH.altarMat);
+      altar.scale.x = w; altar.position.y = 0.35;
+      const step = new THREE.Mesh(SH.stepGeo, SH.altarMat);
+      step.scale.x = w + 1; step.position.y = 0.1;
+      floorGroup.add(altar, step);
+
+      const spacing = w / (n + 1);
+      const startX = -w / 2 + spacing;
+      for (let i = 0; i < n; i++) {
+        const m = new THREE.Mesh(SH.slotGeo, SH.slotMat.idle);
+        m.position.set(startX + i * spacing, 0.75, 0);
+        m.userData.slot = i;
+        floorGroup.add(m);
+        slots.push({ mesh: m, rune: null });
+      }
+
+      // Runes float on two shelves behind the altar, in a shuffled order that is never pre-solved
+      const order = L.shuffledRunes(item);
+      const rows = order.length > 7 ? 2 : 1;
+      const perRow = Math.ceil(order.length / rows);
+      const rs = Math.min(1.0, 8.4 / perRow);
+      order.forEach((r, k) => {
+        const row = Math.floor(k / perRow), col = k % perRow;
+        const inRow = row === rows - 1 ? order.length - row * perRow : perRow;
+        const home = new THREE.Vector3((col - (inRow - 1) / 2) * rs, 1.35 + row * 0.62, -1.35 - row * 0.75);
+        const face = new THREE.MeshStandardMaterial({ map: createRuneTexture(r.text), roughness: 0.35, metalness: 0.1, emissive: 0x000000 });
+        const mesh = new THREE.Mesh(SH.runeGeo, [SH.runeSide, SH.runeSide, face, SH.runeSide, SH.runeSide, SH.runeSide]);
+        mesh.rotation.x = 0.55;   // tilt the face towards the camera on the shelf
+        mesh.position.copy(home);
+        mesh.userData.rune = k;
+        floorGroup.add(mesh);
+        runes.push({ id: k, text: r.text, pos: r.pos, mesh, face, home, target: home.clone(), slot: -1 });
+      });
+      sceneHalfWidth = Math.max(w + 1, perRow * rs) / 2;
+      updateCameraForViewport();
+
+      if (fl.boss) buildBoss(L.bosses[floorIdx]);
+      renderAll();
+      setFeedback(fl.boss ? 'Boss floor: three lives. A wrong sentence costs a life.' : '');
+    }
+
+    function buildBoss(b) {
+      const g = new THREE.Group();
+      const mat = new THREE.MeshStandardMaterial({ color: b.color, emissive: b.color, emissiveIntensity: 0.3, roughness: 0.55, flatShading: true });
+      const body = new THREE.Mesh(SH.bossBody, mat);
+      body.position.y = 1.1;
+      const head = new THREE.Mesh(SH.bossHead, mat);
+      head.position.y = 2.45;
+      const e1 = new THREE.Mesh(eyeGeo, eyeMat); e1.position.set(-0.2, 2.55, 0.48);
+      const e2 = new THREE.Mesh(eyeGeo, eyeMat); e2.position.set(0.2, 2.55, 0.48);
+      const hpBg = new THREE.Mesh(SH.hpGeo, SH.hpBg); hpBg.scale.x = 1.8; hpBg.position.y = 3.35;
+      const hpFg = new THREE.Mesh(SH.hpGeo, SH.hpFg); hpFg.scale.x = 1.8; hpFg.position.set(0, 3.35, 0.01);
+      g.add(body, head, e1, e2, hpBg, hpFg);
+      g.position.set(0, 0.3, -4.6);
+      floorGroup.add(g);
+      boss = { group: g, hpFg, baseY: 0.3, defeated: false, scale: 1 };
+    }
+
+    /* ==========================================================
+       6. HUD / DOM RENDERING
+       ========================================================== */
+    function setFeedback(text, kind) {
+      const el = $('feedback');
+      el.textContent = text || '';
+      el.className = 'feedback-strip' + (kind ? ' ' + kind : '');
+    }
+
+    function renderHUD() {
+      $('hudFloor').textContent = `Floor ${floorIdx + 1} / ${L.floors.length}`;
+      $('hudGold').textContent = state.gold;
+      $('hudXP').textContent = `${state.xp % 100} / 100 XP · Rank ${Math.floor(state.xp / 100) + 1}`;
+      $('hudStreak').textContent = `${state.streak}`;
+      const fl = L.floors[floorIdx];
+      $('questTitle').innerHTML = '';
+      const icon = document.createElement('i');
+      icon.className = 'fa-solid fa-scroll'; icon.setAttribute('aria-hidden', 'true');
+      $('questTitle').append(icon, ` ${floorIdx + 1}. ${fl.title} (${fl.cefr})`);
+      $('btnHint').querySelector('span').textContent = hintsUsed ? `Hint (${hintsUsed}): no rewards` : 'Hint';
+    }
+
+    function renderBoss() {
+      const hud = $('bossArenaHud');
+      const b = L.bosses[floorIdx];
+      if (!b) { hud.style.display = 'none'; return; }
+      hud.style.display = 'block';
+      $('bossName').textContent = `${b.emoji} ${b.name}`;
+      $('bossTaunt').textContent = bossHP <= 0 ? '"Impossible! My syntax is broken!"' : `"${b.taunt}"`;
+      $('bossHpFill').style.width = `${Math.round(bossHP * 100)}%`;
+      $('bossHpBar').setAttribute('aria-valuenow', String(Math.round(bossHP * 100)));
+      $('bossLives').textContent = `Lives: ${'❤'.repeat(Math.max(0, lives))}${'♡'.repeat(Math.max(0, 3 - lives))}`;
+      if (boss) {
+        const hp = Math.max(0.001, bossHP);
+        boss.hpFg.scale.x = 1.8 * hp;
+        boss.hpFg.position.x = -0.9 * (1 - hp);
+      }
+    }
+
+    function renderFormula() {
+      const box = $('syntaxFormula');
+      box.textContent = '';
+      const isBoss = !!L.floors[floorIdx].boss;   // boss floors: recall the structure, labels hidden
+      slots.forEach((s, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'slot-btn' + (s.rune ? ' filled' : '') + (i === targetSlot ? ' targeted' : '') + (i === wrongSlot ? ' wrong' : '');
+        const lab = item.slots[i].label;
+        b.textContent = s.rune ? s.rune.text : (isBoss || lab === 'Any' ? `${i + 1}` : lab);
+        b.setAttribute('aria-label', `Slot ${i + 1}${s.rune ? ': ' + s.rune.text + ' (activate to recall)' : (isBoss ? '' : ': ' + lab)}`);
+        b.setAttribute('aria-pressed', String(i === targetSlot));
+        b.addEventListener('click', () => userSelectSlot(i));
+        box.appendChild(b);
+      });
+    }
+
+    function renderTray() {
+      const row = $('runeTokensRow');
+      row.textContent = '';
+      runes.forEach((r) => {
         const chip = document.createElement('button');
-        chip.className = `rune-chip ${isDecoy ? 'decoy' : ''}`;
-        chip.id = `chip-${runeMesh.userData.id}`;
-        chip.textContent = block.text;
-        chip.onclick = () => slotRuneByName(runeMesh.userData.id);
-        tokensContainer.appendChild(chip);
+        chip.type = 'button';
+        chip.className = 'rune-chip' + (r.slot >= 0 ? ' placed' : '');
+        chip.textContent = r.text;
+        chip.setAttribute('aria-pressed', String(r.slot >= 0));
+        chip.setAttribute('aria-label', r.slot >= 0 ? `${r.text}, in slot ${r.slot + 1}: activate to recall` : `${r.text}: activate to place`);
+        chip.addEventListener('click', () => userToggleRune(r.id));
+        row.appendChild(chip);
       });
     }
 
-    /* ==========================================================
-       5. INTERACTIVE RUNE SLOTTING & RAYCASTING
-       ========================================================== */
-    function getFirstEmptySlot() {
-      for (let i = 0; i < activeSlotMeshes.length; i++) {
-        if (!activeSlotMeshes[i].userData.filled) return i;
-      }
-      return -1;
+    function refreshSlotMats() {
+      slots.forEach((s, i) => {
+        s.mesh.material = solvedGlow ? SH.slotMat.solved
+          : i === wrongSlot ? SH.slotMat.wrong
+          : i === targetSlot ? SH.slotMat.target
+          : i === hintSlot ? SH.slotMat.hint
+          : SH.slotMat.idle;
+      });
     }
 
-    function slotRune(runeMesh, slotIdx) {
+    function renderAll() { renderHUD(); renderBoss(); renderFormula(); renderTray(); refreshSlotMats(); }
+
+    /* ==========================================================
+       7. RUNE MOVES (core moves are ungated; user actions are gated)
+       ========================================================== */
+    function placeRune(r, si) {
+      if (r.slot >= 0) slots[r.slot].rune = null;
+      const s = slots[si];
+      if (s.rune && s.rune !== r) unplaceRune(s.rune);
+      s.rune = r;
+      r.slot = si;
+      r.target.set(s.mesh.position.x, 0.98, 0);
+    }
+    function unplaceRune(r) {
+      if (r.slot >= 0) { slots[r.slot].rune = null; r.slot = -1; }
+      r.target.copy(r.home);
+    }
+    const boardTexts = () => slots.map((s) => (s.rune ? s.rune.text : null));
+    const evaluate = () => L.check(item, boardTexts());
+
+    function onBoardChanged() {
+      wrongSlot = -1;
+      if (hintSlot >= 0 && slots[hintSlot] && slots[hintSlot].rune) hintSlot = -1;
+      renderFormula(); renderTray(); refreshSlotMats();
+      if (slots.every((s) => s.rune)) submit();
+    }
+
+    function userPlace(r) {
+      if (!canPlay()) return false;
       AudioEngine.init();
+      const si = (targetSlot >= 0 && !slots[targetSlot].rune) ? targetSlot : slots.findIndex((s) => !s.rune);
+      if (si < 0) { AudioEngine.playError(); setFeedback('All slots are full: tap a placed rune to recall it.', 'error'); return false; }
+      placeRune(r, si);
+      targetSlot = -1;
       AudioEngine.playSlot();
-
-      if (runeMesh.userData.currentSlot !== null) {
-        activeSlotMeshes[runeMesh.userData.currentSlot].userData.filled = null;
-      }
-
-      const slot = activeSlotMeshes[slotIdx];
-      if (slot.userData.filled) {
-        recallRune(slot.userData.filled);
-      }
-
-      slot.userData.filled = runeMesh;
-      runeMesh.userData.currentSlot = slotIdx;
-      runeMesh.userData.targetPos.set(slot.position.x, 0.95, slot.position.z);
-
-      const chip = document.getElementById(`chip-${runeMesh.userData.id}`);
-      if (chip) chip.classList.add('placed');
-
-      checkAltarPuzzle();
+      onBoardChanged();
+      return true;
+    }
+    function userRecall(r) {
+      if (!canPlay()) return false;
+      unplaceRune(r);
+      AudioEngine.playGrab();
+      onBoardChanged();
+      return true;
+    }
+    function userToggleRune(id) {
+      if (!canPlay()) return;
+      const r = runes[id];
+      if (!r) return;
+      if (r.slot >= 0) userRecall(r); else userPlace(r);
+    }
+    function userSelectSlot(i) {
+      if (!canPlay() || !slots[i]) return;
+      if (slots[i].rune) { userRecall(slots[i].rune); return; }
+      targetSlot = targetSlot === i ? -1 : i;
+      renderFormula(); refreshSlotMats();
+      setFeedback(targetSlot >= 0 ? `Slot ${i + 1} selected: now choose a rune.` : '');
+    }
+    function resetBoard() {
+      if (!canPlay()) return;
+      AudioEngine.playGrab();
+      runes.forEach(unplaceRune);
+      targetSlot = -1;
+      onBoardChanged();
+      setFeedback('');
     }
 
-    function recallRune(runeMesh) {
-      if (runeMesh.userData.currentSlot !== null) {
-        activeSlotMeshes[runeMesh.userData.currentSlot].userData.filled = null;
-        runeMesh.userData.currentSlot = null;
-      }
-      runeMesh.userData.targetPos.copy(runeMesh.userData.initialPos);
-
-      const chip = document.getElementById(`chip-${runeMesh.userData.id}`);
-      if (chip) chip.classList.remove('placed');
-    }
-
-    function slotRuneByName(runeId) {
-      const rune = activeRuneMeshes.find(r => r.userData.id === runeId);
-      if (!rune) return;
-
-      if (rune.userData.currentSlot !== null) {
-        recallRune(rune);
-        AudioEngine.playGrab();
+    function useHint() {
+      if (!canPlay()) return;
+      const c = L.closest(item, boardTexts());
+      const i = c.prefix;
+      if (i >= c.answer.length) return;
+      const want = c.answer[i];
+      const pos = item.posOf[want];
+      hintsUsed++;
+      AudioEngine.playGrab();
+      if (hintsUsed === 1) {
+        hintSlot = i;
+        refreshSlotMats();
+        setFeedback(`Hint: slot ${i + 1} needs: ${L.POS[pos] || 'a rune'}. ${L.TIPS[pos] || ''} ${item.explain} (Hints forfeit this floor's gold and XP.)`, 'hint');
       } else {
-        const slotIdx = getFirstEmptySlot();
-        if (slotIdx !== -1) {
-          slotRune(rune, slotIdx);
+        const r = runes.find((x) => x.text === want && x.slot < 0) || runes.find((x) => x.text === want && x.slot > i);
+        if (r) {
+          placeRune(r, i);
+          hintSlot = -1;
+          setFeedback(`Hint: "${r.text}" belongs in slot ${i + 1}.`, 'hint');
+          renderHUD();
+          onBoardChanged();
+          return;
+        }
+      }
+      renderHUD();
+    }
+
+    function flashTorches(hex) {
+      clearTimeout(torchTimer);
+      setTorches(hex);
+      torchTimer = setTimeout(() => { if (gameState === GS.PLAYING) setTorches(actOf(floorIdx).torch); }, 650);
+    }
+
+    function submit() {
+      const r = evaluate();
+      if (r.result === 'correct') { win(r.answer); return r; }
+      if (r.result === 'near') {
+        setFeedback(r.msg, 'near');
+        AudioEngine.playNear();
+        return r;
+      }
+      // wrong or trap
+      mistakes++;
+      state.streak = 0;
+      saveState();
+      wrongSlot = r.firstWrong;
+      renderHUD(); renderFormula(); refreshSlotMats();
+      const tip = r.msg || (r.isDecoy ? 'That rune is a decoy: it does not belong in this sentence.' : L.TIPS[r.expectedPos] || '');
+      setFeedback(`Slot ${wrongSlot + 1} is not right yet. ${tip}`, 'error');
+      AudioEngine.playError();
+      flashTorches(0xef4444);
+      if (window.WasmWebGLCore && window.WasmWebGLCore.burst) window.WasmWebGLCore.burst(0.0, 0.0, 2.2, -1.0);
+      if (L.floors[floorIdx].boss) {
+        lives--;
+        bossHP = Math.max(0.1, 1 - r.firstWrong / item.tokens.length);
+        renderBoss();
+        if (lives <= 0) {
+          setFeedback('Out of lives! The boss reshuffles the crypt: a fresh sentence rises...', 'error');
+          gameState = GS.TRANSITION;
+          setTimeout(() => transitionTo(floorIdx, { fresh: true }), SELFTEST ? 0 : 1400);
+        }
+      }
+      return r;
+    }
+
+    function rollLoot() {
+      const total = L.loot.reduce((s, l) => s + l.chance, 0);
+      let roll = Math.random() * total;
+      for (const l of L.loot) { roll -= l.chance; if (roll < 0) return l; }
+      return L.loot[0];
+    }
+
+    let lastWin = null;
+    function win(answer) {
+      gameState = GS.SOLVED;
+      clearTimeout(torchTimer);
+      wrongSlot = hintSlot = targetSlot = -1;
+      solvedGlow = true;
+      const fl = L.floors[floorIdx];
+      const firstClear = !state.completed.includes(floorIdx);
+      const earns = firstClear && hintsUsed === 0;
+      let gold = 0, xp = 0, loot = null;
+      state.streak++;
+      if (firstClear) {
+        state.completed.push(floorIdx);
+        if (mistakes === 0 && hintsUsed === 0) state.perfect++;
+      }
+      if (earns) {
+        gold = 15 + Math.min(state.streak - 1, 5) * 3 + (fl.boss ? 50 : 0);
+        xp = 20;
+        state.gold += gold;
+        state.xp += xp;
+      }
+      const milestone = L.milestones[floorIdx];
+      if (firstClear) {
+        if (milestone) {
+          if (!state.relics.includes(milestone.name)) state.relics.push(milestone.name);
+          loot = { name: milestone.name, rarity: 'Legendary Relic', emoji: milestone.emoji };
         } else {
-          AudioEngine.playError();
+          const l = rollLoot();
+          state.inventory.push(l.name);
+          loot = { name: l.name, rarity: l.rarity };
         }
       }
-    }
+      state.level = Math.min(floorIdx + 1, LAST);
+      saveState();
 
-    // Raycast & Unified Pointer Handler (Touch, Mouse, Pen)
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    const reticle = document.getElementById('reticle');
-
-    let pointerDownStartPos = { x: 0, y: 0, time: 0 };
-    let pointerDownPos = { x: 0, y: 0 };
-    let isPointerDragging = false;
-
-    window.addEventListener('pointerdown', (e) => {
-      if (e.target.closest('.interactive-element')) return;
-      isPointerDragging = true;
-      pointerDownStartPos = { x: e.clientX, y: e.clientY, time: performance.now() };
-      pointerDownPos = { x: e.clientX, y: e.clientY };
-    });
-
-    window.addEventListener('pointermove', (e) => {
-      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-      if (isPointerDragging) {
-        const dx = e.clientX - pointerDownPos.x;
-        const dy = e.clientY - pointerDownPos.y;
-        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
-          // Touch drag to orbit / pan camera across altar
-          cameraOrbitOffset.x = Math.max(-3.5, Math.min(3.5, cameraOrbitOffset.x - dx * 0.006));
-          cameraOrbitOffset.y = Math.max(-0.8, Math.min(1.5, cameraOrbitOffset.y + dy * 0.004));
-          pointerDownPos.x = e.clientX;
-          pointerDownPos.y = e.clientY;
-        }
-      }
-
-      // Reticle active indicator
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObjects(activeInteractiveObjects);
-      if (intersects.length > 0) {
-        reticle.classList.add('active');
-      } else {
-        reticle.classList.remove('active');
-      }
-    });
-
-    window.addEventListener('pointerup', (e) => {
-      if (!isPointerDragging) return;
-      isPointerDragging = false;
-      if (e.target.closest('.interactive-element')) return;
-
-      const dist = Math.hypot(e.clientX - pointerDownStartPos.x, e.clientY - pointerDownStartPos.y);
-      const duration = performance.now() - pointerDownStartPos.time;
-
-      // Clean tap detection (< 14px movement, < 450ms duration)
-      if (dist < 14 && duration < 450) {
-        AudioEngine.init();
-        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, camera);
-
-        const intersects = raycaster.intersectObjects(activeInteractiveObjects);
-        if (intersects.length > 0) {
-          const hit = intersects[0].object;
-          if (hit.userData.isRune) {
-            slotRuneByName(hit.userData.id);
-          }
-        }
-      }
-    });
-
-    /* ==========================================================
-       6. VICTORY CHECK & LEVEL CLEAR ANIMATION
-       ========================================================== */
-    function checkAltarPuzzle() {
-      if (isCurrentLevelSolved) return;
-
-      const isAllFilled = activeSlotMeshes.every(s => s.userData.filled !== null);
-      if (!isAllFilled) return;
-
-      const level = LEVELS[currentLevelIndex];
-      const isCorrect = activeSlotMeshes.every((slot, idx) => {
-        return slot.userData.filled.userData.text === level.answer[idx].text;
-      });
-
-      if (isCorrect) {
-        triggerVictory();
-      } else {
-        AudioEngine.playError();
-        if (window.WasmWebGLCore) window.WasmWebGLCore.burst(0.0, 0.0, 2.2, -1.0);
-        torch1.color.setHex(0xef4444);
-        torch2.color.setHex(0xef4444);
-        setTimeout(() => {
-          torch1.color.setHex(0xf59e0b);
-          torch2.color.setHex(0xf59e0b);
-        }, 600);
-      }
-    }
-
-    function triggerVictory() {
-      isCurrentLevelSolved = true;
+      bossHP = 0;
+      if (boss) boss.defeated = true;
+      renderAll();
+      setTorches(0x38bdf8);
+      ambientLight.color.setHex(0x0284c7);
+      const sentence = L.formatSentence(answer);
+      setFeedback(`Correct: ${sentence}`, 'success');
       AudioEngine.playVictory();
       AudioEngine.playGateRumble();
-      if (window.WasmWebGLCore) window.WasmWebGLCore.burst(0.0, 0.2, 2.5, 1.0);
+      if (fl.boss) AudioEngine.playBossDefeat();
+      if (window.WasmWebGLCore && window.WasmWebGLCore.burst) window.WasmWebGLCore.burst(0.0, 0.2, 2.5, 1.0);
+      if (!SELFTEST) { try { if (window.confetti) window.confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 }, disableForReducedMotion: true }); } catch (_) {} }
 
-      // Confetti burst
-      try {
-        if (window.confetti) {
-          window.confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
-        }
-      } catch (_) {}
-
-      // Celestial Soul-Fire
-      torch1.color.setHex(0x38bdf8);
-      torch2.color.setHex(0x38bdf8);
-      ambientLight.color.setHex(0x0284c7);
-
-      // Player stats update
-      playerState.gold += 15;
-      playerState.xp += 20;
-      playerState.streak += 1;
-      if (playerState.xp >= 100) {
-        playerState.xp = playerState.xp % 100;
-      }
-      saveState();
-
-      // Check Boss / Milestone Reward
-      const isBoss = !!BOSSES[currentLevelIndex];
-      const milestone = MILESTONES[currentLevelIndex];
-      let lootItem = LOOT_DROPS[Math.floor(Math.random() * LOOT_DROPS.length)];
-
-      if (milestone) {
-        lootItem = { name: milestone.name, rarity: "Legendary Relic", emoji: milestone.emoji, desc: milestone.desc };
-        if (!playerState.relics.find(r => r.name === milestone.name)) {
-          playerState.relics.push(lootItem);
-          saveState();
-        }
-        AudioEngine.playBossDefeat();
-      }
-
-      // Populate victory modal
-      document.getElementById('modalTitle').textContent = isBoss ? `BOSS VANQUISHED: ${BOSSES[currentLevelIndex].name}!` : `FLOOR ${currentLevelIndex + 1} PURGED!`;
-      document.getElementById('modalDesc').innerHTML = `Syntax correctly assembled: <em>"${LEVELS[currentLevelIndex].answer.map(a => a.text).join(' ')}"</em>`;
-      document.getElementById('modalLootName').textContent = lootItem.name;
-      document.getElementById('modalLootType').textContent = lootItem.rarity;
-      if (lootItem.emoji) {
-        document.getElementById('modalLootIcon').textContent = lootItem.emoji;
-      } else {
-        document.getElementById('modalLootIcon').innerHTML = `<i class="fa-solid fa-trophy"></i>`;
-      }
-
-      // Raise portcullis gate smoothly
-      const startY = gateGroup.position.y;
-      const targetY = 5.2;
-      const duration = 2200;
-      const startTime = performance.now();
-
-      function animateGate(now) {
-        const elapsed = now - startTime;
-        const progress = Math.min(1, elapsed / duration);
-        gateGroup.position.y = startY + progress * (targetY - startY);
-        if (progress < 1) {
-          requestAnimationFrame(animateGate);
-        } else {
-          document.getElementById('victoryModal').style.display = 'block';
-        }
-      }
-      requestAnimationFrame(animateGate);
+      lastWin = { sentence, gold, xp, loot, firstClear, hinted: hintsUsed > 0, boss: !!fl.boss };
+      gateAnim = { from: gateGroup.position.y, to: 5.2, t: 0, dur: 2.0, done: openVictoryModal };
     }
-
-    document.getElementById('btnNextFloor').addEventListener('click', () => {
-      document.getElementById('victoryModal').style.display = 'none';
-      playerState.level = currentLevelIndex + 1;
-      saveState();
-      loadFloor(playerState.level);
-    });
 
     /* ==========================================================
-       7. UI INTERACTION & CONTROLS
+       8. MODALS (role=dialog, focus management, Esc, no click-through)
        ========================================================== */
-    document.querySelectorAll('.cam-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const camKey = btn.getAttribute('data-cam');
-        currentCamTarget = cameraPresets[camKey];
-      });
-    });
+    let openModalEl = null, modalReturnFocus = null, stateBeforeModal = GS.PLAYING;
+    const focusables = (el) => Array.from(el.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])')).filter((x) => !x.disabled && x.offsetParent !== null);
 
-    document.getElementById('btnReset').addEventListener('click', () => {
-      AudioEngine.playGrab();
-      activeRuneMeshes.forEach(r => recallRune(r));
-    });
-
-    document.getElementById('btnHint').addEventListener('click', () => {
-      AudioEngine.playGrab();
-      const nextIdx = getFirstEmptySlot();
-      if (nextIdx !== -1) {
-        const expected = LEVELS[currentLevelIndex].answer[nextIdx].text;
-        const match = activeRuneMeshes.find(r => r.userData.text === expected && r.userData.currentSlot === null);
-        if (match) {
-          slotRuneByName(match.userData.id);
-        }
+    function openModal(el, focusEl) {
+      if (openModalEl) closeModal(openModalEl, true);
+      stateBeforeModal = gameState;
+      gameState = GS.MODAL;
+      modalReturnFocus = document.activeElement;
+      openModalEl = el;
+      el.hidden = false;
+      el.style.display = 'block';
+      $('modalBackdrop').classList.add('open');
+      (focusEl || focusables(el)[0] || el).focus();
+    }
+    function closeModal(el, silent) {
+      el.hidden = true;
+      el.style.display = 'none';
+      $('modalBackdrop').classList.remove('open');
+      if (openModalEl === el) openModalEl = null;
+      if (!silent) {
+        gameState = stateBeforeModal;
+        if (modalReturnFocus && document.contains(modalReturnFocus) && modalReturnFocus.focus) modalReturnFocus.focus();
       }
-    });
-
-    document.getElementById('audioToggle').addEventListener('click', () => {
-      AudioEngine.init();
-      const isOn = AudioEngine.toggle();
-      document.querySelector('#audioToggle span').textContent = isOn ? 'Audio: ON' : 'Audio: OFF';
-      document.querySelector('#audioToggle i').className = isOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
-    });
-
-    const toggleBtn = document.getElementById('toggleInstructionsBtn');
-    const questBanner = document.getElementById('questBanner');
-    const toggleIcon = document.getElementById('instructionToggleIcon');
-    if (toggleBtn && questBanner) {
-      toggleBtn.addEventListener('click', () => {
-        questBanner.classList.toggle('minimized');
-        const isMin = questBanner.classList.contains('minimized');
-        toggleIcon.className = isMin ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
-        toggleBtn.querySelector('span').textContent = isMin ? 'Show' : 'Hide';
-      });
     }
 
-    // Relics Vault Drawer
-    document.getElementById('btnRelics').addEventListener('click', () => {
-      const modal = document.getElementById('relicsModal');
-      const grid = document.getElementById('relicsGrid');
-      grid.innerHTML = '';
+    function openVictoryModal() {
+      if (gameState !== GS.SOLVED || !lastWin) return;
+      const w = lastWin;
+      const b = L.bosses[floorIdx];
+      $('modalTitle').textContent = w.boss ? `BOSS VANQUISHED: ${b.name}!` : `FLOOR ${floorIdx + 1} PURGED!`;
+      $('modalDesc').textContent = '';
+      const em = document.createElement('em');
+      em.textContent = `“${w.sentence}”`;
+      $('modalDesc').append('Syntax correctly assembled: ', em);
+      $('modalExplain').textContent = item.explain;
+      $('modalReward').textContent = !w.firstClear ? 'Floor already cleared earlier: no new rewards.'
+        : w.hinted ? 'Hint used: no gold or XP for this floor (try the next one unaided!).'
+        : `+${w.gold} gold · +${w.xp} XP`;
+      $('modalLootCard').style.display = w.loot ? 'flex' : 'none';
+      if (w.loot) {
+        $('modalLootName').textContent = w.loot.name;
+        $('modalLootType').textContent = w.loot.rarity;
+        if (w.loot.emoji) $('modalLootIcon').textContent = w.loot.emoji;
+        else $('modalLootIcon').innerHTML = '<i class="fa-solid fa-award"></i>';
+      }
+      $('coachingAd').style.display = w.boss ? 'block' : 'none';   // coaching ad only on boss floors
+      $('btnNextFloor').textContent = floorIdx === LAST ? 'Claim the Crown →' : `Descend to Floor ${floorIdx + 2} →`;
+      openModal($('victoryModal'), $('btnNextFloor'));
+    }
 
-      Object.keys(MILESTONES).forEach(k => {
-        const m = MILESTONES[k];
-        const isUnlocked = playerState.relics.some(r => r.name === m.name);
+    function openEndModal() {
+      const box = $('endStats');
+      box.textContent = '';
+      [['Floors cleared', `${state.completed.length} / ${L.floors.length}`], ['Flawless floors', state.perfect],
+       ['Gold', state.gold], ['Rank', Math.floor(state.xp / 100) + 1], ['Relics', `${state.relics.length} / 5`], ['Loot found', state.inventory.length]]
+        .forEach(([k, v]) => { const d = document.createElement('div'); const s = document.createElement('strong'); s.textContent = k + ': '; d.append(s, String(v)); box.appendChild(d); });
+      openModal($('endModal'), $('btnNewRun'));
+    }
+
+    function openRelics() {
+      if (gameState !== GS.PLAYING || openModalEl) return;   // never stack over the victory flow
+      const grid = $('relicsGrid');
+      grid.textContent = '';
+      Object.keys(L.milestones).forEach((k) => {
+        const m = L.milestones[k];
+        const unlocked = state.relics.includes(m.name);
         const card = document.createElement('div');
-        card.className = `relic-item-card ${isUnlocked ? '' : 'locked'}`;
-        card.innerHTML = `
-          <div class="relic-emoji">${m.emoji}</div>
-          <div class="relic-details">
-            <strong>${m.name}</strong>
-            <span>${isUnlocked ? m.desc : 'Floor ' + (parseInt(k, 10) + 1) + ' Boss Relic'}</span>
-          </div>
-        `;
-        grid.appendChild(card);
+        card.className = 'relic-item-card' + (unlocked ? '' : ' locked');
+        const em = document.createElement('div'); em.className = 'relic-emoji'; em.textContent = m.emoji; em.setAttribute('aria-hidden', 'true');
+        const det = document.createElement('div'); det.className = 'relic-details';
+        const st = document.createElement('strong'); st.textContent = m.name;
+        const sp = document.createElement('span'); sp.textContent = unlocked ? m.desc : `Locked: floor ${parseInt(k, 10) + 1} boss relic`;
+        det.append(st, sp); card.append(em, det); grid.appendChild(card);
       });
-      modal.style.display = 'block';
+      openModal($('relicsModal'), $('btnCloseRelics'));
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (openModalEl) {
+        if (e.key === 'Escape' && openModalEl === $('relicsModal')) { e.preventDefault(); closeModal(openModalEl); return; }
+        if (e.key === 'Tab') {
+          const f = focusables(openModalEl);
+          if (!f.length) { e.preventDefault(); return; }
+          const i = f.indexOf(document.activeElement);
+          if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+          else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+        }
+        return;
+      }
+      if (!canPlay() || e.ctrlKey || e.altKey || e.metaKey) return;
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        for (let si = slots.length - 1; si >= 0; si--) {
+          if (slots[si].rune) { e.preventDefault(); userRecall(slots[si].rune); return; }
+        }
+      } else if (e.key >= '1' && e.key <= '9') {
+        const ri = parseInt(e.key, 10) - 1;
+        if (ri < runes.length) { e.preventDefault(); userToggleRune(ri); }
+      } else if (e.key === 'h' || e.key === 'H') {
+        e.preventDefault(); useHint();
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault(); resetBoard();
+      }
     });
 
     /* ==========================================================
-       8. WEBASSEMBLY + WEBGL 3D SOUL EMBER PARTICLE STREAM & LOOP
+       9. DESCENT TRANSITION (fly through the gate, fade, rebuild, fade in)
        ========================================================== */
-    const WASM_EMBER_COUNT = 2048;
-    const wasmEmberGeo = new THREE.BufferGeometry();
-    const wasmEmberPositions = new Float32Array(WASM_EMBER_COUNT * 3);
-    const wasmEmberColors = new Float32Array(WASM_EMBER_COUNT * 3);
-    for (let i = 0; i < WASM_EMBER_COUNT; i++) {
-      wasmEmberPositions[i * 3 + 0] = (Math.random() - 0.5) * 14;
-      wasmEmberPositions[i * 3 + 1] = Math.random() * 6.5;
-      wasmEmberPositions[i * 3 + 2] = (Math.random() - 0.5) * 22;
-      wasmEmberColors[i * 3 + 0] = 0.66;
-      wasmEmberColors[i * 3 + 1] = 0.33;
-      wasmEmberColors[i * 3 + 2] = 0.97;
+    function transitionTo(idx, opts = {}) {
+      gameState = GS.TRANSITION;
+      const fade = $('fadeOverlay');
+      if (!opts.fresh) currentCamTarget = cameraPresets.through;
+      fade.classList.add('on');
+      const rebuild = () => {
+        buildFloor(idx, opts.item);
+        currentCamTarget = cameraPresets.altar;
+        orbit.x = orbit.y = 0;
+        camera.position.copy(cameraPresets.altar.pos);
+        cameraLookAt.copy(cameraPresets.altar.lookAt);
+        document.querySelectorAll('.cam-btn').forEach((b) => { const on = b.dataset.cam === 'altar'; b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
+        if (opts.fresh) setFeedback('A fresh sentence rises from the pool. Three lives restored.', 'hint');
+        setTimeout(() => { fade.classList.remove('on'); gameState = GS.PLAYING; }, SELFTEST ? 0 : 120);
+      };
+      if (SELFTEST) rebuild(); else setTimeout(rebuild, 950);
     }
-    const wasmPosAttr = new THREE.BufferAttribute(wasmEmberPositions, 3);
-    wasmPosAttr.setUsage(THREE.DynamicDrawUsage);
-    const wasmColAttr = new THREE.BufferAttribute(wasmEmberColors, 3);
-    wasmColAttr.setUsage(THREE.DynamicDrawUsage);
-    wasmEmberGeo.setAttribute('position', wasmPosAttr);
-    wasmEmberGeo.setAttribute('color', wasmColAttr);
 
-    const wasmEmberMat = new THREE.PointsMaterial({
-      size: 0.11,
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.85,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
+    /* ==========================================================
+       10. INPUT: canvas tap (rune / slot), drag to orbit, hover
+       ========================================================== */
+    const raycaster = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    let down = null, hovered = null;
+
+    function pick(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      ndc.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+      raycaster.setFromCamera(ndc, camera);
+      const targets = runes.map((r) => r.mesh).concat(slots.map((s) => s.mesh));
+      const hit = raycaster.intersectObjects(targets, false)[0];
+      return hit ? hit.object : null;
+    }
+
+    function handleTap(clientX, clientY) {
+      if (!canPlay()) return false;
+      const obj = pick(clientX, clientY);
+      if (!obj) return false;
+      if (obj.userData.rune !== undefined) { userToggleRune(obj.userData.rune); return true; }
+      if (obj.userData.slot !== undefined) { userSelectSlot(obj.userData.slot); return true; }
+      return false;
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+      down = { x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, t: performance.now() };
+      try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
     });
-    const wasmEmberPoints = new THREE.Points(wasmEmberGeo, wasmEmberMat);
-    scene.add(wasmEmberPoints);
+    canvas.addEventListener('pointermove', (e) => {
+      if (down) {
+        const dx = e.clientX - down.lx, dy = e.clientY - down.ly;
+        if ((gameState === GS.PLAYING || gameState === GS.SOLVED) && (Math.abs(dx) > 3 || Math.abs(dy) > 3)) {
+          orbit.x = Math.max(-3.5, Math.min(3.5, orbit.x - dx * 0.006));
+          orbit.y = Math.max(-0.8, Math.min(1.5, orbit.y + dy * 0.004));
+          down.lx = e.clientX; down.ly = e.clientY;
+        }
+        return;
+      }
+      if (e.pointerType !== 'mouse') return;
+      const obj = canPlay() ? pick(e.clientX, e.clientY) : null;
+      const r = obj && obj.userData.rune !== undefined ? runes[obj.userData.rune] : null;
+      if (r !== hovered) {
+        if (hovered && hovered.face) hovered.face.emissive.setHex(0x000000);
+        hovered = r;
+        if (hovered) hovered.face.emissive.setHex(0x3a2a00);
+        canvas.style.cursor = obj ? 'pointer' : 'grab';
+      }
+    });
+    canvas.addEventListener('pointerup', (e) => {
+      if (!down) return;
+      const dist = Math.hypot(e.clientX - down.x, e.clientY - down.y);
+      const dur = performance.now() - down.t;
+      down = null;
+      if (dist < 14 && dur < 450) { AudioEngine.init(); handleTap(e.clientX, e.clientY); }
+    });
+    canvas.addEventListener('pointercancel', () => { down = null; });
+
+    /* ==========================================================
+       11. BUTTONS
+       ========================================================== */
+    document.querySelectorAll('.cam-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (gameState === GS.TRANSITION) return;
+        document.querySelectorAll('.cam-btn').forEach((b) => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+        currentCamTarget = cameraPresets[btn.dataset.cam];
+      });
+    });
+    $('btnReset').addEventListener('click', resetBoard);
+    $('btnHint').addEventListener('click', useHint);
+    $('btnRelics').addEventListener('click', openRelics);
+    $('btnCloseRelics').addEventListener('click', () => closeModal($('relicsModal')));
+    $('btnNextFloor').addEventListener('click', () => {
+      if (gameState !== GS.MODAL || openModalEl !== $('victoryModal')) return;
+      closeModal($('victoryModal'), true);
+      gameState = GS.SOLVED;
+      if (floorIdx === LAST) openEndModal(); else transitionTo(floorIdx + 1);
+    });
+    $('btnNewRun').addEventListener('click', () => {
+      closeModal($('endModal'), true);
+      state = L.store.fresh(state);
+      saveState();
+      transitionTo(0);
+    });
+    $('audioToggle').addEventListener('click', () => {
+      AudioEngine.init();
+      const on = AudioEngine.toggle();
+      $('audioToggle').setAttribute('aria-pressed', String(on));
+      document.querySelector('#audioToggle span').textContent = on ? 'Audio: ON' : 'Audio: OFF';
+      document.querySelector('#audioToggle i').className = on ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+    });
+    $('toggleInstructionsBtn').addEventListener('click', () => {
+      const banner = $('questBanner');
+      banner.classList.toggle('minimized');
+      const min = banner.classList.contains('minimized');
+      $('instructionToggleIcon').className = min ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+      $('toggleInstructionsBtn').querySelector('span').textContent = min ? 'Show' : 'Hide';
+      $('toggleInstructionsBtn').setAttribute('aria-expanded', String(!min));
+    });
+
+    /* ==========================================================
+       12. EMBERS (WASM particle view) + RENDER LOOP
+       ========================================================== */
+    const EMBERS = 2048;
+    const emberGeo = new THREE.BufferGeometry();
+    const emberPos = new Float32Array(EMBERS * 3), emberCol = new Float32Array(EMBERS * 3);
+    for (let i = 0; i < EMBERS; i++) {
+      let ex = (Math.random() - 0.5) * 14, ey = Math.random() * 6.5, ez = (Math.random() - 0.5) * 22;
+      if (ez > 1.6 && Math.abs(ex) < 2.8) ex = (ex < 0 ? -1 : 1) * (2.8 + Math.random() * 3.5);
+      emberPos[i * 3] = ex; emberPos[i * 3 + 1] = ey; emberPos[i * 3 + 2] = ez;
+      const warm = (i % 5 === 0);
+      emberCol[i * 3] = warm ? 0.96 : 0.62; emberCol[i * 3 + 1] = warm ? 0.68 : 0.34; emberCol[i * 3 + 2] = warm ? 0.24 : 0.94;
+    }
+    const posAttr = new THREE.BufferAttribute(emberPos, 3).setUsage(THREE.DynamicDrawUsage);
+    const colAttr = new THREE.BufferAttribute(emberCol, 3).setUsage(THREE.DynamicDrawUsage);
+    emberGeo.setAttribute('position', posAttr);
+    emberGeo.setAttribute('color', colAttr);
+    function makeEmberSprite() {
+      const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+      const g = c.getContext('2d');
+      const grad = g.createRadialGradient(32, 32, 1, 32, 32, 31);
+      grad.addColorStop(0, 'rgba(255,255,255,1)');
+      grad.addColorStop(0.32, 'rgba(255,235,200,0.65)');
+      grad.addColorStop(0.7, 'rgba(180,120,255,0.18)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = grad; g.fillRect(0, 0, 64, 64);
+      return new THREE.CanvasTexture(c);
+    }
+    scene.add(new THREE.Points(emberGeo, new THREE.PointsMaterial({
+      size: 0.095, map: makeEmberSprite(), alphaTest: 0.01,
+      vertexColors: true, transparent: true, opacity: 0.65,
+      blending: THREE.AdditiveBlending, depthWrite: false
+    })));
 
     const clock = new THREE.Clock();
+    const tmpV = new THREE.Vector3();
+    let elapsed = 0, rafId = 0, contextLost = false, frameAcc = 0, frameN = 0;
 
-    function animate() {
-      requestAnimationFrame(animate);
-      const time = clock.getElapsedTime();
+    function frame() {
+      rafId = requestAnimationFrame(frame);
+      const dt = Math.min(0.05, clock.getDelta());
+      elapsed += dt;
+      const t = elapsed;
 
-      // Stream 2,048 particle coordinates & energies directly from WebAssembly Linear Memory
-      if (window.WasmWebGLCore) {
-        const view = window.WasmWebGLCore.getParticleView();
-        if (view && view.length >= WASM_EMBER_COUNT * 8) {
-          for (let i = 0; i < WASM_EMBER_COUNT; i++) {
-            const b = i * 8;
-            const i3 = i * 3;
-            wasmEmberPositions[i3 + 0] = view[b + 0] * 5.2;
-            wasmEmberPositions[i3 + 1] = (view[b + 1] + 1.15) * 2.8;
-            wasmEmberPositions[i3 + 2] = view[b + 2] * 10.0 - 2.0;
+      const core = window.WasmWebGLCore;
+      const view = core && core.getParticleView ? core.getParticleView() : null;
+      if (view && view.length >= EMBERS * 8) {
+        for (let i = 0; i < EMBERS; i++) {
+          const b = i * 8, i3 = i * 3;
+          let ex = view[b] * 5.2, ey = (view[b + 1] + 1.15) * 2.8, ez = view[b + 2] * 10.0 - 2.0;
+          if (ez > 1.6 && Math.abs(ex) < 2.8) ez -= 3.8;
+          emberPos[i3] = ex; emberPos[i3 + 1] = ey; emberPos[i3 + 2] = ez;
+          const life = view[b + 6], energy = view[b + 7];
+          if (solvedGlow) { emberCol[i3] = 0.22 * life; emberCol[i3 + 1] = (0.74 + 0.25 * energy) * life; emberCol[i3 + 2] = 0.98 * life; }
+          else { emberCol[i3] = (0.66 + 0.34 * energy) * life; emberCol[i3 + 1] = (0.28 + 0.52 * energy) * life; emberCol[i3 + 2] = (0.96 - 0.55 * energy) * life; }
+        }
+        posAttr.needsUpdate = true;
+        colAttr.needsUpdate = true;
+      } else if (dt > 0) {
+        for (let i = 0; i < EMBERS; i++) {
+          const i3 = i * 3;
+          let ey = emberPos[i3 + 1] + dt * (0.22 + (i % 7) * 0.04);
+          if (ey > 6.5) ey -= 6.5;
+          emberPos[i3 + 1] = ey;
+        }
+        posAttr.needsUpdate = true;
+      }
 
-            const life = view[b + 6];
-            const energy = view[b + 7];
-            if (isCurrentLevelSolved) {
-              wasmEmberColors[i3 + 0] = 0.22 * life;
-              wasmEmberColors[i3 + 1] = (0.74 + 0.25 * energy) * life;
-              wasmEmberColors[i3 + 2] = 0.98 * life;
-            } else {
-              wasmEmberColors[i3 + 0] = (0.66 + 0.34 * energy) * life;
-              wasmEmberColors[i3 + 1] = (0.28 + 0.52 * energy) * life;
-              wasmEmberColors[i3 + 2] = (0.96 - 0.55 * energy) * life;
-            }
-          }
-          wasmPosAttr.needsUpdate = true;
-          wasmColAttr.needsUpdate = true;
+      // Layered-sine flicker (cheap pseudo-noise)
+      torch1.intensity = 2.2 + Math.sin(t * 12.3) * 0.22 + Math.sin(t * 7.1 + 1.3) * 0.18 + Math.sin(t * 23.7) * 0.08;
+      torch2.intensity = 2.2 + Math.sin(t * 11.1 + 2.0) * 0.22 + Math.sin(t * 8.3) * 0.18 + Math.sin(t * 19.9 + 0.7) * 0.08;
+
+      // Frame-rate independent damping, no per-frame allocations
+      const camK = 1 - Math.exp(-(currentCamTarget === cameraPresets.through ? 2.2 : 3.2) * dt);
+      tmpV.copy(currentCamTarget.pos);
+      if (currentCamTarget !== cameraPresets.through) { tmpV.x += orbit.x; tmpV.y += orbit.y; }
+      camera.position.lerp(tmpV, camK);
+      cameraLookAt.lerp(currentCamTarget.lookAt, camK);
+      camera.lookAt(cameraLookAt);
+
+      const runeK = 1 - Math.exp(-11 * dt);
+      for (let i = 0; i < runes.length; i++) {
+        const r = runes[i];
+        tmpV.copy(r.target);
+        if (r.slot < 0) tmpV.y += Math.sin(t * 2.5 + i) * 0.05;
+        r.mesh.position.lerp(tmpV, runeK);
+        r.mesh.rotation.x += ((r.slot < 0 ? 0.55 : 0) - r.mesh.rotation.x) * runeK;
+        r.mesh.rotation.y = r.slot < 0 ? Math.sin(t * 1.5 + i) * 0.08 : 0;
+      }
+
+      if (gateAnim) {
+        gateAnim.t += dt;
+        const p = Math.min(1, gateAnim.t / gateAnim.dur);
+        const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        gateGroup.position.y = gateAnim.from + (gateAnim.to - gateAnim.from) * e;
+        if (p >= 1) { const done = gateAnim.done; gateAnim = null; if (done) done(); }
+      }
+
+      if (boss) {
+        if (boss.defeated) {
+          boss.scale = Math.max(0.001, boss.scale - dt * 0.6);
+          boss.group.scale.setScalar(boss.scale);
+          boss.group.rotation.y += dt * 4;
+          boss.group.position.y = boss.baseY - (1 - boss.scale) * 1.5;
+        } else {
+          boss.group.position.y = boss.baseY + Math.sin(t * 1.6) * 0.15;
+          boss.group.rotation.y = Math.sin(t * 0.7) * 0.25;
         }
       }
 
-      // Torch flame flicker
-      torch1.intensity = 2.2 + Math.sin(time * 12) * 0.35 + Math.cos(time * 7) * 0.2;
-      torch2.intensity = 2.2 + Math.cos(time * 11) * 0.35 + Math.sin(time * 8) * 0.2;
-
-      // Smooth Camera Lerp including touch/mouse orbit offset
-      const targetPos = currentCamTarget.pos.clone();
-      targetPos.x += cameraOrbitOffset.x;
-      targetPos.y += cameraOrbitOffset.y;
-
-      camera.position.lerp(targetPos, 0.05);
-      cameraLookAt.lerp(currentCamTarget.lookAt, 0.05);
-      camera.lookAt(cameraLookAt);
-
-      // Smooth Rune Stone Lerp & Floating Idle
-      activeRuneMeshes.forEach((mesh, idx) => {
-        let target = mesh.userData.targetPos.clone();
-        if (mesh.userData.currentSlot === null) {
-          target.y += Math.sin(time * 2.5 + idx) * 0.06;
-        }
-        mesh.position.lerp(target, 0.12);
-        
-        if (mesh.userData.currentSlot === null) {
-          mesh.rotation.y = Math.sin(time * 1.5 + idx) * 0.08;
-        } else {
-          mesh.rotation.y = 0;
-        }
-      });
+      // Adaptive DPR: drop resolution when frames are slow, restore when fast
+      frameAcc += dt; frameN++;
+      if (frameN >= 90) {
+        const avg = frameAcc / frameN;
+        if (avg > 1 / 40 && dpr > 0.75) { dpr = Math.max(0.75, dpr - 0.25); renderer.setPixelRatio(dpr); }
+        else if (avg < 1 / 57 && dpr < MAX_DPR) { dpr = Math.min(MAX_DPR, dpr + 0.25); renderer.setPixelRatio(dpr); }
+        frameAcc = 0; frameN = 0;
+      }
 
       renderer.render(scene, camera);
     }
-    animate();
+    function startLoop() { if (!rafId && !contextLost && !document.hidden) { clock.getDelta(); rafId = requestAnimationFrame(frame); } }
+    function stopLoop() { if (rafId) cancelAnimationFrame(rafId); rafId = 0; }
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { stopLoop(); AudioEngine.suspend(); }
+      else { startLoop(); AudioEngine.resume(); }
+    });
     window.addEventListener('resize', () => {
       updateCameraForViewport();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+    canvas.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();
+      contextLost = true;
+      stopLoop();
+      showOverlay('The graphics context was lost. Waiting for it to come back...');
+    }, false);
+    canvas.addEventListener('webglcontextrestored', () => {
+      contextLost = false;
+      hideOverlay();
+      buildFloor(floorIdx, item);   // re-create per-floor textures on the fresh context
+      if (gameState === GS.TRANSITION) gameState = GS.PLAYING;
+      startLoop();
+    }, false);
 
-    // Initial Floor Load from saved progress
-    loadFloor(playerState.level);
+    /* ==========================================================
+       13. ?selftest=1
+       ========================================================== */
+    function fillBoard(order) {
+      runes.forEach(unplaceRune);
+      for (let i = 0; i < order.length; i++) {
+        const r = runes.find((x) => x.text === order[i] && x.slot < 0);
+        if (!r) return false;
+        placeRune(r, i);
+      }
+      return true;
+    }
+    function runSelfTest() {
+      const lines = ['GRAMMAR CRYPT 3D SELFTEST'];
+      let pass = true;
+      const fail = (m) => { pass = false; lines.push('FAIL ' + m); };
+      const savedState = JSON.parse(JSON.stringify(state));
+      const startFloor = floorIdx;
+      try {
+        const d = L.dataTests();
+        if (!d.pass) pass = false;
+        lines.push(...d.lines);
+
+        // (a)+(b) through the live 3D altar and the real submit() path
+        let nA = 0, nN = 0;
+        L.floors.forEach((fl, f) => fl.pool.forEach((it) => {
+          it.answers.forEach((a, ai) => {
+            buildFloor(f, it); gameState = GS.PLAYING;
+            if (!fillBoard(a)) { fail(`${it.id} answer ${ai}: runes missing on the altar`); return; }
+            const r = submit(); nA++;
+            if (r.result !== 'correct' || gameState !== GS.SOLVED) fail(`${it.id} answer ${ai} -> ${r.result} / ${gameState}`);
+          });
+          it.nearMiss.forEach((n, ni) => {
+            buildFloor(f, it); gameState = GS.PLAYING;
+            if (!fillBoard(n.order)) { fail(`${it.id} nearMiss ${ni}: runes missing`); return; }
+            const r = submit(); nN++;
+            if (r.result !== 'near' || gameState !== GS.PLAYING || $('feedback').textContent !== n.msg) fail(`${it.id} nearMiss ${ni} -> ${r.result} / ${gameState}`);
+          });
+        }));
+        lines.push(`(a/b 3D) live altar + submit(): ${nA} accepted orderings -> SOLVED; ${nN} near-misses -> tailored message, still PLAYING`);
+
+        // (d) inputs ignored outside PLAYING
+        buildFloor(0);
+        camera.position.copy(cameraPresets.altar.pos); cameraLookAt.copy(cameraPresets.altar.lookAt); camera.lookAt(cameraLookAt); camera.updateMatrixWorld();
+        const snap = () => slots.map((s) => (s.rune ? s.rune.id : '-')).join(',') + '|' + targetSlot + '|' + hintsUsed;
+        const screenOf = (mesh) => { mesh.getWorldPosition(tmpV); tmpV.project(camera); const rc = canvas.getBoundingClientRect(); return [rc.left + (tmpV.x + 1) / 2 * rc.width, rc.top + (1 - tmpV.y) / 2 * rc.height]; };
+        [GS.SOLVED, GS.TRANSITION, GS.MODAL].forEach((st) => {
+          gameState = st;
+          const before = snap();
+          userToggleRune(0); userSelectSlot(1); useHint(); resetBoard();
+          const [sx, sy] = screenOf(runes[0].mesh); handleTap(sx, sy);
+          const [tx, ty] = screenOf(slots[0].mesh); handleTap(tx, ty);
+          if (snap() !== before) fail(`input changed the board in state ${st}`);
+        });
+        gameState = GS.PLAYING;
+        const [px, py] = screenOf(runes[0].mesh);
+        const tapped = handleTap(px, py);
+        if (!tapped || runes[0].slot !== 0) fail('control: a canvas tap on a rune in PLAYING did not place it');
+        userToggleRune(0);
+        if (runes[0].slot !== -1) fail('control: tapping a placed rune chip did not recall it');
+        lines.push(`(d) inputs (chip, slot, hint, reset, canvas taps) ignored in SOLVED/TRANSITION/MODAL; control tap in PLAYING placed + recalled: ${tapped ? 'ok' : 'no'}`);
+
+        // (e) GPU memory flat across floor rebuilds
+        const mem = () => ({ g: renderer.info.memory.geometries, t: renderer.info.memory.textures });
+        const passes = [];
+        for (let p = 0; p < 2; p++) {
+          for (let f = 0; f <= LAST; f++) { buildFloor(f); renderer.render(scene, camera); }
+          passes.push(mem());
+        }
+        if (passes[1].g > passes[0].g + 2 || passes[1].t > passes[0].t + 2) fail(`memory grew: ${JSON.stringify(passes)}`);
+        lines.push(`(e) renderer.info.memory after 25 floors: pass1 geometries=${passes[0].g} textures=${passes[0].t}; pass2 geometries=${passes[1].g} textures=${passes[1].t}`);
+
+        // (f) victory text as the player sees it + slot POS blueprint + keyboard shortcuts
+        const samples = [[0, 0], [15, 0], [24, 1]].map(([f, k]) => { const it = L.floors[f].pool[k]; return L.formatSentence(it.answers[it.answers.length - 1]); });
+        lines.push('(f 3D) victory sentences: ' + samples.map((s) => `"${s}"`).join(' | '));
+        if (samples.some((s) => /\s[,.?]|^[a-z]/.test(s))) fail('formatSentence spacing/capitalisation');
+        const anySlots = L.floors.some((fl) => fl.pool.some((it) => it.slots.some((s) => s.pos === 'any' || s.label === 'Any')));
+        if (anySlots) fail('some floor slots collapsed to Any');
+        buildFloor(0); gameState = GS.PLAYING;
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: '1', bubbles: true, cancelable: true }));
+        const placedByKey = runes[0].slot === 0;
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true, cancelable: true }));
+        const recalledByKey = runes[0].slot === -1;
+        if (!placedByKey || !recalledByKey) fail(`keyboard shortcuts 1/Backspace failed (${placedByKey}/${recalledByKey})`);
+        lines.push('(g 3D) explicit POS slot labels on all 25 floors + keyboard 1-9/Backspace verified');
+      } catch (err) {
+        fail('exception: ' + (err && err.stack || err));
+      }
+      state = savedState;
+      gateAnim = null;
+      buildFloor(startFloor);
+      gameState = GS.PLAYING;
+      lines.push(pass ? 'RESULT: PASS' : 'RESULT: FAIL');
+      writeSelftest(lines, pass);
+    }
+
+    /* ==========================================================
+       14. BOOT (wait briefly for the rune font so textures measure correctly)
+       ========================================================== */
+    const fontReady = (document.fonts && document.fonts.load)
+      ? Promise.race([document.fonts.load('900 48px Nunito').then(() => document.fonts.ready), new Promise((r) => setTimeout(r, 1500))])
+      : Promise.resolve();
+    fontReady.catch(() => {}).then(() => {
+      buildFloor(state.level);
+      camera.position.copy(cameraPresets.altar.pos);
+      cameraLookAt.copy(cameraPresets.altar.lookAt);
+      gameState = GS.PLAYING;
+      startLoop();
+      if (SELFTEST) runSelfTest();
+    });
+  })();
   </script>
 </body>
 </html>

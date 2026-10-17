@@ -3,11 +3,14 @@
    Enables 100% offline play and PWA installation.
    ========================================================== */
 
-const CACHE_NAME = 'grammar-crypt-v2';
+const CACHE_NAME = 'grammar-crypt-v3';
 const PRECACHE_ASSETS = [
     './grammar-crypt.html',
     './crypt.css',
+    './crypt-levels.js',
     './crypt.js',
+    './grammar-crypt-3d.html',
+    './wasm-webgl-engine.js',
     './audio.js',
     './manifest.json',
     './icon-192.png',

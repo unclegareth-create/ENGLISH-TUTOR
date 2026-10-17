@@ -1571,6 +1571,8 @@
     .night-watch-item {
       cursor: pointer;
       transition: transform 0.2s ease;
+      transform-box: fill-box;
+      transform-origin: center;
     }
 
     .night-watch-item:hover {
@@ -1778,17 +1780,132 @@
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
     }
 
-    .vault-door-panel-left,
-    .vault-door-panel-right {
-      transition: transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1);
+    .vault-door-left,
+    .vault-door-right {
+      transition: transform 0.9s cubic-bezier(0.34, 1.3, 0.64, 1);
     }
 
-    .vault-unlocked .vault-door-panel-left {
-      transform: translateX(-145px);
+    .vault-unlocked .vault-door-left {
+      transform: translateX(-400px);
     }
 
-    .vault-unlocked .vault-door-panel-right {
-      transform: translateX(145px);
+    .vault-unlocked .vault-door-right {
+      transform: translateX(400px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .vault-door-left,
+      .vault-door-right {
+        transition-duration: 0.01s;
+      }
+    }
+
+    /* Screen-reader-only live region */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Answer-state styles shared by the games */
+    .stone-fragment-btn.wrong-pick {
+      opacity: 0.55;
+      border-color: #f43f5e;
+      background: linear-gradient(145deg, #4c1d24, #3b1219);
+      cursor: not-allowed;
+    }
+
+    .stone-fragment-btn.correct-pick {
+      border-color: #34d399;
+      background: linear-gradient(145deg, #065f46, #064e3b);
+    }
+
+    .stone-fragment-btn:focus-visible,
+    .story-choice-btn:focus-visible,
+    .dig-letter-tile:focus-visible,
+    .night-watch-stage:focus-visible {
+      outline: 3px solid #fbbf24;
+      outline-offset: 3px;
+    }
+
+    .night-watch-item:focus-visible {
+      outline: none;
+    }
+
+    .night-watch-item:focus-visible circle {
+      stroke: #fbbf24;
+      stroke-width: 5;
+    }
+
+    .story-choice-btn:disabled {
+      cursor: default;
+      transform: none;
+    }
+
+    .story-choice-btn:disabled:not(.correct):not(.wrong) {
+      opacity: 0.6;
+    }
+
+    .story-choice-btn.correct {
+      border-color: #10b981;
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .story-choice-btn.wrong {
+      border-color: #f43f5e;
+      background: #ffe4e6;
+      color: #9f1239;
+      opacity: 0.8;
+    }
+
+    .dig-tile-tray {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      margin: 0.6rem 0 0.2rem;
+    }
+
+    .dig-letter-tile {
+      min-width: 2.6rem;
+      height: 2.6rem;
+      border-radius: 10px;
+      border: 2px solid var(--brass-mid);
+      background: linear-gradient(145deg, #fef3c7, #fde68a);
+      color: var(--mahogany-deep);
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .dig-letter-tile:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .dig-letter-tile:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .dig-found-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2rem;
+      height: 2rem;
+      border-radius: 8px;
+      background: rgba(245, 158, 11, 0.18);
+      border: 1.5px dashed var(--brass-mid);
+      font-weight: 900;
+      color: var(--mahogany-warm);
     }
 
     .night-checklist-bar {
@@ -1874,7 +1991,8 @@
     }
 
     .vinyl-spinning {
-      transform-origin: 60px 65px;
+      transform-box: fill-box;
+      transform-origin: center;
       animation: spinVinylDisc 3.2s linear infinite;
     }
 
@@ -2639,9 +2757,10 @@
           <span style="font-size:1.6rem;" aria-hidden="true">🐾</span>
           <div>
             <div style="font-size:0.75rem; text-transform:uppercase; color:var(--brass-glow); font-weight:900;">Pencil’s Helper Corner</div>
-            <div id="modal-pencil-hint-text">"Need a hand? Click my green button and I will give you a clue!"</div>
+            <div id="modal-pencil-hint-text" aria-live="polite">"Need a hand? Click my green button and I will give you a clue!"</div>
           </div>
         </div>
+        <div id="modal-live-region" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
         <button type="button" class="ask-pencil-hint-btn" id="btn-ask-pencil-hint" onclick="StudyHub.triggerContextualHint()">
           <i class="fa-solid fa-cat" aria-hidden="true"></i>
           <span>Ask Pencil for a Clue!</span>
@@ -2653,7 +2772,12 @@
   <!-- ================= APPLICATION ENGINE (JAVASCRIPT) ================= -->
   <script>
     const StudyHub = (() => {
-      const STORAGE_KEY = 'prof_west_study_v5';
+      const REAL_STORAGE_KEY = 'prof_west_study_v6';
+      const LEGACY_STORAGE_KEYS = ['prof_west_study_v5'];
+      const SCHEMA_VERSION = 6;
+      const IS_AUTOTEST = /[?&]autotest=1(?:&|$)/.test((window.location && window.location.search) || '');
+      // The self-test plays every game and resets progress, so it must never read or write the learner's real save.
+      const STORAGE_KEY = IS_AUTOTEST ? 'prof_west_study_autotest' : REAL_STORAGE_KEY;
       const INTRO_SESSION_KEY = 'prof_west_intro_shown_session';
       try {
         if ('caches' in window) {
@@ -2684,6 +2808,8 @@
         mapCurrentStop: 0,
         completedMapStops: [],
         itemIdx: {}, // station[:level] -> next item index (resume where the learner left off)
+        completed: {}, // 'station[:level]:itemIdx' -> true once that item has paid its first-clear reward
+        schemaVersion: SCHEMA_VERSION,
         activeStation: null
       };
 
@@ -2744,9 +2870,14 @@
         }
       }
 
+      let voicePlaybackToken = 0;
+
       function stopVoiceAudio() {
+        voicePlaybackToken += 1; // invalidates callbacks of any playback that is still pending
         try {
           if (voiceAudioEl) {
+            voiceAudioEl.onended = null;
+            voiceAudioEl.onerror = null;
             voiceAudioEl.pause();
             voiceAudioEl.currentTime = 0;
           }
@@ -2759,6 +2890,29 @@
 
       function playVoiceMp3(audioSrc, fallbackText, onEndedCallback) {
         stopVoiceAudio();
+        const token = voicePlaybackToken;
+        let finished = false;
+        const finish = () => {
+          if (finished || token !== voicePlaybackToken) return;
+          finished = true;
+          setMusicDucking(false);
+          if (typeof onEndedCallback === 'function') onEndedCallback();
+        };
+        const speakFallback = () => {
+          if (token !== voicePlaybackToken) return;
+          if (!fallbackText || !('speechSynthesis' in window)) { finish(); return; }
+          try {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(fallbackText);
+            utter.lang = 'en-GB';
+            utter.rate = 0.96;
+            utter.onend = finish;
+            utter.onerror = finish;
+            window.speechSynthesis.speak(utter);
+            // Some browsers never fire onend: finish after a generous estimate of the speaking time.
+            setTimeout(finish, 2500 + fallbackText.split(/\s+/).length * 450);
+          } catch (e) { finish(); }
+        };
         try {
           if (!voiceAudioEl && typeof Audio !== 'undefined') {
             voiceAudioEl = new Audio();
@@ -2768,32 +2922,22 @@
             voiceAudioEl.src = audioSrc;
             voiceAudioEl.volume = 1.0;
             setMusicDucking(true);
-            voiceAudioEl.onended = () => {
-              setMusicDucking(false);
-              if (typeof onEndedCallback === 'function') onEndedCallback();
-            };
-            voiceAudioEl.onerror = () => {
-              setMusicDucking(false);
-              if ('speechSynthesis' in window && fallbackText) {
-                window.speechSynthesis.cancel();
-                const utter = new SpeechSynthesisUtterance(fallbackText);
-                utter.lang = 'en-GB';
-                utter.rate = 0.96;
-                window.speechSynthesis.speak(utter);
-              }
-            };
+            voiceAudioEl.onended = finish;
+            voiceAudioEl.onerror = speakFallback;
             const playPromise = voiceAudioEl.play();
             if (playPromise && typeof playPromise.catch === 'function') {
               playPromise.catch((err) => {
-                setMusicDucking(false);
-                if (err && err.name === 'NotAllowedError' && introVoiceActive) showIntroPlayOverlay();
+                if (err && err.name === 'NotAllowedError') {
+                  if (introVoiceActive) showIntroPlayOverlay();
+                  finish();
+                }
+                // Other errors (missing/unsupported file) are handled by onerror -> speech fallback.
               });
             }
             return;
           }
-        } catch (e) {
-          setMusicDucking(false);
-        }
+        } catch (e) {}
+        speakFallback();
       }
 
       function playClassicalStep() {
@@ -2842,22 +2986,19 @@
             const p = musicAudioEl.play();
             if (p && typeof p.catch === 'function') {
               p.catch((err) => {
-                // Browser blocked HTML5 audio before any interaction: don't claim music is playing,
-                // and arm a one-shot gesture listener if not in the intro modal.
+                // Browser blocked HTML5 audio before any interaction: keep music ON as default
+                // and arm a one-shot gesture listener to resume immediately on first tap/click/key.
                 if (err && err.name === 'NotAllowedError') {
-                  musicPlaying = false;
-                  syncMusicUI();
                   if (introVoiceActive) {
                     showIntroPlayOverlay();
-                  } else {
-                    const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
-                    const unlockMusic = (e) => {
-                      if (e && e.target && e.target.closest && e.target.closest('#music-toggle-btn')) return;
-                      unlockEvents.forEach((ev) => document.removeEventListener(ev, unlockMusic, true));
-                      if (!musicPlaying) startClassicalMusic();
-                    };
-                    unlockEvents.forEach((ev) => document.addEventListener(ev, unlockMusic, { capture: true, passive: true }));
                   }
+                  const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
+                  const unlockMusic = (e) => {
+                    if (e && e.target && e.target.closest && e.target.closest('#btn-music-toggle')) return;
+                    unlockEvents.forEach((ev) => document.removeEventListener(ev, unlockMusic, true));
+                    if (musicPlaying) startClassicalMusic();
+                  };
+                  unlockEvents.forEach((ev) => document.addEventListener(ev, unlockMusic, { capture: true, passive: true }));
                 }
               });
             }
@@ -2969,8 +3110,60 @@
             gain.connect(audioCtx.destination);
             osc.start(now);
             osc.stop(now + 0.25);
+          } else if (type === 'rock') {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(230, now);
+            osc.frequency.exponentialRampToValueAtTime(88, now + 0.14);
+            gain.gain.setValueAtTime(0.18, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.16);
+          } else if (type === 'oops') {
+            // Gentle "uh-oh": two soft descending sine notes. Wrong answers should feel safe, not punishing.
+            [[440, 0], [349.23, 0.16]].forEach(([freq, delay]) => {
+              const osc = audioCtx.createOscillator();
+              const gain = audioCtx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(freq, now + delay);
+              gain.gain.setValueAtTime(0.0001, now + delay);
+              gain.gain.exponentialRampToValueAtTime(0.08, now + delay + 0.03);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + delay + 0.26);
+              osc.connect(gain);
+              gain.connect(audioCtx.destination);
+              osc.start(now + delay);
+              osc.stop(now + delay + 0.28);
+            });
           }
         } catch (e) {}
+      }
+
+      function mergeSavedState(fresh, parsed) {
+        return Object.assign({}, fresh, parsed, {
+          equippedAccessories: Object.assign({}, fresh.equippedAccessories, parsed.equippedAccessories || {}),
+          unlockedCurios: Array.isArray(parsed.unlockedCurios) ? parsed.unlockedCurios.slice() : fresh.unlockedCurios,
+          completedMapStops: Array.isArray(parsed.completedMapStops) ? parsed.completedMapStops.slice() : [],
+          itemIdx: Object.assign({}, parsed.itemIdx || {}),
+          completed: Object.assign({}, parsed.completed || {}),
+          activeStation: null,
+          schemaVersion: SCHEMA_VERSION
+        });
+      }
+
+      // v5 saves had no record of which items were already rewarded. Everything before the learner's
+      // resume point (itemIdx) was cleared, so mark those items as completed: replaying them won't pay again.
+      function migrateLegacyState(old) {
+        const fresh = JSON.parse(JSON.stringify(defaultState));
+        const merged = mergeSavedState(fresh, old || {});
+        Object.keys(merged.itemIdx).forEach(key => {
+          const reached = Math.min(Math.max(0, Number(merged.itemIdx[key]) || 0), 12);
+          for (let i = 0; i < reached; i++) merged.completed[`${key}:${i}`] = true;
+        });
+        merged.schemaVersion = SCHEMA_VERSION;
+        return merged;
       }
 
       function loadState() {
@@ -2978,12 +3171,12 @@
         const fresh = JSON.parse(JSON.stringify(defaultState));
         try {
           const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            return Object.assign({}, fresh, parsed, {
-              equippedAccessories: Object.assign({}, fresh.equippedAccessories, parsed.equippedAccessories || {}),
-              itemIdx: Object.assign({}, parsed.itemIdx || {})
-            });
+          if (raw) return mergeSavedState(fresh, JSON.parse(raw));
+          if (!IS_AUTOTEST) {
+            for (const legacyKey of LEGACY_STORAGE_KEYS) {
+              const legacyRaw = localStorage.getItem(legacyKey);
+              if (legacyRaw) return migrateLegacyState(JSON.parse(legacyRaw));
+            }
           }
         } catch (e) {}
         const hr = new Date().getHours();
@@ -2993,7 +3186,7 @@
 
       function saveState() {
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(Object.assign({}, state, { activeStation: null })));
         } catch (e) {}
         syncHUD();
       }
@@ -3588,7 +3781,7 @@
             after: ' Professor West’s big brown bag.',
             options: ['inside', 'tomorrow', 'quickly', 'because'],
             answer: 'inside',
-            pencilClue: 'Pick the word that tells us WHERE Pencil is hiding ("inside" the bag)!',
+            pencilClue: 'Pick the word that tells us WHERE Pencil is hiding. Is she in, on, or under the bag?',
             explanation: '"Inside" tells us where Pencil is hiding!'
           },
           {
@@ -3626,7 +3819,7 @@
             after: ' a secret map inside the castle.',
             options: ['found', 'finded', 'finding', 'finds'],
             answer: 'found',
-            pencilClue: '"Yesterday" already happened! In the past, "find" changes to "found" (never "finded")!',
+            pencilClue: '"Yesterday" already happened! "Find" is a special (irregular) verb, so its past form does NOT end in -ed.',
             explanation: 'When we talk about yesterday, "find" becomes "found"!'
           },
           {
@@ -3697,23 +3890,90 @@
         ]
       };
 
+      // Why each WRONG stone is wrong, shown when a child picks it (keyed by tablet title, attached below).
+      const ROSETTA_WHY_WRONG = {
+        'The Sphinx Gate Puzzle': {
+          tomorrow: '"Tomorrow" tells us WHEN, not WHERE. "Hiding tomorrow Professor West’s bag" doesn’t make sense.',
+          quickly: '"Quickly" tells us HOW someone does something, not WHERE Pencil is. (And she is hiding quietly!)',
+          because: '"Because" starts a reason (because she is sleepy). It can’t show a place.'
+        },
+        'The Desert Well Puzzle': {
+          a: 'We use "a" before a consonant sound (a key). "Old" starts with a vowel sound, so we say "an old key".',
+          some: '"Some" is for more than one thing, or things we can’t count. There is only ONE key.',
+          many: '"Many" means lots of things, but Professor West found just one key.'
+        },
+        'The Oasis Camel Puzzle': {
+          is: '"Is" is for ONE thing (one camel is). There are THREE camels, so we need "are".',
+          am: '"Am" only goes with "I" (I am). The camels are "they", so we say "they are".',
+          was: '"Was" is for the past and for one thing. The camels are drinking right now.'
+        },
+        'Pencil’s Fish Snack Puzzle': {
+          eat: 'Pencil is one cat (she), so the verb needs an -s: she eats, not she eat.',
+          eating: '"Eating" needs a helper word like "is" (Pencil is eating). After "always", we say "eats".',
+          eaten: '"Eaten" needs "has" (Pencil has eaten). It can’t follow "always" on its own.'
+        },
+        'The King’s Library Puzzle': {
+          finded: '"Find" is an irregular verb: its past form is "found". We never say "finded".',
+          finding: '"Finding" needs "was" (was finding). "Yesterday" needs the simple past: "found".',
+          finds: '"Finds" is for now or every day. "Yesterday" tells us it happened in the past.'
+        },
+        'The Rope Bridge Puzzle': {
+          'more old': 'Short words like "old" just add -er. We say "older", not "more old".',
+          oldest: '"Oldest" is for number one in a group (the oldest). With "than" we compare two things: "older than".',
+          old: 'Before "than" we need a comparing word. Say "much older than", not "much old than".'
+        },
+        'The Torchlight Cave Puzzle': {
+          'must to': 'After "must" we never use "to". Say "You must bring", not "You must to bring".',
+          'can to': 'After "can" we never use "to" either. And this is an important rule, so "must" is best.',
+          are: '"You are bring" isn’t correct English. For an important rule, we say "You must bring".'
+        },
+        'The Golden Statue Puzzle': {
+          bigger: '"Bigger" compares two things (bigger than). "The ... he had ever seen" needs number one: "biggest".',
+          'most big': 'Short words like "big" add -est (and double the g): "biggest", not "most big".',
+          big: 'After "the ... Professor West had ever seen" we need the superlative "biggest" to show number one.'
+        },
+        'The Secret Tunnel Puzzle': {
+          'has walked': '"Has walked" connects to now, but this story is in the past ("she saw"). Use "was walking".',
+          walks: '"Walks" is the present. The story already happened ("she saw"), so use "was walking".',
+          'will walk': '"Will walk" is the future, but the story already happened ("she saw").'
+        },
+        'The Explorer’s Notebook Puzzle': {
+          which: '"Which" is for things and doesn’t show belonging. The dog belongs to the girl, so we use "whose".',
+          where: '"Where" is for places. The dog belongs to the girl, so we say "the girl whose dog".',
+          when: '"When" is for times. We need a word that shows the dog is the girl’s: "whose".'
+        },
+        'The Pharaoh’s Bridge Puzzle': {
+          opened: '"Opened" is the past. "If we pull..." is about what will happen next, so we use "will open".',
+          opening: '"Opening" needs a helper verb (is opening). For the result of "If we pull", use "will open".',
+          'would opened': 'After "would" the verb never changes ("would open", not "would opened"). With "If we pull", use "will open".'
+        },
+        'The Ancient Riddle Puzzle': {
+          yet: '"Yet" is for things we expect to happen (Have you finished yet?). For life experiences, use "ever".',
+          since: '"Since" needs a starting time (since 2020). It can’t ask about your whole life like this.',
+          ago: '"Ago" goes after a time in the simple past (two days ago). It never goes with "Have you...".'
+        }
+      };
+      Object.values(ROSETTA_CIPHER_DATA).flat().forEach(it => { it.why = ROSETTA_WHY_WRONG[it.tabletTitle] || {}; });
+
+      // x/y are only default spots: each Torch round places the treasures at random spots (see initNightWatch),
+      // so the clues describe WHAT to find, never WHERE it is.
       const NIGHT_WATCH_DATA = {
         starters: [
-          { id: 'compass', name: 'Gold Compass', clue: 'Find the round gold compass that points North (bottom left).', x: 180, y: 295, icon: '🧭' },
-          { id: 'owl', name: 'White Owl', clue: 'Find the white owl with big eyes sitting up high (top right).', x: 740, y: 85, icon: '🦉' },
-          { id: 'key', name: 'Silver Key', clue: 'Find the silver key hiding under the wooden bench (bottom right).', x: 680, y: 315, icon: '🗝️' },
-          { id: 'crown', name: 'King’s Crown', clue: 'Find the shiny gold crown in the middle of the room.', x: 450, y: 195, icon: '👑' }
+          { id: 'compass', name: 'Gold Compass', clue: 'Find the round gold compass that points North.', x: 180, y: 295, icon: '🧭' },
+          { id: 'owl', name: 'White Owl', clue: 'Find the white owl with big eyes.', x: 740, y: 85, icon: '🦉' },
+          { id: 'key', name: 'Silver Key', clue: 'Find the silver key that opens the treasure box.', x: 680, y: 315, icon: '🗝️' },
+          { id: 'crown', name: 'King’s Crown', clue: 'Find the shiny gold crown.', x: 450, y: 195, icon: '👑' }
         ],
         movers: [
           { id: 'compass', name: 'Gold Compass', clue: 'Find the round tool that helps explorers when they get lost.', x: 180, y: 295, icon: '🧭' },
-          { id: 'owl', name: 'White Owl', clue: 'Find the night bird that flies in the dark and sits on the high beam.', x: 740, y: 85, icon: '🦉' },
+          { id: 'owl', name: 'White Owl', clue: 'Find the night bird with big eyes that flies in the dark.', x: 740, y: 85, icon: '🦉' },
           { id: 'key', name: 'Silver Key', clue: 'Find the small metal thing that opens locked treasure chests.', x: 680, y: 315, icon: '🗝️' },
           { id: 'crown', name: 'King’s Crown', clue: 'Find the golden hat that a king or queen wears on their head.', x: 450, y: 195, icon: '👑' }
         ],
         flyers: [
           { id: 'compass', name: 'Gold Compass', clue: 'Find the pocket instrument whose needle always points North.', x: 180, y: 295, icon: '🧭' },
-          { id: 'owl', name: 'White Owl', clue: 'Spot the quiet feathered bird that has been watching us from the roof beam.', x: 740, y: 85, icon: '🦉' },
-          { id: 'key', name: 'Silver Key', clue: 'Find the silver key that was hidden under the wooden bench.', x: 680, y: 315, icon: '🗝️' },
+          { id: 'owl', name: 'White Owl', clue: 'Spot the quiet feathered bird that has been watching us all night.', x: 740, y: 85, icon: '🦉' },
+          { id: 'key', name: 'Silver Key', clue: 'Find the small metal object you would need to unlock a treasure chest.', x: 680, y: 315, icon: '🗝️' },
           { id: 'crown', name: 'King’s Crown', clue: 'Spot the golden treasure worn by Egyptian rulers thousands of years ago.', x: 450, y: 195, icon: '👑' }
         ]
       };
@@ -3886,7 +4146,7 @@
             'Where is Pencil sitting right now, and what is she wearing?',
             'Tell Gareth where your favourite toy or book is in your room!'
           ],
-          linkedStation: 'rosetta-cipher'
+          linkedStation: 'night-watch'
         },
         {
           id: 2,
@@ -3900,7 +4160,8 @@
             'What did you do yesterday after school? Tell Gareth 3 things!',
             'Imagine Pencil met a talking parrot on the ship—what did the parrot say?'
           ],
-          linkedStation: 'night-watch'
+          linkedStation: 'rosetta-cipher',
+          linkedLevel: 'movers'
         },
         {
           id: 3,
@@ -3914,7 +4175,8 @@
             'Which is more exciting: exploring a dark cave or sailing on a pirate ship? Why?',
             'Compare summer holidays and winter holidays!'
           ],
-          linkedStation: 'rosetta-cipher'
+          linkedStation: 'rosetta-cipher',
+          linkedLevel: 'movers'
         },
         {
           id: 4,
@@ -3950,7 +4212,7 @@
         { id: 'scarab-badge', name: 'Golden Scarab Badge', desc: 'Your Explorer Welcome Badge!', icon: '🪲' },
         { id: 'clay-tablet', name: 'Golden Clay Tablet', desc: 'Won by spelling a hidden word in The Word Dig.', icon: '🏺' },
         { id: 'rosetta-key', name: 'Secret Door Stone', desc: 'Won by solving a sentence in The Stone Puzzle.', icon: '🪨' },
-        { id: 'night-lantern', name: 'Green Night Torch', desc: 'Won by finding all 4 treasures in Pencil’s Torch Game.', icon: '🔦' },
+        { id: 'night-lantern', name: 'Green Night Torch', desc: 'Won by finding every hidden treasure in Pencil’s Torch Game.', icon: '🔦' },
         { id: 'sphinx-scroll', name: 'Pharaoh’s Story Scroll', desc: 'Won by finishing a chapter in Choose the Story.', icon: '📜' },
         { id: 'sardine-tin', name: 'Yummy Tin of Fish', desc: 'Pencil’s favourite snack! Unlocks at 15 Golden Scarabs.', icon: '🐟' }
       ];
@@ -4164,10 +4426,22 @@
         saveState();
       }
 
+      // Bonus Scarabs for reaching a streak of N first-try answers in a row.
+      const STREAK_MILESTONES = { 3: 2, 5: 3, 10: 5 };
+
       function awardScarabs(amount, curioToUnlock, opts) {
         const countsTowardStreak = amount > 0 && !(opts && opts.noStreak);
         state.scarabs += amount;
-        if (countsTowardStreak) state.streak += 1;
+        if (countsTowardStreak) {
+          state.streak += 1;
+          const bonus = STREAK_MILESTONES[state.streak];
+          if (bonus) {
+            state.scarabs += bonus;
+            const msg = `🔥 ${state.streak} in a row! Streak bonus: +${bonus} Golden Scarabs!`;
+            showToast(msg);
+            setPencilSpeech(`"Purrrfect! ${state.streak} right answers in a row! Here are ${bonus} bonus Golden Scarabs!"`, 'Streak Bonus!');
+          }
+        }
         if (state.scarabs >= 15 && !state.unlockedCurios.includes('sardine-tin')) {
           state.unlockedCurios.push('sardine-tin');
         }
@@ -4175,11 +4449,13 @@
           state.unlockedCurios.push(curioToUnlock);
         }
         playSound('chime');
+        if (amount > 0) announce(`You won ${amount} Golden Scarab${amount === 1 ? '' : 's'}. You have ${state.scarabs} now.`);
         saveState();
       }
 
-      // A wrong answer in ANY game ends the winning streak.
+      // A wrong answer in ANY game ends the winning streak (with a gentle sound, never a scary one).
       function breakStreak() {
+        playSound('oops');
         if (state.streak !== 0) {
           state.streak = 0;
           saveState();
@@ -4199,6 +4475,60 @@
         saveState();
       }
 
+      // ---- First-clear-only rewards ----
+      // The Torch game has one round per level, so it is keyed by level too.
+      function clearKey(station, idx) {
+        const base = station === 'night-watch' ? `${station}:${state.level}` : itemKey(station);
+        return `${base}:${idx}`;
+      }
+      function isCleared(station, idx) {
+        return Boolean(state.completed && state.completed[clearKey(station, idx)]);
+      }
+
+      // Pays `amount` (+streak) only the first time an item is cleared without help.
+      // Returns { kind: 'first' | 'replay' | 'practice', paid, mapStop }.
+      function rewardClear(station, idx, amount, curio, opts) {
+        if (opts && opts.practice) {
+          awardScarabs(0, curio, { noStreak: true });
+          return { kind: 'practice', paid: 0, mapStop: null };
+        }
+        if (isCleared(station, idx)) {
+          awardScarabs(0, curio, { noStreak: true });
+          return { kind: 'replay', paid: 0, mapStop: null };
+        }
+        state.completed[clearKey(station, idx)] = true;
+        awardScarabs(amount, curio);
+        const mapStop = autoMarkMapStop(station);
+        return { kind: 'first', paid: amount, mapStop };
+      }
+
+      // Clearing a game for the first time also ticks off its Treasure Map stop (+2, once per stop).
+      const MAP_STOP_REWARD = 2;
+      function autoMarkMapStop(station) {
+        const idx = EXPEDITION_MAP_STOPS.findIndex((stop, i) =>
+          stop.linkedStation === station &&
+          (!stop.linkedLevel || stop.linkedLevel === state.level) &&
+          !state.completedMapStops.includes(i));
+        if (idx < 0) return null;
+        state.completedMapStops.push(idx);
+        awardScarabs(MAP_STOP_REWARD, undefined, { noStreak: true });
+        const nextOpen = EXPEDITION_MAP_STOPS.findIndex((_, i) => !state.completedMapStops.includes(i));
+        state.mapCurrentStop = nextOpen >= 0 ? nextOpen : idx;
+        saveState();
+        showToast(`🗺️ Treasure Map: ${EXPEDITION_MAP_STOPS[idx].name} finished! +${MAP_STOP_REWARD} Golden Scarabs`);
+        return EXPEDITION_MAP_STOPS[idx];
+      }
+
+      // Short reward line for feedback banners.
+      function payoutText(result, firstText) {
+        if (!result) return '';
+        if (result.kind === 'first') {
+          return firstText + (result.mapStop ? ` 🗺️ Map stop finished: +${MAP_STOP_REWARD} more!` : '');
+        }
+        if (result.kind === 'practice') return '(Pencil helped, so this was practice. Try the next one on your own to win Golden Scarabs!)';
+        return '(You already won the Scarabs for this one. Great practice!)';
+      }
+
       function shuffled(arr) {
         const a = arr.slice();
         for (let i = a.length - 1; i > 0; i--) {
@@ -4206,6 +4536,56 @@
           [a[i], a[j]] = [a[j], a[i]];
         }
         return a;
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      // Screen-reader announcement (visually hidden live region in the activity dialog).
+      function announce(msg) {
+        const region = document.getElementById('modal-live-region');
+        if (region) region.textContent = msg;
+      }
+
+      let toastTimer = null;
+      function showToast(msg) {
+        let toast = document.getElementById('study-toast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'study-toast';
+          toast.setAttribute('role', 'status');
+          toast.setAttribute('aria-live', 'polite');
+          toast.style.cssText = 'position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:100000; background:#065f46; color:#fef3c7; border:2px solid #fbbf24; border-radius:999px; padding:0.55rem 1.1rem; font-weight:900; box-shadow:0 10px 26px rgba(0,0,0,0.35); transition:opacity 0.3s; pointer-events:none;';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.style.opacity = '0'; }, 2600);
+      }
+
+      // Re-render a station without losing keyboard focus: the focused control is found again by id
+      // or by its data-focus-key in the new markup.
+      function setStationBody(body, html) {
+        const active = document.activeElement;
+        let selector = null;
+        if (active && active !== body && body.contains(active)) {
+          if (active.id) selector = '#' + CSS.escape(active.id);
+          else if (active.getAttribute('data-focus-key')) selector = `[data-focus-key="${CSS.escape(active.getAttribute('data-focus-key'))}"]`;
+        }
+        body.innerHTML = html;
+        if (selector) {
+          const next = body.querySelector(selector);
+          if (next && typeof next.focus === 'function') {
+            try { next.focus({ preventScroll: true }); } catch (e) { next.focus(); }
+          }
+        }
       }
 
       // ================= STATION 1: THE WORD DIG =================
@@ -4232,12 +4612,15 @@
         letterMap[positions[letters.length]] = { type: 'bonus', char: '🪲' };
         letterMap[positions[letters.length + 1]] = { type: 'bonus', char: '🏺' };
 
+        const coverPool = shuffled([
+          'stone', 'stone', 'stone', 'stone', 'stone',
+          'sand', 'sand', 'sand', 'sand', 'sand', 'sand', 'sand', 'sand', 'sand', 'sand', 'sand'
+        ]);
         for (let i = 0; i < 16; i++) {
           const content = letterMap[i] || { type: 'empty', char: '·' };
-          const cover = (i % 2 === 0) ? 'stone' : 'sand';
           cells.push({
             index: i,
-            cover: cover,
+            cover: coverPool[i],
             content: content,
             collected: false
           });
@@ -4245,12 +4628,18 @@
 
         digState = {
           wordIndex,
+          itemIdx: wordIndex % levelList.length,
           item,
-          tool: 'brush',
+          tool: 'pickaxe',
           cells,
           foundLetters: [],
           crackedCellIndex: null,
-          hintUsed: false
+          repairOrder: shuffled(item.repairOptions),
+          hintUsed: false,
+          phase: 'dig', // 'dig' (find letters) -> 'spell' (tap them in order) -> 'done'
+          tiles: [],
+          spelled: [],
+          result: null
         };
         renderLexiconDig();
       }
@@ -4258,12 +4647,12 @@
       function renderLexiconDig() {
         const body = document.getElementById('modal-station-body');
         if (!body || !digState) return;
-        const { item, wordIndex, tool, cells, foundLetters, crackedCellIndex } = digState;
+        const { item, wordIndex, tool, cells, foundLetters, crackedCellIndex, phase, tiles, spelled } = digState;
         const list = LEXICON_DIG_DATA[state.level] || LEXICON_DIG_DATA.starters;
         const activeIdx = wordIndex % list.length;
-        const isComplete = foundLetters.length === item.word.length;
+        const isComplete = phase === 'done';
 
-        body.innerHTML = `
+        setStationBody(body, `
           <div class="game-progress-bar-row">
             <div style="font-size:0.84rem; font-weight:900; color:var(--mahogany-warm);">
               ⛏️ Word ${activeIdx + 1} of ${list.length} (${state.level.toUpperCase()}):
@@ -4271,11 +4660,11 @@
             <div class="game-step-pills">
               ${list.map((w, idx) => `
                 <button type="button" class="game-step-pill ${idx === activeIdx ? 'active' : ''}" onclick="StudyHub.initLexiconDig(${idx})">
-                  ${w.icon || '🏺'} Word ${idx + 1}
+                  ${w.icon || '🏺'} Word ${idx + 1}${isCleared('lexicon-dig', idx) ? ' ✓' : ''}
                 </button>
               `).join('')}
             </div>
-            <button type="button" class="wardrobe-pill-btn" style="padding:0.3rem 0.7rem; font-size:0.78rem;" onclick="StudyHub.speakTextHelper('${item.clue.replace(/'/g, "\\'")}')">
+            <button type="button" class="wardrobe-pill-btn" style="padding:0.3rem 0.7rem; font-size:0.78rem;" data-say="${escapeHtml(item.clue)}">
               🔊 Hear Clue
             </button>
           </div>
@@ -4302,19 +4691,27 @@
                 ${cells.map(c => {
                   let cls = 'layer-revealed';
                   let label = '';
+                  let aria = '';
                   if (c.cover === 'stone') {
                     cls = 'layer-stone';
                     label = '🪨<span style="font-size:0.64rem;">ROCK</span>';
+                    aria = `Rock square ${c.index + 1}`;
                   } else if (c.cover === 'sand') {
                     cls = 'layer-sand';
                     label = '🏜️<span style="font-size:0.64rem;">SAND</span>';
+                    aria = `Sand square ${c.index + 1}`;
                   } else if (c.cover === 'cracked') {
                     cls = 'layer-cracked';
                     label = '⚡<span style="font-size:0.64rem;">CRACKED!</span>';
+                    aria = `Cracked square ${c.index + 1}, needs glue repair`;
                   } else {
                     label = `<span>${c.content.char}</span>`;
+                    const revDesc = c.content.type === 'letter'
+                      ? `letter ${c.content.char}`
+                      : c.content.type === 'bonus' ? 'bonus treasure' : 'empty';
+                    aria = `Square ${c.index + 1}, revealed ${revDesc}`;
                   }
-                  return `<button type="button" class="dig-cell ${cls}" data-cell-index="${c.index}" onclick="StudyHub.excavateCell(${c.index})" aria-label="Dig square ${c.index + 1}">${label}</button>`;
+                  return `<button type="button" class="dig-cell ${cls}" data-cell-index="${c.index}" onclick="StudyHub.excavateCell(${c.index})" aria-label="${escapeHtml(aria)}">${label}</button>`;
                 }).join('')}
               </div>
             </div>
@@ -4329,13 +4726,33 @@
                   "${item.clue}"
                 </p>
 
-                <div style="font-size:0.85rem; font-weight:800; margin-bottom:0.35rem;">Letters Found (${foundLetters.length} of ${item.word.length}):</div>
-                <div class="word-slots-tray">
+                <div style="font-size:0.85rem; font-weight:800; margin-bottom:0.35rem;">
+                  ${phase === 'dig'
+                    ? `Letters Found (${foundLetters.length} of ${item.word.length}):`
+                    : `Spell the word! Tap the letters in the right order (${spelled.length} of ${item.word.length}):`}
+                </div>
+                <div class="word-slots-tray" aria-label="Your spelling">
                   ${item.word.split('').map((ch, idx) => {
-                    const revealed = foundLetters.includes(idx);
-                    return `<div class="letter-slot ${revealed ? 'filled' : ''}">${revealed ? ch : '?'}</div>`;
+                    const placed = idx < spelled.length;
+                    return `<div class="letter-slot ${placed ? 'filled' : ''}">${placed ? escapeHtml(spelled[idx]) : '?'}</div>`;
                   }).join('')}
                 </div>
+
+                ${phase === 'dig' ? `
+                  <div class="dig-tile-tray" aria-label="Letters you dug up">
+                    ${foundLetters.length
+                      ? shuffledFoundChips().map(ch => `<span class="dig-found-chip">${escapeHtml(ch)}</span>`).join('')
+                      : '<span style="font-size:0.82rem; font-weight:700; opacity:0.8;">Dig up the hidden letters first!</span>'}
+                  </div>
+                ` : phase === 'spell' ? `
+                  <div class="dig-tile-tray" role="group" aria-label="Letter tiles">
+                    ${tiles.map((t, i) => `
+                      <button type="button" class="dig-letter-tile" data-dig-tile="${i}" data-focus-key="dig-tile-${i}"
+                        ${t.used ? 'disabled' : ''} aria-label="Letter ${escapeHtml(t.char)}"
+                        onclick="StudyHub.placeDigLetter(${i})">${escapeHtml(t.char)}</button>
+                    `).join('')}
+                  </div>
+                ` : ''}
 
                 <div class="glue-repair-modal ${crackedCellIndex !== null ? 'active' : ''}" id="glue-repair-box">
                   <div style="font-weight:900; color:#be123c; margin-bottom:0.35rem;">
@@ -4346,21 +4763,25 @@
                     <strong>${item.repairQuestion}</strong>
                   </p>
                   <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                    ${item.repairOptions.map(opt => `
-                      <button type="button" class="wardrobe-pill-btn" onclick="StudyHub.solveGlueRepair('${opt}')">${opt}</button>
+                    ${(digState.repairOrder || item.repairOptions).map(opt => `
+                      <button type="button" class="wardrobe-pill-btn" data-focus-key="glue-${escapeHtml(opt)}" onclick="StudyHub.solveGlueRepair('${opt}')">${opt}</button>
                     `).join('')}
                   </div>
                 </div>
 
                 ${isComplete ? `
                   <div class="feedback-banner show success">
-                    ${digState.hintUsed
-                      ? `🐾 You spelled <strong>${item.word}</strong> ${item.icon || ''} with Pencil’s help! That was a practice word — try the next one on your own to win Golden Scarabs!`
-                      : `🎉 Awesome digging! You spelled <strong>${item.word}</strong> ${item.icon || ''} and won +3 Golden Scarabs!`}
+                    ${digState.result && digState.result.kind === 'first'
+                      ? `🎉 Awesome digging and spelling! You spelled <strong>${item.word}</strong> ${item.icon || ''} and won +3 Golden Scarabs!${digState.result.mapStop ? ` 🗺️ Map stop finished: +${MAP_STOP_REWARD} more!` : ''}`
+                      : `🐾 You spelled <strong>${item.word}</strong> ${item.icon || ''}! ${payoutText(digState.result, '')}`}
                     <div style="margin-top:0.6rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
                       <button type="button" class="ask-pencil-hint-btn" onclick="StudyHub.nextDigWord()">Dig Next Word &rarr;</button>
-                      <button type="button" class="wardrobe-pill-btn" onclick="StudyHub.speakTextHelper('${item.word}. ${item.clue.replace(/'/g, "\\'")}')">🔊 Hear Word</button>
+                      <button type="button" class="wardrobe-pill-btn" data-say="${escapeHtml(item.word + '. ' + item.clue)}">🔊 Hear Word</button>
                     </div>
+                  </div>
+                ` : phase === 'spell' ? `
+                  <div id="dig-status-msg" class="feedback-banner show warn" style="margin-top:0.85rem;">
+                    🔤 You found every letter! Now tap them in order to spell the word from the clue.
                   </div>
                 ` : `
                   <div id="dig-status-msg" class="feedback-banner show warn" style="margin-top:0.85rem;">
@@ -4370,7 +4791,14 @@
               </div>
             </div>
           </div>
-        `;
+        `);
+      }
+
+      // Found letters are shown in a stable scrambled order, so the dig phase never spells the word for you.
+      function shuffledFoundChips() {
+        if (!digState) return [];
+        if (!digState.chipOrder) digState.chipOrder = shuffled(digState.item.word.split('').map((_, i) => i));
+        return digState.chipOrder.filter(i => digState.foundLetters.includes(i)).map(i => digState.item.word[i]);
       }
 
       function setDigTool(toolName) {
@@ -4392,7 +4820,7 @@
         if (cell.cover === 'stone') {
           if (digState.tool === 'pickaxe') {
             cell.cover = 'sand';
-            playSound('meow');
+            playSound('rock');
             const hintEl = document.getElementById('modal-pencil-hint-text');
             if (hintEl) hintEl.textContent = '"Great swing! The rock broke into soft sand—now switch to the Soft Brush!"';
           } else {
@@ -4422,21 +4850,55 @@
             digState.foundLetters.push(cell.content.orderIdx);
           }
           playSound('chime');
-          if (digState.foundLetters.length === digState.item.word.length) {
-            // A word finished with Pencil's help is a practice word: keep the tablet, no Scarabs/streak.
-            if (digState.hintUsed) awardScarabs(0, 'clay-tablet', { noStreak: true });
-            else awardScarabs(3, 'clay-tablet');
-            setItemIdx('lexicon-dig', digState.wordIndex + 1);
+          if (digState.phase === 'dig' && digState.foundLetters.length === digState.item.word.length) {
+            // All letters dug up: now the child must SPELL the word by tapping the letters in order.
+            digState.phase = 'spell';
+            digState.tiles = shuffled(digState.item.word.split('')).map(ch => ({ char: ch, used: false }));
+            digState.spelled = [];
+            const hintEl = document.getElementById('modal-pencil-hint-text');
+            if (hintEl) hintEl.textContent = '"You found all the letters! Now tap them in the right order to spell the word!"';
+            announce('All letters found. Now spell the word by tapping the letters in order.');
           }
         } else if (cell.content.type === 'bonus') {
-          awardScarabs(1, undefined, { noStreak: true });
           const hintEl = document.getElementById('modal-pencil-hint-text');
-          if (hintEl) hintEl.textContent = '"Purrrr! You brushed away the sand and found a bonus Golden Scarab (+1)!"';
+          if (!isCleared('lexicon-dig', digState.itemIdx)) {
+            awardScarabs(1, undefined, { noStreak: true });
+            if (hintEl) hintEl.textContent = '"Purrrr! You brushed away the sand and found a bonus Golden Scarab (+1)!"';
+          } else if (hintEl) {
+            hintEl.textContent = '"A shiny bonus beetle! (Bonus Scarabs are only on words you haven’t spelled yet.)"';
+          }
         }
       }
 
+      // Spelling phase: tap the dug-up letter tiles in the order of the word.
+      function placeDigLetter(tileIdx, opts) {
+        if (!digState || digState.phase !== 'spell') return;
+        const tile = digState.tiles[tileIdx];
+        if (!tile || tile.used) return;
+        const word = digState.item.word;
+        const need = word[digState.spelled.length];
+        const hintEl = document.getElementById('modal-pencil-hint-text');
+        if (tile.char !== need) {
+          breakStreak();
+          if (hintEl) hintEl.textContent = `"Not that one yet! Say the word slowly. Which letter comes next? (${digState.item.phonicsHint})"`;
+          announce(`${tile.char} is not the next letter. Try again.`);
+          renderLexiconDig();
+          return;
+        }
+        tile.used = true;
+        digState.spelled.push(tile.char);
+        if (digState.spelled.length === word.length) {
+          digState.phase = 'done';
+          digState.result = rewardClear('lexicon-dig', digState.itemIdx, 3, 'clay-tablet', { practice: digState.hintUsed });
+          setItemIdx('lexicon-dig', digState.wordIndex + 1);
+          if (hintEl && !(opts && opts.fromHint)) hintEl.textContent = `"Meow! You spelled ${word}! Clever explorer!"`;
+          announce(`You spelled ${word}.`);
+        }
+        renderLexiconDig();
+      }
+
       function solveGlueRepair(chosenOpt) {
-        if (!digState || digState.crackedCellIndex !== null === false) return;
+        if (!digState || digState.crackedCellIndex === null) return;
         const cell = digState.cells[digState.crackedCellIndex];
         if (chosenOpt === digState.item.repairAnswer) {
           cell.cover = 'revealed';
@@ -4447,9 +4909,9 @@
           renderLexiconDig();
         } else {
           breakStreak();
-          playSound('crack');
           const hintEl = document.getElementById('modal-pencil-hint-text');
           if (hintEl) hintEl.textContent = `"Try again! Clue: ${digState.item.phonicsHint}"`;
+          announce(`${chosenOpt} is not right. Try again.`);
         }
       }
 
@@ -4466,10 +4928,16 @@
         const item = list[index % list.length];
         cipherState = {
           index,
+          itemIdx: index % list.length,
           item,
+          order: shuffled(item.options), // display order; the correct stone lands in a random slot
           selected: null,
           solved: false,
-          eliminatedOptions: []
+          eliminatedOptions: [],
+          wrongPicks: [],
+          hintUsed: false,
+          animateDoor: false,
+          result: null
         };
         renderRosettaCipher();
       }
@@ -4477,12 +4945,16 @@
       function renderRosettaCipher() {
         const body = document.getElementById('modal-station-body');
         if (!body || !cipherState) return;
-        const { item, index, selected, solved, eliminatedOptions } = cipherState;
+        const { item, index, selected, solved, eliminatedOptions, wrongPicks, order, result } = cipherState;
         const list = ROSETTA_CIPHER_DATA[state.level] || ROSETTA_CIPHER_DATA.starters;
         const activeIdx = index % list.length;
-        const fullSentence = `${item.before} ${solved ? item.answer : 'blank'} ${item.after}`;
+        const fullSentence = `${item.before.trim()} ${solved ? item.answer : '...'} ${item.after.trim()}`;
+        // Render the door CLOSED on the solving render, then open it after a style flush so the CSS transition runs.
+        const doorOpenNow = solved && !cipherState.animateDoor;
+        const doorLabel = !result ? '' : result.kind === 'first' ? '+3 Golden Scarabs Awarded!' : result.kind === 'practice' ? 'Practice tablet solved!' : 'Solved again. Great practice!';
+        const lastWrong = !solved && selected && wrongPicks.includes(selected) ? selected : null;
 
-        body.innerHTML = `
+        setStationBody(body, `
           <div>
             <div class="game-progress-bar-row">
               <div style="font-size:0.84rem; font-weight:900; color:var(--mahogany-warm);">
@@ -4491,21 +4963,21 @@
               <div class="game-step-pills">
                 ${list.map((t, idx) => `
                   <button type="button" class="game-step-pill ${idx === activeIdx ? 'active' : ''}" onclick="StudyHub.initRosettaCipher(${idx})">
-                    Tablet ${idx + 1}
+                    Tablet ${idx + 1}${isCleared('rosetta-cipher', idx) ? ' ✓' : ''}
                   </button>
                 `).join('')}
               </div>
-              <button type="button" class="wardrobe-pill-btn" style="padding:0.3rem 0.7rem; font-size:0.78rem;" onclick="StudyHub.speakTextHelper('${fullSentence.replace(/'/g, "\\'")}')">
+              <button type="button" class="wardrobe-pill-btn" style="padding:0.3rem 0.7rem; font-size:0.78rem;" data-say="${escapeHtml(fullSentence)}">
                 🔊 Listen
               </button>
             </div>
 
-            <div class="vault-door-frame ${solved ? 'vault-unlocked' : ''}" id="rosetta-vault-door">
-              <svg viewBox="0 0 800 130" width="100%" height="125" style="display:block;">
+            <div class="vault-door-frame ${doorOpenNow ? 'vault-unlocked' : ''}" id="rosetta-vault-door">
+              <svg viewBox="0 0 800 130" width="100%" height="125" style="display:block;" aria-hidden="true">
                 <rect x="0" y="0" width="800" height="130" fill="#064e3b" />
                 <circle cx="400" cy="65" r="48" fill="rgba(251,191,36,0.22)" />
                 <text x="400" y="62" text-anchor="middle" fill="#fde68a" font-size="18" font-weight="900">✨ SECRET TEMPLE CHAMBER UNLOCKED! ✨</text>
-                <text x="400" y="90" text-anchor="middle" fill="#a7f3d0" font-size="13" font-weight="800">+3 Golden Scarabs Awarded!</text>
+                <text x="400" y="90" text-anchor="middle" fill="#a7f3d0" font-size="13" font-weight="800">${doorLabel}</text>
                 <g class="vault-door-left">
                   <rect x="0" y="0" width="400" height="130" fill="#334155" stroke="#94a3b8" stroke-width="3" />
                   <circle cx="360" cy="65" r="22" fill="#d97706" stroke="#fde68a" stroke-width="2" />
@@ -4529,19 +5001,23 @@
 
               <div class="rosetta-inscription">
                 ${item.before}
-                <span class="cipher-gap" id="rosetta-slot-display">${selected || '______'}</span>
+                <span class="cipher-gap" id="rosetta-slot-display">${solved ? escapeHtml(item.answer) : '______'}</span>
                 ${item.after}
               </div>
             </div>
 
-            <div class="stone-fragments-grid">
-              ${item.options.map(opt => {
+            <div class="stone-fragments-grid" role="group" aria-label="Word stones">
+              ${order.map(opt => {
                 const isElim = eliminatedOptions.includes(opt);
+                const isWrong = wrongPicks.includes(opt);
+                const isRight = solved && opt === item.answer;
                 return `
-                  <button type="button" class="stone-fragment-btn ${isElim ? 'eliminated' : ''}"
-                    ${isElim || solved ? 'disabled' : ''}
-                    onclick="StudyHub.selectCipherStone('${opt.replace(/'/g, "\\'")}')">
-                    🪨 ${opt}
+                  <button type="button" class="stone-fragment-btn ${isElim ? 'eliminated' : ''} ${isWrong ? 'wrong-pick' : ''} ${isRight ? 'correct-pick' : ''}"
+                    data-opt="${escapeHtml(opt)}" data-focus-key="stone-${escapeHtml(opt)}"
+                    ${isElim || isWrong || solved ? 'disabled' : ''}
+                    aria-label="${escapeHtml(opt)}${isWrong ? ' (not right)' : ''}${isElim ? ' (removed by Pencil)' : ''}"
+                    onclick="StudyHub.selectCipherStone(this.getAttribute('data-opt'))">
+                    ${isWrong ? '✗' : isRight ? '✓' : '🪨'} ${escapeHtml(opt)}
                   </button>
                 `;
               }).join('')}
@@ -4549,32 +5025,48 @@
 
             ${solved ? `
               <div class="feedback-banner show success">
-                🔓 <strong>The Secret Door Opens!</strong> ${item.explanation} (+3 Golden Scarabs!)
+                🔓 <strong>The Secret Door Opens!</strong> ${item.explanation} ${payoutText(result, '(+3 Golden Scarabs!)')}
                 <div style="margin-top:0.65rem;">
                   <button type="button" class="ask-pencil-hint-btn" onclick="StudyHub.nextCipherTablet()">Next Stone Puzzle &rarr;</button>
                 </div>
               </div>
-            ` : selected ? `
+            ` : lastWrong ? `
               <div class="feedback-banner show warn">
-                🤔 Hmm, "<strong>${selected}</strong>" didn’t unlock the door. Click <strong>Ask Pencil for a Clue!</strong> below or try another stone!
+                🤔 "<strong>${escapeHtml(lastWrong)}</strong>" didn’t unlock the door. ${escapeHtml((item.why && item.why[lastWrong]) || '')} Try another stone!
               </div>
             ` : ''}
           </div>
-        `;
+        `);
+
+        if (cipherState.animateDoor) {
+          cipherState.animateDoor = false;
+          const frame = document.getElementById('rosetta-vault-door');
+          const leftDoor = frame && frame.querySelector('.vault-door-left');
+          if (frame && leftDoor) {
+            getComputedStyle(leftDoor).transform; // flush the closed state so the change below transitions
+            frame.classList.add('vault-unlocked');
+          }
+        }
       }
 
       function selectCipherStone(choice) {
         if (!cipherState || cipherState.solved) return;
+        const { item } = cipherState;
+        if (!item.options.includes(choice) || cipherState.wrongPicks.includes(choice) || cipherState.eliminatedOptions.includes(choice)) return;
         cipherState.selected = choice;
-        if (choice === cipherState.item.answer) {
+        const hintEl = document.getElementById('modal-pencil-hint-text');
+        if (choice === item.answer) {
           cipherState.solved = true;
-          awardScarabs(3, 'rosetta-key');
+          cipherState.animateDoor = true;
+          cipherState.result = rewardClear('rosetta-cipher', cipherState.itemIdx, 3, 'rosetta-key', { practice: cipherState.hintUsed });
           setItemIdx('rosetta-cipher', cipherState.index + 1);
-          const hintEl = document.getElementById('modal-pencil-hint-text');
           if (hintEl) hintEl.textContent = `"Meow! The stone door is opening! '${choice}' is right!"`;
+          announce(`Correct! ${choice}. The door opens.`);
         } else {
+          cipherState.wrongPicks.push(choice);
           breakStreak();
-          playSound('crack');
+          if (hintEl) hintEl.textContent = '"Read the sentence again, and look at the words next to the gap!"';
+          announce(`${choice} is not right. ${(item.why && item.why[choice]) || ''}`);
         }
         renderRosettaCipher();
       }
@@ -4587,55 +5079,91 @@
       // ================= STATION 3: PENCIL'S TORCH GAME =================
       let nightWatchState = null;
 
+      // Candidate hiding spots (viewBox 900x400), spaced further apart than the beam radius.
+      const NIGHT_SPOTS = [
+        { x: 130, y: 110 }, { x: 140, y: 300 }, { x: 330, y: 95 }, { x: 330, y: 300 },
+        { x: 560, y: 110 }, { x: 570, y: 300 }, { x: 770, y: 100 }, { x: 760, y: 305 }
+      ];
+      const NIGHT_BEAM_RADIUS = 120; // viewBox units: an item counts as "lit" when its centre is this close to the beam
+      const TORCH_HINT_COST = 20;
+
       function initNightWatch() {
-        const items = NIGHT_WATCH_DATA[state.level] || NIGHT_WATCH_DATA.starters;
+        const base = NIGHT_WATCH_DATA[state.level] || NIGHT_WATCH_DATA.starters;
+        const spots = shuffled(NIGHT_SPOTS);
+        const items = base.map((it, i) => Object.assign({}, it, {
+          x: spots[i].x + Math.round((Math.random() - 0.5) * 30),
+          y: spots[i].y + Math.round((Math.random() - 0.5) * 20)
+        }));
         nightWatchState = {
           items,
+          targets: shuffled(items), // the order of clues changes every round
           currentIndex: 0,
           foundIds: [],
-          battery: 100
+          battery: 100,
+          beam: { x: 50, y: 50 },
+          beamLockUntil: 0,
+          result: null
         };
         renderNightWatch();
+      }
+
+      function nightItemInBeam(item) {
+        if (!nightWatchState || !item) return false;
+        const bx = (nightWatchState.beam.x / 100) * 900;
+        const by = (nightWatchState.beam.y / 100) * 400;
+        return Math.hypot(item.x - bx, item.y - by) <= NIGHT_BEAM_RADIUS;
+      }
+
+      function applyNightBeam() {
+        const mask = document.getElementById('night-watch-mask');
+        if (!mask || !nightWatchState) return;
+        mask.style.setProperty('--beam-x', `${nightWatchState.beam.x}%`);
+        mask.style.setProperty('--beam-y', `${nightWatchState.beam.y}%`);
       }
 
       function renderNightWatch() {
         const body = document.getElementById('modal-station-body');
         if (!body || !nightWatchState) return;
-        const { items, currentIndex, foundIds, battery } = nightWatchState;
-        const allFound = foundIds.length === items.length;
-        const currentTarget = items[currentIndex] || items[0];
+        const { items, targets, currentIndex, foundIds, battery, beam, result } = nightWatchState;
+        const allFound = foundIds.length === targets.length;
+        const currentTarget = targets[currentIndex] || targets[0];
+        const showNames = state.level === 'starters'; // Level 2/3: no labels, the clue must be read
         const cavernImg = document.getElementById('pixar-img-2');
         const cavernHref = cavernImg && cavernImg.src ? cavernImg.src : '';
 
-        body.innerHTML = `
+        setStationBody(body, `
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:0.65rem;">
               <div style="font-weight:800; font-size:1rem;">
-                🔦 <strong>Find This (${foundIds.length} of ${items.length}):</strong>
-                <span style="color:var(--brass-dark);">${allFound ? 'You found everything!' : currentTarget.clue}</span>
+                🔦 <strong>Find This (${foundIds.length} of ${targets.length}):</strong>
+                <span style="color:var(--brass-dark);">${allFound ? 'You found everything!' : escapeHtml(currentTarget.clue)}</span>
+                ${allFound ? '' : `<button type="button" class="wardrobe-pill-btn" style="padding:0.2rem 0.6rem; font-size:0.75rem; margin-left:0.35rem;" data-say="${escapeHtml(currentTarget.clue)}">🔊</button>`}
               </div>
               <div style="display:flex; align-items:center; gap:0.5rem; font-weight:900; color:var(--emerald-deep);">
-                <i class="fa-solid fa-battery-three-quarters"></i>
+                <i class="fa-solid fa-battery-three-quarters" aria-hidden="true"></i>
                 <span>Torch Power: ${battery}%</span>
               </div>
             </div>
 
             <div class="night-checklist-bar">
-              ${items.map((it, idx) => {
+              ${targets.map((it, idx) => {
                 const isDone = foundIds.includes(it.id);
                 const isTarget = !allFound && idx === currentIndex;
-                return `
-                  <span class="night-target-pill ${isDone ? 'found' : isTarget ? 'current' : ''}">
-                    ${isDone ? '✓' : it.icon} ${it.name}
-                  </span>
-                `;
+                const label = isDone ? `✓ ${escapeHtml(it.name)}` : showNames ? `${it.icon} ${escapeHtml(it.name)}` : `${isTarget ? '🔍' : '❔'} Treasure ${idx + 1}`;
+                return `<span class="night-target-pill ${isDone ? 'found' : isTarget ? 'current' : ''}">${label}</span>`;
               }).join('')}
             </div>
 
-            <div class="night-watch-stage" id="night-watch-stage"
+            <p style="font-size:0.82rem; font-weight:700; margin:0 0 0.45rem;">
+              Move your torch over the room (mouse, finger, or arrow keys). Click the treasure when it is <strong>inside the light</strong>!
+            </p>
+
+            <div class="night-watch-stage" id="night-watch-stage" tabindex="0" role="application"
+                 aria-label="Dark room. Use the arrow keys to move the torch, and Enter to pick the treasure in the light. Or press Tab to jump between treasures."
                  onmousemove="StudyHub.moveNightBeam(event)"
                  ontouchstart="StudyHub.moveNightBeam(event)"
-                 ontouchmove="StudyHub.moveNightBeam(event)">
+                 ontouchmove="StudyHub.moveNightBeam(event)"
+                 onkeydown="StudyHub.nightStageKey(event)">
               <svg viewBox="0 0 900 400" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
                 <rect x="0" y="0" width="900" height="400" fill="#090d16" />
                 ${cavernHref ? `<image href="${cavernHref}" x="0" y="0" width="900" height="400" preserveAspectRatio="xMidYMid slice" opacity="0.45" />` : ''}
@@ -4643,69 +5171,132 @@
                 <rect x="390" y="220" width="120" height="160" fill="#1e293b" stroke="#475569" stroke-width="2" opacity="0.55" rx="8" />
                 <rect x="620" y="275" width="120" height="18" fill="#451a03" opacity="0.7" rx="4" />
 
-                ${items.map(it => {
+                ${items.map((it, n) => {
                   const isFound = foundIds.includes(it.id);
+                  const aria = showNames || isFound ? it.name : `Mystery treasure ${n + 1}`;
                   return `
-                    <g class="night-watch-item" onclick="StudyHub.spotNightItem('${it.id}')" style="cursor:pointer;">
+                    <g class="night-watch-item" tabindex="0" role="button" aria-label="${escapeHtml(aria)}${isFound ? ' (found)' : ''}"
+                       data-focus-key="night-${it.id}"
+                       onclick="StudyHub.spotNightItem('${it.id}')"
+                       onfocus="StudyHub.aimNightBeamAt('${it.id}')"
+                       onkeydown="StudyHub.nightItemKey(event, '${it.id}')">
                       <circle cx="${it.x}" cy="${it.y}" r="36" fill="${isFound ? 'rgba(16, 185, 129, 0.42)' : 'rgba(253, 230, 138, 0.16)'}" stroke="${isFound ? '#34d399' : '#fbbf24'}" stroke-width="2.5" />
                       <text x="${it.x}" y="${it.y + 10}" text-anchor="middle" font-size="31">${it.icon}</text>
-                      <rect x="${it.x - 58}" y="${it.y + 38}" width="116" height="20" rx="6" fill="rgba(9,13,22,0.82)" />
-                      <text x="${it.x}" y="${it.y + 52}" text-anchor="middle" fill="#fde68a" font-size="11.5" font-weight="800">${it.name}</text>
+                      ${showNames ? `
+                        <rect x="${it.x - 58}" y="${it.y + 38}" width="116" height="20" rx="6" fill="rgba(9,13,22,0.82)" />
+                        <text class="night-item-label" x="${it.x}" y="${it.y + 52}" text-anchor="middle" fill="#fde68a" font-size="11.5" font-weight="800">${escapeHtml(it.name)}</text>
+                      ` : ''}
                     </g>
                   `;
                 }).join('')}
               </svg>
-              <div class="night-watch-mask" id="night-watch-mask"></div>
+              <div class="night-watch-mask" id="night-watch-mask" style="--beam-x:${beam.x}%; --beam-y:${beam.y}%;"></div>
             </div>
 
             ${allFound ? `
               <div class="feedback-banner show success">
-                🌟 <strong>Amazing!</strong> You and Pencil found all 4 hidden treasures in the dark! (+4 Golden Scarabs!)
+                🌟 <strong>Amazing!</strong> You and Pencil found all ${targets.length} hidden treasures in the dark! ${payoutText(result, '(+4 Golden Scarabs!)')}
                 <div style="margin-top:0.5rem;">
                   <button type="button" class="ask-pencil-hint-btn" onclick="StudyHub.initNightWatch()">Play Torch Game Again &rarr;</button>
                 </div>
               </div>
             ` : ''}
           </div>
-        `;
+        `);
       }
 
       function moveNightBeam(e) {
+        if (!nightWatchState || Date.now() < nightWatchState.beamLockUntil) return;
         const stage = document.getElementById('night-watch-stage');
-        const mask = document.getElementById('night-watch-mask');
-        if (!stage || !mask) return;
+        if (!stage) return;
         const rect = stage.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        const xPct = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
-        const yPct = Math.max(0, Math.min(100, ((clientY - rect.top) / rect.height) * 100));
-        mask.style.setProperty('--beam-x', `${xPct}%`);
-        mask.style.setProperty('--beam-y', `${yPct}%`);
+        if (!rect.width || !rect.height) return;
+        const point = e.touches && e.touches[0] ? e.touches[0] : e;
+        nightWatchState.beam = {
+          x: Math.max(0, Math.min(100, ((point.clientX - rect.left) / rect.width) * 100)),
+          y: Math.max(0, Math.min(100, ((point.clientY - rect.top) / rect.height) * 100))
+        };
+        applyNightBeam();
+      }
+
+      // Point the torch straight at an item (keyboard focus, and Pencil's hint).
+      function aimNightBeamAt(itemId) {
+        if (!nightWatchState) return;
+        const it = nightWatchState.items.find(i => i.id === itemId);
+        if (!it) return;
+        nightWatchState.beam = { x: (it.x / 900) * 100, y: (it.y / 400) * 100 };
+        applyNightBeam();
+      }
+
+      function nightStageKey(e) {
+        if (!nightWatchState || !e) return;
+        const step = 4;
+        const moves = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step * 2], ArrowDown: [0, step * 2] };
+        if (moves[e.key]) {
+          if (typeof e.preventDefault === 'function') e.preventDefault();
+          const [dx, dy] = moves[e.key];
+          nightWatchState.beam = {
+            x: Math.max(0, Math.min(100, nightWatchState.beam.x + dx)),
+            y: Math.max(0, Math.min(100, nightWatchState.beam.y + dy))
+          };
+          applyNightBeam();
+        } else if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
+          if (typeof e.preventDefault === 'function') e.preventDefault();
+          const lit = nightWatchState.items
+            .filter(nightItemInBeam)
+            .sort((a, b) => {
+              const bx = (nightWatchState.beam.x / 100) * 900, by = (nightWatchState.beam.y / 100) * 400;
+              return Math.hypot(a.x - bx, a.y - by) - Math.hypot(b.x - bx, b.y - by);
+            })[0];
+          const hintEl = document.getElementById('modal-pencil-hint-text');
+          if (lit) spotNightItem(lit.id);
+          else if (hintEl) hintEl.textContent = '"It is too dark there! Move the torch onto a treasure first."';
+        }
+      }
+
+      function nightItemKey(e, itemId) {
+        if (!e || (e.key !== 'Enter' && e.key !== ' ')) return;
+        if (typeof e.preventDefault === 'function') e.preventDefault();
+        if (typeof e.stopPropagation === 'function') e.stopPropagation();
+        aimNightBeamAt(itemId);
+        spotNightItem(itemId);
       }
 
       function spotNightItem(itemId) {
         if (!nightWatchState) return;
-        const { items, currentIndex, foundIds } = nightWatchState;
-        const target = items[currentIndex];
-        if (!target) return;
+        const { items, targets, currentIndex, foundIds } = nightWatchState;
+        const target = targets[currentIndex];
+        const item = items.find(i => i.id === itemId);
+        if (!target || !item) return;
+        const hintEl = document.getElementById('modal-pencil-hint-text');
+
+        if (foundIds.includes(itemId)) {
+          if (hintEl) hintEl.textContent = `"You already found that one! Now: ${target.clue}"`;
+          return;
+        }
+        if (!nightItemInBeam(item)) {
+          // Clicking in the dark doesn't count (and doesn't cost anything): shine the torch on it first.
+          if (hintEl) hintEl.textContent = '"It is too dark to see that! Shine the torch on it first."';
+          return;
+        }
 
         if (itemId === target.id) {
-          if (!foundIds.includes(itemId)) {
-            foundIds.push(itemId);
-          }
+          foundIds.push(itemId);
           nightWatchState.currentIndex += 1;
           nightWatchState.battery = Math.min(100, nightWatchState.battery + 10);
           playSound('chime');
-          if (foundIds.length === items.length) {
-            awardScarabs(4, 'night-lantern');
+          announce(`Found the ${item.name}!`);
+          if (foundIds.length === targets.length) {
+            nightWatchState.result = rewardClear('night-watch', 0, 4, 'night-lantern');
+          } else if (hintEl) {
+            hintEl.textContent = `"Yes! That’s the ${item.name}! Next: ${targets[nightWatchState.currentIndex].clue}"`;
           }
           renderNightWatch();
         } else {
           breakStreak();
-          nightWatchState.battery = Math.max(10, nightWatchState.battery - 10);
-          playSound('meow');
-          const hintEl = document.getElementById('modal-pencil-hint-text');
-          if (hintEl) hintEl.textContent = `"Meow! Not that one! Look for: '${target.clue}'"`;
+          nightWatchState.battery = Math.max(0, nightWatchState.battery - 10);
+          if (hintEl) hintEl.textContent = `"Meow! Not that one! Read the clue again: '${target.clue}'"`;
+          announce('Not that one. Read the clue again.');
           renderNightWatch();
         }
       }
@@ -4720,7 +5311,9 @@
           // Display order only: buttons still report the ORIGINAL choice index.
           order: shuffled(FIELD_JOURNAL_CHAPTERS[idx].choices.map((_, i) => i)),
           selectedChoice: null,
-          solved: false
+          wrongPicks: [],
+          solved: false,
+          result: null
         };
         renderFieldJournal();
       }
@@ -4732,7 +5325,7 @@
         const plateEl = document.getElementById('pixar-img-' + (chapter.pixarPlate ?? 0));
         const plateUrl = plateEl && plateEl.src ? plateEl.src : '';
 
-        body.innerHTML = `
+        setStationBody(body, `
           <div>
             <div class="game-progress-bar-row">
               <div style="font-size:0.84rem; font-weight:900; color:var(--mahogany-warm);">
@@ -4741,11 +5334,11 @@
               <div class="game-step-pills">
                 ${FIELD_JOURNAL_CHAPTERS.map((ch, idx) => `
                   <button type="button" class="game-step-pill ${idx === journalState.chapterIdx ? 'active' : ''}" onclick="StudyHub.initFieldJournal(${idx})">
-                    Part ${idx + 1}
+                    Part ${idx + 1}${isCleared('field-journal', idx) ? ' ✓' : ''}
                   </button>
                 `).join('')}
               </div>
-              <button type="button" class="wardrobe-pill-btn" style="padding:0.3rem 0.7rem; font-size:0.78rem;" onclick="StudyHub.speakTextHelper('${chapter.story.replace(/'/g, "\\'")}')">
+              <button type="button" class="wardrobe-pill-btn story-read-aloud-btn" style="padding:0.3rem 0.7rem; font-size:0.78rem;" data-say="${escapeHtml(chapter.story)}">
                 🔊 Read Aloud
               </button>
             </div>
@@ -4761,8 +5354,8 @@
                 </span>
                 <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
                   ${(chapter.vocabNotes || []).map(v => `
-                    <span style="font-size:0.74rem; font-weight:800; background:rgba(245,158,11,0.16); border:1px solid var(--brass-mid); padding:0.15rem 0.5rem; border-radius:999px; color:var(--mahogany-warm);">
-                      💡 ${v}
+                    <span title="${escapeHtml(v.meaning)}" style="font-size:0.74rem; font-weight:800; background:rgba(245,158,11,0.16); border:1px solid var(--brass-mid); padding:0.15rem 0.5rem; border-radius:999px; color:var(--mahogany-warm);">
+                      💡 <strong>${escapeHtml(v.word)}</strong>: ${escapeHtml(v.meaning)}
                     </span>
                   `).join('')}
                 </div>
@@ -4772,20 +5365,34 @@
                 ${chapter.title}
               </h3>
 
-              <p class="journal-chapter-text">${chapter.story}</p>
+              <p class="journal-chapter-text">${escapeHtml(chapter.story)}</p>
 
-              <div class="choice-btn-list">
-                ${journalState.order.map(idx => `
-                  <button type="button" class="story-choice-btn" onclick="StudyHub.chooseJournalOption(${idx})">
-                    ${chapter.choices[idx].text}
-                  </button>
-                `).join('')}
+              <div class="choice-btn-list" role="group" aria-label="Choose what happens next">
+                ${journalState.order.map(idx => {
+                  const isWrong = journalState.wrongPicks.includes(idx);
+                  const isRight = journalState.solved && chapter.choices[idx].correct;
+                  return `
+                  <div style="display:flex; gap:0.5rem; align-items:stretch;">
+                    <button type="button" class="story-choice-btn ${isRight ? 'correct' : ''} ${isWrong ? 'wrong' : ''}"
+                      style="flex:1;"
+                      data-focus-key="story-choice-${idx}"
+                      ${journalState.solved || isWrong ? 'disabled' : ''}
+                      onclick="StudyHub.chooseJournalOption(${idx})">
+                      ${isRight ? '✓ ' : isWrong ? '✗ ' : ''}${escapeHtml(chapter.choices[idx].text)}
+                    </button>
+                    <button type="button" class="wardrobe-pill-btn story-choice-say-btn"
+                      style="padding:0.4rem 0.65rem; font-size:0.88rem; flex-shrink:0;"
+                      aria-label="Hear choice aloud"
+                      data-say="${escapeHtml(chapter.choices[idx].text)}">🔊</button>
+                  </div>
+                `;
+                }).join('')}
               </div>
 
               ${journalState.selectedChoice !== null ? `
                 <div class="feedback-banner show ${journalState.solved ? 'success' : 'warn'}">
-                  ${chapter.choices[journalState.selectedChoice].feedback}
-                  ${journalState.solved ? `
+                  ${escapeHtml(chapter.choices[journalState.selectedChoice].feedback)}
+                  ${journalState.solved ? ` ${payoutText(journalState.result, '(+3 Golden Scarabs!)')}
                     <div style="margin-top:0.65rem;">
                       <button type="button" class="ask-pencil-hint-btn" onclick="StudyHub.nextJournalChapter()">
                         ${journalState.chapterIdx + 1 < FIELD_JOURNAL_CHAPTERS.length ? 'Read Next Part &rarr;' : 'Play Story Again &rarr;'}
@@ -4796,23 +5403,24 @@
               ` : ''}
             </div>
           </div>
-        `;
+        `);
       }
 
       function chooseJournalOption(choiceIdx) {
-        if (!journalState) return;
+        if (!journalState || journalState.solved) return; // locked once the chapter is solved
         const chapter = FIELD_JOURNAL_CHAPTERS[journalState.chapterIdx];
         const chosen = chapter.choices[choiceIdx];
+        if (!chosen || journalState.wrongPicks.includes(choiceIdx)) return;
         journalState.selectedChoice = choiceIdx;
         if (chosen.correct) {
-          if (!journalState.solved) {
-            journalState.solved = true;
-            awardScarabs(3, 'sphinx-scroll');
-            setItemIdx('field-journal', (journalState.chapterIdx + 1) % FIELD_JOURNAL_CHAPTERS.length);
-          }
+          journalState.solved = true;
+          journalState.result = rewardClear('field-journal', journalState.chapterIdx, 3, 'sphinx-scroll');
+          setItemIdx('field-journal', (journalState.chapterIdx + 1) % FIELD_JOURNAL_CHAPTERS.length);
+          announce('Correct! ' + chosen.feedback);
         } else {
+          journalState.wrongPicks.push(choiceIdx);
           breakStreak();
-          playSound('meow');
+          announce('Not quite. ' + chosen.feedback);
         }
         renderFieldJournal();
       }
@@ -4826,26 +5434,32 @@
       let fieldLogState = null;
 
       function initFieldLogs(logIdx = 0) {
+        stopVoiceAudio(); // switching message must silence the previous one
         const log = AUDIO_FIELD_LOGS[logIdx % AUDIO_FIELD_LOGS.length];
         fieldLogState = {
           logIdx: logIdx % AUDIO_FIELD_LOGS.length,
           log,
           showTranscript: false,
           answers: {},
-          submitted: false,
-          playing: false
+          submitted: false, // a check was made: answers are frozen until "Try Again"
+          locked: false,    // all correct: this round is finished
+          listened: false,  // pressed Listen at least once (unlocks the written words)
+          checkedOnce: false,
+          playing: false,
+          result: null
         };
         renderFieldLogs();
       }
 
       function speakFieldLog() {
         if (!fieldLogState) return;
-        fieldLogState.playing = true;
+        const current = fieldLogState;
+        current.playing = true;
+        current.listened = true;
         renderFieldLogs();
-        playSound('purr');
-        playVoiceMp3(fieldLogState.log.audioSrc, fieldLogState.log.transcript, () => {
-          if (fieldLogState) {
-            fieldLogState.playing = false;
+        playVoiceMp3(current.log.audioSrc, current.log.transcript, () => {
+          if (fieldLogState === current) {
+            current.playing = false;
             renderFieldLogs();
           }
         });
@@ -4855,46 +5469,64 @@
 
       function toggleTranscript() {
         if (!fieldLogState) return;
+        if (!fieldLogState.showTranscript && !fieldLogState.listened && !fieldLogState.checkedOnce) {
+          const hintEl = document.getElementById('modal-pencil-hint-text');
+          if (hintEl) hintEl.textContent = '"Listen to Professor West first! Then you can read the words too."';
+          announce('Listen to the message first. Then you can read the words.');
+          return;
+        }
         fieldLogState.showTranscript = !fieldLogState.showTranscript;
         renderFieldLogs();
       }
 
       function answerFieldLogQ(qIdx, optIdx) {
-        if (!fieldLogState) return;
+        if (!fieldLogState || fieldLogState.submitted || fieldLogState.locked) return;
         fieldLogState.answers[qIdx] = optIdx;
         renderFieldLogs();
       }
 
       function checkFieldLogAnswers() {
-        if (!fieldLogState) return;
+        if (!fieldLogState || fieldLogState.submitted || fieldLogState.locked) return;
+        const qs = fieldLogState.log.questions;
+        const hintEl = document.getElementById('modal-pencil-hint-text');
+        if (qs.some((q, idx) => fieldLogState.answers[idx] === undefined)) {
+          if (hintEl) hintEl.textContent = '"Answer every question first, then press Check!"';
+          announce('Answer every question first.');
+          return;
+        }
         fieldLogState.submitted = true;
-        let correctCount = 0;
-        fieldLogState.log.questions.forEach((q, idx) => {
-          if (fieldLogState.answers[idx] === q.answer) correctCount++;
-        });
-        if (correctCount === fieldLogState.log.questions.length) {
-          if (!fieldLogState.awarded) {
-            fieldLogState.awarded = true;
-            awardScarabs(4);
-            setItemIdx('field-logs', fieldLogState.logIdx + 1);
-          }
+        fieldLogState.checkedOnce = true;
+        const correctCount = qs.filter((q, idx) => fieldLogState.answers[idx] === q.answer).length;
+        if (correctCount === qs.length) {
+          fieldLogState.locked = true;
+          fieldLogState.result = rewardClear('field-logs', fieldLogState.logIdx, 4);
+          setItemIdx('field-logs', fieldLogState.logIdx + 1);
+          announce(`All ${qs.length} answers are right!`);
         } else {
           breakStreak();
-          playSound('meow');
+          announce(`You got ${correctCount} out of ${qs.length}. Press Try Again.`);
         }
+        renderFieldLogs();
+      }
+
+      function retryFieldLogs() {
+        if (!fieldLogState || fieldLogState.locked) return;
+        fieldLogState.answers = {};
+        fieldLogState.submitted = false;
         renderFieldLogs();
       }
 
       function renderFieldLogs() {
         const body = document.getElementById('modal-station-body');
         if (!body || !fieldLogState) return;
-        const { log, logIdx, showTranscript, answers, submitted, playing } = fieldLogState;
+        const { log, logIdx, showTranscript, answers, submitted, playing, locked, listened, checkedOnce, result } = fieldLogState;
+        const transcriptUnlocked = listened || checkedOnce;
         let score = 0;
         log.questions.forEach((q, i) => {
           if (answers[i] === q.answer) score++;
         });
 
-        body.innerHTML = `
+        setStationBody(body, `
           <div>
             <div class="game-progress-bar-row">
               <div style="font-size:0.84rem; font-weight:900; color:var(--mahogany-warm);">
@@ -4923,11 +5555,11 @@
                   <div style="font-size:0.78rem; font-weight:900; text-transform:uppercase; color:var(--brass-glow);">📻 ${log.environment}</div>
                   <h3 style="font-family:var(--font-serif); font-size:1.45rem; color:#fff; margin-bottom:0.45rem;">${log.title}</h3>
                   <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                    <button type="button" class="ask-pencil-hint-btn" onclick="StudyHub.speakFieldLog()">
-                      <i class="fa-solid fa-volume-high"></i> ${playing ? 'Playing Voice Message...' : 'Listen to Professor West'}
+                    <button type="button" id="voice-listen-btn" class="ask-pencil-hint-btn" onclick="StudyHub.speakFieldLog()">
+                      <i class="fa-solid fa-volume-high" aria-hidden="true"></i> ${playing ? 'Playing Voice Message...' : 'Listen to Professor West'}
                     </button>
-                    <button type="button" class="wardrobe-pill-btn" onclick="StudyHub.toggleTranscript()">
-                      ${showTranscript ? 'Hide Words' : 'Read the Words'}
+                    <button type="button" id="voice-transcript-btn" class="wardrobe-pill-btn" onclick="StudyHub.toggleTranscript()" aria-pressed="${showTranscript ? 'true' : 'false'}">
+                      ${showTranscript ? 'Hide Words' : transcriptUnlocked ? 'Read the Words' : '🔒 Read the Words (listen first)'}
                     </button>
                   </div>
                 </div>
@@ -4935,25 +5567,28 @@
 
               ${showTranscript ? `
                 <div style="margin-top:0.85rem; padding:0.85rem; background:rgba(255,255,255,0.08); border-radius:10px; font-family:var(--font-serif); font-size:1.15rem; color:#fef3c7;">
-                  "${log.transcript}"
+                  "${escapeHtml(log.transcript)}"
                 </div>
               ` : ''}
             </div>
 
             <div style="display:flex; flex-direction:column; gap:1rem;">
               ${log.questions.map((q, qIdx) => `
-                <div class="journal-spread" style="padding:1rem;">
-                  <div style="font-weight:800; margin-bottom:0.5rem;">${q.q}</div>
+                <div class="journal-spread" style="padding:1rem;" role="group" aria-label="${escapeHtml(q.q)}">
+                  <div style="font-weight:800; margin-bottom:0.5rem;">${escapeHtml(q.q)}</div>
                   <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
                     ${q.options.map((opt, optIdx) => {
                       const picked = answers[qIdx] === optIdx;
-                      const isCorrectOpt = submitted && optIdx === q.answer;
-                      const isWrongPicked = submitted && picked && optIdx !== q.answer;
+                      // Only the child's OWN pick is marked after a check, so the right answer is never handed out.
+                      const mark = submitted && picked ? (optIdx === q.answer ? 'right' : 'wrong') : '';
                       return `
                         <button type="button" class="wardrobe-pill-btn ${picked ? 'equipped' : ''}"
-                          style="${isCorrectOpt ? 'border-color:#10b981; background:#d1fae5; color:#065f46;' : isWrongPicked ? 'border-color:#f43f5e; background:#ffe4e6; color:#9f1239;' : ''}"
+                          data-focus-key="voice-${qIdx}-${optIdx}" ${mark ? `data-mark="${mark}"` : ''}
+                          aria-pressed="${picked ? 'true' : 'false'}"
+                          ${submitted || locked ? 'disabled' : ''}
+                          style="${mark === 'right' ? 'border-color:#10b981; background:#d1fae5; color:#065f46;' : mark === 'wrong' ? 'border-color:#f43f5e; background:#ffe4e6; color:#9f1239;' : ''}"
                           onclick="StudyHub.answerFieldLogQ(${qIdx}, ${optIdx})">
-                          ${isCorrectOpt ? '✓ ' : isWrongPicked ? '✗ ' : ''}${opt}
+                          ${mark === 'right' ? '✓ ' : mark === 'wrong' ? '✗ ' : ''}${escapeHtml(opt)}
                         </button>
                       `;
                     }).join('')}
@@ -4963,23 +5598,29 @@
             </div>
 
             <div style="margin-top:1rem; display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
-              <button type="button" class="ask-pencil-hint-btn" onclick="StudyHub.checkFieldLogAnswers()">
-                Check My Answers
-              </button>
+              ${submitted && !locked ? `
+                <button type="button" id="voice-retry-btn" class="ask-pencil-hint-btn" onclick="StudyHub.retryFieldLogs()">
+                  Try Again
+                </button>
+              ` : `
+                <button type="button" id="voice-check-btn" class="ask-pencil-hint-btn" ${locked ? 'disabled' : ''} onclick="StudyHub.checkFieldLogAnswers()">
+                  Check My Answers
+                </button>
+              `}
               <button type="button" class="wardrobe-pill-btn" onclick="StudyHub.initFieldLogs(${fieldLogState.logIdx + 1})">
                 Next Voice Message &rarr;
               </button>
             </div>
 
             ${submitted ? `
-              <div class="feedback-banner show ${score === log.questions.length ? 'success' : 'warn'}">
-                ${score === log.questions.length
-                  ? `🎧 Amazing listening (${score} out of ${log.questions.length})! You won +4 Golden Scarabs!`
-                  : `You got ${score} out of ${log.questions.length}. Click "Listen to Professor West" or "Read the Words" to check!`}
+              <div class="feedback-banner show ${locked ? 'success' : 'warn'}">
+                ${locked
+                  ? `🎧 Amazing listening (${score} out of ${log.questions.length})! ${payoutText(result, 'You won +4 Golden Scarabs!')}`
+                  : `You got ${score} out of ${log.questions.length}. Listen again or read the words, then press "Try Again"!`}
               </div>
             ` : ''}
           </div>
-        `;
+        `);
       }
 
       // ================= STATION 6: WORLD TREASURE MAP =================
@@ -4988,10 +5629,10 @@
         if (!body) return;
         const currentStop = EXPEDITION_MAP_STOPS[state.mapCurrentStop] || EXPEDITION_MAP_STOPS[0];
 
-        body.innerHTML = `
+        setStationBody(body, `
           <div>
             <p style="font-size:0.98rem; font-weight:800; margin-bottom:0.75rem;">
-              Travel with <strong>Professor West &amp; Pencil</strong> across all 6 places! Click any stop on the map or answer the <strong>Speaking Question</strong> to move forward!
+              Travel with <strong>Professor West &amp; Pencil</strong> across all 6 places! Win a stop’s game for the first time, or answer its <strong>Speaking Question</strong> with Gareth, to tick it off (+2 Golden Scarabs, once per stop).
             </p>
 
             <div style="background:linear-gradient(145deg, #fef3c7, #fde68a); border:3px solid var(--brass-mid); border-radius:16px; padding:0.5rem; margin-bottom:1rem; box-shadow:0 8px 20px rgba(0,0,0,0.2);">
@@ -5002,7 +5643,10 @@
                   const isCurrent = state.mapCurrentStop === idx;
                   const isDone = state.completedMapStops.includes(idx);
                   return `
-                    <g onclick="StudyHub.completeMapStop(${idx})" style="cursor:pointer;">
+                    <g onclick="StudyHub.selectMapStop(${idx})" style="cursor:pointer;" tabindex="0" role="button"
+                       data-focus-key="map-stop-${idx}"
+                       aria-label="${escapeHtml(stop.name)}${isDone ? ' (finished)' : ''}"
+                       onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); StudyHub.selectMapStop(${idx}); }">
                       <circle cx="${stop.cx}" cy="${stop.cy}" r="${isCurrent ? 24 : 18}"
                               fill="${isCurrent ? '#10b981' : isDone ? '#f59e0b' : '#fffbeb'}"
                               stroke="#78350f" stroke-width="3" />
@@ -5044,11 +5688,11 @@
                     </div>
 
                     <div style="display:flex; gap:0.45rem; flex-wrap:wrap; margin-top:0.4rem;">
-                      <button type="button" class="wardrobe-pill-btn equipped" onclick="StudyHub.completeMapStop(${idx})">
-                        ${isDone ? 'Done! (+2 Scarabs)' : 'Finish Stop & Move On'}
+                      <button type="button" class="wardrobe-pill-btn equipped" data-focus-key="map-finish-${idx}" ${isDone ? 'disabled' : ''} onclick="StudyHub.completeMapStop(${idx})">
+                        ${isDone ? '✅ Finished' : 'Finish Stop &amp; Move On (+2)'}
                       </button>
-                      <button type="button" class="wardrobe-pill-btn" onclick="StudyHub.openStation('${stop.linkedStation}')">
-                        Play Game &rarr;
+                      <button type="button" class="wardrobe-pill-btn" onclick="StudyHub.playMapStop(${idx})">
+                        Play Game${stop.linkedLevel ? ` (Level ${{ starters: 1, movers: 2, flyers: 3 }[stop.linkedLevel]})` : ''} &rarr;
                       </button>
                     </div>
                   </div>
@@ -5056,16 +5700,41 @@
               }).join('')}
             </div>
           </div>
-        `;
+        `);
+      }
+
+      function selectMapStop(stopIdx) {
+        if (!EXPEDITION_MAP_STOPS[stopIdx]) return;
+        state.mapCurrentStop = stopIdx;
+        saveState();
+        renderExpeditionMap();
+      }
+
+      function playMapStop(stopIdx) {
+        const stop = EXPEDITION_MAP_STOPS[stopIdx];
+        if (!stop) return;
+        state.mapCurrentStop = stopIdx;
+        if (stop.linkedLevel && state.level !== stop.linkedLevel) {
+          state.level = stop.linkedLevel;
+          saveState();
+        }
+        openStation(stop.linkedStation);
       }
 
       function completeMapStop(stopIdx) {
-        if (!state.completedMapStops.includes(stopIdx)) {
-          state.completedMapStops.push(stopIdx);
+        if (!EXPEDITION_MAP_STOPS[stopIdx]) return;
+        if (state.completedMapStops.includes(stopIdx)) {
+          // Already ticked off: no second payout.
+          const hintEl = document.getElementById('modal-pencil-hint-text');
+          if (hintEl) hintEl.textContent = '"We already finished this stop! Pick a stop we haven’t visited yet."';
+          if (state.activeStation === 'expedition-map') renderExpeditionMap();
+          return;
         }
-        state.mapCurrentStop = (stopIdx + 1) % EXPEDITION_MAP_STOPS.length;
-        awardScarabs(2);
-        renderExpeditionMap();
+        state.completedMapStops.push(stopIdx);
+        const nextOpen = EXPEDITION_MAP_STOPS.findIndex((_, i) => !state.completedMapStops.includes(i));
+        state.mapCurrentStop = nextOpen >= 0 ? nextOpen : stopIdx;
+        awardScarabs(MAP_STOP_REWARD, undefined, { noStreak: true });
+        if (state.activeStation === 'expedition-map') renderExpeditionMap();
       }
 
       // ================= STATION 7: 3D PIXAR DRESS-UP MIRROR & TREASURE SHELF =================
@@ -5254,6 +5923,18 @@
         const station = state.activeStation;
 
         if (station === 'lexicon-dig' && digState) {
+          if (digState.phase === 'spell') {
+            const need = digState.item.word[digState.spelled.length];
+            const tileIdx = digState.tiles.findIndex(t => !t.used && t.char === need);
+            digState.hintUsed = true;
+            if (tileIdx >= 0) placeDigLetter(tileIdx, { fromHint: true });
+            if (hintEl) hintEl.textContent = `"*Tap!* I put the letter '${need}' in the next space for you. (${digState.item.phonicsHint}) I helped, so this is a practice word!"`;
+            return;
+          }
+          if (digState.phase === 'done') {
+            if (hintEl) hintEl.textContent = `"${digState.item.phonicsHint}"`;
+            return;
+          }
           if (digState.crackedCellIndex !== null) {
             digState.hintUsed = true;
             if (hintEl) hintEl.textContent = `"Pencil’s Clue: ${digState.item.phonicsHint} Click '${digState.item.repairAnswer}'! (I helped, so this is a practice word.)"`;
@@ -5270,28 +5951,43 @@
             if (hintEl) hintEl.textContent = `"${digState.item.phonicsHint}"`;
           }
         } else if (station === 'rosetta-cipher' && cipherState) {
+          if (cipherState.solved) {
+            if (hintEl) hintEl.textContent = `"${cipherState.item.explanation}"`;
+            return;
+          }
           const wrongOpts = cipherState.item.options.filter(
-            o => o !== cipherState.item.answer && !cipherState.eliminatedOptions.includes(o)
+            o => o !== cipherState.item.answer && !cipherState.eliminatedOptions.includes(o) && !cipherState.wrongPicks.includes(o)
           );
+          // Same rule as the Word Dig: once Pencil helps, this tablet becomes a practice item (no Scarabs).
+          cipherState.hintUsed = true;
           if (wrongOpts.length > 0) {
-            cipherState.eliminatedOptions.push(wrongOpts[0]);
+            cipherState.eliminatedOptions.push(wrongOpts[Math.floor(Math.random() * wrongOpts.length)]);
             renderRosettaCipher();
           }
-          if (hintEl) hintEl.textContent = `"*Bap!* I knocked away a wrong stone with my paw! Clue: ${cipherState.item.pencilClue}"`;
+          if (hintEl) hintEl.textContent = `"*Bap!* I knocked away a wrong stone with my paw! Clue: ${cipherState.item.pencilClue} (I helped, so this tablet is practice.)"`;
         } else if (station === 'night-watch' && nightWatchState) {
-          const target = nightWatchState.items[nightWatchState.currentIndex];
+          const target = nightWatchState.targets[nightWatchState.currentIndex];
           if (target && hintEl) {
-            const mask = document.getElementById('night-watch-mask');
-            if (mask) {
-              mask.style.setProperty('--beam-x', `${(target.x / 900) * 100}%`);
-              mask.style.setProperty('--beam-y', `${(target.y / 400) * 100}%`);
+            if (nightWatchState.battery < TORCH_HINT_COST) {
+              hintEl.textContent = `"My torch battery is too low to help (${nightWatchState.battery}%)! Find a treasure on your own to charge it up (+10%)."`;
+              return;
             }
-            hintEl.textContent = `"Meow! Follow my flashlight beam—I pointed it right at the ${target.name}!"`;
+            nightWatchState.battery -= TORCH_HINT_COST;
+            nightWatchState.beam = { x: (target.x / 900) * 100, y: (target.y / 400) * 100 };
+            nightWatchState.beamLockUntil = Date.now() + 2000;
+            renderNightWatch();
+            hintEl.textContent = state.level === 'starters'
+              ? `"Meow! Follow my flashlight beam—I pointed it right at the ${target.name}! (That used ${TORCH_HINT_COST}% battery.)"`
+              : `"Meow! I pointed my flashlight at it—look inside the beam! (That used ${TORCH_HINT_COST}% battery.)"`;
           }
         } else if (station === 'field-journal' && journalState) {
           const ch = FIELD_JOURNAL_CHAPTERS[journalState.chapterIdx];
           if (hintEl && ch) hintEl.textContent = `"Pencil’s Clue: ${ch.pencilTip}"`;
         } else if (station === 'field-logs' && fieldLogState) {
+          if (!fieldLogState.listened && !fieldLogState.checkedOnce) {
+            if (hintEl) hintEl.textContent = '"Press \'Listen to Professor West\' first! After you listen, I can show you the words."';
+            return;
+          }
           fieldLogState.showTranscript = true;
           renderFieldLogs();
           if (hintEl) hintEl.textContent = '"I opened the written words above so you can read along!"';
@@ -5301,6 +5997,7 @@
       }
 
       // ================= MODAL ROUTER =================
+      let lastModalOpener = null;
       function openStation(stationId) {
         state.activeStation = stationId;
         const backdrop = document.getElementById('activity-modal-backdrop');
@@ -5322,7 +6019,13 @@
         if (titleEl) titleEl.textContent = m.title;
         if (iconEl) iconEl.textContent = m.icon;
         if (hintEl) hintEl.textContent = m.hint;
+        const wasOpen = Boolean(backdrop && backdrop.classList.contains('open'));
+        if (!wasOpen) {
+          // Remember what opened the dialog so focus can go back there on close.
+          lastModalOpener = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+        }
         if (backdrop) backdrop.classList.add('open');
+        stopVoiceAudio();
 
         syncHUD();
 
@@ -5333,6 +6036,12 @@
         else if (stationId === 'field-logs') initFieldLogs(getItemIdx('field-logs'));
         else if (stationId === 'expedition-map') renderExpeditionMap();
         else if (stationId === 'curio-cabinet') renderCurioCabinet();
+
+        // Move keyboard/screen-reader focus into the dialog (its title).
+        if (titleEl) {
+          titleEl.setAttribute('tabindex', '-1');
+          try { titleEl.focus({ preventScroll: true }); } catch (e) { titleEl.focus(); }
+        }
       }
 
       function closeModal() {
@@ -5340,6 +6049,11 @@
         stopVoiceAudio();
         const backdrop = document.getElementById('activity-modal-backdrop');
         if (backdrop) backdrop.classList.remove('open');
+        const opener = lastModalOpener;
+        lastModalOpener = null;
+        if (opener && opener.isConnected && typeof opener.focus === 'function') {
+          try { opener.focus({ preventScroll: true }); } catch (e) { opener.focus(); }
+        }
       }
 
       function awardBonusScarab(amt) {
@@ -5360,6 +6074,8 @@
         if (!window.confirm('Reset ALL progress (Scarabs, treasures, hats, streak)? This cannot be undone.')) return;
         localStorage.removeItem(STORAGE_KEY);
         state = loadState();
+        // Write the fresh save straight away: otherwise the next load would migrate the old v5 save back in.
+        saveState();
         syncHUD();
         setPencilSpeech('"Fresh notebook ready! Let’s start our adventure!"', 'Fresh Start');
       }
@@ -5412,204 +6128,596 @@
         });
       }
 
-      function runAutotest() {
+      // One delegated listener for every "🔊" button: text lives in a data-say attribute (HTML-escaped),
+      // never inside an inline onclick string, so quotes/apostrophes in the content can't break it.
+      function setupDelegatedSpeech() {
+        document.addEventListener('click', (e) => {
+          const el = e.target && e.target.closest ? e.target.closest('[data-say]') : null;
+          if (!el) return;
+          speakTextHelper(el.getAttribute('data-say'));
+        });
+      }
+
+      function getModalFocusables() {
+        const modal = document.querySelector('#activity-modal-backdrop .activity-modal');
+        if (!modal) return [];
+        return Array.from(modal.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+        )).filter(el => el.getClientRects().length > 0);
+      }
+
+      // Keep keyboard focus inside the open activity dialog (WAI-ARIA dialog pattern).
+      function setupModalFocusTrap() {
+        document.addEventListener('keydown', (e) => {
+          if (e.key !== 'Tab' || !state.activeStation) return;
+          const backdrop = document.getElementById('activity-modal-backdrop');
+          if (!backdrop || !backdrop.classList.contains('open')) return;
+          const items = getModalFocusables();
+          if (!items.length) { e.preventDefault(); return; }
+          const first = items[0];
+          const last = items[items.length - 1];
+          const active = document.activeElement;
+          const inside = backdrop.contains(active);
+          if (e.shiftKey && (active === first || !inside)) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && (active === last || !inside)) {
+            e.preventDefault();
+            first.focus();
+          }
+        });
+      }
+
+      async function runAutotest() {
         const results = [];
         const check = (name, cond) => {
           results.push(`${name}:${cond ? 'PASS' : 'FAIL'}`);
         };
+        const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        const jsErrors = [];
+        window.addEventListener('error', (e) => jsErrors.push(String((e && e.message) || e)));
+        const bodyEl = () => document.getElementById('modal-station-body');
+        let sawObjectObject = false;
+        const scanBody = () => {
+          const b = bodyEl();
+          if (b && b.innerHTML.includes('[object Object]')) sawObjectObject = true;
+        };
 
-        // Verify Intro Video opens automatically on first visit, embeds inline Base64 Pixar plates, and switches scenes
-        openIntroVideo();
-        const allInlinePlates = [0, 1, 2, 3].every(i => {
-          const el = document.getElementById('pixar-img-' + i);
-          return el && el.getAttribute('src') && el.getAttribute('src').startsWith('data:image/jpeg;base64,');
-        });
-        check('pixarInlinePlates', allInlinePlates);
+        // ---- Storage isolation: the autotest runs on its OWN key and must never touch the learner's save ----
+        const realKeys = [REAL_STORAGE_KEY].concat(LEGACY_STORAGE_KEYS);
+        const readReal = () => realKeys.map(k => { try { return localStorage.getItem(k); } catch (e) { return 'ERR'; } });
+        const realSnapshot = readReal();
+        check('autotestUsesOwnStorageKey', STORAGE_KEY !== REAL_STORAGE_KEY && !LEGACY_STORAGE_KEYS.includes(STORAGE_KEY));
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        state = loadState();
 
-        // Verify Main Study Page uses Pixar 3D artwork & station card banners
-        const studyBg = document.getElementById('study-main-pixar-bg');
-        const bannersHydrated = document.querySelectorAll('.station-pixar-banner').length === 6;
-        check('pixarMainStudyHub', Boolean(studyBg && studyBg.getAttribute('href') && studyBg.getAttribute('href').startsWith('data:image/jpeg;base64,')) && bannersHydrated);
+        // Test helpers that play the games the way a child would (through the public game functions).
+        const revealAllDigLetters = () => {
+          digState.cells.filter(c => c.content.type === 'letter' && !c.collected).forEach(c => {
+            c.cover = 'revealed';
+            handleCellReveal(c);
+          });
+          renderLexiconDig();
+        };
+        const spellDigWord = () => {
+          const word = digState.item.word;
+          for (let k = 0; k < word.length && digState.phase === 'spell'; k++) {
+            const need = word[digState.spelled.length];
+            placeDigLetter(digState.tiles.findIndex(t => !t.used && t.char === need));
+          }
+        };
+        const solveTorchRun = () => {
+          for (let guard = 0; guard < 20 && nightWatchState.foundIds.length < nightWatchState.targets.length; guard++) {
+            const t = nightWatchState.targets[nightWatchState.currentIndex];
+            aimNightBeamAt(t.id);
+            spotNightItem(t.id);
+          }
+        };
 
-        // Verify Mobile/Tablet Anti-Fat-Finger Camera Zone Switcher
-        setCameraZone('desk');
-        const svgViewBoxZoomed = document.getElementById('study-svg').getAttribute('viewBox') === '315 175 520 480';
-        setCameraZone('full');
-        const svgViewBoxFull = document.getElementById('study-svg').getAttribute('viewBox') === '0 0 1200 675';
-        check('cameraZoneSwitch', svgViewBoxZoomed && svgViewBoxFull);
+        try {
+          // Verify Intro Video opens automatically on first visit, embeds inline Base64 Pixar plates, and switches scenes
+          openIntroVideo();
+          const allInlinePlates = [0, 1, 2, 3].every(i => {
+            const el = document.getElementById('pixar-img-' + i);
+            return el && el.getAttribute('src') && el.getAttribute('src').startsWith('data:image/jpeg;base64,');
+          });
+          check('pixarInlinePlates', allInlinePlates);
 
-        // Verify Real Audio MP3 sources configured for Classical Music & Neural Voiceover
-        const hasRealMp3Config = CLASSICAL_TRACKS.every(t => t.audioSrc && t.audioSrc.endsWith('.mp3')) &&
-          INTRO_SCENES.every(s => s.audioSrc && s.audioSrc.endsWith('.mp3')) &&
-          AUDIO_FIELD_LOGS.every(l => l.audioSrc && l.audioSrc.endsWith('.mp3'));
-        check('realMp3AudioConfigured', hasRealMp3Config);
+          // Verify Main Study Page uses Pixar 3D artwork & station card banners
+          const studyBg = document.getElementById('study-main-pixar-bg');
+          const bannersHydrated = document.querySelectorAll('.station-pixar-banner').length === 6;
+          check('pixarMainStudyHub', Boolean(studyBg && studyBg.getAttribute('href') && studyBg.getAttribute('href').startsWith('data:image/jpeg;base64,')) && bannersHydrated);
 
-        setIntroScene(2);
-        check('introVideoScenes', introSceneIndex === 2);
-        closeIntroVideo();
-        check('introVideoCloseStartsMusic', musicPlaying === true);
+          // Verify Mobile/Tablet Anti-Fat-Finger Camera Zone Switcher
+          setCameraZone('desk');
+          const svgViewBoxZoomed = document.getElementById('study-svg').getAttribute('viewBox') === '315 175 520 480';
+          setCameraZone('full');
+          const svgViewBoxFull = document.getElementById('study-svg').getAttribute('viewBox') === '0 0 1200 675';
+          check('cameraZoneSwitch', svgViewBoxZoomed && svgViewBoxFull);
 
-        // Verify Classical Music track cycling
-        nextClassicalTrack();
-        check('classicalMusicCycle', currentTrackIndex === 1);
-        stopClassicalMusic();
+          // Verify Real Audio MP3 sources configured for Classical Music & Neural Voiceover
+          const hasRealMp3Config = CLASSICAL_TRACKS.every(t => t.audioSrc && t.audioSrc.endsWith('.mp3')) &&
+            INTRO_SCENES.every(s => s.audioSrc && s.audioSrc.endsWith('.mp3')) &&
+            AUDIO_FIELD_LOGS.every(l => l.audioSrc && l.audioSrc.endsWith('.mp3'));
+          check('realMp3AudioConfigured', hasRealMp3Config);
 
-        setLevel('movers');
-        check('levelSwitch', state.level === 'movers');
-        setLevel('starters');
+          setIntroScene(2);
+          check('introVideoScenes', introSceneIndex === 2);
+          closeIntroVideo();
+          check('introVideoCloseStartsMusic', musicPlaying === true);
 
-        // 1. Word Dig + Cracked Tile Repair
-        openStation('lexicon-dig');
-        setDigTool('pickaxe');
-        excavateCell(0);
-        excavateCell(1);
-        check('digCrack', digState.crackedCellIndex === 1);
-        solveGlueRepair(digState.item.repairAnswer);
-        check('digGlueRepair', digState.crackedCellIndex === null);
-        triggerContextualHint();
-        check('digPencilHint', digState.foundLetters.length >= 1);
+          // Verify Classical Music track cycling
+          nextClassicalTrack();
+          check('classicalMusicCycle', currentTrackIndex === 1);
+          stopClassicalMusic();
 
-        // 2. Stone Puzzle + Pencil Hint + Solve + Vault Door
-        openStation('rosetta-cipher');
-        triggerContextualHint();
-        check('rosettaPencilEliminate', cipherState.eliminatedOptions.length === 1);
-        selectCipherStone(cipherState.item.answer);
-        const vaultUnlocked = Boolean(document.getElementById('rosetta-vault-door')?.classList.contains('vault-unlocked'));
-        check('rosettaSolve', cipherState.solved === true && state.unlockedCurios.includes('rosetta-key') && vaultUnlocked);
+          setLevel('movers');
+          check('levelSwitch', state.level === 'movers');
+          setLevel('starters');
 
-        // 3. Pencil's Torch Game
-        openStation('night-watch');
-        ['compass', 'owl', 'key', 'crown'].forEach(id => spotNightItem(id));
-        check('nightWatchComplete', state.unlockedCurios.includes('night-lantern'));
-
-        // 4. Adventure Story Book
-        openStation('field-journal');
-        chooseJournalOption(1);
-        check('journalPoliteChoice', journalState.solved === true && state.unlockedCurios.includes('sphinx-scroll'));
-
-        // 5. Voice Messages
-        openStation('field-logs');
-        answerFieldLogQ(0, 0);
-        answerFieldLogQ(1, 1);
-        answerFieldLogQ(2, 1);
-        check('fieldLogsQuiz', (checkFieldLogAnswers(), fieldLogState.submitted === true));
-
-        // 6. World Treasure Map & 3D Pixar Dress-Up Mirror
-        openStation('expedition-map');
-        completeMapStop(0);
-        check('expeditionMapAdvance', state.completedMapStops.includes(0) && Boolean(document.getElementById('expedition-world-svg')));
-        openStation('curio-cabinet');
-        toggleAccessory('glasses-brass');
-        const mirrorSvgExists = Boolean(document.getElementById('dressup-mirror-svg'));
-        const mirrorGlassesVisible = document.getElementById('mirror-acc-glasses-brass')?.style.display === 'block';
-        check('pencilWardrobe', state.equippedAccessories['glasses-brass'] === true && mirrorSvgExists && mirrorGlassesVisible);
-        applyOutfitPreset('adventurer');
-        check('outfitPreset', state.equippedAccessories['bandana-red'] === true && state.equippedAccessories['collar-scarab'] === true);
-        const shelfTrophyVisible = document.getElementById('shelf-trophy-rosetta-key')?.style.display === 'block';
-        check('livingShelfTrophies', shelfTrophyVisible);
-        closeModal();
-
-        // ---- Content lint: every item in every game must be internally consistent ----
-        const blanks = (s) => (s.match(/_/g) || []).length;
-        const digLintOk = Object.values(LEXICON_DIG_DATA).flat().every(it =>
-          blanks(it.repairQuestion) === it.repairAnswer.length &&
-          it.repairOptions.includes(it.repairAnswer) &&
-          new Set(it.repairOptions).size === it.repairOptions.length);
-        check('lintWordDig', digLintOk);
-        const cipherLintOk = Object.values(ROSETTA_CIPHER_DATA).flat().every(it =>
-          it.options.includes(it.answer) && new Set(it.options).size === it.options.length);
-        check('lintStonePuzzle', cipherLintOk);
-        check('lintStory', FIELD_JOURNAL_CHAPTERS.every(ch => ch.choices.filter(c => c.correct).length === 1));
-        check('lintVoice', AUDIO_FIELD_LOGS.every(l => l.questions.every(q => q.answer >= 0 && q.answer < q.options.length)));
-        check('lintTorch', Object.values(NIGHT_WATCH_DATA).every(list =>
-          new Set(list.map(i => i.id)).size === list.length));
-        check('torchCopyHonest', !Array.from(document.querySelectorAll('.station-body-copy'))
-          .some(el => /battery runs out/i.test(el.textContent)));
-
-        // ---- Word Dig: finishing a word purely with Pencil's hints must not pay out Scarabs ----
-        openStation('lexicon-dig');
-        const scarabsBeforeHints = state.scarabs;
-        state.streak = 4;
-        for (let i = 0; i < 12 && digState.foundLetters.length < digState.item.word.length; i++) triggerContextualHint();
-        check('hintFarmNoScarabs', digState.foundLetters.length === digState.item.word.length &&
-          state.scarabs === scarabsBeforeHints && state.streak === 4);
-        check('hintFarmStillUnlocksTablet', state.unlockedCurios.includes('clay-tablet'));
-
-        // ---- Streak must break on a wrong answer in every game, not just the Stone Puzzle ----
-        openStation('night-watch');
-        state.streak = 3;
-        spotNightItem('owl'); // current target is the compass, so this is wrong
-        check('streakBreaksTorch', state.streak === 0);
-        state.streak = 3;
-        openStation('field-journal');
-        chooseJournalOption(FIELD_JOURNAL_CHAPTERS[journalState.chapterIdx].choices.findIndex(c => !c.correct));
-        check('streakBreaksStory', state.streak === 0);
-        openStation('field-logs');
-        state.streak = 3;
-        checkFieldLogAnswers(); // nothing answered
-        check('streakBreaksVoice', state.streak === 0);
-        openStation('lexicon-dig');
-        state.streak = 3;
-        const crackCell = digState.cells.find(c => c.cover === 'sand' && c.content.type !== 'letter');
-        if (crackCell) {
+          // 1. Word Dig + Cracked Tile Repair
+          openStation('lexicon-dig');
+          scanBody();
           setDigTool('pickaxe');
-          excavateCell(crackCell.index);
-          const wrongOpt = digState.item.repairOptions.find(o => o !== digState.item.repairAnswer);
-          solveGlueRepair(wrongOpt);
-        }
-        check('streakBreaksDigRepair', state.streak === 0);
-        closeModal();
+          const sandCell = digState.cells.find(c => c.cover === 'sand');
+          if (sandCell) excavateCell(sandCell.index);
+          check('digCrack', Boolean(sandCell) && digState.crackedCellIndex === sandCell.index);
+          solveGlueRepair(digState.item.repairAnswer);
+          check('digGlueRepair', digState.crackedCellIndex === null);
+          triggerContextualHint();
+          check('digPencilHint', digState.foundLetters.length >= 1);
 
-        // ---- Bonus / teacher Scarabs must not inflate the streak ----
-        state.streak = 0;
-        awardBonusScarab(5);
-        check('bonusNoStreak', state.streak === 0);
+          // 2. Stone Puzzle + Pencil Hint + Solve + Vault Door
+          openStation('rosetta-cipher');
+          scanBody();
+          triggerContextualHint();
+          check('rosettaPencilEliminate', cipherState.eliminatedOptions.length === 1);
+          selectCipherStone(cipherState.item.answer);
+          const vaultUnlocked = Boolean(document.getElementById('rosetta-vault-door')?.classList.contains('vault-unlocked'));
+          check('rosettaSolve', cipherState.solved === true && state.unlockedCurios.includes('rosetta-key') && vaultUnlocked);
 
-        // ---- Voice quiz: a perfect score pays out once, however often "Check" is pressed ----
-        openStation('field-logs');
-        AUDIO_FIELD_LOGS[fieldLogState.logIdx].questions.forEach((q, i) => answerFieldLogQ(i, q.answer));
-        const scarabsBeforeCheck = state.scarabs;
-        checkFieldLogAnswers();
-        checkFieldLogAnswers();
-        checkFieldLogAnswers();
-        check('voiceQuizPaysOnce', state.scarabs === scarabsBeforeCheck + 4);
-        closeModal();
+          // 3. Pencil's Torch Game
+          openStation('night-watch');
+          scanBody();
+          solveTorchRun();
+          check('nightWatchComplete', state.unlockedCurios.includes('night-lantern'));
 
-        // ---- Story: choices are shuffled for display but still map to the right answer ----
-        const seenCorrectSlots = new Set();
-        let orderOk = true;
-        for (let i = 0; i < 60; i++) {
+          // 4. Adventure Story Book
+          openStation('field-journal');
+          scanBody();
+          chooseJournalOption(1);
+          check('journalPoliteChoice', journalState.solved === true && state.unlockedCurios.includes('sphinx-scroll'));
+
+          // 5. Voice Messages
+          openStation('field-logs');
+          scanBody();
+          answerFieldLogQ(0, 0);
+          answerFieldLogQ(1, 1);
+          answerFieldLogQ(2, 1);
+          check('fieldLogsQuiz', (checkFieldLogAnswers(), fieldLogState.submitted === true));
+
+          // 6. World Treasure Map & 3D Pixar Dress-Up Mirror
+          openStation('expedition-map');
+          scanBody();
+          completeMapStop(0);
+          check('expeditionMapAdvance', state.completedMapStops.includes(0) && Boolean(document.getElementById('expedition-world-svg')));
+          openStation('curio-cabinet');
+          toggleAccessory('glasses-brass');
+          const mirrorSvgExists = Boolean(document.getElementById('dressup-mirror-svg'));
+          const mirrorGlassesVisible = document.getElementById('mirror-acc-glasses-brass')?.style.display === 'block';
+          check('pencilWardrobe', state.equippedAccessories['glasses-brass'] === true && mirrorSvgExists && mirrorGlassesVisible);
+          applyOutfitPreset('adventurer');
+          check('outfitPreset', state.equippedAccessories['bandana-red'] === true && state.equippedAccessories['collar-scarab'] === true);
+          const shelfTrophyVisible = document.getElementById('shelf-trophy-rosetta-key')?.style.display === 'block';
+          check('livingShelfTrophies', shelfTrophyVisible);
+          closeModal();
+
+          // ---- Content lint: every item in every game must be internally consistent ----
+          const blanks = (s) => (s.match(/_/g) || []).length;
+          const digLintOk = Object.values(LEXICON_DIG_DATA).flat().every(it =>
+            blanks(it.repairQuestion) === it.repairAnswer.length &&
+            it.repairOptions.includes(it.repairAnswer) &&
+            new Set(it.repairOptions).size === it.repairOptions.length);
+          check('lintWordDig', digLintOk);
+          const cipherLintOk = Object.values(ROSETTA_CIPHER_DATA).flat().every(it =>
+            it.options.includes(it.answer) && new Set(it.options).size === it.options.length);
+          check('lintStonePuzzle', cipherLintOk);
+          check('lintStoneWhyForEveryWrongOption', Object.values(ROSETTA_CIPHER_DATA).flat().every(it =>
+            it.why && it.options.filter(o => o !== it.answer).every(o => typeof it.why[o] === 'string' && it.why[o].length > 15)));
+          check('lintStory', FIELD_JOURNAL_CHAPTERS.every(ch => ch.choices.filter(c => c.correct).length === 1));
+          check('lintVoice', AUDIO_FIELD_LOGS.every(l => l.questions.every(q => q.answer >= 0 && q.answer < q.options.length)));
+          check('lintTorch', Object.values(NIGHT_WATCH_DATA).every(list =>
+            new Set(list.map(i => i.id)).size === list.length));
+          check('torchCopyHonest', !Array.from(document.querySelectorAll('.station-body-copy'))
+            .some(el => /battery runs out/i.test(el.textContent)));
+
+          // ---- Word Dig: finishing a word purely with Pencil's hints must not pay out Scarabs ----
+          openStation('lexicon-dig');
+          const scarabsBeforeHints = state.scarabs;
+          state.streak = 4;
+          for (let i = 0; i < 40 && digState.phase !== 'done'; i++) triggerContextualHint();
+          check('hintFarmNoScarabs', digState.phase === 'done' && state.scarabs === scarabsBeforeHints && state.streak === 4);
+          check('hintFarmStillUnlocksTablet', state.unlockedCurios.includes('clay-tablet'));
+
+          // ---- Streak must break on a wrong answer in every game, not just the Stone Puzzle ----
+          openStation('night-watch');
+          state.streak = 3;
+          {
+            const tgt = nightWatchState.targets[nightWatchState.currentIndex];
+            const wrongItem = nightWatchState.items.find(i => i.id !== tgt.id);
+            aimNightBeamAt(wrongItem.id);
+            spotNightItem(wrongItem.id);
+          }
+          check('streakBreaksTorch', state.streak === 0);
+          state.streak = 3;
+          openStation('field-journal');
+          chooseJournalOption(FIELD_JOURNAL_CHAPTERS[journalState.chapterIdx].choices.findIndex(c => !c.correct));
+          check('streakBreaksStory', state.streak === 0);
+          openStation('field-logs');
+          state.streak = 3;
+          fieldLogState.log.questions.forEach((q, i) => answerFieldLogQ(i, (q.answer + 1) % q.options.length));
+          checkFieldLogAnswers();
+          check('streakBreaksVoice', state.streak === 0);
+          openStation('lexicon-dig');
+          state.streak = 3;
+          const crackCell = digState.cells.find(c => c.cover === 'sand' && c.content.type !== 'letter');
+          if (crackCell) {
+            setDigTool('pickaxe');
+            excavateCell(crackCell.index);
+            const wrongOpt = digState.item.repairOptions.find(o => o !== digState.item.repairAnswer);
+            solveGlueRepair(wrongOpt);
+          }
+          check('streakBreaksDigRepair', state.streak === 0);
+          closeModal();
+
+          // ---- Bonus / teacher Scarabs must not inflate the streak ----
+          state.streak = 0;
+          awardBonusScarab(5);
+          check('bonusNoStreak', state.streak === 0);
+
+          // ---- Voice quiz: a perfect score pays out once, however often "Check" is pressed ----
+          openStation('field-logs');
+          state.streak = 0;
+          AUDIO_FIELD_LOGS[fieldLogState.logIdx].questions.forEach((q, i) => answerFieldLogQ(i, q.answer));
+          const scarabsBeforeCheck = state.scarabs;
+          checkFieldLogAnswers();
+          checkFieldLogAnswers();
+          checkFieldLogAnswers();
+          check('voiceQuizPaysOnce', state.scarabs === scarabsBeforeCheck + 4);
+          closeModal();
+
+          // ---- Story: choices are shuffled for display but still map to the right answer ----
+          const seenCorrectSlots = new Set();
+          let orderOk = true;
+          for (let i = 0; i < 60; i++) {
+            initFieldJournal(1);
+            const sorted = journalState.order.slice().sort().join(',');
+            if (sorted !== '0,1,2') orderOk = false;
+            seenCorrectSlots.add(journalState.order.indexOf(FIELD_JOURNAL_CHAPTERS[1].choices.findIndex(c => c.correct)));
+          }
+          check('storyOrderIsPermutation', orderOk);
+          check('storyCorrectNotAlwaysSameSlot', seenCorrectSlots.size > 1);
+
+          // ---- Progress resumes at the next item instead of always restarting at item 0 ----
+          state.itemIdx = {};
+          openStation('rosetta-cipher');
+          const firstIdx = cipherState.index;
+          selectCipherStone(cipherState.item.answer);
+          openStation('rosetta-cipher');
+          check('resumeNextItem', firstIdx === 0 && cipherState.index === 1);
+          closeModal();
+
+          // =====================================================================================
+          // ---- v6 regression suite: each check independently proves one audit fix ----
+          // =====================================================================================
+
+          // Word Dig is real spelling: letters are not auto-placed, wrong tiles are rejected, payout only at the end.
+          // Clearing a station for the first time also auto-marks its linked Treasure Map stop (+2, once).
+          state.level = 'starters';
+          state.completedMapStops = [];
+          state.completed = {};
+          openStation('lexicon-dig');
+          state.streak = 0;
+          const digWord = digState.item.word;
+          const sBeforeDig = state.scarabs;
+          revealAllDigLetters();
+          check('digSpellPhaseStarts', digState.phase === 'spell' && state.scarabs === sBeforeDig &&
+            bodyEl().querySelectorAll('[data-dig-tile]').length === digWord.length);
+          check('digSlotsNotAutoFilled', digState.spelled.length === 0 &&
+            Array.from(bodyEl().querySelectorAll('.letter-slot')).every(s => s.textContent.trim() === '?'));
+          const wrongTile = digState.tiles.findIndex(t => t.char !== digWord[0]);
+          if (wrongTile >= 0) placeDigLetter(wrongTile);
+          check('digWrongTileRejected', digState.spelled.length === 0);
+          spellDigWord();
+          check('digSpellingPaysOnCompletion', digState.phase === 'done' && digState.spelled.join('') === digWord &&
+            state.scarabs - sBeforeDig === 3 + 2);
+          check('mapAutoMarksOnFirstClear', state.completedMapStops.includes(0));
+          const sDigReplay = state.scarabs;
+          initLexiconDig(digState.wordIndex);
+          revealAllDigLetters();
+          spellDigWord();
+          check('digReplayNoFullPay', digState.phase === 'done' && state.scarabs - sDigReplay <= 1);
+          const digCoverPatterns = new Set();
+          const digRepairOrders = new Set();
+          for (let n = 0; n < 25; n++) {
+            initLexiconDig(0);
+            digCoverPatterns.add(digState.cells.map(c => c.cover).join(','));
+            digRepairOrders.add(digState.repairOrder.join('|'));
+          }
+          check('digCoversRandomisedAndBalanced', digCoverPatterns.size > 1 &&
+            digState.cells.filter(c => c.cover === 'stone').length === 5 &&
+            digState.cells.filter(c => c.cover === 'sand').length === 11);
+          check('digRepairOptionsShuffled', digRepairOrders.size > 1);
+          const digArias = Array.from(bodyEl().querySelectorAll('.dig-cell')).map(b => b.getAttribute('aria-label') || '');
+          check('digCellAriaAnnouncesState', digArias.some(a => a.startsWith('Rock square')) && digArias.some(a => a.startsWith('Sand square')));
+
+          // From here on, neutralise Map auto-marking so payouts below are measured exactly.
+          state.completedMapStops = EXPEDITION_MAP_STOPS.map((_, i) => i);
+
+          // Stone Puzzle: the answer's position varies across shuffles for EVERY item, and the DOM renders that order.
+          openStation('rosetta-cipher');
+          let rosettaAllVary = true;
+          let rosettaAllPerm = true;
+          const answerSlotCounts = [0, 0, 0, 0];
+          ['starters', 'movers', 'flyers'].forEach(lv => {
+            state.level = lv;
+            ROSETTA_CIPHER_DATA[lv].forEach((it, i) => {
+              const positions = new Set();
+              for (let n = 0; n < 40; n++) {
+                initRosettaCipher(i);
+                const p = cipherState.order.indexOf(it.answer);
+                positions.add(p);
+                answerSlotCounts[p] += 1;
+                if (cipherState.order.slice().sort().join('|') !== it.options.slice().sort().join('|')) rosettaAllPerm = false;
+              }
+              if (positions.size < 2) rosettaAllVary = false;
+            });
+          });
+          state.level = 'starters';
+          check('rosettaAnswerPositionVaries', rosettaAllVary && answerSlotCounts.every(c => c > 60));
+          check('rosettaOrderIsPermutation', rosettaAllPerm);
+          initRosettaCipher(2);
+          const domStones = Array.from(bodyEl().querySelectorAll('.stone-fragment-btn')).map(b => b.getAttribute('data-opt'));
+          check('rosettaRendersShuffledOrder', domStones.join('|') === cipherState.order.join('|'));
+
+          // Wrong stone: disabled + its own explanation. Then first clear pays, vault door really animates open.
+          const rItem = cipherState.item;
+          const rWrong = rItem.options.find(o => o !== rItem.answer);
+          selectCipherStone(rWrong);
+          const rWrongBtn = Array.from(bodyEl().querySelectorAll('.stone-fragment-btn')).find(b => b.getAttribute('data-opt') === rWrong);
+          check('rosettaWrongStoneDisabled', Boolean(rWrongBtn && rWrongBtn.disabled));
+          check('rosettaWrongWhyShown', bodyEl().textContent.includes(rItem.why[rWrong]));
+          state.streak = 0;
+          const sRosetta = state.scarabs;
+          selectCipherStone(rItem.answer);
+          check('rosettaFirstClearPays', state.scarabs - sRosetta === 3);
+          const leftDoor = bodyEl().querySelector('.vault-door-left');
+          const doorAnims = leftDoor && leftDoor.getAnimations ? leftDoor.getAnimations() : [];
+          check('vaultDoorTransitionStarted', doorAnims.length > 0);
+          doorAnims.forEach(a => { try { a.finish(); } catch (e) {} });
+          let doorShift = 0;
+          try { doorShift = new DOMMatrixReadOnly(getComputedStyle(leftDoor).transform).m41; } catch (e) {}
+          check('vaultDoorComputedTransformOpen', doorShift < -200);
+          const sRosettaReplay = state.scarabs;
+          initRosettaCipher(2);
+          selectCipherStone(rItem.answer);
+          check('rosettaReplayNoFullPay', cipherState.solved && state.scarabs - sRosettaReplay <= 1);
+          initRosettaCipher(3);
+          triggerContextualHint();
+          const sRosettaHint = state.scarabs;
+          selectCipherStone(cipherState.item.answer);
+          check('rosettaHintMakesPractice', state.scarabs === sRosettaHint && !state.completed['rosetta-cipher:starters:3']);
+
+          // Streak milestone: reaching 3 in a row pays a small bonus.
+          initRosettaCipher(1);
+          state.streak = 2;
+          const sMilestone = state.scarabs;
+          selectCipherStone(cipherState.item.answer);
+          check('streakMilestoneBonus', state.streak === 3 && state.scarabs - sMilestone === 3 + STREAK_MILESTONES[3]);
+
+          // Torch: names hidden above Starters, beam-gated clicks, randomised runs, keyboard, battery, replay.
+          state.level = 'movers';
+          openStation('night-watch');
+          scanBody();
+          const checklistText = bodyEl().querySelector('.night-checklist-bar').textContent;
+          check('torchLabelsHiddenAboveStarters', !bodyEl().querySelector('.night-item-label') &&
+            !nightWatchState.targets.some(t => checklistText.includes(t.name)));
+          const t0 = nightWatchState.targets[nightWatchState.currentIndex];
+          const farItem = nightWatchState.items.slice().sort((a, b) =>
+            Math.hypot(b.x - t0.x, b.y - t0.y) - Math.hypot(a.x - t0.x, a.y - t0.y))[0];
+          aimNightBeamAt(farItem.id);
+          state.streak = 3;
+          spotNightItem(t0.id);
+          check('torchClickOutsideBeamIgnored', !nightWatchState.foundIds.includes(t0.id) && state.streak === 3);
+          aimNightBeamAt(t0.id);
+          spotNightItem(t0.id);
+          check('torchClickInsideBeamAccepted', nightWatchState.foundIds.includes(t0.id));
+          spotNightItem(t0.id);
+          check('torchAlreadyFoundKeepsStreak', state.streak === 3);
+          check('torchItemsKeyboardReachable', bodyEl().querySelectorAll('.night-watch-item[tabindex="0"][role="button"][aria-label]').length === nightWatchState.items.length &&
+            document.getElementById('night-watch-stage').getAttribute('tabindex') === '0');
+          nightWatchState.beam = { x: 50, y: 50 };
+          nightStageKey(new KeyboardEvent('keydown', { key: 'ArrowRight' }));
+          check('torchArrowKeysMoveBeam', nightWatchState.beam.x > 50);
+          const batteryBefore = nightWatchState.battery;
+          triggerContextualHint();
+          check('torchHintCostsBattery', nightWatchState.battery < batteryBefore);
+          state.streak = 0;
+          const sTorch = state.scarabs;
+          solveTorchRun();
+          check('torchFirstClearPays', state.scarabs - sTorch === 4);
+          const torchOrders = new Set();
+          const torchSpots = new Set();
+          for (let n = 0; n < 25; n++) {
+            initNightWatch();
+            torchOrders.add(nightWatchState.targets.map(t => t.id).join(','));
+            const c = nightWatchState.items.find(i => i.id === 'compass');
+            torchSpots.add(`${c.x},${c.y}`);
+          }
+          check('torchOrderRandomised', torchOrders.size > 1);
+          check('torchPositionsRandomised', torchSpots.size > 1);
+          const sTorchReplay = state.scarabs;
+          solveTorchRun();
+          check('torchReplayNoFullPay', nightWatchState.foundIds.length === nightWatchState.targets.length && state.scarabs - sTorchReplay <= 1);
+          state.level = 'starters';
+          openStation('night-watch');
+          check('torchLabelsKeptAtStarters', bodyEl().querySelectorAll('.night-item-label').length === nightWatchState.items.length);
+
+          // Story: vocab chips show word + meaning, Read Aloud survives double quotes, choices lock after solving.
+          openStation('field-journal');
           initFieldJournal(1);
-          const sorted = journalState.order.slice().sort().join(',');
-          if (sorted !== '0,1,2') orderOk = false;
-          seenCorrectSlots.add(journalState.order.indexOf(FIELD_JOURNAL_CHAPTERS[1].choices.findIndex(c => c.correct)));
+          scanBody();
+          const ch1 = FIELD_JOURNAL_CHAPTERS[1];
+          check('storyVocabShowsWordAndMeaning', ch1.vocabNotes.every(v => bodyEl().textContent.includes(v.word) && bodyEl().textContent.includes(v.meaning)));
+          const readBtn = bodyEl().querySelector('.story-read-aloud-btn');
+          check('noInlineSpeakHandlers', !document.querySelector('[onclick*="speakTextHelper"]') && Boolean(readBtn) &&
+            readBtn.getAttribute('data-say').includes(ch1.story));
+          let spokenText = null;
+          const synth = window.speechSynthesis;
+          if (synth) { try { synth.speak = (u) => { spokenText = u && u.text; }; } catch (e) {} }
+          if (readBtn) readBtn.click();
+          if (synth) { try { delete synth.speak; } catch (e) {} }
+          check('storyReadAloudSpeaksQuotedText', typeof spokenText === 'string' && spokenText.includes('"Walk toward'));
+          state.streak = 0;
+          const sStory = state.scarabs;
+          chooseJournalOption(ch1.choices.findIndex(c => c.correct));
+          check('storyFirstClearPays', state.scarabs - sStory === 3);
+          const storyBtns = Array.from(bodyEl().querySelectorAll('.story-choice-btn'));
+          check('storyChoicesLockedAfterSolve', storyBtns.length === 3 && storyBtns.every(b => b.disabled) &&
+            storyBtns.some(b => b.classList.contains('correct')));
+          const streakAfterStory = state.streak;
+          chooseJournalOption(ch1.choices.findIndex(c => !c.correct));
+          check('storyWrongAfterSolveIgnored', state.streak === streakAfterStory && journalState.solved);
+          const sStoryReplay = state.scarabs;
+          initFieldJournal(1);
+          chooseJournalOption(ch1.choices.findIndex(c => c.correct));
+          check('storyReplayNoFullPay', journalState.solved && state.scarabs - sStoryReplay <= 1);
+
+          // Voice: transcript locked until a listen/check; failed check reveals nothing; re-check can't exploit.
+          openStation('field-logs');
+          initFieldLogs(0);
+          toggleTranscript();
+          check('voiceTranscriptLockedBeforeListening', fieldLogState.showTranscript === false);
+          const vqs = fieldLogState.log.questions;
+          vqs.forEach((q, i) => answerFieldLogQ(i, (q.answer + 1) % q.options.length));
+          checkFieldLogAnswers();
+          check('voiceFailedCheckRevealsNoAnswers', fieldLogState.submitted === true &&
+            bodyEl().querySelectorAll('[data-mark="right"]').length === 0 &&
+            bodyEl().querySelectorAll('[data-mark="wrong"]').length === vqs.length);
+          const sVoice = state.scarabs;
+          vqs.forEach((q, i) => answerFieldLogQ(i, q.answer));
+          checkFieldLogAnswers();
+          check('voiceRecheckCannotExploit', state.scarabs === sVoice && vqs.every((q, i) => fieldLogState.answers[i] !== q.answer));
+          toggleTranscript();
+          check('voiceTranscriptUnlocksAfterCheck', fieldLogState.showTranscript === true);
+          retryFieldLogs();
+          check('voiceTryAgainResets', fieldLogState.submitted === false && Object.keys(fieldLogState.answers).length === 0);
+          vqs.forEach((q, i) => answerFieldLogQ(i, q.answer));
+          state.streak = 0;
+          const sVoiceFirst = state.scarabs;
+          checkFieldLogAnswers();
+          check('voiceFirstClearPays', fieldLogState.locked === true && state.scarabs - sVoiceFirst === 4);
+          initFieldLogs(0);
+          fieldLogState.log.questions.forEach((q, i) => answerFieldLogQ(i, q.answer));
+          const sVoiceReplay = state.scarabs;
+          checkFieldLogAnswers();
+          check('voiceAwardPersistedAcrossInstances', fieldLogState.locked === true && state.scarabs - sVoiceReplay <= 1);
+          initFieldLogs(1);
+          fieldLogState.log = Object.assign({}, fieldLogState.log, { audioSrc: 'assets/audio/__autotest_missing__.mp3', transcript: '' });
+          speakFieldLog();
+          const playingStarted = fieldLogState.playing === true;
+          await wait(2500);
+          check('voicePlayingRecoversFromMissingMp3', playingStarted && fieldLogState.playing === false && fieldLogState.listened === true);
+          initFieldLogs(0);
+          speakFieldLog();
+          initFieldLogs(1);
+          check('voiceSwitchStopsAudio', fieldLogState.playing === false && (!voiceAudioEl || voiceAudioEl.paused));
+          closeModal();
+
+          // Map: a stop pays once, ever; map circles only select; links match the grammar focus.
+          openStation('expedition-map');
+          state.completedMapStops = state.completedMapStops.filter(i => i !== 3);
+          const sMap = state.scarabs;
+          completeMapStop(3);
+          const mapFirst = state.scarabs - sMap;
+          completeMapStop(3);
+          completeMapStop(3);
+          check('mapStopPaysOnce', mapFirst === 2 && state.scarabs - sMap === 2);
+          const sMapSelect = state.scarabs;
+          selectMapStop(4);
+          check('mapCircleSelectsWithoutPaying', state.mapCurrentStop === 4 && state.scarabs === sMapSelect);
+          check('mapLinksMatchGrammarFocus', EXPEDITION_MAP_STOPS[1].linkedStation === 'night-watch' &&
+            EXPEDITION_MAP_STOPS[2].linkedStation === 'rosetta-cipher' && EXPEDITION_MAP_STOPS[2].linkedLevel === 'movers' &&
+            EXPEDITION_MAP_STOPS[3].linkedStation === 'rosetta-cipher' && EXPEDITION_MAP_STOPS[3].linkedLevel === 'movers');
+          closeModal();
+
+          // Modal accessibility: focus moves in, Tab is trapped, focus returns, re-renders keep focus.
+          const opener = document.createElement('button');
+          opener.type = 'button';
+          opener.textContent = 'autotest opener';
+          document.body.appendChild(opener);
+          opener.focus();
+          openStation('field-journal');
+          const modalEl = document.querySelector('.activity-modal');
+          check('modalFocusMovesIn', modalEl.contains(document.activeElement));
+          const focusables = getModalFocusables();
+          focusables[focusables.length - 1].focus();
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+          check('modalTabTrapWraps', document.activeElement === focusables[0]);
+          openStation('lexicon-dig');
+          const pickaxeBtn = document.getElementById('tool-btn-pickaxe');
+          pickaxeBtn.focus();
+          pickaxeBtn.click();
+          check('focusRestoredAfterRerender', document.activeElement && document.activeElement.id === 'tool-btn-pickaxe' &&
+            document.activeElement !== pickaxeBtn);
+          closeModal();
+          check('modalFocusRestoredOnClose', document.activeElement === opener);
+          opener.remove();
+          check('liveRegionsPresent', document.getElementById('modal-pencil-hint-text').getAttribute('aria-live') === 'polite' &&
+            Boolean(document.getElementById('modal-live-region')));
+
+          // Schema migration from v5 keeps learner progress and infers cleared items.
+          const mig = migrateLegacyState({ scarabs: 9, streak: 2, unlockedCurios: ['scarab-badge', 'rosetta-key'],
+            itemIdx: { 'rosetta-cipher:starters': 2, 'lexicon-dig:movers': 9 }, completedMapStops: [1] });
+          check('migrateV5KeepsProgress', mig.scarabs === 9 && mig.unlockedCurios.includes('rosetta-key') &&
+            mig.completed['rosetta-cipher:starters:0'] === true && mig.completed['rosetta-cipher:starters:1'] === true &&
+            !mig.completed['rosetta-cipher:starters:2'] && mig.completed['lexicon-dig:movers:3'] === true &&
+            mig.completedMapStops.includes(1) && mig.schemaVersion === SCHEMA_VERSION);
+
+          // No "[object Object]" anywhere a station renders (all stations, all story chapters).
+          ['lexicon-dig', 'rosetta-cipher', 'night-watch', 'field-journal', 'field-logs', 'expedition-map', 'curio-cabinet'].forEach(id => {
+            openStation(id);
+            scanBody();
+          });
+          FIELD_JOURNAL_CHAPTERS.forEach((_, i) => { initFieldJournal(i); scanBody(); });
+          closeModal();
+          // Scan rendered markup only: this inline <script> lives in <body> and its own source contains the needle.
+          const renderedBody = document.body.cloneNode(true);
+          renderedBody.querySelectorAll('script').forEach(s => s.remove());
+          check('noObjectObjectInDom', !sawObjectObject && !renderedBody.innerHTML.includes('[object Object]'));
+
+          // ---- Reset Progress: asks first, and really resets (no leaked references to defaults) ----
+          const realConfirm = window.confirm;
+          window.confirm = () => false;
+          const scarabsBeforeReset = state.scarabs;
+          resetProgress();
+          check('resetCancelKeepsProgress', state.scarabs === scarabsBeforeReset && scarabsBeforeReset > 0);
+          window.confirm = () => true;
+          resetProgress();
+          check('resetClearsProgress', state.scarabs === 0 && state.unlockedCurios.length === 3 &&
+            Object.keys(state.itemIdx).length === 0 && Object.keys(state.completed).length === 0);
+          state.unlockedCurios.push('autotest-leak');
+          resetProgress();
+          check('resetNoSharedDefaults', !state.unlockedCurios.includes('autotest-leak'));
+          window.confirm = realConfirm;
+        } catch (err) {
+          check('autotestThrew_' + String((err && err.message) || err).replace(/[^a-zA-Z0-9]+/g, '_').slice(0, 80), false);
         }
-        check('storyOrderIsPermutation', orderOk);
-        check('storyCorrectNotAlwaysSameSlot', seenCorrectSlots.size > 1);
 
-        // ---- Progress resumes at the next item instead of always restarting at item 0 ----
-        state.itemIdx = {};
-        openStation('rosetta-cipher');
-        const firstIdx = cipherState.index;
-        selectCipherStone(cipherState.item.answer);
-        openStation('rosetta-cipher');
-        check('resumeNextItem', firstIdx === 0 && cipherState.index === 1);
-        closeModal();
-
-        // ---- Reset Progress: asks first, and really resets (no leaked references to defaults) ----
-        const realConfirm = window.confirm;
-        window.confirm = () => false;
-        const scarabsBeforeReset = state.scarabs;
-        resetProgress();
-        check('resetCancelKeepsProgress', state.scarabs === scarabsBeforeReset && scarabsBeforeReset > 0);
-        window.confirm = () => true;
-        resetProgress();
-        check('resetClearsProgress', state.scarabs === 0 && state.unlockedCurios.length === 3 &&
-          Object.keys(state.itemIdx).length === 0);
-        state.unlockedCurios.push('autotest-leak');
-        resetProgress();
-        check('resetNoSharedDefaults', !state.unlockedCurios.includes('autotest-leak'));
-        window.confirm = realConfirm;
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        const realAfter = readReal();
+        check('autotestLeavesRealStorageUntouched', realAfter.every((v, i) => v === realSnapshot[i]));
+        check('noJsErrors', jsErrors.length === 0);
 
         const badge = document.createElement('div');
         badge.id = 'autotest-summary';
@@ -5622,6 +6730,8 @@
         hydratePixarMainPageArt();
         syncHUD();
         setupEyeTracking();
+        setupDelegatedSpeech();
+        setupModalFocusTrap();
         // Auto-open the animated intro cartoon on each new visit (once per browser session),
         // and always when the link says ?intro=1 (used by the homepage "Watch 3D Intro" links).
         let introShownThisSession = false;
@@ -5632,7 +6742,7 @@
         } else {
           startClassicalMusic();
         }
-        if (window.location && window.location.search && window.location.search.includes('autotest=1')) {
+        if (IS_AUTOTEST) {
           runAutotest();
         }
       }
@@ -5660,12 +6770,16 @@
         setDigTool,
         excavateCell,
         solveGlueRepair,
+        placeDigLetter,
         nextDigWord,
         initRosettaCipher,
         selectCipherStone,
         nextCipherTablet,
         initNightWatch,
         moveNightBeam,
+        nightStageKey,
+        nightItemKey,
+        aimNightBeamAt,
         spotNightItem,
         initFieldJournal,
         chooseJournalOption,
@@ -5675,7 +6789,10 @@
         toggleTranscript,
         answerFieldLogQ,
         checkFieldLogAnswers,
+        retryFieldLogs,
         completeMapStop,
+        selectMapStop,
+        playMapStop,
         toggleAccessory,
         applyOutfitPreset,
         triggerContextualHint,
