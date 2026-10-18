@@ -1218,6 +1218,8 @@
       const safeStudio = this.escapeHtml(wlConfig.studio || 'English Coaching Studio');
       const safeCtaLabel = this.escapeHtml(wlConfig.ctaLabel || 'Return to Classroom / Book Session');
       const safeCtaUrl = this.sanitizeUrl(wlConfig.cta);
+      const currentPath = (window.location.pathname || '').toLowerCase();
+      const isKidsModule = currentPath.includes('professor-west') || currentPath.includes('study');
 
       const banner = document.createElement('div');
       banner.id = 'gm-wl-top-banner';
@@ -1235,12 +1237,12 @@
         box-shadow: 0 8px 25px rgba(0,0,0,0.45);
       `;
 
-      const ctaHtml = safeCtaUrl
+      const ctaHtml = (!isKidsModule && safeCtaUrl)
         ? `<a href="${safeCtaUrl}" target="_blank" rel="noopener noreferrer" style="background:${palette.btn};color:${palette.btnText};font-weight:800;font-size:12px;padding:7px 14px;border-radius:999px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;">
              <span>${safeCtaLabel}</span>
              <span aria-hidden="true">&rarr;</span>
            </a>`
-        : '';
+        : (isKidsModule ? `<span style="font-size:11px;color:#94a3b8;font-weight:600;">🛡️ 100% Ad-Free Young Learner Mode</span>` : '');
 
       const previewPill = isPreview
         ? `<a href="teacher-vault.html#pricing" style="background:#f59e0b;color:#1c1917;font-weight:800;font-size:11px;padding:5px 11px;border-radius:6px;text-decoration:none;white-space:nowrap;">
@@ -1275,6 +1277,8 @@
       const safeStudio = this.escapeHtml(wlConfig.studio || 'Language Studio');
       const safeCtaUrl = this.sanitizeUrl(wlConfig.cta) || '#';
       const safeCtaLabel = this.escapeHtml(wlConfig.ctaLabel || `Send Score to ${wlConfig.tutor || 'Your Tutor'}`);
+      const currentPath = (window.location.pathname || '').toLowerCase();
+      const isKidsModule = currentPath.includes('professor-west') || currentPath.includes('study');
 
       window.showDiagnosticGate = function (opts) {
         opts = opts || {};
@@ -1310,6 +1314,14 @@
                 <span style="color:#e5e7eb;">${examImpact}</span>
               </div>
               <div style="display:grid;gap:10px;">
+                ${isKidsModule ? `
+                <div style="text-align:center;padding:12px;background:#1e293b;border-radius:10px;color:${palette.accent};font-weight:800;font-size:14px;">
+                  ⭐ Fantastic work completing Professor West's Study! Share your stars with your teacher in class!
+                </div>
+                <button id="gm-diag-replay" type="button" style="background:${palette.btn};color:${palette.btnText};font-size:14px;font-weight:800;cursor:pointer;padding:12px;border-radius:10px;border:none;">
+                  &#8635; Play Again to Win More Golden Scarabs!
+                </button>
+                ` : `
                 ${safeCtaUrl !== '#' ? `
                 <a href="${safeCtaUrl}" target="_blank" rel="noopener noreferrer"
                    style="display:block;text-align:center;background:${palette.btn};color:${palette.btnText};font-weight:800;padding:14px;border-radius:10px;text-decoration:none;font-size:15px;">
@@ -1318,6 +1330,7 @@
                 <button id="gm-diag-replay" type="button" style="background:#1f2937;border:1px solid #374151;color:#f9fafb;font-size:14px;font-weight:700;cursor:pointer;padding:11px;border-radius:10px;">
                   &#8635; Practise Again to Beat ${pct}%
                 </button>
+                `}
               </div>
             </div>
           </div>
