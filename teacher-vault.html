@@ -137,51 +137,74 @@
   <!-- ================= STICKY HEADER ================= -->
   <header class="sticky top-0 z-40 lab-navbar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-3">
-      <div class="flex items-center gap-3 min-w-0">
-        <a href="index.html" class="text-xl font-bold tracking-tight text-white flex items-center gap-2.5 shrink-0">
-          <span class="w-9 h-9 rounded-lg bg-sky-600 text-white flex items-center justify-center font-extrabold text-lg shadow-md shadow-sky-500/30" aria-hidden="true">G</span>
+      <div class="flex items-center gap-2.5 shrink-0">
+        <a href="index.html" class="text-xl font-bold tracking-tight text-white flex items-center gap-2.5 shrink-0 whitespace-nowrap" aria-label="Gareth Montgomery, return to home">
+          <span class="w-9 h-9 rounded-lg bg-sky-600 text-white flex items-center justify-center font-extrabold text-lg shadow-md shadow-sky-500/30 shrink-0" aria-hidden="true">G</span>
           <span>Gareth<span class="text-sky-400" aria-hidden="true">.</span></span>
         </a>
-        <span class="lab-brand-badge hidden sm:inline-flex">
+        <span class="lab-brand-badge hidden 2xl:inline-flex shrink-0 whitespace-nowrap">
           <span class="lab-pulse-dot" aria-hidden="true"></span>
           <span>For ESL Tutors &amp; Schools</span>
         </span>
       </div>
 
-      <nav aria-label="Teacher Vault Navigation" class="hidden lg:flex items-center gap-2 shrink-0">
+      <!-- Desktop Navigation (Clean, single-line tabs displayed at xl and up to prevent overlap) -->
+      <nav aria-label="Teacher Vault Navigation" class="hidden xl:flex items-center gap-1.5 shrink-0">
         <a href="#studio-customizer" class="lab-nav-link">
           <i class="fa-solid fa-wand-magic-sparkles text-emerald-400 text-xs" aria-hidden="true"></i>
           <span>White-Label Studio</span>
         </a>
         <a href="#catalog" class="lab-nav-link">
           <i class="fa-solid fa-layer-group text-sky-400 text-xs" aria-hidden="true"></i>
-          <span>26 Interactive Modules</span>
+          <span>26 Modules</span>
         </a>
         <a href="#geo-comparison" class="lab-nav-link">
           <i class="fa-solid fa-table-columns text-amber-400 text-xs" aria-hidden="true"></i>
-          <span>Why Interactive &gt; PDF</span>
+          <span>Why Interactive</span>
         </a>
         <a href="#pricing" class="lab-nav-link">
           <i class="fa-solid fa-key text-purple-400 text-xs" aria-hidden="true"></i>
-          <span>Licensing (£49 / £149)</span>
+          <span>Licensing (£49)</span>
         </a>
         <a href="#bespoke-commission" class="lab-nav-link">
           <i class="fa-solid fa-code text-rose-400 text-xs" aria-hidden="true"></i>
-          <span>Custom Build (£195)</span>
+          <span>Custom (£195)</span>
         </a>
       </nav>
 
+      <!-- Action Buttons + Tablet/Mobile Hamburger -->
       <div class="flex items-center gap-2 shrink-0">
-        <button type="button" onclick="TeacherVaultApp.focusLicenseBox()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 text-xs font-extrabold transition cursor-pointer">
+        <button type="button" onclick="TeacherVaultApp.focusLicenseBox()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 text-xs font-extrabold transition cursor-pointer whitespace-nowrap">
           <i class="fa-solid fa-key mr-1" aria-hidden="true"></i>
           <span id="nav-license-status">Enter License Key</span>
         </button>
-        <a href="#pricing" class="hidden sm:inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-500/25 transition shrink-0">
+        <a href="#pricing" class="hidden sm:inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-500/25 transition shrink-0 whitespace-nowrap">
           <span>Unlock Vault (£49)</span>
           <i class="fa-solid fa-arrow-right text-xs" aria-hidden="true"></i>
         </a>
+        <button id="teacher-menu-btn" type="button" aria-expanded="false" aria-controls="teacher-mobile-menu" aria-label="Open menu" class="xl:hidden p-2.5 rounded-xl border border-slate-700 text-slate-200 hover:bg-slate-800 transition">
+          <i class="fa-solid fa-bars text-lg" aria-hidden="true"></i>
+        </button>
       </div>
     </div>
+
+    <!-- Mobile / Tablet Navigation Drawer -->
+    <nav id="teacher-mobile-menu" aria-label="Mobile navigation" class="hidden xl:hidden bg-slate-950 border-t border-slate-800 px-6 py-5 space-y-3 shadow-2xl">
+      <div class="text-xs font-extrabold uppercase tracking-widest text-slate-400">Teacher Vault Sections</div>
+      <a href="#studio-customizer" onclick="document.getElementById('teacher-mobile-menu').classList.add('hidden')" class="block py-2 text-sm font-bold text-emerald-400 hover:text-white">✨ 1. White-Label Studio &amp; Homework Generator</a>
+      <a href="#catalog" onclick="document.getElementById('teacher-mobile-menu').classList.add('hidden')" class="block py-2 text-sm font-semibold text-sky-300 hover:text-white">📚 2. All 26 Interactive Modules (C1/C2, IELTS, Business)</a>
+      <a href="#geo-comparison" onclick="document.getElementById('teacher-mobile-menu').classList.add('hidden')" class="block py-2 text-sm font-semibold text-amber-300 hover:text-white">📊 3. Why Interactive &gt; Static PDF Worksheets</a>
+      <a href="#pricing" onclick="document.getElementById('teacher-mobile-menu').classList.add('hidden')" class="block py-2 text-sm font-semibold text-purple-300 hover:text-white">🔑 4. Classroom &amp; Studio Licensing (£49 / £149)</a>
+      <a href="#bespoke-commission" onclick="document.getElementById('teacher-mobile-menu').classList.add('hidden')" class="block py-2 text-sm font-semibold text-rose-300 hover:text-white">🛠️ 5. Custom Interactive HTML5 Lesson Commission (£195)</a>
+      <div class="pt-3 border-t border-slate-800 flex flex-col gap-2.5">
+        <a href="lab.html" class="block w-full text-center py-2.5 rounded-xl bg-slate-900 text-slate-200 border border-slate-700 font-bold text-xs hover:bg-slate-800 transition">
+          &larr; View Student Learning Lab
+        </a>
+        <a href="#pricing" onclick="document.getElementById('teacher-mobile-menu').classList.add('hidden')" class="block w-full text-center py-3 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/25 hover:bg-emerald-400 transition">
+          Unlock Lifetime Vault (£49) &rarr;
+        </a>
+      </div>
+    </nav>
   </header>
 
   <main id="main-content">
@@ -862,6 +885,15 @@
         this.refreshLicenseUI();
         this.syncPreview();
         this.renderCatalog();
+
+        const menuBtn = document.getElementById('teacher-menu-btn');
+        const mobileMenu = document.getElementById('teacher-mobile-menu');
+        if (menuBtn && mobileMenu) {
+          menuBtn.addEventListener('click', () => {
+            const isHidden = mobileMenu.classList.toggle('hidden');
+            menuBtn.setAttribute('aria-expanded', String(!isHidden));
+          });
+        }
 
         const params = new URLSearchParams(window.location.search);
         if (params.get('ordered') === 'true') {
