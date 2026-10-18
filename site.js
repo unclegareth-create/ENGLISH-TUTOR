@@ -141,8 +141,19 @@
         updateStickyVisibility();
     }
 
-    /* ---------- Pre-fill Package Intent on Inquiry Form ---------- */
-    const applyPackagePrefill = (pkg) => {
+    /* ---------- Stripe Payment Links & Pre-fill Package Intent ---------- */
+    // Drop your live Stripe Payment Link URLs (https://buy.stripe.com/...) here
+    // to enable instant 1-click Stripe checkout on the pricing buttons & banner
+    // (Wise and PayPal remain available via the form on request).
+    const STRIPE_PAYMENT_LINKS = window.GARETH_STRIPE_LINKS || {
+        pack_5_275: '',     // e.g. 'https://buy.stripe.com/...' (5-Lesson Pack - £275)
+        sprint_10_500: '',  // e.g. 'https://buy.stripe.com/...' (10-Lesson Pack - £500)
+        vip_12_600: '',     // e.g. 'https://buy.stripe.com/...' (12-Lesson Pack - £600)
+        single_65: '',      // e.g. 'https://buy.stripe.com/...' (Single Session - £65)
+        audit_async_29: ''  // e.g. 'https://buy.stripe.com/...' (24h Async Audit - £29)
+    };
+
+    const applyPackagePrefill = (pkg, tierKey) => {
         const goalInput = document.getElementById('goal');
         const messageInput = document.getElementById('message');
         const subjectInput = document.querySelector('#contact-form input[name="_subject"]');
@@ -153,10 +164,13 @@
         const pkgBanner = document.getElementById('selected-package-banner');
         const pkgNameEl = document.getElementById('selected-package-name');
         const pkgNextStepEl = document.getElementById('selected-package-next-step');
+        const stripeBtn = document.getElementById('selected-package-stripe-link');
         const submitBtn = document.getElementById('contact-submit-btn');
         const enquiryCard = document.getElementById('enquiry-card');
 
         if (!pkg) return;
+
+        const stripeUrl = (tierKey && STRIPE_PAYMENT_LINKS[tierKey]) || '';
 
         if (goalInput) {
             goalInput.value = 'Selected Package: ' + pkg;
@@ -166,30 +180,38 @@
             subjectInput.value = 'Package Order / Enquiry: ' + pkg;
         }
         if (formTitle) {
-            formTitle.textContent = 'Requesting: ' + pkg;
+            formTitle.textContent = 'Selected: ' + pkg;
         }
         if (formSubtitle) {
             formSubtitle.textContent = pkg.includes('Async')
-                ? 'Complete your details below—I will reply immediately with your secure upload link and £29 Stripe checkout link.'
-                : 'Complete your details and preferred days/times below—I will reply within 24 hours with your direct Stripe/PayPal/Wise payment link and schedule.';
+                ? 'Complete your details below for your £29 Stripe Payment Link and essay/voice-note upload instructions (Wise or PayPal also available on request).'
+                : 'Complete your details and preferred days/times below for your Stripe Payment Link (or request Wise / PayPal).';
         }
         if (formBadge) {
             formBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
-            formBadge.innerHTML = '<i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Package Reservation &amp; Checkout';
+            formBadge.innerHTML = '<i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Package Checkout &amp; Scheduling';
         }
         if (pkgBanner && pkgNameEl) {
             pkgNameEl.textContent = pkg;
             if (pkgNextStepEl) {
-                pkgNextStepEl.textContent = pkg.includes('Async')
-                    ? 'Enter your name and email below—I will send your secure Google Doc / voice-note upload link and £29 Stripe checkout link.'
-                    : 'Enter your name, email, and time zone below—I will reply personally within 24 hours with your Stripe/PayPal/Wise invoice and scheduling link.';
+                pkgNextStepEl.textContent = stripeUrl
+                    ? 'Click "Pay Instantly via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
+                    : 'Enter your name, email, and time zone below—I will send your Stripe Payment Link (or Wise/PayPal details on request) and confirm your schedule.';
+            }
+            if (stripeBtn) {
+                if (stripeUrl) {
+                    stripeBtn.href = stripeUrl;
+                    stripeBtn.classList.remove('hidden');
+                } else {
+                    stripeBtn.classList.add('hidden');
+                }
             }
             pkgBanner.classList.remove('hidden');
         }
         if (submitBtn) {
             submitBtn.innerHTML = pkg.includes('Async')
-                ? 'Request 24h Async Audit (£29) &rarr;'
-                : 'Request Selected Package &rarr;';
+                ? 'Request £29 Stripe Link &amp; Upload Details &rarr;'
+                : 'Request Payment Link &amp; Schedule &rarr;';
         }
         if (enquiryCard) {
             enquiryCard.classList.add('border-emerald-400/70', 'ring-2', 'ring-emerald-400/25');
@@ -197,8 +219,8 @@
         }
         if (messageInput) {
             messageInput.placeholder = pkg.includes('Async')
-                ? 'Tell me which exam (IELTS, C1, C2) or business task you are submitting, and I will reply with your secure upload & £29 Stripe payment link...'
-                : 'Let me know your target exam or goal, your time zone, and the days/times that usually suit you best...';
+                ? 'Tell me which exam (IELTS, C1, C2) or business task you are submitting (let me know if you prefer Stripe, Wise, or PayPal)...'
+                : 'Let me know your target exam or goal, your time zone, preferred days/times, and if you prefer Stripe, Wise, or PayPal...';
         }
         setTimeout(() => {
             if (enquiryCard) {
@@ -210,7 +232,7 @@
 
     const urlPkg = urlParams.get('package');
     if (urlPkg) {
-        applyPackagePrefill(urlPkg);
+        applyPackagePrefill(urlPkg, urlParams.get('tier') || '');
     }
 
     const clearPackageBtn = document.getElementById('clear-package-btn');
@@ -223,6 +245,7 @@
             const formSubtitle = document.getElementById('enquiry-form-subtitle');
             const formBadge = document.getElementById('enquiry-form-badge');
             const pkgBanner = document.getElementById('selected-package-banner');
+            const stripeBtn = document.getElementById('selected-package-stripe-link');
             const submitBtn = document.getElementById('contact-submit-btn');
             const enquiryCard = document.getElementById('enquiry-card');
 
@@ -232,10 +255,11 @@
             }
             if (subjectInput) subjectInput.value = 'New Student Enquiry (Website)';
             if (formTitle) formTitle.textContent = 'Ask a Question or Reserve a Lesson Pack';
-            if (formSubtitle) formSubtitle.textContent = 'Select a lesson pack above or let me know your goals below—I reply personally within 24 hours with next steps and payment links.';
+            if (formSubtitle) formSubtitle.textContent = 'Select a lesson pack above or let me know your goals below—pay via Stripe Payment Link (or request Wise/PayPal).';
             if (formBadge) {
                 formBadge.className = 'hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
             }
+            if (stripeBtn) stripeBtn.classList.add('hidden');
             if (pkgBanner) pkgBanner.classList.add('hidden');
             if (submitBtn) submitBtn.innerHTML = 'Send Message &rarr;';
             if (enquiryCard) {
@@ -251,9 +275,10 @@
     document.querySelectorAll('[data-prefill-package]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const pkg = btn.getAttribute('data-prefill-package');
+            const tierKey = btn.getAttribute('data-tier') || '';
             if (pkg) {
                 e.preventDefault();
-                applyPackagePrefill(pkg);
+                applyPackagePrefill(pkg, tierKey);
             }
         });
     });
@@ -500,7 +525,7 @@ const WRITING_SAMPLES = {
           }
           const isActive = seg.id === activeAnnotationId;
           const activeClass = isActive ? 'active-annotation' : '';
-          const a11yAttrs = `data-note-id="${seg.id}" role="button" tabindex="0" aria-pressed="${isActive}" aria-label="Examiner feedback ${seg.id}" onclick="selectAnnotation(${seg.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${seg.id});}"`;
+          const a11yAttrs = `data-note-id="${seg.id}" role="button" tabindex="0" aria-pressed="${isActive}" aria-label="Mark-scheme feedback ${seg.id}" onclick="selectAnnotation(${seg.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${seg.id});}"`;
 
           if (mode === 'draft') {
             return `<span class="draft-weakness ${activeClass}" ${a11yAttrs}>${seg.before}<span class="markup-badge">${seg.id}</span></span>`;
@@ -550,7 +575,7 @@ const WRITING_SAMPLES = {
                  role="button"
                  tabindex="0"
                  aria-pressed="${isActive}"
-                 aria-label="Examiner note ${note.id}: ${note.category}"
+                 aria-label="Mark-scheme note ${note.id}: ${note.category}"
                  onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${note.id});}"
                  class="note-card cursor-pointer rounded-xl p-4 bg-white border ${isActive ? 'active-card' : 'border-slate-200/90 hover:border-indigo-300'}">
               <div class="flex items-center justify-between gap-2 mb-2">

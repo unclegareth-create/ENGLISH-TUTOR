@@ -2,31 +2,31 @@
  * ============================================================================
  * GarethEnglish.com — Commercial Teacher Classroom & White-Label Studio Runtime
  * ----------------------------------------------------------------------------
- * Powers the B2B / B2B2C Passive Licensing Engine across all 26+ interactive
- * modules, games, exam builders, and Dark Academia literature units:
+ * Powers the B2B / B2B2C Licensing Engine across all 25 interactive
+ * modules, games, exam builders, Dark Academia literature units, and compendium:
  *
  * 1. Open Core + Gated Pro Extension Architecture:
  *    - Stages 1–3 remain open for student self-practice, SEO indexing, and
  *      Gareth Montgomery's 1-to-1 trial funnel.
- *    - Stages 4–5 (Pro Exam Extension Set B, Examiner Speaking Cards, Full
+ *    - Stages 4–5 (Pro Exam Extension Set B, Mark-Scheme Speaking Cards, Full
  *      Model Answer Key, 60-Min CELTA Lesson Plan) are gated behind:
- *        a) Student Pro Course Key (£24 — e.g. BORGO-89)
- *        b) Solo Tutor Classroom License (£49 — e.g. TEACHER-PRO-49)
- *        c) White-Label Studio License (£149 — e.g. STUDIO-WL-149)
- *        d) Cryptographically signed Student Homework URL (?wl=1&sig=...)
+ *        a) Student Pro Course Key (£24)
+ *        b) Solo Tutor Classroom License (£49)
+ *        c) White-Label Studio License (£149)
+ *        d) Branded module-scoped Student Homework URL (?wl=1&sig=...)
  *
  * 2. Solo Tutor Classroom License (£49):
  *    - Unlocks all 12 Dark Academia C1/C2 units + Compendium + all Set B Vaults
  *    - Enables Clean Screen-Share Mode (hides Gareth Montgomery student CTAs)
  *    - Mounts the floating Teacher Presenter HUD (Live Classroom Timer,
  *      1-Click Reveal All Answers, 1-Click Reset Board, Print Handout,
- *      CEFR C1/C2 & IELTS Examiner Notes)
+ *      CEFR C1/C2 & IELTS Mark-Scheme Notes)
  *
  * 3. White-Label Studio & School License (£149):
  *    - Includes all Solo Tutor Classroom features
- *    - Cryptographically signed Student Homework Links (?wl=1&tutor=...&sig=...)
- *      verified via 64-bit FNV-1a/DJB2 HMAC-style digest without exposing the
- *      master license key in the student URL
+ *    - Branded Student Homework Links (?wl=1&tutor=...&sig=...) scoped to the
+ *      specific assigned module without exposing the license key in the URL
+ *      or unlocking the entire 12-unit course in localStorage
  *    - Dynamically replaces header branding & end-of-game showDiagnosticGate()
  *      CTAs with the licensed tutor/school's name, accent color, and URL
  * ============================================================================
@@ -48,19 +48,19 @@
 
   // Verified 64-bit FNV-1a + DJB2 hashes for Solo Tutor (£49), Studio White-Label (£149), and Student Pro (£24)
   const SOLO_CODE_HASHES = [
-    '07dfc1f76646e3e9', // TEACHER-PRO-49
-    '3089a39af9f71612', // CLASSROOM-2026
-    'df3a72ff4ff87f6d'  // CELTA-VAULT-49
+    '8720a773c24deac9',
+    '68943376c022200c',
+    'e32febaa231630ba'
   ];
 
   const STUDIO_CODE_HASHES = [
-    '410a91742e314132', // STUDIO-WL-149
-    '36d29a47ba9eca49', // WHITELABEL-PRO
-    'ba6766737503c529'  // SCHOOL-MASTER-26
+    'f7c46303a42395e1',
+    '69f9d176bc781314',
+    '642ef07c8176b90a'
   ];
 
   const STUDENT_PRO_HASHES = [
-    '69d0b37588c5f1d3', // BORGO-89
+    '69d0b37588c5f1d3',
     '76194e86377ca58a',
     '8c0169334cd13d01',
     'ab0c08a56e1c455d',
@@ -81,7 +81,7 @@
     rose:    { bg: '#4c0519', border: '#f43f5e', badge: '#e11d48', text: '#fff1f2', accent: '#fda4af', btn: '#f43f5e', btnText: '#1f0910' }
   };
 
-  // Module-specific Examiner Notes & Answer Key Briefings for the Teacher Presenter HUD
+  // Module-specific Mark-Scheme Notes & Answer Key Briefings for the Teacher Presenter HUD
   const MODULE_TEACHER_GUIDES = {
     'chronicle': {
       title: 'Chronicle ’88: 8-Bit Mystery Visual Novel & 2d6 CYOA',
@@ -108,7 +108,7 @@
       cefr: 'CEFR C1–C2 • Reading & Use of English Part 4',
       timing: '45–50 mins (Screen-Share + Guided Transform)',
       notes: [
-        'Examiner Focus: Emphasize why present/perfect participle clauses ("Fearing...", "Having crossed...") elevate Writing Part 1/2 Cohesion & Coherence marks.',
+        'Mark-Scheme Focus: Emphasize why present/perfect participle clauses ("Fearing...", "Having crossed...") elevate Writing Part 1/2 Cohesion & Coherence marks.',
         'Negative Inversion Trap: Remind learners that auxiliary inversion ("Scarcely had I...", "Little did he know...") requires past perfect + "when/before" (not "than" for scarcely).',
         'Quick Answer Key Tip: Use "👁️ Reveal All Answers" below during feedback to display all 6 Part 4 transformations simultaneously.'
       ]
@@ -118,7 +118,7 @@
       cefr: 'CEFR C1–C2 • Cleft Sentences & Concession',
       timing: '45–50 mins',
       notes: [
-        'Examiner Focus: Contrast It-clefts ("It was on a dreary night that...") with What-clefts ("What terrified me most was...") for persuasive essay introductions.',
+        'Mark-Scheme Focus: Contrast It-clefts ("It was on a dreary night that...") with What-clefts ("What terrified me most was...") for persuasive essay introductions.',
         'Advanced Concession: Drill "Much as I admired...", "Be that as it may", and "Notwithstanding" to replace repetitive "Although/However".'
       ]
     },
@@ -127,7 +127,7 @@
       cefr: 'CEFR C1–C2 • Register Duality & Subjunctive Mood',
       timing: '45–50 mins',
       notes: [
-        'Examiner Focus: Highlight the shift between Anglo-Saxon phrasal verbs (spoken B2) and Latinate nominalisation (academic C1/C2 reports).',
+        'Mark-Scheme Focus: Highlight the shift between Anglo-Saxon phrasal verbs (spoken B2) and Latinate nominalisation (academic C1/C2 reports).',
         'Formulaic Subjunctive: Drill "suffice it to say", "be that as it may", and mandative subjunctive ("insisted that he be...").'
       ]
     },
@@ -136,7 +136,7 @@
       cefr: 'CEFR C1–C2 • Past Modal Deductions & Hedging',
       timing: '45–50 mins',
       notes: [
-        'Examiner Focus: Contrast "must have been" (logical certainty) vs "can\'t/couldn\'t have been" (impossibility) vs "may well have been" (strong probability).',
+        'Mark-Scheme Focus: Contrast "must have been" (logical certainty) vs "can\'t/couldn\'t have been" (impossibility) vs "may well have been" (strong probability).',
         'Academic Hedging: Transfer Holmesian deduction structures directly into IELTS Task 2 / CAE Report evidence evaluation.'
       ]
     },
@@ -227,7 +227,7 @@
   const MODULE_PRO_EXTENSIONS = {
     'fce-friendship': {
       badge: 'B2 First (FCE) • Pro Exam Extension (Set B)',
-      title: 'Stages 4 & 5: Set B Exam Bank, Oral Examiner Cards & Teacher Pack',
+      title: 'Stages 4 & 5: Set B Exam Bank, Mark-Scheme Speaking Cards & Teacher Pack',
       previewItem: {
         topic: 'Speculative Conditionals (Part 4 Preview)',
         keyWord: 'SUPPOSING',
@@ -268,14 +268,14 @@
       ],
       speakingPrompts: [
         'Part 3 Collaborative Task: "To what extent is it better for business partners to be like-minded rather than having opposite personalities?" (Target: level-headed, strong-willed, provided that)',
-        'Part 4 Examiner Follow-Up: "If social media had never been invented, how different would our friendships be today?" (Target: Mixed conditional — If + Past Perfect, would + infinitive)',
+        'Part 4 Follow-Up Prompt: "If social media had never been invented, how different would our friendships be today?" (Target: Mixed conditional — If + Past Perfect, would + infinitive)',
         'Error-Correction Drill: Have the student explain why *"Unless you don\'t call me, I\'ll leave"* is ungrammatical and reformulate it aloud.'
       ],
       lessonPlan: [
         '00–10m Lead-In: Elicit compound personality adjectives from 3 famous film/literary duos.',
         '10–25m Guided Discovery (Stages 1–2): Complete the Reading Extract & 8-item Compound Adjective Matcher; drill word stress shift.',
         '25–45m Exam Transformation Clinic (Stages 3–4): Run Set A & Set B Part 4 Key Word Transformations (2 marks per item: 1 for conjunction, 1 for tense shift).',
-        '45–60m Speaking Part 3/4 Simulation (Stage 5): Timed 4-minute paired/tutor discussion using the Oral Examiner Cards.'
+        '45–60m Speaking Part 3/4 Simulation (Stage 5): Timed 4-minute paired/tutor discussion using the Mark-Scheme Speaking Cards.'
       ]
     },
     'cpe-psychometrics': {
@@ -321,14 +321,14 @@
       ],
       speakingPrompts: [
         'C2 Speaking Part 3 Card (2-Minute Long Turn): "How far can human character and leadership potential ever be reduced to quantifiable metrics?" (Target: It is widely contended that..., ostensibly, reductionist)',
-        'Examiner Counter-Question: "Isn\'t an imperfect algorithm still fairer than the unconscious bias of a human interviewer?" (Target: Be that as it may..., alleged to be...)',
+        'Part 3 Counter-Question: "Isn\'t an imperfect algorithm still fairer than the unconscious bias of a human interviewer?" (Target: Be that as it may..., alleged to be...)',
         'Register Upgrade Challenge: Convert 3 blunt claims about corporate hiring into impersonal C2 academic prose.'
       ],
       lessonPlan: [
         '00–10m Lead-In: Critique a real Myers-Briggs / Big Five corporate hiring prompt.',
         '10–25m Lexical Nuance & Reading (Stages 1–2): Contrast pejorative vs. analytical C2 lexis (reductionist, ostensibly, pigeonhole).',
         '25–45m Impersonal Passive Architecture (Stages 3–4): Complete Set A & Set B C2 Part 4 Transformations; highlight tense changes in perfect infinitives.',
-        '45–60m C2 Part 3 Long-Turn Simulation (Stage 5): 2-minute timed monologue + examiner follow-up.'
+        '45–60m C2 Part 3 Long-Turn Simulation (Stage 5): 2-minute timed monologue + discussion follow-up.'
       ]
     },
     'boardroom': {
@@ -378,15 +378,15 @@
         'Live Roleplay Brief C (The Unassigned Action): Everyone nods at the end of a board review, but nobody commits to owning the audit deliverable. Pin down ownership and a Friday 5pm deadline.'
       ],
       lessonPlan: [
-        '00–10m Diagnostic Warm-Up: Have the client/student respond espontaneously to 3 blunt boardroom provocations.',
+        '00–10m Diagnostic Warm-Up: Have the client/student respond spontaneously to 3 blunt boardroom provocations.',
         '10–25m Pragmatic Calibration (Stages 1–2): Contrast direct B2 phrasing with C1/C2 British/International hedging formulas.',
         '25–45m Active Transformation Drills (Stages 3–4): Complete Set A & Set B Key Word Transformations under time pressure.',
         '45–60m High-Stakes Boardroom Simulation (Stage 5): Run Roleplay Briefs A, B, and C with live trainer interruption.'
       ]
     },
     'cae-essay': {
-      badge: 'C1 Advanced (CAE) • Pro Examiner Extension (Set B)',
-      title: 'Stages 4 & 5: C1 Syntactic Prestige Set B, Speaking Part 4 & Examiner Pack',
+      badge: 'C1 Advanced (CAE) • Mark-Scheme Extension (Set B)',
+      title: 'Stages 4 & 5: C1 Syntactic Prestige Set B, Speaking Part 4 & Teacher Pack',
       previewItem: {
         topic: 'Prepositional Concession (Part 4 Preview)',
         keyWord: 'NOTWITHSTANDING',
@@ -438,7 +438,7 @@
       ]
     },
     'ielts-essay': {
-      badge: 'IELTS Band 8.5 Masterclass • Pro Examiner Extension (Set B)',
+      badge: 'IELTS Band 8.5 Masterclass • Mark-Scheme Extension (Set B)',
       title: 'Stages 4 & 5: Band 8.5 Lexical & Syntax Set B, Speaking Part 3 & Teacher Pack',
       previewItem: {
         topic: 'Band 8.5 Evaluative Thesis (Preview)',
@@ -533,7 +533,7 @@
       ],
       speakingPrompts: [
         'C1/C2 Oral Transfer: Formulate two original sentences about your own work or studies using the target structures from today’s module.',
-        'Examiner Precision Check: Identify the two grammatical components that earn 1 mark each in every Part 4 transformation above.'
+        'Mark-Scheme Precision Check: Identify the two grammatical components that earn 1 mark each in every Part 4 transformation above.'
       ],
       lessonPlan: [
         '00–15m Diagnostic Run (Stages 1–2): Assess baseline speed and accuracy on the core interactive engine.',
@@ -560,24 +560,34 @@
     return String(str || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
   }
 
-  function computeHomeworkSig(studioHash, tutor, studio, cta) {
+  function resolveTargetModuleBasename(targetFile) {
+    const raw = String(targetFile || window.location.pathname || 'index.html')
+      .split('?')[0]
+      .split('#')[0]
+      .split('/')
+      .pop();
+    return normalizeField(raw || 'index.html');
+  }
+
+  function computeHomeworkSig(studioHash, tutor, studio, cta, targetFile) {
     const idx = STUDIO_CODE_HASHES.indexOf(studioHash);
     if (idx === -1) return '';
     const payload = [
       studioHash,
       normalizeField(tutor),
       normalizeField(studio),
-      normalizeField(cta)
+      normalizeField(cta),
+      resolveTargetModuleBasename(targetFile)
     ].join('x');
     return String(idx) + hashString64(payload).slice(0, 12);
   }
 
-  function verifyHomeworkSig(sig, tutor, studio, cta) {
+  function verifyHomeworkSig(sig, tutor, studio, cta, targetFile) {
     if (!sig || sig.length < 13) return false;
     const idx = parseInt(sig.charAt(0), 10);
     if (isNaN(idx) || idx < 0 || idx >= STUDIO_CODE_HASHES.length) return false;
     const studioHash = STUDIO_CODE_HASHES[idx];
-    const expected = computeHomeworkSig(studioHash, tutor, studio, cta);
+    const expected = computeHomeworkSig(studioHash, tutor, studio, cta, targetFile);
     return sig === expected;
   }
 
@@ -618,6 +628,7 @@
       p.includes('business-english-meetings.html') ||
       p.includes('cae-essay-builder-v2.html') ||
       p.includes('ielts-essay-masterclass.html') ||
+      p.includes('ielts-task2-paragraphing-slides.html') ||
       p.includes('ynnning-lesson-slides-task2-paragraphing.html') ||
       p.includes('boardroom.html')
     );
@@ -653,6 +664,7 @@
     isProContentUnlocked() {
       const lic = this.getLicenseState();
       if (lic.active) return true;
+      if (window.__GM_SIGNED_HOMEWORK_PAGE_UNLOCK === true) return true;
       try {
         if (
           localStorage.getItem(STORAGE_KEYS.DA_UNLOCK_1) === 'true' ||
@@ -668,7 +680,7 @@
         const tutor = params.get('tutor') || 'Licensed Tutor';
         const studio = params.get('studio') || 'English Coaching Studio';
         const cta = params.get('cta') || '';
-        if (verifyHomeworkSig(sig, tutor, studio, cta)) return true;
+        if (verifyHomeworkSig(sig, tutor, studio, cta, window.location.pathname)) return true;
       }
       return false;
     },
@@ -760,7 +772,7 @@
       base.searchParams.set('color', cfg.color || 'emerald');
 
       if (state.active && state.tier === 'studio') {
-        const sig = computeHomeworkSig(state.hash, cfg.tutor, cfg.studio, cfg.cta || '');
+        const sig = computeHomeworkSig(state.hash, cfg.tutor, cfg.studio, cfg.cta || '', targetFile);
         base.searchParams.set('sig', sig);
       } else {
         base.searchParams.set('wl_preview', '1');
@@ -877,7 +889,7 @@
           if (fb) {
             fb.classList.remove('hidden');
             fb.style.display = 'block';
-            fb.innerHTML = `<strong>✓ Examiner Answer Key:</strong> "${this.escapeHtml(canonical)}"`;
+            fb.innerHTML = `<strong>✓ Model Answer Key:</strong> "${this.escapeHtml(canonical)}"`;
           }
           revealedCount++;
         }
@@ -1035,7 +1047,7 @@
             ${this.escapeHtml(ext.title)}
           </h2>
           <p style="font-size:14px;color:#cbd5e1;margin:0 0 20px 0;line-height:1.55;">
-            Stages 1–3 above are free for independent student practice. Try <strong>Set B Item 1</strong> free below—or unlock the complete <strong>Set B Exam Bank, Oral Examiner Speaking Cards, 1-Click Answer Key Reveal &amp; 60-Min CELTA Lesson Plan</strong>.
+            Stages 1–3 above are free for independent student practice. Try <strong>Set B Item 1</strong> free below—or unlock the complete <strong>Set B Exam Bank, Mark-Scheme Speaking Cards, 1-Click Answer Key Reveal &amp; 60-Min CELTA Lesson Plan</strong>.
           </p>
 
           <!-- Free Preview Set B Item 1 -->
@@ -1071,7 +1083,7 @@
 
               <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px;">
                 <div style="background:#020617;border:1px solid #1e293b;border-radius:16px;padding:18px;">
-                  <h4 style="font-size:14px;font-weight:800;color:#fbbf24;margin:0 0 10px 0;">🎙️ Stage 5: Oral Examiner Speaking Prompts</h4>
+                  <h4 style="font-size:14px;font-weight:800;color:#fbbf24;margin:0 0 10px 0;">🎙️ Stage 5: Mark-Scheme Speaking Prompts</h4>
                   <ul style="margin:0;padding-left:18px;">${speakingHtml}</ul>
                 </div>
                 <div style="background:#020617;border:1px solid #1e293b;border-radius:16px;padding:18px;">
@@ -1087,7 +1099,7 @@
                 🔒 Locked Pro Exam Vault &amp; Classroom Controls
               </div>
               <p style="font-size:13.5px;color:#cbd5e1;max-width:640px;margin:0 auto 16px auto;line-height:1.5;">
-                Unlock <strong>Set B Exam Items 2–4</strong>, <strong>Oral Examiner Speaking Cards</strong>, <strong>1-Click Reveal All Page Answers</strong>, <strong>Print-Ready A4 Handouts</strong>, and <strong>Clean Screen-Share Mode</strong>.
+                Unlock <strong>Set B Exam Items 2–4</strong>, <strong>Mark-Scheme Speaking Cards</strong>, <strong>1-Click Reveal All Page Answers</strong>, <strong>Print-Ready A4 Handouts</strong>, and <strong>Clean Screen-Share Mode</strong>.
               </p>
 
               <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:18px;">
@@ -1374,10 +1386,10 @@
             </div>
           </div>
 
-          <!-- Examiner Briefing & Teaching Notes -->
+          <!-- Mark-Scheme Briefing & Teaching Notes -->
           <div style="margin-bottom:12px;">
             <div style="font-size:11px;font-weight:800;color:#6ee7b7;margin-bottom:6px;">
-              📋 Teaching &amp; Examiner Notes (${guide.timing}):
+              📋 Teaching &amp; Mark-Scheme Notes (${guide.timing}):
             </div>
             <ul style="margin:0;padding-left:16px;font-size:11.5px;color:#cbd5e1;line-height:1.45;display:grid;gap:6px;">
               ${guide.notes.map(n => `<li>${n}</li>`).join('')}
@@ -1556,13 +1568,10 @@
         const sig = params.get('sig') || '';
         const isPreview = params.get('wl_preview') === '1';
 
-        const isValidSigned = verifyHomeworkSig(sig, tutor, studio, cta);
+        const isValidSigned = verifyHomeworkSig(sig, tutor, studio, cta, window.location.pathname);
         if (isValidSigned) {
-          try {
-            localStorage.setItem(STORAGE_KEYS.DA_UNLOCK_1, 'true');
-            localStorage.setItem(STORAGE_KEYS.DA_UNLOCK_2, 'true');
-            localStorage.setItem(STORAGE_KEYS.DA_UNLOCK_3, 'true');
-          } catch (e) {}
+          // Unlock ONLY this assigned page in memory—never persist full-course unlock to localStorage
+          window.__GM_SIGNED_HOMEWORK_PAGE_UNLOCK = true;
           if (window.DarkAcademiaGate && typeof window.DarkAcademiaGate.syncUI === 'function') {
             window.DarkAcademiaGate.syncUI();
           }

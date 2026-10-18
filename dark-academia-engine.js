@@ -24,12 +24,12 @@ const DarkAcademiaGate = {
     '3a90fcfd3df5fd99',
     'df4050d2ac7e7818',
     '87c6e97afd2f9576',
-    '07dfc1f76646e3e9',
-    '3089a39af9f71612',
-    'df3a72ff4ff87f6d',
-    '410a91742e314132',
-    '36d29a47ba9eca49',
-    'ba6766737503c529'
+    '8720a773c24deac9',
+    '68943376c022200c',
+    'e32febaa231630ba',
+    'f7c46303a42395e1',
+    '69f9d176bc781314',
+    '642ef07c8176b90a'
   ],
   STRIPE_LINK: 'https://buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01',
 
@@ -66,7 +66,12 @@ const DarkAcademiaGate = {
       'baskerville_unit2', 'baskerville_unit3',
       'compendium'
     ];
-    return lockedUnits.includes(unitId) && !this.isUnlocked();
+    if (!lockedUnits.includes(unitId)) return false;
+    if (this.isUnlocked()) return false;
+    if (unitId !== 'compendium' && window.__GM_SIGNED_HOMEWORK_PAGE_UNLOCK === true) {
+      return false;
+    }
+    return true;
   },
 
   persistUnlock() {
