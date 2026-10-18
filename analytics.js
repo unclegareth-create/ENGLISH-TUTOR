@@ -9,14 +9,12 @@
 (() => {
     'use strict';
 
-    // UK ICO Children's Code (Age-Appropriate Design Code) Guard:
-    // Never load external analytics or store attribution trails on Young Learners pages (ages 6-12).
+    // UK ICO Children's Code (Age-Appropriate Design Code):
+    // Cookieless, non-PII GoatCounter aggregate counting is active across all pages.
+    // However, commercial attribution trails, Clarity session recording, and diagnostic email gates
+    // are strictly suppressed on Young Learners pages (Professor West's Study, ages 6-12).
     const currentPath = (window.location.pathname || '').toLowerCase();
-    if (currentPath.includes('professor-west-study')) {
-        window.trackFunnelEvent = function () {};
-        window.showDiagnosticGate = function () {};
-        return;
-    }
+    const isYoungLearners = currentPath.includes('professor-west-study');
 
     const GOATCOUNTER_CODE = 'garethenglish';   // <-- Registered GoatCounter site code
 
@@ -39,6 +37,7 @@
             }
         };
         s.addEventListener('load', () => { while (queue.length) send(queue.shift()); });
+        window.trackGoatEvent = send;
 
         const label = (el) => (el.textContent || el.getAttribute('aria-label') || '')
             .replace(/\s+/g, ' ').trim().slice(0, 60) || 'link';
@@ -54,6 +53,10 @@
                 send(`booking-cta: ${label(a)}`);
             } else if (href.includes('cal.com/gareth-montgomery-jgaefz')) {
                 send('booking-external: cal.com');
+            } else if (href.includes('buy.stripe.com')) {
+                send(`stripe-checkout: ${label(a) || page(href)}`);
+            } else if (/(^|\/)(dark-academia|dracula|frankenstein|jekyll|baskerville|the-gothic-canon)/.test(href)) {
+                send(`dark-academia: ${page(href)}`);
             } else if (/(^|\/)(fce-friendship-conditionals|cae-essay-builder|cpe-psychometrics-passives|ielts-essay-masterclass)\.html/.test(href)) {
                 send(`exam-lab: ${page(href)}`);
             } else if (/(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch)\.html/.test(href)) {
@@ -77,7 +80,12 @@
 
     /* ---------- Conversion Funnel Telemetry & Diagnostic Gate ---------- */
     if (!window.trackFunnelEvent) {
-        const FUNNEL_KEY = 'gm_attribution_trail';
+        if (isYoungLearners) {
+            // UK ICO Children's Code: Suppress behavioral attribution trails, Clarity recordings, and diagnostic email gates on Young Learners pages (ages 6-12).
+            window.trackFunnelEvent = function () {};
+            window.showDiagnosticGate = function () {};
+        } else {
+            const FUNNEL_KEY = 'gm_attribution_trail';
 
         const getTrail = () => {
             try {
@@ -110,10 +118,13 @@
                 window.clarity('set', 'last_funnel_step', eventName);
                 if (params.tier) window.clarity('set', 'selected_tier', params.tier);
             }
-            if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+            const gcPath = eventName + (params.tier ? '/' + params.tier : '');
+            if (typeof window.trackGoatEvent === 'function') {
+                window.trackGoatEvent(gcPath);
+            } else if (window.goatcounter && typeof window.goatcounter.count === 'function') {
                 try {
                     window.goatcounter.count({
-                        path: eventName + (params.tier ? '/' + params.tier : ''),
+                        path: gcPath,
                         title: 'Funnel Event: ' + eventName,
                         event: true
                     });
@@ -241,6 +252,7 @@
                 cta_text: (target.innerText || '').trim().slice(0, 50)
             });
         });
+        }
     }
 
     // Load Teacher Classroom & White-Label Studio Runtime if needed

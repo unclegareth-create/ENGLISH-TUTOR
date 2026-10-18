@@ -1,0 +1,459 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dark Academia Vertical Short: Dracula Participle Clause</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400;1,6..72,600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html, body {
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: #060408;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #f8fafc;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Vertical Canvas Shell */
+    .vertical-screen {
+      position: relative;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 20%, #170914 0%, #060408 75%);
+    }
+
+    /* Ambient Background Art */
+    .hero-art-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1080px;
+      height: 720px;
+      background-image: url('assets/gothic/dracula_carpathian.jpg');
+      background-size: cover;
+      background-position: center 30%;
+      opacity: 0.38;
+      filter: saturate(1.1) contrast(1.15);
+      transform: scale(1.05);
+      transition: transform 0.1s linear;
+    }
+
+    .hero-art-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 1080px;
+      height: 780px;
+      background: linear-gradient(180deg, rgba(6,4,8,0.2) 0%, rgba(6,4,8,0.85) 75%, #060408 100%);
+    }
+
+    /* Safe-zone container for TikTok UI */
+    .content-safe-zone {
+      position: relative;
+      z-index: 10;
+      padding: 180px 100px 320px 80px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Top Brand & Badge Bar */
+    .top-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .crest-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #d97706, #78350f);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 4px 16px rgba(217, 119, 6, 0.4);
+      border: 1px solid rgba(251, 191, 36, 0.5);
+    }
+
+    .pill-cefr {
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: rgba(23, 15, 25, 0.85);
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: #fbbf24;
+      text-transform: uppercase;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    .tutor-tag {
+      font-size: 20px;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    /* Dynamic Stage Container */
+    .stage-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 36px;
+      position: relative;
+    }
+
+    /* Card 1: The Hook */
+    .hook-card {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .hook-eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: #f87171;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hook-title {
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.14;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      margin-bottom: 24px;
+    }
+
+    .strike-box {
+      display: inline-block;
+      position: relative;
+      color: #fca5a5;
+      background: rgba(220, 38, 38, 0.15);
+      padding: 4px 18px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(239, 68, 68, 0.35);
+      text-decoration: line-through;
+      text-decoration-color: #ef4444;
+      text-decoration-thickness: 5px;
+    }
+
+    /* Card 2: Gothic Breakdown */
+    .breakdown-card {
+      background: rgba(18, 12, 22, 0.92);
+      border: 2px solid rgba(217, 119, 6, 0.35);
+      border-radius: 28px;
+      padding: 44px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(217, 119, 6, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .breakdown-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #d97706, #fbbf24, #d97706);
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .source-label {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: #fbbf24;
+      text-transform: uppercase;
+    }
+
+    .syntax-badge {
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .quote-box {
+      font-family: 'Newsreader', serif;
+      font-size: 40px;
+      line-height: 1.35;
+      font-style: italic;
+      color: #f1f5f9;
+      margin-bottom: 32px;
+      padding-left: 24px;
+      border-left: 4px solid #f59e0b;
+    }
+
+    .highlight-gold {
+      color: #fde047;
+      font-weight: 700;
+      font-style: normal;
+      background: rgba(245, 158, 11, 0.22);
+      padding: 2px 10px;
+      border-radius: 8px;
+      text-shadow: 0 0 16px rgba(253, 224, 71, 0.5);
+    }
+
+    /* Comparison rows */
+    .compare-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .compare-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 18px 24px;
+      border-radius: 16px;
+      font-size: 24px;
+      line-height: 1.3;
+    }
+
+    .compare-row.bad {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+    }
+
+    .compare-row.good {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1.5px solid rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+      font-weight: 700;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.15);
+    }
+
+    .row-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    /* Modern Essay Transfer Card */
+    .transfer-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1.5px solid rgba(56, 189, 248, 0.3);
+      border-radius: 24px;
+      padding: 32px;
+      margin-top: 24px;
+    }
+
+    .transfer-header {
+      font-size: 21px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #38bdf8;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .transfer-text {
+      font-size: 26px;
+      line-height: 1.4;
+      color: #e2e8f0;
+    }
+
+    /* Bottom CTA Card */
+    .bottom-cta-banner {
+      background: linear-gradient(135deg, rgba(217, 119, 6, 0.22), rgba(180, 83, 9, 0.35));
+      border: 2px solid rgba(245, 158, 11, 0.5);
+      border-radius: 28px;
+      padding: 36px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+    }
+
+    .cta-left {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cta-sub {
+      font-size: 21px;
+      font-weight: 700;
+      color: #fbbf24;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .cta-main {
+      font-size: 34px;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .cta-btn {
+      background: #fbbf24;
+      color: #0f172a;
+      padding: 18px 36px;
+      border-radius: 999px;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.4);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="vertical-screen">
+  <div class="hero-art-bg" id="artBg"></div>
+  <div class="hero-art-gradient"></div>
+
+  <div class="content-safe-zone">
+    
+    <!-- Top Branding & Safe Header -->
+    <div class="top-badge-row">
+      <div class="crest-icon">🕯️</div>
+      <div class="pill-cefr">C1 / C2 &amp; IELTS 8.0+</div>
+      <div class="tutor-tag">Gareth Montgomery</div>
+    </div>
+
+    <!-- Center Stage Dynamic Area -->
+    <div class="stage-container" id="stage">
+
+      <!-- Scene 1: The Contrarian Hook -->
+      <div class="hook-card" id="hookCard">
+        <div class="hook-eyebrow">
+          <span>⚠️</span>
+          <span>Exam Writing Mistake</span>
+        </div>
+        <div class="hook-title">
+          Stop opening sentences with<br>
+          <span class="strike-box">"Because he was afraid..."</span><br>
+          in your essays.
+        </div>
+      </div>
+
+      <!-- Scene 2: Bram Stoker Syntax Lesson -->
+      <div class="breakdown-card" id="breakdownCard">
+        <div class="card-meta">
+          <div class="source-label">Bram Stoker • Dracula (1897)</div>
+          <div class="syntax-badge">Participle Clause</div>
+        </div>
+
+        <div class="quote-box" id="quoteText">
+          "<span class="highlight-gold" id="hlClause">Fearing for his safety</span>, Harker peered through the carriage window..."
+        </div>
+
+        <div class="compare-container">
+          <div class="compare-row bad">
+            <span class="row-icon">❌</span>
+            <span><strong>B2 / Band 6:</strong> Because he feared for his safety, he looked out.</span>
+          </div>
+          <div class="compare-row good">
+            <span class="row-icon">⭐</span>
+            <span><strong>C2 / Band 8.5+:</strong> Fearing for his safety, Harker looked out.</span>
+          </div>
+        </div>
+
+        <!-- Scene 3: Modern Professional Application -->
+        <div class="transfer-card" id="transferCard">
+          <div class="transfer-header">
+            <span>🏛️</span>
+            <span>Use In Modern Reports &amp; Meetings:</span>
+          </div>
+          <div class="transfer-text">
+            "<strong>Fearing</strong> further delays, the board revised the timeline."
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom CTA Bar -->
+    <div class="bottom-cta-banner">
+      <div class="cta-left">
+        <div class="cta-sub">Free Interactive Gothic Lab</div>
+        <div class="cta-main">garethenglish.com</div>
+      </div>
+      <div class="cta-btn">Practise Free →</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Programmatic animation controller for CDP rendering
+  // Total duration: 10.0 seconds (120 frames at 12 fps)
+  window.setFrameTimeline = function(progress) {
+    // progress is 0.0 to 1.0
+    const artBg = document.getElementById('artBg');
+    const hookCard = document.getElementById('hookCard');
+    const breakdownCard = document.getElementById('breakdownCard');
+    const hlClause = document.getElementById('hlClause');
+    const transferCard = document.getElementById('transferCard');
+
+    // Subtle Ken-Burns zoom on oil painting
+    artBg.style.transform = `scale(${1.05 + progress * 0.12}) translateY(${progress * -20}px)`;
+
+    if (progress < 0.28) {
+      // Phase 1: Hook dominant
+      hookCard.style.opacity = '1';
+      hookCard.style.transform = 'translateY(0)';
+      breakdownCard.style.opacity = '0.9';
+      transferCard.style.display = 'none';
+      hlClause.style.boxShadow = 'none';
+    } else if (progress < 0.68) {
+      // Phase 2: Breakdown & Golden Clause Glow
+      hookCard.style.opacity = '0.85';
+      breakdownCard.style.opacity = '1';
+      transferCard.style.display = 'none';
+      
+      const glowIntensity = Math.min(1, (progress - 0.28) / 0.15);
+      hlClause.style.textShadow = `0 0 ${20 * glowIntensity}px rgba(253, 224, 71, 0.9)`;
+    } else {
+      // Phase 3: Transfer card reveal
+      transferCard.style.display = 'block';
+      transferCard.style.opacity = '1';
+      hlClause.style.textShadow = '0 0 25px rgba(253, 224, 71, 0.9)';
+    }
+  };
+
+  // Initialize at frame 0
+  window.setFrameTimeline(0);
+</script>
+
+  <script src="analytics.js" defer></script>
+</body>
+</html>
