@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APEX // UK £100k Tax-Trap, Childcare Cliff &amp; Salary Sacrifice MILP Optimizer (2025/26–2026/27)</title>
+  <meta name="description" content="Deterministic Mixed-Integer Linear Programming (MILP) solver for the UK £100,000–£125,140 60%/62%/69.5% marginal tax trap, £100k Childcare Cliff (SI 2015/522), 15% Employer NI Salary Sacrifice (ITEPA 2003 s.308), and Relief-at-Source SIPP rebates (ITA 2007 s.192)." />
+  <link rel="canonical" href="https://gareth-montgomery.com/uk-tax-trap-optimizer.html" />
+
+  <!-- JSON-LD Structured Data for White-Hat GEO & Search Engines -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "APEX UK Statutory Tax-Trap & Household Wealth MILP Optimizer",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web",
+        "url": "https://gareth-montgomery.com/uk-tax-trap-optimizer.html",
+        "description": "Exact statutory UK & Scottish tax-trap, £100k childcare cliff, pension salary sacrifice, EV BiK, and SIPP relief optimizer using piecewise-linear KKT breakpoint and MILP optimization.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0.00",
+          "priceCurrency": "GBP"
+        },
+        "featureList": [
+          "ITA 2007 s.35 & s.58 Personal Allowance Taper (£100,000 to £125,140) exact solver",
+          "Childcare Act 2016 & SI 2015/522 £100,000.00 Adjusted Net Income Dirac-delta cliff recovery",
+          "NIC Act 2025 15% Employer National Insurance pass-back multiplier calculator",
+          "Scotland 6-band (19%/20%/21%/42%/45%/48%) 69.5% marginal trap vs rUK 62% marginal trap",
+          "ITA 2007 s.192 Personal SIPP net deposit, 20% HMRC top-up, and Self-Assessment cash rebate decomposition"
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How much do I need to put into a SIPP or Salary Sacrifice to avoid the £100,000 UK tax trap and childcare cliff?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Under ITA 2007 s.58 and SI 2015/522, your Adjusted Net Income (ANI) must be £100,000.00 or below. For example, on a £110,000 salary with 5% existing employee pension (Base ANI = £104,500), sacrificing an extra £4,500 gross via Salary Sacrifice (costing only £1,710 in net take-home pay in England/Wales or £1,372.50 in Scotland) or depositing £3,600 net (£4,500 gross) into a Personal SIPP reduces ANI to £100,000, restoring £2,250 of Personal Allowance and unlocking £8,500 per preschool child in 30-hour funded childcare and Tax-Free Childcare."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the exact marginal tax rate between £100,000 and £125,140 in England vs Scotland?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "In England, Wales, and Northern Ireland (rUK), every £2 earned above £100,000 withdraws £1 of the £12,570 Personal Allowance (ITA 2007 s.35), creating a 60% Income Tax rate plus 2% Employee Class 1 National Insurance = 62.0% marginal deduction (71.0% with a Plan 1/2/4/5 Student Loan, or 77.0% with a Postgraduate Loan). In Scotland, the 45% Advanced Rate combines with 22.5% Personal Allowance withdrawal and 2% Employee NI for a 69.5% marginal deduction (78.5% with a Student Loan)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How does the 15% Employer NI pass-back work on Salary Sacrifice pensions in 2025/26 and 2026/27?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Under the National Insurance Contributions (Secondary Class 1 Contributions) Act 2025, employers pay 15% Class 1 Secondary NI on earnings above £5,000. When an employee sacrifices gross salary into a pension under ITEPA 2003 s.308, the employer saves 15% on the sacrificed amount. If the employer passes back 50% to 100% of this saving, every £1,000 sacrificed adds £1,075 to £1,150 into the pension pot while costing a £100k–£125k rUK taxpayer only £380 in net take-home cash."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg-primary: #070b12;
+      --bg-panel: #0d1420;
+      --bg-card: #121c2d;
+      --bg-input: #09101a;
+      --border-grid: #1e2d44;
+      --border-bright: #2f476b;
+      --text-main: #f0f5fa;
+      --text-muted: #93a7c2;
+      --text-dim: #627794;
+      --accent-emerald: #10b981;
+      --accent-emerald-glow: rgba(16, 185, 129, 0.16);
+      --accent-amber: #f59e0b;
+      --accent-danger: #ef4444;
+      --accent-cyan: #06b6d4;
+      --accent-indigo: #6366f1;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      background: rgba(13, 20, 32, 0.94);
+      border-bottom: 1px solid var(--border-grid);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-badge {
+      background: var(--accent-emerald-glow);
+      color: var(--accent-emerald);
+      border: 1px solid var(--accent-emerald);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      letter-spacing: 0.06em;
+    }
+
+    .brand-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-bright);
+      padding: 0.42rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn-action:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    .btn-primary {
+      background: var(--accent-emerald);
+      color: #04130d;
+      border-color: var(--accent-emerald);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background: #34d399;
+      color: #04130d;
+    }
+
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, #0d1626 0%, #101e33 100%);
+      border: 1px solid var(--border-grid);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 980px) {
+      .hero-banner {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hero-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-sub {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .statutory-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.85rem;
+    }
+
+    .stat-pill {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      background: rgba(9, 16, 26, 0.85);
+      border: 1px solid var(--border-grid);
+      color: var(--text-muted);
+      padding: 0.22rem 0.55rem;
+      border-radius: 4px;
+    }
+
+    .hero-kpi-box {
+      background: rgba(7, 11, 18, 0.78);
+      border: 1px solid var(--accent-emerald);
+      border-radius: 8px;
+      padding: 1.15rem;
+    }
+
+    .hero-kpi-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-emerald);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .hero-kpi-value {
+      font-family: var(--font-mono);
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 0.25rem 0;
+    }
+
+    .hero-kpi-detail {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .presets-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      align-items: center;
+    }
+
+    .presets-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-right: 0.35rem;
+    }
+
+    .preset-btn {
+      background: var(--bg-panel);
+      color: var(--text-muted);
+      border: 1px solid var(--border-grid);
+      border-radius: 6px;
+      padding: 0.38rem 0.72rem;
+      font-size: 0.76rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-btn:hover,
+    .preset-btn.active {
+      border-color: var(--accent-emerald);
+      color: var(--accent-emerald);
+      background: var(--accent-emerald-glow);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-grid);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-grid);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .panel-title {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-cyan);
+    }
+
+    .form-group {
+      margin-bottom: 0.95rem;
+    }
+
+    .form-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.32rem;
+      font-weight: 500;
+    }
+
+    .form-val {
+      font-family: var(--font-mono);
+      color: var(--text-main);
+      font-weight: 700;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent-emerald);
+      cursor: pointer;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-grid);
+      color: var(--text-main);
+      padding: 0.48rem 0.65rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.83rem;
+    }
+
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+    }
+
+    .two-col-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.82rem;
+      color: var(--text-main);
+      padding: 0.5rem 0.65rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-grid);
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+    }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .kpi-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-grid);
+      border-radius: 8px;
+      padding: 0.95rem;
+    }
+
+    .kpi-card.highlight {
+      border-color: var(--accent-emerald);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, var(--bg-card) 100%);
+    }
+
+    .kpi-card.danger {
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    .kpi-title {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-num {
+      font-family: var(--font-mono);
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin: 0.25rem 0;
+    }
+
+    .kpi-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    @media (max-width: 950px) {
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-grid);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .chart-caption {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 0.45rem;
+    }
+
+    canvas {
+      width: 100%;
+      height: 250px;
+      display: block;
+      background: #080d16;
+      border-radius: 6px;
+      border: 1px solid var(--border-grid);
+    }
+
+    .comparison-table-wrap {
+      overflow-x: auto;
+      margin-bottom: 1.25rem;
+    }
+
+    table.comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    table.comp-table th,
+    table.comp-table td {
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid var(--border-grid);
+      text-align: right;
+      font-family: var(--font-mono);
+    }
+
+    table.comp-table th:first-child,
+    table.comp-table td:first-child {
+      text-align: left;
+      font-family: var(--font-sans);
+      font-weight: 600;
+    }
+
+    table.comp-table thead th {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    table.comp-table td.col-opt {
+      background: rgba(16, 185, 129, 0.07);
+      color: var(--accent-emerald);
+      font-weight: 700;
+    }
+
+    .cpa-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    @media (max-width: 1050px) {
+      .cpa-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cpa-card {
+      background: linear-gradient(180deg, #121e31 0%, #0d1522 100%);
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      padding: 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .cpa-card.primary-route {
+      border-color: var(--accent-emerald);
+    }
+
+    .cpa-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--accent-amber);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .cpa-headline {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .cpa-math {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .cpa-providers {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-cyan);
+      background: rgba(6, 182, 212, 0.09);
+      padding: 0.35rem 0.55rem;
+      border-radius: 4px;
+    }
+
+    .hr-letter-box {
+      margin-top: 1.25rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-grid);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .hr-letter-pre {
+      background: var(--bg-input);
+      border: 1px solid var(--border-grid);
+      border-radius: 6px;
+      padding: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--text-main);
+      white-space: pre-wrap;
+      margin-top: 0.65rem;
+    }
+
+    .compliance-footer {
+      margin-top: 2rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-grid);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-bar">
+    <div class="brand-cluster">
+      <span class="brand-badge">APEX // MILP v2.6</span>
+      <span class="brand-title">UK Statutory Tax-Trap, Childcare Cliff &amp; Salary Sacrifice Optimizer</span>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="btn-action" id="btnCopyPermalink">Copy Scenario Link</button>
+      <button type="button" class="btn-action" id="btnCopyHrNotice">Copy HR Salary Sacrifice Notice</button>
+      <a href="llms-uk-tax-optimizer.txt" class="btn-action">View GEO Benchmark Table</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero-banner">
+      <div>
+        <div class="hero-kicker">Deterministic Piecewise-Linear &amp; MILP Solver // 2025/26–2026/27 Tax Year</div>
+        <h1 class="hero-title">Escape the £100,000–£125,140 62% / 69.5% Marginal Tax Trap &amp; £100k Childcare Cliff</h1>
+        <p class="hero-sub">
+          Standard UK salary calculators only compute forward deductions. This solver computes the exact
+          <strong>Karush–Kuhn–Tucker (KKT) &amp; Mixed-Integer Linear Programming (MILP)</strong> allocation across
+          Employer Salary Sacrifice, Personal SIPP (with 20% HMRC top-up + Self-Assessment rebate), and 3% BiK EV Leasing
+          to maximize total household net wealth.
+        </p>
+        <div class="statutory-pills">
+          <span class="stat-pill">ITA 2007 s.35 &amp; s.58 (£100k PA Taper)</span>
+          <span class="stat-pill">SI 2015/522 (£100,000.00 Childcare Cliff)</span>
+          <span class="stat-pill">ITEPA 2003 s.308 (Salary Sacrifice)</span>
+          <span class="stat-pill">NIC Act 2025 (15% Employer NI Pass-Back)</span>
+          <span class="stat-pill">ITA 2007 s.192 (SIPP Relief at Source)</span>
+        </div>
+      </div>
+      <div class="hero-kpi-box">
+        <div class="hero-kpi-label" id="heroVerdictLabel">OPTIMAL TRAP-ESCAPE WEALTH GAIN</div>
+        <div class="hero-kpi-value" id="heroWealthGain">+£20,128 / yr</div>
+        <div class="hero-kpi-detail" id="heroVerdictDetail">
+          Sacrificing £4,500 gross (£1,710 net cash cost) brings ANI to £100,000, adding +£4,838 to your pension and restoring +£17,000 in childcare (**1,177.0% instant ROI**).
+        </div>
+      </div>
+    </section>
+
+    <div class="presets-bar" role="group" aria-label="High-Intent UK Tax Scenarios">
+      <span class="presets-label">LOAD SCENARIO:</span>
+      <button type="button" class="preset-btn active" data-preset="ruk_110k_2kids">£110k + 2 Nursery Kids (£17k Cliff)</button>
+      <button type="button" class="preset-btn" data-preset="ruk_115k_0kids">£115k rUK 62% Trap (0 Kids)</button>
+      <button type="button" class="preset-btn" data-preset="ruk_120k_plan2">£120k + Plan 2 Loan (71% Trap)</button>
+      <button type="button" class="preset-btn" data-preset="scot_110k_1kid">£110k Scotland (69.5% Trap + 1 Kid)</button>
+      <button type="button" class="preset-btn" data-preset="ruk_135k_bonus">£110k + £25k Bonus SIPP Rescue</button>
+      <button type="button" class="preset-btn" data-preset="ruk_75k_hicbc">£75k Child Benefit Taper (2 Kids)</button>
+    </div>
+
+    <div class="main-grid">
+      <!-- LEFT COLUMN: INPUT PARAMETERS -->
+      <aside class="panel" aria-label="Household & Statutory Parameters">
+        <div class="panel-header">
+          <span class="panel-title">1. Household &amp; Payroll Parameters</span>
+          <span class="stat-pill" id="activeRegionBadge">rUK (England/Wales/NI)</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="inpSalary">
+            <span>Base Gross Salary (£/yr)</span>
+            <span class="form-val" id="valSalary">£110,000</span>
+          </label>
+          <input type="range" id="inpSalary" min="35000" max="220000" step="500" value="110000" />
+        </div>
+
+        <div class="two-col-inputs">
+          <div class="form-group">
+            <label class="form-label" for="inpBonus">
+              <span>Annual Bonus (£)</span>
+            </label>
+            <input type="number" id="inpBonus" min="0" max="150000" step="500" value="0" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inpRegion">
+              <span>Tax Jurisdiction</span>
+            </label>
+            <select id="inpRegion">
+              <option value="ruk">England, Wales &amp; NI</option>
+              <option value="scotland">Scotland (6-Band)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="two-col-inputs">
+          <div class="form-group">
+            <label class="form-label" for="inpEmpPension">
+              <span>Baseline Pension (%)</span>
+            </label>
+            <input type="number" id="inpEmpPension" min="0" max="40" step="0.5" value="5" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inpErPassback">
+              <span>Employer 15% NI Pass-Back</span>
+            </label>
+            <select id="inpErPassback">
+              <option value="0">0% (Kept by Employer)</option>
+              <option value="0.5" selected>50% (+7.5% Bonus to Pot)</option>
+              <option value="1.0">100% (+15.0% Bonus to Pot)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="two-col-inputs">
+          <div class="form-group">
+            <label class="form-label" for="inpPreschoolKids">
+              <span>Nursery Children (&lt;£100k Cliff)</span>
+            </label>
+            <select id="inpPreschoolKids">
+              <option value="0">0 Preschool Children</option>
+              <option value="1">1 Child (~£8,500/yr)</option>
+              <option value="2" selected>2 Children (~£17,000/yr)</option>
+              <option value="3">3 Children (~£25,500/yr)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inpCbKids">
+              <span>Child Benefit Kids (£60k–£80k)</span>
+            </label>
+            <select id="inpCbKids">
+              <option value="0">0 Children</option>
+              <option value="1">1 Child (£1,355/yr)</option>
+              <option value="2" selected>2 Children (£2,252/yr)</option>
+              <option value="3">3 Children (£3,149/yr)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="two-col-inputs">
+          <div class="form-group">
+            <label class="form-label" for="inpStudentLoan">
+              <span>Student Loan Plan</span>
+            </label>
+            <select id="inpStudentLoan">
+              <option value="none" selected>No Student Loan</option>
+              <option value="plan1">Plan 1 (9% &gt; £26,065)</option>
+              <option value="plan2">Plan 2 (9% &gt; £28,470)</option>
+              <option value="plan4">Plan 4 Scotland (9% &gt; £32,745)</option>
+              <option value="plan5">Plan 5 (9% &gt; £25,000)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inpCarryForward">
+              <span>Carry-Forward AA (£)</span>
+            </label>
+            <input type="number" id="inpCarryForward" min="0" max="180000" step="1000" value="0" />
+          </div>
+        </div>
+
+        <label class="checkbox-row" for="inpPostgrad">
+          <input type="checkbox" id="inpPostgrad" />
+          <span>Include Postgraduate Loan (+6% above £21,000)</span>
+        </label>
+
+        <label class="checkbox-row" for="inpEvToggle">
+          <input type="checkbox" id="inpEvToggle" />
+          <span>Include 3% BiK EV Salary Sacrifice (£650/mo Gross Lease)</span>
+        </label>
+
+        <div class="form-group">
+          <label class="form-label" for="inpMinCash">
+            <span>Minimum Monthly Take-Home Floor (£/mo)</span>
+            <span class="form-val" id="valMinCash">£0 (Unconstrained)</span>
+          </label>
+          <input type="range" id="inpMinCash" min="0" max="7500" step="100" value="0" />
+        </div>
+      </aside>
+
+      <!-- RIGHT COLUMN: SOLVER OUTPUT, CHARTS, TABLE & CPA ROUTER -->
+      <section>
+        <div class="kpi-strip">
+          <div class="kpi-card danger">
+            <div class="kpi-title">Unoptimized ANI &amp; Marginal Rate</div>
+            <div class="kpi-num" id="kpiBaseAni">£104,500</div>
+            <div class="kpi-sub" id="kpiBaseMetr">Current Marginal Rate: 62.0%</div>
+          </div>
+          <div class="kpi-card highlight">
+            <div class="kpi-title">Optimal Extra Sacrifice / SIPP</div>
+            <div class="kpi-num" id="kpiOptExtra">£4,500 / yr</div>
+            <div class="kpi-sub" id="kpiOptNetCost">Net Cash Cost: £1,710/yr (£143/mo)</div>
+          </div>
+          <div class="kpi-card highlight">
+            <div class="kpi-title">Pension Gain + Childcare Saved</div>
+            <div class="kpi-num" id="kpiTotalGain">+£21,838</div>
+            <div class="kpi-sub" id="kpiGainBreakdown">Pension: +£4,838 | Childcare: +£17,000</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title">Instant Risk-Free Return on Cash</div>
+            <div class="kpi-num" id="kpiInstantRoi" style="color: var(--accent-emerald);">+1,177.0%</div>
+            <div class="kpi-sub" id="kpiTargetAni">Target ANI: £100,000 (Full £12,570 PA)</div>
+          </div>
+        </div>
+
+        <!-- DUAL INTERACTIVE CHARTS -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="panel-header" style="margin-bottom: 0.65rem; padding-bottom: 0.45rem;">
+              <span class="panel-title">2A. Statutory Marginal Tax Rate (METR %) Curve</span>
+              <span class="stat-pill" id="chartMetrBadge">62% / 69.5% Trap Zone</span>
+            </div>
+            <canvas id="canvasMetr" width="560" height="250"></canvas>
+            <p class="chart-caption">
+              Red dashed line = Your Unoptimized Adjusted Net Income (ANI). Emerald line = Your MILP-Optimized Target ANI clearing the £100k–£125,140 taper &amp; nursery cliff.
+            </p>
+          </div>
+
+          <div class="chart-card">
+            <div class="panel-header" style="margin-bottom: 0.65rem; padding-bottom: 0.45rem;">
+              <span class="panel-title">2B. Household Net Wealth Frontier vs. Extra Sacrifice</span>
+              <span class="stat-pill" id="chartFrontierBadge">Piecewise-Linear KKT Optimum</span>
+            </div>
+            <canvas id="canvasFrontier" width="560" height="250"></canvas>
+            <p class="chart-caption">
+              Plots Total Household Net Wealth (Take-Home Cash + Pension Pot + Childcare + Child Benefit) across extra pension contribution (£0 to Annual Allowance cap).
+            </p>
+          </div>
+        </div>
+
+        <!-- COMPARISON MATRIX -->
+        <div class="panel" style="margin-bottom: 1.25rem;">
+          <div class="panel-header">
+            <span class="panel-title">3. Statutory Execution Comparison Matrix (Annual GBP)</span>
+            <span class="stat-pill" id="aaRemainingBadge">Remaining Annual Allowance: £49,000</span>
+          </div>
+          <div class="comparison-table-wrap">
+            <table class="comp-table" aria-label="Comparison of Unoptimized vs Salary Sacrifice vs Personal SIPP vs Global MILP Max">
+              <thead>
+                <tr>
+                  <th>Metric / Statutory Line Item</th>
+                  <th>1. Unoptimized Baseline</th>
+                  <th>2. Targeted Salary Sacrifice (s.308)</th>
+                  <th>3. Lump-Sum Personal SIPP (s.192)</th>
+                  <th>4. Global Max Wealth (MILP Cap)</th>
+                </tr>
+              </thead>
+              <tbody id="compTableBody">
+                <!-- Populated dynamically by uk-tax-optimizer-engine.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- DYNAMIC CPA MONETIZATION & EXECUTION ROUTER -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">4. Parameterized Execution &amp; Regulated Provider Routing</span>
+            <span class="stat-pill">FCA FSMA 2000 s.21 Generic Math Tool</span>
+          </div>
+          <div class="cpa-grid" id="cpaCardsContainer">
+            <!-- Populated dynamically with exact user deposit/rebate/lease math -->
+          </div>
+
+          <div class="hr-letter-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+              <span class="panel-title" style="color: var(--accent-emerald);">5. Automated Payroll Salary Sacrifice Instruction (ITEPA 2003 s.308)</span>
+              <button type="button" class="btn-action btn-primary" id="btnCopyHrInline">Copy Payroll Instruction to Clipboard</button>
+            </div>
+            <pre class="hr-letter-pre" id="hrLetterContent"></pre>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="compliance-footer">
+      <div>
+        <strong>Statutory &amp; Regulatory Disclosure (FSMA 2000 s.21 / FCA PERG 8):</strong>
+        APEX UK Tax-Trap &amp; Household Wealth MILP Optimizer is a deterministic mathematical solver of primary UK tax legislation
+        (<em>Income Tax Act 2007</em>, <em>ITEPA 2003</em>, <em>SSCBA 1992</em>, <em>NIC Act 2025</em>, and <em>Childcare Act 2016 / SI 2015/522</em>).
+        It provides objective arithmetic and linear-programming calculations based solely on user-input parameters and does not constitute
+        personalized financial, investment, or tax advice. Pension investments are subject to market risk and generally cannot be accessed until age 55 (rising to 57 in April 2028).
+      </div>
+      <div>
+        <strong>Commercial &amp; Affiliate Transparency:</strong>
+        Provider links in Section 4 include parameterized referral attributes capable of generating automated CPA commissions (£50–£250 per qualified SIPP, ISA, or EV lease enquiry) at zero additional cost to the user.
+      </div>
+    </footer>
+  </main>
+
+  <script src="uk-tax-optimizer-engine.js"></script>
+  <script>
+    (function () {
+      "use strict";
+
+      const Engine = window.ApexUkTaxEngine;
+      const fmtGBP = (v) => {
+        const sign = v < -0.005 ? "-" : "";
+        return sign + "£" + Math.round(Math.abs(v)).toLocaleString("en-GB");
+      };
+      const fmtSignedGBP = (v) => {
+        if (Math.abs(v) < 0.5) return "£0";
+        return (v > 0 ? "+£" : "-£") + Math.round(Math.abs(v)).toLocaleString("en-GB");
+      };
+
+      const PRESETS = {
+        ruk_110k_2kids: {
+          gross_salary: 110000,
+          bonus: 0,
+          region: "ruk",
+          existing_pension_pct: 5,
+          employer_ni_passback_pct: 0.5,
+          preschool_children: 2,
+          child_benefit_children: 2,
+          student_loan_plan: "none",
+          has_postgrad_loan: false,
+          carry_forward_allowance: 0,
+          min_monthly_take_home: 0,
+          consider_ev_lease: false,
+        },
+        ruk_115k_0kids: {
+          gross_salary: 115000,
+          bonus: 0,
+          region: "ruk",
+          existing_pension_pct: 5,
+          employer_ni_passback_pct: 0.5,
+          preschool_children: 0,
+          child_benefit_children: 0,
+          student_loan_plan: "none",
+          has_postgrad_loan: false,
+          carry_forward_allowance: 0,
+          min_monthly_take_home: 0,
+          consider_ev_lease: false,
+        },
+        ruk_120k_plan2: {
+          gross_salary: 120000,
+          bonus: 0,
+          region: "ruk",
+          existing_pension_pct: 5,
+          employer_ni_passback_pct: 0.5,
+          preschool_children: 1,
+          child_benefit_children: 1,
+          student_loan_plan: "plan2",
+          has_postgrad_loan: false,
+          carry_forward_allowance: 0,
+          min_monthly_take_home: 0,
+          consider_ev_lease: false,
+        },
+        scot_110k_1kid: {
+          gross_salary: 110000,
+          bonus: 0,
+          region: "scotland",
+          existing_pension_pct: 5,
+          employer_ni_passback_pct: 0.5,
+          preschool_children: 1,
+          child_benefit_children: 1,
+          student_loan_plan: "none",
+          has_postgrad_loan: false,
+          carry_forward_allowance: 0,
+          min_monthly_take_home: 0,
+          consider_ev_lease: false,
+        },
+        ruk_135k_bonus: {
+          gross_salary: 110000,
+          bonus: 25000,
+          region: "ruk",
+          existing_pension_pct: 5,
+          employer_ni_passback_pct: 0.5,
+          preschool_children: 1,
+          child_benefit_children: 2,
+          student_loan_plan: "none",
+          has_postgrad_loan: false,
+          carry_forward_allowance: 0,
+          min_monthly_take_home: 0,
+          consider_ev_lease: false,
+        },
+        ruk_75k_hicbc: {
+          gross_salary: 75000,
+          bonus: 0,
+          region: "ruk",
+          existing_pension_pct: 5,
+          employer_ni_passback_pct: 0.5,
+          preschool_children: 0,
+          child_benefit_children: 2,
+          student_loan_plan: "none",
+          has_postgrad_loan: false,
+          carry_forward_allowance: 0,
+          min_monthly_take_home: 0,
+          consider_ev_lease: false,
+        },
+      };
+
+      const els = {
+        inpSalary: document.getElementById("inpSalary"),
+        valSalary: document.getElementById("valSalary"),
+        inpBonus: document.getElementById("inpBonus"),
+        inpRegion: document.getElementById("inpRegion"),
+        inpEmpPension: document.getElementById("inpEmpPension"),
+        inpErPassback: document.getElementById("inpErPassback"),
+        inpPreschoolKids: document.getElementById("inpPreschoolKids"),
+        inpCbKids: document.getElementById("inpCbKids"),
+        inpStudentLoan: document.getElementById("inpStudentLoan"),
+        inpCarryForward: document.getElementById("inpCarryForward"),
+        inpPostgrad: document.getElementById("inpPostgrad"),
+        inpEvToggle: document.getElementById("inpEvToggle"),
+        inpMinCash: document.getElementById("inpMinCash"),
+        valMinCash: document.getElementById("valMinCash"),
+        activeRegionBadge: document.getElementById("activeRegionBadge"),
+        heroWealthGain: document.getElementById("heroWealthGain"),
+        heroVerdictDetail: document.getElementById("heroVerdictDetail"),
+        kpiBaseAni: document.getElementById("kpiBaseAni"),
+        kpiBaseMetr: document.getElementById("kpiBaseMetr"),
+        kpiOptExtra: document.getElementById("kpiOptExtra"),
+        kpiOptNetCost: document.getElementById("kpiOptNetCost"),
+        kpiTotalGain: document.getElementById("kpiTotalGain"),
+        kpiGainBreakdown: document.getElementById("kpiGainBreakdown"),
+        kpiInstantRoi: document.getElementById("kpiInstantRoi"),
+        kpiTargetAni: document.getElementById("kpiTargetAni"),
+        aaRemainingBadge: document.getElementById("aaRemainingBadge"),
+        compTableBody: document.getElementById("compTableBody"),
+        cpaCardsContainer: document.getElementById("cpaCardsContainer"),
+        hrLetterContent: document.getElementById("hrLetterContent"),
+        canvasMetr: document.getElementById("canvasMetr"),
+        canvasFrontier: document.getElementById("canvasFrontier"),
+      };
+
+      function readProfileFromInputs() {
+        return {
+          gross_salary: Number(els.inpSalary.value),
+          bonus: Number(els.inpBonus.value || 0),
+          region: els.inpRegion.value,
+          existing_pension_pct: Number(els.inpEmpPension.value || 0) / 100.0,
+          employer_match_pct: 0.05,
+          employer_ni_passback_pct: Number(els.inpErPassback.value),
+          preschool_children: parseInt(els.inpPreschoolKids.value, 10),
+          childcare_value_per_child: 8500.0,
+          child_benefit_children: parseInt(els.inpCbKids.value, 10),
+          student_loan_plan: els.inpStudentLoan.value,
+          has_postgrad_loan: els.inpPostgrad.checked,
+          carry_forward_allowance: Number(els.inpCarryForward.value || 0),
+          min_monthly_take_home: Number(els.inpMinCash.value || 0),
+          consider_ev_lease: els.inpEvToggle.checked,
+          ev_gross_annual_lease: 7800.0,
+          ev_p11d_value: 42000.0,
+        };
+      }
+
+      function applyPresetObject(p) {
+        els.inpSalary.value = p.gross_salary;
+        els.inpBonus.value = p.bonus;
+        els.inpRegion.value = p.region;
+        els.inpEmpPension.value = p.existing_pension_pct;
+        els.inpErPassback.value = String(p.employer_ni_passback_pct);
+        els.inpPreschoolKids.value = String(p.preschool_children);
+        els.inpCbKids.value = String(p.child_benefit_children);
+        els.inpStudentLoan.value = p.student_loan_plan;
+        els.inpPostgrad.checked = Boolean(p.has_postgrad_loan);
+        els.inpCarryForward.value = p.carry_forward_allowance;
+        els.inpMinCash.value = p.min_monthly_take_home;
+        els.inpEvToggle.checked = Boolean(p.consider_ev_lease);
+        renderAll();
+      }
+
+      function drawMetrChart(profile, res) {
+        const canvas = els.canvasMetr;
+        const ctx = canvas.getContext("2d");
+        const W = canvas.width;
+        const H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const padL = 46, padR = 18, padT = 22, padB = 32;
+        const plotW = W - padL - padR;
+        const plotH = H - padT - padB;
+
+        const minX = 10000, maxX = 160000;
+        const minY = 0, maxY = 85;
+        const xToPx = (x) => padL + ((x - minX) / (maxX - minX)) * plotW;
+        const yToPx = (y) => padT + plotH - ((Math.min(maxY, Math.max(minY, y)) - minY) / (maxY - minY)) * plotH;
+
+        // Shaded £100k - £125,140 Tax Trap Zone
+        const x100 = xToPx(100000);
+        const x125 = xToPx(125140);
+        ctx.fillStyle = "rgba(239, 68, 68, 0.13)";
+        ctx.fillRect(x100, padT, x125 - x100, plotH);
+
+        // Grid lines
+        ctx.strokeStyle = "#1e2d44";
+        ctx.lineWidth = 1;
+        ctx.font = "10px JetBrains Mono, monospace";
+        ctx.fillStyle = "#93a7c2";
+        for (const yTick of [0, 20, 40, 60, 80]) {
+          const py = yToPx(yTick);
+          ctx.beginPath();
+          ctx.moveTo(padL, py);
+          ctx.lineTo(W - padR, py);
+          ctx.stroke();
+          ctx.fillText(yTick + "%", 8, py + 3);
+        }
+
+        for (const xTick of [25000, 50000, 75000, 100000, 125140, 150000]) {
+          const px = xToPx(xTick);
+          ctx.beginPath();
+          ctx.moveTo(px, padT);
+          ctx.lineTo(px, padT + plotH);
+          ctx.stroke();
+          ctx.fillText("£" + Math.round(xTick / 1000) + "k", px - 14, H - 10);
+        }
+
+        // Plot METR curve
+        const curve = Engine.computeMetrCurve(profile);
+        ctx.strokeStyle = "#06b6d4";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        curve.forEach((pt, idx) => {
+          const px = xToPx(pt.gross_income);
+          const py = yToPx(pt.metr_pct);
+          if (idx === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+
+        // Highlight £100k Childcare Cliff Spike if preschool_children > 0
+        if (profile.preschool_children > 0) {
+          ctx.strokeStyle = "#f59e0b";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(x100, padT);
+          ctx.lineTo(x100, padT + plotH);
+          ctx.stroke();
+          ctx.fillStyle = "#f59e0b";
+          ctx.fillText("£100k CLIFF", x100 - 32, padT + 12);
+        }
+
+        // Marker 1: Unoptimized ANI
+        const baseAni = Math.min(maxX, Math.max(minX, res.baseline.adjusted_net_income));
+        const pxBase = xToPx(baseAni);
+        ctx.strokeStyle = "#ef4444";
+        ctx.setLineDash([4, 4]);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(pxBase, padT);
+        ctx.lineTo(pxBase, padT + plotH);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "#ef4444";
+        ctx.fillText("BASE ANI", Math.min(W - 65, pxBase + 4), padT + 26);
+
+        // Marker 2: Target Optimized ANI
+        const optAni = Math.min(maxX, Math.max(minX, res.targeted_trap_escape.adjusted_net_income));
+        const pxOpt = xToPx(optAni);
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(pxOpt, padT);
+        ctx.lineTo(pxOpt, padT + plotH);
+        ctx.stroke();
+        ctx.fillStyle = "#10b981";
+        ctx.fillText("OPT ANI", Math.max(padL + 4, pxOpt - 48), padT + 40);
+      }
+
+      function drawFrontierChart(profile, res) {
+        const canvas = els.canvasFrontier;
+        const ctx = canvas.getContext("2d");
+        const W = canvas.width;
+        const H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        const frontier = Engine.computeWealthFrontierCurve(profile);
+        if (!frontier || frontier.length === 0) return;
+
+        const padL = 56, padR = 18, padT = 22, padB = 32;
+        const plotW = W - padL - padR;
+        const plotH = H - padT - padB;
+
+        const maxX = Math.max(1000, frontier[frontier.length - 1].extra_sacrifice);
+        let minW = Infinity, maxW = -Infinity;
+        for (const pt of frontier) {
+          if (pt.total_household_wealth < minW) minW = pt.total_household_wealth;
+          if (pt.total_household_wealth > maxW) maxW = pt.total_household_wealth;
+        }
+        const spanW = Math.max(2000, maxW - minW);
+        minW -= spanW * 0.1;
+        maxW += spanW * 0.12;
+
+        const xToPx = (x) => padL + (x / maxX) * plotW;
+        const yToPx = (y) => padT + plotH - ((y - minW) / (maxW - minW)) * plotH;
+
+        ctx.strokeStyle = "#1e2d44";
+        ctx.lineWidth = 1;
+        ctx.font = "10px JetBrains Mono, monospace";
+        ctx.fillStyle = "#93a7c2";
+
+        for (let i = 0; i <= 4; i++) {
+          const wVal = minW + ((maxW - minW) * i) / 4;
+          const py = yToPx(wVal);
+          ctx.beginPath();
+          ctx.moveTo(padL, py);
+          ctx.lineTo(W - padR, py);
+          ctx.stroke();
+          ctx.fillText("£" + (wVal / 1000).toFixed(1) + "k", 4, py + 3);
+        }
+
+        for (let i = 0; i <= 4; i++) {
+          const xVal = (maxX * i) / 4;
+          const px = xToPx(xVal);
+          ctx.beginPath();
+          ctx.moveTo(px, padT);
+          ctx.lineTo(px, padT + plotH);
+          ctx.stroke();
+          ctx.fillText("+£" + Math.round(xVal / 1000) + "k", px - 16, H - 10);
+        }
+
+        // Draw wealth curve
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 2.4;
+        ctx.beginPath();
+        frontier.forEach((pt, idx) => {
+          const px = xToPx(pt.extra_sacrifice);
+          const py = yToPx(pt.total_household_wealth);
+          if (idx === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        });
+        ctx.stroke();
+
+        // Highlight Targeted Trap-Escape point
+        const optX = Math.min(
+          maxX,
+          res.targeted_trap_escape.extra_salary_sacrifice + res.targeted_trap_escape.extra_sipp_gross
+        );
+        const optY = res.targeted_trap_escape.total_household_wealth;
+        const pxOpt = xToPx(optX);
+        const pyOpt = yToPx(optY);
+
+        ctx.fillStyle = "#f59e0b";
+        ctx.beginPath();
+        ctx.arc(pxOpt, pyOpt, 5.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillText("TRAP ESCAPE (" + fmtGBP(optX) + ")", Math.min(W - 145, Math.max(padL + 6, pxOpt - 40)), Math.max(padT + 14, pyOpt - 10));
+      }
+
+      function renderAll() {
+        const profile = readProfileFromInputs();
+        els.valSalary.textContent = fmtGBP(profile.gross_salary);
+        els.valMinCash.textContent =
+          profile.min_monthly_take_home > 0
+            ? fmtGBP(profile.min_monthly_take_home) + "/mo"
+            : "£0 (Unconstrained)";
+        els.activeRegionBadge.textContent =
+          profile.region === "scotland" ? "Scotland (6-Band 45%/48%)" : "rUK (England/Wales/NI)";
+
+        const res = Engine.optimizeHouseholdWealth(profile);
+        const base = res.baseline;
+        const targ = res.targeted_trap_escape;
+        const sipp = res.sipp_lump_sum_equivalent;
+        const glob = res.global_wealth_optimum;
+        const evSim = res.ev_simulation;
+
+        const extraChosen =
+          targ.extra_salary_sacrifice + targ.extra_sipp_gross + targ.ev_gross_sacrifice;
+        const cashCostAnnual = Math.max(0, base.net_take_home_cash - targ.net_take_home_cash);
+
+        els.heroWealthGain.textContent = fmtSignedGBP(targ.net_wealth_gain) + " / yr";
+        els.heroVerdictDetail.innerHTML =
+          `Sacrificing <strong>${fmtGBP(extraChosen)}</strong> gross (costing only <strong>${fmtGBP(cashCostAnnual)}/yr</strong> or <strong>${fmtGBP(cashCostAnnual / 12)}/mo</strong> in take-home cash) reduces Adjusted Net Income from <strong>${fmtGBP(base.adjusted_net_income)}</strong> to <strong>${fmtGBP(targ.adjusted_net_income)}</strong> — adding <strong>${fmtSignedGBP(targ.pension_pot_gain)}</strong> to your pension pot and restoring <strong>${fmtSignedGBP(targ.childcare_restored)}</strong> in childcare (<strong>+${targ.instant_return_on_cash_sacrificed_pct.toFixed(1)}% instant ROI</strong>).`;
+
+        els.kpiBaseAni.textContent = fmtGBP(base.adjusted_net_income);
+        els.kpiBaseMetr.textContent =
+          "Current Marginal Rate: " + (base.marginal_effective_tax_rate * 100).toFixed(1) + "%";
+        els.kpiOptExtra.textContent = fmtGBP(extraChosen) + " / yr";
+        els.kpiOptNetCost.textContent =
+          `Net Cash Cost: ${fmtGBP(cashCostAnnual)}/yr (${fmtGBP(cashCostAnnual / 12)}/mo)`;
+        els.kpiTotalGain.textContent = fmtSignedGBP(
+          targ.pension_pot_gain + targ.childcare_restored
+        );
+        els.kpiGainBreakdown.textContent =
+          `Pension: ${fmtSignedGBP(targ.pension_pot_gain)} | Childcare: ${fmtSignedGBP(targ.childcare_restored)}`;
+        els.kpiInstantRoi.textContent = "+" + targ.instant_return_on_cash_sacrificed_pct.toFixed(1) + "%";
+        els.kpiTargetAni.textContent =
+          `Target ANI: ${fmtGBP(targ.adjusted_net_income)} (PA: ${fmtGBP(targ.personal_allowance)})`;
+        els.aaRemainingBadge.textContent =
+          `Remaining Pension AA: ${fmtGBP(res.remaining_pension_allowance)} (Cap: ${fmtGBP(res.pension_annual_allowance)})`;
+
+        // Comparison Table rows
+        const rows = [
+          ["Adjusted Net Income (ANI — ITA 2007 s.58)", fmtGBP(base.adjusted_net_income), fmtGBP(targ.adjusted_net_income), fmtGBP(sipp.adjusted_net_income), fmtGBP(glob.adjusted_net_income)],
+          ["Personal Allowance (ITA 2007 s.35)", fmtGBP(base.personal_allowance), fmtGBP(targ.personal_allowance), fmtGBP(sipp.personal_allowance), fmtGBP(glob.personal_allowance)],
+          ["Extra Salary Sacrifice / SIPP Gross", "£0", fmtGBP(targ.extra_salary_sacrifice + targ.ev_gross_sacrifice), fmtGBP(sipp.extra_sipp_gross), fmtGBP(glob.extra_salary_sacrifice + glob.extra_sipp_gross)],
+          ["Employer 15% NI Saved & Passed to Pot", "£0", fmtSignedGBP(targ.er_ni_passback_to_pension), "£0 (SIPP is personal)", fmtSignedGBP(glob.er_ni_passback_to_pension)],
+          ["Income Tax Liability", fmtGBP(base.income_tax), fmtGBP(targ.income_tax), fmtGBP(sipp.income_tax), fmtGBP(glob.income_tax)],
+          ["Employee Class 1 NI (8% / 2%)", fmtGBP(base.employee_ni), fmtGBP(targ.employee_ni), fmtGBP(sipp.employee_ni), fmtGBP(glob.employee_ni)],
+          ["Student & Postgrad Loan Repayments", fmtGBP(base.student_loan), fmtGBP(targ.student_loan), fmtGBP(sipp.student_loan), fmtGBP(glob.student_loan)],
+          ["Childcare Subsidy (30h + Tax-Free Childcare)", fmtGBP(base.childcare_subsidy), fmtGBP(targ.childcare_subsidy), fmtGBP(sipp.childcare_subsidy), fmtGBP(glob.childcare_subsidy)],
+          ["Net Child Benefit (after s.681B HICBC)", fmtGBP(base.net_child_benefit), fmtGBP(targ.net_child_benefit), fmtGBP(sipp.net_child_benefit), fmtGBP(glob.net_child_benefit)],
+          ["Annual Net Take-Home Cash", fmtGBP(base.net_take_home_cash), fmtGBP(targ.net_take_home_cash), fmtGBP(sipp.net_take_home_cash), fmtGBP(glob.net_take_home_cash)],
+          ["Monthly Net Take-Home Cash", fmtGBP(base.monthly_take_home_cash) + "/mo", fmtGBP(targ.monthly_take_home_cash) + "/mo", fmtGBP(sipp.monthly_take_home_cash) + "/mo", fmtGBP(glob.monthly_take_home_cash) + "/mo"],
+          ["Total Annual Pension Pot Inflow", fmtGBP(base.total_pension_pot), fmtGBP(targ.total_pension_pot), fmtGBP(sipp.total_pension_pot), fmtGBP(glob.total_pension_pot)],
+          ["TOTAL HOUSEHOLD NET WEALTH", fmtGBP(base.total_household_wealth), fmtGBP(targ.total_household_wealth), fmtGBP(sipp.total_household_wealth), fmtGBP(glob.total_household_wealth)],
+          ["Net Household Wealth Gain vs Baseline", "Baseline", fmtSignedGBP(targ.net_wealth_gain) + " (" + targ.instant_return_on_cash_sacrificed_pct.toFixed(1) + "% ROI)", fmtSignedGBP(sipp.net_wealth_gain) + " (" + sipp.instant_return_on_cash_sacrificed_pct.toFixed(1) + "% ROI)", fmtSignedGBP(glob.net_wealth_gain) + " (" + glob.instant_return_on_cash_sacrificed_pct.toFixed(1) + "% ROI)"],
+        ];
+
+        els.compTableBody.innerHTML = rows
+          .map(
+            (r) => `
+            <tr>
+              <td>${r[0]}</td>
+              <td>${r[1]}</td>
+              <td class="col-opt">${r[2]}</td>
+              <td>${r[3]}</td>
+              <td>${r[4]}</td>
+            </tr>`
+          )
+          .join("");
+
+        // Dynamic CPA Cards
+        const sippNet = sipp.extra_sipp_net_deposit > 0 ? sipp.extra_sipp_net_deposit : extraChosen * 0.8;
+        const sippGross = sipp.extra_sipp_gross > 0 ? sipp.extra_sipp_gross : extraChosen;
+        const sippTopup = sippGross * 0.2;
+        const sippRebate = sipp.sipp_self_assessment_rebate;
+
+        els.cpaCardsContainer.innerHTML = `
+          <article class="cpa-card primary-route">
+            <div>
+              <div class="cpa-tag">ROUTE 1 // ITA 2007 s.192 LUMP-SUM SIPP SHIELD</div>
+              <h3 class="cpa-headline">Deposit ${fmtGBP(sippNet)} Net &rarr; Get ${fmtGBP(sippGross)} in SIPP + ${fmtGBP(sippRebate)} Cash Rebate</h3>
+              <p class="cpa-math" style="margin-top:0.45rem;">
+                Can't change payroll before 5 April? Transfer <strong>${fmtGBP(sippNet)}</strong> into a Personal SIPP.
+                HMRC automatically adds <strong>${fmtGBP(sippTopup)}</strong> (20% basic relief) into your SIPP and refunds
+                <strong>${fmtGBP(sippRebate)}</strong> via Self-Assessment — reducing your ANI to <strong>${fmtGBP(sipp.adjusted_net_income)}</strong>.
+              </p>
+            </div>
+            <div>
+              <div class="cpa-providers">Regulated SIPP Platforms: Interactive Investor (ii) &bull; AJ Bell &bull; InvestEngine &bull; Vanguard UK</div>
+              <a class="btn-action btn-primary" style="display:block; text-align:center; margin-top:0.6rem;"
+                 href="#sipp-shield-execution?net_deposit=${Math.round(sippNet)}&gross=${Math.round(sippGross)}&rebate=${Math.round(sippRebate)}">
+                Compare Low-Cost SIPP Platforms (${fmtGBP(sippNet)} Deposit)
+              </a>
+            </div>
+          </article>
+
+          <article class="cpa-card">
+            <div>
+              <div class="cpa-tag">ROUTE 2 // ITEPA 2003 s.139 3% BiK EV LEASE</div>
+              <h3 class="cpa-headline">Drive a £42,000 EV for ${fmtGBP(evSim.ev_net_monthly_cost)}/mo Net (${evSim.ev_effective_discount_pct.toFixed(0)}% Tax-Trap Saving)</h3>
+              <p class="cpa-math" style="margin-top:0.45rem;">
+                Sacrificing £650/mo (£7,800/yr) gross salary for an insured EV lease lowers your ANI to
+                <strong>${fmtGBP(evSim.ani_after_ev)}</strong> while adding only 3% BiK (£1,260/yr taxable).
+                ${evSim.childcare_restored_by_ev > 0 ? `Restores <strong>${fmtGBP(evSim.childcare_restored_by_ev)}/yr</strong> in funded childcare!` : ""}
+              </p>
+            </div>
+            <div>
+              <div class="cpa-providers">EV Salary Sacrifice Brokers: Octopus EV &bull; Loveelectric &bull; LeaseLoco</div>
+              <a class="btn-action" style="display:block; text-align:center; margin-top:0.6rem;"
+                 href="#ev-salary-sacrifice?salary=${Math.round(profile.gross_salary)}&net_mo=${Math.round(evSim.ev_net_monthly_cost)}">
+                Calculate Instant EV Salary Sacrifice Quote
+              </a>
+            </div>
+          </article>
+
+          <article class="cpa-card">
+            <div>
+              <div class="cpa-tag">ROUTE 3 // £20,000 FLEXIBLE ISA &amp; BED-AND-ISA SHIELD</div>
+              <h3 class="cpa-headline">Protect Savings &amp; Dividends from ${base.adjusted_net_income >= 125140 ? "45%/48% (£0 PSA)" : "40%/42% (£500 PSA)"} Tax</h3>
+              <p class="cpa-math" style="margin-top:0.45rem;">
+                At <strong>${fmtGBP(base.adjusted_net_income)}</strong> ANI, your Personal Savings Allowance is
+                <strong>${base.adjusted_net_income >= 125140 ? "£0 (completely eliminated)" : "halved to £500/yr"}</strong>.
+                Wrapping £20,000/yr inside a 0%-commission Flexible Stocks &amp; Shares or Cash ISA eliminates 33.75%–39.35% dividend tax.
+              </p>
+            </div>
+            <div>
+              <div class="cpa-providers">Zero-Fee ISA Providers: Trading 212 &bull; InvestEngine &bull; IG &bull; Hargreaves Lansdown</div>
+              <a class="btn-action" style="display:block; text-align:center; margin-top:0.6rem;"
+                 href="#flexible-isa-shield?ani=${Math.round(base.adjusted_net_income)}">
+                Open 2025/26 £20,000 Tax-Free ISA Wrapper
+              </a>
+            </div>
+          </article>
+        `;
+
+        // Populate HR Salary Sacrifice Letter
+        const totalSacAnnual = Math.round(
+          profile.gross_salary * profile.existing_pension_pct + targ.extra_salary_sacrifice
+        );
+        const extraSacMonthly = Math.round(targ.extra_salary_sacrifice / 12);
+        els.hrLetterContent.textContent =
+`SUBJECT: Formal Request for Contractual Pension Salary Sacrifice Variation (ITEPA 2003 s.308)
+
+Dear Payroll & People Operations Team,
+
+I am writing to request a contractual variation to my gross remuneration under Section 308 of the Income Tax (Earnings and Pensions) Act 2003 (ITEPA 2003) for the current UK tax year.
+
+1. Current Base Salary + Bonus: ${fmtGBP(profile.gross_salary + profile.bonus)} / year
+2. Requested Additional Salary Sacrifice into Workplace Pension: ${fmtGBP(targ.extra_salary_sacrifice)} / year (${fmtGBP(extraSacMonthly)} / month)
+3. Total Combined Employee Salary Sacrifice Allocation: ${fmtGBP(totalSacAnnual)} / year (bringing Adjusted Net Income under ITA 2007 s.58 to ${fmtGBP(targ.adjusted_net_income)})
+4. Employer Class 1 Secondary NIC Saving (NIC Act 2025 @ 15%): ${fmtGBP(targ.extra_salary_sacrifice * 0.15)} / year saved by the company (of which ${Math.round(profile.employer_ni_passback_pct * 100)}% = ${fmtGBP(targ.er_ni_passback_to_pension)}/yr is credited to my pension pot).
+
+Please confirm that this variation will take effect prior to the next payroll cut-off date and remains compliant with National Minimum Wage regulations.
+
+Kind regards,
+[Employee Name]`;
+
+        drawMetrChart(profile, res);
+        drawFrontierChart(profile, res);
+      }
+
+      // Wire events
+      [
+        els.inpSalary,
+        els.inpBonus,
+        els.inpRegion,
+        els.inpEmpPension,
+        els.inpErPassback,
+        els.inpPreschoolKids,
+        els.inpCbKids,
+        els.inpStudentLoan,
+        els.inpCarryForward,
+        els.inpPostgrad,
+        els.inpEvToggle,
+        els.inpMinCash,
+      ].forEach((el) => {
+        el.addEventListener("input", renderAll);
+        el.addEventListener("change", renderAll);
+      });
+
+      document.querySelectorAll(".preset-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          const key = btn.getAttribute("data-preset");
+          if (PRESETS[key]) applyPresetObject(PRESETS[key]);
+        });
+      });
+
+      function copyHrNotice() {
+        navigator.clipboard.writeText(els.hrLetterContent.textContent).then(() => {
+          const btn = document.getElementById("btnCopyHrInline");
+          const orig = btn.textContent;
+          btn.textContent = "Copied Payroll Notice!";
+          setTimeout(() => (btn.textContent = orig), 1800);
+        });
+      }
+
+      document.getElementById("btnCopyHrNotice").addEventListener("click", copyHrNotice);
+      document.getElementById("btnCopyHrInline").addEventListener("click", copyHrNotice);
+
+      document.getElementById("btnCopyPermalink").addEventListener("click", () => {
+        const p = readProfileFromInputs();
+        const params = new URLSearchParams({
+          salary: p.gross_salary,
+          bonus: p.bonus,
+          region: p.region,
+          kids: p.preschool_children,
+          cb: p.child_benefit_children,
+          loan: p.student_loan_plan,
+        });
+        const url = window.location.origin + window.location.pathname + "?" + params.toString();
+        navigator.clipboard.writeText(url);
+        const btn = document.getElementById("btnCopyPermalink");
+        const orig = btn.textContent;
+        btn.textContent = "Scenario Link Copied!";
+        setTimeout(() => (btn.textContent = orig), 1800);
+      });
+
+      // Hydrate from URL query params if present
+      const qs = new URLSearchParams(window.location.search);
+      if (qs.has("salary")) {
+        els.inpSalary.value = Number(qs.get("salary")) || 110000;
+        if (qs.has("bonus")) els.inpBonus.value = Number(qs.get("bonus")) || 0;
+        if (qs.has("region")) els.inpRegion.value = qs.get("region");
+        if (qs.has("kids")) els.inpPreschoolKids.value = qs.get("kids");
+        if (qs.has("cb")) els.inpCbKids.value = qs.get("cb");
+        if (qs.has("loan")) els.inpStudentLoan.value = qs.get("loan");
+      }
+
+      renderAll();
+    })();
+  </script>
+</body>
+</html>

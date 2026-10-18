@@ -129,16 +129,44 @@
       </div>
     `;
 
+    const previousFocus = document.activeElement;
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     const overlay = document.getElementById('gm-diag-overlay');
     const closeBtn = document.getElementById('gm-diag-close');
     const replayBtn = document.getElementById('gm-diag-replay');
 
-    const cleanup = () => {
-      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    const keyHandler = (e) => {
+      if (e.key === 'Escape') {
+        cleanup();
+        return;
+      }
+      if (e.key === 'Tab' && overlay) {
+        const focusables = overlay.querySelectorAll('a[href], button:not([disabled])');
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
 
-    if (closeBtn) closeBtn.onclick = cleanup;
+    const cleanup = () => {
+      document.removeEventListener('keydown', keyHandler);
+      if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+      if (previousFocus && typeof previousFocus.focus === 'function') {
+        try { previousFocus.focus(); } catch (_) {}
+      }
+    };
+
+    if (closeBtn) {
+      closeBtn.onclick = cleanup;
+      closeBtn.focus();
+    }
     if (replayBtn) {
       replayBtn.onclick = () => {
         window.trackFunnelEvent('game_replay_clicked', { gameName, score });
@@ -147,13 +175,7 @@
       };
     }
 
-    const escHandler = (e) => {
-      if (e.key === 'Escape') {
-        cleanup();
-        document.removeEventListener('keydown', escHandler);
-      }
-    };
-    document.addEventListener('keydown', escHandler);
+    document.addEventListener('keydown', keyHandler);
   };
 
   // Auto-bind all elements with [data-track] attributes
@@ -168,4 +190,13 @@
       cta_text: (target.innerText || '').trim().slice(0, 50)
     });
   });
+
+  // Load Teacher Classroom & White-Label Studio Runtime if needed
+  if (!window.GarethTeacherWhiteLabel && !document.querySelector('script[src*="teacher-white-label.js"]')) {
+    const wlScript = document.createElement('script');
+    wlScript.src = 'teacher-white-label.js';
+    wlScript.defer = true;
+    document.head.appendChild(wlScript);
+  }
 })();
+

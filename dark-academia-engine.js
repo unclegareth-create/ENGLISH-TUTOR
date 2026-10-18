@@ -23,7 +23,13 @@ const DarkAcademiaGate = {
     'ab0e473c6e1c45b8',
     '3a90fcfd3df5fd99',
     'df4050d2ac7e7818',
-    '87c6e97afd2f9576'
+    '87c6e97afd2f9576',
+    '07dfc1f76646e3e9',
+    '3089a39af9f71612',
+    'df3a72ff4ff87f6d',
+    '410a91742e314132',
+    '36d29a47ba9eca49',
+    'ba6766737503c529'
   ],
   STRIPE_LINK: 'https://buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01',
 
@@ -2572,5 +2578,12 @@ document.addEventListener('DOMContentLoaded', () => {
   DarkAcademiaGate.checkUrlUnlock();
   DarkAcademiaGate.syncUI();
   DarkAcademiaAtmosphere.initGlobal();
+  if (!window.GarethTeacherWhiteLabel && !document.querySelector('script[src*="teacher-white-label.js"]')) {
+    const wlScript = document.createElement('script');
+    wlScript.src = 'teacher-white-label.js';
+    wlScript.defer = true;
+    document.head.appendChild(wlScript);
+  }
 });
+
 

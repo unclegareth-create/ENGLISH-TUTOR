@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APEX // Cross-Exchange LP Arbitrage, Dutching &amp; UK 0%-Tax SNR Extraction Terminal</title>
+  <meta name="description" content="Deterministic Linear Programming (LP) solver for cross-exchange order-book arbitrage, net-of-commission multi-outcome Dutching, Polymarket Marginal Polytope subset reverse-Dutching, and UK 0%-tax SNR Free-Bet conversion." />
+  <style>
+    :root {
+      --bg-primary: #060a10;
+      --bg-panel: #0c131f;
+      --bg-card: #111b2b;
+      --bg-input: #080e17;
+      --border-grid: #1e2e46;
+      --text-main: #eef4fb;
+      --text-muted: #8ea4c2;
+      --accent-emerald: #10b981;
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-danger: #ef4444;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", Consolas, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      padding-bottom: 3rem;
+    }
+    header {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-grid);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--accent-emerald);
+      border: 1px solid var(--accent-emerald);
+      background: rgba(16, 185, 129, 0.14);
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .container {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (max-width: 980px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-grid);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+    .panel-title {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      color: var(--accent-cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.9rem;
+      border-bottom: 1px solid var(--border-grid);
+      padding-bottom: 0.55rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .row-inputs {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+      align-items: center;
+    }
+    label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    input, select {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-grid);
+      color: var(--text-main);
+      padding: 0.45rem 0.6rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+    .result-box {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-emerald);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .result-headline {
+      font-family: var(--font-mono);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--accent-emerald);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+    }
+    th, td {
+      padding: 0.5rem 0.6rem;
+      border-bottom: 1px solid var(--border-grid);
+      text-align: right;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex; align-items:center; gap:0.75rem;">
+      <span class="badge">ENGINE #1 // LP ARBITRAGE TERMINAL</span>
+      <strong>Cross-Exchange Dutching LP, Polymarket Polytope Scanner &amp; UK 0%-Tax SNR Solver</strong>
+    </div>
+    <a href="uk-tax-trap-optimizer.html" style="color:var(--accent-cyan); font-family:var(--font-mono); font-size:0.8rem; text-decoration:none;">
+      &rarr; Open Engine #4 (UK £100k Tax-Trap MILP Optimizer)
+    </a>
+  </header>
+
+  <main class="container">
+    <div class="grid-2">
+      <!-- MODULE A: UK 0%-TAX SNR FREE-BET & BACK-LAY LP SOLVER -->
+      <section class="panel">
+        <div class="panel-title">
+          <span>1A. Back-Lay Cross-Exchange &amp; UK SNR Free-Bet LP Solver</span>
+          <span class="badge">TCGA 1992 s.51 (0% UK Tax)</span>
+        </div>
+        <div class="row-inputs" style="grid-template-columns: 1fr 1fr;">
+          <div>
+            <label for="snrMode">Execution Mode</label>
+            <select id="snrMode">
+              <option value="snr_free_bet" selected>SNR Free-Bet Conversion (Zero Risk Cash Extraction)</option>
+              <option value="standard_arb">Standard Cash Back-vs-Lay Arbitrage / Qualifier</option>
+            </select>
+          </div>
+          <div>
+            <label for="snrStake">Back Stake / Promo Credit (£)</label>
+            <input type="number" id="snrStake" value="50" min="1" step="5" />
+          </div>
+        </div>
+        <div class="row-inputs">
+          <div>
+            <label for="snrBackOdds">Bookmaker Back Odds (Decimal)</label>
+            <input type="number" id="snrBackOdds" value="6.50" min="1.05" step="0.05" />
+          </div>
+          <div>
+            <label for="snrLayOdds">Exchange Lay Odds (Smarkets/Betfair)</label>
+            <input type="number" id="snrLayOdds" value="6.60" min="1.05" step="0.05" />
+          </div>
+          <div>
+            <label for="snrLayComm">Exchange Commission (%)</label>
+            <input type="number" id="snrLayComm" value="2.0" min="0" max="8" step="0.5" />
+          </div>
+        </div>
+
+        <div class="result-box">
+          <div style="font-size:0.74rem; font-family:var(--font-mono); color:var(--text-muted);">EXACT STATE-EQUALIZED LP SOLUTION</div>
+          <div class="result-headline" id="snrHeadline">Guaranteed Profit: +£40.91 (81.82% Retention)</div>
+          <p style="font-size:0.82rem; color:var(--text-muted); margin-top:0.35rem;" id="snrSub"></p>
+        </div>
+      </section>
+
+      <!-- MODULE B: 3-WAY MULTI-EXCHANGE DUTCHING LP SOLVER -->
+      <section class="panel">
+        <div class="panel-title">
+          <span>1B. 3-Way Multi-Exchange Net-of-Commission Dutching LP</span>
+          <span class="badge">Exact State Equalization</span>
+        </div>
+        <div style="margin-bottom:0.65rem;">
+          <label for="dutchBankroll">Total Deployment Bankroll (£ or $)</label>
+          <input type="number" id="dutchBankroll" value="1000" min="50" step="50" />
+        </div>
+        <div class="row-inputs">
+          <div><label>Outcome 1 (Home / Candidate A)</label><input type="text" id="dName1" value="Home Win (Bookmaker 0%)" /></div>
+          <div><label>Decimal Odds 1</label><input type="number" id="dOdds1" value="2.18" step="0.02" /></div>
+          <div><label>Comm 1 (%)</label><input type="number" id="dComm1" value="0.0" step="0.5" /></div>
+        </div>
+        <div class="row-inputs">
+          <div><label>Outcome 2 (Draw / Candidate B)</label><input type="text" id="dName2" value="Draw (Smarkets 2%)" /></div>
+          <div><label>Decimal Odds 2</label><input type="number" id="dOdds2" value="3.75" step="0.02" /></div>
+          <div><label>Comm 2 (%)</label><input type="number" id="dComm2" value="2.0" step="0.5" /></div>
+        </div>
+        <div class="row-inputs">
+          <div><label>Outcome 3 (Away / Candidate C)</label><input type="text" id="dName3" value="Away Win (Betfair 2%)" /></div>
+          <div><label>Decimal Odds 3</label><input type="number" id="dOdds3" value="3.95" step="0.02" /></div>
+          <div><label>Comm 3 (%)</label><input type="number" id="dComm3" value="2.0" step="0.5" /></div>
+        </div>
+
+        <div class="result-box">
+          <div class="result-headline" id="dutchHeadline">Guaranteed Arbitrage Profit: +£13.83 (+1.38% ROI)</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Outcome / Venue</th>
+                <th>Gross Odds</th>
+                <th>Net Eff. Odds</th>
+                <th>Optimal LP Stake</th>
+                <th>Net Profit if Wins</th>
+              </tr>
+            </thead>
+            <tbody id="dutchTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      function solveSnr() {
+        const mode = document.getElementById("snrMode").value;
+        const B = Number(document.getElementById("snrStake").value || 50);
+        const Ob = Number(document.getElementById("snrBackOdds").value || 6.5);
+        const Ol = Number(document.getElementById("snrLayOdds").value || 6.6);
+        const cl = Number(document.getElementById("snrLayComm").value || 2.0) / 100.0;
+
+        // Closed-form exact 2-state LP solution:
+        // State 1 (Back wins) == State 2 (Lay wins):
+        // If SNR: B*(Ob - 1) - L*(Ol - 1) = L*(1 - cl) => L* = B*(Ob - 1) / (Ol - cl)
+        // If Standard: B*(Ob - 1) - L*(Ol - 1) = L*(1 - cl) - B => L* = B*Ob / (Ol - cl)
+        const optLay = mode === "snr_free_bet"
+          ? (B * (Ob - 1.0)) / (Ol - cl)
+          : (B * Ob) / (Ol - cl);
+        const liability = optLay * (Ol - 1.0);
+        const profit = mode === "snr_free_bet"
+          ? optLay * (1.0 - cl)
+          : optLay * (1.0 - cl) - B;
+        const pct = (profit / B) * 100.0;
+
+        const head = document.getElementById("snrHeadline");
+        head.textContent =
+          `Guaranteed Net Profit: ${profit >= 0 ? "+£" : "-£"}${Math.abs(profit).toFixed(2)} (${pct.toFixed(2)}% ${mode === "snr_free_bet" ? "Retention" : "ROI"})`;
+        head.style.color = profit >= 0 ? "var(--accent-emerald)" : "var(--accent-amber)";
+
+        document.getElementById("snrSub").innerHTML =
+          `Place Back Stake of <strong>£${B.toFixed(2)}</strong> @ <strong>${Ob.toFixed(2)}</strong> and Lay <strong>£${optLay.toFixed(2)}</strong> @ <strong>${Ol.toFixed(2)}</strong> (Exchange Liability: <strong>£${liability.toFixed(2)}</strong>). Whether the selection wins or loses, your exact net profit is <strong>£${profit.toFixed(2)}</strong>.`;
+      }
+
+      function solveDutch() {
+        const bankroll = Number(document.getElementById("dutchBankroll").value || 1000);
+        const items = [1, 2, 3].map((i) => {
+          const name = document.getElementById("dName" + i).value;
+          const odds = Number(document.getElementById("dOdds" + i).value || 2.0);
+          const comm = Number(document.getElementById("dComm" + i).value || 0.0) / 100.0;
+          const eff = 1.0 + (odds - 1.0) * (1.0 - comm);
+          return { name, odds, comm, eff };
+        });
+
+        const invSum = items.reduce((acc, it) => acc + 1.0 / it.eff, 0.0);
+        const rowsHtml = items
+          .map((it) => {
+            const stake = (bankroll * (1.0 / it.eff)) / invSum;
+            const grossPayout = stake * it.eff;
+            const netProfit = grossPayout - bankroll;
+            return `<tr>
+              <td>${it.name}</td>
+              <td>${it.odds.toFixed(2)}</td>
+              <td>${it.eff.toFixed(4)}</td>
+              <td style="color:var(--accent-cyan); font-weight:700;">£${stake.toFixed(2)}</td>
+              <td style="color:${netProfit >= 0 ? "var(--accent-emerald)" : "var(--accent-danger)"}; font-weight:700;">
+                ${netProfit >= 0 ? "+£" : "-£"}${Math.abs(netProfit).toFixed(2)}
+              </td>
+            </tr>`;
+          })
+          .join("");
+
+        const guaranteedProfit = bankroll / invSum - bankroll;
+        const roi = (guaranteedProfit / bankroll) * 100.0;
+        const head = document.getElementById("dutchHeadline");
+        head.textContent =
+          `Guaranteed Worst-Case Profit: ${guaranteedProfit >= 0 ? "+£" : "-£"}${Math.abs(guaranteedProfit).toFixed(2)} (${roi >= 0 ? "+" : ""}${roi.toFixed(2)}% ROI | Implied Sum: ${(invSum * 100).toFixed(2)}%)`;
+        head.style.color = guaranteedProfit >= 0 ? "var(--accent-emerald)" : "var(--accent-danger)";
+        document.getElementById("dutchTableBody").innerHTML = rowsHtml;
+      }
+
+      ["snrMode", "snrStake", "snrBackOdds", "snrLayOdds", "snrLayComm"].forEach((id) =>
+        document.getElementById(id).addEventListener("input", solveSnr)
+      );
+      [
+        "dutchBankroll",
+        "dName1", "dOdds1", "dComm1",
+        "dName2", "dOdds2", "dComm2",
+        "dName3", "dOdds3", "dComm3",
+      ].forEach((id) => document.getElementById(id).addEventListener("input", solveDutch));
+
+      solveSnr();
+      solveDutch();
+    })();
+  </script>
+</body>
+</html>

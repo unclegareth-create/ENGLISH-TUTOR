@@ -20,7 +20,22 @@
         btn.addEventListener('click', () => setOpen(menu.classList.contains('hidden')));
         menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !menu.classList.contains('hidden')) { setOpen(false); btn.focus(); }
+            if (menu.classList.contains('hidden')) return;
+            if (e.key === 'Escape') {
+                setOpen(false);
+                btn.focus();
+            } else if (e.key === 'Tab') {
+                const focusables = [btn, ...menu.querySelectorAll('a[href], button:not([disabled])')];
+                const first = focusables[0];
+                const last = focusables[focusables.length - 1];
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault();
+                    last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault();
+                    first.focus();
+                }
+            }
         });
         window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) setOpen(false); });
     }
@@ -485,7 +500,7 @@ const WRITING_SAMPLES = {
           }
           const isActive = seg.id === activeAnnotationId;
           const activeClass = isActive ? 'active-annotation' : '';
-          const a11yAttrs = `data-note-id="${seg.id}" role="button" tabindex="0" aria-label="Examiner feedback ${seg.id}" onclick="selectAnnotation(${seg.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${seg.id});}"`;
+          const a11yAttrs = `data-note-id="${seg.id}" role="button" tabindex="0" aria-pressed="${isActive}" aria-label="Examiner feedback ${seg.id}" onclick="selectAnnotation(${seg.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${seg.id});}"`;
 
           if (mode === 'draft') {
             return `<span class="draft-weakness ${activeClass}" ${a11yAttrs}>${seg.before}<span class="markup-badge">${seg.id}</span></span>`;
@@ -534,6 +549,7 @@ const WRITING_SAMPLES = {
                  onclick="selectAnnotation(${note.id})"
                  role="button"
                  tabindex="0"
+                 aria-pressed="${isActive}"
                  aria-label="Examiner note ${note.id}: ${note.category}"
                  onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${note.id});}"
                  class="note-card cursor-pointer rounded-xl p-4 bg-white border ${isActive ? 'active-card' : 'border-slate-200/90 hover:border-indigo-300'}">
@@ -615,7 +631,9 @@ const WRITING_SAMPLES = {
       function updateHighlightStates(scrollCardIntoView) {
         document.querySelectorAll('[data-note-id]').forEach(el => {
           const id = parseInt(el.getAttribute('data-note-id'), 10);
-          if (id === activeAnnotationId) {
+          const isMatch = id === activeAnnotationId;
+          el.setAttribute('aria-pressed', String(isMatch));
+          if (isMatch) {
             el.classList.add('active-annotation');
           } else {
             el.classList.remove('active-annotation');
@@ -627,7 +645,9 @@ const WRITING_SAMPLES = {
         annotations.forEach(note => {
           const card = document.getElementById(`note-card-${note.id}`);
           if (!card) return;
-          if (note.id === activeAnnotationId) {
+          const isMatch = note.id === activeAnnotationId;
+          card.setAttribute('aria-pressed', String(isMatch));
+          if (isMatch) {
             card.classList.add('active-card');
             card.classList.remove('border-slate-200/90');
             if (scrollCardIntoView) {
@@ -654,6 +674,7 @@ const WRITING_SAMPLES = {
 })();
 
 (() => {
+  'use strict';
   window.switchResourceTab = function switchResourceTab(tabKey) {
     const keys = ['modules', 'games', 'guides'];
     keys.forEach((key) => {
@@ -688,7 +709,7 @@ const WRITING_SAMPLES = {
     }
 
     document.querySelectorAll('.lab-card').forEach(function(card) {
-      var cardLevel = card.getAttribute('data-level') || '';
+      const cardLevel = card.getAttribute('data-level') || '';
       if (level === 'all' || cardLevel === level || cardLevel.indexOf(level) !== -1) {
         card.style.display = 'flex';
       } else {
