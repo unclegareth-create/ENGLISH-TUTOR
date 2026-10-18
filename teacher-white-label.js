@@ -83,6 +83,26 @@
 
   // Module-specific Examiner Notes & Answer Key Briefings for the Teacher Presenter HUD
   const MODULE_TEACHER_GUIDES = {
+    'chronicle': {
+      title: 'Chronicle ’88: 8-Bit Mystery Visual Novel & 2d6 CYOA',
+      cefr: 'CEFR B1 Preliminary to B2 First (Teens & Adults)',
+      timing: '45–60 mins Episodic Screen-Share',
+      notes: [
+        'Classroom Mode Tip: Have students read character dialogue aloud (Inspector Deck, Chief Miller, suspect) to practice rhythm, intonation, and drama.',
+        '2d6 Hazard Mechanics: Let the student call high/low or roll live dice. If Composure is depleted, use the B2 Rewind Transformation Parry to turn damage into grammar drills.',
+        'Homework Assignment: Assign individual Tape cartridges as self-paced mystery homework with your white-label studio link.'
+      ]
+    },
+    'professor-west': {
+      title: 'Professor West’s 3D Study & Pencil the Cat',
+      cefr: 'CEFR A1–B1 Young Learners & Lower-Intermediate',
+      timing: '30–45 mins Interactive 3D Screen-Share',
+      notes: [
+        'Intro Movie: Play the 4-act animated intro with sound on to establish context before stepping into the 3D room.',
+        'Screen-Share Interaction: Call on young learners to spot objects in the 3D room (compass, globe, phonograph, bookshelf) before clicking.',
+        'Pencil the Cat Quests: Complete the 6 spelling and vocabulary mini-quests together to reinforce lexical retention without test anxiety.'
+      ]
+    },
     'dracula': {
       title: 'Dark Academia: Bram Stoker’s Dracula (C1/C2)',
       cefr: 'CEFR C1–C2 • Reading & Use of English Part 4',
@@ -563,6 +583,8 @@
 
   function detectModuleKey() {
     const p = (window.location.pathname || '').toLowerCase();
+    if (p.includes('chronicle') || p.includes('88')) return 'chronicle';
+    if (p.includes('professor-west') || p.includes('study')) return 'professor-west';
     if (p.includes('dracula')) return 'dracula';
     if (p.includes('frankenstein')) return 'frankenstein';
     if (p.includes('jekyll')) return 'jekyll';
