@@ -501,8 +501,15 @@
     mountTeacherPresenterHUD(tier) {
       if (document.getElementById('gm-teacher-presenter-hud')) return;
       const currentPath = (window.location.pathname || '').toLowerCase();
-      // Do not mount presenter HUD on homepage or legal pages
-      if (currentPath.endsWith('/index.html') || currentPath === '/' || currentPath.includes('terms.html') || currentPath.includes('privacy-policy.html')) {
+      // Do not mount presenter HUD on homepage, lab directory hub, blog, or legal pages
+      if (
+        currentPath.endsWith('/index.html') ||
+        currentPath.endsWith('/lab.html') ||
+        currentPath.endsWith('/blog.html') ||
+        currentPath === '/' ||
+        currentPath.includes('terms.html') ||
+        currentPath.includes('privacy-policy.html')
+      ) {
         return;
       }
 
