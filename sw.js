@@ -16,7 +16,7 @@ const PRECACHE_ASSETS = [
     './icon-192.png',
     './icon-512.png',
     './icon-512-maskable.png',
-    'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js'
+    './assets/vendor/confetti.browser.min.js'
 ];
 
 const CRYPT_ASSET_PATTERN = /\/(grammar-crypt(-3d)?\.html|crypt\.(css|js)|audio\.js|wasm-webgl-engine\.js|arcade_physics\.wasm|manifest\.json|icon-(192|512)(-maskable)?\.png|confetti\.browser\.min\.js)$/;

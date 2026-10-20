@@ -4,20 +4,30 @@
 (() => {
     'use strict';
 
-    /* ---------- Mobile menu ---------- */
+    /* ---------- Mobile menu (with aria-hidden sync & focus management) ---------- */
     const btn = document.getElementById('menu-btn');
     const menu = document.getElementById('mobile-menu');
 
     if (btn && menu) {
         const icon = btn.querySelector('i');
-        const setOpen = (open) => {
+        const setOpen = (open, moveFocus = false) => {
             menu.classList.toggle('hidden', !open);
+            menu.setAttribute('aria-hidden', String(!open));
             btn.setAttribute('aria-expanded', String(open));
             btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
             if (icon) icon.className = open ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+            if (open && moveFocus) {
+                const firstLink = menu.querySelector('a[href], button:not([disabled])');
+                if (firstLink) {
+                    requestAnimationFrame(() => firstLink.focus());
+                }
+            }
         };
 
-        btn.addEventListener('click', () => setOpen(menu.classList.contains('hidden')));
+        btn.addEventListener('click', () => {
+            const willOpen = menu.classList.contains('hidden');
+            setOpen(willOpen, true);
+        });
         menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
         document.addEventListener('keydown', (e) => {
             if (menu.classList.contains('hidden')) return;
@@ -40,40 +50,99 @@
         window.matchMedia('(min-width: 1024px)').addEventListener('change', (e) => { if (e.matches) setOpen(false); });
     }
 
+    /* ---------- Click-to-Load Vimeo Video Facade (Zero Cookie / Fast LCP) ---------- */
+    const videoFacadeBtn = document.getElementById('video-facade-btn');
+    const videoFacadeContainer = document.getElementById('video-facade-container');
+    if (videoFacadeBtn && videoFacadeContainer) {
+        videoFacadeBtn.addEventListener('click', () => {
+            const vimeoSrc = videoFacadeBtn.getAttribute('data-vimeo-src') || 'https://player.vimeo.com/video/1117062710?autoplay=1&title=0&byline=0&portrait=0&dnt=1';
+            const iframe = document.createElement('iframe');
+            iframe.src = vimeoSrc;
+            iframe.className = 'absolute top-0 left-0 w-full h-full border-0';
+            iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media');
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.setAttribute('title', 'Gareth Montgomery - English Tutor Introduction');
+            videoFacadeContainer.innerHTML = '';
+            videoFacadeContainer.appendChild(iframe);
+        });
+    }
+
+    /* ---------- Legacy Anchor Hash Mapping (Replaces hacky -top-20 empty divs) ---------- */
+    const LEGACY_HASH_MAP = {
+        '#writing-markup': '#gareth-writing-markup',
+        '#sample-markup': '#gareth-writing-markup',
+        '#courses': '#resources',
+        '#gothic-course': '#resources',
+        '#exam-lab': '#resources',
+        '#interactive-tools': '#resources',
+        '#cal-embed': '#contact',
+        '#booking': '#contact'
+    };
+
+    const resolveLegacyHash = (hash) => {
+        if (!hash || !LEGACY_HASH_MAP[hash]) return;
+        const targetEl = document.querySelector(LEGACY_HASH_MAP[hash]);
+        if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
+    if (window.location.hash && LEGACY_HASH_MAP[window.location.hash]) {
+        setTimeout(() => resolveLegacyHash(window.location.hash), 100);
+    }
+
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a[href^="#"]');
+        if (!link) return;
+        const href = link.getAttribute('href');
+        if (href && LEGACY_HASH_MAP[href] && !document.getElementById(href.slice(1))) {
+            const mappedTarget = document.querySelector(LEGACY_HASH_MAP[href]);
+            if (mappedTarget) {
+                e.preventDefault();
+                mappedTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                history.pushState(null, '', href);
+            }
+        }
+    });
+
     /* ---------- Copyright Year ---------- */
     const yearEl = document.getElementById('year');
     if (yearEl) {
         yearEl.textContent = String(new Date().getFullYear());
     }
 
-    /* ---------- Form Success Handling ---------- */
-    // If we've just been redirected from FormSubmit
+    /* ---------- Form Success Handling (?submitted=true) ---------- */
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('submitted') === 'true') {
+        const successBanner = document.getElementById('form-success-banner');
         const formStatus = document.getElementById('form-status');
         const targetForm = document.getElementById('lead-form') || document.getElementById('contact-form');
-        const successMsg = "Thank you! I'll reply within 24 hours to schedule your trial lesson.";
+        const successMsg = "Thank you! I've received your message and will reply within 24 hours to schedule your lesson.";
+
+        if (successBanner) {
+            successBanner.classList.remove('hidden');
+        }
 
         const createAlertBox = () => {
             const div = document.createElement('div');
             div.className = 'bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-4 rounded-xl mb-4 text-sm font-semibold shadow-sm flex items-center gap-3';
-            div.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i> <span>' + successMsg + '</span>';
+            div.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-lg" aria-hidden="true"></i> <span>' + successMsg + '</span>';
             return div;
         };
 
         if (formStatus) {
             formStatus.textContent = '';
             formStatus.appendChild(createAlertBox());
-        } else if (targetForm && targetForm.parentNode) {
+        } else if (!successBanner && targetForm && targetForm.parentNode) {
             targetForm.parentNode.insertBefore(createAlertBox(), targetForm);
         }
 
         setTimeout(() => {
-            const target = document.getElementById('contact') || targetForm;
+            const target = successBanner || document.getElementById('enquiry-card') || document.getElementById('contact') || targetForm;
             if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 150);
 
-        // Clean up the URL
+        // Clean up the URL query parameter while preserving hash
         window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
     }
 
@@ -142,9 +211,6 @@
     }
 
     /* ---------- Stripe Payment Links & Pre-fill Package Intent ---------- */
-    // Drop your live Stripe Payment Link URLs (https://buy.stripe.com/...) here
-    // to enable instant 1-click Stripe checkout on the pricing buttons & banner
-    // (Wise and PayPal remain available via the form on request).
     const STRIPE_PAYMENT_LINKS = window.GARETH_STRIPE_LINKS || {
         pack_5_275: '',     // e.g. 'https://buy.stripe.com/...' (5-Lesson Pack - £275)
         sprint_10_500: '',  // e.g. 'https://buy.stripe.com/...' (10-Lesson Pack - £500)
@@ -284,10 +350,11 @@
     });
 })();
 
-/* === HOMEPAGE INTERACTIVE MODULES === */
+/* === HOMEPAGE INTERACTIVE WRITING MARKUP MODULE (EVENT DELEGATED & ACCESSIBLE) === */
 (() => {
+  const markupSection = document.getElementById('gareth-writing-markup');
   if (document.getElementById('essay-canvas-body') || document.getElementById('essay-display-area')) {
-const WRITING_SAMPLES = {
+    const WRITING_SAMPLES = {
         "c1": {
           "title": "Cambridge C1 Advanced (CAE) — Part 1 Essay",
           "prompt": "Discuss two ways governments can encourage people to use public transport instead of private cars, and evaluate which is more effective.",
@@ -429,7 +496,6 @@ const WRITING_SAMPLES = {
               "criterion": "Diplomatic Register",
               "before": "Unfortunately, we have a problem with the new security update, so we cannot launch on Friday.",
               "after": "To ensure the platform meets your organisation's strict data-compliance standards, we are conducting an additional round of penetration testing prior to launch.",
-
               "why": "Avoid leading with alarmist phrasing like 'Unfortunately, we have a problem... we cannot'. Start with the benefit to the client ('To ensure the platform meets your strict standards...') before introducing the revised date."
             },
             { "type": "text", "content": " " },
@@ -471,6 +537,14 @@ const WRITING_SAMPLES = {
       let currentViewMode = 'markup';
       let activeAnnotationId = 1;
 
+      function escapeAttr(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/"/g, '&quot;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+      }
+
       function renderComponent() {
         const sample = WRITING_SAMPLES[currentContextKey];
 
@@ -483,7 +557,7 @@ const WRITING_SAMPLES = {
           <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-slate-200 shadow-sm text-xs">
             <span class="text-slate-500 font-medium">${pill.label}:</span>
             <span class="text-rose-600 line-through font-mono text-xs">${pill.before}</span>
-            <span class="text-slate-400">&rarr;</span>
+            <span class="text-slate-400" aria-hidden="true">&rarr;</span>
             <span class="text-emerald-700 font-bold font-mono text-xs bg-emerald-50 px-1.5 py-0.5 rounded">${pill.after}</span>
           </div>
         `).join('');
@@ -525,14 +599,15 @@ const WRITING_SAMPLES = {
           }
           const isActive = seg.id === activeAnnotationId;
           const activeClass = isActive ? 'active-annotation' : '';
-          const a11yAttrs = `data-note-id="${seg.id}" role="button" tabindex="0" aria-pressed="${isActive}" aria-label="Mark-scheme feedback ${seg.id}" onclick="selectAnnotation(${seg.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${seg.id});}"`;
+          const summaryLabel = escapeAttr(`Feedback ${seg.id} (${seg.category}): Draft phrase '${seg.before}' upgraded to '${seg.after}'`);
+          const a11yAttrs = `data-note-id="${seg.id}" role="button" tabindex="0" aria-pressed="${isActive}" aria-describedby="note-card-${seg.id}" aria-label="${summaryLabel}"`;
 
           if (mode === 'draft') {
-            return `<span class="draft-weakness ${activeClass}" ${a11yAttrs}>${seg.before}<span class="markup-badge">${seg.id}</span></span>`;
+            return `<span class="draft-weakness ${activeClass}" ${a11yAttrs}>${seg.before}<span class="markup-badge" aria-hidden="true">${seg.id}</span></span>`;
           } else if (mode === 'polished') {
-            return `<span class="polished-highlight ${activeClass}" ${a11yAttrs}>${seg.after}<span class="markup-badge">${seg.id}</span></span>`;
+            return `<span class="polished-highlight ${activeClass}" ${a11yAttrs}>${seg.after}<span class="markup-badge" aria-hidden="true">${seg.id}</span></span>`;
           } else {
-            return `<span class="markup-group ${activeClass}" ${a11yAttrs}><del class="markup-del">${seg.before}</del><ins class="markup-ins no-underline">${seg.after}</ins><span class="markup-badge">${seg.id}</span></span>`;
+            return `<span class="markup-group ${activeClass}" ${a11yAttrs}><del class="markup-del" aria-hidden="true">${seg.before}</del><ins class="markup-ins no-underline" aria-hidden="true">${seg.after}</ins><span class="markup-badge" aria-hidden="true">${seg.id}</span></span>`;
           }
         }).join('');
       }
@@ -571,12 +646,11 @@ const WRITING_SAMPLES = {
           const isActive = note.id === activeAnnotationId;
           return `
             <div id="note-card-${note.id}"
-                 onclick="selectAnnotation(${note.id})"
+                 data-note-id="${note.id}"
                  role="button"
                  tabindex="0"
                  aria-pressed="${isActive}"
-                 aria-label="Mark-scheme note ${note.id}: ${note.category}"
-                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectAnnotation(${note.id});}"
+                 aria-label="Mark-scheme note ${note.id}: ${escapeAttr(note.category)}"
                  class="note-card cursor-pointer rounded-xl p-4 bg-white border ${isActive ? 'active-card' : 'border-slate-200/90 hover:border-indigo-300'}">
               <div class="flex items-center justify-between gap-2 mb-2">
                 <div class="flex items-center gap-2">
@@ -592,11 +666,11 @@ const WRITING_SAMPLES = {
 
               <div class="bg-slate-50 rounded-lg p-3 mb-2.5 border border-slate-200/60 text-sm space-y-1.5">
                 <div class="flex items-start gap-1.5 text-rose-700">
-                  <span class="font-bold shrink-0">✗</span>
+                  <span class="font-bold shrink-0" aria-hidden="true">✗</span>
                   <span class="line-through opacity-85">"${note.before}"</span>
                 </div>
                 <div class="flex items-start gap-1.5 text-emerald-800 font-medium">
-                  <span class="font-bold shrink-0">✓</span>
+                  <span class="font-bold shrink-0" aria-hidden="true">✓</span>
                   <span>"${note.after}"</span>
                 </div>
               </div>
@@ -609,12 +683,14 @@ const WRITING_SAMPLES = {
         }).join('');
       }
 
-      window.switchContext = function switchContext(contextKey) {
+      function switchContext(contextKey) {
+        if (!WRITING_SAMPLES[contextKey]) return;
         currentContextKey = contextKey;
         activeAnnotationId = 1;
 
         ['c1', 'ielts', 'business'].forEach(key => {
           const btn = document.getElementById(`tab-${key}`);
+          if (!btn) return;
           if (key === contextKey) {
             btn.className = "context-tab active-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-sm";
             btn.setAttribute('aria-selected', 'true');
@@ -624,17 +700,20 @@ const WRITING_SAMPLES = {
           }
         });
 
-        document.getElementById('writing-tabpanel').setAttribute('aria-labelledby', 'tab-' + contextKey);
+        const tabpanel = document.getElementById('writing-tabpanel');
+        if (tabpanel) tabpanel.setAttribute('aria-labelledby', 'tab-' + contextKey);
         renderComponent();
-      };
+      }
 
-      window.switchViewMode = function switchViewMode(mode) {
+      function switchViewMode(mode) {
         currentViewMode = mode;
 
         ['draft', 'markup', 'polished', 'split'].forEach(m => {
           const btn = document.getElementById(`mode-${m}`);
           if (!btn) return;
-          if (m === mode) {
+          const isSelected = m === mode;
+          btn.setAttribute('aria-pressed', String(isSelected));
+          if (isSelected) {
             btn.className = m === 'split'
               ? "view-mode-btn hidden sm:inline-flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-slate-900 shadow-sm"
               : "view-mode-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-white text-slate-900 shadow-sm";
@@ -646,15 +725,62 @@ const WRITING_SAMPLES = {
         });
 
         renderComponent();
-      };
+      }
 
-      window.selectAnnotation = function selectAnnotation(id) {
+      function selectAnnotation(id) {
         activeAnnotationId = id;
         updateHighlightStates(true);
-      };
+      }
+
+      // Expose globals for backwards compatibility if any external script calls them
+      window.switchContext = switchContext;
+      window.switchViewMode = switchViewMode;
+      window.selectAnnotation = selectAnnotation;
+
+      // Event Delegation for Context Tabs, View Mode Buttons, and Annotations
+      if (markupSection) {
+        markupSection.addEventListener('click', (e) => {
+          const contextBtn = e.target.closest('[data-context-tab]');
+          if (contextBtn) {
+            switchContext(contextBtn.getAttribute('data-context-tab'));
+            return;
+          }
+          const modeBtn = e.target.closest('[data-view-mode]');
+          if (modeBtn) {
+            switchViewMode(modeBtn.getAttribute('data-view-mode'));
+            return;
+          }
+          const noteEl = e.target.closest('[data-note-id]');
+          if (noteEl) {
+            const noteId = parseInt(noteEl.getAttribute('data-note-id'), 10);
+            if (!isNaN(noteId)) selectAnnotation(noteId);
+          }
+        });
+
+        markupSection.addEventListener('keydown', (e) => {
+          const noteEl = e.target.closest('[data-note-id]');
+          if (noteEl && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            const noteId = parseInt(noteEl.getAttribute('data-note-id'), 10);
+            if (!isNaN(noteId)) selectAnnotation(noteId);
+            return;
+          }
+          const contextBtn = e.target.closest('[data-context-tab]');
+          if (contextBtn && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+            e.preventDefault();
+            const keys = ['c1', 'ielts', 'business'];
+            const idx = keys.indexOf(contextBtn.getAttribute('data-context-tab'));
+            const nextIdx = e.key === 'ArrowRight' ? (idx + 1) % keys.length : (idx - 1 + keys.length) % keys.length;
+            const nextKey = keys[nextIdx];
+            switchContext(nextKey);
+            const nextTab = document.getElementById('tab-' + nextKey);
+            if (nextTab) nextTab.focus();
+          }
+        });
+      }
 
       function updateHighlightStates(scrollCardIntoView) {
-        document.querySelectorAll('[data-note-id]').forEach(el => {
+        document.querySelectorAll('#essay-canvas-body [data-note-id]').forEach(el => {
           const id = parseInt(el.getAttribute('data-note-id'), 10);
           const isMatch = id === activeAnnotationId;
           el.setAttribute('aria-pressed', String(isMatch));
@@ -763,97 +889,96 @@ const WRITING_SAMPLES = {
 })();
 
 // Lazy-load Cal.com only when #contact approaches the viewport
-            (function() {
-              const calEl = document.getElementById('my-cal-inline');
-              const fallbackCard = document.getElementById('cal-fallback-card');
-              if (!calEl) return;
+(function() {
+  const calEl = document.getElementById('my-cal-inline');
+  const fallbackCard = document.getElementById('cal-fallback-card');
+  if (!calEl) return;
 
-              // Ensure container is always interactive
-              calEl.classList.remove('pointer-events-none');
-              calEl.classList.add('pointer-events-auto');
+  calEl.classList.remove('pointer-events-none');
+  calEl.classList.add('pointer-events-auto');
 
-              let calLoaded = false;
+  let calLoaded = false;
 
-              function initCalEmbed() {
-                if (calLoaded) return;
-                calLoaded = true;
-                calEl.classList.remove('pointer-events-none');
-                calEl.classList.add('pointer-events-auto');
+  function initCalEmbed() {
+    if (calLoaded) return;
+    calLoaded = true;
+    calEl.classList.remove('pointer-events-none');
+    calEl.classList.add('pointer-events-auto');
 
-                (function (C, A, L) {
-                  let p = function (a, ar) { a.q.push(ar); };
-                  let d = C.document;
-                  C.Cal = C.Cal || function () {
-                    let cal = C.Cal;
-                    let ar = arguments;
-                    if (!cal.loaded) {
-                      cal.ns = {};
-                      cal.q = cal.q || [];
-                      d.head.appendChild(d.createElement("script")).src = A;
-                      cal.loaded = true;
-                    }
-                    if (ar[0] === L) {
-                      const api = function () { p(api, arguments); };
-                      const namespace = ar[1];
-                      api.q = api.q || [];
-                      if (typeof namespace === "string") {
-                        cal.ns[namespace] = cal.ns[namespace] || api;
-                        p(cal.ns[namespace], ar);
-                        p(cal, ["initNamespace", namespace]);
-                      } else p(cal, ar);
-                      return;
-                    }
-                    p(cal, ar);
-                  };
-                })(window, "https://app.cal.com/embed/embed.js", "init");
+    (function (C, A, L) {
+      let p = function (a, ar) { a.q.push(ar); };
+      let d = C.document;
+      C.Cal = C.Cal || function () {
+        let cal = C.Cal;
+        let ar = arguments;
+        if (!cal.loaded) {
+          cal.ns = {};
+          cal.q = cal.q || [];
+          d.head.appendChild(d.createElement("script")).src = A;
+          cal.loaded = true;
+        }
+        if (ar[0] === L) {
+          const api = function () { p(api, arguments); };
+          const namespace = ar[1];
+          api.q = api.q || [];
+          if (typeof namespace === "string") {
+            cal.ns[namespace] = cal.ns[namespace] || api;
+            p(cal.ns[namespace], ar);
+            p(cal, ["initNamespace", namespace]);
+          } else p(cal, ar);
+          return;
+        }
+        p(cal, ar);
+      };
+    })(window, "https://app.cal.com/embed/embed.js", "init");
 
-                Cal("init", { origin: "https://cal.com" });
-                Cal("inline", {
-                  elementOrSelector: "#my-cal-inline",
-                  calLink: "gareth-montgomery-jgaefz/30min",
-                  layout: "month_view"
-                });
-                Cal("ui", {
-                  styles: { branding: { brandColor: "#0284c7" } },
-                  hideEventTypeDetails: false,
-                  layout: "month_view"
-                });
+    Cal("init", { origin: "https://cal.com" });
+    Cal("inline", {
+      elementOrSelector: "#my-cal-inline",
+      calLink: "gareth-montgomery-jgaefz/30min",
+      layout: "month_view"
+    });
+    Cal("ui", {
+      styles: { branding: { brandColor: "#0284c7" } },
+      hideEventTypeDetails: false,
+      layout: "month_view"
+    });
 
-                const checkState = function() {
-                  const mountedEmbed = calEl.querySelector('iframe, cal-inline');
-                  if (mountedEmbed) {
-                    calEl.classList.remove('pointer-events-none');
-                    calEl.classList.add('pointer-events-auto');
-                    if (fallbackCard) fallbackCard.style.display = 'none';
-                  }
-                  if (calEl.textContent && (calEl.textContent.includes('Something went wrong') || calEl.textContent.includes('enable JavaScript'))) {
-                    const existingIframe = calEl.querySelector('iframe, cal-inline');
-                    if (!existingIframe && fallbackCard) {
-                      calEl.innerHTML = '';
-                      fallbackCard.style.display = 'flex';
-                      calEl.appendChild(fallbackCard);
-                    }
-                  }
-                };
+    const checkState = function() {
+      const mountedEmbed = calEl.querySelector('iframe, cal-inline');
+      if (mountedEmbed) {
+        calEl.classList.remove('pointer-events-none');
+        calEl.classList.add('pointer-events-auto');
+        if (fallbackCard) fallbackCard.style.display = 'none';
+      }
+      if (calEl.textContent && (calEl.textContent.includes('Something went wrong') || calEl.textContent.includes('enable JavaScript'))) {
+        const existingIframe = calEl.querySelector('iframe, cal-inline');
+        if (!existingIframe && fallbackCard) {
+          calEl.innerHTML = '';
+          fallbackCard.style.display = 'flex';
+          calEl.appendChild(fallbackCard);
+        }
+      }
+    };
 
-                const mutationObserver = new MutationObserver(checkState);
-                mutationObserver.observe(calEl, { childList: true, subtree: true, characterData: true });
-              }
+    const mutationObserver = new MutationObserver(checkState);
+    mutationObserver.observe(calEl, { childList: true, subtree: true, characterData: true });
+  }
 
-              if ('IntersectionObserver' in window) {
-                const viewportObserver = new IntersectionObserver(function(entries) {
-                  if (entries[0].isIntersecting) {
-                    initCalEmbed();
-                    viewportObserver.disconnect();
-                  }
-                }, { rootMargin: '400px 0px' });
-                viewportObserver.observe(calEl);
-              } else {
-                initCalEmbed();
-              }
+  if ('IntersectionObserver' in window) {
+    const viewportObserver = new IntersectionObserver(function(entries) {
+      if (entries[0].isIntersecting) {
+        initCalEmbed();
+        viewportObserver.disconnect();
+      }
+    }, { rootMargin: '400px 0px' });
+    viewportObserver.observe(calEl);
+  } else {
+    initCalEmbed();
+  }
 
-              document.querySelectorAll('a[href="#contact"], a[href="#booking"], a[href="#cal-embed"], a[href="#book-diagnostic"]').forEach(function(link) {
-                link.addEventListener('mouseenter', initCalEmbed, { once: true });
-                link.addEventListener('click', initCalEmbed, { once: true });
-              });
-            })();
+  document.querySelectorAll('a[href="#contact"], a[href="#booking"], a[href="#cal-embed"], a[href="#book-diagnostic"]').forEach(function(link) {
+    link.addEventListener('mouseenter', initCalEmbed, { once: true });
+    link.addEventListener('click', initCalEmbed, { once: true });
+  });
+})();

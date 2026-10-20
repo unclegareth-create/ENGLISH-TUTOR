@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gareth Prezi Visual World Games · Interactive Teaching Arena</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --panel: #111827;
+      --border: #1f293d;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --gold: #f59e0b;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(17, 24, 39, 0.95);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* World Selector Navigation Strip */
+    .world-selector-bar {
+      background: #0f172a;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px;
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .world-btn {
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .world-btn:hover {
+      color: #fff;
+      border-color: var(--accent);
+      background: #273549;
+    }
+
+    .world-btn.active {
+      background: var(--accent);
+      color: #041926;
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+    }
+
+    .main-stage {
+      flex: 1;
+      padding: 24px;
+      max-width: 1240px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Visual Prezi Backdrop Canvas Card */
+    .stage-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      margin-bottom: 24px;
+    }
+
+    .prezi-backdrop-container {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: #000;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .prezi-backdrop-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.85;
+      transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .prezi-backdrop-container:hover .prezi-backdrop-img {
+      transform: scale(1.03);
+    }
+
+    .stage-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(0deg, rgba(11, 17, 32, 0.95) 0%, rgba(11, 17, 32, 0.4) 60%, transparent 100%);
+      padding: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .stage-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    }
+
+    .stage-caption {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      margin-top: 4px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    }
+
+    .game-body {
+      padding: 28px;
+    }
+
+    /* Specific Game 1: The Iceberg Bingo Board */
+    .bingo-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .bingo-tile {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .bingo-tile:hover {
+      border-color: var(--accent);
+      background: #1e293b;
+      transform: translateY(-2px);
+    }
+
+    .bingo-tile.marked {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.3);
+    }
+
+    /* Specific Game 2: The Footprint Trail Board Game */
+    .trail-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      margin: 32px 0 24px;
+      padding: 0 12px;
+    }
+
+    .trail-line {
+      position: absolute;
+      top: 50%;
+      left: 30px;
+      right: 30px;
+      height: 3px;
+      background: #334155;
+      z-index: 1;
+    }
+
+    .trail-step {
+      position: relative;
+      z-index: 2;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: #0f172a;
+      border: 3px solid #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .trail-step.active {
+      border-color: var(--gold);
+      background: var(--gold);
+      color: #000;
+      box-shadow: 0 0 20px var(--gold);
+      transform: scale(1.15);
+    }
+
+    .trail-step.visited {
+      border-color: var(--emerald);
+      background: #064e3b;
+      color: #a7f3d0;
+    }
+
+    .trail-card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--gold);
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    /* Specific Game 3: The Silhouette Desk Regret Flipper */
+    .desk-regrets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .regret-card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .regret-card:hover {
+      border-color: var(--rose);
+      transform: translateY(-2px);
+    }
+
+    .regret-card.flipped {
+      background: #1e1b4b;
+      border-color: #818cf8;
+    }
+
+    /* Specific Game 4: Box of Strips */
+    .box-container {
+      background: #0f172a;
+      border: 2px dashed var(--accent);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .strip-drawn {
+      background: #1e293b;
+      border-left: 4px solid var(--emerald);
+      padding: 16px 20px;
+      border-radius: 6px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #fff;
+      margin: 16px 0;
+      display: inline-block;
+    }
+
+    /* Universal Controls */
+    .btn {
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover { background: #334155; }
+    .btn-accent { background: #0284c7; border-color: #0284c7; }
+    .btn-accent:hover { background: #0369a1; }
+    .btn-gold { background: var(--gold); border-color: var(--gold); color: #000; }
+    .btn-gold:hover { background: #d97706; color: #fff; }
+    .btn-emerald { background: var(--emerald); border-color: var(--emerald); color: #042f2e; }
+    .btn-emerald:hover { background: #059669; color: #fff; }
+
+    .reveal-box {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #a7f3d0;
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 14px;
+      display: none;
+      text-align: left;
+    }
+
+    .reveal-box.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div>
+        <div class="brand-title">Gareth Montgomery · Prezi Visual Masterclass Games</div>
+        <div class="brand-sub">Crafted from Authentic Prezi Backdrops & Visual Metaphors · Zero Generic UI</div>
+      </div>
+    </div>
+    <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent);">
+      100% Student-Facing · Active Voice First
+    </div>
+  </header>
+
+  <!-- WORLD SELECTOR STRIP -->
+  <nav class="world-selector-bar">
+    <button class="world-btn active" onclick="switchWorld('iceberg')">🧊 The Arctic Iceberg (Mixed Conditionals)</button>
+    <button class="world-btn" onclick="switchWorld('trail')">🚂 Darjeeling Footprint Trail (Travel & Speaking)</button>
+    <button class="world-btn" onclick="switchWorld('cat')">🐾 Silhouette Desk & Black Cat (The Third Conditional)</button>
+    <button class="world-btn" onclick="switchWorld('dolmen')">🪨 Celtic Portal Dolmen (The Selfish Giant / Deep Speaking)</button>
+    <button class="world-btn" onclick="switchWorld('book')">📖 The Battle Against Boredom (Flying Pages)</button>
+    <button class="world-btn" onclick="switchWorld('vault')">🏦 The Blueprint Vault (Money & Causative Passives)</button>
+  </nav>
+
+  <main class="main-stage">
+
+    <!-- ================= WORLD 1: THE ARCTIC ICEBERG ================= -->
+    <div id="world-iceberg" class="stage-card">
+      <div class="prezi-backdrop-container">
+        <img src="prezi_visuals/Mixed_conditionals_overview.png" alt="Mixed Conditionals Iceberg and Sea Siren" class="prezi-backdrop-img">
+        <div class="stage-overlay">
+          <div>
+            <div class="stage-title">The Arctic Iceberg & Deep Siren</div>
+            <div class="stage-caption">From Gareth's <em>Mixed Conditionals</em> Prezi · Surface Rules vs. Deep Submerged Counterfactuals</div>
+          </div>
+          <button class="btn btn-accent" onclick="randomizeIcebergDilemma()">🎲 New Deep-Sea Dilemma</button>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <div style="background: #0f172a; border-left: 4px solid var(--accent); padding: 18px; border-radius: 8px; margin-bottom: 20px;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">
+            SUBMERGED DILEMMA QUESTION (FROM PREZI SLIDE 4):
+          </div>
+          <div id="icebergDilemma" style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-top: 6px;">
+            "If you could have chosen your nationality at birth, which one would you want to be today?"
+          </div>
+        </div>
+
+        <h3 style="font-size: 1.1rem; margin-bottom: 8px; color: var(--gold);">
+          🎯 Authentic Prezi Challenge: "BINGO TIME!!!"
+        </h3>
+        <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 12px;">
+          Listen to the candidate's response or formulate your own. Click each C1 structural tile as soon as it is deployed in natural speech:
+        </p>
+
+        <div class="bingo-grid">
+          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+            If + Had V3 ...<br>Would + V1 (Present)
+          </div>
+          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+            If + Past Simple ...<br>Would have + V3 (Past)
+          </div>
+          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+            "Had I known..."<br>(Inversion)
+          </div>
+          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+            "Were it not for..."<br>(Present Trait)
+          </div>
+          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+            "Provided that..."<br>(Alternative to If)
+          </div>
+          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+            "Unless I..."<br>(Condition)
+          </div>
+          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+            "Even if I try..."<br>(Contrast)
+          </div>
+          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+            "..., thereby preventing..."<br>(Participle Result)
+          </div>
+        </div>
+
+        <button class="btn" onclick="toggleReveal('icebergReveal')">👁️ Reveal Cambridge Model</button>
+        <div id="icebergReveal" class="reveal-box">
+          <strong>Model Structure (Past Action &rarr; Present Reality):</strong><br>
+          <em>"**If I had invested** in bilingual fluency a decade ago, I **would not be encountering** these professional language barriers today."</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= WORLD 2: DARJEELING FOOTPRINT TRAIL ================= -->
+    <div id="world-trail" class="stage-card" style="display: none;">
+      <div class="prezi-backdrop-container">
+        <img src="prezi_visuals/Travel__tourism_overview.png" alt="Travel and Tourism Footprint Trail" class="prezi-backdrop-img">
+        <div class="stage-overlay">
+          <div>
+            <div class="stage-title">The Darjeeling Footprint Expedition</div>
+            <div class="stage-caption">From Gareth's <em>Travel & Tourism (CPE 27/4/15)</em> Prezi · The Winding Trail of Mishaps & Magic</div>
+          </div>
+          <button class="btn btn-gold" onclick="advanceTrail()">👣 Advance to Next Footprint</button>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <div class="trail-container">
+          <div class="trail-line"></div>
+          <div id="trail-1" class="trail-step active" onclick="setTrailStep(1)">1</div>
+          <div id="trail-2" class="trail-step" onclick="setTrailStep(2)">2</div>
+          <div id="trail-3" class="trail-step" onclick="setTrailStep(3)">3</div>
+          <div id="trail-4" class="trail-step" onclick="setTrailStep(4)">4</div>
+          <div id="trail-5" class="trail-step" onclick="setTrailStep(5)">5</div>
+        </div>
+
+        <div id="trailCardContent" class="trail-card">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--gold); text-transform: uppercase;">
+            EXPEDITION STOP 1: THE AWKWARD MISHAP (PREZI SLIDE 1)
+          </div>
+          <h3 style="color: #fff; margin: 8px 0; font-size: 1.2rem;">
+            "Your awkward moments, your embarrassments, and your mishaps... It makes you seem more human."
+          </h3>
+          <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 12px;">
+            <strong>Speaking Challenge (45s)</strong>: Describe an embarrassing misadventure or miscommunication you experienced when navigating an unfamiliar city or airport.
+          </p>
+          <button class="btn" onclick="toggleReveal('trailReveal')">👁️ Reveal Cambridge Model</button>
+          <div id="trailReveal" class="reveal-box">
+            <strong>Model Narrative Device:</strong><br>
+            <em>"Scarcely had I boarded the overnight sleeper to Varanasi when I discovered my reserved compartment had been double-booked, forcing me to negotiate across a chaotic language divide."</em>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= WORLD 3: SILHOUETTE DESK & BLACK CAT ================= -->
+    <div id="world-cat" class="stage-card" style="display: none;">
+      <div class="prezi-backdrop-container">
+        <img src="prezi_visuals/The_Third_Conditional_overview.png" alt="Third Conditional Silhouette Hands and Black Cat" class="prezi-backdrop-img">
+        <div class="stage-overlay">
+          <div>
+            <div class="stage-title">The Silhouette Desk & Black Cat</div>
+            <div class="stage-caption">From Gareth's <em>The Third Conditional (FCE 27/2/18)</em> Prezi · Cards of Criticism & Regret</div>
+          </div>
+          <button class="btn btn-emerald" onclick="flipAllRegrets()">🃏 Flip All Cards</button>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <h3 style="font-size: 1.15rem; margin-bottom: 6px; color: var(--emerald);">
+          "We also use the third conditional for criticism..."
+        </h3>
+        <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 16px;">
+          Click each index card to flip from the raw situational blunder to Gareth's Third Conditional critique:
+        </p>
+
+        <div class="desk-regrets-grid">
+          <div class="regret-card" onclick="this.classList.toggle('flipped')">
+            <div style="font-size: 0.75rem; font-weight: 800; color: var(--rose);">SITUATION A:</div>
+            <div style="font-weight: 700; margin: 6px 0;">You left late and got stuck in heavy rush-hour traffic.</div>
+            <div style="color: var(--muted); font-size: 0.85rem; font-style: italic; border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 8px;">
+              👉 <em>"If you had left earlier, you wouldn't have got held up in the traffic."</em>
+            </div>
+          </div>
+
+          <div class="regret-card" onclick="this.classList.toggle('flipped')">
+            <div style="font-size: 0.75rem; font-weight: 800; color: var(--rose);">SITUATION B:</div>
+            <div style="font-weight: 700; margin: 6px 0;">You didn't check the mountain forecast and got stranded in dense fog.</div>
+            <div style="color: var(--muted); font-size: 0.85rem; font-style: italic; border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 8px;">
+              👉 <em>"If you had checked the weather forecast, you wouldn't have got stuck on a mountain in the fog."</em>
+            </div>
+          </div>
+
+          <div class="regret-card" onclick="this.classList.toggle('flipped')">
+            <div style="font-size: 0.75rem; font-weight: 800; color: var(--rose);">SITUATION C:</div>
+            <div style="font-weight: 700; margin: 6px 0;">You argued fiercely with the manager and got yourself dismissed.</div>
+            <div style="color: var(--muted); font-size: 0.85rem; font-style: italic; border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 8px;">
+              👉 <em>"Had he not antagonised his superior so relentlessly, he would never have got himself fired."</em>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= WORLD 4: CELTIC PORTAL DOLMEN ================= -->
+    <div id="world-dolmen" class="stage-card" style="display: none;">
+      <div class="prezi-backdrop-container">
+        <img src="prezi_visuals/The_selfish_giant_overview.png" alt="Celtic Portal Dolmen in the Burren" class="prezi-backdrop-img">
+        <div class="stage-overlay">
+          <div>
+            <div class="stage-title">The Celtic Portal Dolmen</div>
+            <div class="stage-caption">From Gareth's <em>The Selfish Giant</em> Prezi · Poulnabrone Megalith under Storm Skies</div>
+          </div>
+          <button class="btn btn-gold" onclick="randomizeDolmenPrompt()">⚡ Evoke Ancient Question</button>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <div style="background: #0f172a; border-left: 4px solid var(--gold); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--gold); text-transform: uppercase;">
+            PHILOSOPHICAL DILEMMA (A.R.E.A. CHALLENGE):
+          </div>
+          <div id="dolmenPrompt" style="font-size: 1.25rem; font-weight: 700; color: #fff; margin: 8px 0;">
+            "Is genuine altruism possible in modern competitive societies, or are all human actions fundamentally driven by self-interest?"
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px;">
+            <div style="background: #1e293b; padding: 10px; border-radius: 6px; font-size: 0.8rem; text-align: center;">
+              <strong>[A]ssertion</strong> (5s)
+            </div>
+            <div style="background: #1e293b; padding: 10px; border-radius: 6px; font-size: 0.8rem; text-align: center;">
+              <strong>[R]eason</strong> (10s)
+            </div>
+            <div style="background: #1e293b; padding: 10px; border-radius: 6px; font-size: 0.8rem; text-align: center;">
+              <strong>[E]xample</strong> (10s)
+            </div>
+            <div style="background: #1e293b; padding: 10px; border-radius: 6px; font-size: 0.8rem; text-align: center;">
+              <strong>[A]lternative</strong> (5s)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= WORLD 5: THE BATTLE AGAINST BOREDOM ================= -->
+    <div id="world-book" class="stage-card" style="display: none;">
+      <div class="prezi-backdrop-container">
+        <img src="prezi_visuals/Copy_of_Literature_Lesson_overview.png" alt="Open Book with Flying Pages" class="prezi-backdrop-img">
+        <div class="stage-overlay">
+          <div>
+            <div class="stage-title">The Battle Against Boredom</div>
+            <div class="stage-caption">From Gareth's <em>Literature & Reading Lesson</em> Prezi · The Open Book & Flying Ideas</div>
+          </div>
+          <button class="btn btn-accent" onclick="catchFlyingPage()">✨ Catch Next Flying Page</button>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <div style="background: #0f172a; border-left: 4px solid var(--accent); padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">
+            FLYING VOCABULARY CHALLENGE:
+          </div>
+          <div id="flyingPhrase" style="font-size: 1.25rem; font-weight: 700; color: #fff; margin: 8px 0;">
+            "good fodder for a story"
+          </div>
+          <p style="color: var(--muted); font-size: 0.9rem;">
+            From Gareth's Travel & Reading decks. Integrate this phrase into an authentic C1 response within 30 seconds.
+          </p>
+        </div>
+
+        <button class="btn" onclick="toggleReveal('bookReveal')">👁️ Reveal Cambridge Model</button>
+        <div id="bookReveal" class="reveal-box">
+          <strong>Authentic Model:</strong><br>
+          <em>"Though stranded on a deserted platform for six hours, the bizarre cast of characters I encountered provided **good fodder for a story** that I still recount today."</em>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= WORLD 6: THE BLUEPRINT VAULT ================= -->
+    <div id="world-vault" class="stage-card" style="display: none;">
+      <div class="prezi-backdrop-container">
+        <img src="prezi_visuals/Money_Matters_overview.png" alt="Money Matters Blueprint Grid and Gold" class="prezi-backdrop-img">
+        <div class="stage-overlay">
+          <div>
+            <div class="stage-title">The Blueprint Vault</div>
+            <div class="stage-caption">From Gareth's <em>Money Matters</em> & <em>Passives with Have/Get</em> Prezis · Strip-in-a-Box Game</div>
+          </div>
+          <button class="btn btn-gold" onclick="drawStripFromBox()">📦 Draw Strip from Box</button>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <div class="box-container">
+          <div style="font-size: 0.8rem; font-weight: 800; color: var(--gold); text-transform: uppercase;">
+            CLASSIC GARETH PREZI GAME: "STRIP IN A BOX"
+          </div>
+          <p style="color: var(--muted); font-size: 0.85rem; margin-top: 4px;">
+            "Fold them and place them in a box. Choose a strip, give a definition, and build a causative arrangement..."
+          </p>
+
+          <div id="drawnStrip" class="strip-drawn">
+            "We had the office broken into last night."
+          </div>
+          <br>
+          <div style="font-size: 0.9rem; color: #cbd5e1; margin-top: 10px;">
+            Formulate a causative passive using either <strong>have/had</strong> or <strong>get/got</strong> for this financial scenario:
+          </div>
+        </div>
+
+        <button class="btn" onclick="toggleReveal('vaultReveal')">👁️ Reveal Cambridge Model</button>
+        <div id="vaultReveal" class="reveal-box">
+          <strong>Causative Formulation:</strong><br>
+          <em>"Following the fiscal audit, the corporation **had its offshore subsidiaries liquidated**, thereby satisfying statutory compliance."</em>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function switchWorld(worldKey) {
+      document.querySelectorAll('.stage-card').forEach(c => c.style.display = 'none');
+      document.querySelectorAll('.world-btn').forEach(b => b.classList.remove('active'));
+      
+      const target = document.getElementById('world-' + worldKey);
+      if (target) target.style.display = 'block';
+      event.currentTarget.classList.add('active');
+    }
+
+    const dilemmas = [
+      "If you could have chosen your nationality at birth, which one would you want to be today?",
+      "If you had the choice at birth, which famous person would you want to look like?",
+      "If a machine allowed you to go back in time, what would you have done differently?",
+      "If you were born in a different century, how do you think it would have affected your opportunities?"
+    ];
+    let dilemmaIdx = 0;
+    function randomizeIcebergDilemma() {
+      dilemmaIdx = (dilemmaIdx + 1) % dilemmas.length;
+      document.getElementById('icebergDilemma').innerText = `"${dilemmas[dilemmaIdx]}"`;
+    }
+
+    const trailStops = [
+      {
+        num: 1,
+        title: "EXPEDITION STOP 1: THE AWKWARD MISHAP (PREZI SLIDE 1)",
+        quote: "Your awkward moments, your embarrassments, and your mishaps... It makes you seem more human.",
+        challenge: "Describe an embarrassing misadventure or miscommunication you experienced when navigating an unfamiliar city or airport."
+      },
+      {
+        num: 2,
+        title: "EXPEDITION STOP 2: BUSTLING TRAIN OF MIGRATION (PREZI SLIDE 4)",
+        quote: "Stuck to the biggest attractions by assignment... waiting a long time for anything interesting to happen.",
+        challenge: "Explain why travelers who follow tourist guidebooks verbatim often miss the authentic pulse of a culture."
+      },
+      {
+        num: 3,
+        title: "EXPEDITION STOP 3: IN THE OPPOSITE DIRECTION (PREZI SLIDE 8)",
+        quote: "Head in the opposite direction to everyone else... caught up in the magic of the road.",
+        challenge: "Narrate an occasion where stepping away from the crowd led to an unforgettable discovery."
+      },
+      {
+        num: 4,
+        title: "EXPEDITION STOP 4: GOOD FODDER FOR A STORY (PREZI SLIDE 6)",
+        quote: "You never know when good fodder for a story will jump out of nowhere...",
+        challenge: "Tell the story of a completely unscripted detour that turned out better than your planned itinerary."
+      },
+      {
+        num: 5,
+        title: "EXPEDITION STOP 5: RETURNING HOME TRANSFORMED",
+        quote: "Any reader is going to see right through your prose unless it rings with authentic truth.",
+        challenge: "Reflect on how an arduous journey permanently altered your domestic worldview upon returning home."
+      }
+    ];
+
+    let currentTrail = 1;
+    function setTrailStep(stepNum) {
+      currentTrail = stepNum;
+      document.querySelectorAll('.trail-step').forEach((s, idx) => {
+        s.classList.remove('active');
+        if (idx + 1 < currentTrail) s.classList.add('visited');
+        else s.classList.remove('visited');
+        if (idx + 1 === currentTrail) s.classList.add('active');
+      });
+      const data = trailStops[currentTrail - 1];
+      const card = document.getElementById('trailCardContent');
+      card.innerHTML = `
+        <div style="font-size: 0.8rem; font-weight: 800; color: var(--gold); text-transform: uppercase;">
+          ${data.title}
+        </div>
+        <h3 style="color: #fff; margin: 8px 0; font-size: 1.2rem;">
+          "${data.quote}"
+        </h3>
+        <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 12px;">
+          <strong>Speaking Challenge (45s)</strong>: ${data.challenge}
+        </p>
+        <button class="btn" onclick="toggleReveal('trailReveal')">👁️ Reveal Cambridge Model</button>
+        <div id="trailReveal" class="reveal-box">
+          <strong>Model Narrative Device:</strong><br>
+          <em>"Scarcely had I stepped off the crowded locomotive when a local artisan invited me to share tea, transforming an arduous delay into the highlight of my expedition."</em>
+        </div>
+      `;
+    }
+
+    function advanceTrail() {
+      currentTrail = (currentTrail % trailStops.length) + 1;
+      setTrailStep(currentTrail);
+    }
+
+    function flipAllRegrets() {
+      document.querySelectorAll('.regret-card').forEach(c => c.classList.toggle('flipped'));
+    }
+
+    const dolmenPrompts = [
+      "Is genuine altruism possible in modern competitive societies, or are all human actions fundamentally driven by self-interest?",
+      "Do historical traditions anchor modern identity, or do they merely fossilize outdated social hierarchies?",
+      "Does rapid technological automation liberate human creativity, or does it atrophy our capacity for deep reasoning?"
+    ];
+    let dolmenIdx = 0;
+    function randomizeDolmenPrompt() {
+      dolmenIdx = (dolmenIdx + 1) % dolmenPrompts.length;
+      document.getElementById('dolmenPrompt').innerText = `"${dolmenPrompts[dolmenIdx]}"`;
+    }
+
+    const flyingPhrases = [
+      "good fodder for a story",
+      "caught up in the magic of the road",
+      "head in the opposite direction",
+      "see right through your prose",
+      "a combination of lucky events"
+    ];
+    let phraseIdx = 0;
+    function catchFlyingPage() {
+      phraseIdx = (phraseIdx + 1) % flyingPhrases.length;
+      document.getElementById('flyingPhrase').innerText = `"${flyingPhrases[phraseIdx]}"`;
+    }
+
+    const boxStrips = [
+      "We had the office broken into last night.",
+      "After being with the company a year, she got asked to work in their Tokyo office.",
+      "I didn't think the interview went well, but I got myself invited back for a second one.",
+      "He argued with his manager so much that he got himself fired.",
+      "I'm afraid your application form seems to have got lost in the post.",
+      "I had the recruitment agency check my CV before I sent it off.",
+      "After an hour or so, we had everyone at the office party dancing."
+    ];
+    let stripIdx = 0;
+    function drawStripFromBox() {
+      stripIdx = (stripIdx + 1) % boxStrips.length;
+      document.getElementById('drawnStrip').innerText = `"${boxStrips[stripIdx]}"`;
+    }
+
+    function toggleReveal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('show');
+    }
+  </script>
+</body>
+</html>

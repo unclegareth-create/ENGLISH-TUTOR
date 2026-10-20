@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Abyssal Bathysphere: Conditionals &amp; Inversions | Gareth English</title>
+  <meta name="description" content="Master Mixed Conditionals, Inversions (Had, Were, Should), and alternatives to IF (Provided that, But for) in this interactive C1/C2 masterclass." />
+  <link rel="canonical" href="https://garethenglish.com/abyssal-bathysphere.html" />
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
+  <link rel="stylesheet" href="dark-academia.css">
+  <style>
+
+    :root {
+      --ocean-abyss: #030712;
+      --ocean-deep: #061226;
+      --ocean-card: #091c3d;
+      --ocean-border: rgba(56, 189, 248, 0.22);
+      --ocean-grid: rgba(56, 189, 248, 0.06);
+      --cyan: #38bdf8;
+      --cyan-bright: #7dd3fc;
+      --gold: #f59e0b;
+      --gold-bright: #fbbf24;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --text-subtle: #94a3b8;
+      --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-code: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-ui) !important;
+    }
+
+    body {
+      background-color: var(--ocean-abyss);
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.12), transparent 45%),
+        radial-gradient(circle at 85% 15%, rgba(2, 132, 199, 0.1), transparent 45%),
+        linear-gradient(to right, var(--ocean-grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--ocean-grid) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+      color: var(--text-main);
+      font-size: 16px;
+      line-height: 1.6;
+      padding: 1.75rem 1rem;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; }
+
+    h1, h2, h3, h4 {
+      font-family: var(--font-ui) !important;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    h1 { font-size: 1.85rem; color: #fff; margin-bottom: 0.4rem; }
+    h2 { font-size: 1.35rem; color: #fff; }
+    h3 { font-size: 1.05rem; color: var(--cyan-bright); }
+
+    .nav-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.88rem;
+      color: var(--text-subtle);
+    }
+    .nav-breadcrumb a { color: var(--cyan-bright); text-decoration: none; font-weight: 600; }
+    .nav-breadcrumb a:hover { text-decoration: underline; }
+
+    header.unit-header.ocean-theme {
+      background: linear-gradient(135deg, #071e3d 0%, #051329 60%, #030814 100%);
+      border: 1px solid var(--ocean-border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+    }
+
+    .badge-ocean {
+      background: rgba(56, 189, 248, 0.16);
+      border: 1px solid var(--cyan);
+      color: var(--cyan-bright);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.3rem 0.75rem;
+      border-radius: 99px;
+    }
+
+    .score-box-ocean {
+      background: #020712;
+      border: 1px solid var(--ocean-border);
+      border-radius: 10px;
+      padding: 12px 20px;
+      text-align: center;
+      min-width: 140px;
+    }
+    .score-title-ocean {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-subtle);
+      font-weight: 700;
+    }
+    .score-val-ocean { font-size: 1.6rem; font-weight: 800; color: var(--gold-bright); }
+
+    .scene-frame-ocean {
+      border: 1px solid var(--ocean-border);
+      border-radius: 12px 12px 0 0;
+      background: #020612;
+      overflow: hidden;
+    }
+    .scene-caption-ocean {
+      background: #040d1f;
+      border-top: 1px solid var(--ocean-border);
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      color: var(--text-subtle);
+      display: flex;
+      justify-content: space-between;
+      border-radius: 0 0 12px 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .blueprint-grid-clean {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+      margin: 1.25rem 0;
+    }
+    .bp-card-clean {
+      background: #08162e;
+      border: 1px solid var(--ocean-border);
+      border-left: 4px solid var(--cyan);
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .bp-card-clean strong {
+      display: block;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .bp-card-clean p { font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 6px; }
+    .bp-card-clean code {
+      display: block;
+      background: #030814;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-family: var(--font-code) !important;
+      font-size: 0.82rem;
+      color: var(--cyan-bright);
+    }
+
+    .card-ocean {
+      background: var(--ocean-deep);
+      border: 1px solid var(--ocean-border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+    .card-header-ocean {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--ocean-border);
+    }
+
+    .clean-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 0.9rem;
+    }
+    .clean-table th, .clean-table td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .clean-table th {
+      background: #040d1f;
+      color: var(--cyan-bright);
+      font-weight: 700;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .clean-table tr:hover td { background: rgba(56, 189, 248, 0.03); }
+
+    .mc-block-clean {
+      background: #050e1f;
+      border: 1px solid var(--ocean-border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .mc-btn-clean {
+      width: 100%;
+      background: #0a1730;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      transition: all 0.15s;
+    }
+    .mc-btn-clean:hover { background: #112347; border-color: var(--cyan); }
+    .mc-btn-clean.correct { background: rgba(16, 185, 129, 0.2); border-color: var(--emerald); color: #a7f3d0; }
+    .mc-btn-clean.wrong { background: rgba(244, 63, 94, 0.2); border-color: var(--rose); color: #fecdd3; }
+
+    .feedback-ocean {
+      display: none;
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      margin-top: 8px;
+    }
+    .feedback-ocean.visible { display: block; }
+    .feedback-ocean.correct { background: rgba(16, 185, 129, 0.14); border: 1px solid var(--emerald); color: #d1fae5; }
+    .feedback-ocean.wrong { background: rgba(244, 63, 94, 0.14); border: 1px solid var(--rose); color: #ffe4e6; }
+
+    .kwt-row-clean {
+      background: #050e1f;
+      border: 1px solid var(--ocean-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .kwt-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .kwt-input-clean {
+      flex: 1;
+      min-width: 220px;
+      background: #020610;
+      border: 1px solid var(--cyan);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: var(--font-code) !important;
+      font-size: 0.92rem;
+    }
+    .kwt-badge-pill {
+      font-family: var(--font-code) !important;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text-subtle);
+    }
+    .kwt-badge-pill.valid { background: rgba(16, 185, 129, 0.18); color: #6ee7b7; border: 1px solid var(--emerald); }
+
+    .btn-action-ocean {
+      background: #0284c7;
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.88rem;
+      transition: background 0.15s;
+    }
+    .btn-action-ocean:hover { background: #0369a1; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Breadcrumb -->
+  <nav class="nav-breadcrumb" aria-label="Breadcrumb">
+    <a href="c1_arcade_showcase.html">← Masterclass Arcade</a>
+    <span>/</span>
+    <a href="lab.html">Interactive Lab</a>
+    <span>/</span>
+    <span style="color:var(--text-main);">The Abyssal Bathysphere</span>
+  </nav>
+
+  <!-- Hero Header -->
+  <header class="unit-header ocean-theme">
+    <div>
+      <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+        <span class="badge-ocean">Unit 1 • Language Architecture</span>
+        <span class="badge-ocean" style="border-color:var(--gold); color:var(--gold-bright); background:rgba(245,158,11,0.12);">C1 / C2 Advanced</span>
+        <span class="badge-ocean" style="border-color:#94a3b8; color:#cbd5e1; background:rgba(148,163,184,0.12);">⏱ 20 Mins</span>
+      </div>
+      <h1>The Abyssal Bathysphere: Conditionals &amp; Inversions</h1>
+      <p style="color:var(--text-muted); font-size:0.95rem; max-width:680px;">
+        Master <strong>Mixed Conditionals</strong> (linking past actions to present results), <strong>Conditional Inversions</strong> (<em>Had, Were, Should</em>), and advanced alternatives to IF (<em>Provided that, Otherwise, But for</em>).
+      </p>
+    </div>
+    <div class="score-box-ocean">
+      <div class="score-title-ocean">Session Score</div>
+      <div class="score-val-ocean" id="session-score">0 / 20</div>
+    </div>
+  </header>
+
+  <!-- Technical SVG Illustration Banner -->
+  <section class="scene-frame-ocean" aria-label="Abyssal Bathysphere Illustration">
+    <svg viewBox="0 0 460 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Acoustic telemetry of a deep-sea bathysphere descending past an iceberg into the abyss">
+      <defs>
+        <linearGradient id="ocean-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#0c2340"/>
+          <stop offset="60%" stop-color="#040c1a"/>
+          <stop offset="100%" stop-color="#01040a"/>
+        </linearGradient>
+      </defs>
+      <rect width="460" height="140" fill="url(#ocean-gradient)"/>
+
+      <!-- Grid lines -->
+      <line x1="0" y1="35" x2="460" y2="35" stroke="rgba(56, 189, 248, 0.08)"/>
+      <line x1="0" y1="70" x2="460" y2="70" stroke="rgba(56, 189, 248, 0.08)"/>
+      <line x1="0" y1="105" x2="460" y2="105" stroke="rgba(56, 189, 248, 0.08)"/>
+
+      <!-- Submerged Iceberg Silhouette on Left -->
+      <polygon points="15,0 95,0 80,85 45,130 20,70" fill="rgba(56, 189, 248, 0.15)" stroke="#38bdf8" stroke-width="0.8"/>
+
+      <!-- Center Brass Bathysphere -->
+      <g transform="translate(230, 70)">
+        <!-- Tether cable -->
+        <line x1="0" y1="-70" x2="0" y2="-28" stroke="#64748b" stroke-width="2"/>
+        <!-- Searchlight cone -->
+        <polygon points="16,0 120,-35 120,45 16,10" fill="rgba(253, 224, 71, 0.14)"/>
+        <!-- Hull -->
+        <circle cx="0" cy="0" r="28" fill="#b45309" stroke="#fbbf24" stroke-width="2.5"/>
+        <!-- Porthole -->
+        <circle cx="8" cy="0" r="11" fill="#0284c7" stroke="#fef08a" stroke-width="1.8"/>
+      </g>
+
+      <!-- Deep Kraken Tentacles on Right -->
+      <g stroke="rgba(56, 189, 248, 0.4)" stroke-width="2" fill="none">
+        <path d="M 370,140 Q 385,85 360,50"/>
+        <path d="M 390,140 Q 410,75 385,35"/>
+        <path d="M 410,140 Q 435,90 410,60"/>
+        <circle cx="395" cy="50" r="2.5" fill="#fbbf24"/>
+        <circle cx="408" cy="50" r="2.5" fill="#fbbf24"/>
+      </g>
+    </svg>
+  </section>
+  <div class="scene-caption-ocean">
+    <span>Arctic Trench Telemetry • Depth Zone: 4,000m</span>
+    <span style="color:var(--gold-bright);">Conditionals &amp; Inversion Architecture</span>
+  </div>
+
+  <!-- Section 1: The 4 Core Conditional Formulas -->
+  <section class="card-ocean">
+    <div class="card-header-ocean">
+      <h2>1. The 4 Advanced Conditional Formulas</h2>
+      <span class="badge-ocean">Formulas &amp; Rules</span>
+    </div>
+    <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:12px;">
+      Basic conditionals link past to past or present to present. C1/C2 counterfactuals cross time boundaries or drop 'if' entirely:
+    </p>
+
+    <div class="blueprint-grid-clean">
+      <div class="bp-card-clean">
+        <strong>1. Past Action → Present Result (Mixed Type A)</strong>
+        <p>A past choice caused your present situation:</p>
+        <code>If + had V3, Subject + would/could + V1 (now)</code>
+        <p style="margin-top:6px; font-style:italic; color:#e2e8f0;">"If I had taken that job, I would live in London now."</p>
+      </div>
+
+      <div class="bp-card-clean" style="border-left-color:var(--gold-bright);">
+        <strong>2. Ongoing Trait → Past Result (Mixed Type B)</strong>
+        <p>A permanent trait prevented a past event:</p>
+        <code>If + Past Simple / Were, Subject + would have + V3</code>
+        <p style="margin-top:6px; font-style:italic; color:#e2e8f0;">"If she weren't so confident, she wouldn't have applied."</p>
+      </div>
+
+      <div class="bp-card-clean" style="border-left-color:var(--emerald);">
+        <strong>3. Conditional Inversion (Eliminating 'IF')</strong>
+        <p>Formal academic register for policy and essays:</p>
+        <code>Had / Were / Should + Subject + Verb</code>
+        <p style="margin-top:6px; font-style:italic; color:#e2e8f0;">"Had the council acted sooner, floods would not occur."</p>
+      </div>
+
+      <div class="bp-card-clean" style="border-left-color:#c084fc;">
+        <strong>4. Strict Alternatives to IF</strong>
+        <p>Precise prerequisite or negative condition:</p>
+        <code>Provided that (only if) • But for + Noun (had it not been for)</code>
+        <p style="margin-top:6px; font-style:italic; color:#e2e8f0;">"But for timely funding, the laboratory would have closed."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Quick Register Contrast -->
+  <section class="card-ocean">
+    <div class="card-header-ocean">
+      <h2>2. Structural Precision: Standard vs C1 Inverted</h2>
+      <span class="badge-ocean">Exam Register</span>
+    </div>
+
+    <table class="clean-table">
+      <thead>
+        <tr>
+          <th>Conditional Type</th>
+          <th>Standard B2 Form</th>
+          <th>High-Scoring C1/C2 Inversion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Type 1 (Unlikely Event)</strong></td>
+          <td>If you need any assistance...</td>
+          <td><em>Should you require any assistance...</em></td>
+        </tr>
+        <tr>
+          <td><strong>Type 2 (Hypothetical Policy)</strong></td>
+          <td>If the government banned cars...</td>
+          <td><em>Were the government to ban cars...</em></td>
+        </tr>
+        <tr>
+          <td><strong>Type 3 (Past Counterfactual)</strong></td>
+          <td>If planners had foreseen the risk...</td>
+          <td><em>Had planners foreseen the risk...</em></td>
+        </tr>
+        <tr>
+          <td><strong>Negative Counterfactual</strong></td>
+          <td>If it hadn't been for the grant...</td>
+          <td><em>But for the research grant...</em></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Quick Check MCQ -->
+    <div class="mc-block-clean" data-correct="1">
+      <div style="font-weight:700; color:#fff; margin-bottom:10px;">Quick Check: Which sentence demonstrates accurate C1 conditional inversion?</div>
+      <button type="button" class="mc-btn-clean" onclick="bathyApp.handleMC(this, 0, 'Incorrect: If should not be kept when inverting (never write \'Had if planners...\').')">
+        A) Had if planners invested earlier, the transit system would cope better today.
+      </button>
+      <button type="button" class="mc-btn-clean" onclick="bathyApp.handleMC(this, 1, 'Correct! \'Had + subject + past participle\' cleanly replaces \'If planners had invested\'.')">
+        B) Had planners invested earlier, the transit system would cope better today.
+      </button>
+      <button type="button" class="mc-btn-clean" onclick="bathyApp.handleMC(this, 2, 'Incorrect: Do not use \'would have\' inside the if/inversion clause.')">
+        C) Would planners have invested earlier, the transit system coped better today.
+      </button>
+      <div class="feedback-ocean"></div>
+    </div>
+  </section>
+
+  <!-- Section 3: Key Word Transformations -->
+  <section class="card-ocean">
+    <div class="card-header-ocean">
+      <h2>3. Practice: Key Word Transformations (3 to 6 Words)</h2>
+      <span class="badge-ocean">Cambridge Part 4 Format</span>
+    </div>
+    <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:14px;">
+      Complete the second sentence using between <strong>3 and 6 words</strong> including the keyword:
+    </p>
+
+    <!-- KWT 1 -->
+    <div class="kwt-row-clean" data-valid="had municipal planners invested|had the planners invested">
+      <div class="kwt-head">
+        <span style="font-size:0.92rem; color:#e2e8f0;">1. If municipal planners had invested in drainage ten years ago, inner-city streets wouldn't flood today.</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">HAD</span>
+          <span class="kwt-badge-pill" id="kwt-pill-1">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <input type="text" class="kwt-input-clean" id="kwt-in-1" placeholder="3–6 words..." oninput="bathyApp.trackWords(1)">
+        <span style="font-size:0.92rem;">in drainage ten years ago, streets wouldn't flood today.</span>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkKWT(1, 'had municipal planners invested', 'Inversion replaces \'If municipal planners had invested\'.')">Check</button>
+      </div>
+      <div class="feedback-ocean" id="kwt-fb-1"></div>
+    </div>
+
+    <!-- KWT 2 -->
+    <div class="kwt-row-clean" data-valid="were the ministry to impose|were the government to impose">
+      <div class="kwt-head">
+        <span style="font-size:0.92rem; color:#e2e8f0;">2. If the ministry imposed carbon tariffs tomorrow, heavy industry would accelerate its green transition.</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">WERE</span>
+          <span class="kwt-badge-pill" id="kwt-pill-2">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <input type="text" class="kwt-input-clean" id="kwt-in-2" placeholder="3–6 words..." oninput="bathyApp.trackWords(2)">
+        <span style="font-size:0.92rem;">carbon tariffs tomorrow, heavy industry would accelerate.</span>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkKWT(2, 'were the ministry to impose', 'Inverted 2nd conditional: Were + subject + to-infinitive.')">Check</button>
+      </div>
+      <div class="feedback-ocean" id="kwt-fb-2"></div>
+    </div>
+
+    <!-- KWT 3 -->
+    <div class="kwt-row-clean" data-valid="but for the decisive overnight intervention|but for the decisive intervention">
+      <div class="kwt-head">
+        <span style="font-size:0.92rem; color:#e2e8f0;">3. If the central bank had not intervened decisively overnight, the regional lender would have failed.</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">FOR</span>
+          <span class="kwt-badge-pill" id="kwt-pill-3">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <input type="text" class="kwt-input-clean" id="kwt-in-3" placeholder="3–6 words..." oninput="bathyApp.trackWords(3)">
+        <span style="font-size:0.92rem;">of the central bank, the regional lender would have failed.</span>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkKWT(3, 'but for the decisive overnight intervention', '\'But for + noun phrase\' means \'If it had not been for\'.')">Check</button>
+      </div>
+      <div class="feedback-ocean" id="kwt-fb-3"></div>
+    </div>
+  </section>
+
+  <!-- Section 4: Sonar Telemetry Depth Simulator -->
+  <section class="card-ocean">
+    <div class="card-header-ocean">
+      <h2>4. The Abyssal Sonar Simulator: Pressure Calibration</h2>
+      <span class="badge-ocean" style="border-color:var(--gold); color:var(--gold-bright);">Interactive Simulator</span>
+    </div>
+    <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:12px;">
+      Calibrate the bathysphere depth zone by selecting the correct conditional form:
+    </p>
+
+    <div style="background:#020712; border:1px solid var(--ocean-border); border-radius:10px; padding:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+        <span style="font-family:var(--font-code); color:var(--cyan-bright); font-size:0.82rem;" id="bathy-depth-label">DEPTH: 250m (TWILIGHT ZONE)</span>
+        <span style="font-family:var(--font-code); color:var(--gold-bright); font-size:0.82rem;" id="bathy-hull-label">HULL INTEGRITY: 100% ✓</span>
+      </div>
+
+      <div style="text-align:center; margin-bottom:12px;">
+        <canvas id="bathy-canvas" width="600" height="180" style="max-width:100%; height:auto; background:#01040a; border:1px solid var(--ocean-border); border-radius:6px; cursor:pointer;" onclick="bathyApp.pingSonar()" title="Click to fire acoustic sonar ping!"></canvas>
+      </div>
+
+      <div style="background:#07142b; border-left:3px solid var(--cyan); padding:10px 14px; border-radius:4px; margin-bottom:14px;">
+        <span style="font-size:0.75rem; text-transform:uppercase; color:var(--text-subtle); font-weight:700;">Telemetry Prompt:</span>
+        <p style="font-size:0.95rem; color:#fff;" id="bathy-prompt-text">"If the research team had logged the ocean currents, they _______ the reef."</p>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:8px;" id="bathy-options-grid"></div>
+
+      <div class="feedback-ocean" id="bathy-sim-feedback"></div>
+
+      <div style="display:flex; justify-content:space-between; margin-top:12px; padding-top:10px; border-top:1px solid rgba(148,163,184,0.12);">
+        <button type="button" class="btn-action-ocean" style="background:#1e293b;" onclick="bathyApp.revealSimModel()">👁️ Reveal Model</button>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.nextDepthZone()">Descend to Next Zone &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Speaking Part 2 Warm-Up -->
+  <section class="card-ocean">
+    <div class="card-header-ocean">
+      <h2>5. Speaking Warm-Up: 2-Minute Long Turn</h2>
+      <span class="badge-ocean" style="border-color:var(--emerald); color:#6ee7b7;">Active Voice First</span>
+    </div>
+    <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:12px;">
+      Warm up your voice before writing. Speak for 2 minutes without stopping:
+    </p>
+
+    <div style="background:#020712; border:1px solid var(--ocean-border); border-radius:8px; padding:16px; margin-bottom:14px;">
+      <h3 style="color:var(--gold-bright); margin-bottom:6px;">Cue Card Challenge</h3>
+      <p style="font-weight:700; color:#fff; margin-bottom:8px;">Describe a decision you made that changed the direction of your education or career.</p>
+      <ul style="margin-left:1.25rem; font-size:0.88rem; color:var(--text-muted); line-height:1.6;">
+        <li>What the choice was and when it happened</li>
+        <li>What would have happened if you had chosen differently</li>
+        <li>What the immediate consequences were</li>
+        <li>And explain whether you would make the same decision today.</li>
+      </ul>
+    </div>
+
+    <!-- Gareth's Practical Structuring Advice -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-bottom:14px;">
+      <div style="background:#07142b; padding:10px; border-radius:6px; font-size:0.84rem;">
+        <strong style="color:var(--cyan-bright); display:block;">1. 1-Minute Note Secret</strong>
+        Write only 4 single trigger keywords. Never write full sentences.
+      </div>
+      <div style="background:#07142b; padding:10px; border-radius:6px; font-size:0.84rem;">
+        <strong style="color:var(--cyan-bright); display:block;">2. 3-Act Story Arc</strong>
+        Past Context (30s) &rarr; Core Decision (45s) &rarr; Reflection / 'So What?' (45s).
+      </div>
+      <div style="background:#07142b; padding:10px; border-radius:6px; font-size:0.84rem;">
+        <strong style="color:var(--cyan-bright); display:block;">3. The Cambridge Anchor</strong>
+        Bullet points are springboards, not a rigid checklist. Keep reflecting until halted.
+      </div>
+    </div>
+
+    <div style="text-align:center; padding:12px; background:#020712; border-radius:8px; border:1px solid var(--ocean-border);">
+      <div style="font-family:var(--font-code); font-size:1.8rem; font-weight:700; color:var(--gold-bright); margin-bottom:6px;" id="timer-readout">02:00</div>
+      <div style="display:flex; justify-content:center; gap:8px;">
+        <button type="button" class="btn-action-ocean" style="background:#059669;" onclick="bathyApp.startTimer()">▶ Start 2-Minute Turn</button>
+        <button type="button" class="btn-action-ocean" style="background:#334155;" onclick="bathyApp.resetTimer()">Reset</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const bathyApp = (() => {
+  let score = 0;
+  const answered = new Set();
+  let audioCtx = null;
+
+  function ensureAudio() {
+    if (!audioCtx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) audioCtx = new AC();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  }
+
+  function playTone(freqs, duration = 0.12, type = 'sine') {
+    ensureAudio();
+    if (!audioCtx) return;
+    freqs.forEach((freq, idx) => {
+      setTimeout(() => {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch(e) {}
+      }, idx * 70);
+    });
+  }
+
+  function addScore(pts, key) {
+    if (!answered.has(key)) {
+      answered.add(key);
+      score += pts;
+      const el = document.getElementById('session-score');
+      if (el) el.textContent = `${score} / 20`;
+    }
+  }
+
+  function handleMC(btn, chosen, explanation) {
+    const parent = btn.closest('.mc-block-clean');
+    const fb = parent.querySelector('.feedback-ocean');
+    parent.querySelectorAll('.mc-btn-clean').forEach(b => b.classList.remove('correct', 'wrong'));
+
+    if (chosen === 1) {
+      playTone([523, 659, 783]);
+      btn.classList.add('correct');
+      fb.className = 'feedback-ocean visible correct';
+      fb.innerHTML = `<strong>✓ Correct:</strong> ${explanation}`;
+      addScore(2, 'mc_bathy');
+    } else {
+      playTone([220, 160], 0.25, 'sawtooth');
+      btn.classList.add('wrong');
+      fb.className = 'feedback-ocean visible wrong';
+      fb.innerHTML = `<strong>⚠️ Check:</strong> ${explanation}`;
+    }
+  }
+
+  function trackWords(id) {
+    const input = document.getElementById(`kwt-in-${id}`);
+    const pill = document.getElementById(`kwt-pill-${id}`);
+    if (!input || !pill) return;
+    const count = input.value.trim() ? input.value.trim().split(/\s+/).length : 0;
+    pill.textContent = `${count} WORDS (3–6 REQ)`;
+    pill.classList.toggle('valid', count >= 3 && count <= 6);
+  }
+
+  function checkKWT(id, model, explanation) {
+    const row = document.querySelectorAll('.kwt-row-clean')[id - 1];
+    const input = document.getElementById(`kwt-in-${id}`);
+    const fb = document.getElementById(`kwt-fb-${id}`);
+    const val = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+    const valid = row.dataset.valid.split('|').map(s => s.trim().toLowerCase());
+
+    if (valid.includes(val)) {
+      playTone([523, 659, 783]);
+      fb.className = 'feedback-ocean visible correct';
+      fb.innerHTML = `<strong>✓ Spot on (+2 pts):</strong> <em>"${val}"</em>. ${explanation}`;
+      addScore(2, `kwt_${id}`);
+    } else {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-ocean visible wrong';
+      fb.innerHTML = `<strong>Model:</strong> <em>"${model}"</em> (${explanation})`;
+    }
+  }
+
+  // Sonar Simulator
+  const depthStages = [
+    {
+      depth: "500m (MIDNIGHT SHELF)",
+      prompt: "If municipal planners had invested in permeable drainage a decade ago, inner-city districts _______ chronic flooding today.",
+      options: [
+        { text: "would not face", correct: true },
+        { text: "would not have faced", correct: false },
+        { text: "will not face", correct: false }
+      ],
+      model: "If planners had invested earlier, districts would not face flooding now.",
+      rule: "Mixed Conditional: Past counterfactual (had invested) producing a present result (would not face)."
+    },
+    {
+      depth: "1,500m (ABYSSAL PLAIN)",
+      prompt: "_______ national governments to introduce strict carbon tariffs tomorrow, industry would accelerate its green transition.",
+      options: [
+        { text: "Were", correct: true },
+        { text: "Had", correct: false },
+        { text: "Should", correct: false }
+      ],
+      model: "Were national governments to introduce tariffs, industry would accelerate.",
+      rule: "Inverted Second Conditional: 'Were + subject + to-infinitive' for hypothetical scenarios."
+    },
+    {
+      depth: "3,000m (HADAL TRENCH)",
+      prompt: "_______ decisive overnight liquidity support from the regulator, the cooperative lender would have failed.",
+      options: [
+        { text: "But for", correct: true },
+        { text: "Provided that", correct: false },
+        { text: "Even if", correct: false }
+      ],
+      model: "But for decisive liquidity support, the lender would have failed.",
+      rule: "'But for + noun phrase' cleanly expresses 'If it had not been for'."
+    }
+  ];
+
+  let currentStage = 0;
+  let sonarRadius = 0;
+  let animTick = 0;
+
+  function updateSimUI() {
+    const s = depthStages[currentStage];
+    document.getElementById('bathy-depth-label').textContent = `DEPTH: ${s.depth}`;
+    document.getElementById('bathy-prompt-text').textContent = `"${s.prompt}"`;
+    const grid = document.getElementById('bathy-options-grid');
+    grid.innerHTML = '';
+    s.options.forEach(opt => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn-action-ocean';
+      b.style.background = '#0a1730';
+      b.style.border = '1px solid var(--ocean-border)';
+      b.textContent = opt.text;
+      b.onclick = () => {
+        const fb = document.getElementById('bathy-sim-feedback');
+        if (opt.correct) {
+          playTone([523, 659, 783, 1046]);
+          fb.className = 'feedback-ocean visible correct';
+          fb.innerHTML = `<strong>✓ Telemetry Confirmed (+2 pts)!</strong> ${s.rule}<br><strong>Model:</strong> <em>"${s.model}"</em>`;
+          addScore(2, `sim_bathy_${currentStage}`);
+          sonarRadius = 1;
+        } else {
+          playTone([220, 160], 0.25, 'sawtooth');
+          fb.className = 'feedback-ocean visible wrong';
+          fb.innerHTML = `<strong>⚠️ Pressure Instability:</strong> Check the time frame (past action vs present result).`;
+        }
+      };
+      grid.appendChild(b);
+    });
+    document.getElementById('bathy-sim-feedback').className = 'feedback-ocean';
+  }
+
+  function pingSonar() {
+    sonarRadius = 1;
+    playTone([880, 440], 0.25, 'sine');
+  }
+
+  function revealSimModel() {
+    const s = depthStages[currentStage];
+    const fb = document.getElementById('bathy-sim-feedback');
+    fb.className = 'feedback-ocean visible correct';
+    fb.innerHTML = `<strong>Model Solution:</strong> <em>"${s.model}"</em><br><small>${s.rule}</small>`;
+  }
+
+  function nextDepthZone() {
+    currentStage = (currentStage + 1) % depthStages.length;
+    updateSimUI();
+  }
+
+  function drawCanvas() {
+    const canvas = document.getElementById('bathy-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    animTick++;
+
+    ctx.fillStyle = '#01040a';
+    ctx.fillRect(0, 0, W, H);
+
+    // Sonar grid
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.08)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 24) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = 0; y < H; y += 24) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    const cx = W / 2, cy = H / 2 + Math.sin(animTick * 0.05) * 5;
+
+    // Searchlight beam
+    const beam = ctx.createLinearGradient(cx + 20, cy, cx + 180, cy);
+    beam.addColorStop(0, 'rgba(253, 224, 71, 0.3)');
+    beam.addColorStop(1, 'rgba(253, 224, 71, 0)');
+    ctx.fillStyle = beam;
+    ctx.beginPath();
+    ctx.moveTo(cx + 15, cy - 8);
+    ctx.lineTo(cx + 180, cy - 35);
+    ctx.lineTo(cx + 180, cy + 35);
+    ctx.lineTo(cx + 15, cy + 8);
+    ctx.fill();
+
+    // Bathysphere body
+    ctx.fillStyle = '#b45309';
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 32, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Porthole
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(cx + 10, cy, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Sonar ring
+    if (sonarRadius > 0) {
+      sonarRadius += 4;
+      const alpha = Math.max(0, 1 - sonarRadius / 220);
+      ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 32 + sonarRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      if (sonarRadius > 220) sonarRadius = 0;
+    }
+
+    requestAnimationFrame(drawCanvas);
+  }
+
+  // Timer
+  let timerInterval = null;
+  let timeLeft = 120;
+
+  function startTimer() {
+    playTone([600], 0.05);
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+        const secs = String(timeLeft % 60).padStart(2, '0');
+        document.getElementById('timer-readout').textContent = `${mins}:${secs}`;
+      } else {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        playTone([523, 659, 783], 0.5);
+        document.getElementById('timer-readout').textContent = "00:00 (STOP)";
+      }
+    }, 1000);
+  }
+
+  function resetTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = null;
+    timeLeft = 120;
+    document.getElementById('timer-readout').textContent = "02:00";
+  }
+
+  function init() {
+    updateSimUI();
+    requestAnimationFrame(drawCanvas);
+  }
+
+  window.addEventListener('DOMContentLoaded', init);
+
+  return {
+    handleMC,
+    trackWords,
+    checkKWT,
+    pingSonar,
+    revealSimModel,
+    nextDepthZone,
+    startTimer,
+    resetTimer
+  };
+})();
+</script>
+</body>
+</html>
