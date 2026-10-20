@@ -477,65 +477,22 @@
       unlockEvents.forEach((ev) => document.addEventListener(ev, unlockHandler, { capture: true, passive: true }));
     }
 
-    function injectTelemetryHUD(modeName, isThreeShared = false) {
-      if (document.getElementById('wasm-webgl-hud')) return;
-      // Developer telemetry is hidden unless ?debug is in the URL. Pages that use the pill
-      // for their music toggle keep just that button.
-      const debugHud = /[?&]debug\b/.test(window.location.search || '');
-      if (!debugHud && !shouldManageArcadeBGM()) return;
+    function injectEngineBaseStyles() {
+      if (document.getElementById('wasm-webgl-base-style')) return;
       const style = document.createElement('style');
+      style.id = 'wasm-webgl-base-style';
       style.textContent = `
-        .wasm-webgl-hud {
-          position: fixed;
-          bottom: 12px;
-          right: 12px;
-          z-index: 95;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 6px 11px;
-          border-radius: 999px;
-          background: rgba(5, 8, 20, 0.86);
-          border: 1px solid rgba(56, 189, 248, 0.35);
-          color: #e2e8f0;
-          font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
-          font-size: 11px;
-          letter-spacing: 0.03em;
-          backdrop-filter: blur(8px);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
-          user-select: none;
-        }
-        .wasm-webgl-dot {
-          width: 7px;
-          height: 7px;
-          border-radius: 50%;
-          background: #10b981;
-          box-shadow: 0 0 8px #10b981;
-        }
-        .wasm-webgl-btn {
-          background: rgba(56, 189, 248, 0.14);
-          border: 1px solid rgba(56, 189, 248, 0.4);
-          color: #7dd3fc;
-          font-family: inherit;
-          font-size: 10px;
-          font-weight: 700;
-          padding: 2px 7px;
-          border-radius: 999px;
-          cursor: pointer;
-          transition: all 0.15s ease;
-        }
-        .wasm-webgl-btn:hover {
-          background: rgba(56, 189, 248, 0.28);
-          color: #ffffff;
-        }
         #wasm-webgl-stage {
-          position: fixed;
-          inset: 0;
-          width: 100vw;
-          height: 100vh;
-          z-index: 0;
-          pointer-events: none;
-          display: block;
+          position: fixed !important;
+          inset: 0 !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          z-index: 0 !important;
+          pointer-events: none !important;
+          display: block !important;
+          touch-action: none;
           transition: opacity 0.35s ease;
         }
         body.wasm-chronicle #wasm-webgl-stage {
@@ -621,6 +578,61 @@
           background: rgba(136, 19, 55, 0.92) !important;
           border-color: #f43f5e !important;
           color: #fecdd3 !important;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    function injectTelemetryHUD(modeName, isThreeShared = false) {
+      if (document.getElementById('wasm-webgl-hud')) return;
+      // Developer telemetry is hidden unless ?debug is in the URL. Pages that use the pill
+      // for their music toggle keep just that button.
+      const debugHud = /[?&]debug\b/.test(window.location.search || '');
+      if (!debugHud && !shouldManageArcadeBGM()) return;
+      const style = document.createElement('style');
+      style.textContent = `
+        .wasm-webgl-hud {
+          position: fixed;
+          bottom: 12px;
+          right: 12px;
+          z-index: 95;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 11px;
+          border-radius: 999px;
+          background: rgba(5, 8, 20, 0.86);
+          border: 1px solid rgba(56, 189, 248, 0.35);
+          color: #e2e8f0;
+          font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+          font-size: 11px;
+          letter-spacing: 0.03em;
+          backdrop-filter: blur(8px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+          user-select: none;
+        }
+        .wasm-webgl-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #10b981;
+          box-shadow: 0 0 8px #10b981;
+        }
+        .wasm-webgl-btn {
+          background: rgba(56, 189, 248, 0.14);
+          border: 1px solid rgba(56, 189, 248, 0.4);
+          color: #7dd3fc;
+          font-family: inherit;
+          font-size: 10px;
+          font-weight: 700;
+          padding: 2px 7px;
+          border-radius: 999px;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .wasm-webgl-btn:hover {
+          background: rgba(56, 189, 248, 0.28);
+          color: #ffffff;
         }
         @media (max-width: 640px) {
           .wasm-webgl-hud {
@@ -857,6 +869,17 @@
         return;
       }
 
+      injectEngineBaseStyles();
+
+      const isMobile = typeof navigator !== 'undefined' && (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (window.innerWidth <= 768)
+      );
+
+      if (isMobile) {
+        particleCount = 1024;
+      }
+
       canvas = document.createElement('canvas');
       canvas.id = 'wasm-webgl-stage';
       canvas.setAttribute('aria-hidden', 'true');
@@ -864,16 +887,20 @@
       document.body.classList.add('has-wasm-webgl', `wasm-mode-${mode}`);
       if ((window.location.pathname || '').toLowerCase().includes('chronicle')) {
         document.body.classList.add('wasm-chronicle');
-        particleCount = 1024;
+        particleCount = isMobile ? 512 : 1024;
       }
 
-      gl = canvas.getContext('webgl2', {
-        alpha: false,
-        antialias: false,
-        depth: false,
-        stencil: false,
-        powerPreference: 'high-performance'
-      });
+      try {
+        gl = canvas.getContext('webgl2', {
+          alpha: false,
+          antialias: false,
+          depth: false,
+          stencil: false,
+          powerPreference: 'high-performance'
+        });
+      } catch (err) {
+        gl = null;
+      }
 
       if (!gl) {
         console.warn('[WasmWebGLCore] WebGL2 unavailable on this device.');
@@ -882,14 +909,32 @@
         return;
       }
 
+      let bgProg, ptProg;
+      try {
+        bgProg = createProgram(gl, BG_VERT_300, BG_FRAG_300);
+        ptProg = createProgram(gl, PARTICLE_VERT_300, PARTICLE_FRAG_300);
+      } catch (err) {
+        console.warn('[WasmWebGLCore] Shader initialization failed on this device:', err);
+        canvas.remove();
+        document.body.classList.remove('has-wasm-webgl', `wasm-mode-${mode}`, 'wasm-chronicle');
+        return;
+      }
+
+      canvas.addEventListener('webglcontextlost', (e) => {
+        e.preventDefault();
+        paused = true;
+        console.warn('[WasmWebGLCore] WebGL context lost.');
+      }, false);
+      canvas.addEventListener('webglcontextrestored', () => {
+        paused = false;
+        console.log('[WasmWebGLCore] WebGL context restored.');
+      }, false);
+
       wasm.init_sim(mode, particleCount, 1337 + mode);
       initMemoryViews();
       injectTelemetryHUD(modeNames[mode] || 'WASM Sim', false);
       bindGameplayReactivity();
       armArcadeAudioUnlock();
-
-      const bgProg = createProgram(gl, BG_VERT_300, BG_FRAG_300);
-      const ptProg = createProgram(gl, PARTICLE_VERT_300, PARTICLE_FRAG_300);
 
       // Fullscreen quad VAO
       const bgVao = gl.createVertexArray();
@@ -956,7 +1001,8 @@
       };
 
       const resize = () => {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const maxDpr = isMobile ? 1.0 : 2.0;
+        const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
         const w = Math.floor(window.innerWidth * dpr);
         const h = Math.floor(window.innerHeight * dpr);
         if (canvas.width !== w || canvas.height !== h) {
