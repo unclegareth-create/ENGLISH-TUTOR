@@ -214,9 +214,10 @@
     const STRIPE_PAYMENT_LINKS = window.GARETH_STRIPE_LINKS || {
         pack_5_275: '',     // e.g. 'https://buy.stripe.com/...' (5-Lesson Pack - £275)
         sprint_10_500: '',  // e.g. 'https://buy.stripe.com/...' (10-Lesson Pack - £500)
-        vip_12_600: '',     // e.g. 'https://buy.stripe.com/...' (12-Lesson Pack - £600)
+        pack_12_600: '',    // e.g. 'https://buy.stripe.com/...' (12-Lesson Pack - £600)
+        vip_12_600: '',     // legacy alias
         single_65: '',      // e.g. 'https://buy.stripe.com/...' (Single Session - £65)
-        audit_async_29: ''  // e.g. 'https://buy.stripe.com/...' (24h Async Audit - £29)
+        audit_async_29: ''  // e.g. 'https://buy.stripe.com/...' (Written Essay Audit - £29)
     };
 
     const applyPackagePrefill = (pkg, tierKey) => {
@@ -237,6 +238,7 @@
         if (!pkg) return;
 
         const stripeUrl = (tierKey && STRIPE_PAYMENT_LINKS[tierKey]) || '';
+        const isAudit = pkg.includes('Audit') || pkg.includes('Async');
 
         if (goalInput) {
             goalInput.value = 'Selected Package: ' + pkg;
@@ -249,8 +251,8 @@
             formTitle.textContent = 'Selected: ' + pkg;
         }
         if (formSubtitle) {
-            formSubtitle.textContent = pkg.includes('Async')
-                ? 'Complete your details below for your £29 Stripe Payment Link and essay/voice-note upload instructions (Wise or PayPal also available on request).'
+            formSubtitle.textContent = isAudit
+                ? 'Complete your details below for your £29 Stripe Payment Link and Google Doc essay upload instructions (Wise or PayPal also available on request).'
                 : 'Complete your details and preferred days/times below for your Stripe Payment Link (or request Wise / PayPal).';
         }
         if (formBadge) {
@@ -275,7 +277,7 @@
             pkgBanner.classList.remove('hidden');
         }
         if (submitBtn) {
-            submitBtn.innerHTML = pkg.includes('Async')
+            submitBtn.innerHTML = isAudit
                 ? 'Request £29 Stripe Link &amp; Upload Details &rarr;'
                 : 'Request Payment Link &amp; Schedule &rarr;';
         }
@@ -284,8 +286,8 @@
             enquiryCard.classList.remove('border-slate-700');
         }
         if (messageInput) {
-            messageInput.placeholder = pkg.includes('Async')
-                ? 'Tell me which exam (IELTS, C1, C2) or business task you are submitting (let me know if you prefer Stripe, Wise, or PayPal)...'
+            messageInput.placeholder = isAudit
+                ? 'Tell me which exam (IELTS, C1, C2) or professional writing task you are submitting (let me know if you prefer Stripe, Wise, or PayPal)...'
                 : 'Let me know your target exam or goal, your time zone, preferred days/times, and if you prefer Stripe, Wise, or PayPal...';
         }
         setTimeout(() => {
@@ -360,17 +362,17 @@
           "prompt": "Discuss two ways governments can encourage people to use public transport instead of private cars, and evaluate which is more effective.",
           "draftBadge": "Student Draft (Solid B2 — 172/210)",
           "markupBadge": "Gareth's Line-by-Line Markup",
-          "polishedBadge": "Polished C1/C2 Pass (204/210 — Grade A)",
-          "cefrShift": "CEFR B2 → C1/C2",
+          "polishedBadge": "Polished C1 Pass (194/210 — Strong C1)",
+          "cefrShift": "CEFR B2 → Strong C1",
           "splitBeforeBadge": "CEFR B2 (172/210)",
-          "splitAfterBadge": "C1/C2 (204/210)",
+          "splitAfterBadge": "Strong C1 (194/210)",
           "scorePills": [
             { "label": "Content", "before": "3/5", "after": "5/5" },
-            { "label": "Communicative Achievement", "before": "2/5", "after": "5/5" },
-            { "label": "Organisation", "before": "2/5", "after": "5/5" },
+            { "label": "Communicative Achievement", "before": "2/5", "after": "4/5" },
+            { "label": "Organisation", "before": "2/5", "after": "4/5" },
             { "label": "Language", "before": "2/5", "after": "5/5" }
           ],
-          "verdict": "Your argument is clear and logical, which comfortably passes at B2. To reach Grade A (200+ on the Cambridge scale), we need to replace everyday verbs like 'make tickets cheaper' with natural C1 noun phrases ('subsidising fares') and show confident control of complex structures like negative inversion.",
+          "verdict": "Your argument is clear and logical, which comfortably passes at B2. To reach a strong C1 pass (190+ on the Cambridge scale), we need to replace everyday verbs like 'make tickets cheaper' with natural C1 noun phrases ('subsidising fares') and show confident control of complex structures like negative inversion.",
           "segments": [
             { "type": "text", "content": "In many modern cities, traffic congestion is a growing problem. " },
             {
@@ -418,18 +420,18 @@
           "title": "IELTS Academic Writing Task 2 — Opinion Essay",
           "prompt": "Some people believe universities should only offer places to students with high academic marks, while others think people of all ages and abilities should be admitted. Discuss both views and give your opinion.",
           "draftBadge": "Student Draft (Stuck at Band 6.5)",
-          "markupBadge": "Gareth's Band 8.0+ Upgrade",
-          "polishedBadge": "Polished Band 8.0+ Paragraph",
-          "cefrShift": "Band 6.5 → Band 8.0+",
+          "markupBadge": "Gareth's Band 7.5+ Upgrade",
+          "polishedBadge": "Polished Band 7.5+ Paragraph",
+          "cefrShift": "Band 6.5 → Band 7.5+",
           "splitBeforeBadge": "Band 6.5",
-          "splitAfterBadge": "Band 8.0+",
+          "splitAfterBadge": "Band 7.5+",
           "scorePills": [
-            { "label": "Task Response", "before": "6.5", "after": "8.0" },
-            { "label": "Coherence & Cohesion", "before": "6.0", "after": "8.0" },
-            { "label": "Lexical Resource", "before": "6.0", "after": "8.5" },
-            { "label": "Grammatical Range & Accuracy", "before": "6.5", "after": "8.0" }
+            { "label": "Task Response", "before": "6.5", "after": "7.5" },
+            { "label": "Coherence & Cohesion", "before": "6.0", "after": "7.5" },
+            { "label": "Lexical Resource", "before": "6.0", "after": "8.0" },
+            { "label": "Grammatical Range & Accuracy", "before": "6.5", "after": "7.5" }
           ],
-          "verdict": "Many capable professionals get stuck at Band 6.5 in Writing because they rely on memorised 'template' openings and sweeping claims. Here, we introduce academic hedging ('arguably') and precise topic vocabulary so your writing reads naturally at a Band 8.0+ level.",
+          "verdict": "Many capable professionals get stuck at Band 6.5 in Writing because they rely on memorised 'template' openings and sweeping claims. Here, we introduce academic hedging ('arguably') and precise topic vocabulary so your writing reads naturally at a Band 7.5–8.0 level.",
           "segments": [
             {
               "type": "annotation",
@@ -483,7 +485,7 @@
           "splitAfterBadge": "Diplomatic C1/C2",
           "scorePills": [
             { "label": "Diplomatic Tone", "before": "Blunt", "after": "Assured" },
-            { "label": "Clarity & Impact", "before": "6/10", "after": "9.5/10" },
+            { "label": "Clarity & Impact", "before": "6/10", "after": "9/10" },
             { "label": "Client Confidence", "before": "Shaky", "after": "High" }
           ],
           "verdict": "When writing in a second language under time pressure, it is easy to translate directly—which can accidentally sound blunt or defensive ('We have a problem', 'You will have to wait'). Here, we reframe the delay around client security and clear next steps.",
