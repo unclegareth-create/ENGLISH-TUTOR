@@ -297,6 +297,89 @@
             draggedBlock = null;
             clearActive();
         });
+
+        // Mobile Touch Drag & Drop
+        let touchDragEl = null;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isTouchDragging = false;
+        let touchClone = null;
+
+        playArea.addEventListener('touchstart', (e) => {
+            if (locked) return;
+            const block = e.target.closest('.block');
+            if (!block) return;
+            const t = e.touches[0];
+            touchDragEl = block;
+            touchStartX = t.clientX;
+            touchStartY = t.clientY;
+            isTouchDragging = false;
+        }, { passive: true });
+
+        playArea.addEventListener('touchmove', (e) => {
+            if (!touchDragEl || locked) return;
+            const t = e.touches[0];
+            const dx = t.clientX - touchStartX;
+            const dy = t.clientY - touchStartY;
+
+            if (!isTouchDragging && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+                isTouchDragging = true;
+                draggedBlock = touchDragEl;
+                touchDragEl.classList.add('dragging');
+                sfx('grab');
+
+                touchClone = touchDragEl.cloneNode(true);
+                touchClone.classList.add('touch-drag-proxy');
+                touchClone.style.position = 'fixed';
+                touchClone.style.pointerEvents = 'none';
+                touchClone.style.zIndex = '9999';
+                touchClone.style.opacity = '0.9';
+                touchClone.style.transform = 'translate(-50%, -50%) scale(1.08)';
+                touchClone.style.boxShadow = '0 12px 24px rgba(0,0,0,0.6)';
+                document.body.appendChild(touchClone);
+            }
+
+            if (isTouchDragging) {
+                if (e.cancelable) e.preventDefault();
+                if (touchClone) {
+                    touchClone.style.left = t.clientX + 'px';
+                    touchClone.style.top = t.clientY + 'px';
+                }
+                const elem = document.elementFromPoint(t.clientX, t.clientY);
+                const container = elem ? elem.closest('.drop-zone, .block-bank') : null;
+                clearActive();
+                if (container) container.classList.add('active');
+            }
+        }, { passive: false });
+
+        const endTouchDrag = (e) => {
+            if (touchClone) {
+                touchClone.remove();
+                touchClone = null;
+            }
+            if (touchDragEl) {
+                touchDragEl.classList.remove('dragging');
+            }
+            if (isTouchDragging) {
+                const t = e.changedTouches ? e.changedTouches[0] : null;
+                if (t) {
+                    const elem = document.elementFromPoint(t.clientX, t.clientY);
+                    const container = elem ? elem.closest('.drop-zone, .block-bank') : null;
+                    if (container) {
+                        dropOn(container);
+                    }
+                }
+                clearActive();
+                draggedBlock = null;
+                touchDragEl = null;
+                isTouchDragging = false;
+            } else {
+                touchDragEl = null;
+            }
+        };
+
+        playArea.addEventListener('touchend', endTouchDrag, { passive: true });
+        playArea.addEventListener('touchcancel', endTouchDrag, { passive: true });
     }
 
     /* ---------------- VALIDATION ---------------- */

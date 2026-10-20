@@ -223,12 +223,33 @@ button:disabled { background-color: #334155; opacity: 0.7; cursor: not-allowed; 
 }
 #loot-announcement.show { display: block; }
 
+/* ---------- WebGL Background Canvas Guard ---------- */
+#wasm-webgl-stage {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+    display: block !important;
+    touch-action: none;
+}
+body.has-wasm-webgl .layout-grid {
+    position: relative;
+    z-index: 2;
+}
+
 /* ---------- Intro & Name Modals ---------- */
 .fullscreen-modal {
     position: fixed; inset: 0; background: var(--bg);
     display: none; justify-content: center; align-items: center; z-index: 2000;
     background-image: radial-gradient(var(--bg-dot) 4px, transparent 4px);
     background-size: 40px 40px;
+    overflow-y: auto;
+    padding: 15px;
+    -webkit-overflow-scrolling: touch;
 }
 .fullscreen-modal.open { display: flex; }
 .modal-panel {
@@ -236,6 +257,8 @@ button:disabled { background-color: #334155; opacity: 0.7; cursor: not-allowed; 
     padding: 40px; text-align: center; max-width: 600px; width: 90%;
     box-shadow: 15px 15px 0 var(--ink);
     animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 .modal-panel h2 { color: var(--green); font-size: 48px; margin-top: 0; margin-bottom: 20px; text-shadow: 3px 3px 0 var(--ink); font-family: 'Creepster', cursive; font-weight: normal; letter-spacing: 2px;}
 .modal-panel p { font-size: 22px; line-height: 1.5; color: var(--muted); font-weight: bold; margin-bottom: 30px; }
@@ -262,11 +285,23 @@ button:disabled { background-color: #334155; opacity: 0.7; cursor: not-allowed; 
 @media (max-width: 520px) {
     body { padding: 10px; }
     .panel { padding: 15px; border-width: 4px; box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.8); }
-    .puzzle-board, .block-bank { padding: 15px; gap: 10px; }
-    .block { font-size: 15px; padding: 10px 14px; }
-    .drop-zone { min-width: 70px; }
-    .hud { font-size: 18px; }
+    .puzzle-board, .block-bank { padding: 15px; gap: 8px; }
+    .block { font-size: 14px; padding: 10px 12px; }
+    .drop-zone { min-width: 64px; min-height: 58px; }
+    .hud { font-size: 16px; gap: 8px 14px; margin-bottom: 15px; }
     .prize-content { padding: 25px; }
+    .modal-panel { padding: 22px 16px; }
+    .modal-panel h2 { font-size: 32px; margin-bottom: 12px; }
+    .modal-panel p { font-size: 16px; margin-bottom: 18px; }
+    .name-input { font-size: 18px; padding: 10px; width: 92%; margin-bottom: 15px; }
+    .btn-claim { font-size: 18px; padding: 12px 24px; margin-top: 15px; }
+}
+
+.touch-drag-proxy {
+    pointer-events: none !important;
+    touch-action: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
