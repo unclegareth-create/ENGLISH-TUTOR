@@ -33,19 +33,6 @@ const DarkAcademiaGate = {
   ],
   STRIPE_LINK: 'https://buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01',
 
-  trackEvent(eventName, params = {}) {
-    try {
-      if (typeof window.trackGoatEvent === 'function') {
-        window.trackGoatEvent(eventName);
-      } else if (window.goatcounter && typeof window.goatcounter.count === 'function') {
-        window.goatcounter.count({ path: eventName, title: eventName, event: true });
-      }
-      if (typeof window.trackFunnelEvent === 'function') {
-        window.trackFunnelEvent(eventName, params);
-      }
-    } catch (e) {}
-  },
-
   hashAccessCode(raw) {
     const clean = String(raw || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
     if (!clean) return '';
@@ -122,7 +109,6 @@ const DarkAcademiaGate = {
         params.get('unlocked') === 'true' || Boolean(params.get('session_id'));
       const unlockParam = params.get('unlock');
       if (isDirectStripeReturn || (unlockParam && this.unlock(unlockParam))) {
-        this.trackEvent('da-stripe-return: unlocked', { tier: 'da_course' });
         this.persistUnlock();
         const cleanUrl = window.location.pathname + window.location.hash;
         window.history.replaceState({}, document.title, cleanUrl);
@@ -253,10 +239,6 @@ const DarkAcademiaGate = {
   },
 
   openModal(targetUnit) {
-    this.trackEvent(`da-modal-open: ${targetUnit || 'unknown'}`, {
-      unitId: targetUnit || '',
-      tier: 'da_course'
-    });
     let modal = document.getElementById('da-paywall-modal');
     if (!modal) {
       modal = this.createModalElement();
@@ -318,7 +300,7 @@ const DarkAcademiaGate = {
           </div>
         </div>
 
-        <a href="${this.STRIPE_LINK}" class="da-btn-stripe" onclick="DarkAcademiaGate.trackEvent('da-stripe-checkout: modal', { tier: 'da_course' })">
+        <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
           <span>Unlock Instant Access via Stripe (£24)</span>
           <span aria-hidden="true">→</span>
         </a>
@@ -373,7 +355,6 @@ const DarkAcademiaGate = {
     }
 
     if (this.unlock(val)) {
-      this.trackEvent('da-unlock-code: success', { tier: 'da_course' });
       feedback.style.color = '#86efac';
       feedback.innerHTML = '✓ Access Code Verified! Full Course Unlocked.';
       setTimeout(() => {
@@ -432,7 +413,7 @@ const DarkAcademiaGate = {
               </div>
             </div>
 
-            <a href="${this.STRIPE_LINK}" class="da-btn-stripe" onclick="DarkAcademiaGate.trackEvent('da-stripe-checkout: veil', { tier: 'da_course' })">
+            <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
               <span>Unlock Full Course via Stripe (£24)</span>
               <span aria-hidden="true">→</span>
             </a>
@@ -478,7 +459,6 @@ const DarkAcademiaGate = {
 
     const val = input.value.trim();
     if (this.unlock(val)) {
-      this.trackEvent('da-unlock-code: success', { tier: 'da_course' });
       feedback.style.color = '#86efac';
       feedback.textContent = '✓ Unlocked! Loading lesson...';
       setTimeout(() => window.location.reload(), 500);
@@ -768,14 +748,6 @@ class DarkAcademiaEngine {
 
     if (this.score >= Math.ceil(this.totalMarks * 0.8)) {
       el.style.color = '#4ade80';
-      if (!this._completedTracked && this.unitId) {
-        this._completedTracked = true;
-        DarkAcademiaGate.trackEvent(`da-unit-complete: ${this.unitId} (${this.score}/${this.totalMarks})`, {
-          unitId: this.unitId,
-          score: this.score,
-          total: this.totalMarks
-        });
-      }
     } else if (this.score >= Math.ceil(this.totalMarks * 0.5)) {
       el.style.color = '#fbbf24';
     } else {
@@ -873,7 +845,7 @@ class DarkAcademiaEngine {
           <div class="da-perk-chip"><span>📖</span> Printable Study Guide &amp; Answer Key</div>
         </div>
         <div class="da-completion-actions">
-          <button class="da-btn-stripe" style="max-width:340px;" onclick="DarkAcademiaGate.trackEvent('da-stripe-checkout: unit-banner', { unitId: '${this.unitId}', tier: 'da_course' }); DarkAcademiaGate.openModal('${this.unitId}')">
+          <button class="da-btn-stripe" style="max-width:340px;" onclick="DarkAcademiaGate.openModal('${this.unitId}')">
             <span>Unlock Full 12-Lesson Course — £24</span>
             <span aria-hidden="true">→</span>
           </button>

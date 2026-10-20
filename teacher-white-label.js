@@ -600,7 +600,7 @@
     if (p.includes('jekyll')) return 'jekyll';
     if (p.includes('baskerville')) return 'baskerville';
     if (p.includes('cae-essay')) return 'cae-essay';
-    if (p.includes('ielts') || p.includes('ynnning')) return 'ielts-essay';
+    if (p.includes('ielts')) return 'ielts-essay';
     if (p.includes('fce-friendship')) return 'fce-friendship';
     if (p.includes('cpe-psychometrics')) return 'cpe-psychometrics';
     if (p.includes('reactor')) return 'reactor';
@@ -628,8 +628,6 @@
       p.includes('business-english-meetings.html') ||
       p.includes('cae-essay-builder-v2.html') ||
       p.includes('ielts-essay-masterclass.html') ||
-      p.includes('ielts-task2-paragraphing-slides.html') ||
-      p.includes('ynnning-lesson-slides-task2-paragraphing.html') ||
       p.includes('boardroom.html')
     );
   }

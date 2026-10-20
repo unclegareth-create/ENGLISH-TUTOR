@@ -191,8 +191,20 @@
     });
   });
 
-  // Load Teacher Classroom & White-Label Studio Runtime if needed
-  if (!window.GarethTeacherWhiteLabel && !document.querySelector('script[src*="teacher-white-label.js"]')) {
+  // Load Teacher Classroom & White-Label Studio Runtime only when relevant
+  const needsTeacherRuntime = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('teacher_key') || params.get('wl') === '1') return true;
+      if (localStorage.getItem('gm_teacher_license_tier') || localStorage.getItem('gm_teacher_license_hash')) return true;
+      if (document.querySelector('.lab-vault-mount, #da-gate-veil, #da-hub-access-code-btn')) return true;
+      return false;
+    } catch (_) {
+      return false;
+    }
+  };
+
+  if (!window.GarethTeacherWhiteLabel && !document.querySelector('script[src*="teacher-white-label.js"]') && needsTeacherRuntime()) {
     const wlScript = document.createElement('script');
     wlScript.src = 'teacher-white-label.js';
     wlScript.defer = true;
