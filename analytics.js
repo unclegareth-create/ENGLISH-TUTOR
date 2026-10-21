@@ -9,6 +9,14 @@
 (() => {
     'use strict';
 
+    // Local file:/// Protocol Guard:
+    // Prevent browser hanging on external analytics when files are opened locally off disk.
+    if (!window.location.protocol.startsWith('http')) {
+        window.trackFunnelEvent = function () {};
+        window.showDiagnosticGate = function () {};
+        return;
+    }
+
     // UK ICO Children's Code (Age-Appropriate Design Code) Guard:
     // Never load external analytics or store attribution trails on Young Learners pages (ages 6-12).
     const currentPath = (window.location.pathname || '').toLowerCase();

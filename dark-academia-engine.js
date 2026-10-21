@@ -12,6 +12,7 @@ const DarkAcademiaGate = {
   STORAGE_KEY: 'da_archive_unlocked',
   LEGACY_KEY: 'da_canon_unlocked',
   LAB_KEY: 'da_course_unlocked_v1',
+  _inMemoryUnlocked: false,
   VALID_CODE_HASHES: [
     '76194e86377ca58a',
     '69d0b37588c5f1d3',
@@ -29,7 +30,13 @@ const DarkAcademiaGate = {
     'e32febaa231630ba',
     'f7c46303a42395e1',
     '69f9d176bc781314',
-    '642ef07c8176b90a'
+    '642ef07c8176b90a',
+    '07dfc1f76646e3e9',
+    '3089a39af9f71612',
+    'df3a72ff4ff87f6d',
+    '410a91742e314132',
+    '36d29a47ba9eca49',
+    'ba6766737503c529'
   ],
   STRIPE_LINK: 'https://buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01',
 
@@ -47,6 +54,7 @@ const DarkAcademiaGate = {
   },
 
   isUnlocked() {
+    if (this._inMemoryUnlocked) return true;
     try {
       return (
         localStorage.getItem(this.STORAGE_KEY) === 'true' ||
@@ -54,7 +62,7 @@ const DarkAcademiaGate = {
         localStorage.getItem(this.LAB_KEY) === 'true'
       );
     } catch (e) {
-      return false;
+      return this._inMemoryUnlocked;
     }
   },
 
@@ -75,6 +83,7 @@ const DarkAcademiaGate = {
   },
 
   persistUnlock() {
+    this._inMemoryUnlocked = true;
     try {
       localStorage.setItem(this.STORAGE_KEY, 'true');
       localStorage.setItem(this.LEGACY_KEY, 'true');
@@ -94,6 +103,7 @@ const DarkAcademiaGate = {
   },
 
   lock() {
+    this._inMemoryUnlocked = false;
     try {
       localStorage.removeItem(this.STORAGE_KEY);
       localStorage.removeItem(this.LEGACY_KEY);
@@ -144,7 +154,10 @@ const DarkAcademiaGate = {
   },
 
   syncUI() {
-    const unlocked = this.isUnlocked();
+    const unlocked =
+      this.isUnlocked() ||
+      (window.__GM_SIGNED_HOMEWORK_PAGE_UNLOCK === true &&
+        !window.location.pathname.includes('compendium'));
     if (unlocked) {
       document.body.classList.remove('da-is-locked');
     }
@@ -206,15 +219,39 @@ const DarkAcademiaGate = {
       }
     });
 
-    // 1b. Update top access code button on index hub if unlocked
-    const passkeyTrigger = document.getElementById('da-hub-access-code-btn') || document.getElementById('da-hub-passkey-btn');
+    // 1b. Update top hero buttons on index hub if unlocked
+    const heroUnlockBtn =
+      document.getElementById('da-hub-hero-unlock-btn') ||
+      document.querySelector('.portal-hero .da-btn-stripe');
+    if (heroUnlockBtn) {
+      if (unlocked) {
+        heroUnlockBtn.innerHTML = '<span>✓ Full Course Unlocked — Open Lesson 2 →</span>';
+        heroUnlockBtn.style.background = 'linear-gradient(135deg, #065f46 0%, #047857 100%)';
+        heroUnlockBtn.style.borderColor = '#10b981';
+        heroUnlockBtn.onclick = () => {
+          window.location.href = 'dracula-unit2-counts-hospitality.html';
+        };
+      } else {
+        heroUnlockBtn.innerHTML =
+          '<span>Unlock All 12 Lessons — £24</span><span aria-hidden="true">→</span>';
+        heroUnlockBtn.style.background = '';
+        heroUnlockBtn.style.borderColor = '';
+        heroUnlockBtn.onclick = () => DarkAcademiaGate.openModal('hub');
+      }
+    }
+
+    const passkeyTrigger =
+      document.getElementById('da-hub-access-code-btn') ||
+      document.getElementById('da-hub-passkey-btn');
     if (passkeyTrigger) {
       if (unlocked) {
-        passkeyTrigger.innerHTML = '✓ Full Course Unlocked';
+        passkeyTrigger.innerHTML = '✓ All Lessons Unlocked';
         passkeyTrigger.style.borderColor = '#10b981';
         passkeyTrigger.style.color = '#86efac';
       } else {
         passkeyTrigger.innerHTML = '§ Enter Access Code';
+        passkeyTrigger.style.borderColor = '';
+        passkeyTrigger.style.color = '';
       }
     }
 
@@ -244,12 +281,21 @@ const DarkAcademiaGate = {
       modal = this.createModalElement();
       document.body.appendChild(modal);
     }
+    const feedback = modal.querySelector('.da-passkey-feedback');
+    if (feedback) {
+      feedback.textContent = '';
+      feedback.innerHTML = '';
+    }
+    const input = modal.querySelector('.da-passkey-input');
+    if (input) {
+      input.value = '';
+    }
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 
     setTimeout(() => {
-      const input = modal.querySelector('.da-passkey-input');
-      if (input) input.focus();
+      const activeInput = modal.querySelector('.da-passkey-input');
+      if (activeInput) activeInput.focus();
     }, 100);
   },
 
@@ -384,7 +430,7 @@ const DarkAcademiaGate = {
 
     if (!lockedUnits.includes(unitId)) return;
 
-    if (!this.isUnlocked()) {
+    if (this.isUnitGated(unitId)) {
       document.body.classList.add('da-is-locked');
       let veil = document.getElementById('da-gate-veil');
       if (!veil) {
@@ -449,6 +495,9 @@ const DarkAcademiaGate = {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.classList.remove('da-is-locked');
+      const veil = document.getElementById('da-gate-veil');
+      if (veil) veil.classList.add('unlocked');
+      document.body.style.overflow = '';
     }
   },
 
@@ -779,35 +828,93 @@ class DarkAcademiaEngine {
     const metaMap = {
       dracula_unit1: {
         mastered: 'Participle Clauses in Dracula Chapter 1',
-        unit2Url: 'dracula-unit2-counts-hospitality.html',
-        unit2Title: "Lesson 2: The Count's Hospitality",
+        nextUrl: 'dracula-unit2-counts-hospitality.html',
+        nextTitle: "Lesson 2: The Count's Hospitality",
+        nextFreeUrl: 'frankenstein-unit1-spark-of-being.html',
+        nextFreeTitle: 'Frankenstein Lesson 1'
+      },
+      dracula_unit2: {
+        mastered: 'Negative Inversion in Castle Dracula',
+        nextUrl: 'dracula-unit3-log-of-the-demeter.html',
+        nextTitle: 'Lesson 3: The Shipwreck at Whitby',
+        nextFreeUrl: 'frankenstein-unit1-spark-of-being.html',
+        nextFreeTitle: 'Frankenstein Lesson 1'
+      },
+      dracula_unit3: {
+        mastered: 'Formal Reporting Passives in Whitby',
+        nextUrl: 'frankenstein-unit1-spark-of-being.html',
+        nextTitle: 'Lesson 4: Frankenstein — The Spark of Being',
         nextFreeUrl: 'frankenstein-unit1-spark-of-being.html',
         nextFreeTitle: 'Frankenstein Lesson 1'
       },
       frankenstein_unit1: {
         mastered: 'Inverted Conditionals in Frankenstein',
-        unit2Url: 'frankenstein-unit2-sea-of-ice.html',
-        unit2Title: 'Lesson 5: The Sea of Ice',
+        nextUrl: 'frankenstein-unit2-sea-of-ice.html',
+        nextTitle: 'Lesson 5: The Sea of Ice',
+        nextFreeUrl: 'jekyll-unit1-soho-threshold.html',
+        nextFreeTitle: 'Jekyll & Hyde Lesson 1'
+      },
+      frankenstein_unit2: {
+        mastered: 'Contrast Fronting & Subjunctives on the Glacier',
+        nextUrl: 'frankenstein-unit3-creatures-apologia.html',
+        nextTitle: "Lesson 6: The Creature's Case",
+        nextFreeUrl: 'jekyll-unit1-soho-threshold.html',
+        nextFreeTitle: 'Jekyll & Hyde Lesson 1'
+      },
+      frankenstein_unit3: {
+        mastered: "Cleft Sentences in the Creature's Case",
+        nextUrl: 'jekyll-unit1-soho-threshold.html',
+        nextTitle: 'Lesson 7: The Mysterious Door in Soho',
         nextFreeUrl: 'jekyll-unit1-soho-threshold.html',
         nextFreeTitle: 'Jekyll & Hyde Lesson 1'
       },
       jekyll_unit1: {
         mastered: 'Concessive Clauses in Jekyll & Hyde',
-        unit2Url: 'jekyll-unit2-lanyons-narrative.html',
-        unit2Title: "Lesson 8: Dr Lanyon's Narrative",
+        nextUrl: 'jekyll-unit2-lanyons-narrative.html',
+        nextTitle: "Lesson 8: Dr Lanyon's Narrative",
+        nextFreeUrl: 'baskerville-unit1-curse-of-the-moors.html',
+        nextFreeTitle: 'Hound of the Baskervilles Lesson 1'
+      },
+      jekyll_unit2: {
+        mastered: "Turning-Point Inversion in Dr Lanyon's Study",
+        nextUrl: 'jekyll-unit3-full-statement.html',
+        nextTitle: "Lesson 9: Henry Jekyll's Full Confession",
+        nextFreeUrl: 'baskerville-unit1-curse-of-the-moors.html',
+        nextFreeTitle: 'Hound of the Baskervilles Lesson 1'
+      },
+      jekyll_unit3: {
+        mastered: "Emphasizing Causes & Jekyll's Double Life",
+        nextUrl: 'baskerville-unit1-curse-of-the-moors.html',
+        nextTitle: 'Lesson 10: The Mystery at Baskerville Hall',
         nextFreeUrl: 'baskerville-unit1-curse-of-the-moors.html',
         nextFreeTitle: 'Hound of the Baskervilles Lesson 1'
       },
       baskerville_unit1: {
         mastered: 'Past Modals of Deduction at 221B Baker Street',
-        unit2Url: 'baskerville-unit2-grimpen-mire.html',
-        unit2Title: 'Lesson 11: Grimpen Mire',
+        nextUrl: 'baskerville-unit2-grimpen-mire.html',
+        nextTitle: 'Lesson 11: Across Dartmoor & Grimpen Mire',
         nextFreeUrl: 'dracula-unit1-carpathian-threshold.html',
         nextFreeTitle: 'Dracula Lesson 1'
+      },
+      baskerville_unit2: {
+        mastered: 'Place Inversion on Grimpen Mire',
+        nextUrl: 'baskerville-unit3-moorland-vigil.html',
+        nextTitle: 'Lesson 12: The Hound Revealed',
+        nextFreeUrl: 'dracula-unit1-carpathian-threshold.html',
+        nextFreeTitle: 'Dracula Lesson 1'
+      },
+      baskerville_unit3: {
+        mastered: 'Counterfactual Conditionals & The Final Dartmoor Deduction',
+        nextUrl: 'the-gothic-canon-c1-c2-compendium.html',
+        nextTitle: 'Printable Study Guide & Answer Key',
+        nextFreeUrl: 'the-gothic-canon-c1-c2-compendium.html',
+        nextFreeTitle: 'Study Guide & Answer Key'
       }
     };
 
     const meta = metaMap[this.unitId] || metaMap.dracula_unit1;
+    const targetUrl = meta.nextUrl || meta.unit2Url;
+    const targetTitle = meta.nextTitle || meta.unit2Title;
 
     if (unlocked) {
       container.innerHTML = `
@@ -820,8 +927,8 @@ class DarkAcademiaEngine {
           You have practiced ${meta.mastered}. Continue to the next lesson or open the printable Study Guide &amp; Answer Key.
         </p>
         <div class="da-completion-actions">
-          <a href="${meta.unit2Url}" class="btn-main" style="text-decoration:none;">
-            Continue to ${meta.unit2Title} →
+          <a href="${targetUrl}" class="btn-main" style="text-decoration:none;">
+            Continue to ${targetTitle} →
           </a>
           <a href="the-gothic-canon-c1-c2-compendium.html" class="dossier-pill-btn">
             📖 Open Study Guide &amp; Answer Key
@@ -1496,6 +1603,10 @@ const DarkAcademiaAtmosphere = (() => {
     baskerville_unit3: {
       src: 'assets/gothic/baskerville_unit3.jpg',
       credit: 'Caspar David Friedrich, Moonrise by the Sea (1822) • Alte Nationalgalerie'
+    },
+    alice_unit1: {
+      src: 'assets/gothic/alice_unit1.jpg',
+      credit: 'Sir John Tenniel & Dalziel Brothers, Alice Falling Down the Rabbit-Hole (1865) • Victorian Fine Art Plate'
     }
   };
 
@@ -1505,12 +1616,14 @@ const DarkAcademiaAtmosphere = (() => {
       dracula: 'assets/gothic/dracula_carpathian.jpg',
       frankenstein: 'assets/gothic/frankenstein_lab.jpg',
       jekyll: 'assets/gothic/jekyll_apothecary.jpg',
-      baskerville: 'assets/gothic/baskerville_moor.jpg'
+      baskerville: 'assets/gothic/baskerville_moor.jpg',
+      alice: 'assets/gothic/alice_unit1.jpg'
     };
+    const key = String(keyOrUnitId || '').toLowerCase();
     const src =
       (UNIT_PAINTINGS[keyOrUnitId] && UNIT_PAINTINGS[keyOrUnitId].src) ||
       bookMap[keyOrUnitId] ||
-      bookMap.dracula;
+      (key.includes('alice') ? 'assets/gothic/alice_unit1.jpg' : bookMap.dracula);
     if (!preloadedImages[src] && typeof Image !== 'undefined') {
       const img = new Image();
       img.src = src;
@@ -1524,6 +1637,7 @@ const DarkAcademiaAtmosphere = (() => {
     if (u.includes('frankenstein')) return 'frankenstein';
     if (u.includes('jekyll')) return 'jekyll';
     if (u.includes('baskerville')) return 'baskerville';
+    if (u.includes('alice')) return 'alice';
     return 'dracula';
   }
 
@@ -1805,6 +1919,31 @@ const DarkAcademiaAtmosphere = (() => {
     }
   }
 
+  function hasHighQualityBritishVoice() {
+    if (!('speechSynthesis' in window)) return false;
+    try {
+      const voices = window.speechSynthesis.getVoices() || [];
+      return voices.some((v) => {
+        const name = (v.name || '').toLowerCase();
+        const lang = (v.lang || '').toLowerCase();
+        const isBritish = /^en[-_](gb|uk)/.test(lang) || name.includes('united kingdom') || name.includes('uk');
+        return isBritish && (
+          name.includes('natural') ||
+          name.includes('neural') ||
+          name.includes('online') ||
+          name.includes('google') ||
+          name.includes('serena') ||
+          name.includes('daniel') ||
+          name.includes('oliver') ||
+          name.includes('ryan') ||
+          name.includes('sonia')
+        );
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+
   function selectBestBritishVoice() {
     if (!('speechSynthesis' in window)) return null;
     try {
@@ -1817,12 +1956,12 @@ const DarkAcademiaAtmosphere = (() => {
       const scoreVoice = (v) => {
         const name = (v.name || '').toLowerCase();
         let s = 0;
-        if (name.includes('natural') || name.includes('neural')) s += 100;
-        if (name.includes('online')) s += 60;
-        if (name.includes('ryan') || name.includes('thomas') || name.includes('sonia') || name.includes('libby')) s += 50;
-        if (name.includes('google uk english')) s += 45;
-        if (name.includes('daniel') || name.includes('oliver') || name.includes('serena') || name.includes('arthur')) s += 35;
-        if (name.includes('hazel') || name.includes('desktop')) s -= 40;
+        if (name.includes('natural') || name.includes('neural')) s += 120;
+        if (name.includes('online')) s += 80;
+        if (name.includes('ryan') || name.includes('thomas') || name.includes('sonia') || name.includes('libby')) s += 60;
+        if (name.includes('google uk english') || name.includes('google english')) s += 50;
+        if (name.includes('daniel') || name.includes('oliver') || name.includes('serena') || name.includes('arthur')) s += 40;
+        if (name.includes('hazel') || name.includes('desktop') || name.includes('david') || name.includes('zira')) s -= 80;
         return s;
       };
 
@@ -1830,6 +1969,12 @@ const DarkAcademiaAtmosphere = (() => {
     } catch (e) {
       return null;
     }
+  }
+
+  function syncVoiceHUD(isSpeaking) {
+    const btn = document.getElementById('da-hud-voice-stop');
+    if (!btn) return;
+    btn.style.display = isSpeaking ? 'inline-flex' : 'none';
   }
 
   function stopNarration() {
@@ -1845,6 +1990,9 @@ const DarkAcademiaAtmosphere = (() => {
       const lbl = btn.querySelector('.da-reader-btn-label');
       if (lbl && btn.dataset.defaultLabel) lbl.textContent = btn.dataset.defaultLabel;
     });
+    document.querySelectorAll('.da-pronounce-btn.speaking').forEach((btn) => {
+      btn.classList.remove('speaking');
+    });
     document.querySelectorAll('.da-waveform.active').forEach((w) => {
       w.classList.remove('active');
     });
@@ -1859,6 +2007,16 @@ const DarkAcademiaAtmosphere = (() => {
       }
     } catch (e) {}
     setMusicDucking(false);
+    syncVoiceHUD(false);
+  }
+
+  // Keyboard shortcut: Press Escape at any time to immediately stop voice / audio
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        stopNarration();
+      }
+    });
   }
 
   function computeClauseWindows(fullText, clausesNodeList) {
@@ -1883,6 +2041,8 @@ const DarkAcademiaAtmosphere = (() => {
     });
   }
 
+  let lastFallbackContext = null;
+
   function playDramaticExtract(mp3Src, fallbackText, btnEl, waveformEl, clausesNodeList) {
     if (btnEl && btnEl.classList.contains('speaking')) {
       stopNarration();
@@ -1897,6 +2057,7 @@ const DarkAcademiaAtmosphere = (() => {
     }
     if (waveformEl) waveformEl.classList.add('active');
     setMusicDucking(true);
+    syncVoiceHUD(true);
 
     const clauseWindows = computeClauseWindows(fallbackText, clausesNodeList);
 
@@ -1912,7 +2073,34 @@ const DarkAcademiaAtmosphere = (() => {
       }
     };
 
-    const speakFallback = () => {
+    const speakFallback = (force = false) => {
+      lastFallbackContext = { fallbackText, btnEl, waveformEl, clausesNodeList };
+
+      // High-standard filter: Do not automatically foist robotic SAPI desktop voices on the student
+      const hasQualityVoice = hasHighQualityBritishVoice();
+      if (!hasQualityVoice && !force) {
+        stopNarration();
+        if (btnEl) {
+          const lbl = btnEl.querySelector('.da-reader-btn-label');
+          if (lbl) lbl.textContent = '🎙️ Studio British Audio in Production';
+        }
+        // Surface helpful, dignified explanation with opt-in control
+        const parentBar = (waveformEl && waveformEl.closest('.da-audio-reader-bar')) || (btnEl && btnEl.closest('.da-audio-reader-bar'));
+        if (parentBar && !parentBar.querySelector('.da-synth-quality-notice')) {
+          const notice = document.createElement('div');
+          notice.className = 'da-synth-quality-notice';
+          notice.style.cssText = 'width:100%; margin-top:0.6rem; font-size:0.78rem; color:#fde68a; background:rgba(245,158,11,0.12); border-left:3px solid #f59e0b; padding:0.5rem 0.8rem; border-radius:4px; display:flex; align-items:center; justify-content:space-between; gap:0.6rem; flex-wrap:wrap;';
+          notice.innerHTML = `
+            <span>🎙️ <strong>Studio British Reading in Production:</strong> Metallic computer speech has been paused to maintain Cambridge pronunciation standards.</span>
+            <button type="button" class="da-hud-pill" style="font-size:0.74rem; padding:0.25rem 0.65rem; cursor:pointer;" onclick="DarkAcademiaAtmosphere.speakFallbackExplicit()">
+              ▶ Play System Voice (Experimental)
+            </button>
+          `;
+          parentBar.appendChild(notice);
+        }
+        return;
+      }
+
       startFallbackClauseTimer();
       if ('speechSynthesis' in window && fallbackText) {
         try {
@@ -1921,10 +2109,11 @@ const DarkAcademiaAtmosphere = (() => {
           utter.lang = 'en-GB';
           const bestVoice = selectBestBritishVoice();
           if (bestVoice) utter.voice = bestVoice;
-          utter.rate = 0.95;
+          utter.rate = 0.94;
           utter.onend = () => stopNarration();
           utter.onerror = () => stopNarration();
           window.speechSynthesis.speak(utter);
+          syncVoiceHUD(true);
           return;
         } catch (e) {}
       }
@@ -1948,15 +2137,44 @@ const DarkAcademiaAtmosphere = (() => {
           });
         };
         voiceAudioEl.onended = () => stopNarration();
-        voiceAudioEl.onerror = () => speakFallback();
+        voiceAudioEl.onerror = () => speakFallback(false);
         const p = voiceAudioEl.play();
         if (p && typeof p.catch === 'function') {
-          p.catch(() => speakFallback());
+          p.catch(() => speakFallback(false));
         }
         return;
       } catch (e) {}
     }
-    speakFallback();
+    speakFallback(false);
+  }
+
+  function speakFallbackExplicit() {
+    if (lastFallbackContext) {
+      const { fallbackText, btnEl, waveformEl, clausesNodeList } = lastFallbackContext;
+      if (btnEl) {
+        btnEl.classList.add('speaking');
+        const lbl = btnEl.querySelector('.da-reader-btn-label');
+        if (lbl) lbl.textContent = '⏹ Stop Reading';
+      }
+      if (waveformEl) waveformEl.classList.add('active');
+      setMusicDucking(true);
+      syncVoiceHUD(true);
+
+      if ('speechSynthesis' in window && fallbackText) {
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(fallbackText);
+          utter.lang = 'en-GB';
+          const bestVoice = selectBestBritishVoice();
+          if (bestVoice) utter.voice = bestVoice;
+          utter.rate = 0.94;
+          utter.onend = () => stopNarration();
+          utter.onerror = () => stopNarration();
+          window.speechSynthesis.speak(utter);
+          return;
+        } catch (e) {}
+      }
+    }
   }
 
   const VOCAB_SPRITE_SRC = 'assets/audio/da_vocab_lexicon.mp3?v=2';
@@ -2052,9 +2270,19 @@ const DarkAcademiaAtmosphere = (() => {
     'yonder': [167.448, 168.6]
   };
 
-  function pronounceText(text) {
+  function pronounceText(text, triggerBtn) {
     if (!text) return;
+    if (triggerBtn && triggerBtn.classList.contains('speaking')) {
+      stopNarration();
+      return;
+    }
     stopNarration();
+
+    if (triggerBtn) {
+      triggerBtn.classList.add('speaking');
+    }
+    syncVoiceHUD(true);
+
     const key = text.replace(/\s+/g, ' ').trim().toLowerCase();
     const range = VOCAB_SPRITE_INDEX[key];
 
@@ -2071,14 +2299,17 @@ const DarkAcademiaAtmosphere = (() => {
             voiceAudioEl.ontimeupdate = () => {
               if (voiceAudioEl.currentTime >= endSec - 0.04) {
                 voiceAudioEl.ontimeupdate = null;
-                voiceAudioEl.pause();
+                stopNarration();
               }
             };
+            voiceAudioEl.onended = () => stopNarration();
             const p = voiceAudioEl.play();
             if (p && typeof p.catch === 'function') {
-              p.catch(() => {});
+              p.catch(() => stopNarration());
             }
-          } catch (e) {}
+          } catch (e) {
+            stopNarration();
+          }
         };
 
         if (!voiceAudioEl.src || !voiceAudioEl.src.includes('da_vocab_lexicon.mp3')) {
@@ -2100,10 +2331,16 @@ const DarkAcademiaAtmosphere = (() => {
         utter.lang = 'en-GB';
         const bestVoice = selectBestBritishVoice();
         if (bestVoice) utter.voice = bestVoice;
-        utter.rate = 0.94;
+        utter.rate = 0.92;
+        utter.onend = () => stopNarration();
+        utter.onerror = () => stopNarration();
         window.speechSynthesis.speak(utter);
+      } else {
+        stopNarration();
       }
-    } catch (e) {}
+    } catch (e) {
+      stopNarration();
+    }
   }
 
   /* ==============================================================
@@ -2148,6 +2385,11 @@ const DarkAcademiaAtmosphere = (() => {
       </div>
 
       <div class="da-hud-right">
+        <button type="button" id="da-hud-voice-stop" class="da-hud-pill da-voice-stop-pill" onclick="DarkAcademiaAtmosphere.stopVoice()" title="Stop Voice Narration (Esc)" style="display:none;">
+          <span>⏹</span>
+          <span>Stop Voice</span>
+        </button>
+
         <div class="da-hud-music-group" role="group" aria-label="Study Music Controls">
           <button type="button" id="da-hud-music-toggle" onclick="DarkAcademiaAtmosphere.toggleMusic()">
             <span id="da-hud-music-icon">♪</span>
@@ -2223,8 +2465,13 @@ const DarkAcademiaAtmosphere = (() => {
       ctx.drawImage(img, dx, dy, dw, dh);
     } else {
       const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-      bgGrad.addColorStop(0, '#16120f');
-      bgGrad.addColorStop(1, '#0c0a08');
+      if (String(keyOrUnitId || '').toLowerCase().includes('alice')) {
+        bgGrad.addColorStop(0, '#2e1065');
+        bgGrad.addColorStop(1, '#090314');
+      } else {
+        bgGrad.addColorStop(0, '#16120f');
+        bgGrad.addColorStop(1, '#0c0a08');
+      }
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, W, H);
     }
@@ -2323,17 +2570,21 @@ const DarkAcademiaAtmosphere = (() => {
       });
     }
 
-    // Assign each of the 12 unit cards its own distinct 18th/19th-century oil painting
+    // Assign each unit card its own distinct 18th/19th-century fine art plate
     document.querySelectorAll('.unit-card').forEach((card) => {
       if (card.querySelector('.unit-art-strip')) return;
       const rawId = (card.id || '').replace(/^card-/, '') || card.getAttribute('data-unit-id') || '';
-      const bKey = ['dracula', 'frankenstein', 'jekyll', 'baskerville'].find((k) => card.classList.contains(k)) || 'dracula';
+      const bKey = ['dracula', 'frankenstein', 'jekyll', 'baskerville', 'alice'].find((k) => 
+        card.classList.contains(k) || card.classList.contains(`${k}-card`)
+      ) || (rawId.includes('alice') ? 'alice' : 'dracula');
       const plate = UNIT_PAINTINGS[rawId] || UNIT_PAINTINGS[`${bKey}_unit1`];
-      const strip = document.createElement('div');
-      strip.className = 'unit-art-strip';
-      strip.style.backgroundImage = `url('${plate.src}')`;
-      strip.innerHTML = `<span class="unit-art-credit">${plate.credit}</span>`;
-      card.insertBefore(strip, card.firstChild);
+      if (plate) {
+        const strip = document.createElement('div');
+        strip.className = 'unit-art-strip';
+        strip.style.backgroundImage = `url('${plate.src}')`;
+        strip.innerHTML = `<span class="unit-art-credit">${plate.credit}</span>`;
+        card.insertBefore(strip, card.firstChild);
+      }
     });
 
     const canvas = document.getElementById('da-cinema-canvas');
@@ -2514,7 +2765,10 @@ const DarkAcademiaAtmosphere = (() => {
       btn.className = 'da-pronounce-btn';
       btn.title = `Hear British pronunciation of "${word}"`;
       btn.innerHTML = '🔊';
-      btn.addEventListener('click', () => pronounceText(word));
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        pronounceText(word, btn);
+      });
       strongEl.insertAdjacentElement('afterend', btn);
     });
 
@@ -2530,7 +2784,7 @@ const DarkAcademiaAtmosphere = (() => {
       btn.innerHTML = '🔊';
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        pronounceText(word);
+        pronounceText(word, btn);
       });
       const spanEl = wordEl.querySelector('span');
       if (spanEl) {
@@ -2553,7 +2807,7 @@ const DarkAcademiaAtmosphere = (() => {
     injectScholarHUD();
     initHubShowcase();
     const bookKey = detectBookKey();
-    const bookTrackMap = { dracula: 2, frankenstein: 0, jekyll: 1, baskerville: 2 };
+    const bookTrackMap = { dracula: 2, frankenstein: 0, jekyll: 1, baskerville: 2, alice: 2 };
     if (typeof bookTrackMap[bookKey] === 'number') {
       currentTrackIdx = bookTrackMap[bookKey];
     }
@@ -2573,22 +2827,32 @@ const DarkAcademiaAtmosphere = (() => {
     setCinemaAct,
     playCurrentBookOverview,
     toggleSceneBlueprint,
-    pronounceText
+    pronounceText,
+    stopVoice: stopNarration,
+    speakFallbackExplicit
   };
 })();
 
 window.DarkAcademiaAtmosphere = DarkAcademiaAtmosphere;
 
-document.addEventListener('DOMContentLoaded', () => {
+function initDarkAcademiaBootstrap() {
   DarkAcademiaGate.checkUrlUnlock();
   DarkAcademiaGate.syncUI();
-  DarkAcademiaAtmosphere.initGlobal();
+  if (window.DarkAcademiaAtmosphere && typeof window.DarkAcademiaAtmosphere.initGlobal === 'function') {
+    DarkAcademiaAtmosphere.initGlobal();
+  }
   if (!window.GarethTeacherWhiteLabel && !document.querySelector('script[src*="teacher-white-label.js"]')) {
     const wlScript = document.createElement('script');
     wlScript.src = 'teacher-white-label.js';
     wlScript.defer = true;
     document.head.appendChild(wlScript);
   }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initDarkAcademiaBootstrap);
+} else {
+  initDarkAcademiaBootstrap();
+}
 
 

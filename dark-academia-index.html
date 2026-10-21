@@ -31,7 +31,7 @@
     </p>
     <div style="margin-top: 1.4rem; display: flex; gap: 0.85rem; flex-wrap: wrap; align-items: center;">
       <a href="dracula-unit1-carpathian-threshold.html" class="da-btn-gold" style="text-decoration: none;">Read Free Lesson 1: Dracula →</a>
-      <button type="button" class="da-btn-stripe" style="width: auto; padding: 0.75rem 1.35rem;" onclick="DarkAcademiaGate.openModal('hub')">
+      <button type="button" id="da-hub-hero-unlock-btn" class="da-btn-stripe" style="width: auto; padding: 0.75rem 1.35rem;" onclick="DarkAcademiaGate.openModal('hub')">
         <span>Unlock All 12 Lessons — £24</span>
         <span aria-hidden="true">→</span>
       </button>
@@ -394,13 +394,14 @@
 
   <!-- BOOK 5: ALICE IN WONDERLAND -->
   <section class="canon-section" aria-labelledby="alice-canon-heading">
-    <div class="canon-art-banner alice" style="background: linear-gradient(135deg, #2e1065 0%, #0f172a 55%, #3b0764 100%); border: 1px solid #9333ea; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem;">
+    <div class="canon-art-banner alice">
+      <div class="canon-art-bg" style="background-image: url('assets/gothic/alice_unit1.jpg');"></div>
       <div class="canon-art-content">
         <div class="canon-title-group">
-          <h2 id="alice-canon-heading" style="color: #f3e8ff;">Book V: Lewis Carroll's <em>Alice's Adventures in Wonderland</em> (1865)</h2>
-          <p style="color: #d8b4fe;">Negative &amp; Limiting Inversion, Extreme Result Fronting &amp; Cognitive Inversion</p>
+          <h2 id="alice-canon-heading">Book V: Lewis Carroll's <em>Alice's Adventures in Wonderland</em> (1865)</h2>
+          <p>Negative &amp; Limiting Inversion, Extreme Result Fronting &amp; Cognitive Inversion • <em>Plate: Sir John Tenniel (1865)</em></p>
         </div>
-        <div style="display:flex; gap:0.65rem; flex-wrap:wrap; align-items:center; margin-top: 0.5rem;">
+        <div style="display:flex; gap:0.65rem; flex-wrap:wrap; align-items:center;">
           <span class="badge badge-canon-alice">Lesson 13 Available</span>
         </div>
       </div>
@@ -454,6 +455,7 @@
   ];
 
   function loadPortalProgress() {
+    const isUnlocked = window.DarkAcademiaGate && window.DarkAcademiaGate.isUnlocked();
     unitIds.forEach(id => {
       const badge = document.getElementById(`prog-${id}`);
       if (!badge) return;
@@ -461,9 +463,11 @@
         const raw = localStorage.getItem(`da_progress_${id}`);
         if (raw) {
           const data = JSON.parse(raw);
-          badge.textContent = `${data.score} / ${data.total} Marks`;
-          if (data.score > 0) {
-            badge.classList.add('completed');
+          if (isUnlocked || !badge.classList.contains('unit-lock-badge')) {
+            badge.textContent = `${data.score} / ${data.total} Marks`;
+            if (data.score > 0) {
+              badge.classList.add('completed');
+            }
           }
         }
       } catch (e) {}
@@ -480,10 +484,17 @@
           badge.classList.remove('completed');
         }
       });
+      if (window.DarkAcademiaGate) {
+        window.DarkAcademiaGate.syncUI();
+      }
     }
   }
 
-  document.addEventListener('DOMContentLoaded', loadPortalProgress);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadPortalProgress);
+  } else {
+    loadPortalProgress();
+  }
 </script>
 </body>
 </html>

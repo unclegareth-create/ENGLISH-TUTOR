@@ -50,13 +50,19 @@
   const SOLO_CODE_HASHES = [
     '8720a773c24deac9',
     '68943376c022200c',
-    'e32febaa231630ba'
+    'e32febaa231630ba',
+    '07dfc1f76646e3e9',
+    '3089a39af9f71612',
+    'df3a72ff4ff87f6d'
   ];
 
   const STUDIO_CODE_HASHES = [
     'f7c46303a42395e1',
     '69f9d176bc781314',
-    '642ef07c8176b90a'
+    '642ef07c8176b90a',
+    '410a91742e314132',
+    '36d29a47ba9eca49',
+    'ba6766737503c529'
   ];
 
   const STUDENT_PRO_HASHES = [
