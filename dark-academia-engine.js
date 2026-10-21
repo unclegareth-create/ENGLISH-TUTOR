@@ -527,6 +527,10 @@ class DarkAcademiaEngine {
     this.sortItems = config.sortItems || [];
     this.styleShiftItems = config.styleShiftItems || [];
     this.capstoneConfig = config.capstoneConfig || null;
+    this.sortLabels = config.sortLabels || {
+      arsenal: '✓ Modern C1/C2 Word',
+      museum: '🏛 Old-Fashioned Word'
+    };
     this.score = 0;
 
     this.init();
@@ -972,6 +976,8 @@ class DarkAcademiaEngine {
     if (!container || !this.sortItems.length) return;
 
     container.innerHTML = '';
+    const arsenalLabel = (this.sortLabels && this.sortLabels.arsenal) || '✓ Modern C1/C2 Word';
+    const museumLabel = (this.sortLabels && this.sortLabels.museum) || '🏛 Old-Fashioned Word';
 
     this.sortItems.forEach((item, index) => {
       const row = document.createElement('div');
@@ -984,11 +990,11 @@ class DarkAcademiaEngine {
           <span>${item.sub}</span>
         </div>
         <div class="sort-controls" role="group" aria-label="Classify ${item.word}">
-          <button type="button" class="btn-sort" data-choice="arsenal" aria-label="Mark ${item.word} as a Modern C1/C2 Word">
-            ✓ Modern C1/C2 Word
+          <button type="button" class="btn-sort" data-choice="arsenal" aria-label="Mark as ${arsenalLabel}">
+            ${arsenalLabel}
           </button>
-          <button type="button" class="btn-sort" data-choice="museum" aria-label="Mark ${item.word} as an Old-Fashioned Word">
-            🏛 Old-Fashioned Word
+          <button type="button" class="btn-sort" data-choice="museum" aria-label="Mark as ${museumLabel}">
+            ${museumLabel}
           </button>
         </div>
         <div class="sort-feedback" id="sort-fb-${index}" aria-live="polite"></div>
