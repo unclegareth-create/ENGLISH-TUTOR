@@ -24,7 +24,7 @@ const LabObservatory = (() => {
       img: 'assets/gothic/dracula_carpathian.jpg',
       alt: 'Caspar David Friedrich — Abbey in the Oakwood (1809–1810), illustrating Dracula Lesson 1',
       url: 'dark-academia-index.html',
-      quizTag: '⚡ Live 5-Second Challenge (C1 Negative Inversion):',
+      quizTag: 'Quick one: C1 inversion',
       prompt: '“_______ had Jonathan Harker crossed the bridge than the wolves began to howl.”',
       options: [
         { text: 'A) No sooner', correct: true, explain: 'Spot on! “No sooner + had + subject + past participle ... than” is a high-scoring C1/C2 negative inversion.' },
@@ -39,7 +39,7 @@ const LabObservatory = (() => {
       img: 'assets/arcade/c88_neon_alibi.svg',
       alt: 'Chronicle 88 Tape 01: Neon Alibi 1989 detective interrogation scene with Inspector Deck',
       url: 'chronicle-88.html',
-      quizTag: '⚡ Live 5-Second Alibi Trap (B2 Narrative Tenses):',
+      quizTag: 'Quick one: B2 narrative tenses',
       prompt: 'Which suspect was ALREADY out of the room when the 23:15 alarm went off?',
       options: [
         { text: 'A) “When the alarm went off, I left the vault.”', correct: false, explain: 'Past Simple (“I left”) means they left AFTER the alarm sounded—caught red-handed!' },
@@ -53,7 +53,7 @@ const LabObservatory = (() => {
       img: 'assets/arcade/grammar_crypt.svg',
       alt: 'Grammar Crypt dungeon vault with glowing syntax runes, floating embers, and the Arch-Lich boss',
       url: 'grammar-crypt-3d.html',
-      quizTag: '⚡ Live Phrasal Reactor Check (C1 Collocations):',
+      quizTag: 'Quick one: Phrasal verbs',
       prompt: '“The new transport policy is expected to bring _______ a major drop in emissions.”',
       options: [
         { text: 'A) about (cause to happen)', correct: true, explain: 'Reactor stabilised! “Bring about” means to cause or produce a significant result.' },
@@ -67,7 +67,7 @@ const LabObservatory = (() => {
       img: 'assets/study/act4_study.jpg',
       alt: 'Professor West and Pencil the Cat inside the warm mahogany 3D Study',
       url: 'professor-west-study.html?v=6&intro=1',
-      quizTag: '⚡ Pencil the Cat’s Word Quest Preview (A2/B1):',
+      quizTag: 'Quick one: Word quest',
       prompt: 'Which word means “curious and eager to learn new things”?',
       options: [
         { text: 'A) Inquisitive', correct: true, explain: 'Purr-fect! Professor West awards you +10 Golden Scarabs!' },
@@ -223,7 +223,7 @@ const LabObservatory = (() => {
     if (link) link.href = w.url;
     if (qTag) qTag.textContent = w.quizTag;
     if (qPrompt) qPrompt.textContent = w.prompt;
-    if (qStatus) qStatus.textContent = 'Tap to test';
+    if (qStatus) qStatus.textContent = 'Have a go';
     if (qFeed) {
       qFeed.classList.add('hidden');
       qFeed.textContent = '';
