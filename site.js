@@ -362,6 +362,123 @@
    for optimal landing page performance and modular architecture. === */
 (() => {
   'use strict';
+  const REDPEN_DATA = {
+    ielts: {
+      formula: 'Rather than + V-ing ..., Subject + ought to + Verb, thereby + V-ing ...',
+      beforeLabel: 'Student Draft (B2 / Band 6.5)',
+      beforeMeta: 'Everyday Phrasing',
+      beforeHtml: '&ldquo;Universities should focus more on practical skills instead of just theory, because this will help graduates find jobs much faster after they leave.&rdquo;',
+      beforeNote: 'Relies on repetitive causal links (\u2018because this will help\u2019) and flat clause rhythm.',
+      afterLabel: 'My Line-by-Line Upgrade (C1 / Band 8.0)',
+      afterMeta: 'Examiner Standard',
+      afterHtml: '&ldquo;<span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">Rather than prioritising abstract theory</span>, universities ought to <span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">anchor their curricula in practical training</span>, <span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">thereby equipping graduates</span> to navigate an increasingly competitive job market.&rdquo;',
+      tags: ['Fronted Contrast', 'Participle Clause', 'Precise Collocation']
+    },
+    part4: {
+      formula: 'have / had + NO + INTENTION + of + V-ing (3\u20136 words \u2022 Keyword unchanged)',
+      beforeLabel: 'Cambridge C1 Part 4 Prompt (Step 1: Strike Out Echoes)',
+      beforeMeta: 'Keyword: INTENTION',
+      beforeHtml: '<span class="line-through text-slate-400">Sarah</span> <strong class="text-rose-700 not-italic">refused to apologise</strong> <span class="line-through text-slate-400">for the mistake she had made.</span><br><span class="text-xs font-mono text-slate-500 not-italic mt-1.5 block">Gap: Sarah ________________________ for the mistake she had made.</span>',
+      beforeNote: 'Strike out the echoes first: only \u201crefused to apologise\u201d (Past Simple) remains to be solved.',
+      afterLabel: 'Solved Pattern (2/2 Marks \u2022 5 Words)',
+      afterMeta: 'Exact Tense Harmony',
+      afterHtml: 'Sarah <span class="bg-emerald-50 text-emerald-950 font-bold px-1.5 py-0.5 rounded border border-emerald-200 not-italic">had no INTENTION of apologising</span> for the mistake she had made.',
+      tags: ['Echoes Struck Out', 'Keyword Unchanged', 'Past Simple Harmony']
+    },
+    spoken: {
+      formula: 'What + Clause + is + Noun Phrase (Emphatic What-Cleft)',
+      beforeLabel: 'Spoken / Executive B2 Habit (Direct Translation)',
+      beforeMeta: 'Stalled Mid-Sentence',
+      beforeHtml: '&ldquo;In our clinic, the problem is that the new staff don\u2019t want to take responsibility when a patient complains, and it makes me very frustrated.&rdquo;',
+      beforeNote: 'Stringing clauses together with \u2018and it makes me...\u2019 weakens authority in meetings and Part 3.',
+      afterLabel: 'Natural C1 Spoken Upgrade',
+      afterMeta: 'Measured Authority',
+      afterHtml: '&ldquo;<span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">What really holds the clinic back is</span> a <span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">reluctance among newer staff to take ownership</span> when a patient raises a complaint.&rdquo;',
+      tags: ['What-Cleft Opening', 'Natural Collocation', 'Zero Thesaurus Fluff']
+    }
+  };
+
+  let redpenRevealed = true;
+
+  function setRedpenReveal(show) {
+    redpenRevealed = show;
+    const body = document.getElementById('redpen-after-body');
+    const mask = document.getElementById('redpen-after-mask');
+    const btn = document.getElementById('redpen-reveal-btn');
+    if (!body || !mask || !btn) return;
+    body.classList.toggle('hidden', !show);
+    mask.classList.toggle('hidden', show);
+    btn.setAttribute('aria-expanded', String(show));
+    btn.innerHTML = show ? '<span>\uD83D\uDC41\uFE0F Hide / Test Yourself First</span>' : '<span>\uD83D\uDC41\uFE0F Reveal Cambridge Model</span>';
+  }
+
+  function switchRedpenTab(key, maskFirst) {
+    const item = REDPEN_DATA[key];
+    if (!item) return;
+    ['ielts', 'part4', 'spoken'].forEach((k) => {
+      const tab = document.getElementById('redpen-tab-' + k);
+      if (!tab) return;
+      const active = k === key;
+      tab.setAttribute('aria-selected', String(active));
+      tab.className = active
+        ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-indigo-600 text-white shadow-sm cursor-pointer'
+        : 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-slate-800 text-slate-300 hover:text-white cursor-pointer';
+    });
+
+    const elFormula = document.getElementById('redpen-formula');
+    const elBeforeLabel = document.getElementById('redpen-before-label');
+    const elBeforeMeta = document.getElementById('redpen-before-meta');
+    const elBeforeText = document.getElementById('redpen-before-text');
+    const elBeforeNote = document.getElementById('redpen-before-note');
+    const elAfterLabel = document.getElementById('redpen-after-label');
+    const elAfterMeta = document.getElementById('redpen-after-meta');
+    const elAfterText = document.getElementById('redpen-after-text');
+    const elTags = document.getElementById('redpen-tags');
+
+    if (elFormula) elFormula.textContent = item.formula;
+    if (elBeforeLabel) elBeforeLabel.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> ' + item.beforeLabel;
+    if (elBeforeMeta) elBeforeMeta.textContent = item.beforeMeta;
+    if (elBeforeText) elBeforeText.innerHTML = item.beforeHtml;
+    if (elBeforeNote) elBeforeNote.textContent = item.beforeNote;
+    if (elAfterLabel) elAfterLabel.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-600"></span> ' + item.afterLabel;
+    if (elAfterMeta) elAfterMeta.textContent = item.afterMeta;
+    if (elAfterText) elAfterText.innerHTML = item.afterHtml;
+    if (elTags) {
+      elTags.innerHTML = item.tags.map((t, i) => {
+        const palettes = [
+          'bg-indigo-50 text-indigo-700 border-indigo-100',
+          'bg-emerald-50 text-emerald-800 border-emerald-100',
+          'bg-sky-50 text-sky-800 border-sky-100'
+        ];
+        return '<span class="px-2 py-0.5 rounded font-semibold border ' + palettes[i % 3] + '">' + t + '</span>';
+      }).join('');
+    }
+    if (typeof maskFirst === 'boolean') {
+      setRedpenReveal(!maskFirst);
+    }
+  }
+
+  document.querySelectorAll('[data-redpen-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      switchRedpenTab(btn.getAttribute('data-redpen-tab'), false);
+    });
+  });
+
+  document.querySelectorAll('[data-redpen-jump]').forEach((link) => {
+    link.addEventListener('click', () => {
+      switchRedpenTab(link.getAttribute('data-redpen-jump'), true);
+    });
+  });
+
+  const revealBtn = document.getElementById('redpen-reveal-btn');
+  if (revealBtn) {
+    revealBtn.addEventListener('click', () => setRedpenReveal(!redpenRevealed));
+  }
+  const unmaskBtn = document.getElementById('redpen-unmask-btn');
+  if (unmaskBtn) {
+    unmaskBtn.addEventListener('click', () => setRedpenReveal(true));
+  }
+
   window.switchResourceTab = function switchResourceTab(tabKey) {
     const keys = ['modules', 'games', 'guides'];
     keys.forEach((key) => {
