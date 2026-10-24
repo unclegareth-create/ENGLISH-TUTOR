@@ -325,13 +325,86 @@
         }, 250);
     };
 
+    const applyBillingSupportPrefill = () => {
+        const goalInput = document.getElementById('goal');
+        const messageInput = document.getElementById('message');
+        const subjectInput = document.querySelector('#contact-form input[name="_subject"]');
+        const nameInput = document.getElementById('name');
+        const formTitle = document.getElementById('enquiry-form-title');
+        const formSubtitle = document.getElementById('enquiry-form-subtitle');
+        const submitBtn = document.getElementById('contact-submit-btn');
+        const enquiryCard = document.getElementById('enquiry-card');
+        if (!enquiryCard) return;
+
+        const selectEl = enquiryCard.querySelector('select');
+        if (selectEl) {
+            selectEl.value = 'Billing, Access Code or Refund Request';
+        }
+        if (goalInput) {
+            goalInput.value = 'Billing, Access Code or Refund Request';
+            goalInput.classList.add('ring-2', 'ring-emerald-400', 'border-emerald-400');
+        }
+        if (subjectInput) {
+            subjectInput.value = 'Priority Billing / Access / Refund Support (24h Resolution)';
+        }
+        if (formTitle) {
+            formTitle.textContent = 'Priority Billing, Access Code & Refund Support';
+        }
+        if (formSubtitle) {
+            formSubtitle.textContent = 'Direct 24-hour personal resolution for Stripe receipts, course/vault access codes, or refund requests.';
+        }
+        if (submitBtn) {
+            submitBtn.innerHTML = 'Send Priority Support Request (24h Resolution) &rarr;';
+        }
+
+        const prefillTemplate = '[Priority Billing / Access / Refund Support — 24h Resolution]\nOrder Email / Stripe Receipt:\nProduct (£24 Gothic Course / Teacher License / Lesson Pack):\nHow can I help? ';
+        if (messageInput && !messageInput.value.trim()) {
+            messageInput.value = prefillTemplate;
+        }
+
+        const bannerText = '✓ Priority Billing, Access & Refund Support: Send your details below and I will sort out your access code or refund request personally within 24 hours.';
+        let supportBanner = document.getElementById('billing-support-banner');
+        if (!supportBanner) {
+            supportBanner = document.createElement('div');
+            supportBanner.id = 'billing-support-banner';
+            supportBanner.setAttribute('role', 'status');
+            supportBanner.setAttribute('aria-live', 'polite');
+            supportBanner.className = 'mb-6 p-4 sm:p-5 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-100 flex items-start gap-3 shadow-lg';
+            enquiryCard.insertBefore(supportBanner, enquiryCard.firstChild);
+        }
+        supportBanner.textContent = bannerText;
+        supportBanner.classList.remove('hidden');
+
+        enquiryCard.classList.add('border-emerald-400/70', 'ring-2', 'ring-emerald-400/25');
+        enquiryCard.classList.remove('border-slate-700');
+
+        setTimeout(() => {
+            enquiryCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (nameInput) nameInput.focus({ preventScroll: true });
+        }, 200);
+    };
+
+    const urlSupport = (urlParams.get('support') || '').toLowerCase();
     const urlPkg = urlParams.get('package');
     const urlOffer = urlParams.get('offer');
-    if (urlPkg) {
+    if (urlSupport === 'billing' || urlSupport === 'refund' || urlSupport === 'access') {
+        applyBillingSupportPrefill();
+    } else if (urlPkg) {
         applyPackagePrefill(urlPkg, urlParams.get('tier') || '');
     } else if (urlOffer === 'async_essay_audit_29') {
         applyPackagePrefill('Written essay feedback (\u00a329)', 'audit_async_29');
     }
+
+    document.querySelectorAll('a[href*="support=billing"], a[href*="support=refund"], a[href*="support=access"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const enquiryCard = document.getElementById('enquiry-card');
+            if (enquiryCard) {
+                e.preventDefault();
+                history.replaceState(null, '', '?support=billing#enquiry-card');
+                applyBillingSupportPrefill();
+            }
+        });
+    });
 
     const clearPackageBtn = document.getElementById('clear-package-btn');
     if (clearPackageBtn) {

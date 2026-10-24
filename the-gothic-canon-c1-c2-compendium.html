@@ -11,12 +11,92 @@
     <link rel="stylesheet" href="dark-academia.css">
     <script src="dark-academia-engine.js?v=2" defer></script>
     <script>
+      function getCompletedLessonsCount() {
+        var seenUnits = {};
+        var count = 0;
+        try {
+          for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (!key) continue;
+            if (key.indexOf('da_unit_') === 0 || key.indexOf('da_progress_') === 0 || key.indexOf('da_score_') === 0) {
+              var raw = localStorage.getItem(key);
+              if (!raw || raw === 'false' || raw === '0' || raw === 'null') continue;
+              var isCompleted = false;
+              try {
+                var parsed = JSON.parse(raw);
+                if (typeof parsed === 'number' && parsed > 0) {
+                  isCompleted = true;
+                } else if (parsed && typeof parsed === 'object') {
+                  if ((typeof parsed.score === 'number' && parsed.score > 0) || parsed.completed === true) {
+                    isCompleted = true;
+                  }
+                } else if (parsed === true) {
+                  isCompleted = true;
+                }
+              } catch (e) {
+                isCompleted = true;
+              }
+              if (isCompleted) {
+                var unitId = key.replace(/^(da_unit_|da_progress_|da_score_)/, '') || key;
+                if (!seenUnits[unitId]) {
+                  seenUnits[unitId] = true;
+                  count++;
+                }
+              }
+            }
+          }
+        } catch (e) {}
+        return count;
+      }
+
+      function isCompendiumConfirmed() {
+        try {
+          var val = localStorage.getItem('da_compendium_confirmed_v1');
+          return val === 'true' || Boolean(val && val !== 'false' && val !== 'null');
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function syncCompendiumDripState() {
+        var completedLessons = getCompletedLessonsCount();
+        var confirmed = isCompendiumConfirmed();
+        var progressBadge = document.getElementById('da-drip-lesson-count');
+        if (progressBadge) {
+          progressBadge.textContent = completedLessons + ' of 2 recommended interactive lessons completed in this browser';
+        }
+        if (confirmed || completedLessons >= 2) {
+          document.body.classList.remove('da-compendium-drip-locked');
+        } else {
+          document.body.classList.add('da-compendium-drip-locked');
+        }
+      }
+
+      function confirmCompendiumRelease() {
+        var checkbox = document.getElementById('da-compendium-confirm-checkbox');
+        var errorEl = document.getElementById('da-compendium-confirm-error');
+        if (!checkbox || !checkbox.checked) {
+          if (errorEl) {
+            errorEl.style.display = 'block';
+          }
+          if (checkbox) checkbox.focus();
+          return;
+        }
+        if (errorEl) errorEl.style.display = 'none';
+        try {
+          localStorage.setItem('da_compendium_confirmed_v1', new Date().toISOString());
+        } catch (e) {}
+        document.body.classList.remove('da-compendium-drip-locked');
+      }
+
       document.addEventListener('DOMContentLoaded', () => {
+        syncCompendiumDripState();
         if (window.DarkAcademiaGate) {
           window.DarkAcademiaGate.checkUrlUnlock();
           window.DarkAcademiaGate.enforceGate('compendium');
           if (typeof window.DarkAcademiaGate.isUnlocked === 'function' && window.DarkAcademiaGate.isUnlocked()) {
             document.body.classList.remove('da-is-locked');
+            syncCompendiumDripState();
           }
         }
       });
@@ -213,16 +293,132 @@
             font-size: 0.82rem;
         }
 
-        body.da-is-locked .container {
-            filter: blur(10px);
-            user-select: none;
-            pointer-events: none;
-            max-height: 60vh;
-            overflow: hidden;
+        body.da-is-locked .topbar,
+        body.da-is-locked .hero,
+        body.da-is-locked .container,
+        body.da-compendium-drip-locked .topbar,
+        body.da-compendium-drip-locked .hero,
+        body.da-compendium-drip-locked .container {
+            display: none !important;
+        }
+
+        .da-release-card-wrap {
+            display: none;
+            max-width: 720px;
+            margin: 3.5rem auto;
+            padding: 0 1.5rem;
+        }
+        body.da-compendium-drip-locked:not(.da-is-locked) .da-release-card-wrap {
+            display: block;
+        }
+        .da-release-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--gold);
+            border-radius: 6px;
+            padding: 2.25rem 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+        }
+        .da-release-card .eyebrow {
+            margin-bottom: 0.5rem;
+        }
+        .da-release-card h2 {
+            font-size: 1.85rem;
+            margin-bottom: 0.85rem;
+            color: var(--parchment);
+        }
+        .da-release-why {
+            background: var(--bg-elevated);
+            border-left: 3px solid var(--gold);
+            padding: 1rem 1.25rem;
+            margin: 1rem 0 1.25rem;
+            color: var(--parchment-dim);
+            font-size: 1.05rem;
+        }
+        .da-release-progress-pill {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            color: var(--gold);
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.04em;
+        }
+        .da-release-check-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            background: rgba(15, 13, 11, 0.7);
+            border: 1px solid var(--border);
+            padding: 1rem 1.15rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1.55;
+            color: var(--parchment);
+            margin-bottom: 1rem;
+        }
+        .da-release-check-label input[type="checkbox"] {
+            margin-top: 0.3rem;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--gold);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .da-release-error {
+            display: none;
+            color: #f87171;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            margin-bottom: 0.9rem;
+        }
+        .da-release-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+        .da-release-unlock-btn {
+            background: var(--gold);
+            color: #0b0a09;
+            border: none;
+            padding: 0.75rem 1.35rem;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .da-release-unlock-btn:hover {
+            background: #e5c349;
+        }
+        .da-release-back-link {
+            color: var(--parchment-dim);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            text-decoration: underline;
+        }
+        .da-release-back-link:hover {
+            color: var(--gold);
         }
 
         @media print {
-            body.da-is-locked .container { display: none !important; }
+            body.da-is-locked .topbar,
+            body.da-is-locked .hero,
+            body.da-is-locked .container,
+            body.da-compendium-drip-locked .topbar,
+            body.da-compendium-drip-locked .hero,
+            body.da-compendium-drip-locked .container,
+            .da-release-card-wrap {
+                display: none !important;
+            }
             body { background: #fff; color: #111; font-size: 10.5pt; }
             .topbar { display: none; }
             .hero { padding: 1.5rem 0; border-bottom: 2px solid #222; }
@@ -238,7 +434,29 @@
         }
     </style>
 </head>
-<body class="da-is-locked">
+<body class="da-is-locked da-compendium-drip-locked">
+
+    <section id="da-compendium-release-card" class="da-release-card-wrap" aria-labelledby="da-release-card-title">
+        <div class="da-release-card">
+            <div class="eyebrow">Course Study Guide &amp; Complete Answer Key</div>
+            <h2 id="da-release-card-title">Ready to Open the Printable Study Guide &amp; Answer Key?</h2>
+            <div class="da-release-progress-pill" id="da-drip-lesson-count">0 of 2 recommended interactive lessons completed in this browser</div>
+            <p class="da-release-why">
+                To get the most out of these texts, I recommend completing at least <strong>2 interactive lessons</strong> before opening the full 225-question Answer Key &amp; Printable Study Guide—trying the sentences yourself first makes the grammar stick far better than reading the answers cold. If you want the printable reference right away, simply tick below to unlock it now.
+            </p>
+            <label class="da-release-check-label" for="da-compendium-confirm-checkbox">
+                <input type="checkbox" id="da-compendium-confirm-checkbox" onchange="var err=document.getElementById('da-compendium-confirm-error'); if(err && this.checked) err.style.display='none';">
+                <span>I confirm I am ready to unlock and download the complete Printable Study Guide &amp; Answer Key, and acknowledge that unlocking this downloadable guide completes full digital delivery and waives the 14-day cooling-off refund period.</span>
+            </label>
+            <p id="da-compendium-confirm-error" class="da-release-error" role="alert">Please tick the confirmation box above to unlock the Printable Study Guide &amp; Answer Key.</p>
+            <div class="da-release-actions">
+                <button type="button" id="da-compendium-confirm-btn" class="da-release-unlock-btn" onclick="confirmCompendiumRelease()">
+                    📖 Unlock Printable Study Guide &amp; Answer Key Now
+                </button>
+                <a href="dark-academia-index.html" class="da-release-back-link">← Return to Interactive Lessons First</a>
+            </div>
+        </div>
+    </section>
 
     <nav class="topbar">
         <div class="topbar-links">

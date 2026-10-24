@@ -1356,6 +1356,11 @@
         </div>
 
         <div id="enquiry-card" class="bg-slate-800/80 p-8 sm:p-10 rounded-3xl border border-slate-700 backdrop-blur-sm transition-all duration-300">
+          <!-- Priority Billing, Access & Refund Support Banner (?support=billing) -->
+          <div id="billing-support-banner" role="status" aria-live="polite" class="hidden mb-6 p-4 sm:p-5 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-100 flex items-start gap-3 shadow-lg">
+            <span class="text-emerald-300 font-extrabold text-sm sm:text-base leading-relaxed">✓ Priority Billing, Access &amp; Refund Support: Send your details below and I will sort out your access code or refund request personally within 24 hours.</span>
+          </div>
+
           <!-- Prominent ?submitted=true Success Banner -->
           <div id="form-success-banner" role="status" aria-live="polite" class="hidden mb-6 p-5 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-100 flex items-start gap-3.5 shadow-lg">
             <i class="fa-solid fa-circle-check text-emerald-400 text-xl mt-0.5 shrink-0" aria-hidden="true"></i>
@@ -1421,7 +1426,15 @@
             <div class="space-y-6">
               <div>
                 <label for="goal" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Selected Package or Learning Goal</label>
-                <input id="goal" name="goal" type="text" placeholder="e.g. Cambridge C1 in December, IELTS 7.5, or 10-Lesson Pack" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/50 transition text-sm">
+                <input id="goal" name="goal" type="text" list="goal-options" placeholder="e.g. Cambridge C1 in December, IELTS 7.5, or 10-Lesson Pack" class="w-full bg-slate-900 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/50 transition text-sm">
+                <datalist id="goal-options">
+                  <option value="10-Lesson Pack (£650)">10-Lesson Pack (£650)</option>
+                  <option value="12-Lesson Pack (£780)">12-Lesson Pack (£780)</option>
+                  <option value="5-Lesson Pack (£375)">5-Lesson Pack (£375)</option>
+                  <option value="Written essay feedback (£29)">Written essay feedback (£29)</option>
+                  <option value="Dark Academia C1/C2 Course (£24)">Dark Academia C1/C2 Course (£24)</option>
+                  <option value="Billing, Access Code or Refund Request">Billing, Access Code or Refund Request (24h Resolution)</option>
+                </datalist>
               </div>
               <div>
                 <label for="message" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Message, Preferred Days/Times &amp; Payment Preference (Stripe / Wise / PayPal)</label>
@@ -1434,6 +1447,10 @@
               <button id="contact-submit-btn" type="submit" class="px-8 py-3.5 rounded-full bg-brand-600 hover:bg-brand-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold shadow-lg shadow-brand-600/30 transition cursor-pointer">
                 Send Message &rarr;
               </button>
+
+              <p class="pt-1 text-xs text-slate-300">
+                Questions about a Stripe receipt, access code, or refund? <a href="index.html?support=billing#enquiry-card" class="underline text-emerald-300 hover:text-white font-semibold">Use Priority Billing Support</a>
+              </p>
 
               <details class="max-w-md mx-auto pt-1 text-xs text-slate-400 group">
                 <summary class="cursor-pointer underline hover:text-slate-200 list-none">
@@ -1487,7 +1504,10 @@
           <a href="privacy-policy.html" class="hover:text-white transition">Privacy</a>
         </nav>
       </div>
-      <p class="text-xs text-slate-400 mt-6 leading-relaxed text-center sm:text-left">
+      <p class="text-xs text-slate-400 mt-4 leading-relaxed text-center sm:text-left">
+        Questions about a Stripe receipt, access code, or refund? <a href="index.html?support=billing#enquiry-card" class="underline text-emerald-400 hover:text-white font-semibold">Use Priority Billing Support</a>
+      </p>
+      <p class="text-xs text-slate-400 mt-3 leading-relaxed text-center sm:text-left">
         <strong>Disclaimer:</strong> This website is independently operated by Gareth Montgomery. It is not affiliated with, approved by, or endorsed by Cambridge University Press &amp; Assessment, the British Council, IDP: IELTS Australia, or the University of Cambridge. Cambridge English, C1 Advanced (CAE), C2 Proficiency (CPE), B2 First (FCE), and IELTS are registered trademarks of their respective owners.
       </p>
     </div>
@@ -1499,6 +1519,7 @@
   <script>
     (function () {
       function attachDossierToBooking() {
+        if (/[?&]support=(billing|refund|access)\b/i.test(window.location.search)) return;
         var banner = document.getElementById('dossier-booking-banner');
         var metaEl = document.getElementById('dossier-banner-meta');
         var hiddenField = document.getElementById('candidate-dossier-field');

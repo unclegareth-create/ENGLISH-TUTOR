@@ -291,6 +291,13 @@ const DarkAcademiaGate = {
     if (input) {
       input.value = '';
     }
+    const reg37Error = modal.querySelector('#da-modal-reg37-error');
+    const reg37Wrap = modal.querySelector('#da-modal-reg37-wrap');
+    if (reg37Error) reg37Error.style.display = 'none';
+    if (reg37Wrap) {
+      reg37Wrap.style.borderColor = 'rgba(228,200,140,0.35)';
+      reg37Wrap.style.background = 'rgba(15,23,42,0.75)';
+    }
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
 
@@ -306,6 +313,29 @@ const DarkAcademiaGate = {
       modal.classList.remove('active');
       document.body.style.overflow = '';
     }
+  },
+
+  handleStripeCheckoutClick(event, checkboxId, wrapId, errorId) {
+    const checkbox = document.getElementById(checkboxId);
+    const wrap = document.getElementById(wrapId);
+    const errorEl = document.getElementById(errorId);
+    if (!checkbox || !checkbox.checked) {
+      if (event) event.preventDefault();
+      if (wrap) {
+        wrap.style.borderColor = '#ef4444';
+        wrap.style.background = 'rgba(127, 29, 29, 0.28)';
+      }
+      if (errorEl) {
+        errorEl.style.display = 'block';
+        errorEl.textContent = 'Please tick the box above to confirm immediate digital access before proceeding to Stripe checkout.';
+      }
+      if (checkbox) checkbox.focus();
+      return false;
+    }
+    try {
+      localStorage.setItem('da_reg37_consent_ts', new Date().toISOString());
+    } catch (e) {}
+    return true;
   },
 
   createModalElement() {
@@ -347,15 +377,22 @@ const DarkAcademiaGate = {
           </div>
         </div>
 
-        <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
+        <div id="da-modal-reg37-wrap" style="background:rgba(15,23,42,0.75);border:1px solid rgba(228,200,140,0.35);border-radius:10px;padding:0.7rem 0.85rem;margin-bottom:0.75rem;text-align:left;transition:border-color 0.2s,background 0.2s;">
+          <label for="da-modal-reg37-check" style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer;font-size:0.8rem;color:#e6dcc8;line-height:1.45;">
+            <input type="checkbox" id="da-modal-reg37-check" style="margin-top:0.2rem;width:16px;height:16px;accent-color:#d4af37;cursor:pointer;flex-shrink:0;">
+            <span>I agree to immediate access to this digital pack and acknowledge that I lose my 14-day right to a refund once accessed (<a href="terms.html#digital-content" style="color:#e4c88c;text-decoration:underline;">UK Digital Content Terms</a>).</span>
+          </label>
+          <div id="da-modal-reg37-error" role="alert" aria-live="polite" style="display:none;color:#fca5a5;font-size:0.76rem;font-weight:700;margin-top:0.45rem;">
+            Please tick the box above to confirm immediate digital access before proceeding to Stripe checkout.
+          </div>
+        </div>
+
+        <a href="${this.STRIPE_LINK}" class="da-btn-stripe" id="da-modal-stripe-btn" onclick="return DarkAcademiaGate.handleStripeCheckoutClick(event, 'da-modal-reg37-check', 'da-modal-reg37-wrap', 'da-modal-reg37-error')">
           <span>Unlock Instant Access via Stripe (£24)</span>
           <span aria-hidden="true">→</span>
         </a>
-        <p style="font-size:0.75rem;color:#b5a792;margin:0.5rem 0 0.85rem 0;line-height:1.4;text-align:center;">
-          Immediate digital supply: by purchasing, you consent to instant access and acknowledge that the 14-day statutory right to cancel ends once access begins (<a href="terms.html#digital-content" style="color:#e4c88c;text-decoration:underline;">UK Digital Content Terms</a>).
-        </p>
 
-        <div class="da-passkey-box">
+        <div class="da-passkey-box" style="margin-top:0.85rem;">
           <p>Already purchased? Enter your <strong>Access Code</strong> from your confirmation screen:</p>
           <div class="da-passkey-row">
             <input type="text" class="da-passkey-input" id="da-modal-passkey" placeholder="ENTER ACCESS CODE" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Course access code input">
@@ -363,11 +400,26 @@ const DarkAcademiaGate = {
           </div>
           <div class="da-passkey-feedback" id="da-modal-feedback"></div>
           <p style="font-size:0.74rem;color:#b5a792;margin-top:0.5rem;">
-            Lost your access code or didn’t get redirected? <a href="index.html#enquiry-card" style="color:#e4c88c;text-decoration:underline;">Email me your Stripe receipt</a>.
+            Lost your access code or need billing/refund help? <a href="index.html?support=billing#enquiry-card" style="color:#e4c88c;text-decoration:underline;">Contact Billing &amp; Access Support (24h resolution)</a>.
           </p>
         </div>
       </div>
     `;
+
+    const reg37Checkbox = backdrop.querySelector('#da-modal-reg37-check');
+    if (reg37Checkbox) {
+      reg37Checkbox.addEventListener('change', () => {
+        if (reg37Checkbox.checked) {
+          const wrap = backdrop.querySelector('#da-modal-reg37-wrap');
+          const err = backdrop.querySelector('#da-modal-reg37-error');
+          if (wrap) {
+            wrap.style.borderColor = 'rgba(228,200,140,0.35)';
+            wrap.style.background = 'rgba(15,23,42,0.75)';
+          }
+          if (err) err.style.display = 'none';
+        }
+      });
+    }
 
     backdrop.addEventListener('click', (e) => {
       if (e.target === backdrop) DarkAcademiaGate.closeModal();
@@ -463,15 +515,22 @@ const DarkAcademiaGate = {
               </div>
             </div>
 
-            <a href="${this.STRIPE_LINK}" class="da-btn-stripe">
+            <div id="da-veil-reg37-wrap" style="background:rgba(15,23,42,0.75);border:1px solid rgba(228,200,140,0.35);border-radius:10px;padding:0.7rem 0.85rem;margin-bottom:0.75rem;text-align:left;transition:border-color 0.2s,background 0.2s;">
+              <label for="da-veil-reg37-check" style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer;font-size:0.8rem;color:#e6dcc8;line-height:1.45;">
+                <input type="checkbox" id="da-veil-reg37-check" style="margin-top:0.2rem;width:16px;height:16px;accent-color:#d4af37;cursor:pointer;flex-shrink:0;">
+                <span>I agree to immediate access to this digital pack and acknowledge that I lose my 14-day right to a refund once accessed (<a href="terms.html#digital-content" style="color:#e4c88c;text-decoration:underline;">UK Digital Content Terms</a>).</span>
+              </label>
+              <div id="da-veil-reg37-error" role="alert" aria-live="polite" style="display:none;color:#fca5a5;font-size:0.76rem;font-weight:700;margin-top:0.45rem;">
+                Please tick the box above to confirm immediate digital access before proceeding to Stripe checkout.
+              </div>
+            </div>
+
+            <a href="${this.STRIPE_LINK}" class="da-btn-stripe" id="da-veil-stripe-btn" onclick="return DarkAcademiaGate.handleStripeCheckoutClick(event, 'da-veil-reg37-check', 'da-veil-reg37-wrap', 'da-veil-reg37-error')">
               <span>Unlock Full Course via Stripe (£24)</span>
               <span aria-hidden="true">→</span>
             </a>
-            <p style="font-size:0.75rem;color:#b5a792;margin:0.5rem 0 0.85rem 0;line-height:1.4;text-align:center;">
-              Immediate digital supply: by purchasing, you consent to instant access and acknowledge that the 14-day statutory right to cancel ends once access begins (<a href="terms.html#digital-content" style="color:#e4c88c;text-decoration:underline;">UK Digital Content Terms</a>).
-            </p>
 
-            <div class="da-passkey-box">
+            <div class="da-passkey-box" style="margin-top:0.85rem;">
               <p>Already purchased? Enter your Course Access Code:</p>
               <div class="da-passkey-row">
                 <input type="text" class="da-passkey-input" id="veil-passkey-input" placeholder="ENTER ACCESS CODE" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Enter access code to unlock">
@@ -479,7 +538,7 @@ const DarkAcademiaGate = {
               </div>
               <div class="da-passkey-feedback" id="veil-passkey-feedback"></div>
               <p style="font-size:0.74rem;color:#b5a792;margin-top:0.5rem;">
-                Lost your access code? <a href="index.html#enquiry-card" style="color:#e4c88c;text-decoration:underline;">Email me your Stripe receipt</a>.
+                Lost your access code or need billing/refund help? <a href="index.html?support=billing#enquiry-card" style="color:#e4c88c;text-decoration:underline;">Contact Billing &amp; Access Support (24h resolution)</a>.
               </p>
             </div>
 
@@ -489,6 +548,20 @@ const DarkAcademiaGate = {
           </div>
         `;
         document.body.appendChild(veil);
+        const veilReg37Check = veil.querySelector('#da-veil-reg37-check');
+        if (veilReg37Check) {
+          veilReg37Check.addEventListener('change', () => {
+            if (veilReg37Check.checked) {
+              const wrap = veil.querySelector('#da-veil-reg37-wrap');
+              const err = veil.querySelector('#da-veil-reg37-error');
+              if (wrap) {
+                wrap.style.borderColor = 'rgba(228,200,140,0.35)';
+                wrap.style.background = 'rgba(15,23,42,0.75)';
+              }
+              if (err) err.style.display = 'none';
+            }
+          });
+        }
         const veilInput = veil.querySelector('#veil-passkey-input');
         if (veilInput) {
           veilInput.addEventListener('keydown', (e) => {
