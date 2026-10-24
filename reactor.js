@@ -67,7 +67,8 @@
             if (!btn || !isActive) return;
             const lvl = levels[currentLevel];
             if (lvl) {
-                handleGuess(btn.dataset.particle === lvl.ans);
+                const chosenParticle = btn.dataset.particle;
+                handleGuess(chosenParticle === lvl.ans, chosenParticle, lvl);
             }
         });
     }
@@ -116,8 +117,25 @@
         });
     }
 
-    function handleGuess(isCorrect) {
+    function handleGuess(isCorrect, chosenParticle, lvl) {
         if (!isActive) return;
+
+        const currentLvl = lvl || levels[currentLevel];
+        if (currentLvl) {
+            const promptText = `${currentLvl.def} (${currentLvl.verb} + ___)`;
+            const targetPhrasal = `${currentLvl.verb} ${currentLvl.ans}`;
+            const chosenPhrasal = chosenParticle ? `${currentLvl.verb} ${chosenParticle}` : '';
+            const explanationText = `"${targetPhrasal}" means "${currentLvl.def.toLowerCase()}".`;
+            window.CandidateDossier?.recordAttempt({
+                category: 'phrasal_verbs',
+                correct: isCorrect,
+                game: 'Phrasal Reactor',
+                prompt: promptText,
+                targetAnswer: targetPhrasal,
+                userAttempt: chosenPhrasal,
+                explanation: explanationText
+            });
+        }
 
         if (isCorrect) {
             verbEl.className = 'core success';
@@ -216,7 +234,7 @@
                     examImpact: 'In Cambridge C1/C2 Use of English (Parts 1–4) and IELTS Speaking Part 3, hesitation on phrasal particles drops your Lexical Resource score from Band 7.5 to 6.5.',
                     onReplay: () => {
                         endModal.classList.remove('open');
-                        btnStart.click();
+                        startBtn.click();
                     }
                 });
             }, 600);

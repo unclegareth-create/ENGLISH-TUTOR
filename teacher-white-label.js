@@ -53,7 +53,8 @@
     'e32febaa231630ba',
     '07dfc1f76646e3e9',
     '3089a39af9f71612',
-    'df3a72ff4ff87f6d'
+    'df3a72ff4ff87f6d',
+    '1021c9d1ea7b4387'
   ];
 
   const STUDIO_CODE_HASHES = [
@@ -62,7 +63,8 @@
     '642ef07c8176b90a',
     '410a91742e314132',
     '36d29a47ba9eca49',
-    'ba6766737503c529'
+    'ba6766737503c529',
+    'dd958d406c7e4d18'
   ];
 
   const STUDENT_PRO_HASHES = [
@@ -73,11 +75,18 @@
     'e3983fcdd03203a9'
   ];
 
+  const INSTANT_BACKUP_KEYS = Object.freeze({});
+
   const STRIPE_LINKS = {
     STUDENT_24: 'https://buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01',
-    SOLO_49: 'teacher-vault.html#teacher-order-box',
-    STUDIO_149: 'teacher-vault.html#teacher-order-box'
+    SOLO_49: 'https://buy.stripe.com/5kQ9ASdpy40cfmRed5b3q07',
+    STUDIO_149: 'https://buy.stripe.com/dRmfZgfxG0O0caF3yrb3q08'
   };
+
+  const BLOCKED_REDIRECT_HOSTS = [
+    'bit.ly', 'tinyurl.com', 't.co', 'rb.gy', 'is.gd',
+    'ow.ly', 'cutt.ly', 'shorturl.at', 'tiny.cc', 'rebrand.ly'
+  ];
 
   const ACCENT_PALETTES = {
     emerald: { bg: '#064e3b', border: '#10b981', badge: '#059669', text: '#ecfdf5', accent: '#6ee7b7', btn: '#10b981', btnText: '#022c22' },
@@ -641,15 +650,44 @@
   const GarethTeacherWhiteLabel = {
     SOLO_CODE_HASHES,
     STUDIO_CODE_HASHES,
+    INSTANT_BACKUP_KEYS,
     STRIPE_LINKS,
     ACCENT_PALETTES,
     timerInterval: null,
     timerSeconds: 900, // 15m default
     timerRunning: false,
+    classroomSyncLoading: null,
 
     hashAccessCode: hashString64,
     computeHomeworkSig,
     verifyHomeworkSig,
+
+    ensureClassroomSyncLoaded() {
+      if (window.ClassroomSync) return Promise.resolve(window.ClassroomSync);
+      if (this.classroomSyncLoading) return this.classroomSyncLoading;
+
+      this.classroomSyncLoading = new Promise((resolve) => {
+        const existing = document.querySelector('script[src*="classroom-sync.js"], script[data-gm-classroom-sync]');
+        if (existing) {
+          if (window.ClassroomSync) {
+            resolve(window.ClassroomSync);
+            return;
+          }
+          existing.addEventListener('load', () => resolve(window.ClassroomSync || null));
+          existing.addEventListener('error', () => resolve(null));
+          return;
+        }
+        const script = document.createElement('script');
+        script.src = 'classroom-sync.js';
+        script.async = true;
+        script.setAttribute('data-gm-classroom-sync', '1');
+        script.onload = () => resolve(window.ClassroomSync || null);
+        script.onerror = () => resolve(null);
+        document.head.appendChild(script);
+      });
+
+      return this.classroomSyncLoading;
+    },
 
     getLicenseState() {
       try {
@@ -899,6 +937,10 @@
         }
       });
 
+      if (window.ClassroomSync && window.ClassroomSync.role === 'host') {
+        window.ClassroomSync.broadcastCommand('reveal_all');
+      }
+
       return revealedCount;
     },
 
@@ -973,6 +1015,10 @@
           scoreEl.textContent = `0 / ${total}`;
         }
       } catch (e) {}
+
+      if (window.ClassroomSync && window.ClassroomSync.role === 'host') {
+        window.ClassroomSync.broadcastCommand('reset_all');
+      }
     },
 
     /**
@@ -1363,6 +1409,9 @@
         return;
       }
 
+      // Dynamically load classroom-sync.js whenever the Teacher HUD is mounted
+      this.ensureClassroomSyncLoaded();
+
       const guide = detectModuleGuide();
       const cleanEnabled = this.isCleanModeEnabled();
       this.applyCleanScreenShareDOM(cleanEnabled);
@@ -1379,7 +1428,7 @@
       `;
 
       hud.innerHTML = `
-        <div id="gm-hud-drawer" style="display:none;background:#0f172a;border:1px solid #38bdf8;border-radius:16px;padding:16px;width:350px;max-width:calc(100vw - 32px);color:#f8fafc;box-shadow:0 20px 45px rgba(0,0,0,0.75);margin-bottom:10px;">
+        <div id="gm-hud-drawer" style="display:none;background:#0f172a;border:1px solid #38bdf8;border-radius:16px;padding:16px;width:370px;max-width:calc(100vw - 32px);max-height:84vh;overflow-y:auto;color:#f8fafc;box-shadow:0 20px 45px rgba(0,0,0,0.75);margin-bottom:10px;">
           <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #1e293b;padding-bottom:10px;margin-bottom:12px;">
             <div>
               <span style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#38bdf8;display:block;">
@@ -1400,6 +1449,60 @@
               <button type="button" id="gm-hud-timer-start" style="background:#0284c7;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;">Start</button>
               <button type="button" id="gm-hud-timer-5m" style="background:#1e293b;color:#cbd5e1;border:1px solid #334155;border-radius:6px;padding:5px 7px;font-size:11px;cursor:pointer;">5m</button>
               <button type="button" id="gm-hud-timer-15m" style="background:#1e293b;color:#cbd5e1;border:1px solid #334155;border-radius:6px;padding:5px 7px;font-size:11px;cursor:pointer;">15m</button>
+            </div>
+          </div>
+
+          <!-- 📡 Live P2P Room Sync Control Row -->
+          <div style="background:#020617;border:1px solid #10b981;border-radius:12px;padding:11px 12px;margin-bottom:12px;" data-sync-ignore="true">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px;">
+              <span style="font-size:11px;font-weight:800;color:#6ee7b7;text-transform:uppercase;letter-spacing:0.05em;">
+                📡 Live P2P Room Sync
+              </span>
+              <span id="gm-hud-room-badge" style="font-family:monospace;font-size:11px;font-weight:800;color:#94a3b8;background:#0f172a;padding:2px 7px;border-radius:6px;border:1px solid #1e293b;">
+                Idle
+              </span>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+              <button type="button" id="gm-hud-host-room-btn" style="background:#10b981;color:#022c22;border:none;border-radius:8px;padding:7px 8px;font-size:11px;font-weight:800;cursor:pointer;">
+                📡 Host Live Room
+              </button>
+              <button type="button" id="gm-hud-copy-room-btn" style="background:#1e293b;color:#6ee7b7;border:1px solid #10b981;border-radius:8px;padding:7px 8px;font-size:11px;font-weight:700;cursor:pointer;">
+                🔗 Copy Join Link
+              </button>
+            </div>
+
+            <!-- Live Sync Console (Revealed when Hosting) -->
+            <div id="gm-hud-sync-console" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid #1e293b;">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:10.5px;color:#94a3b8;margin-bottom:4px;">
+                <span id="gm-hud-live-field-label" style="font-weight:700;color:#38bdf8;">Live Student Keystroke Stream:</span>
+                <span id="gm-hud-live-wordcount" style="font-family:monospace;color:#fbbf24;">0 words</span>
+              </div>
+              <div id="gm-hud-live-keystroke-box" style="background:#0f172a;border:1px solid #334155;border-radius:8px;padding:8px 10px;min-height:42px;font-family:monospace;font-size:12px;color:#e2e8f0;line-height:1.4;word-break:break-word;margin-bottom:9px;">
+                <span style="color:#64748b;">Waiting for student to type in synced tab...</span>
+              </div>
+
+              <!-- Live Boss Prompt / Custom Vocab Injector -->
+              <div style="background:#0f172a;border:1px solid #334155;border-radius:9px;padding:9px;">
+                <div style="font-size:10.5px;font-weight:800;color:#fcd34d;text-transform:uppercase;margin-bottom:6px;">
+                  ⚡ Live Boss Prompt / Vocab Injector
+                </div>
+                <input id="gm-hud-boss-prompt" type="text" value="The board refused to delay the merger." placeholder="Target sentence prompt..." style="width:100%;box-sizing:border-box;background:#020617;border:1px solid #334155;border-radius:6px;padding:6px 8px;color:#fff;font-size:11.5px;margin-bottom:6px;" />
+                <div style="display:flex;gap:6px;margin-bottom:6px;">
+                  <input id="gm-hud-boss-keyword" type="text" value="INTENTION" placeholder="KEYWORD" style="width:110px;background:#020617;border:1px solid #4f46e5;border-radius:6px;padding:6px 8px;color:#c7d2fe;font-family:monospace;font-weight:800;font-size:11.5px;text-transform:uppercase;" />
+                  <button type="button" id="gm-hud-boss-push-btn" style="flex:1;background:#f59e0b;color:#1c1917;border:none;border-radius:6px;padding:6px 8px;font-size:11px;font-weight:800;cursor:pointer;">
+                    ⚡ Push Live Challenge to Student
+                  </button>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                  <button type="button" id="gm-hud-award-point-btn" style="background:#059669;color:#fff;border:none;border-radius:6px;padding:6px;font-size:11px;font-weight:800;cursor:pointer;">
+                    ✓ Award Point
+                  </button>
+                  <button type="button" id="gm-hud-send-hint-btn" style="background:#1e293b;color:#fde68a;border:1px solid #f59e0b;border-radius:6px;padding:6px;font-size:11px;font-weight:700;cursor:pointer;">
+                    💡 Send Hint
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1457,6 +1560,149 @@
       const startBtn = document.getElementById('gm-hud-timer-start');
       const btn5m = document.getElementById('gm-hud-timer-5m');
       const btn15m = document.getElementById('gm-hud-timer-15m');
+
+      // Live P2P Room Sync Controls
+      const hostRoomBtn = document.getElementById('gm-hud-host-room-btn');
+      const copyRoomBtn = document.getElementById('gm-hud-copy-room-btn');
+      const roomBadge = document.getElementById('gm-hud-room-badge');
+      const syncConsole = document.getElementById('gm-hud-sync-console');
+      const keystrokeBox = document.getElementById('gm-hud-live-keystroke-box');
+      const fieldLabelEl = document.getElementById('gm-hud-live-field-label');
+      const wordCountEl = document.getElementById('gm-hud-live-wordcount');
+      const bossPromptInput = document.getElementById('gm-hud-boss-prompt');
+      const bossKeywordInput = document.getElementById('gm-hud-boss-keyword');
+      const bossPushBtn = document.getElementById('gm-hud-boss-push-btn');
+      const awardPointBtn = document.getElementById('gm-hud-award-point-btn');
+      const sendHintBtn = document.getElementById('gm-hud-send-hint-btn');
+
+      let syncListenersBound = false;
+      const bindHudSyncListeners = (sync) => {
+        if (!sync || syncListenersBound) return;
+        syncListenersBound = true;
+
+        sync.on('keystroke', (pkt) => {
+          if (syncConsole) syncConsole.style.display = 'block';
+          if (fieldLabelEl) {
+            fieldLabelEl.textContent = `✍️ ${pkt.fieldLabel || 'Student Input'}:`;
+          }
+          if (wordCountEl) {
+            wordCountEl.textContent = `${pkt.wordCount || 0} words`;
+          }
+          if (keystrokeBox) {
+            keystrokeBox.style.borderColor = '#10b981';
+            keystrokeBox.innerHTML = pkt.value
+              ? `<span style="color:#6ee7b7;font-weight:700;">${this.escapeHtml(pkt.value)}</span><span style="color:#10b981;">▋</span>`
+              : `<span style="color:#64748b;">(Cleared input)</span>`;
+          }
+        });
+
+        sync.on('boss_submit', (pkt) => {
+          if (syncConsole) syncConsole.style.display = 'block';
+          if (fieldLabelEl) {
+            fieldLabelEl.textContent = `🚀 Submitted [${pkt.keyword || 'BOSS'}]:`;
+          }
+          if (keystrokeBox) {
+            keystrokeBox.style.borderColor = '#f59e0b';
+            keystrokeBox.innerHTML = `<strong style="color:#fcd34d;">✓ LOCKED IN: &ldquo;${this.escapeHtml(pkt.value)}&rdquo;</strong>`;
+          }
+        });
+
+        sync.on('student_connected', () => {
+          if (roomBadge && sync.roomCode) {
+            roomBadge.textContent = `🟢 ${sync.roomCode}`;
+            roomBadge.style.color = '#6ee7b7';
+            roomBadge.style.borderColor = '#10b981';
+          }
+        });
+      };
+
+      if (hostRoomBtn) {
+        hostRoomBtn.onclick = async () => {
+          hostRoomBtn.textContent = '⏳ Starting...';
+          const sync = await this.ensureClassroomSyncLoaded();
+          if (!sync) {
+            hostRoomBtn.textContent = '⚠️ Sync Offline';
+            return;
+          }
+          bindHudSyncListeners(sync);
+          const info = await sync.hostRoom();
+          if (roomBadge) {
+            roomBadge.textContent = `🟢 ${info.roomCode}`;
+            roomBadge.style.color = '#6ee7b7';
+            roomBadge.style.borderColor = '#10b981';
+          }
+          if (syncConsole) syncConsole.style.display = 'block';
+          hostRoomBtn.textContent = `✓ Room ${info.roomCode}`;
+        };
+      }
+
+      if (copyRoomBtn) {
+        copyRoomBtn.onclick = async () => {
+          const sync = await this.ensureClassroomSyncLoaded();
+          if (!sync) return;
+          bindHudSyncListeners(sync);
+          if (!sync.roomCode || sync.role !== 'host') {
+            await sync.hostRoom();
+            if (roomBadge) {
+              roomBadge.textContent = `🟢 ${sync.roomCode}`;
+              roomBadge.style.color = '#6ee7b7';
+              roomBadge.style.borderColor = '#10b981';
+            }
+            if (syncConsole) syncConsole.style.display = 'block';
+            if (hostRoomBtn) hostRoomBtn.textContent = `✓ Room ${sync.roomCode}`;
+          }
+          const joinUrl = sync.copyStudentJoinLink();
+          copyRoomBtn.textContent = `✓ ?room=${sync.roomCode}`;
+          setTimeout(() => {
+            copyRoomBtn.textContent = '🔗 Copy Join Link';
+          }, 2200);
+          return joinUrl;
+        };
+      }
+
+      if (bossPushBtn) {
+        bossPushBtn.onclick = async () => {
+          const sync = await this.ensureClassroomSyncLoaded();
+          if (!sync) return;
+          bindHudSyncListeners(sync);
+          if (!sync.roomCode || sync.role !== 'host') {
+            await sync.hostRoom();
+          }
+          sync.pushBossChallenge({
+            prompt: bossPromptInput ? bossPromptInput.value : 'The board refused to delay the merger.',
+            keyword: bossKeywordInput ? bossKeywordInput.value : 'INTENTION'
+          });
+          bossPushBtn.textContent = '✓ Challenge Pushed!';
+          setTimeout(() => {
+            bossPushBtn.textContent = '⚡ Push Live Challenge to Student';
+          }, 1800);
+        };
+      }
+
+      if (awardPointBtn) {
+        awardPointBtn.onclick = async () => {
+          const sync = await this.ensureClassroomSyncLoaded();
+          if (!sync) return;
+          const total = sync.awardPoint();
+          awardPointBtn.textContent = `✓ Awarded (${total} ⭐)`;
+          setTimeout(() => {
+            awardPointBtn.textContent = '✓ Award Point';
+          }, 1800);
+        };
+      }
+
+      if (sendHintBtn) {
+        sendHintBtn.onclick = async () => {
+          const sync = await this.ensureClassroomSyncLoaded();
+          if (!sync) return;
+          const kw = bossKeywordInput ? bossKeywordInput.value.trim().toUpperCase() : 'KEY';
+          sync.sendHint(`Keep "${kw}" completely unchanged and check your preposition/tense harmony (3–6 words).`);
+          sendHintBtn.textContent = '✓ Hint Sent!';
+          setTimeout(() => {
+            sendHintBtn.textContent = '💡 Send Hint';
+          }, 1800);
+        };
+      }
 
       const updateTimerUI = () => {
         const m = String(Math.floor(this.timerSeconds / 60)).padStart(2, '0');
@@ -1541,6 +1787,76 @@
       };
     },
 
+    activateInstantTierUnlock(unlockedTier) {
+      const normalized = String(unlockedTier || '').toLowerCase();
+      const key = normalized === 'studio' ? INSTANT_BACKUP_KEYS.studio : INSTANT_BACKUP_KEYS.solo;
+      const res = this.activateLicense(key);
+      if (res.ok) {
+        this.renderInstantLicenseBanner(res.tier, key);
+      }
+      return { ...res, backupKey: key };
+    },
+
+    renderInstantLicenseBanner(tier, backupKey) {
+      const existing = document.getElementById('gm-instant-license-banner');
+      if (existing) existing.remove();
+
+      const isStudio = tier === 'studio';
+      const banner = document.createElement('div');
+      banner.id = 'gm-instant-license-banner';
+      banner.setAttribute('role', 'region');
+      banner.setAttribute('aria-label', 'Instant License Activation Confirmation');
+      banner.style.cssText = `
+        background: linear-gradient(90deg, #064e3b 0%, #0f172a 100%);
+        border-bottom: 2px solid #10b981;
+        color: #ecfdf5;
+        padding: 14px 20px;
+        font-family: system-ui, -apple-system, sans-serif;
+        position: relative;
+        z-index: 9997;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+      `;
+
+      banner.innerHTML = `
+        <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="background:#10b981;color:#022c22;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:0.06em;">
+              ✓ Instant 0-Second Activation
+            </span>
+            <span style="font-size:13.5px;font-weight:700;color:#ffffff;">
+              ${isStudio ? '★ White-Label Studio License (£149)' : '✓ Solo Tutor Classroom License (£49)'} is now active! Save your permanent backup key:
+            </span>
+            <code id="gm-instant-backup-key-code" style="background:#020617;border:1px solid #10b981;color:#6ee7b7;font-family:monospace;font-size:13px;font-weight:800;padding:4px 10px;border-radius:8px;">${this.escapeHtml(backupKey)}</code>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button type="button" id="gm-copy-backup-key-btn" style="background:#10b981;color:#022c22;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:800;cursor:pointer;">
+              📋 Copy Backup Key
+            </button>
+            <button type="button" id="gm-close-backup-banner-btn" aria-label="Dismiss banner" style="background:transparent;border:1px solid #334155;color:#cbd5e1;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;">
+              Dismiss
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.body.insertBefore(banner, document.body.firstChild);
+
+      const copyBtn = document.getElementById('gm-copy-backup-key-btn');
+      const closeBtn = document.getElementById('gm-close-backup-banner-btn');
+      if (copyBtn) {
+        copyBtn.onclick = () => {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(backupKey);
+          }
+          copyBtn.textContent = '✓ Key Copied!';
+          setTimeout(() => { copyBtn.textContent = '📋 Copy Backup Key'; }, 2000);
+        };
+      }
+      if (closeBtn) {
+        closeBtn.onclick = () => banner.remove();
+      }
+    },
+
     escapeHtml(str) {
       return String(str || '')
         .replace(/&/g, '&amp;')
@@ -1552,19 +1868,50 @@
 
     sanitizeUrl(url) {
       const clean = String(url || '').trim();
-      if (!clean || clean === 'https://') return '';
-      if (/^https?:\/\//i.test(clean) || /^mailto:/i.test(clean)) return clean;
-      return '';
+      if (!clean || clean === 'https://' || clean === 'http://') return '';
+      if (/["'<>`\s]/.test(clean)) return '';
+      if (/^mailto:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(clean)) {
+        return this.escapeHtml(clean);
+      }
+      try {
+        const parsed = new URL(clean);
+        const isLocal = parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1';
+        if (parsed.protocol !== 'https:' && !(isLocal && parsed.protocol === 'http:')) {
+          return '';
+        }
+        if (parsed.username || parsed.password) return '';
+        const host = parsed.hostname.toLowerCase();
+        // Block raw IPv4/IPv6 literals, punycode homographs, and opaque URL shorteners
+        if (/^(\d{1,3}\.){3}\d{1,3}$/.test(host) || host.includes(':') || host.includes('xn--')) {
+          return '';
+        }
+        if (BLOCKED_REDIRECT_HOSTS.some((b) => host === b || host.endsWith('.' + b))) {
+          return '';
+        }
+        return this.escapeHtml(parsed.href);
+      } catch (e) {
+        return '';
+      }
     },
 
     initPageRuntime() {
       const params = new URLSearchParams(window.location.search);
 
-      // 1. Check direct license unlock via URL parameter (?teacher_key=...)
+      // 0. Ensure classroom-sync.js is dynamically loaded when ?room= is present in the URL
+      if (params.get('room')) {
+        this.ensureClassroomSyncLoaded().then((sync) => {
+          if (sync && !sync.roomCode) {
+            sync.joinRoom(params.get('room'));
+          }
+        });
+      }
+
+      // 1. Check direct license unlock via verified URL parameter (?teacher_key=...)
       const keyParam = params.get('teacher_key');
       if (keyParam) {
         const res = this.activateLicense(keyParam);
         if (res.ok) {
+          window.__GM_JUST_UNLOCKED_KEY = keyParam;
           params.delete('teacher_key');
           const cleanSearch = params.toString();
           const newUrl = window.location.pathname + (cleanSearch ? '?' + cleanSearch : '') + window.location.hash;

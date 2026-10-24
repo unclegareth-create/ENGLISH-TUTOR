@@ -1031,12 +1031,34 @@ class DarkAcademiaEngine {
         fb.textContent = `✓ Correct! ${item.exp}`;
         fb.style.color = 'var(--green-text)';
       }
+      if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
+        window.CandidateDossier.recordAttempt({
+          category: 'register_shift',
+          correct: true,
+          game: 'Dark Academia (' + (this.unitId || 'Gothic Canon') + ')',
+          prompt: item.word + ' — ' + (item.sub || ''),
+          targetAnswer: item.type === 'arsenal' ? 'Modern C1/C2 Register' : 'Archaic Literary Register',
+          explanation: item.exp
+        });
+      }
     } else {
       btnElement.classList.add('wrong');
       if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('miss');
       if (fb) {
         fb.textContent = `✗ Not quite. ${item.exp}`;
         fb.style.color = 'var(--red-text)';
+      }
+      if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
+        window.CandidateDossier.recordAttempt({
+          category: 'register_shift',
+          correct: false,
+          game: 'Dark Academia (' + (this.unitId || 'Gothic Canon') + ')',
+          prompt: 'Classify C1/C2 vs Archaic register: "' + item.word + '" (' + (item.sub || '') + ')',
+          keyword: item.word.toUpperCase(),
+          targetAnswer: item.type === 'arsenal' ? 'Modern C1/C2' : 'Archaic',
+          userAttempt: choice === 'arsenal' ? 'Modern C1/C2' : 'Archaic',
+          explanation: item.exp
+        });
       }
     }
   }
@@ -1055,6 +1077,11 @@ class DarkAcademiaEngine {
 
     buttons.forEach((b) => (b.disabled = true));
 
+    const promptEl = block.querySelector('.mc-prompt');
+    const promptTxt = promptEl ? promptEl.textContent.trim() : 'Gothic Canon Multiple Choice';
+    const correctBtn = buttons[correctIndex];
+    const correctTxt = correctBtn ? correctBtn.textContent.trim() : '';
+
     if (optionIndex === correctIndex) {
       btn.classList.add('correct');
       this.score += 1;
@@ -1063,6 +1090,16 @@ class DarkAcademiaEngine {
       if (fb) {
         fb.className = 'feedback-box correct';
         fb.innerHTML = `<strong>✓ Correct (+1 Mark):</strong> ${explanation}`;
+      }
+      if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
+        window.CandidateDossier.recordAttempt({
+          category: 'nominalisation',
+          correct: true,
+          game: 'Dark Academia (' + (this.unitId || 'Gothic Canon') + ')',
+          prompt: promptTxt,
+          targetAnswer: correctTxt,
+          explanation: explanation
+        });
       }
     } else {
       btn.classList.add('wrong');
@@ -1073,6 +1110,17 @@ class DarkAcademiaEngine {
       if (fb) {
         fb.className = 'feedback-box wrong';
         fb.innerHTML = `<strong>✗ Key Point:</strong> ${explanation}`;
+      }
+      if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
+        window.CandidateDossier.recordAttempt({
+          category: 'nominalisation',
+          correct: false,
+          game: 'Dark Academia (' + (this.unitId || 'Gothic Canon') + ')',
+          prompt: promptTxt,
+          targetAnswer: correctTxt,
+          userAttempt: btn.textContent.trim(),
+          explanation: explanation
+        });
       }
     }
   }
@@ -1185,6 +1233,17 @@ class DarkAcademiaEngine {
     const attempts = parseInt(card.dataset.attempts || '0', 10) + 1;
     card.dataset.attempts = String(attempts);
 
+    const kwtLead = card.querySelector('.kwt-lead');
+    const kwtPromptText = kwtLead ? kwtLead.textContent.trim() : 'Key Word Transformation (' + (keyWord || '').toUpperCase() + ')';
+    const inferCategory = (expStr) => {
+      const low = String(expStr || '').toLowerCase();
+      if (low.includes('inversion') || low.includes('invert') || low.includes('auxiliary')) return 'inversion';
+      if (low.includes('cleft')) return 'cleft_clauses';
+      if (low.includes('passive') || low.includes('nominal')) return 'nominalisation';
+      return 'inversion';
+    };
+    const kwtCat = inferCategory(explanation);
+
     if (isExactMatch) {
       this.lockKWTCard(card, input, btn);
       if (input) {
@@ -1197,6 +1256,18 @@ class DarkAcademiaEngine {
       if (fb) {
         fb.className = 'feedback-box correct';
         fb.innerHTML = `<strong>✓ Full Marks (+2/2):</strong> Excellent! <em>"${modelAnswer}"</em> — ${explanation}`;
+      }
+      if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
+        window.CandidateDossier.recordAttempt({
+          category: kwtCat,
+          correct: true,
+          game: 'Dark Academia (' + (this.unitId || 'Gothic Canon') + ')',
+          prompt: kwtPromptText,
+          keyword: (keyWord || '').toUpperCase(),
+          targetAnswer: modelAnswer,
+          userAttempt: rawUser,
+          explanation: explanation
+        });
       }
       return;
     }
@@ -1228,6 +1299,18 @@ class DarkAcademiaEngine {
         fb.className = 'feedback-box partial';
         fb.innerHTML = `<strong>⚡ Partial Credit (+1/2):</strong> Good effort using the key word! Full answer: <strong>"${modelAnswer}"</strong>.<br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
       }
+      if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
+        window.CandidateDossier.recordAttempt({
+          category: kwtCat,
+          correct: false,
+          game: 'Dark Academia (' + (this.unitId || 'Gothic Canon') + ')',
+          prompt: kwtPromptText,
+          keyword: (keyWord || '').toUpperCase(),
+          targetAnswer: modelAnswer,
+          userAttempt: rawUser,
+          explanation: explanation
+        });
+      }
     } else {
       if (input) {
         input.style.borderColor = 'var(--red)';
@@ -1237,6 +1320,18 @@ class DarkAcademiaEngine {
       if (fb) {
         fb.className = 'feedback-box wrong';
         fb.innerHTML = `<strong>✗ Model Answer:</strong> <strong>"${modelAnswer}"</strong><br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
+      }
+      if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
+        window.CandidateDossier.recordAttempt({
+          category: kwtCat,
+          correct: false,
+          game: 'Dark Academia (' + (this.unitId || 'Gothic Canon') + ')',
+          prompt: kwtPromptText,
+          keyword: (keyWord || '').toUpperCase(),
+          targetAnswer: modelAnswer,
+          userAttempt: rawUser,
+          explanation: explanation
+        });
       }
     }
   }
@@ -1450,9 +1545,9 @@ const DarkAcademiaAtmosphere = (() => {
   let noiseNode = null;
   let noiseGain = null;
   let musicPlaying = false;
-  let userMutedMusic = false;
+  let userMutedMusic = true;
   let autoplayUnlockArmed = false;
-  let sfxEnabled = true;
+  let sfxEnabled = false;
   let currentTrackIdx = 0;
   let synthStep = 0;
   let clauseTimer = null;
@@ -2852,6 +2947,12 @@ function initDarkAcademiaBootstrap() {
     wlScript.src = 'teacher-white-label.js';
     wlScript.defer = true;
     document.head.appendChild(wlScript);
+  }
+  if (!window.CandidateDossier && !document.querySelector('script[src*="dossier.js"]')) {
+    const dScript = document.createElement('script');
+    dScript.src = 'dossier.js';
+    dScript.defer = true;
+    document.head.appendChild(dScript);
   }
 }
 

@@ -147,6 +147,7 @@
     }
 
     if (urlParams.get('subscribed') === 'true') {
+        const existingBanner = document.getElementById('subscribed-success-banner');
         const hashId = (window.location.hash || '').replace('#', '');
         const targetSection = (hashId && document.getElementById(hashId)) || document.getElementById('cheat-sheet') || document.getElementById('arcade-signup');
         const targetForm = targetSection ? targetSection.querySelector('form') : null;
@@ -169,7 +170,9 @@
             return div;
         };
 
-        if (targetForm && targetForm.parentNode) {
+        if (existingBanner) {
+            existingBanner.classList.remove('hidden');
+        } else if (targetForm && targetForm.parentNode) {
             targetForm.parentNode.insertBefore(createSubAlertBox(), targetForm);
         }
 
@@ -212,17 +215,17 @@
 
     /* ---------- Stripe Payment Links & Pre-fill Package Intent ---------- */
     const STRIPE_PAYMENT_LINKS = window.GARETH_STRIPE_LINKS || {
-        pack_5_375: '',
-        pack_5_275: '',     // e.g. 'https://buy.stripe.com/...' (5-Lesson Pack - £275)
-        sprint_10_650: '',
-        sprint_10_500: '',  // e.g. 'https://buy.stripe.com/...' (10-Lesson Pack - £500)
-        pack_12_780: '',
-        pack_12_600: '',    // e.g. 'https://buy.stripe.com/...' (12-Lesson Pack - £600)
-        vip_12_600: '',     // legacy alias
-        single_85: '',
-        single_65: '',      // e.g. 'https://buy.stripe.com/...' (Single Session - £65)
-        audit_async_39: '',
-        audit_async_29: ''  // e.g. 'https://buy.stripe.com/...' (Written Essay Audit - £29)
+        pack_5_375: 'https://buy.stripe.com/5kQ8wO1GQ68kfmR2unb3q04',
+        pack_5_275: 'https://buy.stripe.com/5kQ8wO1GQ68kfmR2unb3q04',
+        sprint_10_650: 'https://buy.stripe.com/fZudR8bhqeEQfmR7OHb3q05',
+        sprint_10_500: 'https://buy.stripe.com/fZudR8bhqeEQfmR7OHb3q05',
+        pack_12_780: 'https://buy.stripe.com/dRm9AS71afIU8Ytgldb3q06',
+        pack_12_600: 'https://buy.stripe.com/dRm9AS71afIU8Ytgldb3q06',
+        vip_12_600: 'https://buy.stripe.com/dRm9AS71afIU8Ytgldb3q06',
+        single_85: 'https://buy.stripe.com/4gM28q1GQbsE1w11qjb3q03',
+        single_65: 'https://buy.stripe.com/4gM28q1GQbsE1w11qjb3q03',
+        audit_async_39: 'https://buy.stripe.com/aFadR8clu0O0gqV2unb3q02',
+        audit_async_29: 'https://buy.stripe.com/aFadR8clu0O0gqV2unb3q02'
     };
 
     const applyPackagePrefill = (pkg, tierKey) => {
@@ -242,8 +245,16 @@
 
         if (!pkg) return;
 
-        const stripeUrl = (tierKey && STRIPE_PAYMENT_LINKS[tierKey]) || '';
-        const isAudit = pkg.includes('Audit') || pkg.includes('Async');
+        const isAudit = pkg.includes('Audit') || pkg.includes('Async') || pkg.toLowerCase().includes('essay feedback');
+        let resolvedTier = tierKey;
+        if (!resolvedTier) {
+            if (isAudit) resolvedTier = 'audit_async_29';
+            else if (pkg.includes('5-Lesson')) resolvedTier = 'pack_5_375';
+            else if (pkg.includes('10-Lesson')) resolvedTier = 'sprint_10_650';
+            else if (pkg.includes('12-Lesson')) resolvedTier = 'pack_12_780';
+            else if (pkg.includes('Single')) resolvedTier = 'single_85';
+        }
+        const stripeUrl = (resolvedTier && STRIPE_PAYMENT_LINKS[resolvedTier]) || '';
 
         if (goalInput) {
             goalInput.value = 'Selected Package: ' + pkg;
@@ -257,11 +268,11 @@
         }
         if (formSubtitle) {
             formSubtitle.textContent = isAudit
-                ? 'Complete your details below for your £39 Stripe Payment Link and Google Doc essay upload instructions (Wise or PayPal also available on request).'
+                ? 'Complete your details below for your \u00a329 Stripe Payment Link and Google Doc essay upload instructions (Wise or PayPal also available on request).'
                 : 'Complete your details and preferred days/times below for your Stripe Payment Link (or request Wise / PayPal).';
         }
         if (formBadge) {
-            formBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
+            formBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
             formBadge.innerHTML = '<i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Package Checkout &amp; Scheduling';
         }
         if (pkgBanner && pkgNameEl) {
@@ -269,7 +280,7 @@
             if (pkgNextStepEl) {
                 pkgNextStepEl.textContent = stripeUrl
                     ? 'Click "Pay Instantly via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
-                    : 'Enter your name, email, and time zone below—I will send your Stripe Payment Link (or Wise/PayPal details on request) and confirm your schedule.';
+                    : 'Enter your name, email, and time zone below \u2014 I will send your Stripe Payment Link (or Wise/PayPal details on request) and confirm your schedule.';
             }
             if (stripeBtn) {
                 if (stripeUrl) {
@@ -283,7 +294,7 @@
         }
         if (submitBtn) {
             submitBtn.innerHTML = isAudit
-                ? 'Request £39 Stripe Link &amp; Upload Details &rarr;'
+                ? 'Request \u00a329 Stripe Link &amp; Upload Details &rarr;'
                 : 'Request Payment Link &amp; Schedule &rarr;';
         }
         if (enquiryCard) {
@@ -304,8 +315,11 @@
     };
 
     const urlPkg = urlParams.get('package');
+    const urlOffer = urlParams.get('offer');
     if (urlPkg) {
         applyPackagePrefill(urlPkg, urlParams.get('tier') || '');
+    } else if (urlOffer === 'async_essay_audit_29') {
+        applyPackagePrefill('Written essay feedback (\u00a329)', 'audit_async_29');
     }
 
     const clearPackageBtn = document.getElementById('clear-package-btn');
@@ -328,9 +342,9 @@
             }
             if (subjectInput) subjectInput.value = 'New Student Enquiry (Website)';
             if (formTitle) formTitle.textContent = 'Ask a Question or Reserve a Lesson Pack';
-            if (formSubtitle) formSubtitle.textContent = 'Select a lesson pack above or let me know your goals below—pay via Stripe Payment Link (or request Wise/PayPal).';
+            if (formSubtitle) formSubtitle.textContent = 'Select a lesson pack above or let me know your goals below. You can pay via Stripe Payment Link, Wise or PayPal.';
             if (formBadge) {
-                formBadge.className = 'hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
+                formBadge.className = 'hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
             }
             if (stripeBtn) stripeBtn.classList.add('hidden');
             if (pkgBanner) pkgBanner.classList.add('hidden');
@@ -365,36 +379,36 @@
   const REDPEN_DATA = {
     ielts: {
       formula: 'Rather than + V-ing ..., Subject + ought to + Verb, thereby + V-ing ...',
-      beforeLabel: 'Student Draft (B2 / Band 6.5)',
+      beforeLabel: 'Student draft',
       beforeMeta: 'Everyday Phrasing',
       beforeHtml: '&ldquo;Universities should focus more on practical skills instead of just theory, because this will help graduates find jobs much faster after they leave.&rdquo;',
       beforeNote: 'Relies on repetitive causal links (\u2018because this will help\u2019) and flat clause rhythm.',
-      afterLabel: 'My Line-by-Line Upgrade (C1 / Band 8.0)',
-      afterMeta: 'Examiner Standard',
+      afterLabel: 'How we\u2019d improve it',
+      afterMeta: 'C1 / Band 8.0 Standard',
       afterHtml: '&ldquo;<span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">Rather than prioritising abstract theory</span>, universities ought to <span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">anchor their curricula in practical training</span>, <span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">thereby equipping graduates</span> to navigate an increasingly competitive job market.&rdquo;',
       tags: ['Fronted Contrast', 'Participle Clause', 'Precise Collocation']
     },
     part4: {
       formula: 'have / had + NO + INTENTION + of + V-ing (3\u20136 words \u2022 Keyword unchanged)',
-      beforeLabel: 'Cambridge C1 Part 4 Prompt (Step 1: Strike Out Echoes)',
+      beforeLabel: 'Student draft',
       beforeMeta: 'Keyword: INTENTION',
       beforeHtml: '<span class="line-through text-slate-400">Sarah</span> <strong class="text-rose-700 not-italic">refused to apologise</strong> <span class="line-through text-slate-400">for the mistake she had made.</span><br><span class="text-xs font-mono text-slate-500 not-italic mt-1.5 block">Gap: Sarah ________________________ for the mistake she had made.</span>',
-      beforeNote: 'Strike out the echoes first: only \u201crefused to apologise\u201d (Past Simple) remains to be solved.',
-      afterLabel: 'Solved Pattern (2/2 Marks \u2022 5 Words)',
-      afterMeta: 'Exact Tense Harmony',
+      beforeNote: 'Cross out the repeated words first: only \u201crefused to apologise\u201d (Past Simple) needs to be rewritten.',
+      afterLabel: 'How we\u2019d improve it',
+      afterMeta: '2/2 Marks \u2022 5 Words',
       afterHtml: 'Sarah <span class="bg-emerald-50 text-emerald-950 font-bold px-1.5 py-0.5 rounded border border-emerald-200 not-italic">had no INTENTION of apologising</span> for the mistake she had made.',
-      tags: ['Echoes Struck Out', 'Keyword Unchanged', 'Past Simple Harmony']
+      tags: ['Repeated Words Crossed Out', 'Keyword Unchanged', 'Past Simple Harmony']
     },
     spoken: {
       formula: 'What + Clause + is + Noun Phrase (Emphatic What-Cleft)',
-      beforeLabel: 'Spoken / Executive B2 Habit (Direct Translation)',
-      beforeMeta: 'Stalled Mid-Sentence',
+      beforeLabel: 'Student draft',
+      beforeMeta: 'Everyday Phrasing',
       beforeHtml: '&ldquo;In our clinic, the problem is that the new staff don\u2019t want to take responsibility when a patient complains, and it makes me very frustrated.&rdquo;',
       beforeNote: 'Stringing clauses together with \u2018and it makes me...\u2019 weakens authority in meetings and Part 3.',
-      afterLabel: 'Natural C1 Spoken Upgrade',
-      afterMeta: 'Measured Authority',
+      afterLabel: 'How we\u2019d improve it',
+      afterMeta: 'Clear & Natural',
       afterHtml: '&ldquo;<span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">What really holds the clinic back is</span> a <span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">reluctance among newer staff to take ownership</span> when a patient raises a complaint.&rdquo;',
-      tags: ['What-Cleft Opening', 'Natural Collocation', 'Zero Thesaurus Fluff']
+      tags: ['What-Cleft Opening', 'Natural Collocation', 'Clear Tone']
     }
   };
 
@@ -409,7 +423,7 @@
     body.classList.toggle('hidden', !show);
     mask.classList.toggle('hidden', show);
     btn.setAttribute('aria-expanded', String(show));
-    btn.innerHTML = show ? '<span>\uD83D\uDC41\uFE0F Hide / Test Yourself First</span>' : '<span>\uD83D\uDC41\uFE0F Reveal Cambridge Model</span>';
+    btn.innerHTML = show ? '<span>Try it yourself first</span>' : '<span>Show my version</span>';
   }
 
   function switchRedpenTab(key, maskFirst) {

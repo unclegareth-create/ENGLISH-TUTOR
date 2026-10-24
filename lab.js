@@ -18,9 +18,9 @@ const LabObservatory = (() => {
 
   const HOLODECK_WORLDS = [
     {
-      badge: 'C1/C2 Gothic Course • 12 Lessons',
-      title: 'Dark Academia: Bram Stoker’s Dracula & Participle Clauses',
-      desc: '18th- and 19th-century oil paintings, British English dramatic narration, and 60 Cambridge Part 4 transformations.',
+      badge: 'C1/C2 Gothic Course • 12 lessons',
+      title: 'Dark Academia: C1/C2 English Through Classic Gothic Stories',
+      desc: 'Three lessons each from Dracula, Frankenstein, Jekyll & Hyde and Baskervilles, with paintings, British narration (synthetic voice) and 5 Part 4 transformations per lesson (60 in total).',
       img: 'assets/gothic/dracula_carpathian.jpg',
       alt: 'Caspar David Friedrich — Abbey in the Oakwood (1809–1810), illustrating Dracula Lesson 1',
       url: 'dark-academia-index.html',
@@ -33,11 +33,11 @@ const LabObservatory = (() => {
       ]
     },
     {
-      badge: 'Teens B1–B2 • 8-Bit PC-88 Visual Novel + 2d6',
-      title: 'CHRONICLE ’88: Neon Alibi 1989, Citadel of Echoes & Station Zero',
-      desc: 'Interrogate suspects with talking 8-bit character busts, roll 2d6 Composure checks, and parry damage with B2 Key Word Transformations in FM chiptune style.',
+      badge: 'Teens (B1–B2) • Retro detective game',
+      title: 'Chronicle ’88: A retro detective game for teens',
+      desc: 'Question suspects, spot whose alibi doesn’t add up, and use B1–B2 grammar to crack the case across three short episodes.',
       img: 'assets/arcade/c88_neon_alibi.svg',
-      alt: 'Chronicle 88 Tape 01: Neon Alibi 1989 detective interrogation scene with Inspector Deck',
+      alt: 'Chronicle 88 Episode 1: Neon Alibi 1989 detective interrogation scene with Inspector Deck',
       url: 'chronicle-88.html',
       quizTag: 'Quick one: B2 narrative tenses',
       prompt: 'Which suspect was ALREADY out of the room when the 23:15 alarm went off?',
@@ -47,23 +47,23 @@ const LabObservatory = (() => {
       ]
     },
     {
-      badge: 'Browser Arcade • 25 Dungeon Floors • 2D & 3D WebGL',
-      title: 'Grammar Crypt (2D Classic & 3D Dungeon), Phrasal Reactor & Word Factory',
-      desc: 'Slot glowing ancient runes into 4-tier syntax vaults (2D + 3D WebGL mode), stabilise phrasal particles, or drill Cambridge Part 3 prefixes.',
+      badge: 'Grammar & Vocabulary Games • 2D & 3D',
+      title: 'Grammar Crypt, Phrasal Reactor & Word Factory',
+      desc: 'Build sentences from word-runes in the Crypt, choose the right phrasal verb particle, or practise Cambridge Part 3 prefixes.',
       img: 'assets/arcade/grammar_crypt.svg',
       alt: 'Grammar Crypt dungeon vault with glowing syntax runes, floating embers, and the Arch-Lich boss',
       url: 'grammar-crypt-3d.html',
       quizTag: 'Quick one: Phrasal verbs',
       prompt: '“The new transport policy is expected to bring _______ a major drop in emissions.”',
       options: [
-        { text: 'A) about (cause to happen)', correct: true, explain: 'Reactor stabilised! “Bring about” means to cause or produce a significant result.' },
+        { text: 'A) about (cause to happen)', correct: true, explain: 'Spot on! “Bring about” means to cause or produce a significant result.' },
         { text: 'B) around (persuade)', correct: false, explain: '“Bring around” means to persuade someone or restore consciousness. Use “about” (“bring about”) for results!' }
       ]
     },
     {
-      badge: 'Young Learners A1–B1 • Interactive 3D Room',
+      badge: 'Young Learners (A1–B1) • Interactive 3D Room',
       title: 'Professor West’s 3D Study & Pencil the Cat',
-      desc: 'Watch the 4-Act animated intro movie with British storytelling and play 6 word quests inside a 3D room.',
+      desc: 'Watch the 4-Act animated intro with a British storyteller (synthetic voice) and play 6 word games inside a 3D room.',
       img: 'assets/study/act4_study.jpg',
       alt: 'Professor West and Pencil the Cat inside the warm mahogany 3D Study',
       url: 'professor-west-study.html?v=6&intro=1',
@@ -78,31 +78,31 @@ const LabObservatory = (() => {
 
   const GOTHIC_BOOKS = [
     {
-      tag: 'Plate I • Caspar David Friedrich, Abbey in the Oakwood (1809–10)',
-      grammar: 'Bram Stoker’s Dracula: Participle Clauses & Negative Inversion',
+      tag: 'Caspar David Friedrich, Abbey in the Oakwood (1809–10)',
+      grammar: 'Bram Stoker’s Dracula (Lessons 1–3): Participle Clauses & Negative Inversion',
       img: 'assets/gothic/dracula_carpathian.jpg',
-      alt: 'Caspar David Friedrich, Abbey in the Oakwood (1809–1810) — Book I: Dracula',
+      alt: 'Caspar David Friedrich, Abbey in the Oakwood (1809–1810) — Dracula',
       audio: 'assets/audio/gothic_act1_dracula.mp3?v=2'
     },
     {
-      tag: 'Plate II • Joseph Wright of Derby, Experiment on a Bird in the Air Pump (1768)',
-      grammar: 'Mary Shelley’s Frankenstein: Inverted Conditionals & Cleft Sentences',
+      tag: 'Joseph Wright of Derby, Experiment on a Bird in the Air Pump (1768)',
+      grammar: 'Mary Shelley’s Frankenstein (Lessons 4–6): Inverted Conditionals & Cleft Sentences',
       img: 'assets/gothic/frankenstein_lab.jpg',
-      alt: 'Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768) — Book II: Frankenstein',
+      alt: 'Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768) — Frankenstein',
       audio: 'assets/audio/gothic_act2_frankenstein.mp3?v=2'
     },
     {
-      tag: 'Plate III • John Atkinson Grimshaw, Reflections on the Thames (1880)',
-      grammar: 'Stevenson’s Dr Jekyll & Mr Hyde: Concessive Clauses & Time Inversion',
+      tag: 'John Atkinson Grimshaw, Reflections on the Thames (1880)',
+      grammar: 'Stevenson’s Dr Jekyll & Mr Hyde (Lessons 7–9): Concessive Clauses & Time Inversion',
       img: 'assets/gothic/jekyll_apothecary.jpg',
-      alt: 'John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880) — Book III: Dr Jekyll and Mr Hyde',
+      alt: 'John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880) — Dr Jekyll and Mr Hyde',
       audio: 'assets/audio/gothic_act3_jekyll.mp3?v=2'
     },
     {
-      tag: 'Plate IV • Caspar David Friedrich, Two Men Contemplating the Moon (1819)',
-      grammar: 'Conan Doyle’s Baskervilles: Past Modals of Deduction & Place Inversion',
+      tag: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819)',
+      grammar: 'Conan Doyle’s Baskervilles (Lessons 10–12): Past Modals of Deduction & Place Inversion',
       img: 'assets/gothic/baskerville_moor.jpg',
-      alt: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819) — Book IV: The Hound of the Baskervilles',
+      alt: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819) — The Hound of the Baskervilles',
       audio: 'assets/audio/gothic_act4_baskerville.mp3?v=2'
     }
   ];
@@ -269,6 +269,19 @@ const LabObservatory = (() => {
       b.setAttribute('aria-pressed', String(isMatch));
     });
 
+    const youngWrapper = document.getElementById('young-learners-wrapper');
+    const youngDrawer = document.querySelector('details.young-learners-quarantine');
+    if (youngWrapper) {
+      if (wing === 'adults') {
+        youngWrapper.classList.add('wing-hidden');
+      } else {
+        youngWrapper.classList.remove('wing-hidden');
+      }
+    }
+    if (youngDrawer && (wing === 'teens' || wing === 'kids')) {
+      youngDrawer.open = true;
+    }
+
     document.querySelectorAll('.lab-wing-section').forEach((sec) => {
       const secWings = sec.getAttribute('data-wing') || '';
       if (wing === 'all' || secWings.includes(wing)) {
@@ -303,7 +316,7 @@ const LabObservatory = (() => {
     if (sampleAudio && !sampleAudio.paused) {
       sampleAudio.pause();
       const lbl = document.getElementById('da-preview-audio-label');
-      if (lbl) lbl.textContent = 'Hear Sample';
+      if (lbl) lbl.textContent = 'Hear sample (synthetic voice)';
     }
   }
 
@@ -315,16 +328,16 @@ const LabObservatory = (() => {
     }
     if (!sampleAudio.paused) {
       sampleAudio.pause();
-      if (lbl) lbl.textContent = 'Hear Sample';
+      if (lbl) lbl.textContent = 'Hear sample (synthetic voice)';
       return;
     }
     sampleAudio.src = b.audio;
-    if (lbl) lbl.textContent = '⏹ Stop Audio';
+    if (lbl) lbl.textContent = '⏹ Stop audio';
     sampleAudio.onended = () => {
-      if (lbl) lbl.textContent = 'Hear Sample';
+      if (lbl) lbl.textContent = 'Hear sample (synthetic voice)';
     };
     sampleAudio.play().catch(() => {
-      if (lbl) lbl.textContent = 'Hear Sample';
+      if (lbl) lbl.textContent = 'Hear sample (synthetic voice)';
     });
   }
 
@@ -377,7 +390,7 @@ const LabObservatory = (() => {
     }, 140);
     const readout = document.getElementById('c88-dice-readout');
     if (readout) {
-      readout.textContent = `🎲 Rolled ${d1}+${d2}=${sum} (${passed ? 'PASS ≤ 7: UNSCATHED!' : 'HAZARD HIT: TAP TO PARRY'})`;
+      readout.textContent = `🎲 Rolled ${d1} + ${d2} = ${sum} (${passed ? 'Safe! 7 or under passes' : 'Spotted! Solve a grammar puzzle to recover'})`;
     }
   }
 
@@ -529,6 +542,27 @@ const LabObservatory = (() => {
     setHolodeck(0);
     initHeroParticles();
 
+    // Show confirmation banner when redirected back from FormSubmit (?subscribed=true) or pre-filter wing (?wing=teens)
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('subscribed') === 'true') {
+        const subBanner = document.getElementById('subscribed-success-banner');
+        const cheatSheetSec = document.getElementById('cheat-sheet');
+        if (subBanner) {
+          subBanner.classList.remove('hidden');
+        }
+        if (cheatSheetSec) {
+          setTimeout(() => {
+            cheatSheetSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 150);
+        }
+      }
+      const initialWing = params.get('wing');
+      if (initialWing && ['all', 'adults', 'teens', 'kids'].includes(initialWing)) {
+        filterWing(initialWing);
+      }
+    } catch (e) {}
+
     // Ensure clicking any anchor link (nav, mobile menu, bento cards, footer) un-hides filtered wings first
     document.addEventListener('click', (e) => {
       const anchor = e.target.closest('a[href^="#"]');
@@ -543,6 +577,10 @@ const LabObservatory = (() => {
       } else {
         // Always ensure all sections are reachable when jumping via anchor links
         filterWing('all');
+      }
+      if (hash === '#chronicle-88' || hash === '#professor-west' || targetEl.closest('details.young-learners-quarantine')) {
+        const drawer = document.querySelector('details.young-learners-quarantine');
+        if (drawer) drawer.open = true;
       }
     });
 

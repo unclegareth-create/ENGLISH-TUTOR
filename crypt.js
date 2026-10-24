@@ -15,7 +15,13 @@
         try { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); } catch (_) {}
     };
 
+    const isSoundEnabled = () => {
+        const audioBtn = document.getElementById('audio-toggle');
+        return audioBtn ? audioBtn.getAttribute('aria-pressed') === 'true' : false;
+    };
+
     const sfx = (name, arg) => {
+        if (!isSoundEnabled()) return;
         try { if (window.GCAudio) window.GCAudio.play(name, arg); } catch (_) { /* audio is optional */ }
         if (name === 'grab' || name === 'drop') vibrate(15);
         else if (name === 'success') vibrate([30, 40, 60]);
@@ -384,6 +390,19 @@
 
     /* ---------------- VALIDATION ---------------- */
 
+    let inSelfTest = false;
+
+    function getCryptCategory(floorIdx, it) {
+        if (it && it.tokens) {
+            if (it.tokens.some(t => t.pos === 'cleft' || t.pos === 'rel')) return 'cleft_clauses';
+            if (it.tokens.some(t => t.pos === 'neg')) return 'inversion';
+        }
+        if (floorIdx >= 20 && floorIdx <= 23) return 'cleft_clauses';
+        if (floorIdx === 8 || floorIdx === 9) return 'register_shift';
+        if (floorIdx === 5 || floorIdx === 6 || floorIdx === 7) return 'nominalisation';
+        return 'inversion';
+    }
+
     function validateBoard() {
         const slots = zones();
         if (!slots.every(z => blockIn(z))) {
@@ -392,15 +411,42 @@
         }
 
         // Any accepted ordering wins; near-misses are grammatical but not this floor's structure.
-        const r = L.check(item, boardTexts());
+        const currentTexts = boardTexts();
+        const r = L.check(item, currentTexts);
+        const questionText = levels[state.level] ? `${levels[state.level].title} (${levels[state.level].cefr})` : 'Grammar Crypt';
+        const correctAns = L.formatSentence(r.answer || item.answers[0]);
+        const chosenAns = L.formatSentence(currentTexts);
+        const ruleExplanation = r.msg || item.explain || (L.TIPS[r.expectedPos] || '');
 
         if (r.result === 'correct') {
+            if (!inSelfTest) {
+                window.CandidateDossier?.recordAttempt({
+                    category: getCryptCategory(state.level, item),
+                    correct: true,
+                    game: 'Grammar Crypt',
+                    prompt: questionText,
+                    targetAnswer: correctAns,
+                    userAttempt: chosenAns,
+                    explanation: item.explain || ruleExplanation
+                });
+            }
             solveLevel(r.answer);
         } else if (r.result === 'near') {
             setStatus('Almost!', '');
             if (tipEl) tipEl.textContent = r.msg;
             sfx('grab');
         } else {
+            if (!inSelfTest) {
+                window.CandidateDossier?.recordAttempt({
+                    category: getCryptCategory(state.level, item),
+                    correct: false,
+                    game: 'Grammar Crypt',
+                    prompt: questionText,
+                    targetAnswer: correctAns,
+                    userAttempt: chosenAns,
+                    explanation: ruleExplanation
+                });
+            }
             state.streak = 0;
             refreshHud();
             saveState();
@@ -655,6 +701,7 @@
         const lines = ['GRAMMAR CRYPT 2D SELFTEST'].concat(res.lines);
         // Board integration: every floor renders one zone per token, and solving with answers[last] locks the board.
         const saved = JSON.stringify(state);
+        inSelfTest = true;
         try {
             levels.forEach((fl, f) => {
                 state.level = f; item = null; initLevel();
@@ -669,6 +716,7 @@
             });
             lines.push('(2D) all 25 floors render and accept an alternative ordering on the live board');
         } catch (e) { pass = false; lines.push('FAIL 2D board: ' + e.message); }
+        inSelfTest = false;
         state = L.store.sanitize(JSON.parse(saved)); saveState();
         item = null; initLevel();
         lines.push(pass ? 'RESULT: PASS' : 'RESULT: FAIL');
@@ -680,7 +728,17 @@
 
     /* ---------------- BOOT ---------------- */
 
+    // Ensure audio/music is OFF/muted by default until the user explicitly toggles sound on
+    const muteAudioByDefault = () => {
+        const audioBtn = document.getElementById('audio-toggle');
+        if (audioBtn && audioBtn.getAttribute('aria-pressed') === 'true') {
+            audioBtn.click();
+        }
+    };
+    muteAudioByDefault();
+
     document.addEventListener('DOMContentLoaded', () => {
+        muteAudioByDefault();
         loadState();
         const justSubmitted = location.search.includes('success=true');
         if (justSubmitted) {

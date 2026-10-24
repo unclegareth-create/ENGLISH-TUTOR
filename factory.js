@@ -142,6 +142,24 @@
         isActive = false;
         lives--;
         updateHud();
+
+        if (currentWord) {
+            const sentenceText = `Form the ${currentWord.req} from "${currentWord.root}"`;
+            const rootWord = currentWord.root;
+            const targetWord = currentWord.ans;
+            const userWord = typingInput.value.trim().toUpperCase() || '(timed out)';
+            const morphHint = `${currentWord.root} → ${currentWord.ans} (${currentWord.req})`;
+            window.CandidateDossier?.recordAttempt({
+                category: 'word_formation',
+                correct: false,
+                game: 'Word Factory',
+                prompt: sentenceText,
+                keyword: rootWord,
+                targetAnswer: targetWord,
+                userAttempt: userWord,
+                explanation: morphHint
+            });
+        }
         
         blockEl.className = 'block fail';
         typingInput.value = currentWord.ans; // show correct answer
@@ -156,7 +174,27 @@
     typingInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && isActive) {
             const guess = typingInput.value.trim().toUpperCase();
-            if (guess === currentWord.ans) {
+            const isCorrect = !!(currentWord && guess === currentWord.ans);
+
+            if (currentWord) {
+                const sentenceText = `Form the ${currentWord.req} from "${currentWord.root}"`;
+                const rootWord = currentWord.root;
+                const targetWord = currentWord.ans;
+                const userWord = guess || '(empty)';
+                const morphHint = `${currentWord.root} → ${currentWord.ans} (${currentWord.req})`;
+                window.CandidateDossier?.recordAttempt({
+                    category: 'word_formation',
+                    correct: isCorrect,
+                    game: 'Word Factory',
+                    prompt: sentenceText,
+                    keyword: rootWord,
+                    targetAnswer: targetWord,
+                    userAttempt: userWord,
+                    explanation: morphHint
+                });
+            }
+
+            if (isCorrect) {
                 // Success
                 isActive = false;
                 score++;
@@ -217,7 +255,7 @@
                     examImpact: 'In Cambridge C1/C2 Use of English Part 3, missing double-affixes (e.g. un-precedented-ly) drops your score directly into B2 territory.',
                     onReplay: () => {
                         endModal.classList.remove('open');
-                        btnStart.click();
+                        startBtn.click();
                     }
                 });
             }, 600);

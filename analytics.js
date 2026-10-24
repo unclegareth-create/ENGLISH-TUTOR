@@ -177,10 +177,10 @@
                        style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:14px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 4px 6px -1px rgba(37,99,235,0.4);">
                       Book a 30-Min 1-to-1 Trial with Gareth (&pound;35) &rarr;
                     </a>
-                    <a href="index.html?package=Written+Essay+Audit+(%C2%A339)#contact"
-                       onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'async_audit_39', pct: ${pct} })"
+                    <a href="index.html?package=Written+essay+feedback+(%C2%A329)&tier=audit_async_29#enquiry-card"
+                       onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'async_audit_29', pct: ${pct} })"
                        style="display:block;text-align:center;background:#1f2937;border:1px solid #4b5563;color:#e5e7eb;font-weight:600;padding:12px;border-radius:10px;text-decoration:none;font-size:14px;">
-                      Get a Written Essay Audit (&pound;39) &rarr;
+                      Get Written Essay Feedback (&pound;29) &rarr;
                     </a>
                   </div>
                   <button id="gm-diag-replay" type="button" style="margin-top:14px;width:100%;background:none;border:none;color:#9ca3af;font-size:13px;cursor:pointer;text-decoration:underline;">
