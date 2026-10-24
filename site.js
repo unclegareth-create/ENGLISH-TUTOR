@@ -278,13 +278,24 @@
         if (pkgBanner && pkgNameEl) {
             pkgNameEl.textContent = pkg;
             if (pkgNextStepEl) {
-                pkgNextStepEl.textContent = stripeUrl
-                    ? 'Click "Pay Instantly via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
-                    : 'Enter your name, email, and time zone below \u2014 I will send your Stripe Payment Link (or Wise/PayPal details on request) and confirm your schedule.';
+                if (resolvedTier === 'sprint_10_650') {
+                    pkgNextStepEl.textContent = 'Click "Pay via Stripe" for the £650 full pack, or submit the form below to claim your £35 starter-session credit (£615 remaining balance), confirm times, or request Wise/PayPal.';
+                } else if (resolvedTier === 'pack_12_780') {
+                    pkgNextStepEl.textContent = 'Click "Pay via Stripe" for the £780 full pack, or submit the form below to claim your £35 starter-session credit (£745 remaining balance), confirm times, or request Wise/PayPal.';
+                } else {
+                    pkgNextStepEl.textContent = stripeUrl
+                        ? 'Click "Pay via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
+                        : 'Enter your name, email, and time zone below \u2014 I will send your Stripe Payment Link (or Wise/PayPal details on request) and confirm your schedule.';
+                }
             }
             if (stripeBtn) {
                 if (stripeUrl) {
                     stripeBtn.href = stripeUrl;
+                    stripeBtn.textContent = resolvedTier === 'sprint_10_650'
+                        ? 'Pay Full Pack (£650) via Stripe \u2192'
+                        : resolvedTier === 'pack_12_780'
+                            ? 'Pay Full Pack (£780) via Stripe \u2192'
+                            : 'Pay via Stripe \u2192';
                     stripeBtn.classList.remove('hidden');
                 } else {
                     stripeBtn.classList.add('hidden');

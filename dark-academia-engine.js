@@ -2,7 +2,7 @@
  * ==========================================================================
  * Dark Academia: The Gothic Canon — Interactive Learning Engine & £24 Paywall Gate
  * Handles:
- * - £24 Stripe Self-Serve Paywall Gate (4 Free Unit 1s + 8 Gated Advanced Units + Compendium)
+ * - £24 Stripe Self-Serve Paywall Gate (5 Free Unit 1s + 10 Gated Advanced Units + Compendium)
  * - Auto-unlock via Stripe redirect & multi-device Access Code (verified via 64-bit hash)
  * - Interactive Tap-to-Build Word Tiles, Hint Button, and 2-Try Forgiving KWT Checking
  * ==========================================================================
@@ -142,7 +142,7 @@ const DarkAcademiaGate = {
       <div>
         <strong style="color:#6ee7b7;font-size:1rem;">✓ Payment Confirmed — Full Dark Academia Course Unlocked!</strong>
         <p style="font-size:0.86rem;color:#d1fae5;margin:0.25rem 0 0 0;">
-          All 12 Lessons and the Printable Study Guide &amp; Answer Key are now unlocked on this browser. Save your backup Access Code for phones or other devices: <code style="background:#022c22;padding:0.15rem 0.45rem;border-radius:4px;border:1px solid #10b981;color:#fde68a;font-weight:800;">${backupCode}</code>
+          All 15 Lessons and the Printable Study Guide &amp; Answer Key are now unlocked on this browser. Save your backup Access Code for phones or other devices: <code style="background:#022c22;padding:0.15rem 0.45rem;border-radius:4px;border:1px solid #10b981;color:#fde68a;font-weight:800;">${backupCode}</code>
         </p>
       </div>
       <button onclick="this.parentElement.remove()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:0.4rem 0.85rem;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:700;">Dismiss</button>
@@ -234,7 +234,7 @@ const DarkAcademiaGate = {
         };
       } else {
         heroUnlockBtn.innerHTML =
-          '<span>Unlock All 12 Lessons — £24</span><span aria-hidden="true">→</span>';
+          '<span>Unlock All 15 Lessons — £24</span><span aria-hidden="true">→</span>';
         heroUnlockBtn.style.background = '';
         heroUnlockBtn.style.borderColor = '';
         heroUnlockBtn.onclick = () => DarkAcademiaGate.openModal('hub');
@@ -322,20 +322,20 @@ const DarkAcademiaGate = {
         <div style="text-align:center;">
           <div class="da-modal-seal">🕯️</div>
           <span class="da-modal-badge">Full Course Access</span>
-          <h2 id="modal-gate-title" class="da-modal-title">Unlock the Complete 12-Lesson Course</h2>
+          <h2 id="modal-gate-title" class="da-modal-title">Unlock the Complete 15-Lesson Course</h2>
           <p class="da-modal-subtitle">
-            Lesson 1 of each book is free to try. Unlock all 8 Advanced Lessons across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, and <em>The Hound of the Baskervilles</em> (+ the Printable Study Guide &amp; Complete Answer Key) for <strong>£24</strong> (one-time payment, lifetime access).
+            Lesson 1 of each book is free to try. Unlock all 10 Advanced Lessons across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, <em>The Hound of the Baskervilles</em>, and <em>Alice in Wonderland</em> (+ the Printable Study Guide &amp; Complete Answer Key) for <strong>£24</strong> (one-time payment, lifetime access).
           </p>
         </div>
 
         <div class="da-modal-benefits">
           <div class="da-benefit-item">
             <span class="da-benefit-icon">✓</span>
-            <span><strong>All 12 Interactive C1/C2 Lessons:</strong> Complete 3-part modules for <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, and <em>The Hound of the Baskervilles</em>.</span>
+            <span><strong>All 15 Interactive C1/C2 Lessons:</strong> Complete 3-part modules for <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, <em>The Hound of the Baskervilles</em>, and <em>Alice in Wonderland</em>.</span>
           </div>
           <div class="da-benefit-item">
             <span class="da-benefit-icon">✓</span>
-            <span><strong>60 Interactive Key Word Transformations:</strong> With tap-to-build word tiles, instant hints, and Cambridge C1/C2 feedback.</span>
+            <span><strong>75 Interactive Key Word Transformations:</strong> With tap-to-build word tiles, instant hints, and Cambridge C1/C2 feedback.</span>
           </div>
           <div class="da-benefit-item">
             <span class="da-benefit-icon">✓</span>
@@ -343,7 +343,7 @@ const DarkAcademiaGate = {
           </div>
           <div class="da-benefit-item">
             <span class="da-benefit-icon">✓</span>
-            <span><strong>Printable Study Guide &amp; Answer Key:</strong> Complete grammar cheat sheet, vocabulary filter, and all 180 answers.</span>
+            <span><strong>Printable Study Guide &amp; Answer Key:</strong> Complete grammar cheat sheet, vocabulary filter, and all 225 answers.</span>
           </div>
         </div>
 
@@ -519,6 +519,72 @@ const DarkAcademiaGate = {
       feedback.style.color = '#fca5a5';
       feedback.textContent = '✗ Invalid access code. Check your confirmation screen or email Gareth your Stripe receipt.';
     }
+  },
+
+  copyShareLink(unitId, btnEl) {
+    const unitPages = {
+      dracula_unit1: 'dracula-unit1-carpathian-threshold.html',
+      dracula_unit2: 'dracula-unit2-counts-hospitality.html',
+      dracula_unit3: 'dracula-unit3-log-of-the-demeter.html',
+      frankenstein_unit1: 'frankenstein-unit1-spark-of-being.html',
+      frankenstein_unit2: 'frankenstein-unit2-sea-of-ice.html',
+      frankenstein_unit3: 'frankenstein-unit3-creatures-apologia.html',
+      jekyll_unit1: 'jekyll-unit1-soho-threshold.html',
+      jekyll_unit2: 'jekyll-unit2-lanyons-narrative.html',
+      jekyll_unit3: 'jekyll-unit3-full-statement.html',
+      baskerville_unit1: 'baskerville-unit1-curse-of-the-moors.html',
+      baskerville_unit2: 'baskerville-unit2-grimpen-mire.html',
+      baskerville_unit3: 'baskerville-unit3-moorland-vigil.html',
+      alice_unit1: 'alice-unit13-down-the-rabbit-hole.html',
+      alice_unit2: 'alice-unit14-mad-tea-party.html',
+      alice_unit3: 'alice-unit15-queens-trial.html'
+    };
+    const pathSlug = (window.location.pathname.split('/').pop() || '').trim();
+    const pageFile = pathSlug.endsWith('.html') ? pathSlug : (unitPages[unitId] || 'dark-academia-index.html');
+    const canonicalUrl = `https://garethenglish.com/${pageFile}`;
+
+    const showCopiedState = () => {
+      if (!btnEl) return;
+      if (!btnEl.dataset.origLabel) {
+        btnEl.dataset.origLabel = btnEl.textContent.trim();
+      }
+      btnEl.textContent = '✓ Link Copied — Send to a Study Partner!';
+      btnEl.style.borderColor = '#10b981';
+      btnEl.style.color = '#86efac';
+      btnEl.style.background = 'rgba(16, 185, 129, 0.18)';
+      clearTimeout(btnEl._copyTimer);
+      btnEl._copyTimer = setTimeout(() => {
+        btnEl.textContent = btnEl.dataset.origLabel;
+        btnEl.style.borderColor = '';
+        btnEl.style.color = '';
+        btnEl.style.background = '';
+      }, 3200);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(canonicalUrl).then(showCopiedState).catch(() => {
+        this._fallbackCopyText(canonicalUrl);
+        showCopiedState();
+      });
+    } else {
+      this._fallbackCopyText(canonicalUrl);
+      showCopiedState();
+    }
+    return canonicalUrl;
+  },
+
+  _fallbackCopyText(text) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    } catch (e) {}
   }
 };
 
@@ -962,6 +1028,9 @@ class DarkAcademiaEngine {
           <a href="the-gothic-canon-c1-c2-compendium.html" class="dossier-pill-btn">
             📖 Open Study Guide &amp; Answer Key
           </a>
+          <button type="button" class="dossier-pill-btn" style="cursor:pointer;" onclick="DarkAcademiaGate.copyShareLink('${this.unitId}', this)">
+            🔗 Share this lesson with a study partner (Copy Link)
+          </button>
         </div>
       `;
     } else {
@@ -970,24 +1039,27 @@ class DarkAcademiaEngine {
           <span class="da-score-callout">Free Lesson Score: ${this.score} / ${this.totalMarks} Marks (${pct}%)</span>
           <span class="badge badge-canon-dracula">C1/C2 Complete Course</span>
         </div>
-        <h3 class="da-completion-title">Enjoying the Course? Unlock All 12 Lessons</h3>
+        <h3 class="da-completion-title">Enjoying the Course? Unlock All 15 Lessons</h3>
         <p class="da-completion-body">
-          You've practiced ${meta.mastered}. Unlock the complete <strong>12-Lesson Dark Academia Course</strong> across <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, and <em>The Hound of the Baskervilles</em> (+ the Printable Study Guide &amp; Complete Answer Key) for <strong>£24</strong>.
+          You've practiced ${meta.mastered}. Unlock the complete <strong>15-Lesson Dark Academia Course</strong> across <em>Dracula</em>, <em>Frankenstein</em>, <em>Dr Jekyll &amp; Mr Hyde</em>, <em>The Hound of the Baskervilles</em>, and <em>Alice in Wonderland</em> (+ the Printable Study Guide &amp; Complete Answer Key) for <strong>£24</strong>.
         </p>
         <div class="da-completion-perks">
-          <div class="da-perk-chip"><span>🔓</span> 8 Advanced C1/C2 Lessons</div>
-          <div class="da-perk-chip"><span>✓</span> 60 Interactive Transformations</div>
+          <div class="da-perk-chip"><span>🔓</span> 10 Advanced C1/C2 Lessons</div>
+          <div class="da-perk-chip"><span>✓</span> 75 Interactive Transformations</div>
           <div class="da-perk-chip"><span>✍️</span> Modern Essay &amp; Review Practice</div>
           <div class="da-perk-chip"><span>📖</span> Printable Study Guide &amp; Answer Key</div>
         </div>
         <div class="da-completion-actions">
           <button class="da-btn-stripe" style="max-width:340px;" onclick="DarkAcademiaGate.openModal('${this.unitId}')">
-            <span>Unlock Full 12-Lesson Course — £24</span>
+            <span>Unlock Full 15-Lesson Course — £24</span>
             <span aria-hidden="true">→</span>
           </button>
           <a href="${meta.nextFreeUrl}" class="da-link-secondary">
             Or try ${meta.nextFreeTitle} for free first →
           </a>
+          <button type="button" class="dossier-pill-btn" style="cursor:pointer;" onclick="DarkAcademiaGate.copyShareLink('${this.unitId}', this)">
+            🔗 Share this lesson with a study partner (Copy Link)
+          </button>
         </div>
       `;
     }
@@ -2509,7 +2581,7 @@ const DarkAcademiaAtmosphere = (() => {
           !isHub
             ? `<a href="dark-academia-index.html" class="da-hud-pill" title="Return to Dark Academia Course Hub">
                  <span>§</span>
-                 <span>Course Hub (12 Lessons)</span>
+                 <span>Course Hub (15 Lessons)</span>
                </a>`
             : `<span class="da-hud-pill" style="cursor:default; border-color:rgba(197,160,89,0.45); color:#e6d3a7;">
                  <span>✦</span>

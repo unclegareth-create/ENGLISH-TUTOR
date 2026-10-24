@@ -412,7 +412,19 @@ const LabObservatory = (() => {
     'ab0e473c6e1c45b8',
     '3a90fcfd3df5fd99',
     'df4050d2ac7e7818',
-    '87c6e97afd2f9576'
+    '87c6e97afd2f9576',
+    '8720a773c24deac9',
+    '68943376c022200c',
+    'e32febaa231630ba',
+    'f7c46303a42395e1',
+    '69f9d176bc781314',
+    '642ef07c8176b90a',
+    '07dfc1f76646e3e9',
+    '3089a39af9f71612',
+    'df3a72ff4ff87f6d',
+    '410a91742e314132',
+    '36d29a47ba9eca49',
+    'ba6766737503c529'
   ];
 
   function hashAccessCode(raw) {
@@ -602,6 +614,20 @@ const LabObservatory = (() => {
       const initialWing = params.get('wing');
       if (initialWing && ['all', 'adults', 'teens', 'kids'].includes(initialWing)) {
         filterWing(initialWing);
+      }
+      const unlockParam = params.get('unlock');
+      const isDirectUnlock = params.get('unlocked') === 'true' || Boolean(params.get('session_id'));
+      if (isDirectUnlock || (unlockParam && VALID_CODE_HASHES.includes(hashAccessCode(unlockParam)))) {
+        try {
+          localStorage.setItem('da_archive_unlocked', 'true');
+          localStorage.setItem('da_canon_unlocked', 'true');
+          localStorage.setItem('da_course_unlocked_v1', 'true');
+        } catch (e) {}
+        const feedback = document.getElementById('lab-da-access-code-feedback');
+        if (feedback) {
+          feedback.className = 'text-xs font-bold text-emerald-400 mt-1.5';
+          feedback.textContent = '✓ Full 15-lesson course unlocked on this browser!';
+        }
       }
     } catch (e) {}
 
