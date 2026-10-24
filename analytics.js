@@ -27,6 +27,38 @@
     }
 
     const GOATCOUNTER_CODE = 'garethenglish';   // <-- Registered GoatCounter site code
+    const LAST_FREE_TOOL_KEY = 'gm_last_free_tool';
+
+    const FREE_GAME_RE = /(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch|abyssal-bathysphere|darjeeling-signal-box|midnight-study-desk|blueprint-vault|chronicle-88)\.html/i;
+    const EXAM_LAB_RE = /(^|\/)(fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson)\.html/i;
+    const FREE_GOTHIC_RE = /(^|\/)(dracula-unit1-carpathian-threshold|frankenstein-unit1-spark-of-being|jekyll-unit1-soho-threshold|baskerville-unit1-curse-of-the-moors|alice-unit13-down-the-rabbit-hole)\.html/i;
+    const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark)\.(html|pdf)/i;
+
+    const getLastFreeTool = () => {
+        try {
+            return localStorage.getItem(LAST_FREE_TOOL_KEY) || 'direct';
+        } catch (e) {
+            return 'direct';
+        }
+    };
+
+    const setLastFreeTool = (toolSlug) => {
+        if (!toolSlug) return;
+        try {
+            localStorage.setItem(LAST_FREE_TOOL_KEY, String(toolSlug).replace(/\.(html|pdf)$/i, ''));
+        } catch (e) {}
+    };
+
+    // Auto-record if the visitor lands directly on a free game, exam lab, free Gothic lesson, or study guide
+    const currentSlug = (currentPath.split('/').pop() || '').split(/[?#]/)[0];
+    if (
+        FREE_GAME_RE.test(currentPath) ||
+        EXAM_LAB_RE.test(currentPath) ||
+        FREE_GOTHIC_RE.test(currentPath) ||
+        STUDY_GUIDE_RE.test(currentPath)
+    ) {
+        setLastFreeTool(currentSlug);
+    }
 
     if (GOATCOUNTER_CODE) {
         // Load the GoatCounter counter script (cookieless, privacy-friendly).
@@ -58,15 +90,36 @@
             if (!a) return;
             const href = a.getAttribute('href');
 
-            if (href === '#contact' || href.includes('#contact')) {
-                send(`booking-cta: ${label(a)}`);
+            if (href.includes('buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01') || a.getAttribute('data-tier') === 'gothic_canon_24') {
+                const fromTool = getLastFreeTool();
+                send(`course-checkout: from=${fromTool}`);
+                if (typeof window.trackFunnelEvent === 'function') {
+                    window.trackFunnelEvent('course_checkout_clicked', { tier: 'gothic_canon_24', from_free_tool: fromTool });
+                }
+            } else if (/(^|\/)dark-academia-index\.html/i.test(href)) {
+                const fromTool = getLastFreeTool();
+                send(`course-hub: from=${fromTool}`);
+                if (typeof window.trackFunnelEvent === 'function') {
+                    window.trackFunnelEvent('course_hub_clicked', { tier: 'gothic_canon_24', from_free_tool: fromTool });
+                }
+            } else if (href === '#contact' || href.includes('#contact')) {
+                send(`booking-cta: ${label(a)} (from=${getLastFreeTool()})`);
             } else if (href.includes('cal.com/gareth-montgomery-jgaefz')) {
-                send('booking-external: cal.com');
-            } else if (/(^|\/)(fce-friendship-conditionals|cae-essay-builder|cpe-psychometrics-passives|ielts-essay-masterclass)\.html/.test(href)) {
+                send(`booking-external: cal.com (from=${getLastFreeTool()})`);
+            } else if (href.includes('#prosody-lab')) {
+                setLastFreeTool('prosody-lab');
+                send('study-guide: prosody-lab');
+            } else if (EXAM_LAB_RE.test(href)) {
+                setLastFreeTool(page(href));
                 send(`exam-lab: ${page(href)}`);
-            } else if (/(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch)\.html/.test(href)) {
+            } else if (FREE_GAME_RE.test(href)) {
+                setLastFreeTool(page(href));
                 send(`game: ${page(href)}`);
-            } else if (a.closest('[data-track="articles"]')) {
+            } else if (FREE_GOTHIC_RE.test(href)) {
+                setLastFreeTool(page(href));
+                send(`free-gothic-lesson: ${page(href)}`);
+            } else if (STUDY_GUIDE_RE.test(href) || a.closest('[data-track="articles"]')) {
+                setLastFreeTool(page(href));
                 send(`article: ${page(href)}`);
             }
         });
@@ -76,9 +129,10 @@
             const form = e.target;
             if (!form) return;
             if (form.closest('#cheat-sheet') || form.closest('#arcade-signup')) {
+                setLastFreeTool('cheat-sheet-study-pack');
                 send('lead-magnet: cheat-sheet-download');
             } else if (form.id === 'contact-form' || form.id === 'lead-form') {
-                send('contact-form: enquiry-sent');
+                send(`contact-form: enquiry-sent (from=${getLastFreeTool()})`);
             }
         });
     }
@@ -97,9 +151,11 @@
 
         window.trackFunnelEvent = function (eventName, params) {
             params = params || {};
+            const lastFreeTool = getLastFreeTool();
             const payload = {
                 event: eventName,
                 path: window.location.pathname,
+                last_free_tool: lastFreeTool,
                 timestamp: new Date().toISOString(),
                 ...params
             };
@@ -121,7 +177,7 @@
             if (window.goatcounter && typeof window.goatcounter.count === 'function') {
                 try {
                     window.goatcounter.count({
-                        path: eventName + (params.tier ? '/' + params.tier : ''),
+                        path: eventName + (params.tier ? '/' + params.tier : '') + (lastFreeTool ? '/from=' + lastFreeTool : ''),
                         title: 'Funnel Event: ' + eventName,
                         event: true
                     });
@@ -144,6 +200,9 @@
             const pct = Math.max(0, Math.min(100, Math.round((score / (maxScore || 1)) * 100)));
             const cefrEstimate = pct >= 85 ? 'C1 Advanced / C2 Ready' : pct >= 65 ? 'B2 Upper-Intermediate (Borderline C1)' : 'B1/B2 Transition';
 
+            if (currentSlug) {
+                setLastFreeTool(currentSlug);
+            }
             window.trackFunnelEvent('diagnostic_gate_shown', { gameName, score, maxScore, pct, cefrEstimate });
 
             const existing = document.getElementById('gm-diag-overlay');
@@ -169,12 +228,17 @@
                     <span style="color:#e5e7eb;">${examImpact}</span>
                   </div>
                   <p style="font-size:14px;color:#d1d5db;margin-bottom:18px;line-height:1.5;">
-                    Want personal feedback on your actual speaking and writing? Choose what suits you best:
+                    Ready for your next step? Continue with the self-paced Gothic course or get personal 1-to-1 feedback:
                   </p>
                   <div style="display:grid;gap:10px;">
+                    <a href="dark-academia-index.html"
+                       onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'gothic_canon_24', pct: ${pct} })"
+                       style="display:block;text-align:center;background:#78350f;border:1px solid #f59e0b;color:#fef3c7;font-weight:700;padding:13px;border-radius:10px;text-decoration:none;font-size:14px;">
+                      Explore the C1/C2 Gothic Course (5 Free Lessons / &pound;24 Full Course) &rarr;
+                    </a>
                     <a href="index.html#book-trial"
                        onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'trial_35', pct: ${pct} })"
-                       style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:14px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 4px 6px -1px rgba(37,99,235,0.4);">
+                       style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:13px;border-radius:10px;text-decoration:none;font-size:14px;box-shadow:0 4px 6px -1px rgba(37,99,235,0.4);">
                       Book a 30-Min 1-to-1 Trial with Gareth (&pound;35) &rarr;
                     </a>
                     <a href="index.html?package=Written+essay+feedback+(%C2%A329)&tier=audit_async_29#enquiry-card"

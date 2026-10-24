@@ -200,7 +200,7 @@
             <span class="pill">2 Marks Each (10 Marks Total)</span>
           </div>
           <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1.35rem;">
-            Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. <strong>Do not change the word given.</strong> Use between <strong>3 and 8 words</strong>, including the key word.
+            Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. <strong>Do not change the word given.</strong> Use between <strong>3 and 6 words</strong>, including the key word.
           </p>
           ${(kwt || []).map((item, kIdx) => `
             <div class="kwt-card ${theme}" data-kwt-idx="${kIdx}" data-valid="${item.validAnswers.join('|')}">
@@ -208,7 +208,7 @@
               <span class="kwt-key">${item.keyWord}</span>
               <div class="kwt-input-row">
                 <span>${item.leadIn}</span>
-                <input type="text" class="kwt-input" placeholder="3–8 words..." aria-label="Transformation answer for question ${item.number}">
+                <input type="text" class="kwt-input" placeholder="3–6 words..." aria-label="Transformation answer for question ${item.number}">
                 <span>${item.leadOut}</span>
                 <button class="btn-main ${theme} dare-kwt-check" data-kwt-idx="${kIdx}">Check</button>
               </div>

@@ -72,6 +72,7 @@ const DarkAcademiaGate = {
       'frankenstein_unit2', 'frankenstein_unit3',
       'jekyll_unit2', 'jekyll_unit3',
       'baskerville_unit2', 'baskerville_unit3',
+      'alice_unit2', 'alice_unit3',
       'compendium'
     ];
     if (!lockedUnits.includes(unitId)) return false;
@@ -408,6 +409,8 @@ const DarkAcademiaGate = {
         if (
           window.location.pathname.includes('unit2') ||
           window.location.pathname.includes('unit3') ||
+          window.location.pathname.includes('unit14') ||
+          window.location.pathname.includes('unit15') ||
           window.location.pathname.includes('compendium')
         ) {
           window.location.reload();
@@ -425,6 +428,7 @@ const DarkAcademiaGate = {
       'frankenstein_unit2', 'frankenstein_unit3',
       'jekyll_unit2', 'jekyll_unit3',
       'baskerville_unit2', 'baskerville_unit3',
+      'alice_unit2', 'alice_unit3',
       'compendium'
     ];
 
@@ -444,14 +448,14 @@ const DarkAcademiaGate = {
               <span class="da-modal-badge">Full Course Lesson</span>
               <h2 class="da-modal-title">Unlock the Complete Course (£24)</h2>
               <p class="da-modal-subtitle">
-                Lesson 1 of each book is free to try. Unlock all 12 lessons across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, and <em>The Hound of the Baskervilles</em> + the Printable Study Guide &amp; Answer Key.
+                The first lesson of each book is free to try. Unlock all 15 lessons across <em>Dracula</em>, <em>Frankenstein</em>, <em>Jekyll &amp; Hyde</em>, <em>The Hound of the Baskervilles</em>, and <em>Alice in Wonderland</em> + the Printable Study Guide &amp; Answer Key.
               </p>
             </div>
 
             <div class="da-modal-benefits">
               <div class="da-benefit-item">
                 <span class="da-benefit-icon">✓</span>
-                <span>Full access to all 12 Interactive C1/C2 Lessons + the Printable Study Guide &amp; Complete Answer Key.</span>
+                <span>Full access to all 15 Interactive C1/C2 Lessons + the Printable Study Guide &amp; Complete Answer Key.</span>
               </div>
               <div class="da-benefit-item">
                 <span class="da-benefit-icon">✓</span>
@@ -897,18 +901,39 @@ class DarkAcademiaEngine {
         mastered: 'Past Modals of Deduction at 221B Baker Street',
         nextUrl: 'baskerville-unit2-grimpen-mire.html',
         nextTitle: 'Lesson 11: Across Dartmoor & Grimpen Mire',
-        nextFreeUrl: 'dracula-unit1-carpathian-threshold.html',
-        nextFreeTitle: 'Dracula Lesson 1'
+        nextFreeUrl: 'alice-unit13-down-the-rabbit-hole.html',
+        nextFreeTitle: 'Alice in Wonderland Lesson 13 (Free)'
       },
       baskerville_unit2: {
         mastered: 'Place Inversion on Grimpen Mire',
         nextUrl: 'baskerville-unit3-moorland-vigil.html',
         nextTitle: 'Lesson 12: The Hound Revealed',
-        nextFreeUrl: 'dracula-unit1-carpathian-threshold.html',
-        nextFreeTitle: 'Dracula Lesson 1'
+        nextFreeUrl: 'alice-unit13-down-the-rabbit-hole.html',
+        nextFreeTitle: 'Alice in Wonderland Lesson 13 (Free)'
       },
       baskerville_unit3: {
         mastered: 'Counterfactual Conditionals & The Final Dartmoor Deduction',
+        nextUrl: 'alice-unit13-down-the-rabbit-hole.html',
+        nextTitle: 'Lesson 13: Down the Rabbit-Hole',
+        nextFreeUrl: 'alice-unit13-down-the-rabbit-hole.html',
+        nextFreeTitle: 'Alice in Wonderland Lesson 13 (Free)'
+      },
+      alice_unit1: {
+        mastered: 'Negative & Limiting Inversion Down the Rabbit-Hole',
+        nextUrl: 'alice-unit14-mad-tea-party.html',
+        nextTitle: 'Lesson 14: A Mad Tea-Party',
+        nextFreeUrl: 'dracula-unit1-carpathian-threshold.html',
+        nextFreeTitle: 'Dracula Lesson 1'
+      },
+      alice_unit2: {
+        mastered: 'Inverted Conditionals & Unreal Past Subjunctives at Six O’Clock',
+        nextUrl: 'alice-unit15-queens-trial.html',
+        nextTitle: "Lesson 15: The Queen's Trial — Who Stole the Tarts?",
+        nextFreeUrl: 'dracula-unit1-carpathian-threshold.html',
+        nextFreeTitle: 'Dracula Lesson 1'
+      },
+      alice_unit3: {
+        mastered: "Evidential Passives, Subjunctive Mandates & Cleft Focus",
         nextUrl: 'the-gothic-canon-c1-c2-compendium.html',
         nextTitle: 'Printable Study Guide & Answer Key',
         nextFreeUrl: 'the-gothic-canon-c1-c2-compendium.html',
@@ -1708,6 +1733,14 @@ const DarkAcademiaAtmosphere = (() => {
     alice_unit1: {
       src: 'assets/gothic/alice_unit1.jpg',
       credit: 'Sir John Tenniel & Dalziel Brothers, Alice Falling Down the Rabbit-Hole (1865) • Victorian Fine Art Plate'
+    },
+    alice_unit2: {
+      src: 'assets/gothic/alice_unit1.jpg',
+      credit: 'Sir John Tenniel & Dalziel Brothers, A Mad Tea-Party (1865) • Victorian Fine Art Plate'
+    },
+    alice_unit3: {
+      src: 'assets/gothic/alice_unit1.jpg',
+      credit: 'Sir John Tenniel & Dalziel Brothers, Who Stole the Tarts? (1865) • Victorian Fine Art Plate'
     }
   };
 

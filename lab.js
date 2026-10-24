@@ -18,9 +18,9 @@ const LabObservatory = (() => {
 
   const HOLODECK_WORLDS = [
     {
-      badge: 'C1/C2 Gothic Course • 12 lessons',
-      title: 'Dark Academia: C1/C2 English Through Classic Gothic Stories',
-      desc: 'Three lessons each from Dracula, Frankenstein, Jekyll & Hyde and Baskervilles, with paintings, British narration (synthetic voice) and 5 Part 4 transformations per lesson (60 in total).',
+      badge: 'C1/C2 Gothic Course • 15 lessons (5 free)',
+      title: 'Dark Academia: C1/C2 English Through Classic Gothic & Victorian Stories',
+      desc: 'Three lessons each from Dracula, Frankenstein, Jekyll & Hyde, Baskervilles, and Alice in Wonderland, with British narration and 15 practice questions per lesson (including 5 Part 4 transformations).',
       img: 'assets/gothic/dracula_carpathian.jpg',
       alt: 'Caspar David Friedrich — Abbey in the Oakwood (1809–1810), illustrating Dracula Lesson 1',
       url: 'dark-academia-index.html',
@@ -104,6 +104,13 @@ const LabObservatory = (() => {
       img: 'assets/gothic/baskerville_moor.jpg',
       alt: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819) — The Hound of the Baskervilles',
       audio: 'assets/audio/gothic_act4_baskerville.mp3?v=2'
+    },
+    {
+      tag: 'Sir John Tenniel, Original Wood-Engraved Plate (1865)',
+      grammar: 'Lewis Carroll’s Alice in Wonderland (Lessons 13–15): Negative Inversion & Subjunctives',
+      img: 'assets/gothic/alice_unit1.jpg',
+      alt: 'Sir John Tenniel, Alice in Wonderland (1865) — Down the Rabbit-Hole',
+      audio: 'assets/audio/gothic_act1_dracula.mp3?v=2'
     }
   ];
 
@@ -433,13 +440,48 @@ const LabObservatory = (() => {
         localStorage.setItem('da_course_unlocked_v1', 'true');
       } catch (e) {}
       feedback.className = 'text-xs font-bold text-emerald-400 mt-1.5';
-      feedback.textContent = '✓ Access code verified! All 12 lessons unlocked—opening Course Hub...';
+      feedback.textContent = '✓ Access code verified! All 15 lessons unlocked—opening Course Hub...';
       setTimeout(() => {
         window.location.href = 'dark-academia-index.html?unlocked=true';
       }, 450);
     } else {
       feedback.className = 'text-xs font-bold text-rose-400 mt-1.5';
-      feedback.innerHTML = '✗ Invalid access code. Check your confirmation screen or <a href="index.html#enquiry-card" class="underline text-amber-300 hover:text-white">email Gareth your Stripe receipt</a>.';
+      feedback.innerHTML = '✗ Invalid access code. Check your confirmation screen or <a href="mailto:gareth@garethenglish.com?subject=Dark%20Academia%20Stripe%20Receipt%20%E2%80%94%20Access%20Code%20Request" class="underline text-amber-300 hover:text-white">email Gareth your Stripe receipt</a>.';
+    }
+  }
+
+  function checkGothicSampleKWT(revealModel) {
+    const input = document.getElementById('da-sample-kwt-input');
+    const feedback = document.getElementById('da-sample-kwt-feedback');
+    if (!feedback) return;
+    const raw = input ? String(input.value || '').trim().replace(/\s+/g, ' ').replace(/[.,;!?]+$/, '') : '';
+    const norm = raw.toLowerCase();
+    const valid = [
+      'hemmed in by dense pine forests',
+      'hemmed in by the dense pine forests'
+    ];
+
+    feedback.classList.remove('hidden');
+    if (revealModel) {
+      playTone(620, 0.06, 'triangle', 0.035);
+      if (input && !raw) input.value = 'Hemmed in by dense pine forests';
+      feedback.innerHTML = '<strong class="text-amber-300">Cambridge Model (6 words):</strong> <code class="text-white font-bold">Hemmed in by dense pine forests</code><br><span class="text-[#d6cbb8]">Why it scores 2/2: Replaces “was closely surrounded by” with the past participle opener <em>Hemmed in by...</em> while keeping the key word <strong>HEMMED</strong> unchanged.</span>';
+      return;
+    }
+
+    if (valid.includes(norm)) {
+      playTone(660, 0.08, 'triangle', 0.05);
+      setTimeout(() => playTone(880, 0.12, 'triangle', 0.05), 70);
+      feedback.innerHTML = '<strong class="text-emerald-400">✓ 2/2 Marks! Spot on.</strong> <code class="text-white font-bold">Hemmed in by dense pine forests</code> uses the past participle phrase at the start of the sentence with the unchanged key word <strong>HEMMED</strong>.';
+    } else if (!norm) {
+      playTone(320, 0.07, 'sine', 0.03);
+      feedback.innerHTML = 'Type 3–6 words using <strong>HEMMED</strong> (for example, how do we shorten <em>“was closely surrounded by”</em> into a participle phrase?), or click <strong>Show model answer</strong>.';
+    } else if (!norm.includes('hemmed')) {
+      playTone(220, 0.1, 'sawtooth', 0.04);
+      feedback.innerHTML = '<strong class="text-rose-400">Remember the golden Part 4 rule:</strong> You must include the exact key word <strong>HEMMED</strong> without changing its form.';
+    } else {
+      playTone(260, 0.1, 'sawtooth', 0.04);
+      feedback.innerHTML = '<strong class="text-amber-300">Almost there!</strong> Use the past participle opener <code class="text-white">Hemmed in by...</code> + <code class="text-white">dense pine forests</code> (6 words).';
     }
   }
 
@@ -613,6 +655,16 @@ const LabObservatory = (() => {
         }
       });
     }
+
+    const sampleKwtInput = document.getElementById('da-sample-kwt-input');
+    if (sampleKwtInput) {
+      sampleKwtInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          checkGothicSampleKWT(false);
+        }
+      });
+    }
   });
 
   return {
@@ -621,6 +673,7 @@ const LabObservatory = (() => {
     selectGothicBook,
     selectProfWestAct,
     playGothicSample,
+    checkGothicSampleKWT,
     roll2d6Demo,
     hoverBlip,
     toggleSFX,
