@@ -242,8 +242,16 @@
         const stripeBtn = document.getElementById('selected-package-stripe-link');
         const submitBtn = document.getElementById('contact-submit-btn');
         const enquiryCard = document.getElementById('enquiry-card');
+        const supportBanner = document.getElementById('billing-support-banner');
 
         if (!pkg) return;
+
+        if (supportBanner) {
+            supportBanner.classList.add('hidden');
+        }
+        if (messageInput && messageInput.value.startsWith('[Help with a receipt')) {
+            messageInput.value = '';
+        }
 
         const isAudit = pkg.includes('Audit') || pkg.includes('Async') || pkg.toLowerCase().includes('essay feedback');
         let resolvedTier = tierKey;
@@ -279,9 +287,11 @@
             pkgNameEl.textContent = pkg;
             if (pkgNextStepEl) {
                 if (resolvedTier === 'sprint_10_650') {
-                    pkgNextStepEl.textContent = 'Click "Pay via Stripe" for the £650 full pack, or submit the form below to claim your £35 starter-session credit (£615 remaining balance), confirm times, or request Wise/PayPal.';
+                    pkgNextStepEl.textContent = 'Click "Pay Full Pack (£650) via Stripe" to reserve for mid-January, or submit the form below to claim your £35 starter-session credit (£615 remaining balance), confirm January times, or request Wise/PayPal.';
                 } else if (resolvedTier === 'pack_12_780') {
-                    pkgNextStepEl.textContent = 'Click "Pay via Stripe" for the £780 full pack, or submit the form below to claim your £35 starter-session credit (£745 remaining balance), confirm times, or request Wise/PayPal.';
+                    pkgNextStepEl.textContent = 'Click "Pay Full Pack (£780) via Stripe" to reserve for mid-January, or submit the form below to claim your £35 starter-session credit (£745 remaining balance), confirm January times, or request Wise/PayPal.';
+                } else if (resolvedTier === 'pack_5_375') {
+                    pkgNextStepEl.textContent = 'Click "Pay via Stripe" to reserve your £375 pack for mid-January, or submit the form below to confirm January times or request Wise/PayPal.';
                 } else {
                     pkgNextStepEl.textContent = stripeUrl
                         ? 'Click "Pay via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
@@ -332,37 +342,42 @@
         const nameInput = document.getElementById('name');
         const formTitle = document.getElementById('enquiry-form-title');
         const formSubtitle = document.getElementById('enquiry-form-subtitle');
+        const formBadge = document.getElementById('enquiry-form-badge');
+        const pkgBanner = document.getElementById('selected-package-banner');
         const submitBtn = document.getElementById('contact-submit-btn');
         const enquiryCard = document.getElementById('enquiry-card');
         if (!enquiryCard) return;
 
+        if (pkgBanner) pkgBanner.classList.add('hidden');
+        if (formBadge) formBadge.classList.add('hidden');
+
         const selectEl = enquiryCard.querySelector('select');
         if (selectEl) {
-            selectEl.value = 'Billing, Access Code or Refund Request';
+            selectEl.value = 'Help with a receipt, access code or refund';
         }
         if (goalInput) {
-            goalInput.value = 'Billing, Access Code or Refund Request';
+            goalInput.value = 'Help with a receipt, access code or refund';
             goalInput.classList.add('ring-2', 'ring-emerald-400', 'border-emerald-400');
         }
         if (subjectInput) {
-            subjectInput.value = 'Priority Billing / Access / Refund Support (24h Resolution)';
+            subjectInput.value = 'Help with a receipt, access code or refund';
         }
         if (formTitle) {
-            formTitle.textContent = 'Priority Billing, Access Code & Refund Support';
+            formTitle.textContent = 'Help with a receipt, access code or refund';
         }
         if (formSubtitle) {
-            formSubtitle.textContent = 'Direct 24-hour personal resolution for Stripe receipts, course/vault access codes, or refund requests.';
+            formSubtitle.textContent = 'Send your details below and I’ll reply personally within 24 hours.';
         }
         if (submitBtn) {
-            submitBtn.innerHTML = 'Send Priority Support Request (24h Resolution) &rarr;';
+            submitBtn.innerHTML = 'Send message (I’ll reply within 24 hours) &rarr;';
         }
 
-        const prefillTemplate = '[Priority Billing / Access / Refund Support — 24h Resolution]\nOrder Email / Stripe Receipt:\nProduct (£24 Gothic Course / Teacher License / Lesson Pack):\nHow can I help? ';
+        const prefillTemplate = '[Help with a receipt, access code or refund]\nEmail used at checkout:\nWhat you bought (£24 Gothic Course / £29 Essay Feedback / Lesson Pack):\nHow can I help? ';
         if (messageInput && !messageInput.value.trim()) {
             messageInput.value = prefillTemplate;
         }
 
-        const bannerText = '✓ Priority Billing, Access & Refund Support: Send your details below and I will sort out your access code or refund request personally within 24 hours.';
+        const bannerHtml = '<span class="text-emerald-300 font-extrabold text-sm sm:text-base leading-relaxed">✓ Help with a receipt, access code or refund — send your details below and I’ll reply within 24 hours.</span>';
         let supportBanner = document.getElementById('billing-support-banner');
         if (!supportBanner) {
             supportBanner = document.createElement('div');
@@ -372,7 +387,7 @@
             supportBanner.className = 'mb-6 p-4 sm:p-5 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-100 flex items-start gap-3 shadow-lg';
             enquiryCard.insertBefore(supportBanner, enquiryCard.firstChild);
         }
-        supportBanner.textContent = bannerText;
+        supportBanner.innerHTML = bannerHtml;
         supportBanner.classList.remove('hidden');
 
         enquiryCard.classList.add('border-emerald-400/70', 'ring-2', 'ring-emerald-400/25');
