@@ -1783,7 +1783,7 @@ const DarkAcademiaAtmosphere = (() => {
     {
       bookKey: 'dracula',
       title: 'Book I • Bram Stoker’s Dracula (1897)',
-      imgSrc: 'assets/gothic/dracula_carpathian.jpg',
+      imgSrc: 'assets/gothic/dracula_carpathian.webp',
       museumCredit: 'Plate I — Caspar David Friedrich, Abbey in the Oakwood (1809–1810), Oil on canvas • Alte Nationalgalerie, Berlin',
       audioSrc: 'assets/audio/gothic_act1_dracula.mp3?v=2',
       quote: '"Soon we were hemmed in with trees, which in places arched right over the roadway till we passed as through a tunnel..."',
@@ -1794,7 +1794,7 @@ const DarkAcademiaAtmosphere = (() => {
     {
       bookKey: 'frankenstein',
       title: 'Book II • Mary Shelley’s Frankenstein (1818)',
-      imgSrc: 'assets/gothic/frankenstein_lab.jpg',
+      imgSrc: 'assets/gothic/frankenstein_lab.webp',
       museumCredit: 'Plate II — Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768), Oil on canvas • The National Gallery, London',
       audioSrc: 'assets/audio/gothic_act2_frankenstein.mp3?v=2',
       quote: '"It was on a dreary night of November that I beheld the accomplishment of my toils..."',
@@ -1805,7 +1805,7 @@ const DarkAcademiaAtmosphere = (() => {
     {
       bookKey: 'jekyll',
       title: 'Book III • R.L. Stevenson’s Dr Jekyll & Mr Hyde (1886)',
-      imgSrc: 'assets/gothic/jekyll_apothecary.jpg',
+      imgSrc: 'assets/gothic/jekyll_apothecary.webp',
       museumCredit: 'Plate III — John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880), Oil on canvas • Leeds Art Gallery',
       audioSrc: 'assets/audio/gothic_act3_jekyll.mp3?v=2',
       quote: '"Much as Utterson wished to trust his old friend, the sinister connection to Mr Hyde filled him with repugnance..."',
@@ -1816,7 +1816,7 @@ const DarkAcademiaAtmosphere = (() => {
     {
       bookKey: 'baskerville',
       title: 'Book IV • Conan Doyle’s The Hound of the Baskervilles (1901)',
-      imgSrc: 'assets/gothic/baskerville_moor.jpg',
+      imgSrc: 'assets/gothic/baskerville_moor.webp',
       museumCredit: 'Plate IV — Caspar David Friedrich, Two Men Contemplating the Moon (1819–1820), Oil on canvas • Galerie Neue Meister, Dresden',
       audioSrc: 'assets/audio/gothic_act4_baskerville.mp3?v=2',
       quote: '"Sir Charles must have been waiting at the moor-gate, yet no footprints could be seen upon the gravel..."',
@@ -1828,63 +1828,63 @@ const DarkAcademiaAtmosphere = (() => {
 
   const UNIT_PAINTINGS = {
     dracula_unit1: {
-      src: 'assets/gothic/dracula_carpathian.jpg',
+      src: 'assets/gothic/dracula_carpathian.webp',
       credit: 'Caspar David Friedrich, Abbey in the Oakwood (1809–1810) • Alte Nationalgalerie'
     },
     dracula_unit2: {
-      src: 'assets/gothic/dracula_unit2.jpg',
+      src: 'assets/gothic/dracula_unit2.webp',
       credit: 'Caspar David Friedrich, Ruins of Eldena (c. 1825) • Oil on canvas'
     },
     dracula_unit3: {
-      src: 'assets/gothic/dracula_unit3.jpg',
+      src: 'assets/gothic/dracula_unit3.webp',
       credit: 'Johan Christian Dahl, Shipwreck on the Coast (1832) • National Museum, Oslo'
     },
     frankenstein_unit1: {
-      src: 'assets/gothic/frankenstein_lab.jpg',
+      src: 'assets/gothic/frankenstein_lab.webp',
       credit: 'Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768) • National Gallery'
     },
     frankenstein_unit2: {
-      src: 'assets/gothic/frankenstein_unit2.jpg',
+      src: 'assets/gothic/frankenstein_unit2.webp',
       credit: 'Caspar David Friedrich, The Sea of Ice (1824) • Hamburger Kunsthalle'
     },
     frankenstein_unit3: {
-      src: 'assets/gothic/frankenstein_unit3.jpg',
+      src: 'assets/gothic/frankenstein_unit3.webp',
       credit: 'Caspar David Friedrich, Wanderer above the Sea of Fog (c. 1818) • Hamburger Kunsthalle'
     },
     jekyll_unit1: {
-      src: 'assets/gothic/jekyll_apothecary.jpg',
+      src: 'assets/gothic/jekyll_apothecary.webp',
       credit: 'John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880) • Leeds Art Gallery'
     },
     jekyll_unit2: {
-      src: 'assets/gothic/jekyll_unit2.jpg',
+      src: 'assets/gothic/jekyll_unit2.webp',
       credit: 'Joseph Wright of Derby, The Alchymist Discovering Phosphorus (1771) • Derby Museum'
     },
     jekyll_unit3: {
-      src: 'assets/gothic/jekyll_unit3.jpg',
+      src: 'assets/gothic/jekyll_unit3.webp',
       credit: 'John Atkinson Grimshaw, Liverpool Quay by Moonlight (1887) • Tate Britain'
     },
     baskerville_unit1: {
-      src: 'assets/gothic/baskerville_moor.jpg',
+      src: 'assets/gothic/baskerville_moor.webp',
       credit: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819) • Galerie Neue Meister'
     },
     baskerville_unit2: {
-      src: 'assets/gothic/baskerville_unit2.jpg',
+      src: 'assets/gothic/baskerville_unit2.webp',
       credit: 'Caspar David Friedrich, Megalithic Tomb in Autumn (c. 1820) • Galerie Neue Meister'
     },
     baskerville_unit3: {
-      src: 'assets/gothic/baskerville_unit3.jpg',
+      src: 'assets/gothic/baskerville_unit3.webp',
       credit: 'Caspar David Friedrich, Moonrise by the Sea (1822) • Alte Nationalgalerie'
     },
     alice_unit1: {
-      src: 'assets/gothic/alice_unit1.jpg',
+      src: 'assets/gothic/alice_unit1.webp',
       credit: 'Sir John Tenniel & Dalziel Brothers, Alice Falling Down the Rabbit-Hole (1865) • Victorian Fine Art Plate'
     },
     alice_unit2: {
-      src: 'assets/gothic/alice_unit1.jpg',
+      src: 'assets/gothic/alice_unit1.webp',
       credit: 'Sir John Tenniel & Dalziel Brothers, A Mad Tea-Party (1865) • Victorian Fine Art Plate'
     },
     alice_unit3: {
-      src: 'assets/gothic/alice_unit1.jpg',
+      src: 'assets/gothic/alice_unit1.webp',
       credit: 'Sir John Tenniel & Dalziel Brothers, Who Stole the Tarts? (1865) • Victorian Fine Art Plate'
     }
   };
@@ -1892,17 +1892,17 @@ const DarkAcademiaAtmosphere = (() => {
   const preloadedImages = {};
   function getBookImage(keyOrUnitId) {
     const bookMap = {
-      dracula: 'assets/gothic/dracula_carpathian.jpg',
-      frankenstein: 'assets/gothic/frankenstein_lab.jpg',
-      jekyll: 'assets/gothic/jekyll_apothecary.jpg',
-      baskerville: 'assets/gothic/baskerville_moor.jpg',
-      alice: 'assets/gothic/alice_unit1.jpg'
+      dracula: 'assets/gothic/dracula_carpathian.webp',
+      frankenstein: 'assets/gothic/frankenstein_lab.webp',
+      jekyll: 'assets/gothic/jekyll_apothecary.webp',
+      baskerville: 'assets/gothic/baskerville_moor.webp',
+      alice: 'assets/gothic/alice_unit1.webp'
     };
     const key = String(keyOrUnitId || '').toLowerCase();
     const src =
       (UNIT_PAINTINGS[keyOrUnitId] && UNIT_PAINTINGS[keyOrUnitId].src) ||
       bookMap[keyOrUnitId] ||
-      (key.includes('alice') ? 'assets/gothic/alice_unit1.jpg' : bookMap.dracula);
+      (key.includes('alice') ? 'assets/gothic/alice_unit1.webp' : bookMap.dracula);
     if (!preloadedImages[src] && typeof Image !== 'undefined') {
       const img = new Image();
       img.src = src;

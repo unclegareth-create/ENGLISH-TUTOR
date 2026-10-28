@@ -1,0 +1,2404 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="light">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secret Gadgets, Loud Music &amp; The Battle for Quiet Public Spaces · Vitaly's Interactive B1 Lesson</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-canvas: #eef2f7;
+      --bg-mesh: radial-gradient(at 15% 10%, rgba(29, 78, 216, 0.08) 0px, transparent 50%),
+                 radial-gradient(at 85% 20%, rgba(14, 165, 233, 0.07) 0px, transparent 50%),
+                 radial-gradient(at 50% 90%, rgba(99, 102, 241, 0.06) 0px, transparent 50%);
+      --sheet-bg: #ffffff;
+      --sheet-border: rgba(203, 213, 225, 0.85);
+      --sheet-shadow: 0 20px 50px -12px rgba(15, 37, 87, 0.10), 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+      --surface-subtle: #f8fafc;
+      --surface-tint: #f0f6ff;
+      --navy-950: #0a193b;
+      --navy-900: #0f2557;
+      --navy-800: #16377d;
+      --navy-700: #1d4ed8;
+      --navy-600: #2563eb;
+      --ink-900: #0f172a;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --ink-400: #94a3b8;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --emerald-bg: #ecfdf5;
+      --emerald-border: #10b981;
+      --emerald-text: #065f46;
+      --rose-bg: #fff1f2;
+      --rose-border: #f43f5e;
+      --rose-text: #9f1239;
+      --amber-bg: #fffbeb;
+      --amber-border: #f59e0b;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    html[data-theme="dark"] {
+      --bg-canvas: #070b14;
+      --bg-mesh: radial-gradient(at 15% 10%, rgba(37, 99, 235, 0.16) 0px, transparent 50%),
+                 radial-gradient(at 85% 20%, rgba(14, 165, 233, 0.12) 0px, transparent 50%);
+      --sheet-bg: #0f172a;
+      --sheet-border: rgba(51, 65, 85, 0.8);
+      --sheet-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.65);
+      --surface-subtle: #1e293b;
+      --surface-tint: rgba(30, 58, 138, 0.28);
+      --navy-950: #f8fafc;
+      --navy-900: #f1f5f9;
+      --navy-800: #60a5fa;
+      --navy-700: #3b82f6;
+      --navy-600: #2563eb;
+      --ink-900: #f8fafc;
+      --ink-700: #cbd5e1;
+      --ink-500: #94a3b8;
+      --ink-400: #64748b;
+      --border: #1e293b;
+      --border-strong: #334155;
+      --emerald-bg: rgba(16, 185, 129, 0.15);
+      --emerald-border: #10b981;
+      --emerald-text: #6ee7b7;
+      --rose-bg: rgba(244, 63, 94, 0.15);
+      --rose-border: #f43f5e;
+      --rose-text: #fda4af;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-canvas);
+      background-image: var(--bg-mesh);
+      background-attachment: fixed;
+      color: var(--ink-900);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      padding: 20px 16px 56px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    /* Top Glass Utility Bar */
+    .top-bar {
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 10px 18px;
+      background: var(--sheet-bg);
+      border: 1px solid var(--sheet-border);
+      border-radius: 999px;
+      box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+    }
+
+    .top-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.84rem;
+    }
+
+    .hub-btn {
+      color: var(--ink-900);
+      text-decoration: none;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      transition: all 0.15s;
+    }
+
+    .hub-btn:hover {
+      border-color: var(--navy-700);
+      color: var(--navy-700);
+    }
+
+    .level-pill {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--navy-800);
+      background: var(--surface-tint);
+      padding: 4px 10px;
+      border-radius: 999px;
+      letter-spacing: 0.03em;
+    }
+
+    .utility-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-util {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-700);
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-family: var(--font-sans);
+      font-size: 0.79rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-util:hover, .btn-util.active-mode {
+      border-color: var(--navy-700);
+      color: var(--navy-800);
+      background: var(--surface-tint);
+    }
+
+    /* Sleek 6-Step Segmented Pill Navigation */
+    .task-tabs {
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto 18px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      background: var(--sheet-bg);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--sheet-border);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    @media (max-width: 780px) {
+      .task-tabs { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .task-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--ink-500);
+      padding: 10px 8px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      position: relative;
+    }
+
+    .task-tab:hover {
+      color: var(--ink-900);
+      background: var(--surface-subtle);
+    }
+
+    .task-tab.active {
+      background: linear-gradient(135deg, #16377d, #2563eb);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.28);
+    }
+
+    .task-tab .step-num {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.78;
+      margin-bottom: 2px;
+    }
+
+    /* Main Executive Workbook Sheet */
+    .sheet {
+      max-width: 960px;
+      width: 100%;
+      margin: 0 auto;
+      background: var(--sheet-bg);
+      border: 1px solid var(--sheet-border);
+      border-radius: 20px;
+      box-shadow: var(--sheet-shadow);
+      overflow: hidden;
+      min-height: 580px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .sheet-progress-track {
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+    }
+
+    .sheet-progress-fill {
+      height: 100%;
+      width: 16.66%;
+      background: linear-gradient(90deg, #1d4ed8, #0ea5e9);
+      transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sheet-inner {
+      padding: 44px 56px 36px;
+      flex: 1;
+    }
+
+    @media (max-width: 720px) {
+      .sheet-inner { padding: 28px 20px; }
+    }
+
+    /* Editorial Document Header */
+    .doc-header {
+      border-bottom: 1.5px solid var(--border);
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .doc-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--navy-700);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .doc-title {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--navy-950);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .doc-meta-pill {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--ink-500);
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    /* Paginated Task Pages */
+    .task-page {
+      display: none;
+      animation: slideFade 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .task-page.active {
+      display: block;
+    }
+
+    body.show-all-mode .task-page {
+      display: block;
+      margin-bottom: 48px;
+      padding-bottom: 40px;
+      border-bottom: 2px dashed var(--border-strong);
+    }
+
+    @keyframes slideFade {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--navy-700);
+      background: var(--surface-tint);
+      padding: 4px 11px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .section-heading {
+      font-size: 1.38rem;
+      font-weight: 800;
+      color: var(--navy-950);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .instruction {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink-700);
+      margin-bottom: 20px;
+    }
+
+    /* Task 1: Speaking Warm-Up Stage (Graphic-Anchored, Highly Legible, Timer-Free) */
+    .warmup-stage {
+      display: grid;
+      grid-template-columns: 1.05fr 1.35fr;
+      gap: 22px;
+      margin-bottom: 20px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 820px) {
+      .warmup-stage { grid-template-columns: 1fr; }
+    }
+
+    .warmup-visual-card {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .graphic-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+      max-height: 380px;
+      overflow: hidden;
+      background: var(--navy-950);
+    }
+
+    .warmup-graphic-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .warmup-visual-card:hover .warmup-graphic-img {
+      transform: scale(1.02);
+    }
+
+    .graphic-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(6px);
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 5px 11px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #38bdf8;
+      display: inline-block;
+    }
+
+    .graphic-caption {
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      color: var(--ink-700);
+      background: var(--surface-card);
+      border-top: 1px solid var(--border);
+      line-height: 1.45;
+    }
+
+    .graphic-caption strong {
+      color: var(--navy-800);
+      font-weight: 700;
+      margin-right: 4px;
+    }
+
+    .cue-card {
+      background: linear-gradient(155deg, var(--surface-tint), var(--sheet-bg));
+      border: 1.5px solid var(--navy-700);
+      border-radius: 16px;
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 8px 24px rgba(29, 78, 216, 0.06);
+    }
+
+    .cue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cue-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--navy-700);
+    }
+
+    .cue-time-hint {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-500);
+      background: var(--surface-card);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    .cue-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--navy-950);
+      margin-bottom: 14px;
+      line-height: 1.42;
+    }
+
+    .cue-lead {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--ink-500);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    .cue-bullets {
+      margin-left: 20px;
+      font-size: 0.95rem;
+      color: var(--ink-800);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .cue-bullets li {
+      margin-bottom: 6px;
+    }
+
+    .cue-closing-prompt {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--navy-800);
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--navy-700);
+      padding: 10px 14px;
+      border-radius: 8px;
+      line-height: 1.45;
+    }
+
+    /* Gareth's 3 Practical Structuring Rules (Clean Banner) */
+    .rules-trio-banner {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 760px) {
+      .rules-trio-banner { grid-template-columns: 1fr; }
+    }
+
+    .rule-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--navy-700);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.84rem;
+      color: var(--ink-700);
+      line-height: 1.45;
+    }
+
+    .rule-box .rule-num {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--navy-700);
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+
+    .rule-box strong {
+      display: block;
+      color: var(--navy-950);
+      font-size: 0.88rem;
+      margin-bottom: 4px;
+    }
+
+    .rule-box p {
+      margin: 0;
+      font-size: 0.82rem;
+    }
+
+    /* 4 Interactive Lead-In Discussion Cards */
+    .disc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 680px) {
+      .disc-grid { grid-template-columns: 1fr; }
+    }
+
+    .disc-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      user-select: none;
+    }
+
+    .disc-card:hover {
+      border-color: var(--navy-700);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+    }
+
+    .disc-card.done {
+      background: var(--emerald-bg);
+      border-color: var(--emerald-border);
+    }
+
+    .disc-num {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--navy-700);
+      background: var(--surface-tint);
+      padding: 5px 9px;
+      border-radius: 8px;
+    }
+
+    .disc-text {
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--ink-900);
+    }
+
+    .disc-check {
+      opacity: 0;
+      color: var(--emerald-border);
+      font-weight: 800;
+      transition: opacity 0.15s;
+    }
+
+    .disc-card.done .disc-check { opacity: 1; }
+
+    /* Task 2: Featured Editorial Article Card */
+    .editorial-media-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .media-meta {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--navy-700);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .media-title-link {
+      font-size: 1.12rem;
+      font-weight: 800;
+      color: var(--navy-950);
+      text-decoration: none;
+    }
+
+    .media-title-link:hover {
+      color: var(--navy-600);
+      text-decoration: underline;
+    }
+
+    .btn-external {
+      background: var(--navy-700);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .reading-digest {
+      border-left: 4px solid var(--navy-700);
+      background: var(--surface-subtle);
+      border-radius: 0 14px 14px 0;
+      padding: 20px 26px;
+      margin-bottom: 24px;
+      font-size: 0.98rem;
+      color: var(--ink-700);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Task 3: Sentence-Halves Matching */
+    .matching-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 36px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 700px) {
+      .matching-grid { grid-template-columns: 1fr; }
+    }
+
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .match-left {
+      background: linear-gradient(135deg, #16377d, #1e40af);
+      color: #ffffff;
+      border: 1.5px solid #1e3a8a;
+      border-radius: 11px;
+      padding: 13px 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+      box-shadow: 0 4px 10px rgba(22, 55, 125, 0.15);
+    }
+
+    .match-left:hover { transform: translateY(-1px); }
+    .match-left.active-pick {
+      outline: 3px solid #38bdf8;
+      transform: translateX(4px);
+    }
+
+    .match-right {
+      background: var(--sheet-bg);
+      color: var(--ink-900);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 11px;
+      padding: 13px 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+
+    .match-right:hover {
+      border-color: var(--navy-700);
+      background: var(--surface-tint);
+    }
+
+    .match-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .match-right .match-badge {
+      background: var(--navy-700);
+      color: #ffffff;
+    }
+
+    .match-right.correct {
+      background: var(--emerald-bg);
+      border-color: var(--emerald-border);
+      color: var(--emerald-text);
+    }
+
+    .match-right.incorrect {
+      background: var(--rose-bg);
+      border-color: var(--rose-border);
+      color: var(--rose-text);
+    }
+
+    /* Interactive Phrase Discussion Vault */
+    .phrase-vault {
+      margin-top: 28px;
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 16px;
+      padding: 20px 24px;
+    }
+
+    .phrase-vault-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .phrase-chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .phrase-chip {
+      background: var(--sheet-bg);
+      border: 1.5px solid var(--navy-700);
+      color: var(--navy-950);
+      padding: 9px 16px;
+      border-radius: 999px;
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+
+    .phrase-chip:hover {
+      background: var(--surface-tint);
+      transform: translateY(-1px);
+    }
+
+    .phrase-chip .chip-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--navy-600);
+    }
+
+    .phrase-chip.used {
+      background: var(--emerald-bg);
+      border-color: var(--emerald-border);
+      color: var(--emerald-text);
+    }
+
+    .phrase-chip.used .chip-dot {
+      background: var(--emerald-border);
+    }
+
+    /* Task 4 & 5: Word Bank Dock & Gap-Fill Rows */
+    .word-bank-dock {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .word-chip {
+      background: var(--sheet-bg);
+      border: 1px solid var(--border-strong);
+      color: var(--navy-950);
+      padding: 7px 14px;
+      border-radius: 9px;
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.14s;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03);
+    }
+
+    .word-chip:hover {
+      border-color: var(--navy-700);
+      color: var(--navy-700);
+      transform: translateY(-1px);
+    }
+
+    .word-chip.selected-chip {
+      background: var(--navy-700);
+      border-color: var(--navy-700);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.25);
+    }
+
+    .word-chip.used-chip {
+      opacity: 0.38;
+      text-decoration: line-through;
+    }
+
+    .gap-row {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      margin-bottom: 8px;
+      transition: background 0.15s;
+    }
+
+    .gap-row:hover {
+      background: var(--surface-subtle);
+      border-color: var(--border);
+    }
+
+    .row-num {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--navy-700);
+      background: var(--surface-tint);
+      padding: 3px 8px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .row-body {
+      font-size: 1.01rem;
+      color: var(--ink-900);
+      line-height: 1.8;
+    }
+
+    input.line-gap {
+      border: none;
+      border-bottom: 2px solid var(--navy-700);
+      background: var(--surface-tint);
+      color: var(--navy-950);
+      font-family: var(--font-sans);
+      font-size: 0.98rem;
+      font-weight: 700;
+      text-align: center;
+      width: 175px;
+      padding: 3px 10px;
+      margin: 0 5px;
+      border-radius: 6px 6px 0 0;
+      transition: all 0.15s;
+    }
+
+    input.line-gap.wide { width: 235px; }
+    input.line-gap:focus {
+      outline: none;
+      box-shadow: 0 2px 0 0 var(--navy-600);
+    }
+
+    input.line-gap.correct {
+      color: var(--emerald-text);
+      border-bottom-color: var(--emerald-border);
+      background: var(--emerald-bg);
+    }
+
+    input.line-gap.incorrect {
+      color: var(--rose-text);
+      border-bottom-color: var(--rose-border);
+      background: var(--rose-bg);
+    }
+
+    /* Key-Word Transformation Cards */
+    .kwt-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+    }
+
+    .kwt-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .kwt-prompt {
+      flex: 1;
+      font-weight: 600;
+      color: var(--ink-700);
+      font-size: 0.96rem;
+    }
+
+    .kw-pill {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      background: var(--navy-900);
+      color: #ffffff;
+      padding: 3px 10px;
+      border-radius: 6px;
+      letter-spacing: 0.06em;
+    }
+
+    html[data-theme="dark"] .kw-pill {
+      background: var(--navy-600);
+    }
+
+    .kwt-bottom {
+      padding-left: 42px;
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--ink-900);
+    }
+
+    /* C1 Blueprint Card */
+    .c1-blueprint-card {
+      margin-top: 28px;
+      border: 1.5px solid var(--navy-700);
+      border-radius: 16px;
+      background: linear-gradient(145deg, var(--surface-tint), var(--sheet-bg));
+      padding: 22px 26px;
+    }
+
+    .blueprint-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--navy-700);
+      margin-bottom: 10px;
+    }
+
+    .formula-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .formula-line {
+      background: var(--sheet-bg);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--navy-700);
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--navy-950);
+      font-size: 0.85rem;
+    }
+
+    /* Category Matrix Table */
+    .category-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 14px;
+      border: 1.5px solid var(--navy-700);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .category-table tr {
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .category-table th {
+      background: linear-gradient(135deg, #16377d, #1e40af);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 14px 18px;
+      width: 32%;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .category-table td {
+      background: var(--sheet-bg);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-strong);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .category-table td:hover {
+      background: var(--surface-tint);
+    }
+
+    .placed-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 28px;
+      align-items: center;
+    }
+
+    .drop-hint {
+      font-size: 0.82rem;
+      color: var(--ink-400);
+      font-style: italic;
+    }
+
+    .placed-chip {
+      background: var(--surface-tint);
+      border: 1px solid var(--navy-700);
+      color: var(--navy-950);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .placed-chip.correct { background: var(--emerald-bg); border-color: var(--emerald-border); color: var(--emerald-text); }
+    .placed-chip.incorrect { background: var(--rose-bg); border-color: var(--rose-border); color: var(--rose-text); }
+
+    /* Task 6: Debate Cards */
+    .debate-card {
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      background: var(--surface-subtle);
+      transition: border-color 0.15s;
+    }
+
+    .debate-card:hover {
+      border-color: var(--navy-700);
+    }
+
+    .debate-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .debate-num {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--navy-700);
+      letter-spacing: 0.06em;
+    }
+
+    .stance-pills {
+      display: flex;
+      gap: 6px;
+    }
+
+    .stance-btn {
+      background: var(--sheet-bg);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-700);
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .stance-btn.active-agree { background: var(--emerald-bg); border-color: var(--emerald-border); color: var(--emerald-text); }
+    .stance-btn.active-disagree { background: var(--rose-bg); border-color: var(--rose-border); color: var(--rose-text); }
+    .stance-btn.active-devil { background: var(--amber-bg); border-color: var(--amber-border); color: #b45309; }
+
+    .debate-statement {
+      font-family: var(--font-serif);
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--navy-950);
+      margin-bottom: 8px;
+    }
+
+    .debate-followup {
+      font-size: 0.9rem;
+      color: var(--ink-700);
+      padding-top: 8px;
+      border-top: 1px dashed var(--border-strong);
+    }
+
+    /* Action Buttons & Model Reveal Drawer */
+    .action-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-check {
+      background: linear-gradient(135deg, #16377d, #2563eb);
+      color: #ffffff;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+      transition: transform 0.12s;
+    }
+
+    .btn-check:hover { transform: translateY(-1px); }
+
+    .btn-reveal {
+      background: var(--sheet-bg);
+      color: var(--navy-800);
+      border: 1.5px solid var(--navy-700);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.86rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-reveal:hover { background: var(--surface-tint); }
+
+    .score-pill {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--emerald-text);
+      background: var(--emerald-bg);
+      border: 1px solid var(--emerald-border);
+      padding: 5px 12px;
+      border-radius: 999px;
+      display: none;
+    }
+
+    .model-reveal-box {
+      display: none;
+      margin-top: 14px;
+      padding: 16px 20px;
+      background: var(--emerald-bg);
+      border-left: 4px solid var(--emerald-border);
+      border-radius: 10px;
+      font-size: 0.92rem;
+      color: var(--emerald-text);
+      line-height: 1.6;
+    }
+
+    .model-reveal-box.open { display: block; }
+
+    textarea.notes-input {
+      width: 100%;
+      background: var(--sheet-bg);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: var(--font-sans);
+      font-size: 0.95rem;
+      color: var(--ink-900);
+      resize: vertical;
+      min-height: 72px;
+      margin-top: 10px;
+    }
+
+    textarea.notes-input:focus {
+      outline: none;
+      border-color: var(--navy-700);
+    }
+
+    /* Bottom Paginated Footer */
+    .sheet-footer {
+      background: var(--surface-subtle);
+      border-top: 1px solid var(--border);
+      padding: 16px 56px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-page {
+      background: linear-gradient(135deg, #16377d, #2563eb);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-page.secondary {
+      background: var(--sheet-bg);
+      color: var(--ink-700);
+      border: 1px solid var(--border-strong);
+    }
+
+    .btn-page:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Modular Task Variety Widgets (ESL Brains / English4Tutors / Guardian / Prezi) */
+    .task-tabs {
+      grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+    }
+    .mw-grid, .rebus-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 700px) {
+      .mw-grid, .rebus-grid { grid-template-columns: 1fr; }
+    }
+    .mw-card, .rebus-card {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 18px 20px;
+    }
+    .mw-header {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--navy-700);
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .mw-clue {
+      font-size: 0.93rem;
+      color: var(--ink-700);
+      margin-bottom: 6px;
+      padding-left: 10px;
+      border-left: 3px solid var(--navy-600);
+    }
+    .mw-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .masked-span {
+      background: var(--navy-900);
+      color: transparent;
+      padding: 2px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    .masked-span::after {
+      content: " 🔒 Click to Unmask Punchline";
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+    }
+    .masked-span.unmasked {
+      background: var(--emerald-bg);
+      color: var(--emerald-text);
+      border: 1px solid var(--emerald-border);
+    }
+    .masked-span.unmasked::after {
+      content: "";
+    }
+    .matrix-cell {
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      user-select: none;
+    }
+    .matrix-cell.picked {
+      background: var(--surface-tint);
+      color: var(--navy-700);
+    }
+    .matrix-cell.correct {
+      background: var(--emerald-bg) !important;
+      color: var(--emerald-text) !important;
+    }
+    .matrix-cell.incorrect {
+      background: var(--rose-bg) !important;
+      color: var(--rose-text) !important;
+    }
+    .rebus-visual {
+      background: var(--sheet-bg);
+      border: 2px dashed var(--navy-700);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 12px;
+      font-family: var(--font-mono);
+    }
+    .rebus-top {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--navy-950);
+      letter-spacing: 0.12em;
+    }
+    .rebus-bottom {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy-700);
+      margin-top: 4px;
+      border-top: 1px solid var(--border-strong);
+      padding-top: 4px;
+    }
+
+    @media print {
+      @page {
+        margin: 12mm 15mm;
+        size: A4 portrait;
+      }
+      *, *:before, *:after {
+        box-shadow: none !important;
+        text-shadow: none !important;
+      }
+      html, body {
+        background: #ffffff !important;
+        background-image: none !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: block !important;
+        min-height: auto !important;
+        height: auto !important;
+        width: 100% !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      /* Hide interactive chrome, navigation, timers, and buttons */
+      .top-bar, .task-tabs, .action-bar, .sheet-footer, .sheet-progress-track, 
+      .timer-btns, .btn-util, .btn-page, .btn-reveal, .btn-check, .score-pill,
+      .speech-ctl, #timer-clock, .drop-hint, .disc-check, .cue-audio-bar,
+      .timer-display, .reset-btn, .timer-badge {
+        display: none !important;
+      }
+      /* Main sheet container resets */
+      .sheet {
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        overflow: visible !important;
+        min-height: auto !important;
+        height: auto !important;
+        background: transparent !important;
+      }
+      .sheet-inner {
+        padding: 0 !important;
+        display: block !important;
+      }
+      /* Document Header */
+      .doc-header {
+        margin-bottom: 20px !important;
+        padding-bottom: 12px !important;
+        border-bottom: 2px solid #0f2557 !important;
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+      }
+      .doc-eyebrow {
+        color: #1d4ed8 !important;
+        font-size: 0.72rem !important;
+      }
+      .doc-title {
+        font-size: 1.8rem !important;
+        color: #0a193b !important;
+        line-height: 1.2 !important;
+      }
+      .doc-meta-pill {
+        display: none !important;
+      }
+      /* Task Pages - Unroll cleanly for workbook printing without clipping */
+      .task-page {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        animation: none !important;
+        transform: none !important;
+        margin-bottom: 26px !important;
+        padding-bottom: 20px !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+        break-inside: auto !important;
+        page-break-inside: auto !important;
+      }
+      .task-page:last-of-type {
+        border-bottom: none !important;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+      }
+      /* Headings & structural flow */
+      .section-heading, .section-tag, .instruction, .blueprint-title, h2, h3, h4 {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+      }
+      .section-tag {
+        color: #1d4ed8 !important;
+      }
+      .section-heading {
+        color: #0a193b !important;
+      }
+      /* Warm-Up stage: side-by-side on paper */
+      .warmup-stage {
+        display: grid !important;
+        grid-template-columns: 0.9fr 1.4fr !important;
+        gap: 16px !important;
+        margin-bottom: 14px !important;
+        break-inside: auto !important;
+      }
+      .warmup-visual-card {
+        margin-bottom: 14px !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        border: 1px solid #cbd5e1 !important;
+      }
+      .graphic-img-wrap, .warmup-graphic-img {
+        max-height: 160px !important;
+        object-fit: cover !important;
+      }
+      .graphic-caption {
+        padding: 8px 12px !important;
+        font-size: 0.82rem !important;
+      }
+      /* Card components: avoid breaking mid-card */
+      .kwt-card, .disc-card, .mw-card, .match-pair-row, .c1-blueprint-card, 
+      .vocab-card, .notes-card, .cue-card, .article-card, .frame-card, .analysis-callout {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+      }
+      /* Printable form inputs: fill-in lines */
+      input.line-gap {
+        border: none !important;
+        border-bottom: 1.5px solid #0f172a !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        min-width: 100px !important;
+        padding: 0 4px !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+      }
+      textarea.notes-input {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        background: transparent !important;
+        min-height: 70px !important;
+        color: #0f172a !important;
+      }
+      /* Masked spans: show subtle dashed underline */
+      .masked-span {
+        background: transparent !important;
+        color: #0f172a !important;
+        filter: none !important;
+        border-bottom: 1.5px dashed #64748b !important;
+        padding: 0 4px !important;
+      }
+      .masked-span::after {
+        display: none !important;
+      }
+      /* Model reveal boxes: hide if closed, show cleanly if opened */
+      .model-reveal-box:not(.open) {
+        display: none !important;
+      }
+      .model-reveal-box.open {
+        display: block !important;
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 8px 12px !important;
+        margin-top: 6px !important;
+      }
+      /* Chips and badges */
+      .word-chip, .phrase-chip, .placed-chip {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        display: inline-block !important;
+      }
+      .stance-btn {
+        background: #f8fafc !important;
+        color: #334155 !important;
+        border: 1px solid #cbd5e1 !important;
+      }
+      .category-table th, .category-table td {
+        border: 1px solid #cbd5e1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Glass Utility Ribbon -->
+  <div class="top-bar">
+    <div class="top-left">
+      <a class="hub-btn" href="index.html">&larr; Master Teaching Hub</a>
+      <span class="level-pill">B1 Intermediate • Youth Fluency, Tech &amp; Spoken Confidence</span>
+    </div>
+    <div class="utility-actions">
+      <button class="btn-util" id="theme-toggle-btn" onclick="toggleTheme()">🌙 Dark Studio</button>
+      <button class="btn-util" id="toggle-all-btn" onclick="toggleShowAll()">📄 Full Sheet View</button>
+      <button class="btn-util" onclick="window.print()">🖨️ Print / PDF</button>
+      <button class="btn-util" onclick="resetWorkbook()">↺ Reset</button>
+    </div>
+  </div>
+
+  <!-- Paginated Task Stepper Tabs -->
+  <nav class="task-tabs" aria-label="Lesson Tasks">
+    <div class="task-tab active" onclick="goToTask(0)">
+      <span class="step-num">01 &bull; Warm-Up</span>Speaking Warm-Up
+    </div>
+    <div class="task-tab" onclick="goToTask(1)">
+      <span class="step-num">02 &bull; Reading</span>Article Digest
+    </div>
+    <div class="task-tab" onclick="goToTask(2)">
+      <span class="step-num">03 &bull; Video</span>Sound Warfare Match
+    </div>
+    <div class="task-tab" onclick="goToTask(3)">
+      <span class="step-num">04 &bull; Lexis</span>Practical Lexis
+    </div>
+    <div class="task-tab" onclick="goToTask(4)">
+      <span class="step-num">05 &bull; Idioms</span>B1+ Grammar Blueprints
+    </div>
+    <div class="task-tab" onclick="goToTask(5)">
+      <span class="step-num">06 &bull; Debate</span>High-Energy Debates
+    </div>
+    <div class="task-tab" onclick="goToTask(6)">
+      <span class="step-num">07 &bull; Mystery Tech</span>Mystery Gadget Grid
+    </div>
+    <div class="task-tab" onclick="goToTask(7)">
+      <span class="step-num">08 &bull; Sound Science</span>Sound Myths &amp; Facts
+    </div>
+    <div class="task-tab" onclick="goToTask(8)">
+      <span class="step-num">09 &bull; Action Matrix</span>Sound Collocation Matrix
+    </div>
+    <div class="task-tab" onclick="goToTask(9)">
+      <span class="step-num">10 &bull; Idiom Fixer</span>Broken Sound Idioms
+    </div>
+    <div class="task-tab" onclick="goToTask(10)">
+      <span class="step-num">11 &bull; Noise Triage</span>Noise Crime Triage
+    </div>
+  </nav>
+
+  <!-- Main Executive Workbook Card -->
+  <main class="sheet">
+    <div class="sheet-progress-track">
+      <div class="sheet-progress-fill" id="top-progress-fill"></div>
+    </div>
+
+    <div class="sheet-inner">
+      <header class="doc-header">
+  <meta name="robots" content="noindex, nofollow" />
+        <div>
+          <div class="doc-eyebrow">Gareth Montgomery &bull; Vitaly • 13 Years Old • Switzerland • High-Energy Tech &amp; Debate Studio</div>
+          <h1 class="doc-title">Secret Gadgets, Loud Music &amp; The Battle for Quiet Public Spaces</h1>
+        </div>
+        <div class="doc-meta-pill" id="page-counter-label">Task 1 &bull; Warm-Up</div>
+      </header>
+
+      <!-- ================= TASK 1: WARM-UP ================= -->
+      <section class="task-page active" data-title="Warm-Up">
+        <span class="section-tag">Stage 01 // Active Voice First</span>
+        <h2 class="section-heading">Fluency Warm-Up &amp; Topic Lead-In</h2>
+        <p class="instruction">Start with the visual scene and 2-minute spoken turn below to establish communication immediately.</p>
+
+        <div class="warmup-stage">
+          <!-- Associated Thematic Graphic / Visual Anchor -->
+          <div class="warmup-visual-card">
+            <div class="graphic-img-wrap">
+              <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80" alt="Loud concert speaker and soundwaves in an urban setting" class="warmup-graphic-img" loading="eager" />
+              <div class="graphic-badge">
+                <span class="badge-dot"></span>
+                <span>Visual Anchor</span>
+              </div>
+            </div>
+            <div class="graphic-caption">
+              <strong>Context Focus:</strong> Sound Warfare · When Massive Speakers Collide with the Right to Peace and Quiet
+            </div>
+          </div>
+
+          <!-- Clean, High-Readability Speaking Cue Card -->
+          <div class="cue-card">
+            <div class="cue-header">
+              <span class="cue-kicker">🎙️ Active Spoken Warm-Up &bull; 2-Minute Long Turn</span>
+              <span class="cue-time-hint">⏱️ 1m Prep &bull; Up to 2m Talk</span>
+            </div>
+
+            <h3 class="cue-title">Describe a time when you were disturbed by loud noise or loud music, or an annoying noise in your town, school, or neighbourhood.</h3>
+
+            <div class="cue-lead">You should say:</div>
+            <ul class="cue-bullets">
+              <li>Where you were and what you were trying to do (e.g. sleep, game with friends, study)</li>
+<li>What the noise was and where it was coming from</li>
+<li>How you (or the people around you) reacted to it</li>
+<li>And explain what you did (or what you wish you could have done) to solve the problem.</li>
+            </ul>
+
+            <div class="cue-closing-prompt">
+              ...and explain what you did (or what you wish you could have done) to solve the problem.
+            </div>
+          </div>
+        </div>
+
+        
+
+        <p class="instruction" style="margin-bottom: 12px;">
+          Warm-Up Talking Points · Click each card as you discuss it aloud:
+          <span style="font-weight: 400; font-size: 0.85rem; color: var(--ink-500);">(Click any card to mark as discussed.)</span>
+        </p>
+        <div class="disc-grid">
+          <div class="disc-card" onclick="this.classList.toggle('done')"><span class="disc-num">01</span><span class="disc-text">In Switzerland, there are very strict rules about quiet hours (Ruhezeit) on Sundays and late in the evening. Do you think these rules are great, or are they sometimes annoying?</span><span class="disc-check">✓</span></div>
+<div class="disc-card" onclick="this.classList.toggle('done')"><span class="disc-num">02</span><span class="disc-text">What is the single most annoying sound in the world to you: loud TikTok videos on a bus, lawnmowers outside your window at 7am, someone chewing loudly, or barking dogs?</span><span class="disc-check">✓</span></div>
+<div class="disc-card" onclick="this.classList.toggle('done')"><span class="disc-num">03</span><span class="disc-text">If someone played blasting music outside your bedroom window while you were trying to sleep or game with friends, how would you react?</span><span class="disc-check">✓</span></div>
+<div class="disc-card" onclick="this.classList.toggle('done')"><span class="disc-num">04</span><span class="disc-text">Have you ever seen someone use a cool, clever, or unusual gadget to solve an annoying everyday problem?</span><span class="disc-check">✓</span></div>
+        </div>
+      </section>
+
+      <!-- ================= TASK 2: READING ================= -->
+      <section class="task-page" data-title="Reading">
+        <span class="section-tag">Stage 02 // Receptive Reading</span>
+        <h2 class="section-heading">Reading: China&#x27;s &#x27;Dancing Grannies&#x27; Silenced by Secret Anti-Speaker Guns</h2>
+        <p class="instruction">Read the briefing below and answer the comprehension question.</p>
+
+        <div class="editorial-media-card">
+          <div>
+            <div class="media-meta">📰 The Guardian · World &amp; Technology News</div>
+            <a class="media-title-link" href="https://www.theguardian.com/world/2021/oct/08/chinas-noisy-dancing-grannies-silenced-by-device-that-disables-speakers" target="_blank" rel="noopener noreferrer">
+              China&#x27;s &#x27;Dancing Grannies&#x27; Silenced by Secret Anti-Speaker Guns
+            </a>
+          </div>
+          <a class="btn-external" href="https://www.theguardian.com/world/2021/oct/08/chinas-noisy-dancing-grannies-silenced-by-device-that-disables-speakers" target="_blank" rel="noopener noreferrer">
+            Open Original Article &nearr;
+          </a>
+        </div>
+
+        <div class="reading-digest">
+          <p>Every evening in public parks and apartment squares across China, millions of retired women meet up for &#x27;guangchangwu&#x27; (plaza dancing). For the dancers, it is a fun, social way to stay fit and chat with friends. The trouble is that each group brings enormous rolling loudspeakers, turning up the volume to maximum and blasting traditional folk music and loud pop songs directly beneath residential bedroom windows.</p>
+<p>For neighbours trying to study for difficult school exams, sleep after night shifts, or relax after work, the deafening music has triggered years of bitter standoffs. Frustrated residents have tried everything: throwing water balloons from balconies, letting off firecrackers, and even tossing smelly garbage. But because traditional culture strictly demands deep respect for elderly citizens, local police are extremely reluctant to issue fines or ban the dancers.</p>
+<p>Now, fed-up residents have turned to a futuristic secret weapon: a handheld &#x27;anti-loudspeaker jammer gun&#x27;. Looking like a heavy tactical torch, the gadget shoots a concentrated, invisible infrared beam up to 50 metres away, instantly cutting the Bluetooth connection or shutting down the dancers&#x27; speaker entirely. When the booming music abruptly dies, the bewildered dancers tap the speaker in confusion, assume it has broken down, and quietly pack up for the night—while smiling residents watch in secret from their windows.</p>
+        </div>
+
+        <div style="font-weight: 700; font-size: 1.04rem; color: var(--navy-950);">
+          1. According to the article, why did residents decide to buy secret jammer guns instead of asking the police to help them?
+        </div>
+        <textarea class="notes-input" placeholder="Synthesise the key reason in 1–2 crisp sentences..."></textarea>
+
+        <div class="action-bar">
+          <button class="btn-reveal" onclick="toggleModel('reading-model')">👁️ Reveal Model Answer</button>
+        </div>
+        <div id="reading-model" class="model-reveal-box">
+          <strong>Model Summary:</strong> Residents turned to jammer guns because the police were reluctant to punish or fine elderly citizens due to cultural respect, and previous protests like water balloons failed to stop the loud music.
+        </div>
+      </section>
+
+      <!-- ================= TASK 3: VIDEO ================= -->
+      <section class="task-page" data-title="Video &amp; Matching">
+        <span class="section-tag">Stage 03 // Broadcast Listening &amp; Collocations</span>
+        <h2 class="section-heading">Context: Acoustic Warfare: The Battle for the Town Square</h2>
+        <p class="instruction">Match the sentence beginnings (1–5) on the left with their logical completions (A–E) on the right.</p>
+
+        <div class="editorial-media-card">
+          <div>
+            <div class="media-meta">📺 Guardian Global News Digest (GD-18 Archive)</div>
+            <a class="media-title-link" href="https://www.theguardian.com/world/2021/oct/08/chinas-noisy-dancing-grannies-silenced-by-device-that-disables-speakers" target="_blank" rel="noopener noreferrer">
+              Acoustic Warfare: The Battle for the Town Square
+            </a>
+          </div>
+          <a class="btn-external" style="background: #dc2626;" href="https://www.theguardian.com/world/2021/oct/08/chinas-noisy-dancing-grannies-silenced-by-device-that-disables-speakers" target="_blank" rel="noopener noreferrer">
+            ▶ Read Original Guardian Report ↗
+          </a>
+        </div>
+
+        <p style="font-size: 0.9rem; color: var(--ink-500); margin-bottom: 12px;">
+          <strong>Interactive Matching:</strong> Click a blue sentence beginning on the left (<code>1–5</code>), then click its matching ending on the right.
+        </p>
+
+        <div class="matching-grid">
+          <div class="match-col" id="match-left-col">
+            <div class="match-left" data-left="1" onclick="selectLeftMatch(1)"><span class="match-badge">1</span><span>When plaza dancers turn their industrial loudspeakers up to full blast, they</span></div>
+<div class="match-left" data-left="2" onclick="selectLeftMatch(2)"><span class="match-badge">2</span><span>Residents tried throwing water balloons and shouting from their windows, but</span></div>
+<div class="match-left" data-left="3" onclick="selectLeftMatch(3)"><span class="match-badge">3</span><span>Local police officers were very reluctant to step in because</span></div>
+<div class="match-left" data-left="4" onclick="selectLeftMatch(4)"><span class="match-badge">4</span><span>The anti-speaker device shoots an invisible beam from 50 metres away, which</span></div>
+<div class="match-left" data-left="5" onclick="selectLeftMatch(5)"><span class="match-badge">5</span><span>When their powerful sound systems suddenly turn off for no clear reason, the dancers</span></div>
+          </div>
+          <div class="match-col" id="match-right-col">
+            <div class="match-right" data-ans="3" onclick="selectRightMatch(this)"><span class="match-badge" style="display:none;"></span><span>in Chinese culture it is important to show respect to older people.</span></div>
+<div class="match-right" data-ans="1" onclick="selectRightMatch(this)"><span class="match-badge" style="display:none;"></span><span>make it impossible for students upstairs to study or for babies to sleep.</span></div>
+<div class="match-right" data-ans="5" onclick="selectRightMatch(this)"><span class="match-badge" style="display:none;"></span><span>look at each other in complete confusion and assume their equipment is broken.</span></div>
+<div class="match-right" data-ans="2" onclick="selectRightMatch(this)"><span class="match-badge" style="display:none;"></span><span>the stubborn dancing groups simply came back and danced louder the next evening.</span></div>
+<div class="match-right" data-ans="4" onclick="selectRightMatch(this)"><span class="match-badge" style="display:none;"></span><span>instantly breaks the Bluetooth signal and powers off the loudspeaker without a sound.</span></div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-check" onclick="checkVideoMatches()">Check Matches</button>
+          <button class="btn-reveal" onclick="revealVideoMatches()">👁️ Reveal Model</button>
+          <span class="score-pill" id="video-score-pill"></span>
+        </div>
+
+        <div class="phrase-vault">
+          <div class="phrase-vault-top">
+            <strong style="color: var(--navy-950); font-size: 0.96rem;">
+              🗣️ Post-Viewing Retell: Use these phrases to summarise the report
+            </strong>
+            <span id="phrase-counter" class="level-pill">0 / 8 phrases activated</span>
+          </div>
+          <div class="phrase-chips-wrap">
+            <button type="button" class="phrase-chip" onclick="togglePhraseChip(this)"><span class="chip-dot"></span>blasting music</button>
+<button type="button" class="phrase-chip" onclick="togglePhraseChip(this)"><span class="chip-dot"></span>fed up with...</button>
+<button type="button" class="phrase-chip" onclick="togglePhraseChip(this)"><span class="chip-dot"></span>take matters into your own hands</button>
+<button type="button" class="phrase-chip" onclick="togglePhraseChip(this)"><span class="chip-dot"></span>in complete confusion</button>
+<button type="button" class="phrase-chip" onclick="togglePhraseChip(this)"><span class="chip-dot"></span>put up with the noise</button>
+<button type="button" class="phrase-chip" onclick="togglePhraseChip(this)"><span class="chip-dot"></span>a peaceful compromise</button>
+<button type="button" class="phrase-chip" onclick="togglePhraseChip(this)"><span class="chip-dot"></span>secret gadget</button>
+<button type="button" class="phrase-chip" onclick="togglePhraseChip(this)"><span class="chip-dot"></span>turn down the volume</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TASK 4: VOCABULARY GAP-FILL ================= -->
+      <section class="task-page" data-title="Target Vocabulary">
+        <span class="section-tag">Stage 04 // Essential B1 Vocabulary</span>
+        <h2 class="section-heading">Controlled Practice: High-Utility B1 Vocabulary</h2>
+        <p class="instruction">Click a word in the dock below and click a gap—or type directly into each sentence.</p>
+
+        <div class="word-bank-dock" id="adj-bank">
+          <button type="button" class="word-chip" onclick="pickBankWord(this)">blasting</button>
+<button type="button" class="word-chip" onclick="pickBankWord(this)">fed up</button>
+<button type="button" class="word-chip" onclick="pickBankWord(this)">step in</button>
+<button type="button" class="word-chip" onclick="pickBankWord(this)">gadget</button>
+<button type="button" class="word-chip" onclick="pickBankWord(this)">confusion</button>
+<button type="button" class="word-chip" onclick="pickBankWord(this)">dispute</button>
+<button type="button" class="word-chip" onclick="pickBankWord(this)">peaceful</button>
+<button type="button" class="word-chip" onclick="pickBankWord(this)">compromise</button>
+        </div>
+
+        <div id="adj-questions">
+          <div class="gap-row"><span class="row-num">01</span><div class="row-body">The music was <input type="text" class="line-gap" placeholder="select or type..." data-ans="blasting" onclick="fillInputFromBank(this)" /> so loudly from the park that students could not concentrate on their homework.</div></div>
+<div class="gap-row"><span class="row-num">02</span><div class="row-body">After weeks of broken sleep, the neighbours became completely <input type="text" class="line-gap" placeholder="select or type..." data-ans="fed up" onclick="fillInputFromBank(this)" /> with the loud volume outside.</div></div>
+<div class="gap-row"><span class="row-num">03</span><div class="row-body">The police were asked to <input type="text" class="line-gap" placeholder="select or type..." data-ans="step in" onclick="fillInputFromBank(this)" /> , but they did not want to cause an argument with elderly citizens.</div></div>
+<div class="gap-row"><span class="row-num">04</span><div class="row-body">He ordered a special handheld <input type="text" class="line-gap" placeholder="select or type..." data-ans="gadget" onclick="fillInputFromBank(this)" /> online that could disable electronic speakers through the window.</div></div>
+<div class="gap-row"><span class="row-num">05</span><div class="row-body">The dancers looked at their dead stereo in complete <input type="text" class="line-gap" placeholder="select or type..." data-ans="confusion" onclick="fillInputFromBank(this)" /> , wondering why it had suddenly stopped working.</div></div>
+<div class="gap-row"><span class="row-num">06</span><div class="row-body">The loud music created a bitter <input type="text" class="line-gap" placeholder="select or type..." data-ans="dispute" onclick="fillInputFromBank(this)" /> between the residents and the dancers.</div></div>
+<div class="gap-row"><span class="row-num">07</span><div class="row-body">All the neighbours wanted was a <input type="text" class="line-gap" placeholder="select or type..." data-ans="peaceful" onclick="fillInputFromBank(this)" /> evening without heavy bass shaking their walls.</div></div>
+<div class="gap-row"><span class="row-num">08</span><div class="row-body">The local council tried to reach a fair <input type="text" class="line-gap" placeholder="select or type..." data-ans="compromise" onclick="fillInputFromBank(this)" /> by setting a 9pm curfew for music in the park.</div></div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-check" onclick="checkInputs('adj-questions', 'adj-score')">Check Answers</button>
+          <button class="btn-reveal" onclick="revealInputs('adj-questions', 'adj-score')">👁️ Reveal Model</button>
+          <span class="score-pill" id="adj-score"></span>
+        </div>
+      </section>
+
+      <!-- ================= TASK 5: IDIOMS, BLUEPRINT & CATEGORY TABLE ================= -->
+      <section class="task-page" data-title="Everyday Phrases &amp; B1+ Blueprints">
+        <span class="section-tag">Stage 05 // Everyday Phrasal Verbs &amp; B1+ Structures</span>
+        <h2 class="section-heading">Key Phrases &amp; B1+ Sentence Blueprints</h2>
+        <p class="instruction">Complete the second sentence so that it has a similar meaning to the first, using the keyword pill.</p>
+
+        <div id="idiom-questions">
+          
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-check" onclick="checkInputs('idiom-questions', 'idiom-score')">Check Idioms</button>
+          <button class="btn-reveal" onclick="revealInputs('idiom-questions', 'idiom-score')">👁️ Reveal Model</button>
+          <span class="score-pill" id="idiom-score"></span>
+        </div>
+
+        <!-- Structural Blueprint Card -->
+        <div class="c1-blueprint-card">
+          <div class="blueprint-title">📐 B1+ Structural Upgrades • Everyday Opinions, Contrasts &amp; Hypotheticals</div>
+          <div class="formula-stack">
+            <div class="formula-line">Formula 1 · Second Conditional for Hypotheticals: If + Past Simple, would (not) + Verb (e.g. If I lived next to the park, I would buy a jammer immediately / If they used headphones, nobody would complain)</div>
+            <div class="formula-line">Formula 2 · Clear Contrast with Even though: Even though + [Fact], [Main Point] (e.g. Even though public parks are for everyone, people still need to respect their neighbours)</div>
+            <div class="formula-line">Formula 3 · Purpose &amp; Result with So that: [Action] + so that + [Subject] could + Verb (e.g. He used the device so that he could stop the noise without starting an argument)</div>
+          </div>
+          <p style="font-size: 0.92rem; color: var(--ink-700); margin-bottom: 8px;">
+            <strong>Live Workout:</strong> Upgrade this baseline sentence using <strong>Formula 1 (Second Conditional)</strong> or <strong>Formula 2 (Even though)</strong>:<br/><br/>
+            <em>Baseline: 'People want to dance in the park. But they shouldn't make so much noise for residents.'</em>
+          </p>
+          <textarea class="notes-input" placeholder="Type your B1+ sentence upgrade here..."></textarea>
+          <div class="action-bar">
+            <button class="btn-reveal" onclick="toggleModel('c1-idiom-model')">👁️ Reveal Model</button>
+          </div>
+          <div id="c1-idiom-model" class="model-reveal-box">
+            <strong>Model Formulations:</strong><br/>
+            &bull; <em>Second Conditional Model: 'If the dancers kept the volume at a reasonable level, residents wouldn't have any problem with them.'</em><br/><br/>
+            &bull; <em>Even Though Model: 'Even though people should be free to exercise in the park, they shouldn't play music so loudly that it disturbs everyone at home.'</em>
+          </div>
+        </div>
+
+        <!-- Category Sorter Matrix -->
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--navy-950); margin: 34px 0 6px;">
+          Lexical Categorisation Matrix
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--ink-500); margin-bottom: 14px;">
+          Click a term in the dock below, then click the row in the matrix where it belongs. Explain your reasoning aloud.
+        </p>
+
+        <div class="word-bank-dock" id="cat-bank">
+          
+        </div>
+
+        <table class="category-table" id="cat-table">
+          <tbody>
+            
+          </tbody>
+        </table>
+
+        <div class="action-bar">
+          <button class="btn-check" onclick="checkCategories()">Check Matrix</button>
+          <button class="btn-reveal" onclick="revealCategories()">👁️ Reveal Model</button>
+        </div>
+      </section>
+
+      <!-- ================= TASK 6: SPEAKING & DEBATE ================= -->
+      <section class="task-page" data-title="Speaking &amp; Debate">
+        <span class="section-tag">Stage 06 // Communicative Production</span>
+        <h2 class="section-heading">High-Energy Debates &bull; Point &amp; Counterpoint</h2>
+        <p class="instruction">
+          Select your initial stance on each proposition and defend it. Then switch to <strong>⚡ Devil's Advocate</strong> and argue the opposite view.
+        </p>
+
+        
+
+        <div class="c1-blueprint-card" style="margin-top: 22px;">
+          <div class="blueprint-title">🗣️ B1+ Teen Fluency &amp; Debate Toolkit</div>
+          <div style="font-size: 0.9rem; color: var(--ink-700); display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+              &bull; <strong>Giving Your Opinion:</strong> <em>&quot;In my opinion...&quot; / &quot;To be honest, I think...&quot; / &quot;As far as I&#x27;m concerned...&quot;</em><br/>
+&bull; <strong>Agreeing &amp; Disagreeing:</strong> <em>&quot;I completely agree because...&quot; / &quot;I see your point, but...&quot; / &quot;That makes sense, but...&quot;</em>
+            </div>
+            <div>
+              &bull; <strong>Playing Devil&#x27;s Advocate:</strong> <em>&quot;To be fair to the dancers...&quot; / &quot;Looking at it from their side...&quot; / &quot;You could also argue that...&quot;</em><br/>
+&bull; <strong>Real-World Examples:</strong> <em>&quot;For example, where I live in Switzerland...&quot; / &quot;If that happened near my house, I would...&quot;</em>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ================= MODULAR TASK 07: 2-Clue Mystery Gadget &amp; Sound Concept Grid ================= -->
+      <section class="task-page" data-title="2-Clue Mystery Gadget &amp; Sound Concept Grid">
+        <span class="section-tag">Archetype A2 // 2-Clue Tech Reveal Grid</span>
+        <h2 class="section-heading">2-Clue Mystery Gadget &amp; Sound Concept Grid</h2>
+        <p class="instruction">Read the two progressive clues in each box, type your guess for the secret gadget or sound concept, then reveal the overarching theme connecting all four.</p>
+        <div class="mw-grid" id="mw-grid-6"><div class="mw-card"><div class="mw-header">MYSTERY CONCEPT 01</div><div class="mw-clue"><strong>Clue A:</strong> A handheld tactical device shaped like a torch that shoots an invisible infrared ray.</div><div class="mw-clue"><strong>Clue B:</strong> It instantly cuts electronic audio signals from up to 50 metres away.</div><div class="mw-input-row"><input type="text" class="line-gap" placeholder="guess concept..." data-ans="jammer|jammer gun|signal jammer" /><button type="button" class="btn-reveal" onclick="toggleModel('mw-6-0')">🔍 Reveal</button></div><div id="mw-6-0" class="model-reveal-box"><strong>Concept:</strong> jammer</div></div><div class="mw-card"><div class="mw-header">MYSTERY CONCEPT 02</div><div class="mw-clue"><strong>Clue A:</strong> A heavy portable audio box on wheels with massive bass woofers.</div><div class="mw-clue"><strong>Clue B:</strong> Plaza dancers wheel it into public squares to blast folk songs.</div><div class="mw-input-row"><input type="text" class="line-gap" placeholder="guess concept..." data-ans="loudspeaker|speaker|boombox" /><button type="button" class="btn-reveal" onclick="toggleModel('mw-6-1')">🔍 Reveal</button></div><div id="mw-6-1" class="model-reveal-box"><strong>Concept:</strong> loudspeaker</div></div><div class="mw-card"><div class="mw-header">MYSTERY CONCEPT 03</div><div class="mw-clue"><strong>Clue A:</strong> A short-range wireless standard that connects smartphones to headphones and speakers.</div><div class="mw-clue"><strong>Clue B:</strong> When its 2.4 GHz signal is blocked, music abruptly cuts out.</div><div class="mw-input-row"><input type="text" class="line-gap" placeholder="guess concept..." data-ans="bluetooth|bluetooth signal" /><button type="button" class="btn-reveal" onclick="toggleModel('mw-6-2')">🔍 Reveal</button></div><div id="mw-6-2" class="model-reveal-box"><strong>Concept:</strong> bluetooth</div></div><div class="mw-card"><div class="mw-header">MYSTERY CONCEPT 04</div><div class="mw-clue"><strong>Clue A:</strong> The cultural and legal rule in Switzerland that guarantees peace and quiet.</div><div class="mw-clue"><strong>Clue B:</strong> It forbids mowing lawns, loud DIY work, or blasting music on Sundays and after 10 PM.</div><div class="mw-input-row"><input type="text" class="line-gap" placeholder="guess concept..." data-ans="ruhezeit|quiet hours|quiet time" /><button type="button" class="btn-reveal" onclick="toggleModel('mw-6-3')">🔍 Reveal</button></div><div id="mw-6-3" class="model-reveal-box"><strong>Concept:</strong> ruhezeit</div></div></div><div class="action-bar"><button class="btn-check" onclick="checkInputs('mw-grid-6', 'mw-score-6')">Check Guesses</button><button class="btn-reveal" onclick="revealInputs('mw-grid-6', 'mw-score-6')">👁️ Reveal All</button><span class="score-pill" id="mw-score-6"></span></div><div class="c1-blueprint-card" style="margin-top:20px;"><div class="blueprint-title">🎯 Overarching Theme Synthesis</div><p style="font-weight:700; margin-bottom:8px;">What overarching theme connects a Jammer Gun, a Loudspeaker, Bluetooth, and Swiss Ruhezeit?</p><button type="button" class="btn-reveal" onclick="toggleModel('mw-theme-6')">👁️ Reveal Connecting Theme</button><div id="mw-theme-6" class="model-reveal-box">Sound Warfare &amp; The Tech Battle for Quiet Spaces — how residents and modern technology clash with public noise in everyday life.</div></div>
+      </section>
+
+      <!-- ================= MODULAR TASK 08: Masked Provocation &amp; Sound Science Myth-Buster ================= -->
+      <section class="task-page" data-title="Masked Provocation &amp; Sound Science Myth-Buster">
+        <span class="section-tag">Archetype A3 &amp; E4 // Acoustic Provocation &amp; Science Quiz</span>
+        <h2 class="section-heading">Masked Provocation &amp; Sound Science Myth-Buster</h2>
+        <p class="instruction">Predict the masked punchline of the acoustic quote before unmasking it, then test your intuition on the 4 real-world sound claims below.</p>
+        <div class="c1-blueprint-card" style="margin-bottom:24px;"><div class="blueprint-title">💬 Masked Quote Provocation &bull; Dr. Sarah Lindqvist (Acoustic Engineer &amp; Urban Sound Researcher)</div><p style="font-family:var(--font-serif); font-size:1.22rem; font-weight:700; color:var(--navy-950); margin-bottom:12px;">“Peace and quiet in your own bedroom is not an optional luxury; <span id="quote-mask-7" class="masked-span" onclick="this.classList.toggle('unmasked')">[Click to Unmask Punchline: it is a biological necessity for healthy sleep, mental focus, and gaming reaction times.]</span>”</p><p style="font-size:0.94rem; color:var(--ink-700);"><strong> Provocation:</strong> Do you agree that loud noise damages concentration and gaming performance? What&#x27;s your ideal sound environment when you play games or study?</p></div><h3 style="font-size:1.12rem; font-weight:800; color:var(--navy-950); margin-bottom:12px;">Myth vs. Fact Lead-In Quiz</h3><div class="kwt-card"><div class="kwt-top"><span class="row-num">01</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">In Switzerland, federal law strictly forbids flushing your apartment toilet after 10:00 PM anywhere in the country.</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="checkFactMyth(this, true, false, 'qf-exp-7-0')">✓ Fact</button><button type="button" class="stance-btn" onclick="checkFactMyth(this, false, false, 'qf-exp-7-0')">✕ Myth</button></div></div><div id="qf-exp-7-0" class="model-reveal-box">MYTH: This is a famous worldwide internet myth! While some older apartment buildings have house rules advising consideration, there is no federal law banning night-time toilet flushing.</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">02</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">The &#x27;Mosquito Ringtone&#x27; emits a high-pitched 17.4 kHz sound that teenagers can hear clearly, but most adults over 30 cannot hear at all.</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="checkFactMyth(this, true, true, 'qf-exp-7-1')">✓ Fact</button><button type="button" class="stance-btn" onclick="checkFactMyth(this, false, true, 'qf-exp-7-1')">✕ Myth</button></div></div><div id="qf-exp-7-1" class="model-reveal-box">FACT: As the human ear ages, microscopic hair cells in the cochlea degrade, making adults completely deaf to ultra-high frequencies that teenagers hear effortlessly.</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">03</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">Sound waves travel roughly 4 times faster through water than they do through air.</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="checkFactMyth(this, true, true, 'qf-exp-7-2')">✓ Fact</button><button type="button" class="stance-btn" onclick="checkFactMyth(this, false, true, 'qf-exp-7-2')">✕ Myth</button></div></div><div id="qf-exp-7-2" class="model-reveal-box">FACT: Because water molecules are much more tightly packed than gas molecules in the air, vibrational energy travels at roughly 1,480 m/s compared to 343 m/s in air.</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">04</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">Across China, an estimated 100 million retired citizens take part in outdoor plaza dancing every single evening.</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="checkFactMyth(this, true, true, 'qf-exp-7-3')">✓ Fact</button><button type="button" class="stance-btn" onclick="checkFactMyth(this, false, true, 'qf-exp-7-3')">✕ Myth</button></div></div><div id="qf-exp-7-3" class="model-reveal-box">FACT: Square dancing (&#x27;guangchangwu&#x27;) is a colossal cultural phenomenon with over 100 million regular dancers, creating massive social benefits but huge acoustic battles.</div></div>
+      </section>
+
+      <!-- ================= MODULAR TASK 09: Many-to-Many Sound &amp; Tech Action Collocation Matrix ================= -->
+      <section class="task-page" data-title="Many-to-Many Sound &amp; Tech Action Collocation Matrix">
+        <span class="section-tag">Archetype B1 // Multi-Verb Collocation Matrix</span>
+        <h2 class="section-heading">Many-to-Many Sound &amp; Tech Action Collocation Matrix</h2>
+        <p class="instruction">Click the cells where the verb in the column header naturally collocates with the noun on the left (each noun matches multiple verbs). Then click Check Collocations.</p>
+        <div style="overflow-x:auto;"><table class="category-table" id="cmatrix-8"><thead><tr><th>Target Noun / Object</th><th style="text-align:center; font-size:0.8rem;">DISABLE</th><th style="text-align:center; font-size:0.8rem;">BLAST</th><th style="text-align:center; font-size:0.8rem;">INTERVENE</th><th style="text-align:center; font-size:0.8rem;">TOLERATE</th><th style="text-align:center; font-size:0.8rem;">COMPROMISE</th><th style="text-align:center; font-size:0.8rem;">CONFUSE</th></tr></thead><tbody><tr><th style="width:26%;">loud music / heavy bass</th><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td></tr><tr><th style="width:26%;">a bluetooth speaker / gadget</th><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td></tr><tr><th style="width:26%;">the local police / authorities</th><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td></tr><tr><th style="width:26%;">annoying background noise</th><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td></tr><tr><th style="width:26%;">bewildered dancers / neighbours</th><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="0" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td><td class="matrix-cell" data-expected="1" onclick="toggleMatrixCell(this)"><span class="matrix-mark"></span></td></tr></tbody></table></div><div class="action-bar"><button class="btn-check" onclick="checkCollocationMatrix('cmatrix-8', 'cm-score-8')">Check Collocations</button><button class="btn-reveal" onclick="revealCollocationMatrix('cmatrix-8', 'cm-score-8')">👁️ Reveal Valid Pairs</button><span class="score-pill" id="cm-score-8"></span></div><h3 style="font-size:1.08rem; font-weight:800; color:var(--navy-950); margin:24px 0 10px;">Activate the Collocations in Speech</h3><div class="disc-grid"><div class="disc-card" onclick="this.classList.toggle('done')"><span class="disc-num">01</span><span class="disc-text">If someone is blasting loud music on a public bus in Switzerland, would the driver intervene or expect passengers to tolerate it?</span><span class="disc-check">✓</span></div><div class="disc-card" onclick="this.classList.toggle('done')"><span class="disc-num">02</span><span class="disc-text">Have you ever tried to disable an electronic notification or device because the repetitive sound was driving you crazy?</span><span class="disc-check">✓</span></div><div class="disc-card" onclick="this.classList.toggle('done')"><span class="disc-num">03</span><span class="disc-text">What is the best way for neighbours to compromise when one person wants to practice drums and the other wants quiet?</span><span class="disc-check">✓</span></div></div>
+      </section>
+
+      <!-- ================= MODULAR TASK 10: Broken Sound Idioms &amp; Fake Proverb Detector ================= -->
+      <section class="task-page" data-title="Broken Sound Idioms &amp; Fake Proverb Detector">
+        <span class="section-tag">Archetype C2 &amp; C3 // Idiom Repair &amp; Malaphor Spotter</span>
+        <h2 class="section-heading">Broken Sound Idioms &amp; Fake Proverb Detector</h2>
+        <p class="instruction">In Part A, replace the bolded corrupted word to restore the authentic English sound idiom. In Part B, decide if each proverb is Authentic or a Blended Fake (&#x27;Malaphor&#x27;).</p>
+        <div id="broken-box-9"><div class="kwt-card"><div class="kwt-top"><span class="row-num">01</span><span class="kwt-prompt">Making a huge complaint about someone listening quietly to a podcast was just a storm in a cup of coffee.</span><span class="kw-pill" style="background:var(--rose-border);">Fix: cup of coffee</span></div><div class="kwt-bottom">Authentic Idiom Keyword: <input type="text" class="line-gap" placeholder="correct word..." data-ans="teacup" /> <span style="font-size:0.86rem; color:var(--ink-500);">(exaggerating a trivial problem: a storm in a teacup)</span></div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">02</span><span class="kwt-prompt">When the angry neighbours shouted from their balconies, the dancers decided to turn a blind ear.</span><span class="kw-pill" style="background:var(--rose-border);">Fix: blind</span></div><div class="kwt-bottom">Authentic Idiom Keyword: <input type="text" class="line-gap" placeholder="correct word..." data-ans="deaf" /> <span style="font-size:0.86rem; color:var(--ink-500);">(ignore complaints intentionally: turn a deaf ear)</span></div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">03</span><span class="kwt-prompt">The person who bought the illegal speaker jammer eventually had to face the painting when police arrived.</span><span class="kw-pill" style="background:var(--rose-border);">Fix: painting</span></div><div class="kwt-bottom">Authentic Idiom Keyword: <input type="text" class="line-gap" placeholder="correct word..." data-ans="music" /> <span style="font-size:0.86rem; color:var(--ink-500);">(accept the unpleasant consequences of your actions: face the music)</span></div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">04</span><span class="kwt-prompt">After two hours of loud lawnmowers, hearing the engines finally shut down was complete music to my eyes.</span><span class="kw-pill" style="background:var(--rose-border);">Fix: eyes</span></div><div class="kwt-bottom">Authentic Idiom Keyword: <input type="text" class="line-gap" placeholder="correct word..." data-ans="ears" /> <span style="font-size:0.86rem; color:var(--ink-500);">(something that is extremely welcome and pleasant to hear: music to my ears)</span></div></div></div><div class="action-bar"><button class="btn-check" onclick="checkInputs('broken-box-9', 'broken-score-9')">Check Fixed Idioms</button><button class="btn-reveal" onclick="revealInputs('broken-box-9', 'broken-score-9')">👁️ Reveal Idioms</button><span class="score-pill" id="broken-score-9"></span></div><h3 style="font-size:1.12rem; font-weight:800; color:var(--navy-950); margin:28px 0 12px;">Part B &bull; Real Proverb vs. Blended "Malaphor" Detector</h3><div class="kwt-card"><div class="kwt-top"><span class="row-num">P1</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">“Silence is golden.”</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="checkFactMyth(this, true, true, 'prov-exp-9-0')">✓ Authentic</button><button type="button" class="stance-btn" onclick="checkFactMyth(this, false, true, 'prov-exp-9-0')">⚡ Blended Fake</button></div></div><div id="prov-exp-9-0" class="model-reveal-box">AUTHENTIC PROVERB: It is often wiser and more peaceful to stay silent or enjoy quiet than to make noise.</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">P2</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">“Don&#x27;t count your chickens while blasting loud music.”</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="checkFactMyth(this, true, false, 'prov-exp-9-1')">✓ Authentic</button><button type="button" class="stance-btn" onclick="checkFactMyth(this, false, false, 'prov-exp-9-1')">⚡ Blended Fake</button></div></div><div id="prov-exp-9-1" class="model-reveal-box">BLENDED FAKE (&#x27;Malaphor&#x27;): Hilariously mixes &#x27;Don&#x27;t count your chickens before they hatch&#x27; with loud party advice.</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">P3</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">“Actions speak louder than words.”</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="checkFactMyth(this, true, true, 'prov-exp-9-2')">✓ Authentic</button><button type="button" class="stance-btn" onclick="checkFactMyth(this, false, true, 'prov-exp-9-2')">⚡ Blended Fake</button></div></div><div id="prov-exp-9-2" class="model-reveal-box">AUTHENTIC PROVERB: What people actually do has a much greater impact than what they claim they will do.</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">P4</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">“A rolling stone gathers no loud dancers.”</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="checkFactMyth(this, true, false, 'prov-exp-9-3')">✓ Authentic</button><button type="button" class="stance-btn" onclick="checkFactMyth(this, false, false, 'prov-exp-9-3')">⚡ Blended Fake</button></div></div><div id="prov-exp-9-3" class="model-reveal-box">BLENDED FAKE (&#x27;Malaphor&#x27;): Corrupts &#x27;A rolling stone gathers no moss&#x27;.</div></div>
+      </section>
+
+      <!-- ================= MODULAR TASK 11: 3-Tier Sound &amp; Gadget Triage Matrix ================= -->
+      <section class="task-page" data-title="3-Tier Sound &amp; Gadget Triage Matrix">
+        <span class="section-tag">Archetype F2 // 3-Tier Spectrum Triage</span>
+        <h2 class="section-heading">3-Tier Sound &amp; Gadget Triage Matrix</h2>
+        <p class="instruction">Evaluate each everyday scenario below. Decide whether it is Totally Fine &amp; Cool, Annoying (Deserves a Polite Warning), or Desperate Acoustic Warfare (Deserves the Jammer Gun!).</p>
+        <div class="kwt-card"><div class="kwt-top"><span class="row-num">01</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">A silent disco in a Zurich park where 150 teenagers dance to electronic music wearing wireless glowing LED headphones.</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-0')">🟢 Totally Cool &amp; Fair</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-0')">🟡 Annoying (Deserves a Warning)</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-0')">🔴 Sound Warfare (Jammer Target!)</button></div></div><div id="sp-rat-10-0" class="model-reveal-box"><strong>Analytical Angle:</strong> 🟢 TOTALLY COOL &amp; FAIR: High-energy fun for dancers without emitting a single decibel of loudspeaker noise to nearby flats.</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">02</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">Someone watching full-volume TikTok videos or talking on loudspeaker at the front of a quiet Swiss train carriage.</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-1')">🟢 Totally Cool &amp; Fair</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-1')">🟡 Annoying (Deserves a Warning)</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-1')">🔴 Sound Warfare (Jammer Target!)</button></div></div><div id="sp-rat-10-1" class="model-reveal-box"><strong>Analytical Angle:</strong> 🟡 ANNOYING (DESERVES A WARNING): Violates public transport etiquette; politely ask them to plug in headphones before reaching for a jammer!</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">03</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">A dance group aiming four 500-watt rolling concert speakers directly at apartment bedroom windows every night until 10:30 PM.</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-2')">🟢 Totally Cool &amp; Fair</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-2')">🟡 Annoying (Deserves a Warning)</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-2')">🔴 Sound Warfare (Jammer Target!)</button></div></div><div id="sp-rat-10-2" class="model-reveal-box"><strong>Analytical Angle:</strong> 🔴 SOUND WARFARE: Unreasonable acoustic saturation that deprives residents of essential sleep; classic target for acoustic intervention.</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">04</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">A neighbour doing quiet homework on their balcony at 2:00 PM on a Saturday while listening to music through AirPods.</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-3')">🟢 Totally Cool &amp; Fair</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-3')">🟡 Annoying (Deserves a Warning)</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-3')">🔴 Sound Warfare (Jammer Target!)</button></div></div><div id="sp-rat-10-3" class="model-reveal-box"><strong>Analytical Angle:</strong> 🟢 TOTALLY COOL &amp; FAIR: Zero noise leakage; completely respectful of communal public space.</div></div><div class="kwt-card"><div class="kwt-top"><span class="row-num">05</span><span class="kwt-prompt" style="font-weight:700; color:var(--navy-950);">Someone mowing their lawn with a noisy two-stroke petrol engine at 7:00 AM on a Sunday morning.</span><div class="stance-pills"><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-4')">🟢 Totally Cool &amp; Fair</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-4')">🟡 Annoying (Deserves a Warning)</button><button type="button" class="stance-btn" onclick="selectSpectrumTier(this, 'sp-rat-10-4')">🔴 Sound Warfare (Jammer Target!)</button></div></div><div id="sp-rat-10-4" class="model-reveal-box"><strong>Analytical Angle:</strong> 🔴 SOUND WARFARE: Strictly violates Swiss Ruhezeit quiet hours and wakes the entire neighbourhood.</div></div>
+      </section>
+    </div>
+
+    <!-- Bottom Paginated Controls -->
+    <footer class="sheet-footer">
+      <button class="btn-page secondary" id="prev-task-btn" onclick="changeTask(-1)" disabled>&larr; Previous Task</button>
+      <div style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-500); font-weight: 600;">
+        Navigate with &larr; / &rarr; arrow keys
+      </div>
+      <button class="btn-page" id="next-task-btn" onclick="changeTask(1)">Next Task &rarr;</button>
+    </footer>
+  </main>
+
+  <script>
+    // Theme Switcher
+    function toggleTheme() {
+      const root = document.documentElement;
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('theme-toggle-btn').textContent = isDark ? '🌙 Dark Studio' : '☀️ Editorial Paper';
+    }
+
+    // Pagination & Progress Bar
+    let currentTask = 0;
+    const pages = document.querySelectorAll('.task-page');
+    const tabs = document.querySelectorAll('.task-tab');
+    const progressFill = document.getElementById('top-progress-fill');
+
+    function goToTask(index) {
+      document.body.classList.remove('show-all-mode');
+      document.getElementById('toggle-all-btn').classList.remove('active-mode');
+      currentTask = Math.max(0, Math.min(pages.length - 1, index));
+      pages.forEach((p, idx) => p.classList.toggle('active', idx === currentTask));
+      tabs.forEach((t, idx) => t.classList.toggle('active', idx === currentTask));
+      const title = pages[currentTask] ? (pages[currentTask].dataset.title || '') : '';
+      document.getElementById('page-counter-label').innerHTML = `Task ${currentTask + 1} of ${pages.length} &bull; ${title}`;
+      document.getElementById('prev-task-btn').disabled = (currentTask === 0);
+      document.getElementById('next-task-btn').disabled = (currentTask === pages.length - 1);
+      progressFill.style.width = `${((currentTask + 1) / pages.length) * 100}%`;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function changeTask(delta) {
+      goToTask(currentTask + delta);
+    }
+
+    function toggleShowAll() {
+      const isAll = document.body.classList.toggle('show-all-mode');
+      document.getElementById('toggle-all-btn').classList.toggle('active-mode', isAll);
+      progressFill.style.width = isAll ? '100%' : `${((currentTask + 1) / pages.length) * 100}%`;
+      document.getElementById('page-counter-label').innerHTML = isAll
+        ? `All ${pages.length} Tasks Visible (Continuous Sheet Mode)`
+        : `Task ${currentTask + 1} of ${pages.length} &bull; ${pages[currentTask].dataset.title}`;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.key === 'ArrowRight') changeTask(1);
+      if (e.key === 'ArrowLeft') changeTask(-1);
+    });
+
+
+    function toggleModel(id) {
+      const box = document.getElementById(id);
+      if (box) box.classList.toggle('open');
+    }
+
+    // Video Matching
+    let activeLeftNum = null;
+    function selectLeftMatch(num) {
+      activeLeftNum = num;
+      document.querySelectorAll('#match-left-col .match-left').forEach(el => {
+        el.classList.toggle('active-pick', Number(el.dataset.left) === num);
+      });
+    }
+
+    function selectRightMatch(rightEl) {
+      if (!activeLeftNum) {
+        rightEl.dataset.userPick = '';
+        rightEl.classList.remove('correct', 'incorrect');
+        const badge = rightEl.querySelector('.match-badge');
+        badge.style.display = 'none';
+        badge.textContent = '';
+        return;
+      }
+      document.querySelectorAll('#match-right-col .match-right').forEach(el => {
+        if (Number(el.dataset.userPick) === activeLeftNum) {
+          el.dataset.userPick = '';
+          const b = el.querySelector('.match-badge');
+          b.style.display = 'none';
+          b.textContent = '';
+        }
+      });
+      rightEl.dataset.userPick = String(activeLeftNum);
+      rightEl.classList.remove('correct', 'incorrect');
+      const badge = rightEl.querySelector('.match-badge');
+      badge.textContent = String(activeLeftNum);
+      badge.style.display = 'inline-flex';
+      activeLeftNum = null;
+      document.querySelectorAll('#match-left-col .match-left').forEach(el => el.classList.remove('active-pick'));
+    }
+
+    function checkVideoMatches() {
+      let correct = 0;
+      const items = document.querySelectorAll('#match-right-col .match-right');
+      items.forEach(el => {
+        el.classList.remove('correct', 'incorrect');
+        if (el.dataset.userPick && el.dataset.userPick === el.dataset.ans) {
+          el.classList.add('correct');
+          correct++;
+        } else {
+          el.classList.add('incorrect');
+        }
+      });
+      const pill = document.getElementById('video-score-pill');
+      pill.textContent = `Matched: ${correct} / ${items.length}`;
+      pill.style.display = 'inline-block';
+    }
+
+    function revealVideoMatches() {
+      const items = document.querySelectorAll('#match-right-col .match-right');
+      items.forEach(el => {
+        el.dataset.userPick = el.dataset.ans;
+        el.classList.remove('incorrect');
+        el.classList.add('correct');
+        const badge = el.querySelector('.match-badge');
+        badge.textContent = el.dataset.ans;
+        badge.style.display = 'inline-flex';
+      });
+      const pill = document.getElementById('video-score-pill');
+      pill.textContent = `Matched: ${items.length} / ${items.length}`;
+      pill.style.display = 'inline-block';
+    }
+
+    // Phrase Counter
+    function togglePhraseChip(btn) {
+      btn.classList.toggle('used');
+      const total = document.querySelectorAll('.phrase-chip').length;
+      const used = document.querySelectorAll('.phrase-chip.used').length;
+      document.getElementById('phrase-counter').textContent = `${used} / ${total} phrases activated`;
+    }
+
+    // Word Bank & Gap-Fills
+    let selectedBankWord = null;
+    let selectedBankChip = null;
+
+    function pickBankWord(chipEl) {
+      if (selectedBankChip === chipEl) {
+        chipEl.classList.remove('selected-chip');
+        selectedBankWord = null;
+        selectedBankChip = null;
+        return;
+      }
+      document.querySelectorAll('.word-bank-dock .word-chip').forEach(c => c.classList.remove('selected-chip'));
+      chipEl.classList.add('selected-chip');
+      selectedBankWord = chipEl.textContent.trim();
+      selectedBankChip = chipEl;
+    }
+
+    function fillInputFromBank(inputEl) {
+      if (!selectedBankWord) return;
+      inputEl.value = selectedBankWord;
+      inputEl.classList.remove('correct', 'incorrect');
+      if (selectedBankChip) {
+        selectedBankChip.classList.remove('selected-chip');
+        selectedBankChip.classList.add('used-chip');
+      }
+      selectedBankWord = null;
+      selectedBankChip = null;
+    }
+
+    function checkInputs(containerId, scoreId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const inputs = container.querySelectorAll('input.line-gap');
+      let right = 0;
+      inputs.forEach(inp => {
+        const val = inp.value.trim().toLowerCase().replace(/\s+/g, ' ');
+        const valid = inp.dataset.ans.toLowerCase().split('|');
+        inp.classList.remove('correct', 'incorrect');
+        if (valid.includes(val)) {
+          inp.classList.add('correct');
+          right++;
+        } else {
+          inp.classList.add('incorrect');
+        }
+      });
+      if (scoreId) {
+        const pill = document.getElementById(scoreId);
+        if (pill) {
+          pill.textContent = `Score: ${right} / ${inputs.length}`;
+          pill.style.display = 'inline-block';
+        }
+      }
+    }
+
+    function revealInputs(containerId, scoreId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const inputs = container.querySelectorAll('input.line-gap');
+      inputs.forEach(inp => {
+        inp.value = inp.dataset.ans.split('|')[0];
+        inp.classList.remove('incorrect');
+        inp.classList.add('correct');
+      });
+      if (scoreId) {
+        const pill = document.getElementById(scoreId);
+        if (pill) {
+          pill.textContent = `Score: ${inputs.length} / ${inputs.length}`;
+          pill.style.display = 'inline-block';
+        }
+      }
+    }
+
+    // Category Matrix
+    let activeCatChip = null;
+    function pickCatTerm(chipEl) {
+      if (chipEl.classList.contains('used-chip')) return;
+      if (activeCatChip === chipEl) {
+        chipEl.classList.remove('selected-chip');
+        activeCatChip = null;
+        return;
+      }
+      document.querySelectorAll('#cat-bank .word-chip').forEach(c => c.classList.remove('selected-chip'));
+      chipEl.classList.add('selected-chip');
+      activeCatChip = chipEl;
+    }
+
+    function placeCatTerm(rowEl) {
+      if (!activeCatChip) return;
+      const term = activeCatChip.dataset.term;
+      const container = rowEl.querySelector('.placed-chips');
+      const hint = container.querySelector('.drop-hint');
+      if (hint) hint.remove();
+
+      const pill = document.createElement('span');
+      pill.className = 'placed-chip';
+      pill.dataset.term = term;
+      pill.textContent = term;
+      pill.onclick = function(e) {
+        e.stopPropagation();
+        pill.remove();
+        const orig = document.querySelector(`#cat-bank .word-chip[data-term="${term}"]`);
+        if (orig) orig.classList.remove('used-chip');
+      };
+      container.appendChild(pill);
+      activeCatChip.classList.remove('selected-chip');
+      activeCatChip.classList.add('used-chip');
+      activeCatChip = null;
+    }
+
+    function checkCategories() {
+      document.querySelectorAll('#cat-table tbody tr').forEach(row => {
+        const expected = row.dataset.expected.split('|');
+        row.querySelectorAll('.placed-chip').forEach(pill => {
+          pill.classList.remove('correct', 'incorrect');
+          if (expected.includes(pill.dataset.term)) pill.classList.add('correct');
+          else pill.classList.add('incorrect');
+        });
+      });
+    }
+
+    function revealCategories() {
+      document.querySelectorAll('#cat-bank .word-chip').forEach(c => {
+        c.classList.remove('selected-chip');
+        c.classList.add('used-chip');
+      });
+      document.querySelectorAll('#cat-table tbody tr').forEach(row => {
+        const expected = row.dataset.expected.split('|');
+        const container = row.querySelector('.placed-chips');
+        container.innerHTML = '';
+        expected.forEach(term => {
+          const pill = document.createElement('span');
+          pill.className = 'placed-chip correct';
+          pill.dataset.term = term;
+          pill.textContent = term;
+          container.appendChild(pill);
+        });
+      });
+    }
+
+    // Debate Stance Toggles
+    function setStance(btn, type) {
+      const group = btn.parentElement;
+      group.querySelectorAll('.stance-btn').forEach(b => {
+        b.classList.remove('active-agree', 'active-disagree', 'active-devil');
+      });
+      btn.classList.add(`active-${type}`);
+    }
+
+    // Modular Task Variety JS Handlers (ESL Brains / English4Tutors / Guardian / Prezi)
+    function checkFactMyth(btn, userChoice, actualTruth, expId) {
+      const group = btn.parentElement;
+      group.querySelectorAll('.stance-btn').forEach(b => b.classList.remove('active-agree', 'active-disagree'));
+      if (userChoice === actualTruth) {
+        btn.classList.add('active-agree');
+      } else {
+        btn.classList.add('active-disagree');
+      }
+      const exp = document.getElementById(expId);
+      if (exp) exp.classList.add('open');
+    }
+
+    function toggleMatrixCell(td) {
+      td.classList.remove('correct', 'incorrect');
+      const isPicked = td.classList.toggle('picked');
+      const mark = td.querySelector('.matrix-mark');
+      if (mark) mark.textContent = isPicked ? '✓' : '';
+    }
+
+    function checkCollocationMatrix(tableId, scoreId) {
+      const table = document.getElementById(tableId);
+      if (!table) return;
+      let right = 0;
+      let totalExpected = 0;
+      table.querySelectorAll('.matrix-cell').forEach(td => {
+        const exp = td.dataset.expected === '1';
+        const picked = td.classList.contains('picked');
+        td.classList.remove('correct', 'incorrect');
+        if (exp) totalExpected++;
+        if (picked && exp) {
+          td.classList.add('correct');
+          right++;
+        } else if (picked && !exp) {
+          td.classList.add('incorrect');
+        }
+      });
+      const pill = document.getElementById(scoreId);
+      if (pill) {
+        pill.textContent = `Valid Collocations Found: ${right} / ${totalExpected}`;
+        pill.style.display = 'inline-block';
+      }
+    }
+
+    function revealCollocationMatrix(tableId, scoreId) {
+      const table = document.getElementById(tableId);
+      if (!table) return;
+      let totalExpected = 0;
+      table.querySelectorAll('.matrix-cell').forEach(td => {
+        const exp = td.dataset.expected === '1';
+        td.classList.remove('incorrect', 'picked');
+        const mark = td.querySelector('.matrix-mark');
+        if (exp) {
+          totalExpected++;
+          td.classList.add('correct');
+          if (mark) mark.textContent = '✓';
+        } else {
+          if (mark) mark.textContent = '—';
+        }
+      });
+      const pill = document.getElementById(scoreId);
+      if (pill) {
+        pill.textContent = `Valid Collocations: ${totalExpected} / ${totalExpected}`;
+        pill.style.display = 'inline-block';
+      }
+    }
+
+    function selectSpectrumTier(btn, ratId) {
+      const group = btn.parentElement;
+      group.querySelectorAll('.stance-btn').forEach(b => b.classList.remove('active-agree'));
+      btn.classList.add('active-agree');
+      const rat = document.getElementById(ratId);
+      if (rat) rat.classList.add('open');
+    }
+
+    function updateMediaFrame(cardId, idx) {
+      const card = document.getElementById(cardId);
+      if (!card) return;
+      try {
+        const frames = JSON.parse(card.dataset.frames || '[]');
+        const f = frames[Number(idx)];
+        if (!f) return;
+        card.querySelector('.frame-headline').textContent = f.headline || '';
+        card.querySelector('.frame-analysis').innerHTML = f.analysis || '';
+      } catch (e) {}
+    }
+
+    function checkRhetoricalDuel(btn, isCorrect) {
+      const parent = btn.parentElement;
+      parent.querySelectorAll('.stance-btn').forEach(b => b.classList.remove('active-agree', 'active-disagree'));
+      btn.classList.add(isCorrect ? 'active-agree' : 'active-disagree');
+    }
+
+    // Reset
+    function resetWorkbook() {
+      stopWarmupTimer();
+      const clock = document.getElementById('timer-clock');
+      if (clock) clock.textContent = '01:00';
+      document.querySelectorAll('input.line-gap, textarea.notes-input').forEach(inp => {
+        inp.value = '';
+        inp.classList.remove('correct', 'incorrect');
+      });
+      document.querySelectorAll('.word-chip').forEach(c => c.classList.remove('selected-chip', 'used-chip'));
+      document.querySelectorAll('.placed-chips').forEach(el => {
+        el.innerHTML = '<span class="drop-hint">Click to place selected term...</span>';
+      });
+      document.querySelectorAll('#match-right-col .match-right').forEach(el => {
+        el.dataset.userPick = '';
+        el.classList.remove('correct', 'incorrect');
+        const b = el.querySelector('.match-badge');
+        b.style.display = 'none';
+        b.textContent = '';
+      });
+      document.querySelectorAll('.matrix-cell').forEach(td => {
+        td.classList.remove('picked', 'correct', 'incorrect');
+        const m = td.querySelector('.matrix-mark');
+        if (m) m.textContent = '';
+      });
+      document.querySelectorAll('.masked-span').forEach(s => s.classList.remove('unmasked'));
+      document.querySelectorAll('.stance-btn').forEach(b => b.classList.remove('active-agree', 'active-disagree', 'active-devil'));
+      document.querySelectorAll('.model-reveal-box').forEach(b => b.classList.remove('open'));
+      document.querySelectorAll('.phrase-chip').forEach(c => c.classList.remove('used'));
+      document.querySelectorAll('.disc-card').forEach(c => c.classList.remove('done'));
+      document.querySelectorAll('.score-pill').forEach(p => p.style.display = 'none');
+    }
+
+    // Initialize initial step counter on load
+    goToTask(0);
+  </script>
+</body>
+</html>

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="paper">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Gaia &middot; Cambridge C2 Proficiency Portal (GarethEnglish)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="paper"] {
+      --bg-base: #f5f3ef;
+      --bg-mesh: radial-gradient(circle at 12% 0%, rgba(217, 119, 6, 0.08) 0%, transparent 48%),
+                 radial-gradient(circle at 88% 12%, rgba(37, 99, 235, 0.06) 0%, transparent 45%);
+      --surface-card: #ffffff;
+      --surface-subtle: #faf8f5;
+      --surface-elevated: rgba(255, 255, 255, 0.94);
+      --navy-900: #0f2557;
+      --navy-800: #16377d;
+      --navy-700: #1d4ed8;
+      --navy-100: #dbeafe;
+      --navy-50: #f0f6ff;
+      --ink-950: #0c1222;
+      --ink-800: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --ink-400: #94a3b8;
+      --border-hairline: rgba(15, 23, 42, 0.09);
+      --border-strong: rgba(15, 23, 42, 0.16);
+      --amber: #b45309;
+      --amber-soft: rgba(217, 119, 6, 0.1);
+      --amber-border: #f59e0b;
+      --emerald: #059669;
+      --emerald-soft: rgba(5, 150, 105, 0.1);
+      --shadow-card: 0 10px 28px -6px rgba(12, 18, 34, 0.06), 0 2px 6px -1px rgba(12, 18, 34, 0.03);
+      --shadow-hover: 0 18px 36px -8px rgba(217, 119, 6, 0.15), 0 4px 12px -2px rgba(12, 18, 34, 0.04);
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #090d16;
+      --bg-mesh: radial-gradient(circle at 12% 0%, rgba(245, 158, 11, 0.12) 0%, transparent 48%),
+                 radial-gradient(circle at 88% 12%, rgba(56, 189, 248, 0.08) 0%, transparent 45%);
+      --surface-card: #111827;
+      --surface-subtle: #182235;
+      --surface-elevated: rgba(17, 24, 39, 0.94);
+      --navy-900: #f8fafc;
+      --navy-800: #fef3c7;
+      --navy-700: #fbbf24;
+      --navy-100: #78350f;
+      --navy-50: #451a03;
+      --ink-950: #f8fafc;
+      --ink-800: #e2e8f0;
+      --ink-700: #cbd5e1;
+      --ink-500: #94a3b8;
+      --ink-400: #64748b;
+      --border-hairline: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.18);
+      --amber: #fbbf24;
+      --amber-soft: rgba(251, 191, 36, 0.14);
+      --amber-border: #fbbf24;
+      --emerald: #34d399;
+      --emerald-soft: rgba(52, 211, 153, 0.14);
+      --shadow-card: 0 16px 36px -8px rgba(0, 0, 0, 0.55);
+      --shadow-hover: 0 20px 44px -8px rgba(245, 158, 11, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: var(--bg-mesh);
+      background-attachment: fixed;
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 0 0 72px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .top-nav {
+      background: var(--surface-elevated);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .top-nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hub-link {
+      color: var(--ink-800);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      transition: all 0.15s ease;
+    }
+
+    .hub-link:hover {
+      border-color: var(--amber-border);
+      color: var(--amber);
+      transform: translateX(-2px);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-nav {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-700);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn-nav:hover {
+      border-color: var(--amber-border);
+      color: var(--amber);
+    }
+
+    .btn-nav.primary {
+      background: #b45309;
+      color: #ffffff;
+      border-color: #b45309;
+      font-weight: 700;
+    }
+
+    .btn-nav.primary:hover {
+      background: #92400e;
+    }
+
+    .container {
+      max-width: 1120px;
+      margin: 24px auto 0;
+      padding: 0 20px;
+    }
+
+    .portal-hero {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-top: 4px solid var(--amber-border);
+      border-radius: 16px;
+      padding: 32px 36px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .hero-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .badge-amber { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-border); }
+    .badge-emerald { background: var(--emerald-soft); color: var(--emerald); border: 1px solid rgba(5, 150, 105, 0.3); }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-tagline {
+      color: var(--ink-500);
+      font-size: 1rem;
+      margin-top: 6px;
+      max-width: 650px;
+      line-height: 1.5;
+    }
+
+    .hero-meta-cluster {
+      display: flex;
+      gap: 12px;
+    }
+
+    .meta-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 12px 18px;
+      text-align: right;
+    }
+
+    .meta-box .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--ink-500);
+    }
+
+    .meta-box .value {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      margin-top: 2px;
+    }
+
+    /* Featured Action Card */
+    .featured-deck-card {
+      background: linear-gradient(135deg, rgba(217, 119, 6, 0.06), rgba(245, 158, 11, 0.02));
+      border: 2px solid var(--amber-border);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .featured-deck-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      color: var(--ink-950);
+      margin-bottom: 6px;
+    }
+
+    .featured-deck-card p {
+      font-size: 0.92rem;
+      color: var(--ink-700);
+      max-width: 680px;
+      line-height: 1.5;
+    }
+
+    .btn-launch-deck {
+      background: #b45309;
+      color: #ffffff;
+      padding: 14px 28px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(180, 83, 9, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-launch-deck:hover {
+      background: #92400e;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(180, 83, 9, 0.45);
+    }
+
+    /* Modules Grid */
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+
+    .module-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .module-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--amber-border);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .module-card h4 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: var(--ink-950);
+      margin-bottom: 6px;
+    }
+
+    .module-card p {
+      font-size: 0.86rem;
+      color: var(--ink-500);
+      line-height: 1.5;
+    }
+
+    .module-card .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-card {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-card.primary {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-800);
+    }
+
+    .btn-card.primary:hover {
+      background: var(--amber);
+      color: #fff;
+      border-color: var(--amber);
+    }
+
+    .syntax-code {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      padding: 6px 10px;
+      border-radius: 6px;
+      color: var(--amber);
+      display: block;
+      margin-top: 6px;
+    }
+      html[data-env="web"] .teacher-only { display: none !important; }
+  </style>
+  <script>
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') || 'paper';
+      const next = cur === 'paper' ? 'dark' : 'paper';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('gareth_studio_theme', next); } catch (e) {}
+    }
+    (function() {
+      try {
+        const saved = localStorage.getItem('gareth_studio_theme');
+        if (saved) document.documentElement.setAttribute('data-theme', saved);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a href="../index.html" class="hub-link teacher-only" class="hub-link">
+        <span>&larr;</span>
+        <span>Gareth's Executive Teaching Studio</span>
+      </a>
+
+      <div class="nav-actions">
+        <button class="btn-nav" onclick="toggleTheme()" title="Switch Light/Dark Mode">&#127767; Theme</button>
+        <a class="btn-nav primary" href="gaia-cambridge-c2-speaking-and-structures.html" target="_blank">
+          &#128640; Launch Active Slide Deck
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Hero Card -->
+    <header class="portal-hero">
+      <div>
+        <div class="hero-badge-row">
+          <span class="badge-pill badge-amber">&#127891; Cambridge C2 Proficiency (CPE)</span>
+          <span class="badge-pill badge-emerald">Exam: End of Month</span>
+        </div>
+        <h1 class="hero-title">Gaia &middot; C2 Exam Command Portal</h1>
+        <p class="hero-tagline">
+          Targeting an elite Cambridge C2 pass via surgical syntactic variety (clefts, passive reporting, participle clauses, inversion, concession) and full timed speaking masterclasses.
+        </p>
+      </div>
+
+      <div class="hero-meta-cluster">
+        <div class="meta-box">
+          <div class="label">Target Level</div>
+          <div class="value">C2 Proficiency</div>
+        </div>
+        <div class="meta-box">
+          <div class="label">Regular Slot</div>
+          <div class="value">Fri 13:00–13:50</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Featured Masterclass Launch Card -->
+    <section class="featured-deck-card">
+      <div>
+        <span style="font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--amber); letter-spacing: 0.05em; display: block; margin-bottom: 4px;">
+          Active Core Exam Deck &bull; Day Mode &bull; Zero Tutor Cues
+        </span>
+        <h3>Cambridge C2 Speaking Simulation &amp; 6 Syntactic Blueprints</h3>
+        <p>
+          Complete 14-slide masterclass featuring click-to-reveal C2 sentence transformations, authentic high-res visual photographs for the Part 2 Collaborative Task (Conductor, Climber, Artisan), the Part 3 Individual 2-Minute Prompt Card, and the <strong>A.R.E.A. Speaking Strategy</strong> for Part 3 Extended Discussion with built-in exam timers.
+        </p>
+      </div>
+      <div>
+        <a href="gaia-cambridge-c2-speaking-and-structures.html" class="btn-launch-deck" target="_blank">
+          <span>&#128640; Open Slide Deck</span>
+          <span>&rarr;</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Exam Modules & Resource Lockers -->
+    <h2 class="section-title">&#128367;&#65039; Active Exam Resources &amp; Syntactic Blueprints</h2>
+
+    <div class="modules-grid">
+
+      <!-- Module 1: The 6 C2 Syntactic Blueprints -->
+      <article class="module-card">
+        <div>
+          <span class="badge-pill badge-amber" style="margin-bottom: 8px;">Syntactic Command</span>
+          <h4>6 High-Leverage C2 Blueprints</h4>
+          <p>
+            The syntactic structures that elevate spoken and written English straight into C2 Grade A criteria:
+          </p>
+          <span class="syntax-code">1. Wh- &amp; It- Cleft Sentences</span>
+          <span class="syntax-code">2. Passive Reporting &amp; Subject Elevation</span>
+          <span class="syntax-code">3. Resultative Participles (, thereby -ing)</span>
+          <span class="syntax-code">4. Negative Inversion (Not only does...)</span>
+          <span class="syntax-code">5. Concessive 'While' Clauses</span>
+          <span class="syntax-code">6. Inverted &amp; Mixed Conditionals (Had it not...)</span>
+        </div>
+        <div class="card-actions">
+          <a href="gaia-cambridge-c2-speaking-and-structures.html" class="btn-card primary" target="_blank">
+            Drill Formulas &rarr;
+          </a>
+        </div>
+      </article>
+
+      <!-- Module 2: The A.R.E.A. Speaking Formula -->
+      <article class="module-card">
+        <div>
+          <span class="badge-pill badge-emerald" style="margin-bottom: 8px;">Speaking Strategy</span>
+          <h4>The A.R.E.A. Speaking Method</h4>
+          <p>
+            The high-scoring framework for Part 3 extended abstract discussions to prevent rambling and guarantee intellectual depth:
+          </p>
+          <span class="syntax-code"><strong>A</strong>ssertion: Direct, clear C2 stance/thesis</span>
+          <span class="syntax-code"><strong>R</strong>eason: Core mechanism &amp; underlying why</span>
+          <span class="syntax-code"><strong>E</strong>vidence: Real-world societal precedent</span>
+          <span class="syntax-code"><strong>A</strong>lternative: Counter-reality (Were this not so...)</span>
+        </div>
+        <div class="card-actions">
+          <a href="gaia-cambridge-c2-speaking-and-structures.html" class="btn-card primary" target="_blank">
+            View AREA Models &rarr;
+          </a>
+        </div>
+      </article>
+
+      <!-- Module 3: Cambridge C2 Speaking Test Matrix -->
+      <article class="module-card">
+        <div>
+          <span class="badge-pill badge-amber" style="margin-bottom: 8px;">Exam Pacing</span>
+          <h4>C2 Speaking Paper Architecture (3 Parts &middot; 16m)</h4>
+          <p>
+            Mastering time management and conversational dynamics across all 3 parts of the CPE interview:
+          </p>
+          <span class="syntax-code">Part 1 (2m): Conversational Spontaneity</span>
+          <span class="syntax-code">Part 2 (4m): Collaborative Visual Task (1m + 3m)</span>
+          <span class="syntax-code">Part 3A (4&ndash;5m): 2-Min Individual Prompt Card Turn</span>
+          <span class="syntax-code">Part 3B (4&ndash;5m): Extended Abstract Discussion (A.R.E.A.)</span>
+        </div>
+        <div class="card-actions">
+          <a href="gaia-cambridge-c2-speaking-and-structures.html" class="btn-card primary" target="_blank">
+            Launch Simulation &rarr;
+          </a>
+        </div>
+      </article>
+
+      <!-- Module 4: Final Pre-Exam Session -->
+      <article class="module-card">
+        <div>
+          <span class="badge-pill badge-emerald" style="margin-bottom: 8px;">Final Session</span>
+          <h4>CPE Final Session: Composure &amp; Command</h4>
+          <p>
+            Your last run-through before the exam: a timed 2-minute Part 3 long turn, rapid blueprint retrieval, eight fresh Part 4 key word transformations, and a calm paper-by-paper checklist.
+          </p>
+          <span class="syntax-code">2-min Long Turn + 3-Act Story Arc</span>
+          <span class="syntax-code">Part 4: 3&ndash;8 words, key word unchanged</span>
+          <span class="syntax-code">Exam-Day Composure Checklist</span>
+        </div>
+        <div class="card-actions">
+          <a href="gaia-cpe-final-session.html" class="btn-card primary" target="_blank">
+            Open Final Session &rarr;
+          </a>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Candidate Session Notes & Ground-Truth Context -->
+    <section style="background: var(--surface-card); border: 1px solid var(--border-hairline); border-radius: 14px; padding: 24px 28px; box-shadow: var(--shadow-card);">
+      <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: var(--ink-950); margin-bottom: 8px;">
+        &#128221; Candidate Profile &amp; Exam Strategy Notes
+      </h3>
+      <p style="font-size: 0.9rem; color: var(--ink-700); line-height: 1.6; margin-bottom: 14px;">
+        Gaia is sitting the Cambridge C2 Proficiency (CPE) examination at the end of this month. Key priorities:
+      </p>
+      <ul style="font-size: 0.88rem; color: var(--ink-700); padding-left: 20px; line-height: 1.6;">
+        <li><strong>Part 2 Collaborative Visuals (4m)</strong>: Avoid surface description; in the 1-minute warm-up and 3-minute decision task, speculate analytically and invite your partner's view every 20–25 seconds.</li>
+        <li><strong>Part 3 Stage A Long Turn (2m)</strong>: Use the written prompt card's 3 bullets as optional springboards across a clear 2-minute arc (thesis &rarr; contrasted angles &rarr; wider societal reflection).</li>
+        <li><strong>Part 3 Stage B Extended Discussion (4–5m)</strong>: Use the A.R.E.A. structure automatically on abstract follow-up questions to weave in clefts, negative inversions, and participle clauses without hesitating.</li>
+      </ul>
+    </section>
+
+  </main>
+
+</body>
+</html>

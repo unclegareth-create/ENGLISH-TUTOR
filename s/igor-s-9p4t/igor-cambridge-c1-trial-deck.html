@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Igor · Cambridge C1 Trial Lesson</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .heading-font {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .slide {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.25s ease-in-out;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .blur-reveal {
+      filter: blur(8px);
+      user-select: none;
+      transition: filter 0.3s ease, background-color 0.3s ease;
+      cursor: pointer;
+    }
+    .blur-reveal.revealed {
+      filter: blur(0);
+      user-select: auto;
+      cursor: default;
+      background-color: rgba(16, 185, 129, 0.15) !important;
+      border-color: rgba(16, 185, 129, 0.5) !important;
+    }
+    .echo-word {
+      transition: all 0.25s ease;
+    }
+    .show-echoes .echo-word {
+      text-decoration: line-through;
+      text-decoration-color: #ef4444;
+      text-decoration-thickness: 2px;
+      color: #94a3b8;
+    }
+    .deficit-word {
+      transition: all 0.25s ease;
+    }
+    .show-echoes .deficit-word {
+      color: #fde68a;
+      font-weight: 700;
+      background-color: rgba(245, 158, 11, 0.2);
+      border-radius: 4px;
+      padding: 1px 5px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-amber-500/30 selection:text-amber-200">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur-md px-6 py-4 flex items-center justify-between z-30">
+  <meta name="robots" content="noindex, nofollow" />
+    <div class="flex items-center gap-3">
+      <span class="w-3 h-3 rounded-full bg-amber-400 animate-pulse"></span>
+      <span class="text-xs font-semibold tracking-wider uppercase text-slate-300 heading-font">GarethEnglish · Trial Session</span>
+      <span class="text-slate-700">|</span>
+      <span id="slide-category" class="text-xs font-mono text-amber-400 font-medium">Getting Started</span>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <!-- Quick Timer -->
+      <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1 rounded-full text-xs font-mono">
+        <span class="text-slate-400">Timer:</span>
+        <span id="timer-display" class="text-amber-400 font-bold">01:00</span>
+        <button onclick="startTimer(60)" class="text-[10px] text-slate-400 hover:text-white ml-1">1m</button>
+        <button onclick="startTimer(120)" class="text-[10px] text-slate-400 hover:text-white">2m</button>
+        <button onclick="resetTimer()" class="text-[10px] text-red-400 hover:text-red-300 ml-1">Reset</button>
+      </div>
+
+      <div class="text-xs font-mono text-slate-400">
+        Slide <span id="current-slide-num" class="text-amber-400 font-bold">1</span> of <span id="total-slides">11</span>
+      </div>
+      <button onclick="toggleFullscreen()" class="text-xs px-2.5 py-1 rounded border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 transition">
+        ⛶ Fullscreen
+      </button>
+    </div>
+  </header>
+
+  <!-- Slide Canvas -->
+  <main class="flex-1 flex items-center justify-center p-4 md:p-8 relative overflow-y-auto">
+
+    <!-- SLIDE 1: WELCOME -->
+    <section class="slide active flex-col max-w-4xl w-full mx-auto text-center space-y-6" data-category="Welcome & Intro">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-xs font-mono uppercase tracking-wider">
+        Trial Lesson · Cambridge C1 Advanced
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold heading-font text-white tracking-tight">
+        Hi Igor, Welcome!
+      </h1>
+      <p class="text-slate-300 text-lg max-w-xl mx-auto leading-relaxed">
+        Let's get to know each other, look at your English goals for Cambridge, and see how we can comfortably bridge that score to 193.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 text-left">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
+          <div class="text-2xl mb-2">👋</div>
+          <h3 class="font-bold text-white text-sm">1. Getting to Know You</h3>
+          <p class="text-xs text-slate-400 mt-1">Your town, school life, and what you enjoy doing.</p>
+        </div>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
+          <div class="text-2xl mb-2">🎯</div>
+          <h3 class="font-bold text-white text-sm">2. English Background & Habits</h3>
+          <p class="text-xs text-slate-400 mt-1">What you like in lessons, how you learn, and your CAE experience.</p>
+        </div>
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
+          <div class="text-2xl mb-2">🧩</div>
+          <h3 class="font-bold text-white text-sm">3. Mini Diagnostic & Strategy</h3>
+          <p class="text-xs text-slate-400 mt-1">A quick look at Use of English & Writing, and a stress-free plan.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2: HOMETOWN & LIFE -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="Warm-Up Chat">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest">Part 1 · Getting Started</span>
+        <h2 class="text-3xl font-bold heading-font text-white">Where are you from?</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <!-- Hometown Prompts -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg">📍</span>
+            <h3 class="font-bold text-white text-base">Your City / Hometown</h3>
+          </div>
+          <ul class="space-y-3 text-sm text-slate-300">
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-400 font-bold">✓</span>
+              <span>Tell me <strong>one thing you really like</strong> about living there.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 font-bold">✕</span>
+              <span>Tell me <strong>one thing you would change</strong> or dislike about it.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-amber-400 font-bold">•</span>
+              <span>What's your favourite spot to hang out or study?</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- School & Cambridge Goal -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-lg">🎓</span>
+            <h3 class="font-bold text-white text-base">School & Maths</h3>
+          </div>
+          <ul class="space-y-3 text-sm text-slate-300">
+            <li class="flex items-start gap-2">
+              <span class="text-blue-400 font-bold">•</span>
+              <span>How are your final school year studies going?</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-400 font-bold">•</span>
+              <span>Applying for Mathematics at Cambridge is brilliant—what sparked your love for maths?</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-blue-400 font-bold">•</span>
+              <span>Do you prefer pure abstract problems, or things like mechanics and coding?</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: ENGLISH STUDY BACKGROUND & PREFERENCES -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="Learning Habits">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest">Part 2 · Your English Journey</span>
+        <h2 class="text-3xl font-bold heading-font text-white">How do you like to learn?</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Experience -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-6 space-y-3">
+          <h3 class="font-bold text-amber-400 text-sm uppercase tracking-wider">Your Experience So Far</h3>
+          <ul class="text-sm text-slate-300 space-y-2.5">
+            <li>• How many years have you been studying English?</li>
+            <li>• How did you prepare for CAE last year (school, self-study, tutor)?</li>
+            <li>• That <strong>199 in Listening</strong> is incredible—what do you watch, listen to, or read in English?</li>
+          </ul>
+        </div>
+
+        <!-- Likes & Dislikes -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-6 space-y-3">
+          <h3 class="font-bold text-amber-400 text-sm uppercase tracking-wider">Lesson Likes & Dislikes</h3>
+          <p class="text-xs text-slate-400">Tell me honestly what works best for you:</p>
+          <div class="grid grid-cols-2 gap-2 text-xs font-medium text-slate-200 mt-2">
+            <span class="bg-slate-950 p-2.5 rounded border border-slate-800">📝 Homework amount?</span>
+            <span class="bg-slate-950 p-2.5 rounded border border-slate-800">🔴 Live correction?</span>
+            <span class="bg-slate-950 p-2.5 rounded border border-slate-800">📚 Reading & articles?</span>
+            <span class="bg-slate-950 p-2.5 rounded border border-slate-800">✍️ Essay feedback?</span>
+            <span class="bg-slate-950 p-2.5 rounded border border-slate-800">🗣️ Free discussion?</span>
+            <span class="bg-slate-950 p-2.5 rounded border border-slate-800">⚙️ Grammar rules & drills?</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: ESL BRAINS - FINISH THE SENTENCES -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-5" data-category="Stay Interested & Motivated">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest">Part 3 · Quick Prompts</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-white">Finish the sentences for yourself...</h2>
+      </div>
+
+      <div class="space-y-3">
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center gap-3">
+          <span class="w-7 h-7 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xs">a</span>
+          <span class="text-sm md:text-base text-slate-200 font-medium">What inspires me to get up in the morning is...</span>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center gap-3">
+          <span class="w-7 h-7 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xs">b</span>
+          <span class="text-sm md:text-base text-slate-200 font-medium">When I’m not very enthusiastic about a task I need to do, I...</span>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center gap-3">
+          <span class="w-7 h-7 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xs">c</span>
+          <span class="text-sm md:text-base text-slate-200 font-medium">In an English lesson, I’m always eager to...</span>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center gap-3">
+          <span class="w-7 h-7 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xs">d</span>
+          <span class="text-sm md:text-base text-slate-200 font-medium">My biggest accomplishment in terms of studying English is...</span>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex items-center gap-3">
+          <span class="w-7 h-7 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-xs">e</span>
+          <span class="text-sm md:text-base text-slate-200 font-medium">When I find myself stuck doing repetitive work, I motivate myself by...</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: ESL BRAINS - QUICK DIAGNOSTIC QUESTIONS -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-5" data-category="Spoken Diagnostic">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest">Part 4 · Rapid Fire Discussion</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-white">A Few Questions to Test the Waters</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+          <span class="text-xs font-mono text-amber-400">1. Habit & Past</span>
+          <p class="text-sm text-slate-200 font-medium">Did you use to be more enthusiastic about school than you are now?</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+          <span class="text-xs font-mono text-amber-400">2. Hypothetical Past</span>
+          <p class="text-sm text-slate-200 font-medium">If you had had more free time over the last year, would you have spent it studying or doing something completely different?</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+          <span class="text-xs font-mono text-amber-400">3. Wishes & Ambition</span>
+          <p class="text-sm text-slate-200 font-medium">What are two things you wish you were naturally better at?</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+          <span class="text-xs font-mono text-amber-400">4. Motivation & Drive</span>
+          <p class="text-sm text-slate-200 font-medium">Which motivates you more to improve: experiencing success, or making a mistake and wanting to fix it?</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/50 border border-slate-800 p-3 rounded-lg text-xs text-slate-400 text-center">
+        💡 <em>No right or wrong answers—this just lets me hear your natural tense control and rhythm!</em>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: SCORE BREAKDOWN (THE 182 → 193 MAP) -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-5" data-category="Your Cambridge Target">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest">Part 5 · Where We Stand</span>
+        <h2 class="text-3xl font-bold heading-font text-white">Your Score Breakdown & The Plan</h2>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+          <div class="text-[11px] font-mono text-slate-400 uppercase">Listening</div>
+          <div class="text-2xl font-bold text-emerald-400 mt-1">199</div>
+          <div class="text-[10px] text-emerald-500 font-mono mt-0.5">Near C2!</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+          <div class="text-[11px] font-mono text-slate-400 uppercase">Speaking</div>
+          <div class="text-2xl font-bold text-emerald-400 mt-1">187</div>
+          <div class="text-[10px] text-emerald-500 font-mono mt-0.5">Solid C1</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-center">
+          <div class="text-[11px] font-mono text-slate-400 uppercase">Reading</div>
+          <div class="text-2xl font-bold text-amber-400 mt-1">179</div>
+          <div class="text-[10px] text-amber-400 font-mono mt-0.5">Target: 190+</div>
+        </div>
+        <div class="bg-slate-900 border border-amber-500/40 bg-amber-500/5 rounded-xl p-3 text-center">
+          <div class="text-[11px] font-mono text-amber-300 uppercase">Writing</div>
+          <div class="text-2xl font-bold text-amber-300 mt-1">177</div>
+          <div class="text-[10px] text-amber-400 font-mono mt-0.5">Target: 192+</div>
+        </div>
+        <div class="bg-slate-900 border border-red-500/40 bg-red-500/5 rounded-xl p-3 text-center">
+          <div class="text-[11px] font-mono text-red-300 uppercase">Use of English</div>
+          <div class="text-2xl font-bold text-red-400 mt-1">170</div>
+          <div class="text-[10px] text-red-400 font-mono mt-0.5">Target: 190+</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl text-sm text-slate-300 space-y-3">
+        <p>
+          <strong class="text-white">Why this is actually great news:</strong>
+          Listening (199) and Speaking (187) are the hardest skills to develop quickly because they require intuitive fluency. You already have that!
+        </p>
+        <p>
+          In contrast, <strong class="text-amber-400">Use of English</strong> and <strong class="text-amber-400">Writing</strong> are pattern-based. Once you understand the exact formulas examiners look for, your score moves up very rapidly.
+        </p>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: USE OF ENGLISH - LOGIC PUZZLE -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-4" data-category="Use of English Diagnostic">
+      <div class="flex justify-between items-center">
+        <div>
+          <span class="text-xs font-mono text-amber-400 uppercase tracking-widest">Part 6 · Diagnostic Drills</span>
+          <h2 class="text-2xl font-bold heading-font text-white">Part 4: Key Word Transformations</h2>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="toggleAllEchoes()" class="text-xs font-mono px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-amber-400 border border-slate-700 transition flex items-center gap-1">
+            ✂️ Toggle Echoes
+          </button>
+          <button onclick="revealAllSteps()" class="text-xs font-mono px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-blue-300 border border-slate-700 transition flex items-center gap-1">
+            🔍 Reveal Steps
+          </button>
+          <button onclick="revealAllAnswers()" class="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+            👁️ Reveal Answers
+          </button>
+        </div>
+      </div>
+
+      <!-- Gareth's 4-Step Deconstruction Method -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-[11px] font-mono">
+        <div class="bg-slate-900/90 border border-amber-500/30 p-2.5 rounded-lg">
+          <span class="text-amber-400 font-bold block mb-1">1. Strike Out Echoes</span>
+          <span class="text-slate-400">Cancel matching words between Sentences 1 & 2 to isolate what's missing.</span>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-lg">
+          <span class="text-amber-400 font-bold block mb-1">2. Tense Harmony</span>
+          <span class="text-slate-400">Check Sentence 1 tense (past, perfect, modal) to lock in the target aspect.</span>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-lg">
+          <span class="text-amber-400 font-bold block mb-1">3. Check Voice Shift</span>
+          <span class="text-slate-400">Has the subject moved? Check for active-to-passive transformations.</span>
+        </div>
+        <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-lg">
+          <span class="text-amber-400 font-bold block mb-1">4. Missing Collocation</span>
+          <span class="text-slate-400">Slot the exact keyword into its fixed pattern (3 to 6 words).</span>
+        </div>
+      </div>
+
+      <div class="space-y-4 pt-1">
+        <!-- Drill 1 -->
+        <div id="drill-1" class="drill-card bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2.5">
+          <div class="text-xs font-mono flex items-center justify-between">
+            <span class="text-amber-400 font-bold">Drill 1 · Unreal Past & Preference</span>
+            <div class="flex items-center gap-1">
+              <button onclick="toggleEchoes('drill-1')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-amber-300 border border-slate-700 transition">
+                1. ✂️ Echoes
+              </button>
+              <button onclick="toggleStepInsight('drill-1-step-2')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-blue-300 border border-slate-700 transition">
+                2. ⏱️ Tense
+              </button>
+              <button onclick="toggleStepInsight('drill-1-step-3')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-purple-300 border border-slate-700 transition">
+                3. 🔄 Voice
+              </button>
+              <button onclick="toggleStepInsight('drill-1-step-4')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-emerald-300 border border-slate-700 transition">
+                4. 🧩 Pattern
+              </button>
+            </div>
+          </div>
+
+          <div class="text-sm text-slate-100 font-medium">
+            <span class="echo-word">I</span> <span class="deficit-word">would prefer you not to discuss</span> <span class="echo-word">this matter with anyone else.</span>
+          </div>
+
+          <div class="flex items-center gap-3 font-mono text-xs">
+            <span class="text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded">RATHER</span>
+            <span class="text-slate-200"><span class="echo-word">I</span> __________________________ <span class="echo-word">this matter with anyone else.</span></span>
+          </div>
+
+          <!-- Step Insights Trays -->
+          <div id="drill-1-step-2" class="step-tray hidden text-[11px] font-mono bg-slate-950/90 border border-blue-500/30 p-2.5 rounded-lg text-blue-300">
+            ⏱️ <strong>Step 2 (Tense Check):</strong> Sentence 1 expresses preference about another person's action (<em>would prefer you not to...</em>) &rarr; when using <em>would rather</em>, this mandates the <strong>Past Subjunctive / Unreal Past</strong> verb form.
+          </div>
+
+          <div id="drill-1-step-3" class="step-tray hidden text-[11px] font-mono bg-slate-950/90 border border-purple-500/30 p-2.5 rounded-lg text-purple-300">
+            🔄 <strong>Step 3 (Voice Check):</strong> Voice remains <strong>Active &rarr; Active</strong> (the person being asked not to discuss remains the subject of the clause).
+          </div>
+
+          <div id="drill-1-step-4" class="step-tray hidden text-[11px] font-mono bg-slate-950/90 border border-emerald-500/30 p-2.5 rounded-lg text-emerald-300">
+            🧩 <strong>Step 4 (Collocation Blueprint):</strong> Formula: <code class="text-white font-bold">would rather + [Subject] + [Past Negative Verb]</code>
+          </div>
+
+          <button onclick="toggleAnswer('drill-1-ans', this)" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition flex items-center justify-between w-full cursor-pointer">
+            <span>👁️ Reveal Cambridge Model Answer</span>
+            <span class="text-[10px] text-emerald-400/80">Click to show</span>
+          </button>
+          <div id="drill-1-ans" class="hidden bg-slate-950 p-3 rounded-lg border border-emerald-500/50 text-sm font-mono font-bold text-emerald-400 text-center">
+            [would rather you didn't discuss] <span class="text-xs text-slate-400 font-normal">(5 words · RATHER unchanged)</span>
+          </div>
+        </div>
+
+        <!-- Drill 2 -->
+        <div id="drill-2" class="drill-card bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2.5">
+          <div class="text-xs font-mono flex items-center justify-between">
+            <span class="text-amber-400 font-bold">Drill 2 · Noun + Dependent Preposition</span>
+            <div class="flex items-center gap-1">
+              <button onclick="toggleEchoes('drill-2')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-amber-300 border border-slate-700 transition">
+                1. ✂️ Echoes
+              </button>
+              <button onclick="toggleStepInsight('drill-2-step-2')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-blue-300 border border-slate-700 transition">
+                2. ⏱️ Tense
+              </button>
+              <button onclick="toggleStepInsight('drill-2-step-3')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-purple-300 border border-slate-700 transition">
+                3. 🔄 Voice
+              </button>
+              <button onclick="toggleStepInsight('drill-2-step-4')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-emerald-300 border border-slate-700 transition">
+                4. 🧩 Pattern
+              </button>
+            </div>
+          </div>
+
+          <div class="text-sm text-slate-100 font-medium">
+            <span class="echo-word">I'm sure that James</span> <span class="deficit-word">didn't intend to</span> <span class="echo-word">offend anyone.</span>
+          </div>
+
+          <div class="flex items-center gap-3 font-mono text-xs">
+            <span class="text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded">INTENTION</span>
+            <span class="text-slate-200"><span class="echo-word">I'm sure that James</span> __________________________ <span class="echo-word">offending anyone.</span></span>
+          </div>
+
+          <!-- Step Insights Trays -->
+          <div id="drill-2-step-2" class="step-tray hidden text-[11px] font-mono bg-slate-950/90 border border-blue-500/30 p-2.5 rounded-lg text-blue-300">
+            ⏱️ <strong>Step 2 (Tense Check):</strong> Sentence 1 main clause is in the <strong>Past Simple</strong> (<em>didn't intend</em>) &rarr; the verb in the gap must harmonize with the past aspect.
+          </div>
+
+          <div id="drill-2-step-3" class="step-tray hidden text-[11px] font-mono bg-slate-950/90 border border-purple-500/30 p-2.5 rounded-lg text-purple-300">
+            🔄 <strong>Step 3 (Voice Check):</strong> Voice remains <strong>Active &rarr; Active</strong> (the subject performing the action does not change).
+          </div>
+
+          <div id="drill-2-step-4" class="step-tray hidden text-[11px] font-mono bg-slate-950/90 border border-emerald-500/30 p-2.5 rounded-lg text-emerald-300">
+            🧩 <strong>Step 4 (Collocation Blueprint):</strong> Formula: <code class="text-white font-bold">[Past verb] + no intention of + [-ing form]</code>
+          </div>
+
+          <button onclick="toggleAnswer('drill-2-ans', this)" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition flex items-center justify-between w-full cursor-pointer">
+            <span>👁️ Reveal Cambridge Model Answer</span>
+            <span class="text-[10px] text-emerald-400/80">Click to show</span>
+          </button>
+          <div id="drill-2-ans" class="hidden bg-slate-950 p-3 rounded-lg border border-emerald-500/50 text-sm font-mono font-bold text-emerald-400 text-center">
+            [had no intention of] <span class="text-xs text-slate-400 font-normal">(4 words · INTENTION unchanged)</span>
+          </div>
+        </div>
+
+        <!-- Drill 3 -->
+        <div id="drill-3" class="drill-card bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2.5">
+          <div class="text-xs font-mono flex items-center justify-between">
+            <span class="text-amber-400 font-bold">Drill 3 · Active to Passive Voice Shift</span>
+            <div class="flex items-center gap-1">
+              <button onclick="toggleEchoes('drill-3')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-amber-300 border border-slate-700 transition">
+                1. ✂️ Echoes
+              </button>
+              <button onclick="toggleStepInsight('drill-3-step-2')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-blue-300 border border-slate-700 transition">
+                2. ⏱️ Tense
+              </button>
+              <button onclick="toggleStepInsight('drill-3-step-3')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-purple-300 border border-slate-700 transition">
+                3. 🔄 Voice
+              </button>
+              <button onclick="toggleStepInsight('drill-3-step-4')" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-950 hover:bg-slate-800 text-emerald-300 border border-slate-700 transition">
+                4. 🧩 Pattern
+              </button>
+            </div>
+          </div>
+
+          <div class="text-sm text-slate-100 font-medium">
+            <span class="deficit-word">People believe that</span> <span class="echo-word">the mathematician</span> <span class="deficit-word">solved</span> <span class="echo-word">the puzzle centuries ago.</span>
+          </div>
+
+          <div class="flex items-center gap-3 font-mono text-xs">
+            <span class="text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded">SAID</span>
+            <span class="text-slate-200"><span class="echo-word">The mathematician</span> __________________________ <span class="echo-word">the puzzle centuries ago.</span></span>
+          </div>
+
+          <!-- Step Insights Trays -->
+          <div id="drill-3-step-2" class="step-tray hidden text-[11px] font-mono bg-slate-950/90 border border-blue-500/30 p-2.5 rounded-lg text-blue-300">
+            ⏱️ <strong>Step 2 (Tense Check):</strong> Reporting is in the <strong>Present</strong> (<em>believe</em>), but the historical action happened in the past (<em>centuries ago</em>) &rarr; mandates a <strong>Present reporting verb + Perfect Infinitive (to have + past participle)</strong>.
+          </div>
+
+          <div id="drill-3-step-3" class="step-tray hidden text-[11px] font-mono bg-slate-950/90 border border-purple-500/30 p-2.5 rounded-lg text-purple-300">
+            🔄 <strong>Step 3 (Voice Shift):</strong> <strong>CRUCIAL VOICE SHIFT!</strong> Active S1 (<em>People believe [object]</em>) &rarr; Passive S2 (<em>[Subject] is reported...</em>).
+          </div>
+
+          <div id="drill-3-step-4" class="step-tray hidden text-[11px] font-mono bg-slate-950/90 border border-emerald-500/30 p-2.5 rounded-lg text-emerald-300">
+            🧩 <strong>Step 4 (Collocation Blueprint):</strong> Formula: <code class="text-white font-bold">[Subject] + [BE present] + SAID + [Perfect Infinitive]</code>
+          </div>
+
+          <button onclick="toggleAnswer('drill-3-ans', this)" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition flex items-center justify-between w-full cursor-pointer">
+            <span>👁️ Reveal Cambridge Model Answer</span>
+            <span class="text-[10px] text-emerald-400/80">Click to show</span>
+          </button>
+          <div id="drill-3-ans" class="hidden bg-slate-950 p-3 rounded-lg border border-emerald-500/50 text-sm font-mono font-bold text-emerald-400 text-center">
+            [is said to have solved] <span class="text-xs text-slate-400 font-normal">(5 words · SAID unchanged)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: WRITING - ESCAPING THE SCHOOL ESSAY TRAP -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-5" data-category="Writing Diagnostic">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest">Part 7 · Writing Power</span>
+        <h2 class="text-3xl font-bold heading-font text-white">Escaping the "School Essay" Trap</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="bg-slate-900/80 border border-red-500/30 rounded-xl p-5 space-y-3">
+          <div class="text-xs font-mono text-red-400 font-bold uppercase">✕ High School English (170-175)</div>
+          <ul class="text-xs text-slate-300 space-y-2">
+            <li>• Starting with: <em>"In my opinion, I think..."</em></li>
+            <li>• Overusing tired linkers: <em>"Moreover", "Furthermore", "In a nutshell"</em></li>
+            <li>• Simple sentences: <em>"Technology is useful. It helps students learn faster."</em></li>
+          </ul>
+        </div>
+
+        <div class="bg-slate-900/80 border border-emerald-500/30 rounded-xl p-5 space-y-3 bg-emerald-500/5">
+          <div class="text-xs font-mono text-emerald-400 font-bold uppercase">✓ Cambridge C1 Academic Standard (193+)</div>
+          <ul class="text-xs text-slate-200 space-y-2">
+            <li>• <strong>Impersonal reporting</strong>: <em>"It is widely contended that..."</em></li>
+            <li>• <strong>Syntactic variety</strong>: Inversions and cleft sentences for emphasis</li>
+            <li>• <strong>Participle clauses</strong>: <em>"..., thereby allowing students to progress rapidly."</em></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Live Before & After Upgrade Card -->
+      <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div class="text-xs font-mono text-amber-400 uppercase font-semibold">Live Before & After</div>
+          <button id="slide8-toggle-btn" onclick="toggleSlide8Upgrade()" class="text-xs font-mono px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition flex items-center gap-1.5 shadow-lg shadow-amber-500/10 cursor-pointer">
+            <span id="slide8-btn-icon">👁️</span> <span id="slide8-btn-text">Reveal Cambridge C1 Upgrade</span>
+          </button>
+        </div>
+
+        <div>
+          <span class="text-slate-500 font-mono text-[11px] uppercase tracking-wider block mb-1">Standard High School Draft:</span>
+          <p class="text-slate-200 text-sm italic bg-slate-950/80 p-3 rounded-lg border border-slate-800/80">
+            "Online courses are cheap and they also help people who live far away."
+          </p>
+        </div>
+
+        <div id="slide8-upgrade-box" class="hidden space-y-2 bg-slate-950 p-4 rounded-lg border border-emerald-500/40 text-emerald-300">
+          <div class="text-emerald-400 font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+            <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">✓</span>
+            Cambridge C1 Syntactic Architecture (Inversion + Precision):
+          </div>
+          <p class="text-white font-semibold text-base leading-relaxed">
+            "Not only are online courses significantly more affordable, but they also grant remote learners unprecedented access to quality education."
+          </p>
+          <div class="text-[11px] text-slate-400 pt-1 font-mono flex items-center gap-2">
+            <span class="text-amber-400 font-semibold">Formula:</span>
+            <code>Not only + [BE] + [Subject]..., but [Subject] also + [Verb]...</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: TWO POWERFUL C1 TOOLS -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-5" data-category="Grammar Architecture">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest">Part 8 · High-Scoring Tools</span>
+        <h2 class="text-3xl font-bold heading-font text-white">Two Simple Tools That Lift Your Score</h2>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Inversion -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-amber-400 text-sm">Tool 1: Negative Inversion (For Strong Emphasis)</h3>
+            <span class="text-[11px] font-mono text-slate-400">Formula: Not only + auxiliary + subject + verb...</span>
+          </div>
+          <p class="text-xs text-slate-300">
+            Example: <em>"Not only does abstract mathematics train rigorous thinking, but it also underpins modern computer science."</em>
+          </p>
+        </div>
+
+        <!-- Cleft -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-2">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-amber-400 text-sm">Tool 2: The 'What' Cleft Sentence (Focus & Variety)</h3>
+            <span class="text-[11px] font-mono text-slate-400">Formula: What makes X [adjective] is...</span>
+          </div>
+          <p class="text-xs text-slate-300">
+            Example: <em>"What makes this theorem particularly challenging is the sheer number of edge cases to consider."</em>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: THE ROAD TO DECEMBER -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-5" data-category="The Roadmap">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-400 uppercase tracking-widest">Part 9 · Stress-Free Plan</span>
+        <h2 class="text-3xl font-bold heading-font text-white">The 10-Week Road to 193</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+          <div class="text-xs font-mono text-amber-400 font-bold">Phase 1 (Weeks 1–3)</div>
+          <h4 class="font-bold text-white text-sm">Use of English Patterns</h4>
+          <p class="text-xs text-slate-400">Mastering Part 4 transformations, collocations, and preposition combinations so you stop dropping easy marks.</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+          <div class="text-xs font-mono text-amber-400 font-bold">Phase 2 (Weeks 4–7)</div>
+          <h4 class="font-bold text-white text-sm">Writing & Reading Logic</h4>
+          <p class="text-xs text-slate-400">Locking in the C1 essay structure, formal report formats, and conquering Reading Part 7 (gapped texts).</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+          <div class="text-xs font-mono text-amber-400 font-bold">Phase 3 (Weeks 8–10)</div>
+          <h4 class="font-bold text-white text-sm">Timed Practice & Polish</h4>
+          <p class="text-xs text-slate-400">Simulating full exam conditions under the clock so you walk into the test centre in Kraków with total confidence.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: WRAP-UP & NEXT STEPS -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6 text-center" data-category="Wrap-Up">
+      <div class="space-y-2">
+        <span class="text-xs font-mono text-emerald-400 uppercase tracking-widest">Next Steps</span>
+        <h2 class="text-3xl md:text-4xl font-bold heading-font text-white">How did that feel today?</h2>
+        <p class="text-slate-300 text-sm max-w-lg mx-auto">
+          You've got a fantastic base to work from. To hit 193 comfortably without stress alongside your school work:
+        </p>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-xl mx-auto text-left space-y-4">
+        <div class="flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">1</span>
+          <div>
+            <div class="text-sm font-bold text-white">Pick a regular weekly schedule</div>
+            <div class="text-xs text-slate-400 mt-0.5">1 or 2 sessions a week that fit easily around your classes and study routine.</div>
+          </div>
+        </div>
+
+        <div class="flex items-start gap-3">
+          <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">2</span>
+          <div>
+            <div class="text-sm font-bold text-white">Optional Diagnostic Writing (If you'd like it)</div>
+            <div class="text-xs text-slate-300 mt-1 italic bg-slate-950 p-2.5 rounded border border-slate-800/80">
+              "If you decide to continue studying with me, please send me your first draft—with no spell check or AI—a day before your next lesson!"
+            </div>
+            <div class="text-[11px] text-slate-400 mt-1">
+              Short 220–250 word essay task: <em>"Should governments prioritise funding for pure theoretical science over applied commercial technology?"</em>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Bottom Navigation & Controls -->
+  <footer class="border-t border-slate-800 bg-slate-900/90 backdrop-blur-md px-6 py-4 flex items-center justify-between z-30">
+    <div class="flex items-center gap-2">
+      <button onclick="prevSlide()" class="px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs font-medium transition flex items-center gap-1">
+        ← Previous
+      </button>
+      <button onclick="nextSlide()" class="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition flex items-center gap-1 shadow-lg shadow-amber-500/10">
+        Next Slide →
+      </button>
+    </div>
+
+    <!-- Dots -->
+    <div id="slide-dots" class="hidden md:flex items-center gap-1.5"></div>
+
+    <div class="text-[11px] font-mono text-slate-500">
+      GarethEnglish · C1 Trial Session
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    document.getElementById('total-slides').innerText = totalSlides;
+
+    const dotsContainer = document.getElementById('slide-dots');
+    slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = i === 0 ? 'w-5 h-1.5 rounded-full bg-amber-400 transition-all' : 'w-1.5 h-1.5 rounded-full bg-slate-800 hover:bg-slate-600 transition-all';
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    });
+
+    function updateSlide() {
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === currentSlide);
+      });
+      document.getElementById('current-slide-num').innerText = currentSlide + 1;
+      
+      const category = slides[currentSlide].getAttribute('data-category') || 'Trial Session';
+      document.getElementById('slide-category').innerText = category;
+
+      Array.from(dotsContainer.children).forEach((d, i) => {
+        if (i === currentSlide) {
+          d.className = 'w-5 h-1.5 rounded-full bg-amber-400 transition-all';
+        } else {
+          d.className = 'w-1.5 h-1.5 rounded-full bg-slate-800 hover:bg-slate-600 transition-all';
+        }
+      });
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(i) {
+      currentSlide = i;
+      updateSlide();
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // Echoes strike-through controls
+    function toggleEchoes(drillId) {
+      const card = document.getElementById(drillId);
+      if (card) {
+        card.classList.toggle('show-echoes');
+      }
+    }
+
+    function toggleAllEchoes() {
+      document.querySelectorAll('.drill-card').forEach(card => {
+        card.classList.toggle('show-echoes');
+      });
+    }
+
+    // Step insights controls
+    function toggleStepInsight(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.classList.toggle('hidden');
+      }
+    }
+
+    function revealAllSteps() {
+      document.querySelectorAll('.step-tray').forEach(el => {
+        el.classList.remove('hidden');
+      });
+    }
+
+    // Answer reveals for Slide 7
+    function toggleAnswer(ansId, btnEl) {
+      const ansBox = document.getElementById(ansId);
+      if (ansBox) {
+        const isHidden = ansBox.classList.contains('hidden');
+        if (isHidden) {
+          ansBox.classList.remove('hidden');
+          if (btnEl) btnEl.classList.add('bg-emerald-500/20');
+        } else {
+          ansBox.classList.add('hidden');
+          if (btnEl) btnEl.classList.remove('bg-emerald-500/20');
+        }
+      }
+    }
+
+    // Slide 8 Live Upgrade Reveal
+    function toggleSlide8Upgrade() {
+      const box = document.getElementById('slide8-upgrade-box');
+      const btnText = document.getElementById('slide8-btn-text');
+      const btnIcon = document.getElementById('slide8-btn-icon');
+      if (box) {
+        const isHidden = box.classList.contains('hidden');
+        if (isHidden) {
+          box.classList.remove('hidden');
+          if (btnText) btnText.innerText = 'Hide C1 Upgrade';
+          if (btnIcon) btnIcon.innerText = '✕';
+        } else {
+          box.classList.add('hidden');
+          if (btnText) btnText.innerText = 'Reveal Cambridge C1 Upgrade';
+          if (btnIcon) btnIcon.innerText = '👁️';
+        }
+      }
+    }
+
+    function revealAllAnswers() {
+      document.querySelectorAll('[id$="-ans"]').forEach(el => el.classList.remove('hidden'));
+      const s8 = document.getElementById('slide8-upgrade-box');
+      const btnText = document.getElementById('slide8-btn-text');
+      const btnIcon = document.getElementById('slide8-btn-icon');
+      if (s8) {
+        s8.classList.remove('hidden');
+        if (btnText) btnText.innerText = 'Hide C1 Upgrade';
+        if (btnIcon) btnIcon.innerText = '✕';
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    let timerInterval = null;
+    let secondsRemaining = 60;
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      secondsRemaining = seconds;
+      document.getElementById('timer-display').innerText = formatTime(secondsRemaining);
+      document.getElementById('timer-display').classList.remove('text-red-400');
+      document.getElementById('timer-display').classList.add('text-amber-400');
+
+      timerInterval = setInterval(() => {
+        secondsRemaining--;
+        document.getElementById('timer-display').innerText = formatTime(secondsRemaining);
+
+        if (secondsRemaining <= 10) {
+          document.getElementById('timer-display').classList.remove('text-amber-400');
+          document.getElementById('timer-display').classList.add('text-red-400');
+        }
+
+        if (secondsRemaining <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById('timer-display').innerText = '00:00';
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      secondsRemaining = 60;
+      document.getElementById('timer-display').innerText = '01:00';
+      document.getElementById('timer-display').classList.remove('text-red-400');
+      document.getElementById('timer-display').classList.add('text-amber-400');
+    }
+  </script>
+</body>
+</html>

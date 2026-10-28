@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IELTS Task 2 · Lesson 2 Master Slide Deck (C1 Structural Toolkit) &bull; Ynnning</title>
+  <style>
+    :root {
+      --desk-bg: #eef2f6;
+      --paper-bg: #ffffff;
+      --navy-900: #0f2557;
+      --navy-800: #16377d;
+      --navy-700: #1d4ed8;
+      --navy-100: #dbeafe;
+      --navy-50: #f0f6ff;
+      --ink-900: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --border: #cbd5e1;
+      --emerald-bg: #ecfdf5;
+      --emerald-border: #10b981;
+      --emerald-text: #065f46;
+      --rose-bg: #fff1f2;
+      --rose-border: #f43f5e;
+      --rose-text: #9f1239;
+      --amber-bg: #fffbeb;
+      --amber-border: #f59e0b;
+      --amber-text: #92400e;
+      --purple-bg: #f5f3ff;
+      --purple-border: #8b5cf6;
+      --purple-text: #5b21b6;
+      --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans); }
+    body {
+      background: var(--desk-bg);
+      color: var(--ink-900);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Top HUD */
+    .top-hud {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(15, 37, 87, 0.05);
+    }
+    .hud-left {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .hud-badge {
+      background: var(--navy-800);
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+    }
+    .hud-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--navy-900);
+    }
+    .hud-student {
+      color: var(--navy-700);
+      font-weight: 600;
+    }
+
+    /* Timer */
+    .timer-box {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: var(--navy-50);
+      border: 1px solid #bfdbfe;
+      padding: 0.35rem 0.85rem;
+      border-radius: 8px;
+    }
+    .timer-digits {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--amber-text);
+      letter-spacing: 0.05em;
+    }
+    .timer-phase {
+      font-size: 0.75rem;
+      color: var(--navy-800);
+      border-left: 1px solid #bfdbfe;
+      padding-left: 0.6rem;
+      font-weight: 600;
+    }
+    .timer-btn {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--ink-700);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .timer-btn:hover { border-color: var(--navy-800); color: var(--navy-800); background: var(--navy-50); }
+
+    /* Slide Stage */
+    .slide-stage {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.75rem 1.25rem;
+      max-width: 1120px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .slide-viewport {
+      width: 100%;
+      min-height: 580px;
+      background: var(--paper-bg);
+      border: 1px solid #d8e0ea;
+      border-radius: 12px;
+      padding: 2.25rem 2.5rem;
+      box-shadow: 0 12px 32px rgba(15, 37, 87, 0.07);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .slide { display: none; height: 100%; flex-direction: column; justify-content: space-between; }
+    .slide.active { display: flex; animation: fadeIn 0.2s ease-out; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Slide Header Elements */
+    .slide-tag {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--navy-800);
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .slide-title {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--navy-900);
+      margin-bottom: 0.85rem;
+      line-height: 1.3;
+    }
+    .slide-desc {
+      font-size: 0.94rem;
+      color: var(--ink-700);
+      margin-bottom: 1.25rem;
+      line-height: 1.55;
+    }
+
+    /* Slide Layout Grids */
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 1.25rem;
+    }
+    .grid-4col {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* Content Cards */
+    .mini-card {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 1.15rem;
+      position: relative;
+      color: var(--ink-900);
+    }
+    .mini-card.accent { border-color: var(--navy-800); background: var(--navy-50); }
+    .mini-card.emerald { border-color: var(--emerald-border); background: var(--emerald-bg); }
+    .mini-card.amber { border-color: var(--amber-border); background: var(--amber-bg); }
+    .mini-card.crimson { border-color: var(--rose-border); background: var(--rose-bg); }
+
+    .card-title-sm {
+      font-size: 0.92rem;
+      font-weight: 800;
+      margin-bottom: 0.45rem;
+      color: var(--navy-900);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Formula Blueprint Box */
+    .formula-box {
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .formula-badge {
+      background: var(--navy-800);
+      color: var(--navy-900);
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .formula-text {
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--navy-900);
+      letter-spacing: 0.02em;
+    }
+
+    /* Comparison Boxes */
+    .box-before {
+      background: var(--rose-bg);
+      border-left: 3px solid var(--rose-border);
+      padding: 0.75rem 0.95rem;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      color: var(--rose-text);
+      margin-bottom: 0.65rem;
+    }
+    .box-after {
+      background: var(--emerald-bg);
+      border-left: 3px solid var(--emerald-border);
+      padding: 0.75rem 0.95rem;
+      border-radius: 4px;
+      font-size: 0.88rem;
+      color: var(--emerald-text);
+      margin-bottom: 0.65rem;
+    }
+    .box-after strong { color: #047857; }
+
+    /* Interactive Practice Workout Box */
+    .practice-box {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 1.15rem 1.35rem;
+      margin-top: 1rem;
+    }
+    .practice-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+    }
+    .practice-tag {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--navy-800);
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .practice-prompt {
+      font-size: 0.92rem;
+      color: var(--ink-900);
+      font-style: italic;
+      margin-bottom: 0.75rem;
+      padding-left: 0.75rem;
+      border-left: 3px solid var(--navy-800);
+    }
+    .reveal-btn {
+      background: #ffffff;
+      border: 1.5px solid var(--navy-800);
+      color: var(--navy-800);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .reveal-btn:hover {
+      background: var(--navy-50);
+    }
+    .practice-solution {
+      margin-top: 0.75rem;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .solution-note {
+      font-size: 0.82rem;
+      color: var(--ink-700);
+      margin-top: 0.35rem;
+    }
+    .solution-note strong { color: var(--emerald-text); }
+
+    /* Interactive Bottom Bar */
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      padding-top: 1.15rem;
+      margin-top: 1.25rem;
+    }
+    .nav-counter {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink-500);
+    }
+    .nav-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .nav-btn {
+      background: var(--navy-800);
+      border: 1px solid var(--navy-800);
+      color: var(--navy-900);
+      padding: 0.5rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--navy-900);
+      border-color: var(--navy-900);
+    }
+    .nav-btn#prev-btn {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      color: var(--ink-700);
+    }
+    .nav-btn#prev-btn:hover:not(:disabled) {
+      background: var(--navy-50);
+      border-color: var(--navy-800);
+      color: var(--navy-800);
+    }
+    .nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* Speaking Cards */
+    .speaking-card {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .speaking-card.active, .speaking-card:hover {
+      border-color: var(--navy-800);
+      background: var(--navy-50);
+    }
+
+    /* Print Styles */
+    @media print {
+      @page {
+        size: 297mm 210mm;
+        margin: 0;
+      }
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .top-hud, .nav-bar, .reveal-btn, .timer-btn {
+        display: none !important;
+      }
+      .slide-stage {
+        padding: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        display: block !important;
+      }
+      .slide-viewport {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+        display: block !important;
+        background: transparent !important;
+      }
+      .slide {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        width: 297mm !important;
+        height: 210mm !important;
+        max-width: 297mm !important;
+        max-height: 210mm !important;
+        box-sizing: border-box !important;
+        padding: 11mm 15mm 9mm 15mm !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        background: #ffffff !important;
+      }
+      .slide:last-child {
+        page-break-after: auto !important;
+        break-after: auto !important;
+      }
+      .practice-solution {
+        display: block !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Top HUD -->
+  <div class="top-hud">
+    <div class="hud-left">
+      <span class="hud-badge">GarethEnglish</span>
+      <span class="hud-title">IELTS Task 2 Masterclass &bull; <span class="hud-student">Lesson 2: C1 Structural Toolkit</span></span>
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <a href="09-Lesson-2-Slide-Deck-Printable.html" target="_blank" class="timer-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; background: var(--navy-800); color: #ffffff; border-color: var(--navy-800);">🖨️ Printable Handout</a>
+      <a href="09-Lesson-2-Slide-Deck.pdf" target="_blank" class="timer-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 4px; background: var(--emerald-bg); color: var(--emerald-text); border-color: var(--emerald-border);">📑 Download PDF</a>
+      
+      <!-- 60-Minute Lesson Clock -->
+      <div class="timer-box">
+        <span id="timer-display" class="timer-digits">00:00</span>
+        <span id="timer-phase" class="timer-phase">Stage 1: Speaking Part 2 Warm-Up (0–12m)</span>
+        <button id="timer-toggle-btn" class="timer-btn" onclick="toggleTimer()">Start</button>
+        <button class="timer-btn" onclick="resetTimer()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Slide Stage -->
+  <div class="slide-stage">
+    <div class="slide-viewport">
+
+      <!-- SLIDE 1: Cover Slide -->
+      <div class="slide active" id="slide-1">
+        <div>
+          <div class="slide-tag">🚀 Lesson 2 of 12 &bull; Continuous Assessment Series</div>
+          <h1 class="slide-title">The C1 Structural Toolkit:<br><span style="color: var(--navy-700);">Locking In Your Guaranteed 7.5 Safety Cushion</span></h1>
+          <p class="slide-desc">
+            Candidate: <strong>Ynnning</strong> &bull; Offer Requirement: <strong>Minimum 7.0 in Writing</strong> &bull; Baseline Confirmed: <strong>Band 7.0 Achieved</strong> &bull; Practice Goal: <strong>Safe 7.5 Margin</strong>
+          </p>
+
+          <div class="grid-3col">
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">🏆 7.0 Baseline Confirmed</div>
+              <div style="font-size: 0.85rem; color: var(--ink-700);">Zero personal anecdotes in Essay 2. Disciplined 255 words across 4 paragraphs.</div>
+            </div>
+            <div class="mini-card accent">
+              <div class="card-title-sm" style="color: var(--navy-700);">📐 C1 Grammar Engine</div>
+              <div style="font-size: 0.85rem; color: var(--ink-700);">Cleft sentences, negative inversions, dummy 'It', and passive reporting verbs.</div>
+            </div>
+            <div class="mini-card amber">
+              <div class="card-title-sm" style="color: var(--amber-text);">🛡️ The Safe 7.5 Cushion</div>
+              <div style="font-size: 0.85rem; color: var(--ink-700);">Zero vocabulary risk; pure grammatical variety to guarantee your conditional offer.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-card" style="border-color: rgba(56, 189, 248, 0.3); background: var(--navy-50); border: 1.5px solid #bfdbfe;">
+          <div style="font-size: 0.95rem; color: var(--ink-900);">
+            <strong>Today's Core Takeaway:</strong> You do <em>not</em> need to gamble with obscure vocabulary or write like a 19th-century academic to get high marks. Examiners award Band 7.5+ when you show consistent control of <strong>C1 sentence structures</strong>.
+          </div>
+        </div>
+      </div>
+
+            <!-- SLIDE 2: Speaking Part 2 Warm-Up (The Long Turn) -->
+      <div class="slide" id="slide-2">
+        <div>
+          <div class="slide-tag">🎙️ Active Warm-Up &bull; Speaking Part 2 Long Turn</div>
+          <h2 class="slide-title">Fluency Warm-Up: The 2-Minute Long Turn</h2>
+          <p class="slide-desc">Let's get you vocal before we look at writing! Plan for 1 minute, then speak for 1.5 to 2 minutes.</p>
+
+          <div class="grid-2col">
+            <!-- Left: The Candidate Cue Card -->
+            <div class="mini-card accent" style="border: 2px solid var(--navy-800); background: var(--navy-50); display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--navy-800); letter-spacing: 0.08em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                  <span>📋 Candidate Task Card</span>
+                </div>
+                <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--navy-900); margin-bottom: 0.85rem; line-height: 1.4;">
+                  Describe a city or town you have visited or lived in that made a strong impression on you.
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--ink-700); margin-bottom: 0.5rem; font-weight: 600;">You should say:</p>
+                <ul style="font-size: 0.88rem; color: var(--ink-900); line-height: 1.8; margin-left: 1.25rem; margin-bottom: 0.85rem;">
+                  <li>Where this place is and when you were there</li>
+                  <li>What the atmosphere, people, or surroundings were like</li>
+                  <li>What you did or experienced while you were there</li>
+                </ul>
+                <div style="font-size: 0.88rem; color: var(--navy-800); font-weight: 700; padding-top: 0.5rem; border-top: 1px dashed #bfdbfe;">
+                  ...and explain why this place made such a lasting impression on you.
+                </div>
+              </div>
+
+              <!-- Interactive Part 2 Mini Timer -->
+              <div style="background: #ffffff; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.65rem 0.85rem; margin-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <span id="p2-timer-label" style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--ink-500);">Prep Timer</span>
+                  <div id="p2-timer-digits" style="font-family: 'Consolas', monospace; font-size: 1.25rem; font-weight: 800; color: var(--amber-text);">01:00</div>
+                </div>
+                <div style="display: flex; gap: 0.4rem;">
+                  <button class="timer-btn" onclick="startP2Timer(60, '1-Min Prep')">⏱️ 1m Prep</button>
+                  <button class="timer-btn" onclick="startP2Timer(120, '2m Talk')">🎙️ 2m Talk</button>
+                  <button class="timer-btn" onclick="stopP2Timer()">Stop</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Golden Structuring Advice -->
+            <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+              <div class="mini-card" style="border-left: 3px solid var(--navy-800); background: #f8fafc; padding: 0.75rem 1rem;">
+                <div style="font-weight: 800; color: var(--navy-800); font-size: 0.85rem; margin-bottom: 0.25rem;">1. The 1-Minute Note Secret: 4 Trigger Words</div>
+                <div style="font-size: 0.83rem; color: var(--ink-700); line-height: 1.45;">
+                  Do <strong>not</strong> write full sentences. Write just <strong>4 single keywords</strong> vertically down your paper—one for each prompt bullet. It forces you to speak spontaneously rather than reading a rigid script.
+                </div>
+              </div>
+
+              <div class="mini-card" style="border-left: 3px solid var(--emerald-border); background: var(--emerald-bg); padding: 0.75rem 1rem;">
+                <div style="font-weight: 800; color: var(--emerald-text); font-size: 0.85rem; margin-bottom: 0.25rem;">2. The 3-Act Story Arc (Avoid Running Out of Ideas)</div>
+                <div style="font-size: 0.83rem; color: var(--ink-700); line-height: 1.45;">
+                  &bull; <strong>Act 1: Past Context (30s)</strong>: Setting the scene—where, when, and initial expectations.<br>
+                  &bull; <strong>Act 2: Sensory Snapshot (45s)</strong>: Specific scene—atmosphere, sounds, streets, or a key interaction.<br>
+                  &bull; <strong>Act 3: Reflection / 'So What?' (45s)</strong>: Why it resonated, what you learned, and how it shifted your outlook.
+                </div>
+              </div>
+
+              <div class="mini-card" style="border-left: 3px solid var(--amber-border); background: var(--amber-bg); padding: 0.75rem 1rem;">
+                <div style="font-weight: 800; color: var(--amber-text); font-size: 0.85rem; margin-bottom: 0.25rem;">3. Cambridge Anchor: Prompts Are Springboards, Not an Interrogation</div>
+                <div style="font-size: 0.83rem; color: var(--ink-700); line-height: 1.45;">
+                  If you cover the prompt bullets before the 2 minutes end, don't stop! Deepen your reflection and compare: <em>"Looking back on it now, what struck me most was..."</em> Keep talking naturally until halted.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scaffolding: Narrative Sequencing Signposts -->
+        <div class="mini-card" style="border: 1.5px solid #bfdbfe; background: var(--navy-50); margin-top: 0.75rem; padding: 0.65rem 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+            <div style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--navy-800); letter-spacing: 0.07em; display: flex; align-items: center; gap: 0.4rem;">
+              <span>🧭 Scaffolding Toolkit: Narrative Sequencing Words (Cohesion Engine)</span>
+            </div>
+            <span style="font-size: 0.72rem; color: var(--ink-500); font-weight: 600;">Replaces repetitive "And then..." with Band 7.5+ narrative cohesion</span>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.65rem; font-size: 0.82rem;">
+            <div style="background: #ffffff; padding: 0.45rem 0.65rem; border-radius: 6px; border: 1px solid #dbeafe;">
+              <span style="font-weight: 700; color: var(--navy-800); font-size: 0.76rem; text-transform: uppercase;">Act 1 &bull; Scene Setting:</span><br>
+              <div style="color: var(--ink-700); font-style: italic; line-height: 1.45; margin-top: 0.2rem;">
+                &bull; <em>"Initially, back when I first..."</em><br>
+                &bull; <em>"Prior to arriving, I had assumed..."</em><br>
+                &bull; <em>"At that particular point in time..."</em>
+              </div>
+            </div>
+            <div style="background: #ffffff; padding: 0.45rem 0.65rem; border-radius: 6px; border: 1px solid #dbeafe;">
+              <span style="font-weight: 700; color: var(--emerald-text); font-size: 0.76rem; text-transform: uppercase;">Act 2 &bull; Narrative Shift & Sensory:</span><br>
+              <div style="color: var(--ink-700); font-style: italic; line-height: 1.45; margin-top: 0.2rem;">
+                &bull; <em>"What struck me almost immediately was..."</em><br>
+                &bull; <em>"Shortly thereafter, as things unfolded..."</em><br>
+                &bull; <em>"By the time I reached..."</em>
+              </div>
+            </div>
+            <div style="background: #ffffff; padding: 0.45rem 0.65rem; border-radius: 6px; border: 1px solid #dbeafe;">
+              <span style="font-weight: 700; color: var(--amber-text); font-size: 0.76rem; text-transform: uppercase;">Act 3 &bull; Reflective Climax:</span><br>
+              <div style="color: var(--ink-700); font-style: italic; line-height: 1.45; margin-top: 0.2rem;">
+                &bull; <em>"Looking back on it now in hindsight..."</em><br>
+                &bull; <em>"Ultimately, what left the deepest mark was..."</em><br>
+                &bull; <em>"That experience completely reshaped..."</em>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 3: Diagnostic vs. Essay 2 Comparison -->
+      <div class="slide" id="slide-3">
+        <div>
+          <div class="slide-tag">📊 The Empirical Breakthrough</div>
+          <h2 class="slide-title">Your Progress: Diagnostic vs. Essay 2</h2>
+          <p class="slide-desc">Look at the measurable shift between your two submissions:</p>
+
+          <div class="grid-2col">
+            <div class="mini-card crimson">
+              <div class="card-title-sm" style="color: var(--rose-text);">Diagnostic Essay 1 (Baseline: 6.0)</div>
+              <ul style="font-size: 0.85rem; color: var(--ink-700); list-style: none; line-height: 1.8;">
+                <li>❌ <strong>487 Words</strong> (Massive blowout under fatigue)</li>
+                <li>❌ <strong>7 Paragraphs</strong> (Fragmented 1-sentence lists)</li>
+                <li>❌ <strong>Personal Memoir</strong> (<em>"my partner", "I", "my career"</em>)</li>
+                <li>❌ <strong>Advice Column Drift</strong> (Self-help tips for WFH)</li>
+              </ul>
+            </div>
+
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">Essay 2: Urban Migration (Current: 7.0)</div>
+              <ul style="font-size: 0.85rem; color: var(--ink-700); list-style: none; line-height: 1.8;">
+                <li>✓ <strong>255 Words</strong> (Optimal Cambridge word economy)</li>
+                <li>✓ <strong>4 Paragraphs</strong> (Strict macro-architecture)</li>
+                <li>✓ <strong>100% Depersonalised</strong> (Objective sociological observer)</li>
+                <li>✓ <strong>Brilliant Insight</strong> (Identified return migration & resilience)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-card" style="border-color: rgba(16, 185, 129, 0.35); background: var(--emerald-bg); border: 1.5px solid var(--emerald-border);">
+          <div style="font-size: 0.92rem; color: var(--ink-700);">
+            <strong style="color: var(--emerald-text);">Examiner Verdict:</strong> You solved the hardest hurdle in IELTS: <em>macro-structure, word count control, and academic detachment</em>. You have your 7.0 in the bag.
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: The 4-Pillar Scorecard -->
+      <div class="slide" id="slide-4">
+        <div>
+          <div class="slide-tag">📋 Cambridge IELTS Rubric</div>
+          <h2 class="slide-title">Scorecard Breakdown: Securing Your 7.5 Cushion</h2>
+          <p class="slide-desc">How C1 grammatical variety unlocks your safe score margin:</p>
+
+          <div class="grid-4col">
+            <div class="mini-card">
+              <div class="card-title-sm" style="color: var(--navy-700);">Task Response</div>
+              <div style="font-size: 1.3rem; font-weight: 800; color: var(--navy-700);">7.0 &rarr; 7.5</div>
+              <p style="font-size: 0.78rem; color: var(--ink-700); margin-top:0.4rem;">
+                <strong>The 7.5 Move:</strong> Front-load your outweigh justification in Paragraph 1 using a concession clause.
+              </p>
+            </div>
+
+            <div class="mini-card">
+              <div class="card-title-sm" style="color: var(--navy-700);">Coherence & Cohesion</div>
+              <div style="font-size: 1.3rem; font-weight: 800; color: var(--navy-700);">7.0 &rarr; 7.5</div>
+              <p style="font-size: 0.78rem; color: var(--ink-700); margin-top:0.4rem;">
+                <strong>The 7.5 Move:</strong> Replace simple markers (<em>"First", "Second"</em>) with thematic transitions.
+              </p>
+            </div>
+
+            <div class="mini-card">
+              <div class="card-title-sm" style="color: var(--emerald-text);">Lexical Resource</div>
+              <div style="font-size: 1.3rem; font-weight: 800; color: var(--emerald-text);">7.0 &rarr; 7.5</div>
+              <p style="font-size: 0.78rem; color: var(--ink-700); margin-top:0.4rem;">
+                <strong>The 7.5 Move:</strong> Fix <em>"twofold"</em> and <em>"economic"</em>. Keep vocabulary natural and unforced.
+              </p>
+            </div>
+
+            <div class="mini-card">
+              <div class="card-title-sm" style="color: var(--emerald-text);">Grammar & Range</div>
+              <div style="font-size: 1.3rem; font-weight: 800; color: var(--emerald-text);">7.0 &rarr; 7.5+</div>
+              <p style="font-size: 0.78rem; color: var(--ink-700); margin-top:0.4rem;">
+                <strong>The 7.5 Move:</strong> Deploy 3 reliable C1 structures: cleft sentences, inversions, and dummy 'It'.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mini-card" style="border-color: rgba(56, 189, 248, 0.3); background: var(--navy-50); border: 1.5px solid #bfdbfe;">
+          <div style="font-size: 0.92rem; color: var(--ink-700);">
+            <strong>Why 7.5 Matters:</strong> By consistently practicing at Band 7.5, even if you have an off day or face a tough prompt in the test centre, you comfortably clear your required 7.0 cutoff.
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: False Friends: Economic vs. Economical -->
+      <div class="slide" id="slide-5">
+        <div>
+          <div class="slide-tag">⚡ Register & Precision &bull; False Friends</div>
+          <h2 class="slide-title">Rule 01: <em>Economic</em> vs. <em>Economical</em></h2>
+          
+          <div class="grid-2col">
+            <div class="mini-card crimson">
+              <div class="card-title-sm" style="color: var(--rose-text);">❌ Economical (Frugal / Money-Saving)</div>
+              <p style="font-size: 0.85rem; color: var(--ink-700); margin-bottom: 0.4rem;">
+                Means inexpensive, thrifty, or fuel-efficient.
+              </p>
+              <div class="box-before">"A small electric vehicle is highly economical to run."</div>
+            </div>
+
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">✓ Economic (Relating to the Economy)</div>
+              <p style="font-size: 0.85rem; color: var(--ink-700); margin-bottom: 0.4rem;">
+                Relates to trade, commerce, industry, or finance.
+              </p>
+              <div class="box-after">"Metropolitan migration causes distinct <strong>economic</strong> challenges."</div>
+            </div>
+          </div>
+
+          <!-- Practice Area -->
+          <div class="practice-box">
+            <div class="practice-top">
+              <span class="practice-tag">✏️ Interactive Practice Workout</span>
+              <button class="reveal-btn" onclick="toggleSolution('sol-4', this)">👁️ Reveal Answer</button>
+            </div>
+            <div class="practice-prompt">
+              Correct this sentence: <em>"The government introduced new economical policies to stimulate business growth in regional areas."</em>
+            </div>
+            <div class="practice-solution" id="sol-4" style="display:none;">
+              <div class="box-after">
+                ✓ <strong>Correct:</strong> "The government introduced new <strong>economic</strong> policies to stimulate business growth in regional areas."
+              </div>
+              <div class="solution-note"><strong>Rule:</strong> Policies relating to national finance or business are always <strong>economic policies</strong>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 6: The "Twofold" Rule & The Academic Contraction Ban -->
+      <div class="slide" id="slide-6">
+        <div>
+          <div class="slide-tag">⚡ Register & Precision &bull; Suffixes & Contractions</div>
+          <h2 class="slide-title">Rule 02 & 03: Suffix Rules & The Contraction Ban</h2>
+
+          <div class="grid-2col">
+            <div class="mini-card">
+              <div class="card-title-sm" style="color: var(--amber-text);">The Suffix Rule: -fold Never Takes an 's'</div>
+              <div class="box-before">❌ "The reasons are two folds."</div>
+              <div class="box-after">✓ "The reasons are <strong>twofold</strong>." (also: <em>threefold, fourfold</em>)</div>
+              <p style="font-size: 0.8rem; color: var(--ink-700);"><em>Twofold</em> is an unspaced compound adjective/adverb. Never add '-s'.</p>
+            </div>
+
+            <div class="mini-card">
+              <div class="card-title-sm" style="color: var(--amber-text);">The Academic Contraction Ban</div>
+              <div class="box-before">❌ "doesn't, haven't, can't"</div>
+              <div class="box-after">✓ "<strong>does not, have not, cannot</strong>"</div>
+              <p style="font-size: 0.8rem; color: var(--ink-700);">Contractions belong to casual speech. Cambridge penalises them in Task 2.</p>
+            </div>
+          </div>
+
+          <!-- Practice Area -->
+          <div class="practice-box">
+            <div class="practice-top">
+              <span class="practice-tag">✏️ Interactive Practice Workout</span>
+              <button class="reveal-btn" onclick="toggleSolution('sol-5', this)">👁️ Reveal Answer</button>
+            </div>
+            <div class="practice-prompt">
+              Spot and fix the two errors: <em>"The drawbacks of moving away are three folds, and it doesn't always guarantee career success."</em>
+            </div>
+            <div class="practice-solution" id="sol-5" style="display:none;">
+              <div class="box-after">
+                ✓ <strong>Correct:</strong> "The drawbacks of moving away are <strong>threefold</strong>, and it <strong>does not</strong> always guarantee career success."
+              </div>
+              <div class="solution-note"><strong>Quick Check:</strong> <em>Threefold</em> (one word, no 's') + <em>does not</em> (full written form).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 7: C1 Structure 1: Introductory 'It' & Passive Reporting -->
+      <div class="slide" id="slide-7">
+        <div>
+          <div class="slide-tag">🛠️ C1 Structural Tool 01 &bull; Introductory 'It'</div>
+          <h2 class="slide-title">Introductory 'It' + Passive Reporting Verbs</h2>
+          
+          <!-- Formula Box -->
+          <div class="formula-box">
+            <span class="formula-badge">Structural Formula</span>
+            <span class="formula-text">It is + [adverb] + [past participle verb] + that + [complete clause]</span>
+          </div>
+
+          <p class="slide-desc" style="margin-bottom:0.75rem;">
+            Use this to replace informal spoken openings (<em>"People know that...", "Nowadays everyone thinks..."</em>) with authoritative academic distance:
+          </p>
+
+          <div class="grid-2col" style="margin-bottom: 0.75rem;">
+            <div class="mini-card">
+              <div class="card-title-sm" style="color: var(--rose-text);">Informal / Conversational Opening</div>
+              <div class="box-before">"Many people nowadays believe that living in big cities is better for young adults."</div>
+            </div>
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">C1 Passive Reporting Pattern</div>
+              <div class="box-after">"<strong>It is widely acknowledged that</strong> metropolitan cities offer superior prospects for young adults."</div>
+            </div>
+          </div>
+
+          <!-- Practice Area -->
+          <div class="practice-box">
+            <div class="practice-top">
+              <span class="practice-tag">✏️ Interactive Practice Workout</span>
+              <button class="reveal-btn" onclick="toggleSolution('sol-6', this)">👁️ Reveal C1 Model</button>
+            </div>
+            <div class="practice-prompt">
+              Transform into an Introductory 'It' passive structure: <em>"Most experts agree that remote work has changed traditional office dynamics."</em>
+            </div>
+            <div class="practice-solution" id="sol-6" style="display:none;">
+              <div class="box-after">
+                ✓ <strong>Model:</strong> "<strong>It is widely acknowledged that</strong> remote work has fundamentally transformed traditional office dynamics."
+              </div>
+              <div class="solution-note"><strong>High-scoring verbs to rotate:</strong> <em>It is widely recognized that... &bull; It is often argued that... &bull; It is commonly asserted that...</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 8: C1 Structure 2: Cleft Sentences -->
+      <div class="slide" id="slide-8">
+        <div>
+          <div class="slide-tag">🛠️ C1 Structural Tool 02 &bull; Cleft Sentences</div>
+          <h2 class="slide-title">Cleft Sentences: <em>"What makes..."</em> & <em>"It is... that..."</em></h2>
+          
+          <div class="grid-2col" style="margin-bottom:0.75rem;">
+            <!-- Formula A -->
+            <div>
+              <div class="formula-box">
+                <span class="formula-badge">It-Cleft</span>
+                <span class="formula-text">It is/was + [Focus] + that/who + [Clause]</span>
+              </div>
+              <div class="box-after">
+                "<strong>It is this geographical separation that</strong> often weakens intergenerational family bonds."
+              </div>
+              <div style="font-size:0.8rem; color:#cbd5e1;">Puts dramatic focus on the specific cause.</div>
+            </div>
+
+            <!-- Formula B -->
+            <div>
+              <div class="formula-box">
+                <span class="formula-badge">Wh-Cleft</span>
+                <span class="formula-text">What [Clause] + is/was + [Noun Phrase]</span>
+              </div>
+              <div class="box-after">
+                "<strong>What makes urban living attractive is</strong> the freedom it gives young adults to shape their futures."
+              </div>
+              <div style="font-size:0.8rem; color:#cbd5e1;">Highlights the main idea as the central topic.</div>
+            </div>
+          </div>
+
+          <!-- Practice Area -->
+          <div class="practice-box">
+            <div class="practice-top">
+              <span class="practice-tag">✏️ Interactive Practice Workout</span>
+              <button class="reveal-btn" onclick="toggleSolution('sol-7', this)">👁️ Reveal C1 Model</button>
+            </div>
+            <div class="practice-prompt">
+              Rewrite using a <strong>Wh- Cleft sentence</strong>: <em>"The high cost of housing causes severe financial strain for young urban transplants."</em>
+            </div>
+            <div class="practice-solution" id="sol-7" style="display:none;">
+              <div class="box-after">
+                ✓ <strong>Model:</strong> "<strong>What causes severe financial strain for young urban transplants is</strong> the exorbitant cost of housing."
+              </div>
+              <div class="solution-note"><strong>Alternative It-Cleft:</strong> "<strong>It is the exorbitant cost of housing that</strong> causes severe financial strain for young urban transplants."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 9: C1 Structure 3: Negative Inversion -->
+      <div class="slide" id="slide-9">
+        <div>
+          <div class="slide-tag">🛠️ C1 Structural Tool 03 &bull; Negative Inversion</div>
+          <h2 class="slide-title">Negative Inversion: <em>"Not only [Auxiliary] + [Subject]..."</em></h2>
+          
+          <!-- Formula Box -->
+          <div class="formula-box">
+            <span class="formula-badge">Inversion Formula</span>
+            <span class="formula-text">Not only + [can / does / is] + [Subject] + [Verb]..., but [Subject] also + [Verb]...</span>
+          </div>
+
+          <p class="slide-desc" style="margin-bottom:0.75rem;">
+            <strong>The Trick:</strong> Invert the subject and auxiliary verb just like forming a question (<em>does it, can they, is there</em>).
+          </p>
+
+          <div class="grid-2col" style="margin-bottom: 0.75rem;">
+            <div class="mini-card">
+              <div class="card-title-sm" style="color: var(--rose-text);">Repetitive "They Can Also" (Band 7.0)</div>
+              <div class="box-before">"They can meet peers from diverse backgrounds. There are also more career opportunities in cities."</div>
+            </div>
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">C1 Correlative Inversion (Band 7.5+)</div>
+              <div class="box-after">"<strong>Not only can students interact</strong> with diverse peers, <strong>but they also gain access</strong> to specialized career opportunities."</div>
+            </div>
+          </div>
+
+          <!-- Practice Area -->
+          <div class="practice-box">
+            <div class="practice-top">
+              <span class="practice-tag">✏️ Interactive Practice Workout</span>
+              <button class="reveal-btn" onclick="toggleSolution('sol-8', this)">👁️ Reveal C1 Model</button>
+            </div>
+            <div class="practice-prompt">
+              Combine using <strong>Not only... but also...</strong>: <em>"University education broadens students' perspectives, and it also boosts their earning potential."</em>
+            </div>
+            <div class="practice-solution" id="sol-8" style="display:none;">
+              <div class="box-after">
+                ✓ <strong>Model:</strong> "<strong>Not only does higher education broaden</strong> students' perspectives, <strong>but it also significantly enhances</strong> their earning potential."
+              </div>
+              <div class="solution-note"><strong>Notice the grammar:</strong> <em>"Not only does higher education broaden..."</em> (Inverted with auxiliary <em>does</em> + base verb <em>broaden</em>).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 10: C1 Structure 4: Participle Clauses -->
+      <div class="slide" id="slide-10">
+        <div>
+          <div class="slide-tag">🛠️ C1 Structural Tool 04 &bull; Non-Finite Clauses</div>
+          <h2 class="slide-title">Participle Clauses: Present (-ing) & Perfect Participles</h2>
+          
+          <div class="grid-2col" style="margin-bottom:0.75rem;">
+            <!-- Formula A -->
+            <div>
+              <div class="formula-box">
+                <span class="formula-badge">Present Participle</span>
+                <span class="formula-text">[Main Clause], + [Verb-ing] + [Result]</span>
+              </div>
+              <div class="box-after">
+                "Regional businesses are left with a depleted talent pool, <strong>making it harder to attract investment</strong>."
+              </div>
+            </div>
+
+            <!-- Formula B -->
+            <div>
+              <div class="formula-box">
+                <span class="formula-badge">Perfect Participle</span>
+                <span class="formula-text">Having + [Past Participle], [Subject] + [Verb]</span>
+              </div>
+              <div class="box-after">
+                "<strong>Having gained valuable experience in major cities</strong>, individuals can return to small towns later in life."
+              </div>
+            </div>
+          </div>
+
+          <!-- Practice Area -->
+          <div class="practice-box">
+            <div class="practice-top">
+              <span class="practice-tag">✏️ Interactive Practice Workout</span>
+              <button class="reveal-btn" onclick="toggleSolution('sol-9', this)">👁️ Reveal C1 Model</button>
+            </div>
+            <div class="practice-prompt">
+              Rewrite with a <strong>Perfect Participle</strong>: <em>"Graduates accumulate wealth and skills in the capital, and then they often reinvest this capital back in their hometowns."</em>
+            </div>
+            <div class="practice-solution" id="sol-9" style="display:none;">
+              <div class="box-after">
+                ✓ <strong>Model:</strong> "<strong>Having accumulated valuable skills and capital in the capital</strong>, graduates frequently reinvest these resources back into their hometowns."
+              </div>
+              <div class="solution-note"><strong>Why examiners reward it:</strong> Eliminates clunky <em>"and then they..."</em> coordination and demonstrates C1 non-finite subordination.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 11: The Master Concession Thesis & Outweigh Formula -->
+      <div class="slide" id="slide-11">
+        <div>
+          <div class="slide-tag">🎯 Task Response Engine &bull; Paragraph 1 & 4</div>
+          <h2 class="slide-title">The Master Concession Thesis & Return Migration Clincher</h2>
+          
+          <div class="formula-box" style="margin-bottom:0.75rem;">
+            <span class="formula-badge">Outweigh Formula</span>
+            <span class="formula-text">While it is true that [Concession], I firmly believe that [Benefits] comfortably outweigh [Drawbacks].</span>
+          </div>
+
+          <div class="grid-2col" style="margin-bottom:0.75rem;">
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">Introductory Thesis (Paragraph 1)</div>
+              <div class="box-after">
+                "<strong>While this demographic shift creates undeniable challenges for provincial communities</strong>, I firmly believe that the long-term developmental advantages substantially outweigh the disadvantages."
+              </div>
+            </div>
+
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">Conclusion Clincher (Paragraph 4)</div>
+              <div class="box-after">
+                "Crucially, moving away does not mean a permanent departure; <strong>having gained valuable experience in a major city, individuals can always return</strong> to smaller towns later in life."
+              </div>
+            </div>
+          </div>
+
+          <!-- Practice Area -->
+          <div class="practice-box">
+            <div class="practice-top">
+              <span class="practice-tag">✏️ Interactive Practice Workout</span>
+              <button class="reveal-btn" onclick="toggleSolution('sol-10', this)">👁️ Reveal Outweigh Thesis</button>
+            </div>
+            <div class="practice-prompt">
+              Draft a concession thesis for: <em>"Do the advantages of studying abroad outweigh the disadvantages?"</em>
+            </div>
+            <div class="practice-solution" id="sol-10" style="display:none;">
+              <div class="box-after">
+                ✓ <strong>Model:</strong> "<strong>While studying in a foreign country undoubtedly incurs significant financial and emotional costs</strong>, I firmly believe that the cultural exposure and career dividends comfortably outweigh these drawbacks."
+              </div>
+              <div class="solution-note"><strong>The Cambridge Golden Rule:</strong> Concede the real drawback first, then state your decisive outweigh verdict.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 12: Academic Reading: The 17-20-23 Pacing Engine & Researcher Paradox -->
+      <div class="slide" id="slide-12">
+        <div>
+          <div class="slide-tag">📖 Receptive Skills Masterclass &bull; Pacing &amp; Architecture</div>
+          <h2 class="slide-title">Academic Reading: The 17–20–23 Pacing Protocol</h2>
+          <p class="slide-desc">
+            As an AI researcher, you read and synthesize complex literature daily. However, IELTS Academic Reading tests <strong>forensic literal accuracy</strong> under strict time pressure—not abstract extrapolation.
+          </p>
+
+          <div class="grid-3col" style="margin-bottom: 0.85rem;">
+            <div class="mini-card accent">
+              <div class="card-title-sm" style="color: var(--navy-800);">⏱️ Passage 1 · 17 Mins</div>
+              <div style="font-size: 0.85rem; color: var(--ink-700); line-height: 1.55;">
+                <strong>Descriptive / Factual.</strong> Target: 13/13 marks. Scan rapidly, bank 3 minutes, and never linger on ambiguous vocabulary.
+              </div>
+            </div>
+
+            <div class="mini-card accent">
+              <div class="card-title-sm" style="color: var(--navy-800);">⏱️ Passage 2 · 20 Mins</div>
+              <div style="font-size: 0.85rem; color: var(--ink-700); line-height: 1.55;">
+                <strong>Explanatory / Analytical.</strong> Target: 11–12 marks. Track topic sentences and maintain steady momentum without second-guessing.
+              </div>
+            </div>
+
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">⏱️ Passage 3 · 23 Mins</div>
+              <div style="font-size: 0.85rem; color: var(--ink-700); line-height: 1.55;">
+                <strong>Discursive / Theoretical.</strong> Target: 10–11 marks. The deciding battleground for Band 7.5+. Requires deep argument mapping.
+              </div>
+            </div>
+          </div>
+
+          <div class="mini-card crimson" style="border-width: 1.5px; padding: 0.85rem 1.15rem; margin-top: 0.5rem;">
+            <div style="font-size: 0.88rem; color: var(--rose-text); line-height: 1.5;">
+              ⚠️ <strong>The Fatal Transfer Trap:</strong> Unlike IELTS Listening, <strong>there is NO 10-minute answer transfer window at the end</strong>. Enter every single answer directly into your answer sheet as you complete each passage!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 13: Academic Reading: The Forensic Literal Standard (T/F/NG & Y/N/NG) -->
+      <div class="slide" id="slide-13">
+        <div>
+          <div class="slide-tag">🔍 Question Archetype 01 &bull; Evidence vs. Inference</div>
+          <h2 class="slide-title">The Forensic Literal Standard: True, False, Not Given</h2>
+          <p class="slide-desc">
+            The single most common mark-drain for academic candidates is <strong>the over-inference trap</strong>. Cambridge requires literal proof:
+          </p>
+
+          <div class="grid-3col" style="margin-bottom: 0.75rem;">
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">✓ TRUE / YES</div>
+              <div style="font-size: 0.84rem; color: var(--ink-700); line-height: 1.5;">
+                The text <strong>explicitly confirms</strong> the statement using exact synonyms or direct paraphrase.
+              </div>
+            </div>
+
+            <div class="mini-card crimson">
+              <div class="card-title-sm" style="color: var(--rose-text);">✗ FALSE / NO</div>
+              <div style="font-size: 0.84rem; color: var(--ink-700); line-height: 1.5;">
+                The text <strong>directly contradicts</strong> the statement. You can pinpoint forensic proof of the opposite.
+              </div>
+            </div>
+
+            <div class="mini-card amber">
+              <div class="card-title-sm" style="color: var(--amber-text);">❓ NOT GIVEN</div>
+              <div style="font-size: 0.84rem; color: var(--ink-700); line-height: 1.5;">
+                The statement may be scientifically plausible or true in reality, but <strong>the author never confirmed or denied the relationship</strong>.
+              </div>
+            </div>
+          </div>
+
+          <!-- Practice Area -->
+          <div class="practice-box" style="margin-top: 0.5rem;">
+            <div class="practice-top">
+              <span class="practice-tag">✏️ Interactive Forensic Drill</span>
+              <button class="reveal-btn" onclick="toggleSolution('sol-tfng', this)">👁️ Reveal Forensic Verdicts</button>
+            </div>
+            <div class="practice-prompt" style="font-size: 0.86rem; line-height: 1.5;">
+              <strong>Passage Text:</strong> <em>"While early psychologists assumed neural plasticity ceased after adolescence, recent neuroimaging reveals that adult brains retain remarkable synaptic reorganisation, particularly when immersed in novel linguistic systems."</em><br><br>
+              <strong>Statement 1:</strong> Adults acquire second languages with greater difficulty than adolescents do.<br>
+              <strong>Statement 2:</strong> Adult synaptic reorganisation only occurs during foreign language acquisition.
+            </div>
+            <div class="practice-solution" id="sol-tfng" style="display:none;">
+              <div class="box-after" style="margin-bottom: 0.4rem;">
+                ✓ <strong>Statement 1 &rarr; NOT GIVEN:</strong> While logically plausible in real life, the passage never compares the <em>relative difficulty</em> between adults and adolescents.
+              </div>
+              <div class="box-after">
+                ✓ <strong>Statement 2 &rarr; FALSE:</strong> The text states <em>"particularly when"</em>, which directly contradicts the limiting absolute <em>"only occurs"</em>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 14: Academic Reading: Matching Headings & Lexical Decoys -->
+      <div class="slide" id="slide-14">
+        <div>
+          <div class="slide-tag">🎯 Question Archetype 02 &bull; Macro-Architecture</div>
+          <h2 class="slide-title">Matching Headings: Evading the Lexical Decoys</h2>
+          <p class="slide-desc">
+            Test designers deliberately plant exact keywords from incorrect headings into body sentences to punish superficial scanners.
+          </p>
+
+          <div class="grid-2col" style="margin-bottom: 0.75rem;">
+            <div class="mini-card accent">
+              <div class="card-title-sm" style="color: var(--navy-800);">🪤 The Lexical Decoy Trap</div>
+              <div style="font-size: 0.85rem; color: var(--ink-700); line-height: 1.55;">
+                If a heading contains an identical word from sentence 2 or 3 of a paragraph, <strong>it is usually a trap</strong>. Headings reflect the <em>entire paragraph's thesis</em>, not a single supporting example.
+              </div>
+            </div>
+
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">🔄 The Rhetorical Pivot Rule</div>
+              <div style="font-size: 0.85rem; color: var(--ink-700); line-height: 1.55;">
+                Always hunt for discourse turn-points: <em>"However," "In reality," "Despite early expectations..."</em> Over 70% of matching headings correspond to the text <strong>immediately following the pivot</strong>.
+              </div>
+            </div>
+          </div>
+
+          <!-- Practice Area -->
+          <div class="practice-box" style="margin-top: 0.5rem;">
+            <div class="practice-top">
+              <span class="practice-tag">✏️ Interactive Decoy Workout</span>
+              <button class="reveal-btn" onclick="toggleSolution('sol-head', this)">👁️ Reveal Correct Heading</button>
+            </div>
+            <div class="practice-prompt" style="font-size: 0.86rem; line-height: 1.5;">
+              <strong>Paragraph:</strong> <em>"Municipal councils invested millions installing high-precision acoustic sensors across traffic intersections. Engineers anticipated dramatic reductions in road accidents. However, subsequent accident records show that without dedicated bus corridors, sensors merely recorded collisions without mitigating vehicular risk."</em><br><br>
+              <strong>Candidate Headings:</strong><br>
+              (i) The financial expense of intersection sensors<br>
+              (ii) Why electronic surveillance failed to improve transit safety<br>
+              (iii) Emerging sensor innovations in European transport
+            </div>
+            <div class="practice-solution" id="sol-head" style="display:none;">
+              <div class="box-after">
+                ✓ <strong>Correct Heading: (ii) Why electronic surveillance failed to improve transit safety.</strong><br>
+                <span class="solution-note" style="color: var(--ink-700);"><strong>Decoy Analysis:</strong> Heading (i) seized upon the word "millions" in sentence 1 (illustrative cost detail, not main thesis). Heading (iii) is an unsupported speculation. The pivot <em>"However..."</em> carries the entire evaluative weight.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 15: Receptive Skills Benchmark & Live Band Tracker -->
+      <div class="slide" id="slide-15">
+        <div>
+          <div class="slide-tag">📊 Receptive Skills Target &bull; Band Matrix</div>
+          <h2 class="slide-title">Academic Reading &amp; Listening: Securing Your 7.5 Cushion</h2>
+          <p class="slide-desc">
+            Raw mark conversion benchmarks for Cambridge IELTS Academic Reading (Raw score out of 40):
+          </p>
+
+          <div class="grid-3col" style="margin-bottom: 0.85rem;">
+            <div class="mini-card accent">
+              <div class="card-title-sm" style="color: var(--navy-800);">Band 7.0 (Offer Baseline)</div>
+              <div style="font-size: 1.45rem; font-weight: 900; font-family: 'Consolas', monospace; color: var(--navy-900); margin: 0.35rem 0;">30 – 32 / 40</div>
+              <div style="font-size: 0.8rem; color: var(--ink-700);">75% raw score. Sufficient for conditional university matriculation.</div>
+            </div>
+
+            <div class="mini-card emerald">
+              <div class="card-title-sm" style="color: var(--emerald-text);">Band 7.5 (Target Cushion)</div>
+              <div style="font-size: 1.45rem; font-weight: 900; font-family: 'Consolas', monospace; color: var(--emerald-text); margin: 0.35rem 0;">33 – 34 / 40</div>
+              <div style="font-size: 0.8rem; color: var(--ink-700);">82.5% raw score. Gareth's recommended safe, stress-free margin.</div>
+            </div>
+
+            <div class="mini-card amber">
+              <div class="card-title-sm" style="color: var(--amber-text);">Band 8.0 (Mastery Margin)</div>
+              <div style="font-size: 1.45rem; font-weight: 900; font-family: 'Consolas', monospace; color: var(--amber-text); margin: 0.35rem 0;">35 – 36 / 40</div>
+              <div style="font-size: 0.8rem; color: var(--ink-700);">87.5% raw score. Elite research &amp; fellowship grade.</div>
+            </div>
+          </div>
+
+          <!-- Tracker Launch Banner -->
+          <div class="mini-card emerald" style="padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; border-width: 2px;">
+            <div>
+              <div style="font-weight: 800; font-size: 1rem; color: var(--navy-900); margin-bottom: 0.2rem;">
+                🚀 Your Living Reading &amp; Listening Band Tracker
+              </div>
+              <div style="font-size: 0.85rem; color: var(--ink-700);">
+                Interactive score calculator, question breakdown, and Cambridge practice test logging portal.
+              </div>
+            </div>
+            <a href="11-IELTS-Reading-Listening-Band-Tracker.html" target="_blank" style="background: var(--navy-800); color: #ffffff; text-decoration: none; font-size: 0.82rem; font-weight: 800; padding: 0.55rem 1.15rem; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.4rem;">
+              📈 Open Band Tracker &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- SLIDE 16: Speaking Part 3 Laboratory (A.R.E.A.) -->
+      <div class="slide" id="slide-16">
+        <div>
+          <div class="slide-tag">🎙️ High-Energy Finish &bull; Speaking Part 3 Booster</div>
+          <h2 class="slide-title">Speaking Part 3 Challenge: The A.R.E.A. Framework</h2>
+          <p class="slide-desc">Let's translate today's C1 structures into instant spoken fluency:</p>
+
+          <div class="mini-card accent" style="margin-bottom: 1rem;">
+            <div style="font-size: 1.05rem; font-weight: 700; color: var(--navy-900);">
+              Examiner Question: <em>"Do you think governments should provide financial subsidies to encourage young graduates to live and work in rural areas?"</em>
+            </div>
+          </div>
+
+          <div class="grid-4col">
+            <div class="speaking-card active" onclick="selectSpeakingCard(this)">
+              <div style="font-weight: 800; color: var(--navy-700);">A &bull; Answer</div>
+              <div style="font-size: 0.8rem; color: var(--ink-700); margin-top:0.3rem;">Direct stance using passive reporting: <em>"It is widely argued that..."</em></div>
+            </div>
+            <div class="speaking-card" onclick="selectSpeakingCard(this)">
+              <div style="font-weight: 800; color: var(--navy-700);">R &bull; Reason</div>
+              <div style="font-size: 0.8rem; color: var(--ink-700); margin-top:0.3rem;">Cause with a cleft: <em>"What smaller towns lack is..."</em></div>
+            </div>
+            <div class="speaking-card" onclick="selectSpeakingCard(this)">
+              <div style="font-weight: 800; color: var(--emerald-text);">E &bull; Example</div>
+              <div style="font-size: 0.8rem; color: var(--ink-700); margin-top:0.3rem;">Illustration with an inversion: <em>"Not only can subsidies attract doctors..."</em></div>
+            </div>
+            <div class="speaking-card" onclick="selectSpeakingCard(this)">
+              <div style="font-weight: 800; color: var(--amber-text);">A &bull; Alternative</div>
+              <div style="font-size: 0.8rem; color: var(--ink-700); margin-top:0.3rem;">Counterweight: <em>"However, money alone is rarely sufficient..."</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- SLIDE 17: Assignment & Next Steps -->
+      <div class="slide" id="slide-17">
+        <div>
+          <div class="slide-tag">📝 Continuous Assessment &bull; Next Steps</div>
+          <h2 class="slide-title">Mission Briefing: Writing Task 2 Homework &amp; Reading Mock</h2>
+          <p class="slide-desc">Locking in your guaranteed Band 7.5+ safety cushion across both active and receptive skills:</p>
+
+          <div class="grid-2col" style="margin-bottom: 0.75rem;">
+            <!-- Left: Non-Negotiables & Rubric Targets -->
+            <div class="mini-card emerald" style="display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div class="card-title-sm" style="color: var(--emerald-text); margin-bottom: 0.65rem;">
+                  <span>🎯 The 4 Non-Negotiable Guardrails</span>
+                </div>
+                <ul style="font-size: 0.86rem; color: var(--ink-900); line-height: 1.75; list-style: none;">
+                  <li>✓ <strong>Word Target:</strong> 260 – 290 words max (hard ceiling: 300 words).</li>
+                  <li>✓ <strong>Register Discipline:</strong> Zero contractions (spell out <em>does not</em>, <em>cannot</em>, <em>will not</em>).</li>
+                  <li>✓ <strong>Mandatory C1 Structural Levers:</strong>
+                    <div style="padding-left: 1.25rem; font-size: 0.82rem; color: var(--ink-700); margin-top: 0.2rem;">
+                      &bull; <strong>1 Inversion:</strong> <em>"Not only... but [also]..."</em><br>
+                      &bull; <strong>1 Cleft Sentence:</strong> <em>"What makes... is..."</em> or <em>"It is... that..."</em><br>
+                      &bull; <strong>1 Participle Clause:</strong> <em>"..., thereby [fostering]..."</em> or <em>"Having [achieved]..."</em>
+                    </div>
+                  </li>
+                  <li>✓ <strong>Receptive Homework:</strong> 1 timed Cambridge Academic Reading test using the 17–20–23 pacing rule; log raw score in tracker.</li>
+                </ul>
+              </div>
+              <div style="background: #ffffff; border: 1px solid #a7f3d0; border-radius: 6px; padding: 0.5rem 0.75rem; margin-top: 0.75rem; font-size: 0.8rem; color: var(--emerald-text); font-weight: 600;">
+                💡 <em>Rule of Thumb:</em> Write between 260–290 words with high syntactic density rather than 400+ words of conversational narrative.
+              </div>
+            </div>
+
+            <!-- Right: The Two Task 2 Writing Homework Options -->
+            <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+              <!-- Task 2 Option A -->
+              <div class="mini-card accent" style="padding: 0.85rem 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <span class="hud-badge" style="background: var(--navy-800); color: #ffffff; font-size: 0.68rem; padding: 0.2rem 0.55rem;">Writing Task 2 &bull; Option A</span>
+                  <span style="font-size: 0.72rem; font-weight: 700; color: var(--navy-700); text-transform: uppercase;">Discuss Both Views</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--ink-900); line-height: 1.5; font-style: italic; background: #ffffff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0.55rem 0.75rem; margin-top: 0.35rem;">
+                  "Some people believe that university education should be free for all students, while others argue that individuals should pay for their own tertiary studies.<br><strong>Discuss both views and give your own opinion.</strong>"
+                </div>
+              </div>
+
+              <!-- Task 2 Option B -->
+              <div class="mini-card accent" style="padding: 0.85rem 1rem; border-color: var(--navy-700); background: #f8faff;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <span class="hud-badge" style="background: var(--navy-700); color: #ffffff; font-size: 0.68rem; padding: 0.2rem 0.55rem;">Writing Task 2 &bull; Option B</span>
+                  <span style="font-size: 0.72rem; font-weight: 700; color: var(--navy-800); text-transform: uppercase;">Outweigh / Impact</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--ink-900); line-height: 1.5; font-style: italic; background: #ffffff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0.55rem 0.75rem; margin-top: 0.35rem;">
+                  "In many parts of the world, automated systems and artificial intelligence are rapidly replacing human workers across various industries.<br><strong>Do the advantages of this trend outweigh the disadvantages?</strong>"
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Submission Anchor -->
+          <div class="mini-card" style="border: 1.5px solid #bfdbfe; background: var(--navy-50); padding: 0.65rem 1rem; margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.84rem; color: var(--navy-900);">
+              📬 <strong>Homework Protocol:</strong> Choose either <strong>Option A</strong> or <strong>Option B</strong> for your core submission. Complete your 4-Box skeleton first, then draft in under 40 minutes.
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem; flex-shrink: 0;">
+              <a href="10-Lesson-2-Homework-Assignment.html" target="_blank" style="background: var(--navy-800); color: #ffffff; text-decoration: none; font-size: 0.76rem; font-weight: 800; padding: 0.35rem 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.35rem; white-space: nowrap;">📝 Open Homework Page &rarr;</a>
+              <span style="background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); font-size: 0.72rem; font-weight: 800; padding: 0.3rem 0.65rem; border-radius: 6px; white-space: nowrap;">Due 24h Before Lesson 3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Navigation Bar -->
+      <div class="nav-bar">
+        <div class="nav-counter">
+          Slide <span id="current-slide-num" style="color: var(--accent); font-weight:800;">1</span> of 17
+        </div>
+        <div class="nav-buttons">
+          <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled>&larr; Previous</button>
+          <button class="nav-btn" id="next-btn" onclick="nextSlide()">Next &rarr;</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 17;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(`slide-${n}`);
+      if (target) {
+        target.classList.add('active');
+        currentSlide = n;
+        document.getElementById('current-slide-num').textContent = n;
+        document.getElementById('prev-btn').disabled = (n === 1);
+        document.getElementById('next-btn').disabled = (n === totalSlides);
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) showSlide(currentSlide - 1);
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    // Interactive Part 2 Mini Timer
+    let p2Interval = null;
+    let p2Remaining = 60;
+
+    function startP2Timer(seconds, label) {
+      if (p2Interval) clearInterval(p2Interval);
+      p2Remaining = seconds;
+      document.getElementById('p2-timer-label').textContent = label;
+      document.getElementById('p2-timer-digits').textContent = formatTime(p2Remaining);
+      document.getElementById('p2-timer-digits').style.color = (seconds === 60) ? 'var(--amber-text)' : 'var(--navy-700)';
+
+      p2Interval = setInterval(() => {
+        p2Remaining--;
+        document.getElementById('p2-timer-digits').textContent = formatTime(p2Remaining);
+        if (p2Remaining <= 0) {
+          clearInterval(p2Interval);
+          p2Interval = null;
+          document.getElementById('p2-timer-digits').textContent = "Time's Up!";
+          document.getElementById('p2-timer-digits').style.color = '#ef4444';
+        }
+      }, 1000);
+    }
+
+    function stopP2Timer() {
+      if (p2Interval) {
+        clearInterval(p2Interval);
+        p2Interval = null;
+      }
+    }
+
+    function toggleSolution(id, btn) {
+      const sol = document.getElementById(id);
+      if (sol) {
+        if (sol.style.display === 'none') {
+          sol.style.display = 'block';
+          btn.textContent = '🙈 Hide Model';
+          btn.style.background = 'var(--navy-800)';
+          btn.style.color = '#ffffff';
+        } else {
+          sol.style.display = 'none';
+          btn.textContent = '👁️ Reveal C1 Model';
+          btn.style.background = '#ffffff';
+          btn.style.color = 'var(--navy-800)';
+        }
+      }
+    }
+
+    // Speaking card selector
+    function selectSpeakingCard(card) {
+      document.querySelectorAll('.speaking-card').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+    }
+
+    // Interactive 60-minute Timer
+    let timerInterval = null;
+    let secondsElapsed = 0;
+    const totalSeconds = 60 * 60;
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function updateTimerPhase() {
+      const m = Math.floor(secondsElapsed / 60);
+      const phaseElem = document.getElementById('timer-phase');
+      if (m < 10) {
+        phaseElem.textContent = 'Stage 1: Speaking Part 2 Warm-Up (0–10m)';
+      } else if (m < 18) {
+        phaseElem.textContent = 'Stage 2: Essay 2 Feedback & 7.0 Baseline Validation (10–18m)';
+      } else if (m < 32) {
+        phaseElem.textContent = 'Stage 3: C1 Sentence Architecture Workouts (18–32m)';
+      } else if (m < 46) {
+        phaseElem.textContent = 'Stage 4: Academic Reading Masterclass & Protocols (32–46m)';
+      } else {
+        phaseElem.textContent = 'Stage 5: Speaking Part 3 Booster & Homework Mission (46–60m)';
+      }
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('timer-toggle-btn');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btn.textContent = 'Resume';
+      } else {
+        btn.textContent = 'Pause';
+        timerInterval = setInterval(() => {
+          secondsElapsed++;
+          document.getElementById('timer-display').textContent = formatTime(secondsElapsed);
+          updateTimerPhase();
+          if (secondsElapsed >= totalSeconds) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            btn.textContent = 'Finished';
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      secondsElapsed = 0;
+      document.getElementById('timer-display').textContent = '00:00';
+      document.getElementById('timer-toggle-btn').textContent = 'Start';
+      document.getElementById('timer-phase').textContent = 'Stage 1: Speaking Part 2 Warm-Up (0–10m)';
+    }
+  </script>
+</body>
+</html>

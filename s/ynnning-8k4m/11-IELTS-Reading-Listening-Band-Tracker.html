@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="paper">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IELTS Reading & Listening Band Tracker · Ynnning · GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="paper"] {
+      --bg-base: #f5f3ef;
+      --bg-mesh: radial-gradient(circle at 12% 0%, rgba(37, 99, 235, 0.07) 0%, transparent 48%),
+                 radial-gradient(circle at 88% 12%, rgba(5, 150, 105, 0.06) 0%, transparent 45%);
+      --surface-card: #ffffff;
+      --surface-subtle: #faf8f5;
+      --surface-elevated: rgba(255, 255, 255, 0.94);
+      --navy-900: #0f2557;
+      --navy-800: #16377d;
+      --navy-700: #1d4ed8;
+      --navy-100: #dbeafe;
+      --navy-50: #f0f6ff;
+      --ink-950: #0c1222;
+      --ink-800: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --ink-400: #94a3b8;
+      --border-hairline: rgba(15, 23, 42, 0.09);
+      --border-strong: rgba(15, 23, 42, 0.16);
+      --emerald: #059669;
+      --emerald-soft: rgba(5, 150, 105, 0.1);
+      --emerald-border: #10b981;
+      --amber: #d97706;
+      --amber-soft: rgba(217, 119, 6, 0.1);
+      --amber-border: #f59e0b;
+      --purple: #7c3aed;
+      --purple-soft: rgba(124, 58, 237, 0.09);
+      --shadow-card: 0 10px 28px -6px rgba(12, 18, 34, 0.06), 0 2px 6px -1px rgba(12, 18, 34, 0.03);
+      --shadow-hover: 0 18px 36px -8px rgba(37, 99, 235, 0.12), 0 4px 12px -2px rgba(12, 18, 34, 0.04);
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #090d16;
+      --bg-mesh: radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.11) 0%, transparent 48%),
+                 radial-gradient(circle at 88% 12%, rgba(52, 211, 153, 0.08) 0%, transparent 45%);
+      --surface-card: #111827;
+      --surface-subtle: #182235;
+      --surface-elevated: rgba(17, 24, 39, 0.94);
+      --navy-900: #f8fafc;
+      --navy-800: #93c5fd;
+      --navy-700: #60a5fa;
+      --navy-100: #1e3a8a;
+      --navy-50: #172554;
+      --ink-950: #f8fafc;
+      --ink-800: #e2e8f0;
+      --ink-700: #cbd5e1;
+      --ink-500: #94a3b8;
+      --ink-400: #64748b;
+      --border-hairline: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --shadow-card: 0 12px 30px -6px rgba(0, 0, 0, 0.45);
+      --shadow-hover: 0 20px 40px -8px rgba(0, 0, 0, 0.65);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-base);
+      background-image: var(--bg-mesh);
+      background-attachment: fixed;
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 72px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface-elevated);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 12px 24px;
+    }
+    .top-nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hub-link {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--navy-700);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hub-link:hover { color: var(--navy-800); text-decoration: underline; }
+
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .btn-nav {
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-800);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+    .btn-nav:hover { border-color: var(--navy-700); color: var(--navy-700); }
+
+    .container { max-width: 1120px; margin: 0 auto; padding: 24px 20px 0; }
+
+    /* Header */
+    header.portal-hero {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-top: 4px solid var(--navy-700);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .hero-badge-row { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .badge-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .badge-blue { background: var(--navy-50); color: var(--navy-700); border: 1px solid var(--navy-100); }
+    .badge-emerald { background: var(--emerald-soft); color: var(--emerald); border: 1px solid var(--emerald-border); }
+    .badge-amber { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-border); }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      line-height: 1.25;
+    }
+    .hero-tagline { color: var(--ink-500); font-size: 0.92rem; margin-top: 4px; }
+    .meta-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 10px 16px;
+      text-align: right;
+    }
+    .meta-box .label { font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: var(--ink-500); letter-spacing: 0.05em; }
+    .meta-box .val { font-size: 1.12rem; font-weight: 800; color: var(--navy-900); }
+
+    /* Section Header */
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin: 28px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      color: var(--ink-950);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-tag { font-size: 0.78rem; font-weight: 600; color: var(--ink-500); }
+
+    /* Converter Card */
+    .converter-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 24px 28px;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 24px;
+    }
+
+    .converter-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+    @media (min-width: 800px) {
+      .converter-grid {
+        grid-template-columns: 1.2fr 1fr;
+      }
+    }
+
+    .module-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .module-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-subtle);
+      color: var(--ink-700);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .module-btn.active {
+      background: var(--navy-700);
+      color: #ffffff;
+      border-color: var(--navy-700);
+    }
+
+    .score-input-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+    }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 10px;
+    }
+    .score-slider {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--border-strong);
+      outline: none;
+      accent-color: var(--navy-700);
+      cursor: pointer;
+    }
+    .raw-num-input {
+      width: 72px;
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-align: center;
+      color: var(--navy-900);
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 6px;
+    }
+
+    /* Result Display */
+    .band-result-box {
+      background: linear-gradient(135deg, var(--navy-50) 0%, #ffffff 100%);
+      border: 2px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .band-display-big {
+      font-family: var(--font-display);
+      font-size: 3.4rem;
+      font-weight: 800;
+      color: var(--navy-900);
+      line-height: 1;
+      margin: 6px 0;
+    }
+    .band-cefr-pill {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    .target-status-banner {
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 8px;
+      width: 100%;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+    .status-safe { background: var(--emerald-soft); color: var(--emerald); border: 1px solid var(--emerald-border); }
+    .status-baseline { background: var(--navy-50); color: var(--navy-800); border: 1px solid var(--navy-100); }
+    .status-warning { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-border); }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 16px 20px;
+      box-shadow: var(--shadow-card);
+    }
+    .stat-label { font-size: 0.74rem; text-transform: uppercase; font-weight: 800; color: var(--ink-500); letter-spacing: 0.05em; }
+    .stat-val { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 800; color: var(--ink-950); margin-top: 4px; }
+    .stat-sub { font-size: 0.76rem; color: var(--ink-500); margin-top: 2px; }
+
+    /* Log Exam Form */
+    .log-form-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 22px 26px;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 24px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+      color: var(--ink-700);
+    }
+    .form-control {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 7px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      background: var(--surface-subtle);
+      color: var(--ink-950);
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--navy-700);
+      background: var(--surface-card);
+    }
+
+    /* History Table */
+    .table-container {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 24px;
+    }
+    table.score-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.86rem;
+    }
+    table.score-table th {
+      background: var(--surface-subtle);
+      color: var(--ink-700);
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+    table.score-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-hairline);
+      color: var(--ink-800);
+    }
+    table.score-table tr:hover {
+      background: var(--surface-subtle);
+    }
+    .band-badge {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .badge-high { background: var(--emerald-soft); color: var(--emerald); border: 1px solid var(--emerald-border); }
+    .badge-mid { background: var(--navy-50); color: var(--navy-800); border: 1px solid #bfdbfe; }
+    .badge-low { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-border); }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      color: var(--ink-400);
+      cursor: pointer;
+      font-size: 1.05rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .btn-delete:hover { color: #e11d48; background: rgba(225, 29, 72, 0.08); }
+
+    /* Scale Reference Matrix (Expandable) */
+    .matrix-toggle-btn {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--ink-700);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .matrix-toggle-btn:hover { color: var(--navy-700); border-color: var(--navy-700); }
+
+    .scale-matrix {
+      display: none;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-card);
+    }
+    .matrix-col {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .matrix-col h4 {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      color: var(--navy-900);
+      border-bottom: 1px solid var(--border-hairline);
+      padding-bottom: 4px;
+    }
+    .matrix-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      padding: 3px 0;
+      border-bottom: 1px dashed var(--border-hairline);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--ink-500);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-hairline);
+      padding-top: 24px;
+      margin-top: 36px;
+    }
+
+    @media print {
+      body { background: white !important; color: black !important; padding: 0 !important; }
+      .top-nav, .log-form-card, .matrix-toggle-btn, .btn-delete, #theme-btn { display: none !important; }
+      .converter-card, .table-container, .stat-card { border: 1px solid #ccc !important; box-shadow: none !important; }
+      .scale-matrix { display: grid !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <a href="index.html" class="hub-link">&larr; Return to Ynnning's Student Portal</a>
+      <div class="nav-actions">
+        <button class="btn-nav" id="theme-btn" onclick="toggleTheme()">🌙 Theme</button>
+        <button class="btn-nav" onclick="window.print()">🖨️ Print / Save PDF</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Hero Header -->
+    <header class="portal-hero">
+  <meta name="robots" content="noindex, nofollow" />
+      <div>
+        <div class="hero-badge-row">
+          <span class="badge-pill badge-blue">GarethEnglish · Diagnostic Tools</span>
+          <span class="badge-pill badge-emerald">Academic Track</span>
+          <span class="badge-pill badge-amber">Offer Target: 7.5 Overall (Min 7.0)</span>
+        </div>
+        <h1 class="hero-title">IELTS Reading &amp; Listening Band Tracker</h1>
+        <p class="hero-tagline">Translate raw mock scores (/40) into official Cambridge IELTS bands and monitor your 7.5+ safety cushion.</p>
+      </div>
+      <div class="meta-box">
+        <div class="label">Candidate Baseline</div>
+        <div class="val">Band 7.0 Confirmed</div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: Interactive Raw-to-Band Instant Converter -->
+    <div class="section-head">
+      <h2>🧮 Interactive Raw Score to Band Converter</h2>
+      <span class="section-tag">Instant Cambridge Scale Algorithm</span>
+    </div>
+
+    <section class="converter-card">
+      <!-- Module Selector -->
+      <div class="module-selector">
+        <button class="module-btn active" id="mod-listening" onclick="setModule('listening')">🎧 Listening (Raw /40)</button>
+        <button class="module-btn" id="mod-reading-acad" onclick="setModule('reading-acad')">📖 Academic Reading (Raw /40)</button>
+        <button class="module-btn" id="mod-reading-gen" onclick="setModule('reading-gen')">📄 General Reading (Raw /40)</button>
+      </div>
+
+      <div class="converter-grid">
+        <!-- Left: Interactive Controls -->
+        <div>
+          <div class="score-input-box">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 700; font-size: 0.92rem; color: var(--navy-900);">Select or Enter Raw Correct Answers:</span>
+              <span style="font-size: 0.78rem; color: var(--ink-500); font-family: var(--font-mono);">Range: 0 – 40</span>
+            </div>
+            <div class="slider-row">
+              <input type="range" min="0" max="40" value="34" class="score-slider" id="score-slider" oninput="onSliderChange(this.value)">
+              <input type="number" min="0" max="40" value="34" class="raw-num-input" id="score-input" oninput="onInputChange(this.value)">
+            </div>
+          </div>
+
+          <div style="font-size: 0.85rem; color: var(--ink-700); line-height: 1.5; background: var(--surface-subtle); border: 1px solid var(--border-hairline); border-radius: 8px; padding: 12px 14px;">
+            ℹ️ <strong id="module-tip-title">Cambridge Listening Standard:</strong>
+            <span id="module-tip-text">To secure your unconditional offer baseline of Band 7.0, you need at least 30 correct answers. For Gareth's recommended Band 7.5+ safety cushion, aim for 32–34 correct answers.</span>
+          </div>
+
+          <div style="margin-top: 14px;">
+            <button class="matrix-toggle-btn" onclick="toggleMatrix()">📊 View Complete Cambridge Band Scale Matrix &#9662;</button>
+          </div>
+        </div>
+
+        <!-- Right: Real-Time Band Output -->
+        <div class="band-result-box">
+          <span style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--navy-800); letter-spacing: 0.08em;">Predicted Cambridge Band</span>
+          <div class="band-display-big" id="result-band">Band 7.5</div>
+          <div class="band-cefr-pill badge-mid" id="result-cefr">C1 · Good User</div>
+          <div style="font-size: 0.84rem; color: var(--ink-700); margin-bottom: 8px;" id="result-range">Score Range: <strong>32 – 34 / 40</strong></div>
+          <div class="target-status-banner status-safe" id="result-status">
+            🛡️ <strong>Band 7.5 Safety Cushion Achieved!</strong> Comfortably protects your university offer.
+          </div>
+        </div>
+      </div>
+
+      <!-- Expandable Cambridge Conversion Scale Matrix -->
+      <div class="scale-matrix" id="scale-matrix">
+        <div class="matrix-col">
+          <h4>🎧 Listening (All Candidates)</h4>
+          <div class="matrix-row"><span>Band 9.0 (Expert)</span><strong>39 – 40</strong></div>
+          <div class="matrix-row"><span>Band 8.5 (C2 Margin)</span><strong>37 – 38</strong></div>
+          <div class="matrix-row"><span>Band 8.0 (Very Good)</span><strong>35 – 36</strong></div>
+          <div class="matrix-row" style="background: rgba(16, 185, 129, 0.1); font-weight: 700;"><span>Band 7.5 (Target Cushion)</span><strong>32 – 34</strong></div>
+          <div class="matrix-row" style="background: rgba(37, 99, 235, 0.08); font-weight: 700;"><span>Band 7.0 (Offer Baseline)</span><strong>30 – 31</strong></div>
+          <div class="matrix-row"><span>Band 6.5 (Competent)</span><strong>26 – 29</strong></div>
+          <div class="matrix-row"><span>Band 6.0</span><strong>23 – 25</strong></div>
+          <div class="matrix-row"><span>Band 5.5</span><strong>18 – 22</strong></div>
+          <div class="matrix-row"><span>Band 5.0</span><strong>16 – 17</strong></div>
+        </div>
+
+        <div class="matrix-col">
+          <h4>📖 Academic Reading</h4>
+          <div class="matrix-row"><span>Band 9.0 (Expert)</span><strong>39 – 40</strong></div>
+          <div class="matrix-row"><span>Band 8.5 (C2 Margin)</span><strong>37 – 38</strong></div>
+          <div class="matrix-row"><span>Band 8.0 (Very Good)</span><strong>35 – 36</strong></div>
+          <div class="matrix-row" style="background: rgba(16, 185, 129, 0.1); font-weight: 700;"><span>Band 7.5 (Target Cushion)</span><strong>33 – 34</strong></div>
+          <div class="matrix-row" style="background: rgba(37, 99, 235, 0.08); font-weight: 700;"><span>Band 7.0 (Offer Baseline)</span><strong>30 – 32</strong></div>
+          <div class="matrix-row"><span>Band 6.5 (Competent)</span><strong>27 – 29</strong></div>
+          <div class="matrix-row"><span>Band 6.0</span><strong>23 – 26</strong></div>
+          <div class="matrix-row"><span>Band 5.5</span><strong>19 – 22</strong></div>
+          <div class="matrix-row"><span>Band 5.0</span><strong>15 – 18</strong></div>
+        </div>
+
+        <div class="matrix-col">
+          <h4>🎯 Ynnning's Strategy Rules</h4>
+          <p style="font-size: 0.78rem; color: var(--ink-700); line-height: 1.5; margin-bottom: 8px;">
+            &bull; <strong>Listening Section 3 & 4 Focus:</strong> Practice keyword signposting and anticipate distractors in multi-speaker dialogues.<br>
+            &bull; <strong>Academic Reading Passage 3:</strong> True/False/Not Given & Yes/No/Not Given require forensic evidence; don't extrapolate beyond the text.<br>
+            &bull; <strong>Pacing Protocol:</strong> 17m (P1), 20m (P2), 23m (P3).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: Analytics & Summary Stats -->
+    <div class="section-head">
+      <h2>📈 Receptive Skills Performance Analytics</h2>
+      <span class="section-tag">Continuous Practice Overview</span>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Mocks Logged</div>
+        <div class="stat-val" id="stat-total">4</div>
+        <div class="stat-sub">Cambridge Practice Tests</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Listening Average</div>
+        <div class="stat-val" id="stat-listening-avg" style="color: var(--navy-700);">Band 7.5</div>
+        <div class="stat-sub">33.0 / 40 Raw Average</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Reading Average</div>
+        <div class="stat-val" id="stat-reading-avg" style="color: var(--emerald);">Band 7.5</div>
+        <div class="stat-sub">33.5 / 40 Raw Average</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Target Compliance</div>
+        <div class="stat-val" id="stat-compliance" style="color: var(--emerald);">100%</div>
+        <div class="stat-sub">&ge; Band 7.0 Baseline</div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Log New Practice Exam -->
+    <div class="section-head">
+      <h2>📝 Log New Practice Test Score</h2>
+      <span class="section-tag">Track Cambridge 15–19 Attempts</span>
+    </div>
+
+    <section class="log-form-card">
+      <form id="exam-log-form" onsubmit="handleLogExam(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date Completed</label>
+            <input type="date" id="exam-date" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>Exam Module</label>
+            <select id="exam-module" class="form-control" onchange="updateFormBandPreview()">
+              <option value="Listening">🎧 Listening</option>
+              <option value="Academic Reading">📖 Academic Reading</option>
+              <option value="General Reading">📄 General Reading</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Practice Source / Mock Title</label>
+            <input type="text" id="exam-source" class="form-control" placeholder="e.g. Cambridge 18 Test 1" required />
+          </div>
+          <div class="form-group">
+            <label>Raw Score (/40)</label>
+            <input type="number" id="exam-raw" class="form-control" min="0" max="40" placeholder="e.g. 34" required oninput="updateFormBandPreview()" />
+          </div>
+          <div class="form-group">
+            <label>Auto Band Preview</label>
+            <input type="text" id="exam-band-preview" class="form-control" style="font-weight: 800; color: var(--navy-800);" readonly value="Band 7.5" />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label>Error Analysis &amp; Diagnostic Focus (Weak Areas / Notes)</label>
+          <input type="text" id="exam-notes" class="form-control" placeholder="e.g. S3 Multiple choice distractors caught me off guard; timing on Passage 3 was tight (22 mins)" />
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="submit" class="btn-nav primary" style="padding: 10px 20px;">+ Save Exam to Progression Log</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- SECTION 4: Exam Log Table -->
+    <div class="section-head">
+      <h2>📋 Historical Exam Progression Log</h2>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-nav" onclick="filterTable('all')">All</button>
+        <button class="btn-nav" onclick="filterTable('Listening')">Listening Only</button>
+        <button class="btn-nav" onclick="filterTable('Academic Reading')">Reading Only</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Module</th>
+            <th>Exam Source</th>
+            <th>Raw Score</th>
+            <th>Band Score</th>
+            <th>Target Status</th>
+            <th>Diagnostic Notes</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="score-table-body">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Export & Clear Tools -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 0.82rem; color: var(--ink-500);">
+      <span>Scores are automatically preserved in your browser's private local storage.</span>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-nav" onclick="exportCSV()">📥 Export CSV</button>
+        <button class="btn-nav" onclick="resetDefaults()">🔄 Reset Benchmarks</button>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; GarethEnglish &bull; Continuous IELTS Assessment Hub &bull; Candidate Portal: Ynnning</p>
+    </footer>
+
+  </div>
+
+  <script>
+    const STUDENT_ID = 'ynnning';
+    let currentModule = 'listening';
+
+    // Official Cambridge Band Scales
+    function getBand(mod, raw) {
+      raw = parseInt(raw, 10);
+      if (isNaN(raw)) return 0;
+      if (raw > 40) raw = 40;
+      if (raw < 0) raw = 0;
+
+      if (mod === 'listening') {
+        if (raw >= 39) return 9.0;
+        if (raw >= 37) return 8.5;
+        if (raw >= 35) return 8.0;
+        if (raw >= 32) return 7.5;
+        if (raw >= 30) return 7.0;
+        if (raw >= 26) return 6.5;
+        if (raw >= 23) return 6.0;
+        if (raw >= 18) return 5.5;
+        if (raw >= 16) return 5.0;
+        if (raw >= 13) return 4.5;
+        if (raw >= 10) return 4.0;
+        if (raw >= 8) return 3.5;
+        if (raw >= 6) return 3.0;
+        if (raw >= 4) return 2.5;
+        return 2.0;
+      } else if (mod === 'reading-acad' || mod === 'Academic Reading') {
+        if (raw >= 39) return 9.0;
+        if (raw >= 37) return 8.5;
+        if (raw >= 35) return 8.0;
+        if (raw >= 33) return 7.5;
+        if (raw >= 30) return 7.0;
+        if (raw >= 27) return 6.5;
+        if (raw >= 23) return 6.0;
+        if (raw >= 19) return 5.5;
+        if (raw >= 15) return 5.0;
+        if (raw >= 13) return 4.5;
+        if (raw >= 10) return 4.0;
+        if (raw >= 8) return 3.5;
+        if (raw >= 6) return 3.0;
+        if (raw >= 4) return 2.5;
+        return 2.0;
+      } else { // General Reading
+        if (raw >= 40) return 9.0;
+        if (raw >= 39) return 8.5;
+        if (raw >= 37) return 8.0;
+        if (raw >= 36) return 7.5;
+        if (raw >= 34) return 7.0;
+        if (raw >= 32) return 6.5;
+        if (raw >= 30) return 6.0;
+        if (raw >= 27) return 5.5;
+        if (raw >= 23) return 5.0;
+        if (raw >= 19) return 4.5;
+        if (raw >= 15) return 4.0;
+        return 3.0;
+      }
+    }
+
+    function getCEFR(band) {
+      if (band >= 8.5) return 'C2 · Expert User';
+      if (band >= 7.5) return 'C1 · Very Good User';
+      if (band >= 7.0) return 'C1 · Good User (Meets Offer)';
+      if (band >= 6.5) return 'B2 · Competent User';
+      return 'B1/B2 · Developing User';
+    }
+
+    function getRangeString(mod, band) {
+      if (mod === 'listening') {
+        const map = { 9.0: '39–40', 8.5: '37–38', 8.0: '35–36', 7.5: '32–34', 7.0: '30–31', 6.5: '26–29', 6.0: '23–25', 5.5: '18–22', 5.0: '16–17' };
+        return map[band] || '0–15';
+      } else if (mod === 'reading-acad' || mod === 'Academic Reading') {
+        const map = { 9.0: '39–40', 8.5: '37–38', 8.0: '35–36', 7.5: '33–34', 7.0: '30–32', 6.5: '27–29', 6.0: '23–26', 5.5: '19–22', 5.0: '15–18' };
+        return map[band] || '0–14';
+      } else {
+        const map = { 9.0: '40', 8.5: '39', 8.0: '37–38', 7.5: '36', 7.0: '34–35', 6.5: '32–33', 6.0: '30–31' };
+        return map[band] || '0–29';
+      }
+    }
+
+    function setModule(mod) {
+      currentModule = mod;
+      document.getElementById('mod-listening').classList.toggle('active', mod === 'listening');
+      document.getElementById('mod-reading-acad').classList.toggle('active', mod === 'reading-acad');
+      document.getElementById('mod-reading-gen').classList.toggle('active', mod === 'reading-gen');
+
+      if (mod === 'listening') {
+        document.getElementById('module-tip-title').textContent = 'Cambridge Listening Standard:';
+        document.getElementById('module-tip-text').textContent = 'To secure your conditional offer baseline of Band 7.0, you need at least 30 correct answers. For Gareth\'s recommended Band 7.5+ safety cushion, aim for 32–34 correct answers.';
+      } else if (mod === 'reading-acad') {
+        document.getElementById('module-tip-title').textContent = 'Academic Reading Standard:';
+        document.getElementById('module-tip-text').textContent = 'Academic Reading requires 30–32 marks for Band 7.0 and 33–34 marks for Band 7.5. Passage 3 True/False/Not Given questions are critical for locking in this margin.';
+      } else {
+        document.getElementById('module-tip-title').textContent = 'General Training Reading:';
+        document.getElementById('module-tip-text').textContent = 'General Reading has higher raw score thresholds: 34 marks for Band 7.0 and 36 marks for Band 7.5.';
+      }
+
+      updateCalculator();
+    }
+
+    function onSliderChange(val) {
+      document.getElementById('score-input').value = val;
+      updateCalculator();
+    }
+
+    function onInputChange(val) {
+      let v = parseInt(val, 10);
+      if (isNaN(v)) v = 0;
+      if (v > 40) v = 40;
+      if (v < 0) v = 0;
+      document.getElementById('score-slider').value = v;
+      updateCalculator();
+    }
+
+    function updateCalculator() {
+      const raw = parseInt(document.getElementById('score-slider').value, 10) || 0;
+      const band = getBand(currentModule, raw);
+      const cefr = getCEFR(band);
+      const range = getRangeString(currentModule, band);
+
+      document.getElementById('result-band').textContent = 'Band ' + band.toFixed(1);
+      document.getElementById('result-cefr').textContent = cefr;
+      document.getElementById('result-range').innerHTML = 'Score Range: <strong>' + range + ' / 40</strong>';
+
+      const statusEl = document.getElementById('result-status');
+      if (band >= 7.5) {
+        statusEl.className = 'target-status-banner status-safe';
+        statusEl.innerHTML = '🛡️ <strong>Band 7.5+ Safety Cushion Confirmed!</strong> Comfortably protects your UK university conditional offer.';
+      } else if (band === 7.0) {
+        statusEl.className = 'target-status-banner status-baseline';
+        statusEl.innerHTML = '🎯 <strong>Band 7.0 Baseline Met!</strong> Meets minimum conditional offer requirements; aim for +2 marks for safety.';
+      } else {
+        const gap = (currentModule === 'listening' ? 30 : 30) - raw;
+        statusEl.className = 'target-status-banner status-warning';
+        statusEl.innerHTML = '⚠️ <strong>Band ' + band.toFixed(1) + '</strong> &bull; Needs <strong>+' + Math.max(1, gap) + ' correct marks</strong> to reach the Band 7.0 offer threshold.';
+      }
+    }
+
+    function toggleMatrix() {
+      const el = document.getElementById('scale-matrix');
+      el.style.display = (el.style.display === 'grid') ? 'none' : 'grid';
+    }
+
+    // Default Benchmark Data for Ynnning
+    const defaultExams = [
+      { id: 1, date: '2026-10-12', mod: 'Listening', source: 'Cambridge IELTS 18 · Test 1', raw: 32, notes: 'Section 4 monologues were steady (8/10); slipped on Section 3 double-speaker distractors.' },
+      { id: 2, date: '2026-10-14', mod: 'Academic Reading', source: 'Cambridge IELTS 18 · Test 1', raw: 33, notes: 'Passage 1 & 2 completed in 37 mins (24/26); Passage 3 True/False/Not Given needed closer scrutiny.' },
+      { id: 3, date: '2026-10-16', mod: 'Listening', source: 'Cambridge IELTS 18 · Test 2', raw: 34, notes: 'Strong performance on numbers and spelling; solid 34/40.' },
+      { id: 4, date: '2026-10-18', mod: 'Academic Reading', source: 'Cambridge IELTS 18 · Test 2', raw: 34, notes: 'Heading matching technique worked well; completed full paper with 3 mins to spare.' }
+    ];
+
+    function getStoredExams() {
+      const data = localStorage.getItem('gareth_exams_' + STUDENT_ID);
+      if (!data) {
+        localStorage.setItem('gareth_exams_' + STUDENT_ID, JSON.stringify(defaultExams));
+        return defaultExams;
+      }
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        return defaultExams;
+      }
+    }
+
+    function saveExams(list) {
+      localStorage.setItem('gareth_exams_' + STUDENT_ID, JSON.stringify(list));
+      renderTable();
+      updateAnalytics();
+    }
+
+    function updateFormBandPreview() {
+      const mod = document.getElementById('exam-module').value;
+      const raw = parseInt(document.getElementById('exam-raw').value, 10) || 0;
+      const band = getBand(mod, raw);
+      document.getElementById('exam-band-preview').value = 'Band ' + band.toFixed(1);
+    }
+
+    function handleLogExam(e) {
+      e.preventDefault();
+      const date = document.getElementById('exam-date').value;
+      const mod = document.getElementById('exam-module').value;
+      const source = document.getElementById('exam-source').value.trim();
+      const raw = parseInt(document.getElementById('exam-raw').value, 10);
+      const notes = document.getElementById('exam-notes').value.trim();
+
+      if (!date || !source || isNaN(raw)) return;
+
+      const exams = getStoredExams();
+      exams.unshift({
+        id: Date.now(),
+        date: date,
+        mod: mod,
+        source: source,
+        raw: raw,
+        notes: notes || 'No diagnostic notes provided.'
+      });
+
+      saveExams(exams);
+      document.getElementById('exam-log-form').reset();
+      document.getElementById('exam-date').valueAsDate = new Date();
+      updateFormBandPreview();
+    }
+
+    function deleteExam(id) {
+      if (confirm('Delete this exam record?')) {
+        let exams = getStoredExams();
+        exams = exams.filter(x => x.id !== id);
+        saveExams(exams);
+      }
+    }
+
+    let activeFilter = 'all';
+    function filterTable(filter) {
+      activeFilter = filter;
+      renderTable();
+    }
+
+    function renderTable() {
+      const exams = getStoredExams();
+      const tbody = document.getElementById('score-table-body');
+      tbody.innerHTML = '';
+
+      const filtered = (activeFilter === 'all') ? exams : exams.filter(x => x.mod === activeFilter);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--ink-400); padding: 24px;">No exam attempts logged yet.</td></tr>';
+        return;
+      }
+
+      filtered.forEach(item => {
+        const band = getBand(item.mod, item.raw);
+        let badgeClass = 'badge-mid';
+        let statusBadge = '<span style="color: var(--navy-800); font-weight:700;">Meets 7.0 Offer</span>';
+        if (band >= 7.5) {
+          badgeClass = 'badge-high';
+          statusBadge = '<span style="color: var(--emerald); font-weight:700;">🛡️ 7.5+ Cushion</span>';
+        } else if (band < 7.0) {
+          badgeClass = 'badge-low';
+          statusBadge = '<span style="color: var(--amber); font-weight:700;">Sub-7.0 Baseline</span>';
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-family: var(--font-mono); font-size: 0.82rem; white-space: nowrap;">${item.date}</td>
+          <td><span class="badge-pill ${item.mod.includes('Listening') ? 'badge-blue' : 'badge-emerald'}">${item.mod}</span></td>
+          <td><strong>${item.source}</strong></td>
+          <td style="font-family: var(--font-mono); font-weight: 700;">${item.raw} / 40</td>
+          <td><span class="band-badge ${badgeClass}">Band ${band.toFixed(1)}</span></td>
+          <td>${statusBadge}</td>
+          <td style="font-size: 0.82rem; color: var(--ink-700); max-width: 260px;">${item.notes}</td>
+          <td style="text-align: right;"><button class="btn-delete" onclick="deleteExam(${item.id})" title="Delete entry">&times;</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateAnalytics() {
+      const exams = getStoredExams();
+      document.getElementById('stat-total').textContent = exams.length;
+
+      const listeningTests = exams.filter(x => x.mod.includes('Listening'));
+      const readingTests = exams.filter(x => x.mod.includes('Reading'));
+
+      if (listeningTests.length > 0) {
+        const lSum = listeningTests.reduce((acc, curr) => acc + getBand('listening', curr.raw), 0);
+        const lAvg = (lSum / listeningTests.length).toFixed(1);
+        const rRawSum = listeningTests.reduce((acc, curr) => acc + curr.raw, 0);
+        const rRawAvg = (rRawSum / listeningTests.length).toFixed(1);
+        document.getElementById('stat-listening-avg').textContent = 'Band ' + lAvg;
+        document.getElementById('stat-listening-avg').parentElement.querySelector('.stat-sub').textContent = rRawAvg + ' / 40 Raw Average';
+      } else {
+        document.getElementById('stat-listening-avg').textContent = '—';
+      }
+
+      if (readingTests.length > 0) {
+        const rSum = readingTests.reduce((acc, curr) => acc + getBand('reading-acad', curr.raw), 0);
+        const rAvg = (rSum / readingTests.length).toFixed(1);
+        const rRawSum = readingTests.reduce((acc, curr) => acc + curr.raw, 0);
+        const rRawAvg = (rRawSum / readingTests.length).toFixed(1);
+        document.getElementById('stat-reading-avg').textContent = 'Band ' + rAvg;
+        document.getElementById('stat-reading-avg').parentElement.querySelector('.stat-sub').textContent = rRawAvg + ' / 40 Raw Average';
+      } else {
+        document.getElementById('stat-reading-avg').textContent = '—';
+      }
+
+      if (exams.length > 0) {
+        const passing = exams.filter(x => getBand(x.mod, x.raw) >= 7.0).length;
+        const rate = Math.round((passing / exams.length) * 100);
+        document.getElementById('stat-compliance').textContent = rate + '%';
+      } else {
+        document.getElementById('stat-compliance').textContent = '—';
+      }
+    }
+
+    function exportCSV() {
+      const exams = getStoredExams();
+      let csv = 'Date,Module,ExamSource,RawScore,BandScore,Notes\n';
+      exams.forEach(x => {
+        const band = getBand(x.mod, x.raw).toFixed(1);
+        csv += `"${x.date}","${x.mod}","${x.source}",${x.raw},"${band}","${x.notes.replace(/"/g, '""')}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Ynnning_IELTS_Reading_Listening_Scores_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }
+
+    function resetDefaults() {
+      if (confirm('Reset to standard benchmark mock records?')) {
+        saveExams(defaultExams);
+      }
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'paper' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('gareth_student_theme', next);
+    }
+
+    // Init
+    (function init() {
+      document.getElementById('exam-date').valueAsDate = new Date();
+      const savedTheme = localStorage.getItem('gareth_student_theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+      updateCalculator();
+      renderTable();
+      updateAnalytics();
+      updateFormBandPreview();
+    })();
+  </script>
+</body>
+</html>

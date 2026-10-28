@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gaia · Cambridge C2 Proficiency (CPE) Masterclass</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .heading-font {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .slide {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.25s ease-in-out;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .c2-pill {
+      background: linear-gradient(135deg, rgba(217, 119, 6, 0.12), rgba(245, 158, 11, 0.05));
+      border: 1px solid rgba(217, 119, 6, 0.35);
+      color: #92400e;
+    }
+    .reveal-box {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .formula-badge {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+    /* Spidergram node interactive selection */
+    .spider-node {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .spider-node:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+      border-color: #d97706;
+    }
+    .spider-node.selected {
+      border-color: #d97706 !important;
+      background-color: #fef3c7 !important;
+      box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.25) !important;
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col justify-between selection:bg-amber-200 selection:text-amber-900">
+
+  <!-- Header Bar (Day Mode) -->
+  <header class="border-b border-slate-200 bg-white/95 backdrop-blur-md px-4 md:px-8 py-3.5 flex items-center justify-between z-30 sticky top-0 shadow-sm">
+  <meta name="robots" content="noindex, nofollow" />
+    <div class="flex items-center gap-3">
+      <span class="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></span>
+      <span class="text-xs md:text-sm font-bold tracking-wider uppercase text-slate-800 heading-font">GarethEnglish · Cambridge C2 Proficiency</span>
+      <span class="text-slate-300 hidden sm:inline">|</span>
+      <span id="slide-category" class="text-xs font-mono text-amber-700 font-semibold hidden sm:inline">Overview & Roadmap</span>
+    </div>
+
+    <div class="flex items-center gap-3 md:gap-5">
+      <!-- Exam Timer -->
+      <div class="flex items-center gap-2 bg-slate-100 border border-slate-300 px-3 py-1 rounded-full text-xs font-mono shadow-inner">
+        <span class="text-slate-500 font-medium">Timer:</span>
+        <span id="timer-display" class="text-amber-700 font-bold text-sm">01:00</span>
+        <div class="flex items-center gap-1 ml-1 border-l border-slate-300 pl-2">
+          <button onclick="startTimer(30)" class="text-[11px] px-1.5 py-0.5 rounded bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 font-medium">30s</button>
+          <button onclick="startTimer(60)" class="text-[11px] px-1.5 py-0.5 rounded bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-bold">1m</button>
+          <button onclick="startTimer(120)" class="text-[11px] px-1.5 py-0.5 rounded bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 font-medium">2m</button>
+          <button onclick="startTimer(180)" class="text-[11px] px-1.5 py-0.5 rounded bg-white hover:bg-slate-200 text-slate-700 border border-slate-200 font-medium">3m</button>
+          <button onclick="resetTimer()" class="text-[11px] px-1.5 py-0.5 rounded text-red-600 hover:text-red-700 hover:bg-red-50 font-bold">↺</button>
+        </div>
+      </div>
+
+      <div class="text-xs font-mono text-slate-500 font-medium">
+        <span id="current-slide-num" class="text-amber-700 font-bold text-sm">1</span> / <span id="total-slides">14</span>
+      </div>
+
+      <button onclick="toggleFullscreen()" class="text-xs px-2.5 py-1 rounded border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 font-medium transition hidden sm:inline-block shadow-sm">
+        ⛶ Fullscreen
+      </button>
+    </div>
+  </header>
+
+  <!-- Slide Canvas (Day Mode) -->
+  <main class="flex-1 flex items-center justify-center p-4 md:p-8 relative overflow-y-auto">
+
+    <!-- ================= SLIDE 1: WELCOME & ROADMAP ================= -->
+    <section class="slide active flex-col max-w-4xl w-full mx-auto text-center space-y-6" data-category="Welcome & Overview">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full c2-pill text-xs font-mono uppercase tracking-wider mx-auto font-bold">
+        Cambridge C2 Proficiency (CPE) · Intensive Exam Preparation
+      </div>
+      <h1 class="text-3xl md:text-5xl font-bold heading-font text-slate-900 tracking-tight">
+        Hi Gaia, Welcome to Your CPE Masterclass!
+      </h1>
+      <p class="text-slate-600 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+        With your exam approaching at the end of the month, today we target the highest tier of English: mastering six elite syntactic blueprints and executing a full, timed Cambridge speaking examination.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 text-left">
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-amber-400 hover:shadow-md transition">
+          <div class="text-2xl mb-2">⚡</div>
+          <h3 class="font-bold text-slate-900 text-sm heading-font">1. Six High-Leverage C2 Structures</h3>
+          <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+            Cleft sentences, passive reporting, participle clauses, inversion with <em>not only</em>, concessive <em>while</em> clauses, and advanced conditionals.
+          </p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-amber-400 hover:shadow-md transition">
+          <div class="text-2xl mb-2">🗣️</div>
+          <h3 class="font-bold text-slate-900 text-sm heading-font">2. Full 3-Part CPE Speaking Paper</h3>
+          <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+            Complete simulation of Part 1 (Interview), Part 2 (4-Min Collaborative Visual Task), and Part 3 (2-Min Individual Prompt Card Long Turn + Extended Abstract Discussion).
+          </p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:border-amber-400 hover:shadow-md transition">
+          <div class="text-2xl mb-2">🏛️</div>
+          <h3 class="font-bold text-slate-900 text-sm heading-font">3. The A.R.E.A. Speaking Strategy</h3>
+          <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+            The professional framework for Part 3 Extended Discussion: Assertion, Reason, Evidence, and Alternative/Amplification to answer with effortless academic poise.
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-4 flex items-center justify-center gap-4 text-xs font-mono text-slate-500">
+        <span>Use <kbd class="px-2 py-1 bg-white border border-slate-300 rounded shadow-sm text-slate-800 font-bold">Space</kbd> or <kbd class="px-2 py-1 bg-white border border-slate-300 rounded shadow-sm text-slate-800 font-bold">→</kbd> to advance</span>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 2: STRUCTURE 1 - CLEFT SENTENCES ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="C2 Structure 1 · Cleft Sentences">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">C2 Blueprint 1 of 6</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">Cleft Sentences (Emphasis & Focus)</h2>
+        <p class="text-xs md:text-sm text-slate-600">Breaks monotonous Subject-Verb-Object rhythms and gives instant rhetorical weight to your core argument.</p>
+      </div>
+
+      <!-- Structural Formulas -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+        <h3 class="text-xs font-mono uppercase tracking-wider text-amber-700 font-bold">Structural Formations</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-600 block mb-1 font-bold">Wh- (Pseudo) Cleft:</span>
+            <code class="formula-badge text-amber-800 font-bold">What + Clause + BE + Focus Element</code>
+            <p class="text-slate-600 mt-1 italic">"What fundamentally elevates this performance is its emotional nuance."</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-600 block mb-1 font-bold">It- Cleft (Single Attribute):</span>
+            <code class="formula-badge text-amber-800 font-bold">It is/was + Focus + that/who + Clause</code>
+            <p class="text-slate-600 mt-1 italic">"It is precisely this architectural harmony that enchants visitors."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Drills -->
+      <div class="space-y-4">
+        <!-- Drill 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 1.1 · Topic Sentence Impact</span>
+            <span class="text-xs text-slate-500 font-mono">Target: Wh- Cleft</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> Early artistic education fundamentally shapes a child's cognitive flexibility and creative instincts.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Rewrite beginning with <em>"What fundamentally shapes..."</em>
+          </p>
+          <button onclick="toggleReveal('cleft-ans-1', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="cleft-ans-1" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>What fundamentally shapes a child's cognitive flexibility and creative instincts is</strong> sustained immersion in artistic disciplines from a formative age."
+          </div>
+        </div>
+
+        <!-- Drill 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 1.2 · Nuanced Contrastive Cleft</span>
+            <span class="text-xs text-slate-500 font-mono">Target: It- Cleft</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> Unchecked commercial development erodes civic heritage, not genuine lack of public interest.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Transform using <em>"It is not so much... as it is... that..."</em>
+          </p>
+          <button onclick="toggleReveal('cleft-ans-2', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="cleft-ans-2" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>It is not so much</strong> a deficit in public interest <strong>as it is</strong> unchecked commercial development <strong>that imperils</strong> our civic architectural heritage."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 3: STRUCTURE 2 - PASSIVE REPORTING ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="C2 Structure 2 · Passive Reporting">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">C2 Blueprint 2 of 6</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">Passive Reporting Verbs & Impersonal Stance</h2>
+        <p class="text-xs md:text-sm text-slate-600">Replaces informal statements like "people think" or "they say" with authoritative academic distance.</p>
+      </div>
+
+      <!-- Structural Formulas -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+        <h3 class="text-xs font-mono uppercase tracking-wider text-amber-700 font-bold">Structural Formations</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">1. Preparatory 'It':</span>
+            <code class="formula-badge text-amber-800 font-bold">It is + Past Participle + that...</code>
+            <p class="text-slate-600 mt-1 italic text-[11px]">widely maintained / asserted / contended / acknowledged</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">2. Subject Elevation (Present):</span>
+            <code class="formula-badge text-amber-800 font-bold">Subj + BE + Participle + to + V1</code>
+            <p class="text-slate-600 mt-1 italic text-[11px]">"The policy is believed to offer significant benefits."</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">3. Subject Elevation (Past/Prior):</span>
+            <code class="formula-badge text-amber-800 font-bold">Subj + BE + Participle + to have + V3</code>
+            <p class="text-slate-600 mt-1 italic text-[11px]">"The ancient library is thought to have housed thousands of scrolls."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Drills -->
+      <div class="space-y-4">
+        <!-- Drill 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 2.1 · Preparatory Consensus</span>
+            <span class="text-xs text-slate-500 font-mono">Target: Preparatory 'It'</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> Many scholars believe that continuous digital connectivity shortens our collective attention spans.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Rephrase using <em>"It is increasingly contended that..."</em>
+          </p>
+          <button onclick="toggleReveal('pass-ans-1', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="pass-ans-1" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>It is increasingly contended that</strong> unremitting digital connectivity exerts a debilitating effect on collective cognitive concentration."
+          </div>
+        </div>
+
+        <!-- Drill 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 2.2 · Prior Action Subject Elevation</span>
+            <span class="text-xs text-slate-500 font-mono">Target: Subject + is thought to have + V3</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> Experts think this traditional craft technique originated in Renaissance Venice during the sixteenth century.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Front with the craft technique: <em>"This artisanal craft is thought..."</em>
+          </p>
+          <button onclick="toggleReveal('pass-ans-2', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="pass-ans-2" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "This intricate artisanal practice <strong>is widely thought to have originated</strong> in sixteenth-century Venetian workshops before permeating continental Europe."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 4: STRUCTURE 3 - PARTICIPLE CLAUSES ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="C2 Structure 3 · Participle Clauses">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">C2 Blueprint 3 of 6</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">Participle Clauses (Syntactic Density)</h2>
+        <p class="text-xs md:text-sm text-slate-600">Eliminates choppy, repetitive compound sentences by condensing cause, consequence, and chronology.</p>
+      </div>
+
+      <!-- Structural Formulas -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+        <h3 class="text-xs font-mono uppercase tracking-wider text-amber-700 font-bold">Structural Formations</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">1. Consequential Participle:</span>
+            <code class="formula-badge text-amber-800 font-bold">Clause, thereby + Verb-ing</code>
+            <p class="text-slate-600 mt-1 italic text-[11px]">"...pedestrianised the square, thereby fostering civic life."</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">2. Perfect Participle Fronting:</span>
+            <code class="formula-badge text-amber-800 font-bold">Having + Past Participle (V3)...</code>
+            <p class="text-slate-600 mt-1 italic text-[11px]">"Having endured years of austerity, the arts scene revived."</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">3. Passive State Fronting:</span>
+            <code class="formula-badge text-amber-800 font-bold">Past Participle (V3) + by/with...</code>
+            <p class="text-slate-600 mt-1 italic text-[11px]">"Galvanised by public demand, the council acted."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Drills -->
+      <div class="space-y-4">
+        <!-- Drill 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 3.1 · Consequential Chain</span>
+            <span class="text-xs text-slate-500 font-mono">Target: , thereby + Verb-ing</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> The municipal authority created an extensive cycleway network. As a direct result, it curtailed carbon emissions and reduced commuter stress.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Combine into a single sentence using <em>", thereby + -ing"</em>.
+          </p>
+          <button onclick="toggleReveal('part-ans-1', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="part-ans-1" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "The municipal council implemented an integrated cycling network across metropolitan corridors, <strong>thereby dramatically curbing carbon emissions and mitigating commuter congestion</strong>."
+          </div>
+        </div>
+
+        <!-- Drill 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 3.2 · Prior Experience Fronting</span>
+            <span class="text-xs text-slate-500 font-mono">Target: Having + V3</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> The candidate spent two decades in investigative journalism, so she approached political debate with deep skepticism.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Front the sentence with <em>"Having spent..."</em>
+          </p>
+          <button onclick="toggleReveal('part-ans-2', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="part-ans-2" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>Having spent over two decades in investigative journalism</strong>, she naturally scrutinised partisan rhetoric through an incisive and rigorous lens."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 5: STRUCTURE 4 - INVERSION WITH NOT ONLY ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="C2 Structure 4 · Inversion with Not Only">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">C2 Blueprint 4 of 6</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">Negative & Correlative Inversion (Not Only...)</h2>
+        <p class="text-xs md:text-sm text-slate-600">Creates rhetorical grandeur and displays flawless syntactic command under exam pressure.</p>
+      </div>
+
+      <!-- Structural Formulas -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+        <h3 class="text-xs font-mono uppercase tracking-wider text-amber-700 font-bold">Structural Formations</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">Additive Inversion (Core Rule):</span>
+            <code class="formula-badge text-amber-800 font-bold">Not only + Aux/Modal + Subj + Verb, but (also)...</code>
+            <p class="text-slate-600 mt-1 italic">Notice: Question-order auxiliary syntax (does / did / can / has / will).</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">Sister C2 Limiting Inversions:</span>
+            <code class="formula-badge text-amber-800 font-bold">Rarely / Seldom / Under no circumstances...</code>
+            <p class="text-slate-600 mt-1 italic">"Rarely do policymakers foresee the cultural ramifications of rapid automation."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Drills -->
+      <div class="space-y-4">
+        <!-- Drill 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 4.1 · Present Additive Power</span>
+            <span class="text-xs text-slate-500 font-mono">Target: Not only does + Subj + Verb</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> A four-day working week boosts employee productivity. It also drastically reduces workplace burnout.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Begin the sentence with <em>"Not only does a compressed working schedule..."</em>
+          </p>
+          <button onclick="toggleReveal('inv-ans-1', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="inv-ans-1" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>Not only does a compressed working schedule foster</strong> heightened cognitive focus, <strong>but it also significantly diminishes</strong> the incidence of chronic workplace burnout."
+          </div>
+        </div>
+
+        <!-- Drill 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 4.2 · Past Retrospective Inversion</span>
+            <span class="text-xs text-slate-500 font-mono">Target: Not only did + Subj + Verb</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> The restoration project preserved the cathedral's Gothic facade, and it revived tourism across the entire district.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Front with <em>"Not only did the restoration..."</em>
+          </p>
+          <button onclick="toggleReveal('inv-ans-2', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="inv-ans-2" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>Not only did the conservation initiative safeguard</strong> the cathedral's Gothic integrity, <strong>but it also breathed new commercial vitality</strong> into the surrounding historic quarter."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 6: STRUCTURE 5 - WHILE CONCESSION CLAUSES ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="C2 Structure 5 · While Concession Clauses">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">C2 Blueprint 5 of 6</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900"><em>While</em> Concession Clauses (Dialectical Balance)</h2>
+        <p class="text-xs md:text-sm text-slate-600">Proves intellectual maturity by acknowledging the counter-perspective before firmly proving your thesis.</p>
+      </div>
+
+      <!-- Structural Formulas -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+        <h3 class="text-xs font-mono uppercase tracking-wider text-amber-700 font-bold">Structural Formations</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">The Concessive Bridge:</span>
+            <code class="formula-badge text-amber-800 font-bold">While it is undeniable that [Counter], [Thesis] remains...</code>
+            <p class="text-slate-600 mt-1 italic">"While technological efficiency is prized, human judgment remains irreplaceable."</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">Nuanced Dialectical Rebuttal:</span>
+            <code class="formula-badge text-amber-800 font-bold">While proponents of X contend that..., the empirical reality is...</code>
+            <p class="text-slate-600 mt-1 italic">Alternative C2 connectors: <em>Whilst / Whereas / Granted that</em>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Drills -->
+      <div class="space-y-4">
+        <!-- Drill 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 5.1 · Technology vs Human Intimacy</span>
+            <span class="text-xs text-slate-500 font-mono">Target: While it is undeniable that...</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> Remote work offers genuine flexibility, but it undeniably risks isolating individuals from spontaneous social collaboration.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Formulate a balanced C2 concession sentence beginning with <em>"While..."</em>
+          </p>
+          <button onclick="toggleReveal('wh-ans-1', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="wh-ans-1" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>While it is undeniable that telecommuting affords unmatched geographical freedom</strong>, the progressive erosion of spontaneous interpersonal exchange remains an acute psychological liability."
+          </div>
+        </div>
+
+        <!-- Drill 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 5.2 · Modernisation vs Conservation</span>
+            <span class="text-xs text-slate-500 font-mono">Target: Whilst / While proponents...</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> Modern high-rises maximise commercial capacity, but they frequently destroy the human scale and aesthetic spirit of historic cities.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Structure a high-level concession highlighting aesthetic consequences.
+          </p>
+          <button onclick="toggleReveal('wh-ans-2', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="wh-ans-2" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>Whilst high-density vertical architecture undoubtedly satisfies modern commercial exigencies</strong>, it all too often obliterates the human scale and historical resonance of the urban fabric."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 7: STRUCTURE 6 - ADVANCED CONDITIONALS ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="C2 Structure 6 · Advanced Conditionals">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">C2 Blueprint 6 of 6</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">Advanced Conditionals & Inversions</h2>
+        <p class="text-xs md:text-sm text-slate-600">Replaces repetitive 'if' sentences with inverted subjunctives and sophisticated mixed time-frames.</p>
+      </div>
+
+      <!-- Structural Formulas -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+        <h3 class="text-xs font-mono uppercase tracking-wider text-amber-700 font-bold">Structural Formations</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">1. Counterfactual Inversion:</span>
+            <code class="formula-badge text-amber-800 font-bold">Had + Subj + (not) + V3...</code>
+            <p class="text-slate-600 mt-1 italic text-[11px]">"Had the committee acted sooner, the crisis would have been averted."</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">2. Hypothetical Inversion:</span>
+            <code class="formula-badge text-amber-800 font-bold">Were + Subj + to-V1 / Were it not for...</code>
+            <p class="text-slate-600 mt-1 italic text-[11px]">"Were it not for subsidies, the gallery would collapse."</p>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <span class="text-slate-700 block mb-1 font-bold">3. Mixed Conditional:</span>
+            <code class="formula-badge text-amber-800 font-bold">If + Past Perfect, Subj + would + V1</code>
+            <p class="text-slate-600 mt-1 italic text-[11px]">"If they had protected the wetlands, we would not face flooding today."</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Drills -->
+      <div class="space-y-4">
+        <!-- Drill 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 6.1 · Third Conditional Inversion</span>
+            <span class="text-xs text-slate-500 font-mono">Target: Had + Subject + Past Participle</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> If the state had not subsidised independent cinema, many art-house theatres would have vanished entirely.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Invert without <em>"if"</em> using <em>"Had it not been for..."</em>
+          </p>
+          <button onclick="toggleReveal('cond-ans-1', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="cond-ans-1" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>Had it not been for decisive state intervention and civic subsidies</strong>, independent cinematic venues would undoubtedly have ceased operations altogether."
+          </div>
+        </div>
+
+        <!-- Drill 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Drill 6.2 · Mixed Conditional (Past Action -> Present Result)</span>
+            <span class="text-xs text-slate-500 font-mono">Target: Past cause -> Present state</span>
+          </div>
+          <p class="text-sm text-slate-800 font-medium">
+            <strong>Baseline:</strong> The government didn't invest in youth apprenticeships ten years ago, so our manufacturing sector suffers a chronic skills shortage right now.
+          </p>
+          <p class="text-xs text-slate-500 font-mono">
+            Objective: Formulate a Mixed Conditional connecting that past failure to today's crisis.
+          </p>
+          <button onclick="toggleReveal('cond-ans-2', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal Cambridge C2 Model</span>
+          </button>
+          <div id="cond-ans-2" class="reveal-box hidden bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs md:text-sm text-emerald-950 font-medium leading-relaxed">
+            <strong>Cambridge Model:</strong> "<strong>If policymakers had instituted comprehensive vocational apprenticeships a decade ago</strong>, the domestic industrial sector <strong>would not be grappling with</strong> such an acute deficit of skilled artisans today."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 8: CPE SPEAKING PAPER OVERVIEW ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="CPE Speaking Architecture">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">Examination Structure & Rubric</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">The Cambridge C2 Speaking Test Breakdown (3 Parts · 16 Mins)</h2>
+        <p class="text-xs md:text-sm text-slate-600">Total duration: ~16 minutes · Assessed in pairs by two examiners (Interlocutor & Assessor).</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Part 1 & 2 -->
+        <div class="space-y-4">
+          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-amber-800 uppercase tracking-wider font-mono">Part 1 · Social Interaction</span>
+              <span class="text-xs font-mono text-slate-500 font-medium">~2 minutes</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">Conversational warm-up. General questions regarding your background, studies, worldview, and personal interests. Shows social poise.</p>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-amber-800 uppercase tracking-wider font-mono">Part 2 · Collaborative Picture Task</span>
+              <span class="text-xs font-mono text-slate-500 font-medium">~4 mins (1m warm-up + 3m decision)</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">Two-stage collaborative task using visual photographs: a 1-minute initial reaction on 1–2 photos, followed by a 3-minute evaluation and decision task across all photos.</p>
+          </div>
+        </div>
+
+        <!-- Part 3A & 3B -->
+        <div class="space-y-4">
+          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-amber-800 uppercase tracking-wider font-mono">Part 3 (Stage A) · Individual Long Turn</span>
+              <span class="text-xs font-mono text-slate-500 font-medium">~4–5 mins (2m speak + 1m response each)</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">Written prompt card with a central question and 3 optional bullet-point ideas. Speak uninterrupted for <strong>2 full minutes</strong>, followed by a brief response from your partner.</p>
+          </div>
+
+          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-l-4 border-l-amber-500">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-bold text-amber-800 uppercase tracking-wider font-mono">Part 3 (Stage B) · Extended Discussion</span>
+              <span class="text-xs font-mono text-slate-500 font-medium">~4–5 minutes</span>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">In-depth philosophical and societal questions broadening the Part 3 card theme. Powered by the <strong>A.R.E.A. method</strong> and C2 syntactic mastery.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assessment Criteria Strip -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <h4 class="text-xs font-mono text-slate-600 uppercase tracking-wider mb-2 font-bold">The 5 Cambridge C2 Assessment Dimensions:</h4>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-xs">
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-800"><strong>Grammatical Resource</strong><br><span class="text-[10px] text-slate-500">Syntactic range & precision</span></div>
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-800"><strong>Lexical Resource</strong><br><span class="text-[10px] text-slate-500">Collocations & register</span></div>
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-800"><strong>Discourse Management</strong><br><span class="text-[10px] text-slate-500">Coherence & fluency</span></div>
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-800"><strong>Pronunciation</strong><br><span class="text-[10px] text-slate-500">Stress, rhythm & intonation</span></div>
+          <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-800"><strong>Interactive Communication</strong><br><span class="text-[10px] text-slate-500">Turn-taking & reacting</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 9: FULL PRACTICE - PART 1 ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="Part 1 · Social Interaction">
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">Speaking Part 1 Simulation</span>
+          <span class="text-xs font-mono px-2 py-0.5 bg-amber-100 text-amber-800 border border-amber-300 rounded font-bold">Time: ~2 Minutes</span>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">Social Interaction & Spontaneous Fluency</h2>
+        <p class="text-xs md:text-sm text-slate-600">Aim for conversational spontaneity, personal authenticity, and natural linguistic range without pausing.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Topic Card 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3 shadow-sm hover:border-slate-300 transition">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-600 text-lg">🎓</span>
+            <h3 class="font-bold text-slate-900 text-sm">Studies, Ambition & Intellectual Passions</h3>
+          </div>
+          <ul class="text-xs md:text-sm text-slate-700 space-y-2">
+            <li class="p-2.5 rounded-lg bg-slate-50 border border-slate-200">• What field of study or intellectual pursuit has had the most enduring influence on how you view the world?</li>
+            <li class="p-2.5 rounded-lg bg-slate-50 border border-slate-200">• Do you prefer immersing yourself in theoretical concepts or practical, hands-on challenges?</li>
+          </ul>
+        </div>
+
+        <!-- Topic Card 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3 shadow-sm hover:border-slate-300 transition">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-600 text-lg">🌍</span>
+            <h3 class="font-bold text-slate-900 text-sm">Language, Culture & Global Perspective</h3>
+          </div>
+          <ul class="text-xs md:text-sm text-slate-700 space-y-2">
+            <li class="p-2.5 rounded-lg bg-slate-50 border border-slate-200">• How has mastering multiple languages reshaped the way you formulate your thoughts?</li>
+            <li class="p-2.5 rounded-lg bg-slate-50 border border-slate-200">• If you could spend six months immersed in any cultural community worldwide, where would you go?</li>
+          </ul>
+        </div>
+
+        <!-- Topic Card 3 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3 shadow-sm hover:border-slate-300 transition">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-600 text-lg">🎨</span>
+            <h3 class="font-bold text-slate-900 text-sm">Leisure, High Culture & Solitude</h3>
+          </div>
+          <ul class="text-xs md:text-sm text-slate-700 space-y-2">
+            <li class="p-2.5 rounded-lg bg-slate-50 border border-slate-200">• In an era of non-stop digital notifications, how do you cultivate genuine mental stillness?</li>
+            <li class="p-2.5 rounded-lg bg-slate-50 border border-slate-200">• What role do you think the visual or performing arts play in sustaining emotional well-being?</li>
+          </ul>
+        </div>
+
+        <!-- Topic Card 4 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3 shadow-sm hover:border-slate-300 transition">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-600 text-lg">⏳</span>
+            <h3 class="font-bold text-slate-900 text-sm">Everyday Life & Future Outlook</h3>
+          </div>
+          <ul class="text-xs md:text-sm text-slate-700 space-y-2">
+            <li class="p-2.5 rounded-lg bg-slate-50 border border-slate-200">• What is one daily ritual or habit that you consider non-negotiable for your peace of mind?</li>
+            <li class="p-2.5 rounded-lg bg-slate-50 border border-slate-200">• Looking ahead to the next five years, what personal milestone are you most determined to achieve?</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Quick C2 Pro-Tip -->
+      <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 flex items-center gap-2.5 shadow-sm font-medium">
+        <span class="text-base">💡</span>
+        <span><strong>C2 Strategy:</strong> Avoid single-sentence answers. Expand immediately by offering an underlying reason or brief reflection: <em>"To be completely candid, what I find most compelling is..."</em></span>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 10: FULL PRACTICE - PART 2 (COLLABORATIVE PICTURE TASK) ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-5" data-category="Part 2 · Collaborative Picture Task">
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">Speaking Part 2 Simulation (~4 Minutes Total)</span>
+          <div class="flex items-center gap-2">
+            <button onclick="startTimer(60)" class="text-xs px-2.5 py-1 bg-amber-100 border border-amber-300 text-amber-900 rounded font-mono font-bold hover:bg-amber-200 shadow-sm">Phase 1 Warm-Up (1m)</button>
+            <button onclick="startTimer(180)" class="text-xs px-2.5 py-1 bg-slate-100 border border-slate-300 text-slate-700 rounded font-mono font-bold hover:bg-slate-200 shadow-sm">Phase 2 Decision (3m)</button>
+          </div>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">Part 2 Collaborative Task: Demanding Pursuits</h2>
+        <p class="text-xs md:text-sm text-slate-600">Two-stage visual collaboration: first react to <strong>Pictures 1 &amp; 2</strong> for <strong>1 minute</strong>, then evaluate <strong>all three pictures</strong> together for <strong>3 minutes</strong> to reach a decision.</p>
+      </div>
+
+      <!-- Phase 1 Prompt Box (Day Mode) -->
+      <div class="bg-amber-50 border-2 border-amber-200 rounded-xl p-4 text-xs md:text-sm space-y-1 shadow-sm">
+        <div class="text-amber-800 font-bold uppercase tracking-wider text-xs font-mono">Phase 1 · Initial Reaction (1 Minute · Pictures 1 &amp; 2):</div>
+        <p class="text-slate-900 font-semibold">
+          "First, look at <strong>Pictures 1 and 2</strong>. Talk together about the kind of personal discipline and psychological resilience each pursuit demands."
+        </p>
+      </div>
+
+      <!-- 3 Real Authentic Photographs -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Photo 1: Classical Musician / Conductor -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-md flex flex-col">
+          <div class="relative h-44 w-full bg-slate-100 overflow-hidden">
+            <img 
+              src="https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=700&q=80" 
+              alt="Orchestra Conductor and Musicians Performing" 
+              class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              loading="lazy"
+            />
+            <span class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur text-white text-[11px] font-mono px-2 py-0.5 rounded font-bold">
+              Picture 1
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1 bg-white flex-1">
+            <h4 class="font-bold text-slate-900 text-xs heading-font">The Symphony Conductor / Orchestra</h4>
+            <p class="text-[11px] text-slate-600 leading-snug">
+              High-stakes stage performance. Collective synchronisation, intense mental stamina, public vulnerability.
+            </p>
+          </div>
+        </div>
+
+        <!-- Photo 2: Extreme Solo Mountaineer / Climber -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-md flex flex-col">
+          <div class="relative h-44 w-full bg-slate-100 overflow-hidden">
+            <img 
+              src="https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=700&q=80" 
+              alt="Rock Climber ascending steep mountain rock face" 
+              class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              loading="lazy"
+            />
+            <span class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur text-white text-[11px] font-mono px-2 py-0.5 rounded font-bold">
+              Picture 2
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1 bg-white flex-1">
+            <h4 class="font-bold text-slate-900 text-xs heading-font">The Solo Mountain Climber</h4>
+            <p class="text-[11px] text-slate-600 leading-snug">
+              Ascending vertical precipice in isolation. Sheer physical endurance, confronting fear, zero margin for error.
+            </p>
+          </div>
+        </div>
+
+        <!-- Photo 3: Master Blacksmith / Metal Artisan -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-md flex flex-col">
+          <div class="relative h-44 w-full bg-slate-100 overflow-hidden">
+            <img 
+              src="artisan_blacksmith.jpg" 
+              onerror="this.src='../assets/study/artisan_blacksmith.jpg'"
+              alt="Traditional Master Blacksmith forging glowing iron with hammer on anvil" 
+              class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              loading="lazy"
+            />
+            <span class="absolute top-2 left-2 bg-slate-900/80 backdrop-blur text-white text-[11px] font-mono px-2 py-0.5 rounded font-bold">
+              Picture 3
+            </span>
+          </div>
+          <div class="p-3.5 space-y-1 bg-white flex-1">
+            <h4 class="font-bold text-slate-900 text-xs heading-font">The Master Blacksmith &amp; Metal Artisan</h4>
+            <p class="text-[11px] text-slate-600 leading-snug">
+              Forging red-hot iron by hand on the anvil beside an open hearth. Raw physical stamina, enduring extreme heat, preserving ancestral craftsmanship.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 2 Decision Task Box -->
+      <div class="bg-white border border-slate-200 rounded-xl p-3.5 flex items-center justify-between text-xs shadow-sm">
+        <div>
+          <span class="font-bold text-amber-800 uppercase tracking-wider font-mono mr-2">Phase 2 · Evaluation &amp; Decision Task (3 Minutes · All Pictures):</span>
+          <span class="text-slate-800 font-medium">"Imagine a cultural documentary series is being commissioned on human mastery. Talk together about what aspects of dedication these pursuits represent, and decide which pursuit would make the most compelling opening episode."</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 11: FULL PRACTICE - PART 3 (STAGE A: 2-MINUTE LONG TURN PROMPT CARD) ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-4" data-category="Part 3 (Stage A) · 2-Min Long Turn">
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">Speaking Part 3 · Stage A (Individual Long Turn)</span>
+          <div class="flex items-center gap-2">
+            <button onclick="startTimer(120)" class="text-xs px-2.5 py-1 bg-amber-100 border border-amber-300 text-amber-900 rounded font-mono font-bold hover:bg-amber-200 shadow-sm">Start 2-Min Long Turn</button>
+            <button onclick="startTimer(60)" class="text-xs px-2.5 py-1 bg-slate-100 border border-slate-300 text-slate-700 rounded font-mono hover:bg-slate-200 shadow-sm">Partner Follow-Up (1m)</button>
+          </div>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">Part 3 Long Turn: Written Prompt Card &amp; Idea Map</h2>
+        <p class="text-xs md:text-sm text-slate-600">Speak uninterrupted for <strong>2 full minutes</strong> on the central prompt card question below. Click any idea node to anchor your points as you speak.</p>
+      </div>
+
+      <!-- Authentic Cambridge Visual Spidergram Container -->
+      <div class="relative w-full max-w-3xl mx-auto bg-white border-2 border-slate-200 rounded-2xl p-4 md:p-6 shadow-md min-h-[350px] flex items-center justify-center">
+
+        <!-- Connecting SVG Spiderweb Web Lines -->
+        <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Lines radiating from center to 5 perimeter points -->
+          <!-- Center is roughly 50% 50% -->
+          <!-- Line 1: Center to Top Node -->
+          <line x1="50%" y1="50%" x2="50%" y2="12%" stroke="#cbd5e1" stroke-width="2.5" stroke-dasharray="5,5" />
+          <!-- Line 2: Center to Top-Right Node -->
+          <line x1="50%" y1="50%" x2="84%" y2="28%" stroke="#cbd5e1" stroke-width="2.5" stroke-dasharray="5,5" />
+          <!-- Line 3: Center to Bottom-Right Node -->
+          <line x1="50%" y1="50%" x2="80%" y2="82%" stroke="#cbd5e1" stroke-width="2.5" stroke-dasharray="5,5" />
+          <!-- Line 4: Center to Bottom-Left Node -->
+          <line x1="50%" y1="50%" x2="20%" y2="82%" stroke="#cbd5e1" stroke-width="2.5" stroke-dasharray="5,5" />
+          <!-- Line 5: Center to Top-Left Node -->
+          <line x1="50%" y1="50%" x2="16%" y2="28%" stroke="#cbd5e1" stroke-width="2.5" stroke-dasharray="5,5" />
+        </svg>
+
+        <!-- Spidergram Central Hub Card -->
+        <div class="relative z-10 max-w-xs md:max-w-sm bg-gradient-to-br from-amber-50 via-white to-amber-100/60 border-2 border-amber-400 rounded-2xl p-4 text-center shadow-lg my-12 md:my-16">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-amber-800 font-bold block mb-1">Central Question</span>
+          <h3 class="text-xs md:text-sm font-bold text-slate-900 leading-snug">
+            How might these initiatives help cities remain vibrant and sustainable for future generations?
+          </h3>
+        </div>
+
+        <!-- Node 1: Top -->
+        <div onclick="this.classList.toggle('selected')" class="spider-node absolute top-2 md:top-3 left-1/2 -translate-x-1/2 z-10 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-center shadow-sm max-w-[200px]">
+          <span class="text-base block">🏛️</span>
+          <span class="text-xs font-bold text-slate-800 block leading-tight">Preserving historic architectural fabric</span>
+        </div>
+
+        <!-- Node 2: Top Right -->
+        <div onclick="this.classList.toggle('selected')" class="spider-node absolute top-12 md:top-14 right-2 md:right-4 z-10 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-center shadow-sm max-w-[190px]">
+          <span class="text-base block">🌳</span>
+          <span class="text-xs font-bold text-slate-800 block leading-tight">Expanding urban parks & green corridors</span>
+        </div>
+
+        <!-- Node 3: Bottom Right -->
+        <div onclick="this.classList.toggle('selected')" class="spider-node absolute bottom-3 md:bottom-4 right-3 md:right-8 z-10 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-center shadow-sm max-w-[190px]">
+          <span class="text-base block">🎭</span>
+          <span class="text-xs font-bold text-slate-800 block leading-tight">Subsidising grassroots arts & music venues</span>
+        </div>
+
+        <!-- Node 4: Bottom Left -->
+        <div onclick="this.classList.toggle('selected')" class="spider-node absolute bottom-3 md:bottom-4 left-3 md:left-8 z-10 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-center shadow-sm max-w-[190px]">
+          <span class="text-base block">🚲</span>
+          <span class="text-xs font-bold text-slate-800 block leading-tight">Creating 100% pedestrianised zones</span>
+        </div>
+
+        <!-- Node 5: Top Left -->
+        <div onclick="this.classList.toggle('selected')" class="spider-node absolute top-12 md:top-14 left-2 md:left-4 z-10 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-center shadow-sm max-w-[190px]">
+          <span class="text-base block">🏘️</span>
+          <span class="text-xs font-bold text-slate-800 block leading-tight">Mandating affordable civic housing ratios</span>
+        </div>
+      </div>
+
+      <!-- Partner Follow-Up Question Strip -->
+      <div class="bg-amber-50 border border-amber-300 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs shadow-sm">
+        <div>
+          <span class="font-bold text-amber-900 uppercase tracking-wider font-mono block sm:inline mr-2">Follow-Up Question after the 2-Minute Turn (1 Minute):</span>
+          <span class="text-slate-800 font-semibold">"Which of these urban priorities do you think has the greatest long-term impact on a resident's daily sense of belonging?"</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 12: PART 3 STAGE B INTRO - THE A.R.E.A. METHOD ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="Part 3 (Stage B) · A.R.E.A. Formula">
+      <div class="space-y-1">
+        <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">Speaking Part 3 (Stage B) Framework</span>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">The A.R.E.A. Formula for Part 3 Extended Discussion</h2>
+        <p class="text-xs md:text-sm text-slate-600">How to construct sophisticated, well-proportioned answers to the examiner's follow-up abstract questions without hesitating or rambling.</p>
+      </div>
+
+      <!-- 4 Pillars of AREA -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- A -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-2 border-t-4 border-t-amber-500 shadow-sm">
+          <div class="text-2xl font-bold heading-font text-amber-700">A</div>
+          <h3 class="font-bold text-slate-900 text-sm">Assertion</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Deliver a direct, unequivocal thesis answering the core prompt immediately. No filler or hesitation.
+          </p>
+          <div class="text-[11px] font-mono text-amber-900 bg-amber-50 p-2 rounded border border-amber-200">
+            "To my mind, it is undeniable that..."
+          </div>
+        </div>
+
+        <!-- R -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-2 border-t-4 border-t-blue-500 shadow-sm">
+          <div class="text-2xl font-bold heading-font text-blue-700">R</div>
+          <h3 class="font-bold text-slate-900 text-sm">Reason</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Explain the underlying mechanism or principle. Why does this phenomenon happen?
+          </p>
+          <div class="text-[11px] font-mono text-blue-900 bg-blue-50 p-2 rounded border border-blue-200">
+            "What lies at the heart of this is..."
+          </div>
+        </div>
+
+        <!-- E -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-2 border-t-4 border-t-emerald-500 shadow-sm">
+          <div class="text-2xl font-bold heading-font text-emerald-700">E</div>
+          <h3 class="font-bold text-slate-900 text-sm">Evidence / Example</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Anchor your point with a tangible societal precedent, cultural observation, or historical case.
+          </p>
+          <div class="text-[11px] font-mono text-emerald-900 bg-emerald-50 p-2 rounded border border-emerald-200">
+            "A telling case in point is..."
+          </div>
+        </div>
+
+        <!-- A -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-2 border-t-4 border-t-purple-500 shadow-sm">
+          <div class="text-2xl font-bold heading-font text-purple-700">A</div>
+          <h3 class="font-bold text-slate-900 text-sm">Alternative / Amplification</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Weigh the counter-reality (*Were this not so...*), concede nuance (*While...*), or examine consequences (*thereby...*).
+          </p>
+          <div class="text-[11px] font-mono text-purple-900 bg-purple-50 p-2 rounded border border-purple-200">
+            "Were societies to overlook this..."
+          </div>
+        </div>
+      </div>
+
+      <!-- Contrast Strip -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs shadow-sm">
+        <div class="p-3 rounded-lg bg-red-50 border border-red-200 space-y-1">
+          <span class="text-red-700 font-bold font-mono">✕ Standard B2/C1 Answer (Rambling):</span>
+          <p class="text-slate-700 italic">"Well, I think old buildings are very important because people like looking at them. In my city there are many historical houses and tourists come, so if we destroy them it's bad."</p>
+        </div>
+        <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200 space-y-1">
+          <span class="text-emerald-800 font-bold font-mono">✓ Cambridge C2 A.R.E.A. Structure:</span>
+          <p class="text-slate-800 italic">"<strong>What architectural preservation fundamentally safeguards is</strong> civic continuity. <strong>While commercial developers argue for</strong> higher yields, <strong>had European cities flattened</strong> their medieval cores, they would have forfeited their cultural soul, <strong>thereby diluting</strong> local identity."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 13: FULL PRACTICE - PART 3 EXTENDED DISCUSSION DRILLS ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-5" data-category="Part 3 (Stage B) · A.R.E.A. Live Drills">
+      <div class="space-y-1">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">Part 3 Extended Discussion Drills</span>
+          <span class="text-xs font-mono text-slate-500 font-medium">Abstract Discussion (~4–5 Mins)</span>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold heading-font text-slate-900">Part 3 (Stage B): Philosophical Discussion Prompts</h2>
+        <p class="text-xs md:text-sm text-slate-600">Deploy the A.R.E.A. structure while integrating today's six C2 grammatical blueprints.</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Question 1 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Question 1 · Civic Identity</span>
+            <span class="text-xs text-slate-500 font-mono">Theme: Heritage vs Modernisation</span>
+          </div>
+          <p class="text-sm md:text-base text-slate-900 font-semibold">
+            "To what extent does rapid urbanisation risk eroding a community's sense of collective cultural identity?"
+          </p>
+          <button onclick="toggleReveal('part4-ans-1', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal C2 A.R.E.A. Model Response</span>
+          </button>
+          <div id="part4-ans-1" class="reveal-box hidden bg-slate-50 border border-emerald-300 rounded-lg p-4 space-y-2 text-xs md:text-sm shadow-inner">
+            <div class="text-slate-800 leading-relaxed space-y-1.5">
+              <p><span class="font-bold text-amber-800">[A - Assertion]:</span> "<strong>What rapid urbanisation imperils most acutely is</strong> the tangible continuity of shared civic memory."</p>
+              <p><span class="font-bold text-blue-800">[R - Reason]:</span> "<strong>It is widely acknowledged that</strong> when generic glass architecture supplants historic neighbourhoods, citizens forfeit the physical anchors of their heritage."</p>
+              <p><span class="font-bold text-emerald-800">[E - Evidence]:</span> "Consider several major Asian and European metropolises that dismantled their ancient districts in pursuit of hyper-density."</p>
+              <p><span class="font-bold text-purple-800">[A - Alternative / Amplification]:</span> "<strong>While modernisation is essential</strong> for economic expansion, <strong>were planners to neglect</strong> vernacular architecture, cities would become indistinguishable monocultures, <strong>thereby severing</strong> the link between generations."</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 space-y-3 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 font-bold">Question 2 · Cultural Philanthropy</span>
+            <span class="text-xs text-slate-500 font-mono">Theme: State Funding vs Private Enterprise</span>
+          </div>
+          <p class="text-sm md:text-base text-slate-900 font-semibold">
+            "Some argue that high culture—such as opera, classical theatre, and public galleries—should be funded exclusively through private patrons rather than public taxation. What is your view?"
+          </p>
+          <button onclick="toggleReveal('part4-ans-2', this)" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold flex items-center gap-1.5 transition">
+            <span>👁️</span> <span>Reveal C2 A.R.E.A. Model Response</span>
+          </button>
+          <div id="part4-ans-2" class="reveal-box hidden bg-slate-50 border border-emerald-300 rounded-lg p-4 space-y-2 text-xs md:text-sm shadow-inner">
+            <div class="text-slate-800 leading-relaxed space-y-1.5">
+              <p><span class="font-bold text-amber-800">[A - Assertion]:</span> "I firmly reject the proposition that high culture should be left to the whims of wealthy benefactors."</p>
+              <p><span class="font-bold text-blue-800">[R - Reason]:</span> "<strong>Not only does state sponsorship democratise</strong> access for citizens regardless of socioeconomic background, <strong>but it also insulates</strong> artistic experimentation from commercial pressure."</p>
+              <p><span class="font-bold text-emerald-800">[E - Evidence]:</span> "The National Theatre and continental European art institutions demonstrate that public subsidisation sustains cutting-edge work that purely commercial venues would deem financially perilous."</p>
+              <p><span class="font-bold text-purple-800">[A - Alternative]:</span> "<strong>Had it not been for public subventions</strong>, transformative cultural movements would have been stifled in their infancy."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SLIDE 14: CPE DEBRIEF & EXAM CHECKLIST ================= -->
+    <section class="slide flex-col max-w-4xl w-full mx-auto space-y-6" data-category="C2 Master Checklist">
+      <div class="space-y-1 text-center">
+        <span class="text-xs font-mono text-amber-700 uppercase tracking-widest font-bold">Final Debrief & Cambridge Strategy</span>
+        <h2 class="text-3xl md:text-4xl font-bold heading-font text-slate-900">Your Cambridge C2 Speaking Blueprint</h2>
+        <p class="text-xs md:text-sm text-slate-600 max-w-xl mx-auto">Keep these 4 golden rules in mind as you head into the final preparation phase for the exam.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-700 font-bold font-mono">01</span>
+            <h3 class="font-bold text-slate-900 text-sm">Dynamic Visual Collaboration (Part 2 · 4 Mins)</h3>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Never waste precious seconds describing surface visual details. In the 1-minute warm-up and 3-minute decision task, speculate analytically and invite your partner's view every 20–25 seconds (<em>"In all likelihood, the conductor is grappling with..."</em>).
+          </p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-700 font-bold font-mono">02</span>
+            <h3 class="font-bold text-slate-900 text-sm">Own the 2-Minute Prompt Card (Part 3 · Stage A)</h3>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Treat the three bullet points on your card as optional springboards, not a rigid checklist. Pace your 2-minute turn across an opening thesis, two contrasted angles, and a wider societal reflection.
+          </p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-700 font-bold font-mono">03</span>
+            <h3 class="font-bold text-slate-900 text-sm">Deploy 3–4 Deliberate Syntactic Shifts</h3>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            You don't need forced archaic vocabulary. Examiners give top marks to candidates who comfortably use clefts (<em>"What strikes me..."</em>), inversions (<em>"Not only does..."</em>), and participle clauses (<em>"..., thereby creating..."</em>).
+          </p>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
+          <div class="flex items-center gap-2">
+            <span class="text-amber-700 font-bold font-mono">04</span>
+            <h3 class="font-bold text-slate-900 text-sm">The A.R.E.A. Formula for Part 3 Extended Discussion</h3>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Assertion &rarr; Reason &rarr; Evidence &rarr; Alternative/Amplification. This guarantees your extended discussion turns are structured, intellectually grounded, and authoritative.
+          </p>
+        </div>
+      </div>
+
+      <!-- Encouragement Box -->
+      <div class="bg-gradient-to-r from-amber-50 via-amber-100/50 to-amber-50 border border-amber-300 rounded-xl p-4 text-center shadow-sm">
+        <p class="text-sm text-amber-950 font-medium leading-relaxed">
+          "C2 Proficiency is not about speaking faster; it is about speaking with deliberate composure, structural elegance, and rhetorical purpose. You have the linguistic toolkit—now own the room!"
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer Navigation Bar (Day Mode) -->
+  <footer class="border-t border-slate-200 bg-white/95 backdrop-blur-md px-4 md:px-8 py-3.5 flex items-center justify-between z-30 shadow-sm">
+    <div class="flex items-center gap-2">
+      <button onclick="prevSlide()" id="prev-btn" class="px-3.5 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
+        <span>←</span> <span>Previous</span>
+      </button>
+      <button onclick="nextSlide()" id="next-btn" class="px-4 py-1.5 rounded-lg border border-amber-400 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-sm">
+        <span>Next</span> <span>→</span>
+      </button>
+    </div>
+
+    <!-- Quick Jump Dots -->
+    <div class="hidden md:flex items-center gap-1.5" id="slide-dots">
+      <!-- Dots injected via JS -->
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button onclick="revealAllOnSlide()" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-300 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition font-medium">
+        👁️ Reveal All
+      </button>
+    </div>
+  </footer>
+
+  <!-- Script for Navigation & Timers -->
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    document.getElementById('total-slides').innerText = totalSlides;
+
+    // Build Dots
+    const dotsContainer = document.getElementById('slide-dots');
+    slides.forEach((_, idx) => {
+      const dot = document.createElement('button');
+      dot.className = `w-2.5 h-2.5 rounded-full transition ${idx === 0 ? 'bg-amber-500' : 'bg-slate-300 hover:bg-slate-400'}`;
+      dot.onclick = () => goToSlide(idx);
+      dotsContainer.appendChild(dot);
+    });
+
+    function updateSlide() {
+      slides.forEach((s, idx) => {
+        s.classList.remove('active');
+        if (idx === currentSlide) s.classList.add('active');
+      });
+      document.getElementById('current-slide-num').innerText = currentSlide + 1;
+      const cat = slides[currentSlide].getAttribute('data-category') || 'Cambridge C2';
+      document.getElementById('slide-category').innerText = cat;
+
+      // Update Dots
+      const dots = dotsContainer.children;
+      for (let i = 0; i < dots.length; i++) {
+        if (i === currentSlide) {
+          dots[i].className = 'w-2.5 h-2.5 rounded-full bg-amber-500 transition';
+        } else {
+          dots[i].className = 'w-2.5 h-2.5 rounded-full bg-slate-300 hover:bg-slate-400 transition';
+        }
+      }
+
+      // Button state
+      document.getElementById('prev-btn').disabled = (currentSlide === 0);
+      document.getElementById('prev-btn').classList.toggle('opacity-40', currentSlide === 0);
+      document.getElementById('next-btn').disabled = (currentSlide === totalSlides - 1);
+      document.getElementById('next-btn').classList.toggle('opacity-40', currentSlide === totalSlides - 1);
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    function goToSlide(n) {
+      if (n >= 0 && n < totalSlides) {
+        currentSlide = n;
+        updateSlide();
+      }
+    }
+
+    // Keyboard Navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    // Reveal Toggles
+    function toggleReveal(id, btn) {
+      const target = document.getElementById(id);
+      if (target) {
+        const isHidden = target.classList.contains('hidden');
+        if (isHidden) {
+          target.classList.remove('hidden');
+          if (btn) btn.classList.add('bg-emerald-100', 'border-emerald-400', 'text-emerald-900');
+        } else {
+          target.classList.add('hidden');
+          if (btn) btn.classList.remove('bg-emerald-100', 'border-emerald-400', 'text-emerald-900');
+        }
+      }
+    }
+
+    function revealAllOnSlide() {
+      const activeSlide = slides[currentSlide];
+      const reveals = activeSlide.querySelectorAll('.reveal-box');
+      reveals.forEach(r => r.classList.remove('hidden'));
+    }
+
+    // Fullscreen
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    // Exam Timer
+    let timerInterval = null;
+    let secondsRemaining = 60;
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function startTimer(seconds) {
+      clearInterval(timerInterval);
+      secondsRemaining = seconds;
+      const display = document.getElementById('timer-display');
+      display.innerText = formatTime(secondsRemaining);
+      display.classList.remove('text-red-600');
+      display.classList.add('text-amber-700');
+
+      timerInterval = setInterval(() => {
+        secondsRemaining--;
+        display.innerText = formatTime(secondsRemaining);
+
+        if (secondsRemaining <= 10 && secondsRemaining > 0) {
+          display.classList.remove('text-amber-700');
+          display.classList.add('text-red-600');
+        }
+
+        if (secondsRemaining <= 0) {
+          clearInterval(timerInterval);
+          display.innerText = '00:00';
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      secondsRemaining = 60;
+      const display = document.getElementById('timer-display');
+      display.innerText = '01:00';
+      display.classList.remove('text-red-600');
+      display.classList.add('text-amber-700');
+    }
+
+    // Initialize
+    updateSlide();
+  </script>
+</body>
+</html>

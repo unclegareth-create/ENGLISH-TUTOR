@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Gothic Canon Library: Interactive 3D World &amp; Genie 4 Studio | Gareth English</title>
+  <meta name="description" content="Walk inside the candlelit 3D Gothic Canon Library on GarethEnglish.com. Steer the atmosphere in real time, explore the 5 classic Victorian literature wings, and solve C1/C2 Key Word Transformations at the mahogany desk.">
+  <meta name="theme-color" content="#0b0806">
+  <link rel="canonical" href="https://garethenglish.com/dark-academia-world.html">
+  <meta property="og:title" content="The Gothic Canon Library: Interactive 3D Dark Academia World | Gareth English">
+  <meta property="og:description" content="Explore a candlelit 3D Victorian library with live natural-language atmosphere steering, procedural Web Audio, 5 Gothic Canon wings, and C1/C2 Part 4 Transformations.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://garethenglish.com/dark-academia-world.html">
+  <meta property="og:image" content="https://garethenglish.com/assets/gothic/genie4_gothic_library_world.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+  <link rel="preload" href="assets/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/eb-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    @font-face {
+      font-family: 'Cormorant Garamond';
+      src: url('assets/fonts/cormorant-garamond-normal-latin.woff2') format('woff2');
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'EB Garamond';
+      src: url('assets/fonts/eb-garamond-normal-latin.woff2') format('woff2');
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --bg-abyss: #080604;
+      --mahogany-dark: rgba(20, 13, 9, 0.92);
+      --mahogany-panel: rgba(28, 19, 13, 0.95);
+      --brass-border: rgba(217, 158, 71, 0.42);
+      --brass-bright: #f59e0b;
+      --gold-leaf: #fbbf24;
+      --gold-soft: #e4c88c;
+      --emerald-lamp: #10b981;
+      --emerald-glow: #34d399;
+      --crimson-ink: #ef4444;
+      --parchment: #f8f1e5;
+      --text-muted: #cbbba2;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'EB Garamond', Georgia, serif;
+      --font-ui: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-abyss);
+      color: var(--parchment);
+      font-family: var(--font-ui);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #world-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: block;
+      cursor: grab;
+    }
+    #world-canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Lightning & Atmosphere Screen Flash Overlay */
+    #atmosphere-flash {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(circle at 50% 30%, rgba(255, 250, 220, 0.65), transparent 70%);
+      opacity: 0;
+      transition: opacity 0.08s ease-out;
+    }
+
+    /* HUD Layer */
+    .hud-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+    }
+
+    .interactive {
+      pointer-events: auto;
+      user-select: text;
+      -webkit-user-select: text;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-plaque {
+      background: var(--mahogany-dark);
+      border: 1px solid var(--brass-border);
+      border-radius: 12px;
+      padding: 0.65rem 1.1rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .back-link {
+      color: var(--gold-soft);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.38rem 0.7rem;
+      border-radius: 8px;
+      border: 1px solid rgba(228, 200, 140, 0.3);
+      background: rgba(15, 10, 7, 0.7);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .back-link:hover {
+      border-color: var(--gold-leaf);
+      color: #fff;
+      background: rgba(217, 158, 71, 0.18);
+    }
+
+    .brand-titles h1 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--gold-leaf);
+      letter-spacing: 0.02em;
+      line-height: 1.1;
+    }
+    .brand-titles p {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .hud-btn {
+      background: var(--mahogany-dark);
+      color: var(--parchment);
+      border: 1px solid var(--brass-border);
+      border-radius: 9px;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+    }
+    .hud-btn:hover {
+      border-color: var(--gold-leaf);
+      background: rgba(45, 30, 19, 0.95);
+      transform: translateY(-1px);
+    }
+    .hud-btn.active {
+      border-color: var(--emerald-glow);
+      color: var(--emerald-glow);
+      background: rgba(6, 78, 59, 0.45);
+    }
+    .hud-btn-genie {
+      background: linear-gradient(135deg, rgba(146, 64, 14, 0.85), rgba(69, 26, 3, 0.95));
+      border-color: var(--gold-leaf);
+      color: #fff;
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.28);
+    }
+
+    /* Wing Compass / Quick Teleport Ribbon */
+    .wing-compass {
+      display: flex;
+      justify-content: center;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      margin-top: 0.35rem;
+    }
+
+    .wing-pill {
+      background: rgba(18, 12, 8, 0.88);
+      border: 1px solid rgba(228, 200, 140, 0.28);
+      color: var(--text-muted);
+      padding: 0.38rem 0.78rem;
+      border-radius: 99px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      backdrop-filter: blur(8px);
+    }
+    .wing-pill:hover, .wing-pill.active {
+      color: #fff;
+      border-color: var(--gold-leaf);
+      background: rgba(120, 53, 15, 0.65);
+      box-shadow: 0 0 14px rgba(251, 191, 36, 0.25);
+    }
+    .wing-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* Center Proximity Prompt */
+    #proximity-banner {
+      align-self: center;
+      background: rgba(16, 11, 8, 0.92);
+      border: 1px solid var(--gold-leaf);
+      border-radius: 99px;
+      padding: 0.55rem 1.25rem;
+      font-size: 0.86rem;
+      color: var(--parchment);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      gap: 0.65rem;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    #proximity-banner:hover {
+      transform: scale(1.03);
+    }
+    .key-hint {
+      background: var(--gold-leaf);
+      color: #140d09;
+      font-weight: 800;
+      padding: 0.12rem 0.45rem;
+      border-radius: 5px;
+      font-size: 0.75rem;
+    }
+
+    /* Bottom Genie 4 Live World Steering Bar */
+    .bottom-dock {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.55rem;
+      width: 100%;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    .steering-presets {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .preset-chip {
+      background: rgba(20, 14, 10, 0.85);
+      border: 1px solid rgba(217, 158, 71, 0.3);
+      color: var(--gold-soft);
+      font-size: 0.73rem;
+      padding: 0.28rem 0.65rem;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .preset-chip:hover, .preset-chip.active {
+      background: rgba(16, 185, 129, 0.22);
+      border-color: var(--emerald-glow);
+      color: #fff;
+    }
+
+    .steering-console {
+      width: 100%;
+      background: var(--mahogany-dark);
+      border: 1px solid var(--brass-border);
+      border-radius: 14px;
+      padding: 0.5rem 0.65rem 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
+    }
+
+    .steering-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--emerald-glow);
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    #steering-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 0.88rem;
+      outline: none;
+      font-family: var(--font-ui);
+    }
+    #steering-input::placeholder {
+      color: rgba(203, 187, 162, 0.55);
+    }
+
+    .steering-submit {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 0.48rem 0.95rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: filter 0.2s ease;
+      white-space: nowrap;
+    }
+    .steering-submit:hover {
+      filter: brightness(1.12);
+    }
+
+    .controls-legend {
+      font-size: 0.72rem;
+      color: rgba(203, 187, 162, 0.75);
+      text-align: center;
+    }
+
+    /* Modal / Dossier Drawer */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgba(5, 3, 2, 0.78);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+    }
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .dossier-card {
+      background: var(--mahogany-panel);
+      border: 1px solid var(--gold-leaf);
+      border-radius: 16px;
+      max-width: 820px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.92);
+      color: var(--parchment);
+      padding: 1.65rem;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1.1rem;
+      right: 1.1rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--brass-border);
+      color: var(--parchment);
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+    .modal-close:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: var(--crimson-ink);
+    }
+
+    .dossier-eyebrow {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--gold-leaf);
+      font-weight: 700;
+    }
+
+    .dossier-title {
+      font-family: var(--font-display);
+      font-size: 1.95rem;
+      color: #fff;
+      margin: 0.2rem 0 0.45rem;
+    }
+
+    .dossier-lead {
+      font-family: var(--font-body);
+      font-size: 1.08rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 1.15rem;
+    }
+
+    /* Wing Units Row */
+    .wing-units-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .wing-unit-item {
+      background: rgba(14, 9, 6, 0.85);
+      border: 1px solid var(--brass-border);
+      border-radius: 10px;
+      padding: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.55rem;
+      text-decoration: none;
+      color: var(--parchment);
+      transition: all 0.2s ease;
+    }
+    .wing-unit-item:hover {
+      border-color: var(--gold-leaf);
+      transform: translateY(-2px);
+    }
+
+    .wing-unit-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--gold-soft);
+      font-weight: 700;
+    }
+    .wing-unit-item h4 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      color: #fff;
+    }
+    .wing-unit-item p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .wing-unit-cta {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--emerald-glow);
+    }
+
+    /* Relic Key Word Transformation Box */
+    .kwt-relic-box {
+      background: linear-gradient(145deg, rgba(16, 12, 9, 0.96), rgba(29, 20, 14, 0.92));
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .formula-banner {
+      background: rgba(245, 158, 11, 0.12);
+      border-left: 3px solid var(--gold-leaf);
+      padding: 0.55rem 0.85rem;
+      border-radius: 0 8px 8px 0;
+      font-family: monospace;
+      font-size: 0.86rem;
+      color: var(--gold-leaf);
+      margin: 0.65rem 0 0.95rem;
+    }
+
+    .kwt-sentence-1 {
+      font-family: var(--font-body);
+      font-size: 1.15rem;
+      color: #fff;
+      margin-bottom: 0.55rem;
+      line-height: 1.5;
+    }
+    .echo-strike {
+      transition: all 0.25s ease;
+    }
+    .echo-strike.struck {
+      text-decoration: line-through;
+      color: rgba(239, 68, 68, 0.75);
+      opacity: 0.65;
+    }
+
+    .kwt-keyword-pill {
+      display: inline-block;
+      background: rgba(251, 191, 36, 0.18);
+      border: 1px solid var(--gold-leaf);
+      color: var(--gold-leaf);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.7rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .kwt-sentence-2 {
+      font-family: var(--font-body);
+      font-size: 1.15rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .kwt-input {
+      background: rgba(8, 5, 3, 0.9);
+      border: 1px solid var(--gold-leaf);
+      border-radius: 7px;
+      color: var(--emerald-glow);
+      font-family: var(--font-ui);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0.42rem 0.75rem;
+      min-width: 240px;
+      outline: none;
+    }
+
+    .kwt-deconstruct-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 0.5rem;
+      margin: 0.85rem 0;
+    }
+
+    .step-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(228, 200, 140, 0.22);
+      border-radius: 8px;
+      padding: 0.55rem 0.65rem;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+    .step-chip strong {
+      display: block;
+      color: var(--gold-soft);
+      margin-bottom: 0.18rem;
+    }
+
+    .kwt-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 0.75rem;
+    }
+
+    .btn-primary {
+      background: var(--emerald-lamp);
+      color: #041f17;
+      font-weight: 800;
+      border: none;
+      padding: 0.55rem 1.05rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--parchment);
+      border: 1px solid var(--brass-border);
+      padding: 0.52rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .kwt-feedback {
+      margin-top: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      display: none;
+      line-height: 1.45;
+    }
+
+    /* Genie 4 Prompt Studio Grid */
+    .genie-sketch-preview {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--gold-leaf);
+      margin: 0.75rem 0;
+      max-height: 290px;
+      object-fit: cover;
+      background: #120c08;
+    }
+
+    .prompt-block {
+      background: rgba(10, 7, 5, 0.92);
+      border: 1px solid var(--brass-border);
+      border-radius: 10px;
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+    .prompt-block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.45rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gold-leaf);
+    }
+    .prompt-text {
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 680px) {
+      .brand-titles h1 { font-size: 1.08rem; }
+      .brand-titles p { display: none; }
+      .dossier-card { padding: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="world-canvas" aria-label="Interactive 3D Gothic Canon Library"></canvas>
+  <div id="atmosphere-flash"></div>
+
+  <div class="hud-layer">
+    <!-- Top Bar -->
+    <div>
+      <header class="top-bar">
+        <div class="brand-plaque interactive">
+          <a href="dark-academia-index.html" class="back-link">← Course Hub</a>
+          <div class="brand-titles">
+            <h1>The Gothic Canon Library</h1>
+            <p>Interactive 3D World &amp; Genie 4 Atmosphere Engine • Gareth Montgomery</p>
+          </div>
+        </div>
+
+        <div class="top-actions interactive">
+          <button type="button" class="hud-btn active" id="audio-toggle-btn" onclick="WorldAudio.toggle()">
+            <span id="audio-icon">🔊</span>
+            <span id="audio-label">Playing: Tchaikovsky: Nocturne</span>
+          </button>
+          <button type="button" class="hud-btn" id="audio-next-btn" onclick="WorldAudio.nextTrack()" title="Switch Classical Track">
+            <span>▸</span>
+            <span id="audio-track-pill">Switch Track</span>
+          </button>
+          <button type="button" class="hud-btn" onclick="openStationModal('desk')">
+            <span>🖋️</span>
+            <span>Belfast Mahogany Desk</span>
+          </button>
+          <button type="button" class="hud-btn hud-btn-genie" onclick="openGenieModal()">
+            <span>🔮</span>
+            <span>Genie 4 World Sketch &amp; Prompts</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Quick Wing Teleport Compass -->
+      <nav class="wing-compass interactive" aria-label="Library Wings">
+        <button type="button" class="wing-pill active" data-target="desk" onclick="teleportToStation('desk')">
+          <span class="wing-dot" style="background:#10b981;"></span> Central Mahogany Desk
+        </button>
+        <button type="button" class="wing-pill" data-target="dracula" onclick="teleportToStation('dracula')">
+          <span class="wing-dot" style="background:#ef4444;"></span> I. Dracula
+        </button>
+        <button type="button" class="wing-pill" data-target="frankenstein" onclick="teleportToStation('frankenstein')">
+          <span class="wing-dot" style="background:#38bdf8;"></span> II. Frankenstein
+        </button>
+        <button type="button" class="wing-pill" data-target="jekyll" onclick="teleportToStation('jekyll')">
+          <span class="wing-dot" style="background:#f59e0b;"></span> III. Jekyll &amp; Hyde
+        </button>
+        <button type="button" class="wing-pill" data-target="baskerville" onclick="teleportToStation('baskerville')">
+          <span class="wing-dot" style="background:#34d399;"></span> IV. Baskerville
+        </button>
+        <button type="button" class="wing-pill" data-target="alice" onclick="teleportToStation('alice')">
+          <span class="wing-dot" style="background:#c084fc;"></span> V. Alice in Wonderland
+        </button>
+      </nav>
+    </div>
+
+    <!-- Proximity Prompt -->
+    <div id="proximity-banner" class="interactive" onclick="openActiveProximityStation()">
+      <span class="key-hint">E / Click</span>
+      <span id="proximity-text">Inspect the Central Mahogany Desk</span>
+    </div>
+
+    <!-- Bottom Genie 4 Live World Steering Bar -->
+    <div class="bottom-dock interactive">
+      <div class="steering-presets" role="group" aria-label="Atmosphere Steering Presets">
+        <button type="button" class="preset-chip active" onclick="applySteeringPreset('study', this)">🕯️ Belfast Mahogany Study</button>
+        <button type="button" class="preset-chip" onclick="applySteeringPreset('carpathian', this)">⛈️ Carpathian Midnight Storm</button>
+        <button type="button" class="preset-chip" onclick="applySteeringPreset('galvanic', this)">⚡ Frankenstein Galvanic Surge</button>
+        <button type="button" class="preset-chip" onclick="applySteeringPreset('soho', this)">🌫️ Soho Gaslight &amp; Fog</button>
+        <button type="button" class="preset-chip" onclick="applySteeringPreset('mire', this)">🐺 Grimpen Mire Spectral Mist</button>
+        <button type="button" class="preset-chip" onclick="applySteeringPreset('wonderland', this)">🕰️ Subterranean Clockwork</button>
+      </div>
+
+      <form class="steering-console" onsubmit="handleSteeringSubmit(event)">
+        <span class="steering-badge">Genie 4 Steer</span>
+        <input
+          type="text"
+          id="steering-input"
+          placeholder="Steer the world in plain English (e.g. 'Carpathian thunderstorm with crimson lightning', 'dense emerald moorland fog', 'floating clockwork gravity')..."
+          aria-label="Live natural language world steering prompt"
+        >
+        <button type="submit" class="steering-submit">Transmute World →</button>
+      </form>
+      <div class="controls-legend">
+        <strong>WASD / Arrows</strong> to walk • <strong>Drag Mouse</strong> to look around • <strong>Click any Wing Portal or press E</strong> to inspect manuscripts &amp; Part 4 Relic Transforms
+      </div>
+    </div>
+  </div>
+
+  <!-- Station Dossier & Part 4 KWT Modal -->
+  <div id="station-modal" class="modal-backdrop interactive" role="dialog" aria-modal="true" aria-labelledby="dossier-title">
+    <div class="dossier-card">
+      <button type="button" class="modal-close" onclick="closeStationModal()" aria-label="Close modal">✕</button>
+      <div class="dossier-eyebrow" id="dossier-eyebrow">Wing I • Gothic Canon Archive</div>
+      <h2 class="dossier-title" id="dossier-title">Bram Stoker's Dracula (1897)</h2>
+      <p class="dossier-lead" id="dossier-lead"></p>
+
+      <div id="wing-units-container" class="wing-units-list"></div>
+
+      <!-- C1/C2 Part 4 Key Word Transformation Relic Workout -->
+      <div class="kwt-relic-box">
+        <div class="dossier-eyebrow" style="color:var(--emerald-glow);">Cambridge C1/C2 Part 4 Relic Workout • 3 to 6 Words</div>
+        <h3 style="font-family:var(--font-display); font-size:1.35rem; color:#fff; margin-top:0.2rem;" id="kwt-heading"></h3>
+        <div class="formula-banner" id="kwt-formula"></div>
+
+        <p class="kwt-sentence-1" id="kwt-s1"></p>
+        <div>
+          <span class="kwt-keyword-pill" id="kwt-keyword"></span>
+          <span style="font-size:0.76rem; color:var(--text-muted); margin-left:0.4rem;">Do not alter this word under any circumstances.</span>
+        </div>
+        <div class="kwt-sentence-2">
+          <span id="kwt-s2-prefix"></span>
+          <input type="text" class="kwt-input" id="kwt-user-input" placeholder="Type 3 to 6 words..." autocomplete="off">
+          <span id="kwt-s2-suffix"></span>
+        </div>
+
+        <div class="kwt-deconstruct-steps" id="kwt-steps-box" style="display:none;">
+          <div class="step-chip">
+            <strong>1. Strike Out the Echoes</strong>
+            <span id="step-echo"></span>
+          </div>
+          <div class="step-chip">
+            <strong>2. Inspect Tense Harmony</strong>
+            <span id="step-tense"></span>
+          </div>
+          <div class="step-chip">
+            <strong>3. Check Voice Shift</strong>
+            <span id="step-voice"></span>
+          </div>
+          <div class="step-chip">
+            <strong>4. Solve the Pattern</strong>
+            <span id="step-pattern"></span>
+          </div>
+        </div>
+
+        <div class="kwt-actions">
+          <button type="button" class="btn-primary" onclick="checkStationKWT()">✓ Check Transformation</button>
+          <button type="button" class="btn-secondary" onclick="toggleEchoStrike()">✂️ Step 1–4 Deconstruction</button>
+          <button type="button" class="btn-secondary" onclick="revealStationModel()">👁️ Reveal Cambridge Model</button>
+        </div>
+
+        <div class="kwt-feedback" id="kwt-feedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Genie 4 World Sketch & Prompt Studio Modal -->
+  <div id="genie-modal" class="modal-backdrop interactive" role="dialog" aria-modal="true" aria-labelledby="genie-modal-title">
+    <div class="dossier-card">
+      <button type="button" class="modal-close" onclick="closeGenieModal()" aria-label="Close Genie 4 Studio">✕</button>
+      <div class="dossier-eyebrow">Google DeepMind Project Genie • World Sketch &amp; Steering Vault</div>
+      <h2 class="dossier-title" id="genie-modal-title">Genie 4 World Sketch &amp; Live Steering Prompts</h2>
+      <p class="dossier-lead">
+        Drop the bespoke 16:9 World Sketch below into <strong>Project Genie (Google Labs)</strong> or <strong>Google AI Studio</strong>, then paste the initial seed prompt and live steering cues to generate synchronized 720p/24fps interactive sessions with native audio.
+      </p>
+
+      <img
+        src="assets/gothic/genie4_gothic_library_world.png"
+        onerror="this.src='assets/gothic/dracula_carpathian.jpg'"
+        alt="Genie 4 World Sketch: The Gothic Canon Library"
+        class="genie-sketch-preview"
+      >
+      <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.1rem;">
+        <a href="assets/gothic/genie4_gothic_library_world.png" download="garethenglish-genie4-world-sketch.png" class="btn-primary" style="text-decoration:none;">⬇ Download 16:9 World Sketch (.PNG)</a>
+        <a href="dark-academia-index.html" class="btn-secondary" style="text-decoration:none;">📚 Open All 15 Gothic Canon Lessons</a>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-block-header">
+          <span>1. Initial Genie 4 World Sketch Seed Prompt (Visuals + Native Audio)</span>
+          <button type="button" class="btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.72rem;" onclick="copyPromptText('p-seed', this)">Copy Prompt</button>
+        </div>
+        <div class="prompt-text" id="p-seed">First-person interactive exploration inside The Gothic Canon Library: a soaring 19th-century Victorian Dark Academia library with vaulted timber arches, polished dark slate flooring, and towering mahogany bookshelves. In the centre stands a Belfast mahogany scholar's desk lit by an emerald-green banker's lamp, an open leather manuscript, and a brass inkwell. Five illuminated stone archway portals line the nave: (1) crimson Carpathian mountain mist, (2) electric amber-cobalt galvanic laboratory, (3) foggy Soho gaslight street, (4) spectral emerald Dartmoor moorland, and (5) golden subterranean clockwork hall. Native audio: warm crackling hearth, soft rain tapping against high leaded glass windows, and resonant footsteps on aged oak.</div>
+      </div>
+
+      <div class="prompt-block">
+        <div class="prompt-block-header">
+          <span>2. Live Mid-Simulation Steering Cues (Type while walking in Project Genie)</span>
+          <button type="button" class="btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.72rem;" onclick="copyPromptText('p-steer', this)">Copy Steering Suite</button>
+        </div>
+        <div class="prompt-text" id="p-steer">• [Dracula Wing]: "Shift weather outside the tall gothic windows to a Carpathian midnight thunderstorm; flash crimson lightning across the mahogany desk and swell distant rolling thunder."
+• [Frankenstein Wing]: "Ignite brass electrostatic coils along the vaulted rafters; send warm amber and cobalt galvanic sparks arcing above the central manuscript with a low harmonic hum."
+• [Jekyll &amp; Hyde Wing]: "Roll dense amber 1880s Soho fog across the library floor and dim the chandeliers to flickering Victorian sodium gaslight."
+• [Baskerville Wing]: "Flood the nave floor with spectral emerald Dartmoor mist and sound a distant, mournful hound baying beyond the leaded glass."
+• [Alice Wing]: "Suspend gravity gently so brass pocket watches, quill pens, and open C1 grammar folios float slowly upward around the chandeliers."</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="dark-academia-engine.js?v=2"></script>
+  <script src="gothic-portal-textures.js?v=1"></script>
+  <script>
+    /**
+     * ========================================================================
+     * STATION & CURRICULUM DATA (5 Gothic Canon Wings + Central Mahogany Desk)
+     * ========================================================================
+     */
+    const STATIONS = {
+      desk: {
+        id: 'desk',
+        eyebrow: 'The Central Nave • Belfast Mahogany Desk',
+        title: 'The Scholar’s Mahogany Desk',
+        lead: 'Examiners mark forty scripts before lunch. Memorised vocabulary lists put them to sleep; clean syntactic control wakes them up. At this desk, we strip away the echoes, check the tense and voice, and let four or five well-placed structural shifts do the heavy lifting.',
+        color: 0x10b981,
+        position: { x: 0, z: 2 },
+        lookAt: { x: 0, y: 1.5, z: -2 },
+        units: [
+          { id: 'dracula_unit1', num: 'Lesson 1 • Free', title: 'Dracula: Carpathian Journey', desc: 'Participle clauses for concise topic sentences.', href: 'dracula-unit1-carpathian-threshold.html', free: true },
+          { id: 'frankenstein_unit1', num: 'Lesson 4 • Free', title: 'Frankenstein: Spark of Being', desc: 'Inverted conditionals for causes & ethics.', href: 'frankenstein-unit1-spark-of-being.html', free: true },
+          { id: 'compendium', num: 'Master Compendium', title: 'The Gothic Canon Study Guide', desc: 'All 75 Part 4 Transformations & answer keys.', href: 'the-gothic-canon-c1-c2-compendium.html', free: false }
+        ],
+        kwt: {
+          heading: 'Master Relic: Negative Inversion with "LITTLE"',
+          formula: 'Little + Auxiliary (did / had) + Subject + Bare Infinitive / Participle',
+          s1Html: 'The candidates <span class="echo-strike">did not realise</span> how much weight <span class="echo-strike">the examiner placed on syntactic variety</span>.',
+          keyword: 'LITTLE',
+          prefix: 'Little',
+          suffix: 'how much weight the examiner placed on syntactic variety.',
+          accepted: ['did the candidates realise', 'did the candidates realize'],
+          model: 'did the candidates realise',
+          echo: 'Cross out "The candidates" and "how much weight the examiner placed...". Only "did not realise" remains.',
+          tense: 'Sentence 1 is Past Simple ("did not realise") → keep Past Simple auxiliary "did".',
+          voice: 'Active voice remains active ("the candidates" performs the verb).',
+          pattern: 'Negative adverbial "Little" at the front forces auxiliary inversion: "did the candidates realise" (4 words).'
+        }
+      },
+      dracula: {
+        id: 'dracula',
+        eyebrow: 'Wing I • Bram Stoker (1897)',
+        title: 'Book I: Dracula — The Carpathian Threshold',
+        lead: 'Follow Jonathan Harker into the Borgo Pass and learn how Stoker binds suspenseful action into compact participle clauses, negative inversions, and formal reporting passives.',
+        color: 0xef4444,
+        art: 'assets/gothic/dracula_carpathian.jpg',
+        position: { x: -6.2, z: -3.5 },
+        lookAt: { x: -10.5, y: 2.6, z: -3.5 },
+        units: [
+          { id: 'dracula_unit1', num: 'Lesson 1 • Free', title: 'The Carpathian Journey', desc: 'Participle Clauses (Fearing..., Having crossed...)', href: 'dracula-unit1-carpathian-threshold.html', free: true },
+          { id: 'dracula_unit2', num: 'Lesson 2 • Ch. 2–3', title: 'The Count’s Hospitality', desc: 'Negative Inversion (Little did..., Scarcely had...)', href: 'dracula-unit2-counts-hospitality.html', free: false },
+          { id: 'dracula_unit3', num: 'Lesson 3 • Ch. 7', title: 'The Shipwreck at Whitby', desc: 'Reporting Passives (is believed to have...)', href: 'dracula-unit3-log-of-the-demeter.html', free: false }
+        ],
+        kwt: {
+          heading: 'Book I Relic: Limiting Inversion with "SCARCELY"',
+          formula: 'Scarcely + had + Subject + Past Participle + when + Past Simple',
+          s1Html: 'Immediately after <span class="echo-strike">the carriage crossed the pass</span>, <span class="echo-strike">the wolves began to howl</span>.',
+          keyword: 'SCARCELY',
+          prefix: 'Scarcely',
+          suffix: 'the pass when the wolves began to howl.',
+          accepted: ['had the carriage crossed'],
+          model: 'had the carriage crossed',
+          echo: 'Strike out "the pass" and "the wolves began to howl". Focus on "Immediately after the carriage crossed".',
+          tense: 'First past action before another past action requires Past Perfect ("had ... crossed").',
+          voice: 'Active voice ("the carriage" is the subject).',
+          pattern: 'Fronted "Scarcely" triggers Past Perfect inversion: "had the carriage crossed" (4 words).'
+        }
+      },
+      frankenstein: {
+        id: 'frankenstein',
+        eyebrow: 'Wing II • Mary Shelley (1818)',
+        title: 'Book II: Frankenstein — The Galvanic Workshop',
+        lead: 'Step inside Victor Frankenstein’s November laboratory and onto the Alpine glacier to practise inverted third conditionals, contrast fronting, and emphatic cleft sentences.',
+        color: 0x38bdf8,
+        art: 'assets/gothic/frankenstein_lab.jpg',
+        position: { x: 6.2, z: -3.5 },
+        lookAt: { x: 10.5, y: 2.6, z: -3.5 },
+        units: [
+          { id: 'frankenstein_unit1', num: 'Lesson 4 • Free', title: 'The Spark of Being', desc: 'Inverted & Mixed Conditionals (Had he known...)', href: 'frankenstein-unit1-spark-of-being.html', free: true },
+          { id: 'frankenstein_unit2', num: 'Lesson 5 • Ch. 10', title: 'Confrontation on the Glacier', desc: 'Contrast Fronting (Much as..., Bleak though...)', href: 'frankenstein-unit2-sea-of-ice.html', free: false },
+          { id: 'frankenstein_unit3', num: 'Lesson 6 • Ch. 10 & 16', title: 'The Creature’s Case', desc: 'Cleft Sentences (What drove him was...)', href: 'frankenstein-unit3-creatures-apologia.html', free: false }
+        ],
+        kwt: {
+          heading: 'Book II Relic: Inverted Third Conditional with "HAD"',
+          formula: 'Had + Subject + (not) + Past Participle, Subject + would have + Past Participle',
+          s1Html: 'If Victor <span class="echo-strike">had not abandoned his creation</span>, the tragedy <span class="echo-strike">might have been averted</span>.',
+          keyword: 'HAD',
+          prefix: '',
+          suffix: 'his creation, the tragedy might have been averted.',
+          accepted: ['had victor not abandoned'],
+          model: 'Had Victor not abandoned',
+          echo: 'Strike out "his creation, the tragedy might have been averted". Isolate "If Victor had not abandoned".',
+          tense: 'Unreal past condition (Past Perfect) → retain "Had + Subject + not + Past Participle".',
+          voice: 'Active voice; note that "not" never contracts to "hadn\'t" in formal inversion.',
+          pattern: 'Drop "If" and invert auxiliary "Had": "Had Victor not abandoned" (4 words).'
+        }
+      },
+      jekyll: {
+        id: 'jekyll',
+        eyebrow: 'Wing III • R.L. Stevenson (1886)',
+        title: 'Book III: Strange Case of Dr Jekyll & Mr Hyde',
+        lead: 'Walk the gaslit streets of Soho with Mr Utterson and Dr Lanyon, contrasting polite Victorian restraint with fronted concessive clauses and "Not until" inversions.',
+        color: 0xf59e0b,
+        art: 'assets/gothic/jekyll_apothecary.jpg',
+        position: { x: -6.2, z: -11.5 },
+        lookAt: { x: -10.5, y: 2.6, z: -11.5 },
+        units: [
+          { id: 'jekyll_unit1', num: 'Lesson 7 • Free', title: 'The Mysterious Door in Soho', desc: 'Concessive Clauses (Much as..., Shocking though...)', href: 'jekyll-unit1-soho-threshold.html', free: true },
+          { id: 'jekyll_unit2', num: 'Lesson 8 • Ch. 9', title: 'Dr Lanyon’s Midnight Visitor', desc: 'Not until... did... & So strange was...', href: 'jekyll-unit2-lanyons-narrative.html', free: false },
+          { id: 'jekyll_unit3', num: 'Lesson 9 • Ch. 10', title: 'Henry Jekyll’s Confession', desc: 'What-Clefts & Emphatic Cause Structures', href: 'jekyll-unit3-full-statement.html', free: false }
+        ],
+        kwt: {
+          heading: 'Book III Relic: Fronted Concessive Clause with "THOUGH"',
+          formula: 'Adjective / Adverb + though / as + Subject + Verb, Main Clause',
+          s1Html: 'Although <span class="echo-strike">the potion was dangerous</span>, Jekyll <span class="echo-strike">could not resist drinking it</span>.',
+          keyword: 'THOUGH',
+          prefix: 'Dangerous',
+          suffix: ', Jekyll could not resist drinking it.',
+          accepted: ['though the potion was'],
+          model: 'though the potion was',
+          echo: 'Strike out "dangerous" (already fronted!) and "Jekyll could not resist drinking it".',
+          tense: 'Past Simple ("was") stays Past Simple.',
+          voice: 'Active linking verb ("the potion was").',
+          pattern: 'Fronted adjective + "though" + Subject + Verb: "though the potion was" (4 words).'
+        }
+      },
+      baskerville: {
+        id: 'baskerville',
+        eyebrow: 'Wing IV • Sir Arthur Conan Doyle (1901)',
+        title: 'Book IV: The Hound of the Baskervilles',
+        lead: 'Separate superstition from hard evidence across the fog-shrouded tors of Dartmoor using past modals of deduction, descriptive place inversion, and evidential passives.',
+        color: 0x34d399,
+        art: 'assets/gothic/baskerville_moor.jpg',
+        position: { x: 6.2, z: -11.5 },
+        lookAt: { x: 10.5, y: 2.6, z: -11.5 },
+        units: [
+          { id: 'baskerville_unit1', num: 'Lesson 10 • Free', title: 'The Mystery at Baskerville Hall', desc: 'Past Modals of Deduction (must have been, can’t have)', href: 'baskerville-unit1-curse-of-the-moors.html', free: true },
+          { id: 'baskerville_unit2', num: 'Lesson 11 • Ch. 6–7', title: 'Across Dartmoor & Grimpen Mire', desc: 'Place Inversion (Beyond the hills lay...)', href: 'baskerville-unit2-grimpen-mire.html', free: false },
+          { id: 'baskerville_unit3', num: 'Lesson 12 • Ch. 14–15', title: 'The Hound Revealed', desc: 'Had it not been for... / But for...', href: 'baskerville-unit3-moorland-vigil.html', free: false }
+        ],
+        kwt: {
+          heading: 'Book IV Relic: Past Modal Deduction with "MUST"',
+          formula: 'Subject + must have + Past Participle (Logical Certainty in the Past)',
+          s1Html: 'Holmes is certain that <span class="echo-strike">the hound</span> was trained <span class="echo-strike">by someone familiar with the moor</span>.',
+          keyword: 'MUST',
+          prefix: 'The hound',
+          suffix: 'by someone familiar with the moor.',
+          accepted: ['must have been trained'],
+          model: 'must have been trained',
+          echo: 'Strike out "The hound" and "by someone familiar with the moor". Isolate "is certain that ... was trained".',
+          tense: 'Past event ("was trained") → Perfect infinitive ("have been trained").',
+          voice: 'Passive voice ("was trained by...") must stay passive ("been trained").',
+          pattern: 'Modal of certainty + perfect passive: "must have been trained" (4 words).'
+        }
+      },
+      alice: {
+        id: 'alice',
+        eyebrow: 'Wing V • Lewis Carroll (1865)',
+        title: 'Book V: Alice’s Adventures in Wonderland',
+        lead: 'Plunge down the rabbit-hole into the Queen’s courtroom to master restrictive inversions ("Only by..."), unreal past subjunctives ("It is high time..."), and evidential passives.',
+        color: 0xc084fc,
+        art: 'assets/gothic/alice_unit1.jpg',
+        position: { x: 0, z: -16.5 },
+        lookAt: { x: 0, y: 2.8, z: -21.5 },
+        units: [
+          { id: 'alice_unit1', num: 'Lesson 13 • Free', title: 'Down the Rabbit-Hole', desc: 'Negative & Limiting Inversion (Only by... could she...)', href: 'alice-unit13-down-the-rabbit-hole.html', free: true },
+          { id: 'alice_unit2', num: 'Lesson 14 • Ch. 7', title: 'A Mad Tea-Party', desc: 'Unreal Past Subjunctives (It is high time...)', href: 'alice-unit14-mad-tea-party.html', free: false },
+          { id: 'alice_unit3', num: 'Lesson 15 • Ch. 11–12', title: 'The Queen’s Trial', desc: 'Evidential Passives (was alleged to have...)', href: 'alice-unit15-queens-trial.html', free: false }
+        ],
+        kwt: {
+          heading: 'Book V Relic: Unreal Past Subjunctive with "TIME"',
+          formula: 'It is (high / about) time + Subject + Past Simple (Subjunctive)',
+          s1Html: '<span class="echo-strike">The Hatter</span> really ought to <span class="echo-strike">wind his broken pocket watch</span> now.',
+          keyword: 'TIME',
+          prefix: 'It is',
+          suffix: 'his broken pocket watch.',
+          accepted: ['high time the hatter wound', 'time the hatter wound', 'about time the hatter wound'],
+          model: 'high time the Hatter wound',
+          echo: 'Strike out "his broken pocket watch". Isolate "The Hatter really ought to wind ... now".',
+          tense: 'Present critique ("ought to wind now") shifts to Past Simple subjunctive ("wound") after "It is high time".',
+          voice: 'Active voice ("the Hatter wound").',
+          pattern: '"high time the Hatter wound" (5 words).'
+        }
+      }
+    };
+
+    /**
+     * ========================================================================
+     * DRACULA CLASSICAL MUSIC + PROCEDURAL SOUND ENGINE (Auto-Start Enabled)
+     * Uses the exact Dracula pages track (assets/audio/tchaikovsky_sugarplum.mp3)
+     * plus the full Dark Academia classical suite & atmospheric SFX
+     * ========================================================================
+     */
+    const WorldAudio = {
+      ctx: null,
+      enabled: true,
+      userMuted: false,
+      masterGain: null,
+      noiseNode: null,
+      filterNode: null,
+      musicEl: null,
+      trackIdx: 0,
+      tracks: [
+        { id: 'tchaikovsky_nocturne', name: 'Tchaikovsky: Nocturne', src: 'assets/audio/tchaikovsky_sugarplum.mp3' },
+        { id: 'bach_minuet', name: 'Bach: Minuet', src: 'assets/audio/bach_minuet.mp3' },
+        { id: 'mozart_nacht', name: 'Mozart: Nachtmusik', src: 'assets/audio/mozart_nachtmusik.mp3' }
+      ],
+      mode: 'study',
+
+      init() {
+        // Silence duplicate background player from dark-academia-engine.js if active
+        try {
+          if (window.DarkAcademiaAtmosphere && typeof window.DarkAcademiaAtmosphere.toggleMusic === 'function') {
+            const hudStatus = document.getElementById('da-hud-music-status');
+            if (!hudStatus) {
+              // Stop internal engine music so WorldAudio is the sole player
+              window.DarkAcademiaAtmosphere.toggleMusic();
+            }
+          }
+        } catch (e) {}
+
+        if (!this.musicEl && typeof Audio !== 'undefined') {
+          this.musicEl = new Audio();
+          this.musicEl.loop = true;
+          this.musicEl.preload = 'auto';
+          this.musicEl.volume = 0.34;
+          this.musicEl.src = this.tracks[this.trackIdx].src;
+        }
+
+        if (this.ctx) return;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        this.ctx = new AudioCtx();
+        this.masterGain = this.ctx.createGain();
+        this.masterGain.gain.value = 0.14;
+        this.masterGain.connect(this.ctx.destination);
+
+        // Soft ambient hearth/rain texture underneath the classical music
+        const bufferSize = 2 * this.ctx.sampleRate;
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let lastOut = 0.0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          output[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = output[i];
+          output[i] *= 1.8;
+        }
+        this.noiseNode = this.ctx.createBufferSource();
+        this.noiseNode.buffer = noiseBuffer;
+        this.noiseNode.loop = true;
+
+        this.filterNode = this.ctx.createBiquadFilter();
+        this.filterNode.type = 'lowpass';
+        this.filterNode.frequency.value = 380;
+
+        this.noiseNode.connect(this.filterNode);
+        this.filterNode.connect(this.masterGain);
+        this.noiseNode.start();
+      },
+
+      syncUI() {
+        const btn = document.getElementById('audio-toggle-btn');
+        const icon = document.getElementById('audio-icon');
+        const label = document.getElementById('audio-label');
+        const trk = this.tracks[this.trackIdx % this.tracks.length];
+        if (!btn || !icon || !label) return;
+        if (this.enabled) {
+          btn.classList.add('active');
+          icon.textContent = '🔊';
+          label.textContent = `Playing: ${trk.name}`;
+        } else {
+          btn.classList.remove('active');
+          icon.textContent = '🔇';
+          label.textContent = 'Audio Paused';
+        }
+      },
+
+      playNow() {
+        this.init();
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+        if (this.ctx && this.masterGain) {
+          this.masterGain.gain.setTargetAtTime(0.14, this.ctx.currentTime, 0.2);
+        }
+        if (this.musicEl) {
+          const trk = this.tracks[this.trackIdx % this.tracks.length];
+          if (!this.musicEl.src || !this.musicEl.src.includes(trk.src)) {
+            this.musicEl.src = trk.src;
+          }
+          const p = this.musicEl.play();
+          if (p && typeof p.catch === 'function') {
+            p.catch(() => {
+              this.armGestureUnlock();
+            });
+          }
+        }
+        this.syncUI();
+      },
+
+      armGestureUnlock() {
+        if (this._unlockArmed) return;
+        this._unlockArmed = true;
+        const events = ['pointerdown', 'pointermove', 'keydown', 'wheel', 'touchstart', 'click'];
+        const unlock = (e) => {
+          if (e && e.target && e.target.closest && e.target.closest('#audio-toggle-btn')) return;
+          if (this.userMuted) return;
+          if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume().catch(() => {});
+          }
+          if (this.musicEl && this.musicEl.paused && this.enabled) {
+            this.musicEl.play().then(() => {
+              events.forEach(ev => window.removeEventListener(ev, unlock, true));
+              this._unlockArmed = false;
+            }).catch(() => {});
+          }
+        };
+        events.forEach(ev => window.addEventListener(ev, unlock, { capture: true, passive: true }));
+      },
+
+      autoStart() {
+        this.enabled = true;
+        this.userMuted = false;
+        this.playNow();
+        this.armGestureUnlock();
+      },
+
+      toggle() {
+        this.init();
+        this.enabled = !this.enabled;
+        this.userMuted = !this.enabled;
+        if (this.enabled) {
+          this.playNow();
+        } else {
+          if (this.musicEl) this.musicEl.pause();
+          if (this.ctx && this.masterGain) {
+            this.masterGain.gain.setTargetAtTime(0.0, this.ctx.currentTime, 0.15);
+          }
+          this.syncUI();
+        }
+      },
+
+      nextTrack() {
+        this.trackIdx = (this.trackIdx + 1) % this.tracks.length;
+        this.enabled = true;
+        this.userMuted = false;
+        if (this.musicEl) {
+          this.musicEl.src = this.tracks[this.trackIdx].src;
+        }
+        this.playNow();
+      },
+
+      setAtmosphereSound(preset) {
+        this.mode = preset;
+        if (!this.ctx || !this.enabled) return;
+        const now = this.ctx.currentTime;
+        if (preset === 'carpathian') {
+          this.filterNode.frequency.setTargetAtTime(950, now, 0.4);
+          this.triggerThunderClap();
+        } else if (preset === 'galvanic') {
+          this.filterNode.frequency.setTargetAtTime(1350, now, 0.3);
+        } else if (preset === 'mire') {
+          this.filterNode.frequency.setTargetAtTime(300, now, 0.5);
+        } else {
+          this.filterNode.frequency.setTargetAtTime(380, now, 0.4);
+        }
+      },
+
+      triggerThunderClap() {
+        if (!this.ctx || !this.enabled) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(95, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(28, this.ctx.currentTime + 1.4);
+        gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.5);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 1.55);
+      },
+
+      playChime(freq = 528) {
+        if (!this.ctx || !this.enabled) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.9);
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.95);
+      }
+    };
+
+    // Start Dracula music (Tchaikovsky: Nocturne) automatically on load
+    WorldAudio.autoStart();
+
+    /**
+     * ========================================================================
+     * THREE.JS 3D GOTHIC CANON LIBRARY ENGINE
+     * ========================================================================
+     */
+    const canvas = document.getElementById('world-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x090604);
+    scene.fog = new THREE.FogExp2(0x0d0806, 0.042);
+
+    const camera = new THREE.PerspectiveCamera(62, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 2.1, 5.5);
+
+    // Camera & Player Navigation State
+    const player = {
+      yaw: 0,
+      pitch: -0.05,
+      targetPos: null,
+      targetLook: null,
+      keys: {},
+      isDragging: false,
+      prevMouse: { x: 0, y: 0 },
+      gravityFloat: 1.0,
+      particleSpeed: 1.0,
+      stormLightning: false
+    };
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0x3a2618, 0.85);
+    scene.add(ambientLight);
+
+    const deskLampLight = new THREE.PointLight(0x10b981, 2.4, 14);
+    deskLampLight.position.set(0, 2.35, -0.5);
+    scene.add(deskLampLight);
+
+    const chandelierLights = [];
+    [-2, -9, -16].forEach(zPos => {
+      const pLight = new THREE.PointLight(0xf59e0b, 1.9, 18);
+      pLight.position.set(0, 6.8, zPos);
+      scene.add(pLight);
+      chandelierLights.push(pLight);
+
+      // Brass Chandelier Ring
+      const ringGeo = new THREE.TorusGeometry(1.2, 0.06, 12, 32);
+      const brassMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.8, roughness: 0.25 });
+      const ring = new THREE.Mesh(ringGeo, brassMat);
+      ring.rotation.x = Math.PI / 2;
+      ring.position.set(0, 6.8, zPos);
+      scene.add(ring);
+    });
+
+    // Architectural Materials & Procedural Textures
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x16100c, roughness: 0.35, metalness: 0.15 });
+    const mahoganyMat = new THREE.MeshStandardMaterial({ color: 0x2b170e, roughness: 0.55, metalness: 0.1 });
+    const bookshelfTex = window.GothicLibraryTextures ? window.GothicLibraryTextures.createBookshelfTexture() : null;
+    const bookshelfMat = new THREE.MeshStandardMaterial({
+      map: bookshelfTex,
+      color: 0xffffff,
+      roughness: 0.65,
+      metalness: 0.08
+    });
+    const stoneMat = new THREE.MeshStandardMaterial({ color: 0x241e1a, roughness: 0.8 });
+    const brassMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.25, metalness: 0.85 });
+    const parchmentMat = new THREE.MeshStandardMaterial({ color: 0xf5e8cc, emissive: 0x3b2a14, emissiveIntensity: 0.35, roughness: 0.7 });
+
+    // Nave Floor & Vaulted Ceiling
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(28, 38), floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0, 0, -8);
+    scene.add(floor);
+
+    // Persian Runner Carpet down the Library Nave
+    const carpetTex = window.GothicLibraryTextures ? window.GothicLibraryTextures.createCarpetTexture() : null;
+    const carpetMat = new THREE.MeshStandardMaterial({
+      map: carpetTex,
+      color: carpetTex ? 0xffffff : 0x451212,
+      roughness: 0.85
+    });
+    const carpet = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 32), carpetMat);
+    carpet.rotation.x = -Math.PI / 2;
+    carpet.position.set(0, 0.01, -8);
+    scene.add(carpet);
+
+    // Vaulted Timber Arches & Bookshelf Colonnades
+    for (let z = 4; z >= -22; z -= 4) {
+      [-11.5, 11.5].forEach(xSide => {
+        const pillar = new THREE.Mesh(new THREE.BoxGeometry(1.1, 8.5, 1.1), stoneMat);
+        pillar.position.set(xSide, 4.25, z);
+        scene.add(pillar);
+
+        // Tall Mahogany Bookcases lined with leather-bound volumes
+        const shelf = new THREE.Mesh(new THREE.BoxGeometry(0.95, 7.2, 3.2), bookshelfMat);
+        shelf.position.set(xSide * 1.02, 3.6, z - 2);
+        scene.add(shelf);
+      });
+
+      // Overhead Vaulted Rib
+      const archRib = new THREE.Mesh(new THREE.BoxGeometry(24, 0.45, 0.55), mahoganyMat);
+      archRib.position.set(0, 8.3, z);
+      scene.add(archRib);
+    }
+
+    // Central Belfast Mahogany Scholar's Desk
+    const deskGroup = new THREE.Group();
+    deskGroup.position.set(0, 0, -0.5);
+    const deskBase = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.15, 1.85), mahoganyMat);
+    deskBase.position.y = 0.58;
+    deskGroup.add(deskBase);
+
+    const deskLeatherTop = new THREE.Mesh(
+      new THREE.BoxGeometry(3.1, 0.06, 1.55),
+      new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.6 })
+    );
+    deskLeatherTop.position.y = 1.18;
+    deskGroup.add(deskLeatherTop);
+
+    // Open Illuminated Manuscript on Central Desk
+    const deskFolio = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.04, 0.62), parchmentMat);
+    deskFolio.position.set(0.25, 1.23, 0.15);
+    deskFolio.userData = { stationId: 'desk' };
+    deskGroup.add(deskFolio);
+
+    // Emerald Banker's Lamp on Desk
+    const lampStem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.14, 0.55, 16), brassMat);
+    lampStem.position.set(-0.95, 1.45, -0.3);
+    deskGroup.add(lampStem);
+
+    const lampShade = new THREE.Mesh(
+      new THREE.ConeGeometry(0.32, 0.25, 16),
+      new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669, emissiveIntensity: 0.85 })
+    );
+    lampShade.position.set(-0.95, 1.75, -0.3);
+    deskGroup.add(lampShade);
+
+    // Floating C1/C2 Syntax Relic Octahedron above Desk
+    const deskRelic = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.32, 0),
+      new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xd97706, emissiveIntensity: 0.7, wireframe: false, metalness: 0.7, roughness: 0.2 })
+    );
+    deskRelic.position.set(0, 1.95, 0);
+    deskRelic.userData = { stationId: 'desk' };
+    deskGroup.add(deskRelic);
+    scene.add(deskGroup);
+
+    // Interactive Clickables Array
+    const interactableMeshes = [deskRelic, deskBase, deskFolio];
+    deskBase.userData = { stationId: 'desk' };
+
+    // Build the 5 Gothic Canon Wing Portals & Lecterns (with CORS-safe embedded paintings)
+    const portalRelics = [];
+
+    const wingConfigs = [
+      { id: 'dracula', pos: [-9.8, 0, -3.5], rotY: Math.PI / 2, shortTitle: "Bram Stoker's Dracula", grammarTag: 'Participle Clauses & Negative Inversion', hexStr: '#ef4444' },
+      { id: 'frankenstein', pos: [9.8, 0, -3.5], rotY: -Math.PI / 2, shortTitle: "Mary Shelley's Frankenstein", grammarTag: 'Inverted Conditionals & Cleft Sentences', hexStr: '#38bdf8' },
+      { id: 'jekyll', pos: [-9.8, 0, -11.5], rotY: Math.PI / 2, shortTitle: 'Dr Jekyll & Mr Hyde', grammarTag: 'Fronted Concessive & Time Inversions', hexStr: '#f59e0b' },
+      { id: 'baskerville', pos: [9.8, 0, -11.5], rotY: -Math.PI / 2, shortTitle: 'Hound of the Baskervilles', grammarTag: 'Past Modal Deductions & Place Inversion', hexStr: '#34d399' },
+      { id: 'alice', pos: [0, 0, -20.5], rotY: 0, shortTitle: 'Alice in Wonderland', grammarTag: 'Restrictive Inversion & Past Subjunctives', hexStr: '#c084fc' }
+    ];
+
+    wingConfigs.forEach(cfg => {
+      const st = STATIONS[cfg.id];
+      const group = new THREE.Group();
+      group.position.set(cfg.pos[0], cfg.pos[1], cfg.pos[2]);
+      group.rotation.y = cfg.rotY;
+
+      // Sculpted Mahogany & Brass Outer Frame
+      const frame = new THREE.Mesh(new THREE.BoxGeometry(3.9, 5.3, 0.3), mahoganyMat);
+      frame.position.y = 2.85;
+      frame.userData = { stationId: cfg.id };
+      group.add(frame);
+
+      const giltTrim = new THREE.Mesh(new THREE.BoxGeometry(3.52, 4.72, 0.32), brassMat);
+      giltTrim.position.y = 2.85;
+      giltTrim.userData = { stationId: cfg.id };
+      group.add(giltTrim);
+
+      // Fine Art Painting Portal Canvas (CORS-safe base64 + museum plaque)
+      const portalTex = window.GothicLibraryTextures
+        ? window.GothicLibraryTextures.createPortalPaintingTexture(cfg.id, {
+            eyebrow: st.eyebrow,
+            shortTitle: cfg.shortTitle,
+            grammarTag: cfg.grammarTag,
+            hexStr: cfg.hexStr
+          })
+        : null;
+      const artMat = new THREE.MeshBasicMaterial({ map: portalTex, color: 0xffffff });
+      const artPlane = new THREE.Mesh(new THREE.PlaneGeometry(3.38, 4.56), artMat);
+      artPlane.position.set(0, 2.85, 0.18);
+      artPlane.userData = { stationId: cfg.id };
+      group.add(artPlane);
+
+      // Glowing Wing Accent Header Bar
+      const borderMat = new THREE.MeshBasicMaterial({ color: st.color });
+      const topBar = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.09, 0.36), borderMat);
+      topBar.position.set(0, 5.28, 0);
+      group.add(topBar);
+
+      // Lectern Podium in front of Wing Portal
+      const lectern = new THREE.Mesh(new THREE.BoxGeometry(1.1, 1.22, 0.85), mahoganyMat);
+      lectern.position.set(0, 0.61, 1.65);
+      lectern.userData = { stationId: cfg.id };
+      group.add(lectern);
+
+      // Open Illuminated Manuscript on Lectern
+      const openBook = new THREE.Mesh(new THREE.BoxGeometry(0.76, 0.05, 0.54), parchmentMat);
+      openBook.position.set(0, 1.25, 1.65);
+      openBook.rotation.x = 0.22;
+      openBook.userData = { stationId: cfg.id };
+      group.add(openBook);
+
+      // Floating Wing Relic Gem above Lectern
+      const gem = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.26, 0),
+        new THREE.MeshStandardMaterial({ color: st.color, emissive: st.color, emissiveIntensity: 0.65, roughness: 0.2 })
+      );
+      gem.position.set(0, 1.72, 1.65);
+      gem.userData = { stationId: cfg.id };
+      group.add(gem);
+      portalRelics.push(gem);
+
+      // Wing Point Light
+      const wLight = new THREE.PointLight(st.color, 1.45, 10);
+      wLight.position.set(0, 3.4, 1.8);
+      group.add(wLight);
+
+      interactableMeshes.push(frame, giltTrim, artPlane, lectern, openBook, gem);
+      scene.add(group);
+    });
+
+    // Floating Candle Embers / Dust Motes Particle System
+    const particleCount = 420;
+    const pGeo = new THREE.BufferGeometry();
+    const pPositions = new Float32Array(particleCount * 3);
+    for (let i = 0; i < particleCount; i++) {
+      pPositions[i * 3] = (Math.random() - 0.5) * 22;
+      pPositions[i * 3 + 1] = Math.random() * 8;
+      pPositions[i * 3 + 2] = (Math.random() - 0.5) * 30 - 6;
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+    const pMat = new THREE.PointsMaterial({ color: 0xfbbf24, size: 0.09, transparent: true, opacity: 0.75 });
+    const particleSystem = new THREE.Points(pGeo, pMat);
+    scene.add(particleSystem);
+
+    /**
+     * ========================================================================
+     * GENIE 4 LIVE NATURAL-LANGUAGE WORLD STEERING ENGINE
+     * ========================================================================
+     */
+    const STEERING_PRESETS = {
+      study: {
+        bg: 0x090604, fogColor: 0x0d0806, fogDensity: 0.042,
+        ambient: 0x3a2618, chandelier: 0xf59e0b, particle: 0xfbbf24,
+        gravity: 1.0, speed: 1.0, storm: false,
+        promptText: 'Belfast Mahogany Study: warm brass candlelight, emerald banker’s lamp, and quiet scholarly focus'
+      },
+      carpathian: {
+        bg: 0x090206, fogColor: 0x1a050d, fogDensity: 0.058,
+        ambient: 0x450a14, chandelier: 0xef4444, particle: 0xf87171,
+        gravity: 1.4, speed: 2.6, storm: true,
+        promptText: 'Carpathian Midnight Storm: crimson lightning, driving mountain gusts, and Stoker gothic tension'
+      },
+      galvanic: {
+        bg: 0x030914, fogColor: 0x071526, fogDensity: 0.048,
+        ambient: 0x0c4a6e, chandelier: 0x38bdf8, particle: 0x7dd3fc,
+        gravity: 1.8, speed: 3.0, storm: true,
+        promptText: 'Frankenstein Galvanic Surge: electrostatic cobalt arcs, amber sparks, and November rain'
+      },
+      soho: {
+        bg: 0x120d04, fogColor: 0x261c0a, fogDensity: 0.078,
+        ambient: 0x422c09, chandelier: 0xfbbf24, particle: 0xfde68a,
+        gravity: 0.5, speed: 0.65, storm: false,
+        promptText: '1886 Soho Gaslight: dense Victorian pea-soup fog and amber sodium streetlamp glow'
+      },
+      mire: {
+        bg: 0x02120b, fogColor: 0x05291a, fogDensity: 0.072,
+        ambient: 0x064e3b, chandelier: 0x10b981, particle: 0x34d399,
+        gravity: 0.7, speed: 0.9, storm: false,
+        promptText: 'Grimpen Mire Spectral Mist: low Devonshire moorland fog and phosphor-emerald illumination'
+      },
+      wonderland: {
+        bg: 0x0f051d, fogColor: 0x1a0933, fogDensity: 0.038,
+        ambient: 0x3b0764, chandelier: 0xc084fc, particle: 0xe879f9,
+        gravity: 2.5, speed: 1.8, storm: false,
+        promptText: 'Subterranean Clockwork Hall: suspended Wonderland gravity and floating golden syntax runes'
+      }
+    };
+
+    function applyAtmosphereConfig(cfg, audioKey = 'study') {
+      scene.background.setHex(cfg.bg);
+      scene.fog.color.setHex(cfg.fogColor);
+      scene.fog.density = cfg.fogDensity;
+      ambientLight.color.setHex(cfg.ambient);
+      chandelierLights.forEach(l => l.color.setHex(cfg.chandelier));
+      pMat.color.setHex(cfg.particle);
+      player.gravityFloat = cfg.gravity;
+      player.particleSpeed = cfg.speed;
+      player.stormLightning = cfg.storm;
+      WorldAudio.setAtmosphereSound(audioKey);
+    }
+
+    function applySteeringPreset(key, btnEl) {
+      document.querySelectorAll('.preset-chip').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      const cfg = STEERING_PRESETS[key] || STEERING_PRESETS.study;
+      document.getElementById('steering-input').value = cfg.promptText;
+      applyAtmosphereConfig(cfg, key);
+    }
+
+    function handleSteeringSubmit(e) {
+      e.preventDefault();
+      const raw = (document.getElementById('steering-input').value || '').toLowerCase();
+      if (!raw.trim()) return;
+
+      if (raw.includes('storm') || raw.includes('thunder') || raw.includes('dracula') || raw.includes('crimson') || raw.includes('carpathian')) {
+        applyAtmosphereConfig(STEERING_PRESETS.carpathian, 'carpathian');
+        triggerLightningFlash();
+      } else if (raw.includes('frank') || raw.includes('galvanic') || raw.includes('electric') || raw.includes('spark') || raw.includes('blue')) {
+        applyAtmosphereConfig(STEERING_PRESETS.galvanic, 'galvanic');
+        triggerLightningFlash();
+      } else if (raw.includes('fog') || raw.includes('soho') || raw.includes('jekyll') || raw.includes('gaslight')) {
+        applyAtmosphereConfig(STEERING_PRESETS.soho, 'study');
+      } else if (raw.includes('mire') || raw.includes('moor') || raw.includes('hound') || raw.includes('baskerville') || raw.includes('emerald') || raw.includes('green')) {
+        applyAtmosphereConfig(STEERING_PRESETS.mire, 'mire');
+      } else if (raw.includes('alice') || raw.includes('float') || raw.includes('gravity') || raw.includes('clock') || raw.includes('purple')) {
+        applyAtmosphereConfig(STEERING_PRESETS.wonderland, 'wonderland');
+      } else {
+        applyAtmosphereConfig(STEERING_PRESETS.study, 'study');
+      }
+      WorldAudio.playChime(587.33);
+    }
+
+    function triggerLightningFlash() {
+      const flash = document.getElementById('atmosphere-flash');
+      flash.style.opacity = '0.85';
+      setTimeout(() => { flash.style.opacity = '0'; }, 120);
+      setTimeout(() => { flash.style.opacity = '0.45'; }, 240);
+      setTimeout(() => { flash.style.opacity = '0'; }, 380);
+      WorldAudio.triggerThunderClap();
+    }
+
+    /**
+     * ========================================================================
+     * NAVIGATION, TELEPORTATION & RAYCASTING
+     * ========================================================================
+     */
+    let activeProximityId = 'desk';
+
+    function teleportToStation(stationId) {
+      const st = STATIONS[stationId];
+      if (!st) return;
+      document.querySelectorAll('.wing-pill').forEach(p => {
+        p.classList.toggle('active', p.dataset.target === stationId);
+      });
+      player.targetPos = new THREE.Vector3(st.position.x, 2.1, st.position.z);
+      const dx = st.lookAt.x - st.position.x;
+      const dz = st.lookAt.z - st.position.z;
+      player.yaw = Math.atan2(-dx, -dz);
+      player.pitch = 0;
+      activeProximityId = stationId;
+      WorldAudio.playChime(440);
+    }
+
+    window.addEventListener('keydown', e => {
+      if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+      const k = e.key.toLowerCase();
+      player.keys[k] = true;
+      player.targetPos = null;
+      if (k === 'e' && activeProximityId) {
+        openStationModal(activeProximityId);
+      }
+      if (e.key === 'Escape') {
+        closeStationModal();
+        closeGenieModal();
+      }
+    });
+
+    window.addEventListener('keyup', e => {
+      player.keys[e.key.toLowerCase()] = false;
+    });
+
+    const raycaster = new THREE.Raycaster();
+    const mouseVec = new THREE.Vector2();
+    let pointerDownPos = { x: 0, y: 0 };
+
+    canvas.addEventListener('pointerdown', e => {
+      player.isDragging = true;
+      player.prevMouse = { x: e.clientX, y: e.clientY };
+      pointerDownPos = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('pointermove', e => {
+      if (!player.isDragging) return;
+      const dx = e.clientX - player.prevMouse.x;
+      const dy = e.clientY - player.prevMouse.y;
+      player.prevMouse = { x: e.clientX, y: e.clientY };
+      player.yaw -= dx * 0.0045;
+      player.pitch = Math.max(-0.55, Math.min(0.55, player.pitch - dy * 0.0035));
+    });
+
+    window.addEventListener('pointerup', e => {
+      player.isDragging = false;
+      const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+      if (dist < 6 && e.target === canvas) {
+        mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouseVec, camera);
+        const hits = raycaster.intersectObjects(interactableMeshes, false);
+        if (hits.length > 0 && hits[0].object.userData.stationId) {
+          const stId = hits[0].object.userData.stationId;
+          teleportToStation(stId);
+          openStationModal(stId);
+        }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    /**
+     * ========================================================================
+     * MODAL & PART 4 RELIC TRANSFORMATION LOGIC
+     * ========================================================================
+     */
+    let currentModalStation = 'desk';
+
+    function openActiveProximityStation() {
+      if (activeProximityId) openStationModal(activeProximityId);
+    }
+
+    function openStationModal(stationId) {
+      const st = STATIONS[stationId];
+      if (!st) return;
+      currentModalStation = stationId;
+
+      document.getElementById('dossier-eyebrow').textContent = st.eyebrow;
+      document.getElementById('dossier-title').textContent = st.title;
+      document.getElementById('dossier-lead').textContent = st.lead;
+
+      // Populate Wing Units with Progress & Gate Integration
+      const container = document.getElementById('wing-units-container');
+      container.innerHTML = '';
+      const isUnlocked = window.DarkAcademiaGate && window.DarkAcademiaGate.isUnlocked();
+
+      st.units.forEach(u => {
+        const gated = !u.free && !isUnlocked;
+        let scoreBadge = u.free ? '✓ Free Lesson' : (isUnlocked ? '✓ Unlocked' : '🔒 Full Course (£24)');
+        try {
+          const saved = localStorage.getItem(`da_progress_${u.id}`);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (isUnlocked || u.free) scoreBadge = `${parsed.score} / ${parsed.total} Marks`;
+          }
+        } catch (err) {}
+
+        const card = document.createElement('a');
+        card.className = 'wing-unit-item';
+        card.href = gated ? '#' : u.href;
+        if (gated) {
+          card.onclick = ev => {
+            ev.preventDefault();
+            if (window.DarkAcademiaGate) window.DarkAcademiaGate.openModal(u.id);
+          };
+        }
+        card.innerHTML = `
+          <div>
+            <div class="wing-unit-meta">
+              <span>${u.num}</span>
+              <span>${scoreBadge}</span>
+            </div>
+            <h4>${u.title}</h4>
+            <p>${u.desc}</p>
+          </div>
+          <span class="wing-unit-cta">${gated ? '🔒 Unlock Full Course (£24) →' : 'Open Lesson →'}</span>
+        `;
+        container.appendChild(card);
+      });
+
+      // Populate Part 4 KWT Relic Challenge
+      const k = st.kwt;
+      document.getElementById('kwt-heading').textContent = k.heading;
+      document.getElementById('kwt-formula').textContent = `Blueprint: ${k.formula}`;
+      document.getElementById('kwt-s1').innerHTML = k.s1Html;
+      document.getElementById('kwt-keyword').textContent = k.keyword;
+      document.getElementById('kwt-s2-prefix').textContent = k.prefix;
+      document.getElementById('kwt-s2-suffix').textContent = k.suffix;
+      document.getElementById('kwt-user-input').value = '';
+      document.getElementById('step-echo').textContent = k.echo;
+      document.getElementById('step-tense').textContent = k.tense;
+      document.getElementById('step-voice').textContent = k.voice;
+      document.getElementById('step-pattern').textContent = k.pattern;
+      document.getElementById('kwt-steps-box').style.display = 'none';
+
+      const fb = document.getElementById('kwt-feedback');
+      fb.style.display = 'none';
+
+      document.getElementById('station-modal').classList.add('open');
+    }
+
+    function closeStationModal() {
+      document.getElementById('station-modal').classList.remove('open');
+    }
+
+    function toggleEchoStrike() {
+      const strikes = document.querySelectorAll('#kwt-s1 .echo-strike');
+      strikes.forEach(el => el.classList.toggle('struck'));
+      const box = document.getElementById('kwt-steps-box');
+      box.style.display = box.style.display === 'none' ? 'grid' : 'none';
+    }
+
+    function checkStationKWT() {
+      const st = STATIONS[currentModalStation];
+      if (!st) return;
+      const raw = document.getElementById('kwt-user-input').value.trim();
+      const clean = raw.toLowerCase().replace(/\s+/g, ' ');
+      const words = clean ? clean.split(' ') : [];
+      const fb = document.getElementById('kwt-feedback');
+      fb.style.display = 'block';
+
+      if (!clean.includes(st.kwt.keyword.toLowerCase())) {
+        fb.style.background = 'rgba(239, 68, 68, 0.18)';
+        fb.style.border = '1px solid #ef4444';
+        fb.innerHTML = `<strong>Keyword Check:</strong> You must include the exact unchanged keyword <strong>${st.kwt.keyword}</strong> in your gap.`;
+        return;
+      }
+
+      if (words.length < 3 || words.length > 6) {
+        fb.style.background = 'rgba(245, 158, 11, 0.18)';
+        fb.style.border = '1px solid #f59e0b';
+        fb.innerHTML = `<strong>Word Count Alert:</strong> Your answer has ${words.length} words. Cambridge Part 4 strictly requires <strong>3 to 6 words</strong> (including the keyword).`;
+        return;
+      }
+
+      if (st.kwt.accepted.includes(clean)) {
+        fb.style.background = 'rgba(16, 185, 129, 0.2)';
+        fb.style.border = '1px solid #10b981';
+        fb.innerHTML = `<strong>Spot on (2 / 2 Cambridge Marks):</strong> <em>"${st.kwt.model}"</em> — clean syntactic control, exact tense harmony, and zero wasted words.`;
+        WorldAudio.playChime(659.25);
+      } else {
+        fb.style.background = 'rgba(245, 158, 11, 0.18)';
+        fb.style.border = '1px solid #f59e0b';
+        fb.innerHTML = `<strong>Close — check the blueprint:</strong> Click <em>✂️ Step 1–4 Deconstruction</em> to isolate the verb tense and voice, or click <em>👁️ Reveal Cambridge Model</em>.`;
+      }
+    }
+
+    function revealStationModel() {
+      const st = STATIONS[currentModalStation];
+      if (!st) return;
+      document.getElementById('kwt-user-input').value = st.kwt.model;
+      const fb = document.getElementById('kwt-feedback');
+      fb.style.display = 'block';
+      fb.style.background = 'rgba(16, 185, 129, 0.16)';
+      fb.style.border = '1px solid #10b981';
+      fb.innerHTML = `<strong>Cambridge Model Answer:</strong> <code>${st.kwt.model}</code> (${st.kwt.model.split(' ').length} words). Notice how the keyword <strong>${st.kwt.keyword}</strong> remains completely unchanged.`;
+    }
+
+    function openGenieModal() {
+      document.getElementById('genie-modal').classList.add('open');
+    }
+
+    function closeGenieModal() {
+      document.getElementById('genie-modal').classList.remove('open');
+    }
+
+    function copyPromptText(elId, btn) {
+      const text = document.getElementById(elId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1600);
+      });
+    }
+
+    /**
+     * ========================================================================
+     * MAIN RENDER & ANIMATION LOOP
+     * ========================================================================
+     */
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const dt = Math.min(clock.getDelta(), 0.1);
+      const elapsed = clock.getElapsedTime();
+
+      // Smooth Teleport or WASD Movement
+      if (player.targetPos) {
+        camera.position.lerp(player.targetPos, 0.08);
+        if (camera.position.distanceTo(player.targetPos) < 0.08) {
+          player.targetPos = null;
+        }
+      } else {
+        const speed = 5.2 * dt;
+        const forward = new THREE.Vector3(-Math.sin(player.yaw), 0, -Math.cos(player.yaw));
+        const right = new THREE.Vector3(Math.cos(player.yaw), 0, -Math.sin(player.yaw));
+
+        if (player.keys['w'] || player.keys['arrowup']) camera.position.addScaledVector(forward, speed);
+        if (player.keys['s'] || player.keys['arrowdown']) camera.position.addScaledVector(forward, -speed);
+        if (player.keys['a'] || player.keys['arrowleft']) camera.position.addScaledVector(right, -speed);
+        if (player.keys['d'] || player.keys['arrowright']) camera.position.addScaledVector(right, speed);
+
+        // Keep within the Library Nave bounds
+        camera.position.x = Math.max(-8.5, Math.min(8.5, camera.position.x));
+        camera.position.z = Math.max(-18.5, Math.min(6.5, camera.position.z));
+      }
+
+      // Apply Look Orientation
+      const lookTarget = new THREE.Vector3(
+        camera.position.x - Math.sin(player.yaw) * Math.cos(player.pitch),
+        camera.position.y + Math.sin(player.pitch),
+        camera.position.z - Math.cos(player.yaw) * Math.cos(player.pitch)
+      );
+      camera.lookAt(lookTarget);
+
+      // Rotate & Hover Relic Gems
+      deskRelic.rotation.y = elapsed * 0.9;
+      deskRelic.position.y = 1.95 + Math.sin(elapsed * 2.2) * 0.12 * player.gravityFloat;
+      portalRelics.forEach((gem, idx) => {
+        gem.rotation.y = elapsed * 1.1 + idx;
+        gem.position.y = 1.65 + Math.sin(elapsed * 2.0 + idx) * 0.1 * player.gravityFloat;
+      });
+
+      // Candlelight Flicker & Occasional Storm Lightning
+      chandelierLights.forEach((l, i) => {
+        l.intensity = 1.75 + Math.sin(elapsed * 7 + i * 2.1) * 0.18;
+      });
+      if (player.stormLightning && Math.random() < 0.003) {
+        triggerLightningFlash();
+      }
+
+      // Animate Floating Dust / Embers
+      const posArr = particleSystem.geometry.attributes.position.array;
+      for (let i = 0; i < particleCount; i++) {
+        posArr[i * 3 + 1] += 0.006 * player.particleSpeed;
+        if (posArr[i * 3 + 1] > 8.2) posArr[i * 3 + 1] = 0.2;
+      }
+      particleSystem.geometry.attributes.position.needsUpdate = true;
+
+      // Check Proximity to Stations
+      let nearestId = null;
+      let minDist = 4.6;
+      Object.values(STATIONS).forEach(st => {
+        const d = Math.hypot(camera.position.x - st.position.x, camera.position.z - st.position.z);
+        if (d < minDist) {
+          minDist = d;
+          nearestId = st.id;
+        }
+      });
+
+      const banner = document.getElementById('proximity-banner');
+      if (nearestId) {
+        activeProximityId = nearestId;
+        banner.style.display = 'inline-flex';
+        document.getElementById('proximity-text').textContent = `Inspect ${STATIONS[nearestId].title}`;
+      } else {
+        banner.style.display = 'none';
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

@@ -21,7 +21,7 @@ const LabObservatory = (() => {
       badge: 'C1/C2 Gothic Course • 15 lessons (5 free)',
       title: 'Dark Academia: C1/C2 English Through Classic Gothic & Victorian Stories',
       desc: 'Three lessons each from Dracula, Frankenstein, Jekyll & Hyde, Baskervilles, and Alice in Wonderland, with British narration and 15 practice questions per lesson (including 5 Part 4 transformations).',
-      img: 'assets/gothic/dracula_carpathian.jpg',
+      img: 'assets/gothic/dracula_carpathian.webp',
       alt: 'Caspar David Friedrich — Abbey in the Oakwood (1809–1810), illustrating Dracula Lesson 1',
       url: 'dark-academia-index.html',
       quizTag: 'Quick one: C1 inversion',
@@ -80,35 +80,35 @@ const LabObservatory = (() => {
     {
       tag: 'Caspar David Friedrich, Abbey in the Oakwood (1809–10)',
       grammar: 'Bram Stoker’s Dracula (Lessons 1–3): Participle Clauses & Negative Inversion',
-      img: 'assets/gothic/dracula_carpathian.jpg',
+      img: 'assets/gothic/dracula_carpathian.webp',
       alt: 'Caspar David Friedrich, Abbey in the Oakwood (1809–1810) — Dracula',
       audio: 'assets/audio/gothic_act1_dracula.mp3?v=2'
     },
     {
       tag: 'Joseph Wright of Derby, Experiment on a Bird in the Air Pump (1768)',
       grammar: 'Mary Shelley’s Frankenstein (Lessons 4–6): Inverted Conditionals & Cleft Sentences',
-      img: 'assets/gothic/frankenstein_lab.jpg',
+      img: 'assets/gothic/frankenstein_lab.webp',
       alt: 'Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768) — Frankenstein',
       audio: 'assets/audio/gothic_act2_frankenstein.mp3?v=2'
     },
     {
       tag: 'John Atkinson Grimshaw, Reflections on the Thames (1880)',
       grammar: 'Stevenson’s Dr Jekyll & Mr Hyde (Lessons 7–9): Concessive Clauses & Time Inversion',
-      img: 'assets/gothic/jekyll_apothecary.jpg',
+      img: 'assets/gothic/jekyll_apothecary.webp',
       alt: 'John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880) — Dr Jekyll and Mr Hyde',
       audio: 'assets/audio/gothic_act3_jekyll.mp3?v=2'
     },
     {
       tag: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819)',
       grammar: 'Conan Doyle’s Baskervilles (Lessons 10–12): Past Modals of Deduction & Place Inversion',
-      img: 'assets/gothic/baskerville_moor.jpg',
+      img: 'assets/gothic/baskerville_moor.webp',
       alt: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819) — The Hound of the Baskervilles',
       audio: 'assets/audio/gothic_act4_baskerville.mp3?v=2'
     },
     {
       tag: 'Sir John Tenniel, Original Wood-Engraved Plate (1865)',
       grammar: 'Lewis Carroll’s Alice in Wonderland (Lessons 13–15): Negative Inversion & Subjunctives',
-      img: 'assets/gothic/alice_unit1.jpg',
+      img: 'assets/gothic/alice_unit1.webp',
       alt: 'Sir John Tenniel, Alice in Wonderland (1865) — Down the Rabbit-Hole',
       audio: 'assets/audio/gothic_act1_dracula.mp3?v=2'
     }
