@@ -1,0 +1,649 @@
+﻿<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C2 Proficiency Speaking · Part-by-Part Walkthrough &bull; Gaia</title>
+  <style>
+    :root {
+      --desk-bg: #eef2f6;
+      --paper-bg: #ffffff;
+      --navy-900: #0f2557;
+      --navy-800: #16377d;
+      --navy-700: #1d4ed8;
+      --navy-50: #f0f6ff;
+      --ink-900: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --border: #cbd5e1;
+      --emerald-bg: #ecfdf5;
+      --emerald-border: #10b981;
+      --emerald-text: #065f46;
+      --rose-bg: #fff1f2;
+      --rose-border: #f43f5e;
+      --rose-text: #9f1239;
+      --amber-bg: #fffbeb;
+      --amber-border: #f59e0b;
+      --amber-text: #92400e;
+      --purple-bg: #f5f3ff;
+      --purple-border: #8b5cf6;
+      --purple-text: #5b21b6;
+      --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans); }
+    body { background: var(--desk-bg); color: var(--ink-900); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+
+    .top-hud { background: #fff; border-bottom: 1px solid var(--border); padding: 0.7rem 1.6rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(15,37,87,0.05); flex-wrap: wrap; gap: 0.6rem; }
+    .hud-left { display: flex; align-items: center; gap: 0.8rem; }
+    .hud-badge { background: var(--navy-800); color: #fff; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.65rem; border-radius: 6px; }
+    .hud-title { font-size: 0.95rem; font-weight: 700; color: var(--navy-900); }
+    .hud-title span { color: var(--navy-700); font-weight: 600; }
+    .timer-box { display: flex; align-items: center; gap: 0.45rem; background: var(--emerald-bg); border: 1px solid var(--emerald-border); padding: 0.3rem 0.7rem; border-radius: 8px; flex-wrap: wrap; }
+    .timer-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--emerald-text); }
+    .timer-digits { font-family: 'Consolas', 'Courier New', monospace; font-size: 1.1rem; font-weight: 800; color: var(--emerald-text); min-width: 54px; text-align: center; }
+    .timer-btn { background: #fff; border: 1px solid var(--border); color: var(--ink-700); font-size: 0.72rem; font-weight: 700; padding: 0.22rem 0.5rem; border-radius: 4px; cursor: pointer; transition: all 0.15s; }
+    .timer-btn:hover { border-color: var(--navy-800); color: var(--navy-800); background: var(--navy-50); }
+
+    .slide-stage { flex: 1; display: flex; justify-content: center; align-items: center; padding: 1.3rem 1.2rem; max-width: 1150px; margin: 0 auto; width: 100%; }
+    .slide-viewport { width: 100%; min-height: 600px; background: var(--paper-bg); border: 1px solid #d8e0ea; border-radius: 12px; padding: 1.8rem 2.2rem; box-shadow: 0 12px 32px rgba(15,37,87,0.07); display: flex; flex-direction: column; justify-content: space-between; }
+    .slide { display: none; flex-direction: column; }
+    .slide.active { display: flex; animation: fadeIn 0.2s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .slide-tag { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--navy-800); margin-bottom: 0.25rem; }
+    .slide-title { font-size: 1.55rem; font-weight: 800; color: var(--navy-900); margin-bottom: 0.5rem; line-height: 1.25; }
+    .slide-desc { font-size: 0.9rem; color: var(--ink-700); margin-bottom: 0.85rem; line-height: 1.5; }
+
+    .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.8rem; }
+    .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin-bottom: 0.8rem; }
+    @media (max-width: 820px) { .grid-2col, .grid-3col { grid-template-columns: 1fr; } }
+
+    .mini-card { background: #fff; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.9rem 1.05rem; }
+    .mini-card.accent { border-color: var(--navy-800); background: var(--navy-50); }
+    .mini-card.emerald { border-color: var(--emerald-border); background: var(--emerald-bg); }
+    .mini-card.amber { border-color: var(--amber-border); background: var(--amber-bg); }
+    .mini-card.crimson { border-color: var(--rose-border); background: var(--rose-bg); }
+    .mini-card.purple { border-color: var(--purple-border); background: var(--purple-bg); }
+    .card-title-sm { font-size: 0.88rem; font-weight: 800; margin-bottom: 0.35rem; color: var(--navy-900); }
+    .card-body { font-size: 0.83rem; color: var(--ink-900); line-height: 1.6; }
+    .card-body ul, .card-body ol { margin-left: 1.15rem; }
+
+    .format-table { width: 100%; border-collapse: collapse; font-size: 0.84rem; margin-bottom: 0.8rem; }
+    .format-table th { background: var(--navy-900); color: #fff; padding: 7px 10px; text-align: left; font-weight: 700; }
+    .format-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .format-table tr:nth-child(even) td { background: #f8fafc; }
+
+    .formula-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 0.6rem 1rem; margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+    .formula-badge { background: var(--navy-800); color: #fff; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.22rem 0.55rem; border-radius: 4px; white-space: nowrap; }
+    .formula-text { font-family: 'Consolas', 'Courier New', monospace; font-size: 0.88rem; font-weight: 700; color: var(--navy-900); }
+
+    .practice-box { background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.8rem 1.05rem; margin-bottom: 0.6rem; }
+    .practice-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
+    .practice-tag { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--navy-800); letter-spacing: 0.05em; }
+    .practice-prompt { font-size: 0.9rem; font-weight: 700; color: var(--ink-900); padding-left: 0.7rem; border-left: 3px solid var(--navy-800); margin-bottom: 0.3rem; }
+    .practice-hint { font-size: 0.79rem; color: var(--ink-700); }
+    .reveal-btn { background: #fff; border: 1.5px solid var(--navy-800); color: var(--navy-800); padding: 0.28rem 0.7rem; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .reveal-btn:hover { background: var(--navy-50); }
+    .practice-solution { display: none; margin-top: 0.5rem; animation: fadeIn 0.2s ease-out; }
+    .box-after { background: var(--emerald-bg); border-left: 3px solid var(--emerald-border); padding: 0.55rem 0.85rem; border-radius: 4px; font-size: 0.83rem; color: var(--emerald-text); line-height: 1.55; }
+    .box-after strong { color: #047857; }
+
+    .task-card { border: 2px solid var(--navy-800); background: var(--navy-50); border-radius: 10px; padding: 1rem 1.25rem; }
+    .task-card-header { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--navy-800); letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+    .task-card-q { font-size: 1.12rem; font-weight: 800; color: var(--navy-900); margin-bottom: 0.55rem; line-height: 1.35; }
+    .task-card ul { font-size: 0.88rem; margin-left: 1.2rem; line-height: 1.65; }
+
+    .pic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-bottom: 0.75rem; }
+    .pic { position: relative; border: 1.5px solid var(--border); border-radius: 8px; overflow: hidden; background: #f1f5f9; aspect-ratio: 4 / 3; cursor: zoom-in; }
+    .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pic .pic-letter { position: absolute; top: 6px; left: 6px; background: var(--navy-900); color: #fff; font-weight: 800; font-size: 0.85rem; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+    .pic.focus { border: 3px solid var(--navy-700); }
+    .lightbox { position: fixed; inset: 0; background: rgba(12,18,34,0.88); display: none; align-items: center; justify-content: center; z-index: 500; cursor: zoom-out; }
+    .lightbox img { max-width: 92vw; max-height: 88vh; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.75rem; }
+    .nav-counter { font-size: 0.85rem; font-weight: 700; color: var(--ink-500); }
+    .nav-buttons { display: flex; gap: 0.7rem; }
+    .nav-btn { background: var(--navy-800); border: 1px solid var(--navy-800); color: #fff; padding: 0.45rem 1.1rem; border-radius: 6px; font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+    .nav-btn:hover:not(:disabled) { background: var(--navy-900); }
+    .nav-btn#prev-btn { background: #fff; border: 1.5px solid var(--border); color: var(--ink-700); }
+    .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    @media print {
+      .top-hud, .nav-bar, .reveal-btn { display: none !important; }
+      .slide { display: flex !important; page-break-after: always; }
+      .practice-solution { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-hud">
+    <div class="hud-left">
+      <span class="hud-badge">GarethEnglish</span>
+      <span class="hud-title">C2 Proficiency Speaking &bull; <span>Part-by-Part Walkthrough &amp; Practice</span></span>
+    </div>
+    <div class="timer-box">
+      <span class="timer-label" id="spk-label">Timer:</span>
+      <span class="timer-digits" id="spk-digits">00:00</span>
+      <button class="timer-btn" onclick="startTimer(30, '30s')">30s</button>
+      <button class="timer-btn" onclick="startTimer(60, '1 min')">1 min</button>
+      <button class="timer-btn" onclick="startTimer(120, '2 min')">2 min</button>
+      <button class="timer-btn" onclick="startTimer(180, '3 min')">3 min</button>
+      <button class="timer-btn" onclick="startTimer(240, '4 min')">4 min</button>
+      <button class="timer-btn" onclick="stopTimer()">⏹️</button>
+    </div>
+  </div>
+
+  <div class="slide-stage">
+    <div class="slide-viewport">
+
+      <!-- SLIDE 1: Test Overview -->
+      <div class="slide active" id="slide-1">
+        <div class="slide-tag">🎓 Cambridge C2 Proficiency &bull; Paper 4: Speaking</div>
+        <h1 class="slide-title">The Speaking Test, Part by Part</h1>
+        <p class="slide-desc">You take the test with one other candidate (occasionally two). There are two examiners: the <strong>interlocutor</strong>, who asks the questions, and the <strong>assessor</strong>, who listens and marks. It lasts <strong>16 minutes</strong> in total.</p>
+
+        <table class="format-table">
+          <thead>
+            <tr><th>Part</th><th>Time</th><th>What happens</th><th>What it tests</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Part 1 · Interview</strong></td><td>2 mins</td><td>The interlocutor asks each of you a few questions about yourself.</td><td>Natural social English; extending your answers.</td></tr>
+            <tr><td><strong>Part 2 · Collaborative Task</strong></td><td>4 mins</td><td>You and your partner discuss a set of pictures: 1 minute on one or two pictures, then 3 minutes on a decision-making task.</td><td>Speculating, evaluating, negotiating and reaching a decision together.</td></tr>
+            <tr><td><strong>Part 3 · Long Turn &amp; Discussion</strong></td><td>10 mins</td><td>Each of you speaks alone for 2 minutes from a question card, your partner responds, then all three of you discuss the wider theme.</td><td>Organising an extended argument; developing abstract ideas.</td></tr>
+          </tbody>
+        </table>
+
+        <div class="grid-2col" style="margin-bottom: 0;">
+          <div class="mini-card accent">
+            <div class="card-title-sm">📋 How you are marked</div>
+            <div class="card-body">The assessor gives marks for <strong>Grammatical Resource</strong>, <strong>Lexical Resource</strong>, <strong>Discourse Management</strong>, <strong>Pronunciation</strong> and <strong>Interactive Communication</strong>. The interlocutor gives one <strong>Global Achievement</strong> mark.</div>
+          </div>
+          <div class="mini-card emerald">
+            <div class="card-title-sm" style="color: var(--emerald-text);">🧭 The mindset that wins marks</div>
+            <div class="card-body">This isn't a quiz with right answers. It's a conversation between intelligent adults. The examiners want to hear you <strong>think out loud</strong>, link your ideas and respond to the people in the room.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2: Part 1 Strategy -->
+      <div class="slide" id="slide-2">
+        <div class="slide-tag">🗣️ Part 1 &bull; Interview (2 minutes)</div>
+        <h2 class="slide-title">Part 1: First Impressions in Two Minutes</h2>
+        <p class="slide-desc">The interlocutor will ask where you are from and what you do, then one or two more personal questions. Each answer should take around <strong>20–30 seconds</strong>: long enough to show your range, short enough to sound natural.</p>
+
+        <div class="grid-3col">
+          <div class="mini-card emerald">
+            <div class="card-title-sm" style="color: var(--emerald-text);">✓ Answer, then extend</div>
+            <div class="card-body">Give a direct answer, then add <strong>one reason</strong> and <strong>one concrete detail</strong>. Two or three sentences are plenty.</div>
+          </div>
+          <div class="mini-card amber">
+            <div class="card-title-sm" style="color: var(--amber-text);">✗ No rehearsed speeches</div>
+            <div class="card-body">Examiners spot memorised answers immediately. A natural, slightly imperfect answer beats a polished monologue.</div>
+          </div>
+          <div class="mini-card accent">
+            <div class="card-title-sm">🔁 Don't echo the question</div>
+            <div class="card-body">If asked <em>"What do you enjoy about…?"</em>, avoid <em>"What I enjoy about… is…"</em> every time. Vary your opening.</div>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          <span class="formula-badge">Part 1 Blueprint</span>
+          <span class="formula-text">Direct Answer + What I (value / find…) most is + [reason] + For instance, [specific detail]</span>
+        </div>
+
+        <div class="practice-box" style="margin-bottom: 0;">
+          <div class="practice-top">
+            <span class="practice-tag">Live Drill · Upgrade a Flat Answer</span>
+            <button class="reveal-btn" onclick="toggleSolution('sol-1', this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="practice-prompt">"How do you like to spend your free time?" &rarr; <em style="font-weight: 400;">"I like reading and going out with friends."</em></div>
+          <div class="practice-hint">Rebuild this answer using the blueprint above.</div>
+          <div class="practice-solution" id="sol-1">
+            <div class="box-after">"Most of it goes on reading, if I'm honest. <strong>What I value most is</strong> being able to switch off completely from studying. At the moment, for instance, I'm halfway through a collection of short stories that I can dip in and out of between revision sessions."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 3: Part 1 Practice -->
+      <div class="slide" id="slide-3">
+        <div class="slide-tag">🗣️ Part 1 &bull; Practice Round</div>
+        <h2 class="slide-title">Part 1 Practice: Typical Interview Questions</h2>
+        <p class="slide-desc">Press <strong>30s</strong> on the timer for each question. Aim for an answer, a reason and a detail, then stop naturally.</p>
+
+        <div class="grid-2col">
+          <div class="mini-card accent">
+            <div class="card-title-sm">Set A · You and your life</div>
+            <div class="card-body">
+              <ol>
+                <li>What do you enjoy most about the place where you live?</li>
+                <li>How important is it for you to plan ahead?</li>
+                <li>Do you think you'll be living in the same place in ten years' time?</li>
+                <li>What is the best piece of advice you have ever been given?</li>
+              </ol>
+            </div>
+          </div>
+          <div class="mini-card purple">
+            <div class="card-title-sm" style="color: var(--purple-text);">Set B · Interests and learning</div>
+            <div class="card-body">
+              <ol>
+                <li>If you could learn a completely new skill, what would it be?</li>
+                <li>What part of learning English has been most rewarding for you?</li>
+                <li>Do you prefer spending time with a large group of people or just a few close friends?</li>
+                <li>How has the way you spend your free time changed over the years?</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          <span class="formula-badge">Grammar Target</span>
+          <span class="formula-text">I used to + infinitive …, whereas these days I tend to + infinitive …</span>
+        </div>
+
+        <div class="practice-box" style="margin-bottom: 0;">
+          <div class="practice-top">
+            <span class="practice-tag">Live Drill · Set B, Question 4</span>
+            <button class="reveal-btn" onclick="toggleSolution('sol-2', this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="practice-prompt">"How has the way you spend your free time changed over the years?"</div>
+          <div class="practice-hint">Use the contrast frame above, then add why the change happened.</div>
+          <div class="practice-solution" id="sol-2">
+            <div class="box-after">"Quite dramatically, actually. <strong>I used to</strong> fill every spare minute with sport and clubs, <strong>whereas these days I tend to</strong> guard my free time much more carefully. With exams coming up, a quiet walk or an evening with a book feels far more valuable than a packed schedule."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: Part 2 Strategy -->
+      <div class="slide" id="slide-4">
+        <div class="slide-tag">🤝 Part 2 &bull; Collaborative Task (4 minutes)</div>
+        <h2 class="slide-title">Part 2: How the Collaborative Task Works</h2>
+        <p class="slide-desc">You and your partner are given a set of pictures. You talk <strong>to each other</strong>, not to the examiner.</p>
+
+        <div class="grid-2col">
+          <div class="mini-card accent">
+            <div class="card-title-sm">Phase 1 · About 1 minute</div>
+            <div class="card-body">The interlocutor asks you to look at <strong>one or two</strong> of the pictures and talk together about them, often what the people might be feeling or why the scene matters.
+              <ul style="margin-top: 0.35rem;">
+                <li><strong>Speculate</strong>; don't just describe.</li>
+                <li>React to your partner's first comment.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="mini-card purple">
+            <div class="card-title-sm" style="color: var(--purple-text);">Phase 2 · About 3 minutes</div>
+            <div class="card-body">You look at <strong>all</strong> the pictures and discuss a question, then <strong>reach a decision</strong> together.
+              <ul style="margin-top: 0.35rem;">
+                <li>Explore several pictures before deciding.</li>
+                <li>Save the decision for the last 30–40 seconds.</li>
+                <li>You don't have to agree. Agreeing to disagree is fine.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          <span class="formula-badge">Speculating About the Past</span>
+          <span class="formula-text">Subject + could / might / must + have + past participle (+ -ing)</span>
+        </div>
+
+        <div class="practice-box" style="margin-bottom: 0;">
+          <div class="practice-top">
+            <span class="practice-tag">Live Drill · From Description to Speculation</span>
+            <button class="reveal-btn" onclick="toggleSolution('sol-3', this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="practice-prompt"><em style="font-weight: 400;">"In this picture there is a woman. She is tired. She is sitting at a desk."</em></div>
+          <div class="practice-hint">Turn this into C2 speculation using the formula above.</div>
+          <div class="practice-solution" id="sol-3">
+            <div class="box-after">"She <strong>looks as though</strong> she's reached the end of a very long day. She <strong>must have been working</strong> on something demanding for hours, and judging by the pile of papers, she <strong>might well</strong> be facing a deadline."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: Part 2 Practice Task -->
+      <div class="slide" id="slide-5">
+        <div class="slide-tag">🤝 Part 2 &bull; Practice Task: Ways of Learning</div>
+        <h2 class="slide-title">Part 2 Practice: Learning From Others</h2>
+
+        <div class="pic-grid">
+          <div class="pic focus" onclick="zoom(this)"><span class="pic-letter">A</span><img src="img/cpe-p2-a.jpg" alt="A grandmother showing a young child how to knead bread dough"></div>
+          <div class="pic focus" onclick="zoom(this)"><span class="pic-letter">B</span><img src="img/cpe-p2-b.jpg" alt="University students taking notes in a large lecture theatre"></div>
+          <div class="pic" onclick="zoom(this)"><span class="pic-letter">C</span><img src="img/cpe-p2-c.jpg" alt="A young man alone at night following an online video tutorial"></div>
+          <div class="pic" onclick="zoom(this)"><span class="pic-letter">D</span><img src="img/cpe-p2-d.jpg" alt="An apprentice working alongside an experienced carpenter"></div>
+          <div class="pic" onclick="zoom(this)"><span class="pic-letter">E</span><img src="img/cpe-p2-e.jpg" alt="A group of walkers listening to a mountain guide"></div>
+          <div class="pic" onclick="zoom(this)"><span class="pic-letter">F</span><img src="img/cpe-p2-f.jpg" alt="An elderly man having his first piano lesson"></div>
+        </div>
+
+        <div class="grid-2col" style="margin-bottom: 0;">
+          <div class="task-card">
+            <div class="task-card-header">Phase 1 · 1 minute · Pictures A and B</div>
+            <div class="card-body" style="font-size: 0.88rem;">"Look at pictures <strong>A</strong> and <strong>B</strong>. Talk together about <strong>how the people might be feeling</strong> and what the relationship between teacher and learner is like in each situation."</div>
+          </div>
+          <div class="task-card" style="border-color: var(--purple-border); background: var(--purple-bg);">
+            <div class="task-card-header" style="color: var(--purple-text);">Phase 2 · 3 minutes · All pictures</div>
+            <div class="card-body" style="font-size: 0.88rem;">"These pictures will be used in a magazine article about <strong>different ways of learning</strong>. Talk together about <strong>what each situation shows about the value of learning from other people</strong>. Then decide <strong>which picture best represents the idea of lifelong learning</strong>."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 6: Part 2 Interaction Language -->
+      <div class="slide" id="slide-6">
+        <div class="slide-tag">🤝 Part 2 &bull; Interactive Communication</div>
+        <h2 class="slide-title">Part 2 Strategy: Steering the Conversation Together</h2>
+        <p class="slide-desc">Interactive Communication is a separate mark. You earn it by <strong>inviting, building on and challenging</strong> your partner's ideas, not by delivering two parallel monologues.</p>
+
+        <div class="grid-3col">
+          <div class="mini-card accent">
+            <div class="card-title-sm">Inviting &amp; building</div>
+            <div class="card-body">
+              <em>"Where do you stand on this one?"</em><br>
+              <em>"That's a fair point, and to take it a step further…"</em><br>
+              <em>"Picking up on what you said about…"</em>
+            </div>
+          </div>
+          <div class="mini-card amber">
+            <div class="card-title-sm" style="color: var(--amber-text);">Disagreeing diplomatically</div>
+            <div class="card-body">
+              <em>"I take your point, but wouldn't you say that…?"</em><br>
+              <em>"I see it slightly differently."</em><br>
+              <em>"That's true up to a point, although…"</em>
+            </div>
+          </div>
+          <div class="mini-card emerald">
+            <div class="card-title-sm" style="color: var(--emerald-text);">Moving towards a decision</div>
+            <div class="card-body">
+              <em>"So, shall we try to narrow it down?"</em><br>
+              <em>"If we had to choose just one…"</em><br>
+              <em>"It seems we've ended up agreeing on…"</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          <span class="formula-badge">Diplomatic Challenge</span>
+          <span class="formula-text">I take your point (about X), but wouldn't you say that + [counter-argument]?</span>
+        </div>
+
+        <div class="practice-box" style="margin-bottom: 0;">
+          <div class="practice-top">
+            <span class="practice-tag">Live Drill · Respond to Your Partner</span>
+            <button class="reveal-btn" onclick="toggleSolution('sol-4', this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="practice-prompt">Your partner says: <em style="font-weight: 400;">"I think picture C is the best example. You can learn absolutely anything online now."</em></div>
+          <div class="practice-hint">Challenge this politely using the formula, then invite them back in.</div>
+          <div class="practice-solution" id="sol-4">
+            <div class="box-after">"<strong>I take your point about</strong> how accessible online learning is, <strong>but wouldn't you say that</strong> something is lost when there's no one there to correct you? Picture D, for example, shows a kind of hands-on guidance a video can't really replicate. What do you think?"</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 7: Part 3 Strategy -->
+      <div class="slide" id="slide-7">
+        <div class="slide-tag">🎤 Part 3 &bull; Long Turn &amp; Discussion (10 minutes)</div>
+        <h2 class="slide-title">Part 3: How the Long Turn Works</h2>
+        <p class="slide-desc">You receive a card with a <strong>question</strong> and three <strong>ideas</strong>. There is <strong>no formal preparation time</strong>: read the card and begin. The ideas are optional; your own ideas are equally welcome.</p>
+
+        <div class="grid-2col">
+          <div class="mini-card accent">
+            <div class="card-title-sm">📐 The sequence</div>
+            <div class="card-body">
+              <ol>
+                <li><strong>Candidate A</strong> speaks alone for <strong>2 minutes</strong>.</li>
+                <li>The interlocutor asks <strong>Candidate B</strong> a related question (about 1 minute).</li>
+                <li>A follow-up question to <strong>both</strong> of you.</li>
+                <li>Then <strong>Candidate B</strong> receives a new card, and the same pattern repeats.</li>
+                <li>Finally, a <strong>discussion</strong> with both of you on the wider theme (about 4 minutes).</li>
+              </ol>
+            </div>
+          </div>
+          <div class="mini-card emerald">
+            <div class="card-title-sm" style="color: var(--emerald-text);">🧱 Shaping your 2 minutes</div>
+            <div class="card-body">
+              <strong>Frame (≈15s):</strong> <em>"When considering the question of…, one has to distinguish between…"</em><br>
+              <strong>Two or three points (≈80s):</strong> <em>"Turning first to…" / "Closely bound up with this is…" / "Looked at from another angle…"</em><br>
+              <strong>Land it (≈20s):</strong> <em>"Ultimately, what this comes down to is…"</em><br>
+              If you finish early, deepen a point with an example. Keep going until you're stopped.
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-box" style="margin-bottom: 0;">
+          <span class="formula-badge">Listening Matters Too</span>
+          <span class="formula-text" style="font-family: var(--font-sans);">While your partner speaks, listen closely. Your question afterwards will be about <em>their</em> topic, and referring to what they said earns interaction credit.</span>
+        </div>
+      </div>
+
+      <!-- SLIDE 8: Part 3 Card A -->
+      <div class="slide" id="slide-8">
+        <div class="slide-tag">🎤 Part 3 &bull; Practice Card A</div>
+        <h2 class="slide-title">Long Turn Practice: Card A</h2>
+
+        <div class="grid-2col">
+          <div class="task-card">
+            <div class="task-card-header">Prompt Card A · Speak for 2 minutes</div>
+            <div class="task-card-q">How much are our choices shaped by the people around us?</div>
+            <ul>
+              <li>family</li>
+              <li>friends</li>
+              <li>social media</li>
+            </ul>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <div class="mini-card amber">
+              <div class="card-title-sm" style="color: var(--amber-text);">Partner question (1 minute)</div>
+              <div class="card-body"><em>"Do you think people are more or less independent in their thinking than they used to be?"</em></div>
+            </div>
+            <div class="mini-card purple">
+              <div class="card-title-sm" style="color: var(--purple-text);">Follow-up for both</div>
+              <div class="card-body"><em>"Is it possible to make a decision that is entirely your own?"</em></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          <span class="formula-badge">C2 Contrastive It-Cleft</span>
+          <span class="formula-text">It is not so much X as Y that + [verb]</span>
+        </div>
+
+        <div class="practice-box" style="margin-bottom: 0;">
+          <div class="practice-top">
+            <span class="practice-tag">Live Drill · Model Opening (First 20 Seconds)</span>
+            <button class="reveal-btn" onclick="toggleSolution('sol-5', this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="practice-prompt">Open Card A with a frame and an It-cleft.</div>
+          <div class="practice-solution" id="sol-5">
+            <div class="box-after">"When considering how far other people shape our choices, one has to distinguish between the big decisions in life and the small, everyday ones. <strong>It is not so much</strong> direct advice <strong>as</strong> the quiet example of those closest to us <strong>that</strong> tends to have the greatest influence. Turning first to family…"</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 9: Part 3 Card B + Discussion -->
+      <div class="slide" id="slide-9">
+        <div class="slide-tag">🎤 Part 3 &bull; Practice Card B &amp; Final Discussion</div>
+        <h2 class="slide-title">Long Turn Practice: Card B, Then the Discussion</h2>
+
+        <div class="grid-2col">
+          <div class="task-card">
+            <div class="task-card-header">Prompt Card B · Speak for 2 minutes</div>
+            <div class="task-card-q">To what extent do the media influence what we believe?</div>
+            <ul>
+              <li>news reporting</li>
+              <li>advertising</li>
+              <li>public figures</li>
+            </ul>
+          </div>
+          <div class="mini-card accent">
+            <div class="card-title-sm">💬 Discussion questions (4 minutes)</div>
+            <div class="card-body">
+              <ol>
+                <li>Should there be stricter rules on what influencers can promote?</li>
+                <li>Why are some people more easily persuaded than others?</li>
+                <li>Is it the responsibility of schools to teach young people to question what they read?</li>
+              </ol>
+              <p style="margin-top: 0.35rem; font-size: 0.79rem; color: var(--ink-700);">Use <strong>A.R.E.A.</strong>: Assertion &rarr; Reason &rarr; Evidence &rarr; Alternative.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          <span class="formula-badge">Emphatic Inversion</span>
+          <span class="formula-text">Rarely / Seldom / Only when … + auxiliary + subject + verb</span>
+        </div>
+
+        <div class="practice-box" style="margin-bottom: 0;">
+          <div class="practice-top">
+            <span class="practice-tag">Live Drill · Discussion Question 3</span>
+            <button class="reveal-btn" onclick="toggleSolution('sol-6', this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="practice-prompt">"Is it the responsibility of schools to teach young people to question what they read?"</div>
+          <div class="practice-hint">Answer with A.R.E.A. and include one inversion.</div>
+          <div class="practice-solution" id="sol-6">
+            <div class="box-after">"Absolutely, I'd say it's one of their most important jobs now. <strong>Rarely do</strong> teenagers come across information that hasn't been filtered by an algorithm, so they need the tools to spot bias. A simple exercise comparing how two newspapers report the same story can be eye-opening. <strong>That said</strong>, schools can't do it alone; it has to be reinforced at home as well."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 10: Exam-Day Checklist -->
+      <div class="slide" id="slide-10">
+        <div class="slide-tag">🏁 Exam Day &bull; Final Checklist</div>
+        <h2 class="slide-title">Walking In With Composure</h2>
+
+        <div class="grid-3col">
+          <div class="mini-card accent">
+            <div class="card-title-sm">Part 1</div>
+            <div class="card-body">
+              <ul>
+                <li>Answer + reason + detail</li>
+                <li>20–30 seconds, then stop</li>
+                <li>Sound like yourself, not a script</li>
+              </ul>
+            </div>
+          </div>
+          <div class="mini-card purple">
+            <div class="card-title-sm" style="color: var(--purple-text);">Part 2</div>
+            <div class="card-body">
+              <ul>
+                <li>Speculate; don't just describe</li>
+                <li>Talk to your partner, not the examiner</li>
+                <li>Explore first; decide at the end</li>
+              </ul>
+            </div>
+          </div>
+          <div class="mini-card emerald">
+            <div class="card-title-sm" style="color: var(--emerald-text);">Part 3</div>
+            <div class="card-body">
+              <ul>
+                <li>Frame &rarr; signposted points &rarr; land it</li>
+                <li>Use your own ideas freely</li>
+                <li>Listen closely to your partner</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          <div class="mini-card amber">
+            <div class="card-title-sm" style="color: var(--amber-text);">🛟 If something goes wrong</div>
+            <div class="card-body">
+              <em>"Sorry, would you mind repeating the question?"</em>: no penalty at all.<br>
+              <em>"Let me put that another way…"</em>: self-correction shows control.<br>
+              <em>"That's not something I've given much thought to, but…"</em>: buys you time naturally.
+            </div>
+          </div>
+          <div class="mini-card crimson">
+            <div class="card-title-sm" style="color: var(--rose-text);">⚖️ Restraint over showing off</div>
+            <div class="card-body">Three or four well-placed structures (one cleft, one inversion, one passive report) will do the work. Clarity, cadence and genuine engagement with the question matter far more than packing every sentence.</div>
+          </div>
+        </div>
+
+        <div class="practice-box" style="margin-bottom: 0;">
+          <div class="practice-top">
+            <span class="practice-tag">Final Drill · Passive Reporting (It + passive + that)</span>
+            <button class="reveal-btn" onclick="toggleSolution('sol-7', this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="practice-prompt">Rephrase: <em style="font-weight: 400;">"Lots of people think that social media makes us less patient."</em></div>
+          <div class="practice-solution" id="sol-7">
+            <div class="box-after">"<strong>It is widely believed that</strong> social media has made us less patient." / "Social media <strong>is widely believed to have made</strong> us less patient."</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <div class="nav-counter">Slide <span id="current-slide-num" style="color: var(--navy-700); font-weight: 800;">1</span> of 10</div>
+        <div class="nav-buttons">
+          <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled>&larr; Previous</button>
+          <button class="nav-btn" id="next-btn" onclick="nextSlide()">Next &rarr;</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox" onclick="this.style.display='none'"><img id="lightbox-img" src="" alt=""></div>
+
+  <script>
+    function zoom(el) {
+      const img = el.querySelector('img');
+      document.getElementById('lightbox-img').src = img.src;
+      document.getElementById('lightbox-img').alt = img.alt;
+      document.getElementById('lightbox').style.display = 'flex';
+    }
+
+    let currentSlide = 1;
+    const totalSlides = 10;
+
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById('slide-' + n);
+      if (target) {
+        target.classList.add('active');
+        currentSlide = n;
+        document.getElementById('current-slide-num').textContent = n;
+        document.getElementById('prev-btn').disabled = (n === 1);
+        document.getElementById('next-btn').disabled = (n === totalSlides);
+      }
+    }
+    function nextSlide() { if (currentSlide < totalSlides) showSlide(currentSlide + 1); }
+    function prevSlide() { if (currentSlide > 1) showSlide(currentSlide - 1); }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function toggleSolution(id, btn) {
+      const sol = document.getElementById(id);
+      if (!sol) return;
+      const hidden = window.getComputedStyle(sol).display === 'none';
+      sol.style.display = hidden ? 'block' : 'none';
+      btn.textContent = hidden ? '🙈 Hide Model' : '👁️ Reveal Cambridge Model';
+      btn.style.background = hidden ? 'var(--navy-800)' : '#ffffff';
+      btn.style.color = hidden ? '#ffffff' : 'var(--navy-800)';
+    }
+
+    let tInterval = null;
+    function fmt(s) { return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+    function startTimer(seconds, label) {
+      if (tInterval) clearInterval(tInterval);
+      let remaining = seconds;
+      const digits = document.getElementById('spk-digits');
+      document.getElementById('spk-label').textContent = label + ':';
+      digits.style.color = 'var(--emerald-text)';
+      digits.textContent = fmt(remaining);
+      tInterval = setInterval(() => {
+        remaining--;
+        digits.textContent = fmt(remaining);
+        if (remaining <= 0) {
+          clearInterval(tInterval);
+          tInterval = null;
+          digits.textContent = 'TIME';
+          digits.style.color = '#e11d48';
+        }
+      }, 1000);
+    }
+    function stopTimer() { if (tInterval) { clearInterval(tInterval); tInterval = null; } }
+  </script>
+</body>
+</html>

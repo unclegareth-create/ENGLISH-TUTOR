@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C2 Proficiency · Part 4 Key Word Transformations (Official Past-Paper Audit) &bull; Gaia</title>
+  <style>
+    :root {
+      --desk-bg: #eef2f6; --paper-bg: #ffffff;
+      --navy-900: #0f2557; --navy-800: #16377d; --navy-700: #1d4ed8; --navy-50: #f0f6ff;
+      --ink-900: #1e293b; --ink-700: #334155; --ink-500: #64748b; --border: #cbd5e1;
+      --emerald-bg: #ecfdf5; --emerald-border: #10b981; --emerald-text: #065f46;
+      --rose-bg: #fff1f2; --rose-border: #f43f5e; --rose-text: #9f1239;
+      --amber-bg: #fffbeb; --amber-border: #f59e0b; --amber-text: #92400e;
+      --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans); }
+    body { background: var(--desk-bg); color: var(--ink-900); line-height: 1.6; min-height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+    .top-hud { background: #fff; border-bottom: 1px solid var(--border); padding: 0.7rem 1.6rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 0.5rem; }
+    .hud-badge { background: var(--navy-800); color: #fff; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.65rem; border-radius: 6px; margin-right: 0.7rem; }
+    .hud-title { font-size: 0.95rem; font-weight: 700; color: var(--navy-900); }
+    .hud-rule { font-size: 0.78rem; font-weight: 700; color: var(--amber-text); background: var(--amber-bg); border: 1px solid var(--amber-border); padding: 0.25rem 0.65rem; border-radius: 6px; }
+    .slide-stage { flex: 1; display: flex; justify-content: center; align-items: center; padding: 1.3rem 1.2rem; max-width: 1120px; margin: 0 auto; width: 100%; }
+    .slide-viewport { width: 100%; min-height: 590px; background: var(--paper-bg); border: 1px solid #d8e0ea; border-radius: 12px; padding: 1.8rem 2.2rem; box-shadow: 0 12px 32px rgba(15,37,87,0.07); display: flex; flex-direction: column; justify-content: space-between; }
+    .slide { display: none; flex-direction: column; }
+    .slide.active { display: flex; animation: fadeIn 0.2s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .slide-tag { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--navy-800); margin-bottom: 0.25rem; }
+    .slide-title { font-size: 1.5rem; font-weight: 800; color: var(--navy-900); margin-bottom: 0.5rem; line-height: 1.25; }
+    .slide-desc { font-size: 0.9rem; color: var(--ink-700); margin-bottom: 0.75rem; }
+    .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 0.75rem; }
+    .grid-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; margin-bottom: 0.75rem; }
+    @media (max-width: 820px) { .grid-2col, .grid-4col { grid-template-columns: 1fr; } }
+    .mini-card { background: #fff; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.83rem; }
+    .mini-card.accent { border-color: var(--navy-800); background: var(--navy-50); }
+    .mini-card.emerald { border-color: var(--emerald-border); background: var(--emerald-bg); }
+    .mini-card.amber { border-color: var(--amber-border); background: var(--amber-bg); }
+    .card-title-sm { font-size: 0.86rem; font-weight: 800; margin-bottom: 0.3rem; color: var(--navy-900); }
+    .formula-box { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 0.6rem 1rem; margin-bottom: 0.55rem; display: flex; align-items: center; gap: 0.7rem; flex-wrap: wrap; }
+    .formula-badge { background: var(--navy-800); color: #fff; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.22rem 0.55rem; border-radius: 4px; white-space: nowrap; }
+    .formula-text { font-family: 'Consolas', 'Courier New', monospace; font-size: 0.88rem; font-weight: 700; color: var(--navy-900); }
+    .watch { font-size: 0.82rem; color: var(--ink-700); background: var(--amber-bg); border-left: 3px solid var(--amber-border); padding: 0.45rem 0.8rem; border-radius: 4px; margin-bottom: 0.7rem; }
+    .kwt { background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.78rem 1rem; margin-bottom: 0.6rem; }
+    .kwt-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.28rem; gap: 0.5rem; }
+    .kwt-num { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--navy-800); letter-spacing: 0.05em; }
+    .kwt-s1 { font-size: 0.91rem; color: var(--ink-900); }
+    .kwt-key { display: inline-block; font-weight: 800; letter-spacing: 0.08em; color: #fff; background: var(--navy-900); padding: 0.05rem 0.55rem; border-radius: 4px; margin: 0.28rem 0; font-size: 0.84rem; }
+    .kwt-s2 { font-size: 0.91rem; color: var(--ink-900); font-weight: 600; }
+    .gap { display: inline-block; min-width: 120px; border-bottom: 2px dashed var(--navy-700); margin: 0 0.25rem; }
+    .answer-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.42rem; }
+    .answer-input { flex: 1; padding: 0.36rem 0.6rem; border: 1.5px solid #93c5fd; border-radius: 6px; font-size: 0.85rem; }
+    .answer-input:focus { outline: none; border-color: var(--navy-700); }
+    .wc { font-family: 'Consolas', monospace; font-size: 0.77rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 999px; background: #fff; border: 1px solid var(--border); min-width: 74px; text-align: center; }
+    .wc.ok { color: var(--emerald-text); border-color: var(--emerald-border); background: var(--emerald-bg); }
+    .wc.bad { color: var(--rose-text); border-color: var(--rose-border); background: var(--rose-bg); }
+    .reveal-btn { background: #fff; border: 1.5px solid var(--navy-800); color: var(--navy-800); padding: 0.28rem 0.7rem; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .reveal-btn:hover { background: var(--navy-50); }
+    .solution { display: none; margin-top: 0.45rem; background: var(--emerald-bg); border-left: 3px solid var(--emerald-border); padding: 0.5rem 0.8rem; border-radius: 4px; font-size: 0.85rem; color: var(--emerald-text); }
+    .solution strong { color: #047857; }
+    .solution .split { color: var(--navy-800); font-weight: 800; padding: 0 0.2rem; }
+    .solution .count { font-size: 0.75rem; color: var(--ink-700); margin-left: 0.35rem; }
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.85rem; margin-top: 0.65rem; }
+    .nav-counter { font-size: 0.85rem; font-weight: 700; color: var(--ink-500); }
+    .nav-buttons { display: flex; gap: 0.7rem; }
+    .nav-btn { background: var(--navy-800); border: 1px solid var(--navy-800); color: #fff; padding: 0.45rem 1.1rem; border-radius: 6px; font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+    .nav-btn#prev-btn { background: #fff; border: 1.5px solid var(--border); color: var(--ink-700); }
+    .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    @media print { .top-hud, .nav-bar, .reveal-btn, .answer-row { display: none !important; } .slide { display: flex !important; page-break-after: always; } .solution { display: block !important; } }
+  </style>
+</head>
+<body>
+
+  <div class="top-hud">
+    <div><span class="hud-badge">GarethEnglish</span><span class="hud-title">C2 Proficiency &bull; Part 4: What Cambridge Actually Tests (Past-Paper Audit)</span></div>
+    <span class="hud-rule">3–8 words &bull; key word unchanged &bull; 2 marks per item (1 + 1 split)</span>
+  </div>
+
+  <div class="slide-stage">
+    <div class="slide-viewport">
+
+      <!-- SLIDE 1: Evidence-Based Breakdown -->
+      <div class="slide active" id="slide-1">
+        <div class="slide-tag">📘 Reading &amp; Use of English &bull; Part 4 (Questions 25–30)</div>
+        <h1 class="slide-title">What Past Papers Actually Test in C2 Part 4</h1>
+        <p class="slide-desc">An audit of <strong>87 official &amp; practice Part 4 items</strong> (including 8 full tests from <em>Cambridge English Proficiency</em> past-paper books + Official Sample Paper 1) shows a clear truth: <strong>over 60% of C2 transformations test Nominalisation (Verb/Adjective &rarr; Noun + Preposition) and Fixed Idiomatic Collocations</strong>—often layered over a passive or grammar shift.</p>
+
+        <div class="grid-4col">
+          <div class="mini-card accent"><div class="card-title-sm">1 · Strike Out the Echoes</div>Cross out every word from Sentence 1 that is already accounted for in Sentence 2. Isolate the exact missing meaning.</div>
+          <div class="mini-card accent"><div class="card-title-sm">2 · Check for Noun Shift</div>At C2, verbs &amp; adjectives regularly become nouns: <em>resemble &rarr; bear no resemblance to</em>; <em>clear &rarr; a lack of clarity</em>.</div>
+          <div class="mini-card accent"><div class="card-title-sm">3 · Check Prepositions</div>The second mark almost always depends on the exact preposition + gerund: <em>prospect <strong>of</strong> being</em>, <em>restricted <strong>to</strong> those who</em>.</div>
+          <div class="mini-card accent"><div class="card-title-sm">4 · Tense &amp; Passive Layer</div>Even when the key word is an idiom or phrasal verb, check whether Sentence 2 has flipped into the passive.</div>
+        </div>
+
+        <div class="grid-2col" style="margin-bottom: 0;">
+          <div class="mini-card emerald">
+            <div class="card-title-sm" style="color: var(--emerald-text);">📊 Frequency Across Official Cambridge Papers</div>
+            <ul style="margin-left: 1.1rem; font-size: 0.81rem; line-height: 1.55;">
+              <li><strong>#1 Nominalisation &amp; Noun + Preposition (~35–49%):</strong> <em>no intention of, little prospect of, bore no resemblance to, came as a surprise to</em></li>
+              <li><strong>#2 Fixed Idioms &amp; Expressions (~25–40%):</strong> <em>taken into account, at a complete loss, to the best of my knowledge, only time will tell</em></li>
+              <li><strong>#3 Phrasal Verbs &amp; Dependent Prepositions (~16%):</strong> <em>come up with, put off until, taken in by, restricted to, dismissed as</em></li>
+              <li><strong>#4 C2 Grammar Shifts (~25%):</strong> <em>But for + noun, Providing there is no…, At no time was there…, On no account are…, It was not until… that, is rumoured to have sustained</em></li>
+            </ul>
+          </div>
+          <div class="mini-card amber">
+            <div class="card-title-sm" style="color: var(--amber-text);">🎯 How the 2 Marks Work (The <code>|</code> Split)</div>
+            Every Part 4 answer is divided into two halves worth <strong>1 mark each</strong> (shown as <code>|</code> in the official key). Even if you aren't 100% sure of one preposition, write the rest of the structure cleanly—you still collect 1 of the 2 marks.
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2: Pattern 1A — Nominalisation (Negative Noun Frames) -->
+      <div class="slide" id="slide-2">
+        <div class="slide-tag">Pattern 1 of 10 &bull; #1 Most Tested C2 Family (Part A)</div>
+        <h2 class="slide-title">Nominalisation: Negative Noun Frames (<em>no / little + noun + prep</em>)</h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">bear no resemblance to &nbsp;|&nbsp; show no sign of + noun &nbsp;|&nbsp; have no intention of + -ing</span></div>
+        <div class="watch">Cambridge loves turning a negative verb or adjective (<em>didn't look like, didn't seem nervous, doesn't intend</em>) into a verb + <strong>no + abstract noun + preposition</strong>.</div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE 2 Test 1 Q29</span><button class="reveal-btn" onclick="reveal('s1', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">My father said that the portrait did not look like him.</div>
+          <span class="kwt-key">RESEMBLANCE</span>
+          <div class="kwt-s2">My father said that the portrait <span class="gap"></span> him.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s1">My father said that the portrait <strong>bore no <span class="split">|</span> resemblance to</strong> him. <span class="count">(4 words)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE 2 Test 2 Q26</span><button class="reveal-btn" onclick="reveal('s2', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">Katy didn't seem nervous, even though she was making her speech without notes.</div>
+          <span class="kwt-key">SIGN</span>
+          <div class="kwt-s2">Katy <span class="gap"></span> even though she was making her speech without notes.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s2">Katy <strong>showed no sign <span class="split">|</span> of nervousness</strong> even though she was making her speech without notes. <span class="count">(5 words · <em>gave no sign</em> also accepted)</span></div>
+        </div>
+      </div>
+
+      <!-- SLIDE 3: Pattern 2 — Nominalisation (Likelihood, Demand & Obligation) -->
+      <div class="slide" id="slide-3">
+        <div class="slide-tag">Pattern 2 of 10 &bull; #1 Most Tested C2 Family (Part B)</div>
+        <h2 class="slide-title">Nominalisation: Probability, Demand &amp; Obligation</h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">see little prospect of + -ing &nbsp;|&nbsp; under no obligation to + V &nbsp;|&nbsp; little demand for</span></div>
+        <div class="watch">Watch the preposition after probability nouns: <em>little prospect <strong>of</strong> (being able to)</em>, <em>what are Tom's chances <strong>of</strong> + -ing</em>, <em>every likelihood <strong>that</strong> + clause</em>.</div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE 2 Test 4 Q27</span><button class="reveal-btn" onclick="reveal('s3', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">Sam doesn't think he'll be able to come with us at the weekend.</div>
+          <span class="kwt-key">PROSPECT</span>
+          <div class="kwt-s2">Sam sees <span class="gap"></span> to come with us at the weekend.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s3">Sam sees <strong>little prospect <span class="split">|</span> of being able</strong> to come with us at the weekend. <span class="count">(5 words · <em>of him/his being able</em> = 6)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE 2 Test 3 Q26</span><button class="reveal-btn" onclick="reveal('s4', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">The owner of the shop said that we didn't have to buy anything; we could just look round.</div>
+          <span class="kwt-key">OBLIGATION</span>
+          <div class="kwt-s2">The owner of the shop said that we <span class="gap"></span> a purchase; we could just look round.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s4">…said that we <strong>were under no <span class="split">|</span> obligation to make</strong> a purchase. <span class="count">(6 words · Notice <em>buy &rarr; make a purchase</em>!)</span></div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: Pattern 3 — Clause-to-Noun Subject & 'There is a lack of' -->
+      <div class="slide" id="slide-4">
+        <div class="slide-tag">Pattern 3 of 10 &bull; Nominalisation (Part C)</div>
+        <h2 class="slide-title">Clause-to-Noun Transformations &amp; Abstract Nouns</h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">[Person's] + noun + came as a surprise to &nbsp;|&nbsp; There was a lack of + abstract noun</span></div>
+        <div class="watch">When Sentence 1 has a clause like <em>"Nobody expected Natalia to resign"</em> or <em>"was not very clear"</em>, turn the verb/adjective into a noun: <strong>resignation</strong>, <strong>decision to retire</strong>, <strong>clarity</strong>.</div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Sample Paper 1 · Q28</span><button class="reveal-btn" onclick="reveal('s5', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">Nobody expected Natalia to resign.</div>
+          <span class="kwt-key">CAME</span>
+          <div class="kwt-s2">Natalia's <span class="gap"></span> everyone.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s5">Natalia's <strong>resignation came <span class="split">|</span> as a surprise to</strong> everyone. <span class="count">(6 words · <em>decision to resign came as a surprise to</em> = 8)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 1 Q27</span><button class="reveal-btn" onclick="reveal('s6', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">What the lecturer said was not very clear at times.</div>
+          <span class="kwt-key">LACK</span>
+          <div class="kwt-s2">There <span class="gap"></span> in what the lecturer said at times.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s6">There <strong>was a lack of <span class="split">|</span> clarity</strong> in what the lecturer said at times. <span class="count">(5 words)</span></div>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: Pattern 4 — Fixed Idiomatic Phrases (Set 1: Passive & Prepositional Idioms) -->
+      <div class="slide" id="slide-5">
+        <div class="slide-tag">Pattern 4 of 10 &bull; #2 Most Tested C2 Family (Part A)</div>
+        <h2 class="slide-title">Fixed Idioms &amp; Prepositional Phrases (Often Passive)</h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">be taken into account &nbsp;|&nbsp; be at a (complete) loss to understand &nbsp;|&nbsp; be put in charge of</span></div>
+        <div class="watch">Notice how <strong>account</strong> and <strong>charge</strong> are tested inside a passive frame when the object moves to the front of Sentence 2.</div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE 2 Test 1 Q25</span><button class="reveal-btn" onclick="reveal('s7', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">I hope the committee will consider this new information when they meet next week.</div>
+          <span class="kwt-key">ACCOUNT</span>
+          <div class="kwt-s2">I hope this new information <span class="gap"></span> when the committee meet next week.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s7">I hope this new information <strong>will be taken <span class="split">|</span> into account</strong> when the committee meet next week. <span class="count">(5 words)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 4 Q29</span><button class="reveal-btn" onclick="reveal('s8', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">I have no idea why my email bounced back.</div>
+          <span class="kwt-key">LOSS</span>
+          <div class="kwt-s2">I <span class="gap"></span> why my email bounced back.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s8">I <strong>am at a loss <span class="split">|</span> to understand</strong> why my email bounced back. <span class="count">(6 words · <em>at a complete loss to know</em> also accepted)</span></div>
+        </div>
+      </div>
+
+      <!-- SLIDE 6: Pattern 5 — Fixed Idiomatic Phrases (Set 2: Knowledge, Choice & Notice) -->
+      <div class="slide" id="slide-6">
+        <div class="slide-tag">Pattern 5 of 10 &bull; #2 Most Tested C2 Family (Part B)</div>
+        <h2 class="slide-title">High-Frequency C2 Set Expressions</h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">to the best of one's knowledge &nbsp;|&nbsp; have no choice but to + V &nbsp;|&nbsp; take no notice of</span></div>
+        <div class="watch">Other official C2 favourites in this group: <em>only time will tell</em>, <em>there is no telling how long</em>, <em>at the height of his success</em>.</div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE 2 Test 4 Q30</span><button class="reveal-btn" onclick="reveal('s9', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">The professor said that, as far as he knows, the results of the research are accurate.</div>
+          <span class="kwt-key">BEST</span>
+          <div class="kwt-s2">The professor said that <span class="gap"></span> the results of the research are accurate.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s9">The professor said that <strong>to the best <span class="split">|</span> of his knowledge</strong> the results of the research are accurate. <span class="count">(6 words)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 2 Q29</span><button class="reveal-btn" onclick="reveal('s10', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">Although she didn't agree with the management's decision, Chloe was forced to accept it.</div>
+          <span class="kwt-key">CHOICE</span>
+          <div class="kwt-s2">Much as she disagreed with it, Chloe <span class="gap"></span> the management's decision.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s10">Much as she disagreed with it, Chloe <strong>had no choice <span class="split">|</span> but to accept</strong> the management's decision. <span class="count">(6 words · <em>was left with no choice other than to accept</em> = 8)</span></div>
+        </div>
+      </div>
+
+      <!-- SLIDE 7: Pattern 6 — Phrasal Verbs (Often Combined with Passive or Noun Frames) -->
+      <div class="slide" id="slide-7">
+        <div class="slide-tag">Pattern 6 of 10 &bull; Phrasal Verbs in C2 Frames</div>
+        <h2 class="slide-title">Phrasal Verbs Layered With Passives or Nouns</h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">have no difficulty (in) coming up with &nbsp;|&nbsp; let yourself be taken in by &nbsp;|&nbsp; be put off until</span></div>
+        <div class="watch">At C2, a phrasal verb is rarely tested alone—it is usually tucked inside a passive (<em>be taken in by, be singled out for, be put off until</em>) or after a noun (<em>difficulty coming up with</em>).</div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE 2 Test 1 Q26</span><button class="reveal-btn" onclick="reveal('s11', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">James did not find it difficult to answer the interviewer's questions.</div>
+          <span class="kwt-key">COMING</span>
+          <div class="kwt-s2">James had no <span class="gap"></span> the interviewer's questions.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s11">James had no <strong>difficulty coming up <span class="split">|</span> with answers to</strong> the interviewer's questions. <span class="count">(6 words · <em>difficulty in coming up with the answers to</em> = 8)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 3 Q25</span><button class="reveal-btn" onclick="reveal('s12', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">Don't let Sarah's carefree attitude deceive you; she's an extremely conscientious worker.</div>
+          <span class="kwt-key">TAKEN</span>
+          <div class="kwt-s2">Don't let <span class="gap"></span> Sarah's carefree attitude; she's an extremely conscientious worker.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s12">Don't let <strong>yourself <span class="split">|</span> be taken in by</strong> Sarah's carefree attitude. <span class="count">(5 words)</span></div>
+        </div>
+      </div>
+
+      <!-- SLIDE 8: Pattern 7 — Dependent Prepositions & Verb Complement Patterns -->
+      <div class="slide" id="slide-8">
+        <div class="slide-tag">Pattern 7 of 10 &bull; Dependent Prepositions &amp; Verb Patterns</div>
+        <h2 class="slide-title">Verb &amp; Adjective + Dependent Preposition Patterns</h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">be restricted to + noun/those who &nbsp;|&nbsp; have any objection to (my) + -ing &nbsp;|&nbsp; be dismissed as</span></div>
+        <div class="watch">Trap alert: in <em>have any objection <strong>to</strong></em>, <em>to</em> is a preposition, so it must be followed by an <strong>-ing</strong> form (<em>to my watching</em>), never an infinitive.</div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 2 Q26</span><button class="reveal-btn" onclick="reveal('s13', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">Visitors can only enter the exhibition if they have booked online.</div>
+          <span class="kwt-key">RESTRICTED</span>
+          <div class="kwt-s2">Entrance <span class="gap"></span> have booked online.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s13">Entrance <strong>to the exhibition is restricted to <span class="split">|</span> those who</strong> have booked online. <span class="count">(8 words · <em>visitors/people who</em> = 8)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Sample Paper 1 · Example 0</span><button class="reveal-btn" onclick="reveal('s14', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">Do you mind if I watch you while you paint?</div>
+          <span class="kwt-key">OBJECTION</span>
+          <div class="kwt-s2">Do you <span class="gap"></span> you while you paint?</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s14">Do you <strong>have any objection <span class="split">|</span> to my watching</strong> you while you paint? <span class="count">(6 words)</span></div>
+        </div>
+      </div>
+
+      <!-- SLIDE 9: Pattern 8 — C2 Conditionals (But for + Nominalisation, Providing, Inverted Had) -->
+      <div class="slide" id="slide-9">
+        <div class="slide-tag">Pattern 8 of 10 &bull; #1 Most Tested Grammar Pattern</div>
+        <h2 class="slide-title">C2 Conditionals: <em>But for</em> + Noun Phrase &amp; <em>Providing</em></h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">But for + [possessive + noun phrase], S + would have + V3 &nbsp;|&nbsp; Providing (that) there is no + noun</span></div>
+        <div class="watch">Notice how C2 combines a conditional with nominalisation: <em>"If Stevie hadn't acted promptly"</em> becomes <em>"But <strong>for Stevie's prompt action in</strong>…"</em></div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 2 Q27</span><button class="reveal-btn" onclick="reveal('s15', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">If Stevie hadn't acted promptly to put out the fire, there might have been more damage to the kitchen.</div>
+          <span class="kwt-key">BUT</span>
+          <div class="kwt-s2"><span class="gap"></span> out the fire, there might have been more damage to the kitchen.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s15"><strong>But for Stevie's prompt action <span class="split">|</span> in putting</strong> out the fire, there might have been more damage. <span class="count">(7 words)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 4 Q25</span><button class="reveal-btn" onclick="reveal('s16', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">Unless Sam's plans change over the weekend, we'll leave early on Monday morning.</div>
+          <span class="kwt-key">NO</span>
+          <div class="kwt-s2">Providing <span class="gap"></span> over the weekend, we'll leave early on Monday morning.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s16">Providing <strong>there is no change <span class="split">|</span> to Sam's plans</strong> over the weekend… <span class="count">(7 words · <em>in Sam's plans</em> also accepted)</span></div>
+        </div>
+      </div>
+
+      <!-- SLIDE 10: Pattern 9 — Negative & Limiting Inversion -->
+      <div class="slide" id="slide-10">
+        <div class="slide-tag">Pattern 9 of 10 &bull; Negative &amp; Limiting Inversion</div>
+        <h2 class="slide-title">Negative &amp; Limiting Inversion at C2</h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">At no time + was there + noun &nbsp;|&nbsp; On no account + are + S + allowed &nbsp;|&nbsp; Only as a last resort + does + S</span></div>
+        <div class="watch">When a negative or limiting phrase opens the sentence (<em>At no time, On no account, Only in the last resort</em>), invert the auxiliary and subject—and watch for a noun or passive shift at the same time.</div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 4 Q27</span><button class="reveal-btn" onclick="reveal('s17', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">The role played by the PR company in securing the government contract was never acknowledged officially.</div>
+          <span class="kwt-key">OFFICIAL</span>
+          <div class="kwt-s2">At no time <span class="gap"></span> the role the PR company played in securing the government contract.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s17">At no time <strong>was there any official <span class="split">|</span> acknowledgement of</strong> the role the PR company played. <span class="count">(6 words)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 4 Q28</span><button class="reveal-btn" onclick="reveal('s18', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">Passengers are absolutely forbidden to cross the railway track.</div>
+          <span class="kwt-key">ACCOUNT</span>
+          <div class="kwt-s2">On <span class="gap"></span> to cross the railway track.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s18">On <strong>no account <span class="split">|</span> are passengers allowed</strong> to cross the railway track. <span class="count">(5 words · <em>permitted</em> also accepted)</span></div>
+        </div>
+      </div>
+
+      <!-- SLIDE 11: Pattern 10 — Clefts & Passive Reporting With Nominalisation -->
+      <div class="slide" id="slide-11">
+        <div class="slide-tag">Pattern 10 of 10 &bull; Clefts &amp; Passive Reporting</div>
+        <h2 class="slide-title">Cleft Sentences &amp; Passive Reporting + Collocation</h2>
+        <div class="formula-box"><span class="formula-badge">Blueprint</span><span class="formula-text">It was not until [clause] that… &nbsp;|&nbsp; The last thing I want is for… &nbsp;|&nbsp; is rumoured to have sustained losses of</span></div>
+        <div class="watch">In CPE, passive reporting rarely tests <em>to have + V3</em> alone—it also tests a formal collocation like <strong>sustain a loss / losses of</strong>.</div>
+
+        <div class="kwt">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 1 Q28</span><button class="reveal-btn" onclick="reveal('s19', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">It was only when it got dark that Paolo decided to make his way back home.</div>
+          <span class="kwt-key">FELL</span>
+          <div class="kwt-s2">It was not <span class="gap"></span> that Paolo decided to make his way back home.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s19">It was not <strong>until <span class="split">|</span> darkness fell</strong> that Paolo decided to make his way back home. <span class="count">(3 words)</span></div>
+        </div>
+
+        <div class="kwt" style="margin-bottom: 0;">
+          <div class="kwt-top"><span class="kwt-num">Official Past Paper · CPE Test 3 Q28</span><button class="reveal-btn" onclick="reveal('s20', this)">👁️ Reveal Official Key</button></div>
+          <div class="kwt-s1">There is a rumour that the company lost over $20 million during the price war.</div>
+          <span class="kwt-key">SUSTAINED</span>
+          <div class="kwt-s2">The company is rumoured <span class="gap"></span> over $20 million during the price war.</div>
+          <div class="answer-row"><input class="answer-input" oninput="count(this)" placeholder="Type your answer (3–8 words)…"><span class="wc">0 words</span></div>
+          <div class="solution" id="s20">The company is rumoured <strong>to have sustained <span class="split">|</span> losses of</strong> over $20 million during the price war. <span class="count">(5 words · <em>a loss of</em> = 6)</span></div>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <div class="nav-counter">Slide <span id="current-slide-num" style="color: var(--navy-700); font-weight: 800;">1</span> of 11</div>
+        <div class="nav-buttons">
+          <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled>&larr; Previous</button>
+          <button class="nav-btn" id="next-btn" onclick="nextSlide()">Next &rarr;</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 11;
+    function showSlide(n) {
+      document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+      document.getElementById('slide-' + n).classList.add('active');
+      currentSlide = n;
+      document.getElementById('current-slide-num').textContent = n;
+      document.getElementById('prev-btn').disabled = (n === 1);
+      document.getElementById('next-btn').disabled = (n === totalSlides);
+    }
+    function nextSlide() { if (currentSlide < totalSlides) showSlide(currentSlide + 1); }
+    function prevSlide() { if (currentSlide > 1) showSlide(currentSlide - 1); }
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+      else if (e.key === 'ArrowLeft') prevSlide();
+    });
+
+    function count(input) {
+      const txt = input.value.trim();
+      let n = 0;
+      if (txt) {
+        txt.split(/\s+/).forEach(w => {
+          n += /[a-z]'(s|t|re|ve|ll|d|m)$/i.test(w) || /n't$/i.test(w) ? 2 : 1;
+        });
+      }
+      const pill = input.nextElementSibling;
+      pill.textContent = n + (n === 1 ? ' word' : ' words');
+      pill.className = 'wc' + (n === 0 ? '' : (n >= 3 && n <= 8 ? ' ok' : ' bad'));
+    }
+
+    function reveal(id, btn) {
+      const sol = document.getElementById(id);
+      const hidden = window.getComputedStyle(sol).display === 'none';
+      sol.style.display = hidden ? 'block' : 'none';
+      btn.textContent = hidden ? '🙈 Hide Key' : '👁️ Reveal Official Key';
+      btn.style.background = hidden ? 'var(--navy-800)' : '#ffffff';
+      btn.style.color = hidden ? '#ffffff' : 'var(--navy-800)';
+    }
+  </script>
+</body>
+</html>
