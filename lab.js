@@ -82,35 +82,45 @@ const LabObservatory = (() => {
       grammar: 'Bram Stoker’s Dracula (Lessons 1–3): Participle Clauses & Negative Inversion',
       img: 'assets/gothic/dracula_carpathian.webp',
       alt: 'Caspar David Friedrich, Abbey in the Oakwood (1809–1810) — Dracula',
-      audio: 'assets/audio/gothic_act1_dracula.mp3?v=2'
+      audio: 'assets/audio/gothic_act1_dracula.mp3?v=2',
+      freeUrl: 'dracula-unit1-carpathian-threshold.html',
+      freeLabel: 'Try Lesson 1 Free (Dracula) →'
     },
     {
       tag: 'Joseph Wright of Derby, Experiment on a Bird in the Air Pump (1768)',
       grammar: 'Mary Shelley’s Frankenstein (Lessons 4–6): Inverted Conditionals & Cleft Sentences',
       img: 'assets/gothic/frankenstein_lab.webp',
       alt: 'Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768) — Frankenstein',
-      audio: 'assets/audio/gothic_act2_frankenstein.mp3?v=2'
+      audio: 'assets/audio/gothic_act2_frankenstein.mp3?v=2',
+      freeUrl: 'frankenstein-unit1-spark-of-being.html',
+      freeLabel: 'Try Lesson 4 Free (Frankenstein) →'
     },
     {
       tag: 'John Atkinson Grimshaw, Reflections on the Thames (1880)',
       grammar: 'Stevenson’s Dr Jekyll & Mr Hyde (Lessons 7–9): Concessive Clauses & Time Inversion',
       img: 'assets/gothic/jekyll_apothecary.webp',
       alt: 'John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880) — Dr Jekyll and Mr Hyde',
-      audio: 'assets/audio/gothic_act3_jekyll.mp3?v=2'
+      audio: 'assets/audio/gothic_act3_jekyll.mp3?v=2',
+      freeUrl: 'jekyll-unit1-soho-threshold.html',
+      freeLabel: 'Try Lesson 7 Free (Jekyll & Hyde) →'
     },
     {
       tag: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819)',
       grammar: 'Conan Doyle’s Baskervilles (Lessons 10–12): Past Modals of Deduction & Place Inversion',
       img: 'assets/gothic/baskerville_moor.webp',
       alt: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819) — The Hound of the Baskervilles',
-      audio: 'assets/audio/gothic_act4_baskerville.mp3?v=2'
+      audio: 'assets/audio/gothic_act4_baskerville.mp3?v=2',
+      freeUrl: 'baskerville-unit1-curse-of-the-moors.html',
+      freeLabel: 'Try Lesson 10 Free (Baskervilles) →'
     },
     {
       tag: 'Sir John Tenniel, Original Wood-Engraved Plate (1865)',
       grammar: 'Lewis Carroll’s Alice in Wonderland (Lessons 13–15): Negative Inversion & Subjunctives',
       img: 'assets/gothic/alice_unit1.webp',
       alt: 'Sir John Tenniel, Alice in Wonderland (1865) — Down the Rabbit-Hole',
-      audio: 'assets/audio/gothic_act1_dracula.mp3?v=2'
+      audio: 'assets/audio/gothic_act1_dracula.mp3?v=2',
+      freeUrl: 'alice-unit13-down-the-rabbit-hole.html',
+      freeLabel: 'Try Lesson 13 Free (Alice) →'
     }
   ];
 
@@ -307,12 +317,17 @@ const LabObservatory = (() => {
     const img = document.getElementById('da-spotlight-img');
     const tag = document.getElementById('da-spotlight-tag');
     const gram = document.getElementById('da-spotlight-grammar');
+    const freeLink = document.getElementById('da-spotlight-free-link');
     if (img) {
       img.src = b.img;
       img.alt = b.alt;
     }
     if (tag) tag.textContent = b.tag;
     if (gram) gram.textContent = b.grammar;
+    if (freeLink && b.freeUrl) {
+      freeLink.href = b.freeUrl;
+      freeLink.textContent = b.freeLabel;
+    }
 
     document.querySelectorAll('.da-book-thumb').forEach((t, i) => {
       const active = i === currentGothicIdx;
@@ -323,7 +338,7 @@ const LabObservatory = (() => {
     if (sampleAudio && !sampleAudio.paused) {
       sampleAudio.pause();
       const lbl = document.getElementById('da-preview-audio-label');
-      if (lbl) lbl.textContent = 'Hear sample (synthetic voice)';
+      if (lbl) lbl.textContent = 'Hear audio sample';
     }
   }
 
@@ -335,16 +350,16 @@ const LabObservatory = (() => {
     }
     if (!sampleAudio.paused) {
       sampleAudio.pause();
-      if (lbl) lbl.textContent = 'Hear sample (synthetic voice)';
+      if (lbl) lbl.textContent = 'Hear audio sample';
       return;
     }
     sampleAudio.src = b.audio;
     if (lbl) lbl.textContent = '⏹ Stop audio';
     sampleAudio.onended = () => {
-      if (lbl) lbl.textContent = 'Hear sample (synthetic voice)';
+      if (lbl) lbl.textContent = 'Hear audio sample';
     };
     sampleAudio.play().catch(() => {
-      if (lbl) lbl.textContent = 'Hear sample (synthetic voice)';
+      if (lbl) lbl.textContent = 'Hear audio sample';
     });
   }
 
@@ -623,10 +638,20 @@ const LabObservatory = (() => {
           localStorage.setItem('da_canon_unlocked', 'true');
           localStorage.setItem('da_course_unlocked_v1', 'true');
         } catch (e) {}
+        const helpDrawer = document.getElementById('course-access-help');
+        if (helpDrawer && helpDrawer.tagName === 'DETAILS') {
+          helpDrawer.open = true;
+        }
         const feedback = document.getElementById('lab-da-access-code-feedback');
         if (feedback) {
           feedback.className = 'text-xs font-bold text-emerald-400 mt-1.5';
           feedback.textContent = '✓ Full 15-lesson course unlocked on this browser!';
+        }
+      }
+      if (window.location.hash === '#course-access-help') {
+        const helpDrawer = document.getElementById('course-access-help');
+        if (helpDrawer && helpDrawer.tagName === 'DETAILS') {
+          helpDrawer.open = true;
         }
       }
     } catch (e) {}
