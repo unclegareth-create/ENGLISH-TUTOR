@@ -289,13 +289,9 @@ const LabObservatory = (() => {
     const youngWrapper = document.getElementById('young-learners-wrapper');
     const youngDrawer = document.querySelector('details.young-learners-quarantine');
     if (youngWrapper) {
-      if (wing === 'adults') {
-        youngWrapper.classList.add('wing-hidden');
-      } else {
-        youngWrapper.classList.remove('wing-hidden');
-      }
+      youngWrapper.classList.remove('wing-hidden');
     }
-    if (youngDrawer && (wing === 'teens' || wing === 'kids')) {
+    if (youngDrawer && wing === 'kids') {
       youngDrawer.open = true;
     }
 
@@ -671,7 +667,7 @@ const LabObservatory = (() => {
         // Always ensure all sections are reachable when jumping via anchor links
         filterWing('all');
       }
-      if (hash === '#chronicle-88' || hash === '#professor-west' || targetEl.closest('details.young-learners-quarantine')) {
+      if (hash === '#prosody-lab' || hash === '#professor-west' || targetEl.closest('details.young-learners-quarantine')) {
         const drawer = document.querySelector('details.young-learners-quarantine');
         if (drawer) drawer.open = true;
       }
