@@ -1,0 +1,2649 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yokohama · Beyoğlu · Belfast Midnight Shortwave Receiver | GarethEnglish After-Hours Lab</title>
+  <style>
+    :root {
+      --bg-void: #070605;
+      --bg-chassis: #13100d;
+      --bg-panel: #1b1612;
+      --bg-inset: #0b0907;
+      --border-brass: #5c462c;
+      --brass-bright: #e5bd68;
+      --brass-dim: #9b7c42;
+      --amber-glow: #ffaa33;
+      --phosphor-green: #4af683;
+      --phosphor-dim: #1d6b39;
+      --cyan-neon: #38bdf8;
+      --crimson: #e04f4f;
+      --parchment: #f4ead5;
+      --parchment-muted: #b8a686;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      background: radial-gradient(circle at 50% 0%, #231a12 0%, var(--bg-void) 78%);
+      color: var(--parchment);
+      font-family: 'Georgia', 'Times New Roman', serif;
+      min-height: 100vh;
+      padding: 1.1rem 1.4rem 2.5rem;
+      overflow-x: hidden;
+    }
+    input, textarea, select, button { font-family: inherit; user-select: text; }
+    .mono { font-family: 'Consolas', 'Courier New', monospace; }
+
+    /* Top Bar */
+    .topbar {
+      max-width: 1540px;
+      margin: 0 auto 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border-brass);
+    }
+    .brand-eyebrow {
+      font-family: 'Consolas', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--brass-bright);
+    }
+    .topbar h1 {
+      font-size: 1.55rem;
+      font-weight: normal;
+      letter-spacing: 0.02em;
+      color: var(--parchment);
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .pill {
+      font-family: 'Consolas', monospace;
+      font-size: 0.75rem;
+      padding: 0.38rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-brass);
+      background: #17120e;
+      color: var(--parchment-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .pill:hover { border-color: var(--brass-bright); color: var(--brass-bright); }
+    .pill.power-on {
+      background: rgba(74, 246, 131, 0.14);
+      border-color: var(--phosphor-green);
+      color: var(--phosphor-green);
+      box-shadow: 0 0 12px rgba(74, 246, 131, 0.22);
+    }
+    .led {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #554;
+    }
+    .led.on {
+      background: var(--phosphor-green);
+      box-shadow: 0 0 8px var(--phosphor-green);
+    }
+    .led.amber {
+      background: var(--amber-glow);
+      box-shadow: 0 0 8px var(--amber-glow);
+    }
+
+    /* Main Chassis Layout */
+    .console-grid {
+      max-width: 1540px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 1.35fr;
+      gap: 1.1rem;
+    }
+    @media (max-width: 1180px) {
+      .console-grid { grid-template-columns: 1fr; }
+    }
+
+    .chassis-card {
+      background: linear-gradient(180deg, #1e1813 0%, #120e0b 100%);
+      border: 2px solid var(--border-brass);
+      border-radius: 10px;
+      padding: 1rem 1.15rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 14px 32px rgba(0,0,0,0.65);
+      position: relative;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.45rem;
+      border-bottom: 1px solid rgba(92, 70, 44, 0.45);
+    }
+    .card-title {
+      font-family: 'Consolas', monospace;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--brass-bright);
+    }
+    .card-sub {
+      font-family: 'Consolas', monospace;
+      font-size: 0.72rem;
+      color: var(--parchment-muted);
+    }
+
+    /* Window Viewport + Rain Canvas */
+    .viewport-frame {
+      position: relative;
+      width: 100%;
+      height: 310px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 2px solid #3d2e1e;
+      background: #090807;
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.85);
+    }
+    .viewport-bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      transition: background-image 0.6s ease, filter 0.4s ease;
+      filter: brightness(0.88) contrast(1.08);
+    }
+    #rainCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .viewport-hud {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      background: linear-gradient(180deg, rgba(7,6,5,0.68) 0%, rgba(7,6,5,0.08) 40%, rgba(7,6,5,0.82) 100%);
+      pointer-events: none;
+    }
+    .hud-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .location-badge {
+      background: rgba(12, 10, 8, 0.82);
+      border: 1px solid var(--brass-bright);
+      padding: 0.35rem 0.7rem;
+      border-radius: 5px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.75rem;
+      color: var(--brass-bright);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    }
+    .clock-badge {
+      background: rgba(12, 10, 8, 0.82);
+      border: 1px solid rgba(255, 170, 51, 0.5);
+      padding: 0.35rem 0.7rem;
+      border-radius: 5px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.75rem;
+      color: var(--amber-glow);
+    }
+    .transcript-ribbon {
+      background: rgba(9, 8, 6, 0.86);
+      border-left: 3px solid var(--amber-glow);
+      padding: 0.55rem 0.8rem;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.9rem;
+      color: var(--parchment);
+      line-height: 1.45;
+      text-shadow: 0 1px 2px #000;
+    }
+    .transcript-station-tag {
+      font-family: 'Consolas', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--amber-glow);
+      display: block;
+      margin-bottom: 0.18rem;
+    }
+
+    /* Scene Selector Bar */
+    .scene-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.45rem;
+      margin-top: 0.65rem;
+    }
+    .scene-btn {
+      background: #14100c;
+      border: 1px solid var(--border-brass);
+      color: var(--parchment-muted);
+      padding: 0.45rem 0.5rem;
+      border-radius: 5px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.72rem;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .scene-btn:hover, .scene-btn.active {
+      background: rgba(229, 189, 104, 0.16);
+      border-color: var(--brass-bright);
+      color: var(--brass-bright);
+    }
+
+    /* Glass Slide-Rule Frequency Dial */
+    .dial-glass {
+      background: radial-gradient(ellipse at center, #251a0d 0%, #090705 90%);
+      border: 2px solid #6b5132;
+      border-radius: 8px;
+      padding: 0.75rem 0.9rem;
+      position: relative;
+      box-shadow: inset 0 0 28px rgba(255, 165, 40, 0.18), 0 4px 14px rgba(0,0,0,0.6);
+      cursor: ew-resize;
+    }
+    .dial-readout-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.55rem;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .freq-digital {
+      font-family: 'Consolas', monospace;
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--amber-glow);
+      text-shadow: 0 0 14px rgba(255, 170, 51, 0.55);
+      letter-spacing: 0.04em;
+      background: #080604;
+      padding: 0.2rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 170, 51, 0.35);
+    }
+    .meters-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+    /* EM84 Magic Eye Tube */
+    .magic-eye-housing {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #080706;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid #3c3224;
+    }
+    .magic-eye-tube {
+      width: 68px;
+      height: 16px;
+      background: #061b0c;
+      border-radius: 999px;
+      border: 1px solid #2b6e42;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 8px #000;
+    }
+    .magic-eye-beam-left, .magic-eye-beam-right {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, #27c95c, #7dffaa);
+      box-shadow: 0 0 12px #4af683;
+      width: 18%;
+      transition: width 0.06s linear;
+    }
+    .magic-eye-beam-left { left: 0; }
+    .magic-eye-beam-right { right: 0; }
+    .s-meter-box {
+      font-family: 'Consolas', monospace;
+      font-size: 0.75rem;
+      color: var(--phosphor-green);
+      background: #080706;
+      padding: 0.3rem 0.6rem;
+      border-radius: 5px;
+      border: 1px solid #2d4c35;
+      min-width: 112px;
+      text-align: center;
+    }
+
+    #dialCanvas {
+      width: 100%;
+      height: 82px;
+      display: block;
+      border-radius: 4px;
+    }
+
+    /* Station Presets Strip */
+    .station-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.42rem;
+      margin-top: 0.7rem;
+    }
+    @media (max-width: 720px) {
+      .station-strip { grid-template-columns: repeat(2, 1fr); }
+    }
+    .station-chip {
+      background: #14100d;
+      border: 1px solid #423321;
+      border-radius: 6px;
+      padding: 0.42rem 0.55rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.14s ease;
+    }
+    .station-chip:hover {
+      border-color: var(--brass-bright);
+      background: #1f1812;
+    }
+    .station-chip.locked {
+      border-color: var(--phosphor-green);
+      background: rgba(74, 246, 131, 0.1);
+      box-shadow: 0 0 10px rgba(74, 246, 131, 0.16);
+    }
+    .station-chip .st-freq {
+      font-family: 'Consolas', monospace;
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: var(--amber-glow);
+      display: flex;
+      justify-content: space-between;
+    }
+    .station-chip .st-name {
+      font-size: 0.76rem;
+      color: var(--parchment);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 0.12rem;
+    }
+
+    /* Rotary Controls & Mode Switches */
+    .controls-deck {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 0.85rem;
+      margin-top: 0.85rem;
+    }
+    @media (max-width: 820px) {
+      .controls-deck { grid-template-columns: 1fr; }
+    }
+    .sub-panel {
+      background: var(--bg-inset);
+      border: 1px solid #382b1c;
+      border-radius: 8px;
+      padding: 0.75rem 0.85rem;
+    }
+    .knobs-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.35rem 0;
+    }
+    .knob-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .flywheel {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 32% 30%, #4a3b28, #18130d 72%);
+      border: 3px solid var(--brass-bright);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.75), inset 0 0 12px rgba(229,189,104,0.25);
+      position: relative;
+      cursor: grab;
+    }
+    .flywheel.small {
+      width: 64px;
+      height: 64px;
+      border-width: 2px;
+    }
+    .flywheel:active { cursor: grabbing; }
+    .flywheel-marker {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      width: 4px;
+      height: 16px;
+      margin-left: -2px;
+      background: var(--amber-glow);
+      border-radius: 2px;
+      box-shadow: 0 0 6px var(--amber-glow);
+      transform-origin: 50% 35px;
+    }
+    .flywheel.small .flywheel-marker {
+      height: 12px;
+      transform-origin: 50% 24px;
+    }
+    .knob-label {
+      font-family: 'Consolas', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--brass-bright);
+      letter-spacing: 0.08em;
+    }
+    .knob-sub {
+      font-family: 'Consolas', monospace;
+      font-size: 0.68rem;
+      color: var(--parchment-muted);
+    }
+
+    .mode-group {
+      margin-bottom: 0.55rem;
+    }
+    .mode-group:last-child { margin-bottom: 0; }
+    .mode-label {
+      font-family: 'Consolas', monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: var(--parchment-muted);
+      margin-bottom: 0.28rem;
+      display: block;
+    }
+    .btn-strip {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+    .hw-btn {
+      flex: 1;
+      background: #17120e;
+      border: 1px solid #463623;
+      color: var(--parchment-muted);
+      padding: 0.36rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .hw-btn:hover { border-color: var(--brass-bright); color: var(--parchment); }
+    .hw-btn.active {
+      background: rgba(255, 170, 51, 0.18);
+      border-color: var(--amber-glow);
+      color: var(--amber-glow);
+      font-weight: bold;
+    }
+
+    /* 4-Channel Mixer + Lo-Fi Synth Controls */
+    .mixer-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.65rem;
+      margin-top: 0.75rem;
+    }
+    .fader-box {
+      background: var(--bg-inset);
+      border: 1px solid #35291b;
+      border-radius: 6px;
+      padding: 0.55rem 0.7rem;
+    }
+    .fader-top {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Consolas', monospace;
+      font-size: 0.72rem;
+      color: var(--brass-bright);
+      margin-bottom: 0.3rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--amber-glow);
+      cursor: pointer;
+    }
+
+    /* Waterfall Spectrogram */
+    #waterfallCanvas {
+      width: 100%;
+      height: 155px;
+      background: #050706;
+      border: 1px solid #2f4534;
+      border-radius: 6px;
+      display: block;
+    }
+
+    /* Numbers Station Cipher & CW Telegraph Desk */
+    .cipher-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      margin-top: 0.85rem;
+    }
+    @media (max-width: 820px) {
+      .cipher-grid { grid-template-columns: 1fr; }
+    }
+    .tape-readout {
+      background: #070907;
+      border: 1px solid #2b4a33;
+      border-radius: 5px;
+      padding: 0.55rem 0.7rem;
+      font-family: 'Consolas', monospace;
+      font-size: 0.8rem;
+      color: var(--phosphor-green);
+      min-height: 54px;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+    .input-dark {
+      width: 100%;
+      background: #090706;
+      border: 1px solid var(--border-brass);
+      color: var(--parchment);
+      padding: 0.45rem 0.65rem;
+      border-radius: 5px;
+      font-family: 'Consolas', monospace;
+      font-size: 0.8rem;
+    }
+    .cw-key-btn {
+      width: 100%;
+      padding: 0.65rem;
+      background: linear-gradient(180deg, #4b3822 0%, #261c10 100%);
+      border: 2px solid var(--brass-bright);
+      border-radius: 6px;
+      color: var(--brass-bright);
+      font-family: 'Consolas', monospace;
+      font-weight: bold;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #140e08;
+      transition: transform 0.05s ease, box-shadow 0.05s ease;
+    }
+    .cw-key-btn:active, .cw-key-btn.pressed {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #140e08;
+      background: linear-gradient(180deg, #694e2f 0%, #382918 100%);
+      color: #fff;
+    }
+    .c1-intercept-box {
+      margin-top: 0.8rem;
+      background: rgba(229, 189, 104, 0.07);
+      border: 1px solid var(--border-brass);
+      border-radius: 7px;
+      padding: 0.75rem 0.9rem;
+    }
+    .c1-keyword-pill {
+      display: inline-block;
+      background: #2b1f13;
+      border: 1px solid var(--brass-bright);
+      color: var(--brass-bright);
+      font-family: 'Consolas', monospace;
+      font-weight: bold;
+      font-size: 0.78rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 4px;
+      margin-left: 0.4rem;
+    }
+    .dial-glass, .flywheel, .cw-key-btn {
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .siren-deck-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 0.65rem;
+      margin-bottom: 0.6rem;
+    }
+    .preamp-faders-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    @media (max-width: 760px) {
+      body { padding: 0.7rem 0.65rem 2rem; }
+      .topbar h1 { font-size: 1.18rem; }
+      .chassis-card { padding: 0.75rem 0.75rem; }
+      .card-header { flex-wrap: wrap; gap: 0.25rem; }
+      .viewport-frame { height: 265px; }
+      .hud-top { flex-wrap: wrap; }
+      .location-badge, .clock-badge { font-size: 0.66rem; padding: 0.25rem 0.5rem; }
+      .transcript-ribbon { font-size: 0.8rem; padding: 0.45rem 0.6rem; }
+      .scene-tabs { grid-template-columns: repeat(2, 1fr); }
+      .mixer-grid { grid-template-columns: 1fr; }
+      .freq-digital { font-size: 1.45rem; padding: 0.15rem 0.55rem; }
+      .siren-deck-grid { grid-template-columns: 1fr; }
+      .preamp-faders-grid { grid-template-columns: repeat(2, 1fr); }
+      #gamepadPill { display: none; }
+    }
+    @media (max-width: 480px) {
+      .preamp-faders-grid { grid-template-columns: 1fr; }
+      .knobs-row { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER -->
+  <header class="topbar">
+    <div>
+      <div class="brand-eyebrow">GarethEnglish · After-Hours Experimental Lab · Suite 05</div>
+      <h1>📻 Yokohama · Beyoğlu · Belfast Midnight Shortwave Receiver</h1>
+    </div>
+    <div class="topbar-right">
+      <button id="powerBtn" class="pill" onclick="togglePower()">
+        <span id="powerLed" class="led"></span>
+        <span id="powerLabel">POWER STANDBY (TAP TO IGNITE VALVES)</span>
+      </button>
+      <button id="dockTapeLabBtn" class="pill" onclick="toggleTapeLabDock()" style="border-color: var(--amber-glow); color: var(--amber-glow);">
+        🎛️ Dock Belfast Tape Lab 2.0 Below
+      </button>
+      <span id="gamepadPill" class="pill">🎮 Xbox Controller: Ready</span>
+      <a class="pill" href="belfast-tape-lab.html" target="_blank">🎹 Open Tape Lab Tab ↗</a>
+      <a class="pill" href="dark-academia-index.html">← Study Archive</a>
+    </div>
+  </header>
+
+  <main class="console-grid">
+
+    <!-- LEFT COLUMN: NOCTURNAL WINDOW VIEWPORT + LO-FI SYNTH + CIPHER DESK -->
+    <section class="chassis-card">
+      <div class="card-header">
+        <span class="card-title">🌧️ Nocturnal Listening Post &amp; Atmospheric Viewport</span>
+        <span id="cityCoords" class="card-sub">35.4437° N, 139.6380° E · YOKOHAMA BAY</span>
+      </div>
+
+      <div class="viewport-frame">
+        <div id="viewportBg" class="viewport-bg" style="background-image: url('assets/radio/yokohama_bay_night.png');"></div>
+        <canvas id="rainCanvas"></canvas>
+        <div class="viewport-hud">
+          <div class="hud-top">
+            <div id="hudLocation" class="location-badge">📍 YOKOHAMA HARBOUR &amp; AIKAWA RELAY</div>
+            <div id="hudClock" class="clock-badge">02:14 JST · RAIN +11°C</div>
+          </div>
+          <div class="transcript-ribbon">
+            <span id="liveStationHeader" class="transcript-station-tag">6.910 MHz · JOKR YOKOHAMA MIDNIGHT RELAY (LOCKED)</span>
+            <div id="liveTranscriptText">Click "POWER STANDBY" above or spin the brass tuning flywheel to warm up the vacuum tubes and sweep the midnight shortwave bands...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Atmospheric Scene Switchers -->
+      <div class="scene-tabs">
+        <button class="scene-btn active" onclick="selectScene(0)" id="sceneBtn0">🏮 Yokohama / Aikawa</button>
+        <button class="scene-btn" onclick="selectScene(1)" id="sceneBtn1">🕌 Beyoğlu / Galata</button>
+        <button class="scene-btn" onclick="selectScene(2)" id="sceneBtn2">🍵 Lisburn / Belfast Desk</button>
+        <button class="scene-btn" onclick="selectScene(3)" id="sceneBtn3">🔢 Cipher Bunker E11</button>
+      </div>
+
+      <!-- 4-Channel Atmospheric & Procedural Lo-Fi Synth Mixer -->
+      <div class="card-header" style="margin-top: 0.95rem;">
+        <span class="card-title">🎚️ 4-Bus Tube Mixer &amp; Generative Midnight Lo-Fi Synth</span>
+        <span id="scaleBadge" class="card-sub">Scale: Japanese Hirajoshi (F#m) · 72 BPM</span>
+      </div>
+
+      <div class="mixer-grid">
+        <div class="fader-box">
+          <div class="fader-top"><span>🎙️ Shortwave Voice Carrier</span><span id="valVoice">96%</span></div>
+          <input type="range" id="faderVoice" min="0" max="100" value="96" oninput="updateMixer()" />
+        </div>
+        <div class="fader-box">
+          <div class="fader-top"><span>⚡ Ionospheric Static (QRN)</span><span id="valStatic">14%</span></div>
+          <input type="range" id="faderStatic" min="0" max="100" value="14" oninput="updateMixer()" />
+        </div>
+        <div class="fader-box">
+          <div class="fader-top"><span>🌧️ Window Rain &amp; Thunder</span><span id="valRain">24%</span></div>
+          <input type="range" id="faderRain" min="0" max="100" value="24" oninput="updateMixer()" />
+        </div>
+        <div class="fader-box">
+          <div class="fader-top"><span>🎹 Midnight Lo-Fi Synth &amp; Beat</span><span id="valLofi">30%</span></div>
+          <input type="range" id="faderLofi" min="0" max="100" value="30" oninput="updateMixer()" />
+        </div>
+      </div>
+
+      <div class="btn-strip" style="margin-top: 0.55rem;">
+        <button class="hw-btn active" id="lofiToggleBtn" onclick="toggleLofiSynth()">🎹 Generative Lo-Fi Rhodes &amp; Brush Beat: ON</button>
+        <button class="hw-btn" onclick="triggerThunderClap()">🌩️ Trigger Rolling Thunder</button>
+        <button class="hw-btn" onclick="replayCurrentBroadcast()">🔁 Re-Cue Station Broadcast</button>
+      </div>
+
+      <!-- C1 Pirate Vessel Rhetorica Intercept Challenge -->
+      <div class="c1-intercept-box">
+        <div class="card-header" style="margin-bottom: 0.45rem; padding-bottom: 0.3rem;">
+          <span class="card-title">🏴‍☠️ Pirate Vessel "MV Rhetorica" · C1 Part 4 Intercept</span>
+          <span class="card-sub" id="c1ScoreBadge">Decoded: 0 / 4</span>
+        </div>
+        <p id="c1Sentence1" style="font-size: 0.86rem; color: var(--parchment-muted); margin-bottom: 0.3rem;">
+          1. Generic essay templates bore the examiner, and they also strip your prose of its rhythm.
+          <span id="c1Keyword" class="c1-keyword-pill">ONLY</span>
+        </p>
+        <p id="c1PromptLead" style="font-size: 0.88rem; color: var(--parchment); margin-bottom: 0.45rem;">
+          2. Not <input type="text" id="c1Input" class="input-dark" style="width: 240px; display: inline-block; padding: 0.22rem 0.5rem;" placeholder="3 to 6 words..." /> the examiner, but they also strip your prose of its rhythm.
+        </p>
+        <div class="btn-strip">
+          <button class="hw-btn active" onclick="checkC1Intercept()">🔓 Verify C1 Cipher</button>
+          <button class="hw-btn" onclick="revealC1Intercept()">👁️ Reveal Cambridge Model</button>
+          <button class="hw-btn" onclick="nextC1Intercept()">⏭️ Next Intercept</button>
+        </div>
+        <div id="c1Feedback" class="mono" style="font-size: 0.76rem; color: var(--phosphor-green); margin-top: 0.4rem; min-height: 1.1rem;"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT COLUMN: STRATOSPHERE MK-IV SHORTWAVE RECEIVER & CIPHER / MORSE DESK -->
+    <section class="chassis-card">
+      <div class="card-header">
+        <span class="card-title">🎛️ Stratosphere Mk-IV · Superheterodyne Shortwave Receiver</span>
+        <span class="card-sub">Continuous Coverage: 2.000 – 20.000 MHz (AM / USB / LSB / CW)</span>
+      </div>
+
+      <!-- Illuminated Slide-Rule Dial -->
+      <div class="dial-glass" id="dialGlass">
+        <div class="dial-readout-row">
+          <div>
+            <span id="freqReadout" class="freq-digital">06.910</span>
+            <span class="mono" style="font-size: 0.85rem; color: var(--brass-bright); margin-left: 0.3rem;">MHz</span>
+            <span id="bfoReadout" class="mono" style="font-size: 0.75rem; color: var(--parchment-muted); margin-left: 0.45rem;">BFO +0.0 kHz</span>
+          </div>
+          <div class="meters-cluster">
+            <div class="magic-eye-housing" title="EM84 Vacuum Tuning Indicator">
+              <span class="mono" style="font-size: 0.68rem; color: var(--parchment-muted);">EM84</span>
+              <div class="magic-eye-tube">
+                <div id="eyeLeft" class="magic-eye-beam-left"></div>
+                <div id="eyeRight" class="magic-eye-beam-right"></div>
+              </div>
+            </div>
+            <div id="sMeterReadout" class="s-meter-box">S9 +15dB · LOCK</div>
+          </div>
+        </div>
+        <canvas id="dialCanvas"></canvas>
+      </div>
+
+      <!-- 8 Pre-Synthesized Shortwave & Pirate Station Presets -->
+      <div class="station-strip" id="stationStrip"></div>
+
+      <!-- Flywheel Knobs + Demodulation Mode & IF Filter Switches -->
+      <div class="controls-deck">
+        <div class="sub-panel">
+          <div class="knobs-row">
+            <div class="knob-wrap">
+              <div class="flywheel" id="mainKnob" title="Drag or scroll to tune 2.000 - 20.000 MHz">
+                <div class="flywheel-marker" id="mainKnobMarker"></div>
+              </div>
+              <span class="knob-label">Main Tuning</span>
+              <span class="knob-sub">Drag / Scroll / Arrows</span>
+            </div>
+            <div class="knob-wrap">
+              <div class="flywheel small" id="bfoKnob" title="Clarifier / Beat Frequency Oscillator (±5 kHz)">
+                <div class="flywheel-marker" id="bfoKnobMarker"></div>
+              </div>
+              <span class="knob-label">BFO / Clarifier</span>
+              <span class="knob-sub">SSB Pitch ±5.0 kHz</span>
+            </div>
+            <div class="knob-wrap">
+              <button class="hw-btn" style="padding: 0.5rem 0.65rem;" onclick="toggleScanner()" id="scanBtn">📡 Auto-Scan DX</button>
+              <button class="hw-btn" style="padding: 0.4rem 0.65rem; margin-top: 0.3rem;" onclick="zeroBeatBfo()">🎯 Zero-Beat BFO</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-panel">
+          <div class="mode-group">
+            <span class="mode-label">Demodulation Detector Mode</span>
+            <div class="btn-strip" id="modeBtns">
+              <button class="hw-btn active" onclick="setDemodMode('AM', this)">AM Env</button>
+              <button class="hw-btn" onclick="setDemodMode('USB', this)">USB</button>
+              <button class="hw-btn" onclick="setDemodMode('LSB', this)">LSB</button>
+              <button class="hw-btn" onclick="setDemodMode('CW', this)">CW 800Hz</button>
+            </div>
+          </div>
+          <div class="mode-group">
+            <span class="mode-label">IF Crystal Lattice Filter Bandwidth</span>
+            <div class="btn-strip" id="bwBtns">
+              <button class="hw-btn" onclick="setFilterBw(1400, this)">1.4k Sharp</button>
+              <button class="hw-btn active" onclick="setFilterBw(3800, this)">3.8k DX</button>
+              <button class="hw-btn" onclick="setFilterBw(8500, this)">8.5k Broadcast</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 60fps RF Waterfall Spectrogram & Phosphor Oscilloscope -->
+      <div class="card-header" style="margin-top: 0.85rem; margin-bottom: 0.45rem;">
+        <span class="card-title">📈 RF Waterfall Spectrogram &amp; Phosphor Audio Scope</span>
+        <span class="card-sub">Red Hairline = Tuned Carrier · Green Peaks = Active Transmitters</span>
+      </div>
+      <canvas id="waterfallCanvas"></canvas>
+
+      <!-- Numbers Station Cipher Scratchpad + Live Brass CW Key & Pirate Transmitter -->
+      <div class="cipher-grid">
+        <div class="sub-panel">
+          <div class="card-header" style="margin-bottom: 0.4rem;">
+            <span class="card-title">🔢 Numbers Station Cipher Decoder</span>
+            <span class="card-sub">E11 &amp; Vesper-9</span>
+          </div>
+          <div id="cipherTape" class="tape-readout">GROUP 397 · 84029 71538 09441 62850 · SHIFT-7: TIJIBAUV</div>
+          <div style="display:flex; gap:0.4rem; margin-top:0.45rem; align-items:center;">
+            <input type="text" id="cipherInput" class="input-dark" value="SVZLIUZG" placeholder="Ciphertext or numbers..." />
+            <input type="number" id="cipherShift" class="input-dark" style="width:68px;" value="7" min="-25" max="25" title="Caesar Shift" />
+          </div>
+          <div class="btn-strip" style="margin-top:0.45rem;">
+            <button class="hw-btn active" onclick="runCipherDecode()">🗝️ Decrypt Intercept</button>
+            <button class="hw-btn" onclick="loadStationCipher(1)">Load 4.625 E11</button>
+            <button class="hw-btn" onclick="loadStationCipher(7)">Load 17.990 Vesper</button>
+          </div>
+        </div>
+
+        <div class="sub-panel">
+          <div class="card-header" style="margin-bottom: 0.4rem;">
+            <span class="card-title">⚡ Brass CW Telegraph &amp; Trilingual Pirate TX</span>
+            <span class="card-sub" id="morseBufferLabel">Spacebar / Hold Button</span>
+          </div>
+          <div id="morseTape" class="tape-readout">CQ CQ DE GI4BEL LISBURN K</div>
+          <div style="margin-top: 0.45rem;">
+            <button id="cwKeyBtn" class="cw-key-btn"
+              onmousedown="cwKeyDown(event)" onmouseup="cwKeyUp(event)" onmouseleave="cwKeyUp(event)"
+              ontouchstart="cwKeyDown(event)" ontouchend="cwKeyUp(event)">
+              ━━●━━ HOLD OR TAP SPACEBAR FOR 800Hz MORSE KEY
+            </button>
+          </div>
+          <div class="btn-strip" style="margin-top:0.45rem;">
+            <button class="hw-btn" onclick="loadPiratePreset('ja')">🇯🇵 Load Yokohama JA</button>
+            <button class="hw-btn" onclick="loadPiratePreset('tr')">🇹🇷 Load Beyoğlu TR</button>
+            <button class="hw-btn" onclick="loadPiratePreset('en')">🇬🇧 Load Lisburn EN</button>
+          </div>
+          <div style="display:flex; gap:0.4rem; margin-top:0.45rem;">
+            <select id="pirateTxLang" class="input-dark" style="width:92px;">
+              <option value="ja">🇯🇵 JA</option>
+              <option value="tr">🇹🇷 TR</option>
+              <option value="en" selected>🇬🇧 EN</option>
+            </select>
+            <input type="text" id="pirateTxText" class="input-dark" value="Broadcasting live from the mahogany desk in Lisburn." placeholder="Custom Japanese, Turkish or English broadcast..." />
+            <button class="hw-btn active" style="white-space:nowrap;" onclick="transmitCustomPirateVoice()">🎙️ TX 14.250</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BELFAST DUB SIREN (DUAL-555) & 10" DUBPLATE PRE-AMP CONSOLE -->
+      <div class="sub-panel" style="margin-top: 0.85rem; border: 2px solid var(--brass-bright); background: linear-gradient(180deg, #1d150e 0%, #0b0806 100%); box-shadow: inset 0 0 24px rgba(255,170,51,0.08);">
+        <div class="card-header" style="margin-bottom: 0.55rem;">
+          <span class="card-title">🎛️ Belfast Soundsystem · Dual-555 Dub Siren &amp; 10&Prime; Dubplate Pre-Amp</span>
+          <span class="card-sub" id="patchStatusBadge">RE-201 Tape Echo + Altec HPF + Acetate Wheel-Up</span>
+        </div>
+
+        <!-- Row 1: Dual-555 Dub Siren Mode Selector + Hold/Latch Triggers -->
+        <div class="siren-deck-grid">
+          <div style="background:#080605; border:1px solid #3d2f1f; border-radius:6px; padding:0.55rem 0.65rem;">
+            <div class="fader-top" style="margin-bottom:0.35rem;">
+              <span>🚨 NJD / JAH TUBBYS 555 SIREN CIRCUIT</span>
+              <span id="sirenStateLabel" style="color:var(--phosphor-green)">READY</span>
+            </div>
+            <div class="btn-strip" id="sirenModeBtns" style="margin-bottom:0.45rem;">
+              <button class="hw-btn active" onclick="setSirenMode('step', this)">🚓 2-Tone Step</button>
+              <button class="hw-btn" onclick="setSirenMode('ramp', this)">🌊 Rising Ramp</button>
+              <button class="hw-btn" onclick="setSirenMode('laser', this)">🔻 Laser Drop</button>
+              <button class="hw-btn" onclick="setSirenMode('lick', this)">⚡ Lickshot Trill</button>
+            </div>
+            <div class="btn-strip">
+              <button id="sirenFireBtn" class="cw-key-btn" style="flex:2; padding:0.5rem;"
+                onmousedown="startDubSiren(event)" onmouseup="stopDubSiren(event)" onmouseleave="stopDubSiren(event)"
+                ontouchstart="startDubSiren(event)" ontouchend="stopDubSiren(event)">
+                🚨 HOLD TO FIRE DUB SIREN
+              </button>
+              <button id="sirenLatchBtn" class="hw-btn" style="flex:1;" onclick="toggleSirenLatch()">🔒 Latch: OFF</button>
+            </div>
+          </div>
+
+          <!-- 10" Dubplate Acetate Turntable & Spring Tank Controls -->
+          <div style="background:#080605; border:1px solid #3d2f1f; border-radius:6px; padding:0.55rem 0.65rem;">
+            <div class="fader-top" style="margin-bottom:0.35rem;">
+              <span>💿 10&Prime; ACETATE DUBPLATE DECK</span>
+              <span id="plateRpmLabel" style="color:var(--amber-glow)">33⅓ RPM (1.00x)</span>
+            </div>
+            <div class="btn-strip" style="margin-bottom:0.45rem;">
+              <button class="hw-btn active" style="border-color:var(--crimson); color:#ff8a80;" onclick="wheelUpPullUp()">⚡ WHEEL UP! (RELOAD)</button>
+              <button id="plateBrakeBtn" class="hw-btn"
+                onmousedown="engagePlateBrake(true)" onmouseup="engagePlateBrake(false)" onmouseleave="engagePlateBrake(false)"
+                ontouchstart="engagePlateBrake(true)" ontouchend="engagePlateBrake(false)">🛑 Hold Brake</button>
+              <button class="hw-btn" onclick="kickSpringTank()">👢 Kick Spring Tank</button>
+            </div>
+            <div class="btn-strip" id="rpmBtns">
+              <button class="hw-btn" onclick="setDubplateSpeed(0.76, 'DUB SLOW 0.76x', this)">🐢 Dub 0.76x</button>
+              <button class="hw-btn active" onclick="setDubplateSpeed(1.00, '33⅓ RPM (1.00x)', this)">💿 33⅓ RPM</button>
+              <button class="hw-btn" onclick="setDubplateSpeed(1.18, '45 RPM (+18%)', this)">🔥 45 RPM</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: 6 Live Rotary/Slider Pre-Amp & Space Echo Parameters -->
+        <div class="preamp-faders-grid">
+          <div class="fader-box">
+            <div class="fader-top"><span>🔊 Siren Pitch (VCO)</span><span id="valSirenPitch">540 Hz</span></div>
+            <input type="range" id="sirenPitchSlider" min="220" max="1350" value="540" oninput="updateSirenParams()" />
+          </div>
+          <div class="fader-box">
+            <div class="fader-top"><span>〰️ Siren LFO Speed</span><span id="valSirenRate">4.2 Hz</span></div>
+            <input type="range" id="sirenRateSlider" min="8" max="180" value="42" oninput="updateSirenParams()" />
+          </div>
+          <div class="fader-box">
+            <div class="fader-top"><span>📐 Siren Sweep Depth</span><span id="valSirenDepth">310 Hz</span></div>
+            <input type="range" id="sirenDepthSlider" min="40" max="750" value="310" oninput="updateSirenParams()" />
+          </div>
+          <div class="fader-box">
+            <div class="fader-top"><span>👑 King Tubby HPF Cut</span><span id="valTubbyHpf">20 Hz (Full)</span></div>
+            <input type="range" id="tubbyHpfSlider" min="20" max="2600" value="20" oninput="updateDubPreamp()" />
+          </div>
+          <div class="fader-box">
+            <div class="fader-top"><span>⏱️ RE-201 Tape Rate</span><span id="valEchoTime">360 ms</span></div>
+            <input type="range" id="echoTimeSlider" min="90" max="780" value="360" oninput="updateDubPreamp()" />
+          </div>
+          <div class="fader-box">
+            <div class="fader-top"><span>♾️ Echo Feedback</span><span id="valEchoFb">64%</span></div>
+            <input type="range" id="echoFbSlider" min="10" max="94" value="64" oninput="updateDubPreamp()" />
+          </div>
+        </div>
+
+        <!-- Row 3: Momentary Dub Throws, Pre-Amp Kill Switches & Tape Lab Bridge -->
+        <div class="btn-strip">
+          <button id="dubThrowBtn" class="hw-btn active"
+            onmousedown="momentaryVoiceDubThrow(true)" onmouseup="momentaryVoiceDubThrow(false)" onmouseleave="momentaryVoiceDubThrow(false)"
+            ontouchstart="momentaryVoiceDubThrow(true)" ontouchend="momentaryVoiceDubThrow(false)">
+            🎙️ HOLD: VOICE DUB THROW
+          </button>
+          <button id="dubRunawayBtn" class="hw-btn"
+            onmousedown="momentaryDubRunaway(true)" onmouseup="momentaryDubRunaway(false)" onmouseleave="momentaryDubRunaway(false)"
+            ontouchstart="momentaryDubRunaway(true)" ontouchend="momentaryDubRunaway(false)">
+            🔥 HOLD: ECHO RUNAWAY (95%)
+          </button>
+          <button id="dubEchoBtn" class="hw-btn" onclick="toggleRadioDubEcho()">🌊 Latch Echo Send: OFF</button>
+          <button id="killSubBtn" class="hw-btn" onclick="toggleKillSwitch('sub')">🔇 Sub Kill</button>
+          <button id="killMidBtn" class="hw-btn" onclick="toggleKillSwitch('mid')">🔇 Voice Kill</button>
+          <button class="hw-btn active" onclick="beamStationToTapeLab(true)">📡 Beam &rarr; Tape Lab</button>
+          <button class="hw-btn" onclick="toggleTapeLabDock()">🎹 Dock Tape Lab ↓</button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- DOCKED BELFAST TAPE LAB 2.0 WORKSTATION DRAWER -->
+  <section id="tapeLabDockSection" style="display:none; max-width:1540px; margin:1.1rem auto 0;">
+    <div class="chassis-card" style="padding: 0.85rem;">
+      <div class="card-header">
+        <span class="card-title">🎹 Docked Hardware Rack · The Belfast Tape Lab 2.0 (Live Shortwave Patch Linked)</span>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="hw-btn active" style="padding:0.25rem 0.7rem;" onclick="beamStationToTapeLab(true)">📡 Re-Sync Current Radio Station &rarr; Tape Lab Pad 01</button>
+          <button class="hw-btn" style="padding:0.25rem 0.7rem;" onclick="toggleTapeLabDock()">✕ Close Dock</button>
+        </div>
+      </div>
+      <iframe id="tapeLabIframe" src="" style="width:100%; height:920px; border:1px solid var(--border-brass); border-radius:8px; background:#08090c;"></iframe>
+    </div>
+  </section>
+
+  <script src="assets/radio/audio/radio-audio-bundle.js"></script>
+  <script>
+    // =========================================================================
+    // 1. STATION REGISTRY (8 REAL PIPER NEURAL TTS BROADCASTS + CITIES)
+    // =========================================================================
+    const SCENES = [
+      {
+        name: 'Yokohama Harbour & Aikawa Relay',
+        coords: '35.4437° N, 139.6380° E · YOKOHAMA BAY',
+        clock: '02:14 JST · NEON RAIN +11°C',
+        img: 'assets/radio/yokohama_bay_night.png',
+        scaleName: 'Japanese Hirajoshi (F#m) · 72 BPM',
+        rootMidi: 54, // F#3
+        intervals: [0, 2, 3, 7, 8, 12, 14, 15]
+      },
+      {
+        name: 'Beyoğlu Rooftops & Golden Horn',
+        coords: '41.0322° N, 28.9770° E · BEYOĞLU ISTANBUL',
+        clock: '20:14 TRT · MIST & COBBLE +14°C',
+        img: 'assets/radio/beyoglu_rooftop_dusk.png',
+        scaleName: 'Istanbul Hijaz Nocturne (Dm) · 68 BPM',
+        rootMidi: 50, // D3
+        intervals: [0, 1, 4, 5, 7, 8, 10, 12]
+      },
+      {
+        name: 'Sprucefield / Belfast Mahogany Desk',
+        coords: '54.5028° N, 6.0583° W · LISBURN / BELFAST',
+        clock: '18:14 GMT · DRIVING GALE +7°C',
+        img: 'assets/radio/belfast_sprucefield_rain.png',
+        scaleName: 'Lagan Dorian Nocturne (Em) · 70 BPM',
+        rootMidi: 52, // E3
+        intervals: [0, 2, 3, 5, 7, 9, 10, 12]
+      },
+      {
+        name: 'Station E11 Cryptographic Bunker',
+        coords: '52.9921° N, 0.4112° W · SHORTWAVE RELAY',
+        clock: '18:14 UTC · IONOSPHERIC F2 SKIP',
+        img: 'assets/radio/numbers_station_bunker.png',
+        scaleName: 'Cold War Chromatic Drone (Cm) · 64 BPM',
+        rootMidi: 48, // C3
+        intervals: [0, 2, 3, 6, 7, 8, 11, 12]
+      }
+    ];
+
+    const STATIONS = [
+      {
+        id: 'belfast_maritime',
+        freq: 3.480,
+        callsign: '2MT BELFAST LOUGH',
+        langs: '🇬🇧 EN · 🇯🇵 JA · 🇹🇷 TR',
+        rootKey: 'E',
+        scaleLock: 'dorian',
+        title: 'Irish Sea & Trilingual Maritime Forecast',
+        sceneIdx: 2,
+        audioUrl: 'assets/radio/audio/station_01_belfast_maritime.mp3',
+        transcript: '🇬🇧 “Midnight Maritime Relay from Belfast Lough on 3.480 MHz. Severe gale nine in the North Channel.” · 🇯🇵 「北アイルランド・ベルファスト湾より海上気象通報。風力9の暴風警報。」 · 🇹🇷 “Belfast Körfezi gece denizcilik rölesi: çaydanlığı sıcak, mürekkebi kuru tut.”'
+      },
+      {
+        id: 'numbers_e11',
+        freq: 4.625,
+        callsign: 'E11 LAGAN POACHER',
+        langs: '🇬🇧 EN · 🇯🇵 JA · 🇹🇷 TR',
+        rootKey: 'C',
+        scaleLock: 'harmonic',
+        title: 'Trilingual Numbers Station (Group 397)',
+        sceneIdx: 3,
+        audioUrl: 'assets/radio/audio/station_02_numbers_e11.mp3',
+        transcript: '🇬🇧 “Attention. Group 3-9-7: 8-4-0-2-9. Never inflect the key word.” · 🇯🇵 「グループ三、九、七。暗号通信開始：八、四、ゼロ、二、九。キーワードを決して変化させるな。」 · 🇹🇷 “Dikkat. Grup üç, dokuz, yedi. Anahtar kelimeyi asla değiştirmeyin.”'
+      },
+      {
+        id: 'yokohama_midnight',
+        freq: 6.910,
+        callsign: 'JOKR YOKOHAMA BAY',
+        langs: '🇯🇵 JA · 🇬🇧 EN',
+        rootKey: 'F#',
+        scaleLock: 'minor',
+        title: 'Minato Mirai & Aikawa-shien Midnight Relay',
+        sceneIdx: 0,
+        audioUrl: 'assets/radio/audio/station_03_yokohama_midnight.mp3',
+        transcript: '🇯🇵 「こちらは横浜ベイ・深夜短波放送、JOKR、周波数6.91メガヘルツです。最終電車は相川駅のホームを静かに離れました。雨に濡れたアスファルトにネオンの光が揺れています。」 · 🇬🇧 “Broadcasting from the rain-slicked docks of Yokohama Bay out toward Kanagawa and the quiet hills of Aikawa...”'
+      },
+      {
+        id: 'beyoglu_nocturne',
+        freq: 9.440,
+        callsign: 'RADYO PERA 31m',
+        langs: '🇹🇷 TR · 🇬🇧 EN',
+        rootKey: 'D',
+        scaleLock: 'phrygian',
+        title: 'Beyoğlu Attic & Golden Horn Shortwave',
+        sceneIdx: 1,
+        audioUrl: 'assets/radio/audio/station_04_beyoglu_nocturne.mp3',
+        transcript: '🇹🇷 “Burası Beyoğlu Radyo Pera, 31 metre kısa dalga, 9.44 MHz. İstiklal Caddesi üzerinde son kırmızı tramvay sislerin içinden çanını çalarak geçti. Haliç ve Boğazın karanlık sularına bakan çatı katından selam olsun.” · 🇬🇧 “From a rooftop attic above Istiklal Street in Beyoğlu, this is Radio Pera...”'
+      },
+      {
+        id: 'grammar_crypt_pirate',
+        freq: 11.175,
+        callsign: 'MV RHETORICA',
+        langs: '🇬🇧 EN · 🇯🇵 JA · 🇹🇷 TR',
+        rootKey: 'E',
+        scaleLock: 'dorian',
+        title: 'Offshore Pirate Vessel · C1 Trilingual Dispatch',
+        sceneIdx: 2,
+        audioUrl: 'assets/radio/audio/station_05_grammar_crypt_pirate.mp3',
+        transcript: '🇬🇧 “Calling all nocturnal scholars from the pirate vessel Rhetorica: Not only do generic templates put your examiner to sleep, but they also strip your prose of its pulse.” · 🇯🇵 「海賊放送船レトリカより深夜の学者たちへ。言葉のリズムと構文の美しさだけが試験官の目を覚まさせる。」 · 🇹🇷 “Basmakalıp şablonları çöpe atın; cümlenin ritmini koruyun.”'
+      },
+      {
+        id: 'bathysphere_beacon',
+        freq: 13.820,
+        callsign: 'HADAL BUOY 4200M',
+        langs: '🇯🇵 JA · 🇬🇧 EN',
+        rootKey: 'C',
+        scaleLock: 'minor',
+        title: 'Deep-Sea Telemetry (Japanese & English)',
+        sceneIdx: 3,
+        audioUrl: 'assets/radio/audio/station_06_bathysphere_beacon.mp3',
+        transcript: '🇯🇵 「深海音響テレメトリー中継、水深四千二百メートル。圧力隔壁は正常。石英の窓の外を発光生物が静かに漂っています。」 · 🇬🇧 “Deep-ocean acoustic telemetry relay, depth 4,200m. Were the pressure seal to falter at this depth, no surface vessel could reach us before dawn.”'
+      },
+      {
+        id: 'chancer_manifesto',
+        freq: 15.600,
+        callsign: 'SPRUCEFIELD 200W',
+        langs: '🇬🇧 EN · 🇹🇷 TR · 🇯🇵 JA',
+        rootKey: 'A',
+        scaleLock: 'minor',
+        title: 'The Chancer’s Trilingual Pirate Transmitter',
+        sceneIdx: 2,
+        audioUrl: 'assets/radio/audio/station_07_chancer_manifesto.mp3',
+        transcript: '🇬🇧 “Trust your instinct, spot the pattern in the dark, and build something they cannot ignore.” · 🇹🇷 “Lisburn’den 200 watt korsan yayın: İçgüdülerine güven, karanlıktaki düzeni gör.” · 🇯🇵 「リスバーンの裏庭より200ワットで送信中。直感を信じろ、暗闇の中のパターンを見抜け。」'
+      },
+      {
+        id: 'ghost_number_cipher',
+        freq: 17.990,
+        callsign: 'VESPER-9 CIPHER',
+        langs: '🇯🇵 JA · 🇹🇷 TR · 🇬🇧 EN',
+        rootKey: 'F#',
+        scaleLock: 'harmonic',
+        title: 'Trilingual Cipher Station Calling “PENCIL”',
+        sceneIdx: 3,
+        audioUrl: 'assets/radio/audio/station_08_ghost_number_cipher.mp3',
+        transcript: '🇯🇵 「ヴェスパー・ナインよりペンシルへ。シフト七で解読せよ。窓辺に猫がいる。」 · 🇹🇷 “Vesper Dokuzdan Pencil’a çağrı: Yedi kaydırma ile şifreyi çözün. Kedi pencerenin kenarında bekliyor.” · 🇬🇧 “Vesper Nine calling Pencil: L-I-S-B-U-R-N · 5-1-9-8-1. The cat is on the windowsill.”'
+      }
+    ];
+
+    // =========================================================================
+    // 2. RECEIVER STATE & AUDIO ENGINE
+    // =========================================================================
+    let isPowered = false;
+    let currentFreq = 6.910; // MHz (2.000 to 20.000)
+    let currentBfo = 0.0;    // kHz (-5.0 to +5.0)
+    let demodMode = 'AM';    // AM, USB, LSB, CW
+    let filterBw = 3800;     // Hz
+    let activeSceneIdx = 0;
+    let lofiEnabled = true;
+    let isScanning = false;
+
+    let audioCtx = null;
+    let masterGain = null;
+    let analyserNode = null;
+    let staticGainNode = null;
+    let rainGainNode = null;
+    let lofiGainNode = null;
+    let voiceGainNode = null;
+    let voiceFilterNode = null;
+    let heterodyneOsc = null;
+    let heterodyneGain = null;
+    let ssbModOsc = null;
+    let ssbModGain = null;
+    let cwOsc = null;
+    let cwGain = null;
+    let dubSendGain = null;
+    let dubDelayNode = null;
+    let dubFbGainNode = null;
+    let tubbyHpfNode = null;
+    let dubEchoActive = false;
+    let dubplateSpeedFactor = 1.0;
+    let nominalPlateRpm = 1.0;
+    let subKilled = false;
+    let midKilled = false;
+
+    // Dual-555 Hardware Dub Siren State
+    let sirenMode = 'step'; // 'step', 'ramp', 'laser', 'lick'
+    let sirenLatched = false;
+    let sirenActiveNodes = null;
+
+    let patchChannel = null;
+    try { patchChannel = new BroadcastChannel('gareth_shortwave_patch_v1'); } catch (_) {}
+
+    // HTML5 Audio Pool for the 8 Trilingual Stations
+    const stationAudios = {};
+    let activeStationObj = null;
+
+    function buildStationStrip() {
+      const container = document.getElementById('stationStrip');
+      container.innerHTML = '';
+      STATIONS.forEach((st, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'station-chip';
+        btn.id = 'stChip_' + idx;
+        btn.onclick = () => tuneToStation(idx);
+        btn.innerHTML = `
+          <div class="st-freq"><span>${st.freq.toFixed(3)} MHz</span><span>${st.langs || st.callsign.split(' ')[0]}</span></div>
+          <div class="st-name">${st.title}</div>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function initAudioEngine() {
+      if (audioCtx) return;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AC();
+
+      masterGain = audioCtx.createGain();
+      masterGain.gain.value = 0.9;
+
+      analyserNode = audioCtx.createAnalyser();
+      analyserNode.fftSize = 512;
+      analyserNode.smoothingTimeConstant = 0.82;
+
+      masterGain.connect(analyserNode);
+      analyserNode.connect(audioCtx.destination);
+
+      // 1. Shortwave Band Static & Crackle Generator (Pink/White Filtered Noise)
+      const bufferSize = audioCtx.sampleRate * 3;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        const crackle = Math.random() > 0.9975 ? (Math.random() * 2 - 1) * 2.2 : 0;
+        output[i] = ((b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.04) + crackle * 0.25;
+        b6 = white * 0.115926;
+      }
+      const staticSource = audioCtx.createBufferSource();
+      staticSource.buffer = noiseBuffer;
+      staticSource.loop = true;
+
+      const staticBandpass = audioCtx.createBiquadFilter();
+      staticBandpass.type = 'bandpass';
+      staticBandpass.frequency.value = 1650;
+      staticBandpass.Q.value = 0.9;
+
+      staticGainNode = audioCtx.createGain();
+      staticGainNode.gain.value = 0.18;
+
+      staticSource.connect(staticBandpass);
+      staticBandpass.connect(staticGainNode);
+      staticGainNode.connect(masterGain);
+      staticSource.start();
+
+      // 2. Nocturnal Window Rain Ambience Generator
+      const rainSource = audioCtx.createBufferSource();
+      rainSource.buffer = noiseBuffer;
+      rainSource.loop = true;
+
+      const rainFilter = audioCtx.createBiquadFilter();
+      rainFilter.type = 'lowpass';
+      rainFilter.frequency.value = 950;
+
+      rainGainNode = audioCtx.createGain();
+      rainGainNode.gain.value = 0.28;
+
+      rainSource.connect(rainFilter);
+      rainFilter.connect(rainGainNode);
+      rainGainNode.connect(masterGain);
+      rainSource.start();
+
+      // 3. Heterodyne Carrier Beat Whistle Oscillator
+      heterodyneOsc = audioCtx.createOscillator();
+      heterodyneOsc.type = 'sine';
+      heterodyneOsc.frequency.value = 900;
+      heterodyneGain = audioCtx.createGain();
+      heterodyneGain.gain.value = 0.0;
+      heterodyneOsc.connect(heterodyneGain);
+      heterodyneGain.connect(masterGain);
+      heterodyneOsc.start();
+
+      // 4. CW Telegraph 800Hz Sidetone Oscillator
+      cwOsc = audioCtx.createOscillator();
+      cwOsc.type = 'sine';
+      cwOsc.frequency.value = 800;
+      cwGain = audioCtx.createGain();
+      cwGain.gain.value = 0.0;
+      cwOsc.connect(cwGain);
+      cwGain.connect(masterGain);
+      cwOsc.start();
+
+      // 5. Voice Broadcast Bus + IF Bandpass Filter + SSB Ring Modulator
+      voiceFilterNode = audioCtx.createBiquadFilter();
+      voiceFilterNode.type = 'lowpass';
+      voiceFilterNode.frequency.value = 4200;
+      voiceFilterNode.Q.value = 0.85;
+
+      voiceGainNode = audioCtx.createGain();
+      voiceGainNode.gain.value = 1.45;
+
+      ssbModOsc = audioCtx.createOscillator();
+      ssbModOsc.type = 'sine';
+      ssbModOsc.frequency.value = 0;
+      ssbModGain = audioCtx.createGain();
+      ssbModGain.gain.value = 0;
+      ssbModOsc.connect(ssbModGain);
+      ssbModOsc.start();
+
+      voiceFilterNode.connect(voiceGainNode);
+
+      // King Tubby Altec High-Pass Filter (Sweeps 20 Hz - 2600 Hz with resonant bark)
+      tubbyHpfNode = audioCtx.createBiquadFilter();
+      tubbyHpfNode.type = 'highpass';
+      tubbyHpfNode.frequency.value = 20;
+      tubbyHpfNode.Q.value = 2.6;
+
+      voiceGainNode.connect(tubbyHpfNode);
+      tubbyHpfNode.connect(masterGain);
+
+      // Roland RE-201 Space Echo Dub Delay Bus with Tape Saturation Loop
+      dubSendGain = audioCtx.createGain();
+      dubSendGain.gain.value = 0.0;
+      dubDelayNode = audioCtx.createDelay(2.0);
+      dubDelayNode.delayTime.value = 0.36;
+      dubFbGainNode = audioCtx.createGain();
+      dubFbGainNode.gain.value = 0.64;
+
+      const dubTone = audioCtx.createBiquadFilter();
+      dubTone.type = 'bandpass';
+      dubTone.frequency.value = 1150;
+      dubTone.Q.value = 0.95;
+
+      // Soft tape saturation curve so 95% runaway feedback never clips harshly
+      const tapeShaper = audioCtx.createWaveShaper();
+      const curve = new Float32Array(1024);
+      for (let i = 0; i < 1024; i++) {
+        const x = (i * 2) / 1024 - 1;
+        curve[i] = Math.tanh(x * 1.85);
+      }
+      tapeShaper.curve = curve;
+
+      tubbyHpfNode.connect(dubSendGain);
+      dubSendGain.connect(dubDelayNode);
+      dubDelayNode.connect(dubTone);
+      dubTone.connect(tapeShaper);
+      tapeShaper.connect(dubFbGainNode);
+      dubFbGainNode.connect(dubDelayNode);
+      tapeShaper.connect(masterGain);
+
+      // Decode & start all 8 Trilingual Broadcasts from file://-safe Base64 bundle
+      STATIONS.forEach(st => {
+        const stGain = audioCtx.createGain();
+        stGain.gain.value = 0.0;
+        stGain.connect(voiceFilterNode);
+        stationAudios[st.id] = { buffer: null, sourceNode: null, gainNode: stGain, rate: 1.0 };
+        decodeStationBuffer(st);
+      });
+
+      // 6. Generative Midnight Lo-Fi Synth Bus (also routed through King Tubby HPF)
+      lofiGainNode = audioCtx.createGain();
+      lofiGainNode.gain.value = 0.22;
+      lofiGainNode.connect(tubbyHpfNode);
+      startLofiSequencer();
+
+      updateMixer();
+      updateRadioDsp();
+    }
+
+    function base64ToArrayBuffer(b64) {
+      const bin = window.atob(b64);
+      const len = bin.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+      return bytes.buffer;
+    }
+
+    async function decodeStationBuffer(st) {
+      try {
+        let ab = null;
+        if (window.GARETH_RADIO_B64 && window.GARETH_RADIO_B64[st.audioUrl]) {
+          ab = base64ToArrayBuffer(window.GARETH_RADIO_B64[st.audioUrl]);
+        } else {
+          const resp = await fetch(st.audioUrl);
+          ab = await resp.arrayBuffer();
+        }
+        const audioBuf = await audioCtx.decodeAudioData(ab);
+        stationAudios[st.id].buffer = audioBuf;
+        if (isPowered) startStationSource(st.id, 0);
+      } catch (err) {
+        console.warn('Station decode error:', st.id, err);
+      }
+    }
+
+    function startStationSource(stId, offsetSec) {
+      const bundle = stationAudios[stId];
+      if (!bundle || !bundle.buffer || !audioCtx) return;
+      if (bundle.sourceNode) {
+        try { bundle.sourceNode.stop(); bundle.sourceNode.disconnect(); } catch (_) {}
+      }
+      const src = audioCtx.createBufferSource();
+      src.buffer = bundle.buffer;
+      src.loop = true;
+      src.playbackRate.value = bundle.rate || 1.0;
+      src.connect(bundle.gainNode);
+      src.start(0, offsetSec || 0);
+      bundle.sourceNode = src;
+    }
+
+    function togglePower() {
+      initAudioEngine();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      isPowered = !isPowered;
+
+      const btn = document.getElementById('powerBtn');
+      const led = document.getElementById('powerLed');
+      const label = document.getElementById('powerLabel');
+
+      if (isPowered) {
+        btn.classList.add('power-on');
+        led.classList.add('on');
+        label.textContent = 'VALVES WARM · RECEIVER ONLINE';
+        STATIONS.forEach(st => startStationSource(st.id, 0));
+        updateRadioDsp();
+      } else {
+        btn.classList.remove('power-on');
+        led.classList.remove('on');
+        label.textContent = 'POWER STANDBY (CLICK TO IGNITE VALVES)';
+        Object.values(stationAudios).forEach(obj => {
+          obj.gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+          if (obj.sourceNode) {
+            try { obj.sourceNode.stop(); } catch (_) {}
+            obj.sourceNode = null;
+          }
+        });
+        if (heterodyneGain) heterodyneGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+      }
+    }
+
+    // =========================================================================
+    // 3. CONTINUOUS TUNING, HETERODYNE WHISTLE & MAGIC EYE DSP
+    // =========================================================================
+    function findNearestStation(freq) {
+      let best = null;
+      let minDiff = 999;
+      STATIONS.forEach((st, idx) => {
+        const diff = Math.abs(freq - st.freq);
+        if (diff < minDiff) {
+          minDiff = diff;
+          best = { station: st, index: idx, diff };
+        }
+      });
+      return best;
+    }
+
+    function updateRadioDsp() {
+      document.getElementById('freqReadout').textContent = currentFreq.toFixed(3).padStart(6, '0');
+      const bfoSign = currentBfo >= 0 ? '+' : '';
+      document.getElementById('bfoReadout').textContent = `BFO ${bfoSign}${currentBfo.toFixed(1)} kHz`;
+
+      // Rotate physical flywheel markers
+      const normFreq = (currentFreq - 2.0) / 18.0;
+      const mainDeg = (normFreq * 1080) - 540;
+      document.getElementById('mainKnobMarker').style.transform = `rotate(${mainDeg}deg)`;
+      const bfoDeg = (currentBfo / 5.0) * 135;
+      document.getElementById('bfoKnobMarker').style.transform = `rotate(${bfoDeg}deg)`;
+
+      const nearest = findNearestStation(currentFreq);
+      const captureRadius = 0.22; // 220 kHz heterodyne capture range
+      const lockRadius = 0.045;   // 45 kHz clear voice lock
+
+      let signalStrength = 0; // 0.0 to 1.0
+      if (nearest && nearest.diff < captureRadius) {
+        signalStrength = Math.max(0, 1 - (nearest.diff / captureRadius));
+        signalStrength = Math.pow(signalStrength, 1.35);
+      }
+
+      // Update EM84 Magic Eye Tube & S-Meter
+      const beamWidth = Math.round(14 + signalStrength * 35);
+      document.getElementById('eyeLeft').style.width = beamWidth + '%';
+      document.getElementById('eyeRight').style.width = beamWidth + '%';
+
+      const sMeterEl = document.getElementById('sMeterReadout');
+      if (signalStrength > 0.78) {
+        const dbPlus = Math.round((signalStrength - 0.75) * 120);
+        sMeterEl.textContent = `S9 +${dbPlus}dB · LOCK`;
+        sMeterEl.style.color = 'var(--phosphor-green)';
+      } else if (signalStrength > 0.15) {
+        const sUnit = Math.max(1, Math.min(9, Math.round(signalStrength * 9)));
+        sMeterEl.textContent = `S${sUnit} · CARRIER`;
+        sMeterEl.style.color = 'var(--amber-glow)';
+      } else {
+        sMeterEl.textContent = `S1 · NOISE FLOOR`;
+        sMeterEl.style.color = 'var(--parchment-muted)';
+      }
+
+      // Highlight locked station chip & update transcript HUD
+      STATIONS.forEach((st, idx) => {
+        const chip = document.getElementById('stChip_' + idx);
+        if (chip) {
+          chip.classList.toggle('locked', nearest && nearest.index === idx && nearest.diff < lockRadius);
+        }
+      });
+
+      if (nearest && nearest.diff < lockRadius) {
+        const st = nearest.station;
+        activeStationObj = st;
+        document.getElementById('liveStationHeader').textContent =
+          `${st.freq.toFixed(3)} MHz · ${st.callsign} — ${st.title.toUpperCase()}`;
+        document.getElementById('liveTranscriptText').textContent = st.transcript;
+      } else {
+        activeStationObj = null;
+        document.getElementById('liveStationHeader').textContent =
+          `${currentFreq.toFixed(3)} MHz · INTER-STATION IONOSPHERIC STATIC (${demodMode})`;
+        document.getElementById('liveTranscriptText').textContent =
+          '“[... atmospheric crackle & F2-layer skywave static ... Sweep the Main Tuning flywheel or click a station preset below to lock onto a carrier wave ...]”';
+      }
+
+      if (!audioCtx || !isPowered) return;
+
+      const now = audioCtx.currentTime;
+      const userVoiceSetting = Number(document.getElementById('faderVoice').value) / 100;
+      const userStaticSetting = Number(document.getElementById('faderStatic').value) / 100;
+
+      // Update per-station audio gains & SSB/BFO pitch effect
+      STATIONS.forEach((st, idx) => {
+        const bundle = stationAudios[st.id];
+        if (!bundle) return;
+        const d = Math.abs(currentFreq - st.freq);
+        if (d < captureRadius) {
+          const clarity = Math.pow(Math.max(0, 1 - d / captureRadius), 1.8);
+          bundle.gainNode.gain.setTargetAtTime(clarity * userVoiceSetting * 1.15, now, 0.04);
+
+          // Simulate SSB/BFO pitch warp + 10" Dubplate Turntable RPM / Brake
+          const detuneFactor = (demodMode === 'USB' || demodMode === 'LSB')
+            ? 1.0 + ((currentFreq - st.freq) * 1.8) + (currentBfo * 0.035)
+            : 1.0 + (currentBfo * 0.012);
+          const clampedRate = Math.max(0.08, Math.min(1.65, detuneFactor * dubplateSpeedFactor));
+          bundle.rate = clampedRate;
+          if (bundle.sourceNode) {
+            bundle.sourceNode.playbackRate.setTargetAtTime(clampedRate, now, 0.04);
+          }
+        } else {
+          bundle.gainNode.gain.setTargetAtTime(0.0, now, 0.04);
+        }
+      });
+
+      // Duck static slightly when locked onto a strong carrier
+      const duckedStatic = userStaticSetting * (1.0 - signalStrength * 0.55);
+      staticGainNode.gain.setTargetAtTime(duckedStatic * 0.55, now, 0.05);
+
+      // Heterodyne carrier beat whistle when tuning near a station
+      if (nearest && nearest.diff > 0.004 && nearest.diff < captureRadius) {
+        const beatHz = Math.max(60, Math.min(3200, nearest.diff * 11500 + Math.abs(currentBfo) * 180));
+        const whistleEnv = Math.sin((1 - nearest.diff / captureRadius) * Math.PI) * 0.075 * userVoiceSetting;
+        heterodyneOsc.frequency.setTargetAtTime(beatHz, now, 0.02);
+        heterodyneGain.gain.setTargetAtTime(whistleEnv, now, 0.03);
+      } else {
+        heterodyneGain.gain.setTargetAtTime(0.0, now, 0.03);
+      }
+    }
+
+    function setFrequency(newFreq) {
+      currentFreq = Math.max(2.000, Math.min(20.000, Number(newFreq)));
+      updateRadioDsp();
+    }
+
+    function tuneToStation(idx) {
+      const st = STATIONS[idx];
+      if (!st) return;
+      isScanning = false;
+      document.getElementById('scanBtn').classList.remove('active');
+      if (!isPowered) togglePower();
+      currentFreq = st.freq;
+      selectScene(st.sceneIdx);
+      startStationSource(st.id, 0);
+      updateRadioDsp();
+    }
+
+    function selectScene(idx) {
+      activeSceneIdx = idx;
+      const sc = SCENES[idx];
+      document.getElementById('viewportBg').style.backgroundImage = `url('${sc.img}')`;
+      document.getElementById('cityCoords').textContent = sc.coords;
+      document.getElementById('hudLocation').textContent = '📍 ' + sc.name.toUpperCase();
+      document.getElementById('hudClock').textContent = sc.clock;
+      document.getElementById('scaleBadge').textContent = 'Scale: ' + sc.scaleName;
+      for (let i = 0; i < 4; i++) {
+        document.getElementById('sceneBtn' + i).classList.toggle('active', i === idx);
+      }
+    }
+
+    function setDemodMode(mode, btnEl) {
+      demodMode = mode;
+      document.querySelectorAll('#modeBtns .hw-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      updateRadioDsp();
+    }
+
+    function setFilterBw(bwHz, btnEl) {
+      filterBw = bwHz;
+      document.querySelectorAll('#bwBtns .hw-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      if (voiceFilterNode && audioCtx) {
+        const qVal = bwHz < 2000 ? 3.2 : (bwHz < 5000 ? 1.2 : 0.45);
+        voiceFilterNode.Q.setTargetAtTime(qVal, audioCtx.currentTime, 0.05);
+      }
+    }
+
+    function zeroBeatBfo() {
+      currentBfo = 0.0;
+      const nearest = findNearestStation(currentFreq);
+      if (nearest && nearest.diff < 0.25) {
+        currentFreq = nearest.station.freq;
+      }
+      updateRadioDsp();
+    }
+
+    function toggleScanner() {
+      if (!isPowered) togglePower();
+      isScanning = !isScanning;
+      document.getElementById('scanBtn').classList.toggle('active', isScanning);
+    }
+
+    function replayCurrentBroadcast() {
+      if (!isPowered) togglePower();
+      const nearest = findNearestStation(currentFreq);
+      if (nearest && stationAudios[nearest.station.id]) {
+        startStationSource(nearest.station.id, 0);
+        updateRadioDsp();
+      }
+    }
+
+    function updateMixer() {
+      const vVoice = Number(document.getElementById('faderVoice').value);
+      const vStatic = Number(document.getElementById('faderStatic').value);
+      const vRain = Number(document.getElementById('faderRain').value);
+      const vLofi = Number(document.getElementById('faderLofi').value);
+
+      document.getElementById('valVoice').textContent = vVoice + '%';
+      document.getElementById('valStatic').textContent = vStatic + '%';
+      document.getElementById('valRain').textContent = vRain + '%';
+      document.getElementById('valLofi').textContent = vLofi + '%';
+
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      if (rainGainNode) rainGainNode.gain.setTargetAtTime((vRain / 100) * 0.55, now, 0.05);
+      if (lofiGainNode) lofiGainNode.gain.setTargetAtTime(lofiEnabled ? (vLofi / 100) * 0.55 : 0, now, 0.05);
+      updateRadioDsp();
+    }
+
+    // =========================================================================
+    // 4. GENERATIVE MIDNIGHT LO-FI SYNTH & THUNDER ENGINE
+    // =========================================================================
+    let lofiStep = 0;
+    function midiToFreq(m) {
+      return 440 * Math.pow(2, (m - 69) / 12);
+    }
+
+    function playRhodesNote(freq, dur, vol) {
+      if (!audioCtx || !isPowered || !lofiEnabled) return;
+      const now = audioCtx.currentTime;
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      osc1.type = 'sine';
+      osc2.type = 'triangle';
+      osc1.frequency.setValueAtTime(freq, now);
+      osc2.frequency.setValueAtTime(freq * 2, now);
+
+      const env = audioCtx.createGain();
+      env.gain.setValueAtTime(0.0001, now);
+      env.gain.linearRampToValueAtTime(vol, now + 0.025);
+      env.gain.exponentialRampToValueAtTime(0.0005, now + dur);
+
+      const osc2Gain = audioCtx.createGain();
+      osc2Gain.gain.value = 0.18;
+
+      osc1.connect(env);
+      osc2.connect(osc2Gain);
+      osc2Gain.connect(env);
+      env.connect(lofiGainNode);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + dur + 0.05);
+      osc2.stop(now + dur + 0.05);
+    }
+
+    function playBrushDrum(type) {
+      if (!audioCtx || !isPowered || !lofiEnabled) return;
+      const now = audioCtx.currentTime;
+      if (type === 'kick') {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.frequency.setValueAtTime(110, now);
+        osc.frequency.exponentialRampToValueAtTime(38, now + 0.14);
+        g.gain.setValueAtTime(0.32, now);
+        g.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc.connect(g);
+        g.connect(lofiGainNode);
+        osc.start(now);
+        osc.stop(now + 0.24);
+      } else if (type === 'hat') {
+        const osc = audioCtx.createOscillator();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(6200, now);
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.035, now);
+        g.gain.exponentialRampToValueAtTime(0.0008, now + 0.055);
+        osc.connect(g);
+        g.connect(lofiGainNode);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      }
+    }
+
+    function startLofiSequencer() {
+      setInterval(() => {
+        if (!isPowered || !lofiEnabled || !audioCtx) return;
+        const sc = SCENES[activeSceneIdx];
+        const stepInBar = lofiStep % 8;
+
+        // Warm lo-fi pulse
+        if (stepInBar === 0 || stepInBar === 5) playBrushDrum('kick');
+        if (stepInBar % 2 === 1) playBrushDrum('hat');
+
+        // Pad chord on beat 0
+        if (stepInBar === 0) {
+          const r = sc.rootMidi;
+          playRhodesNote(midiToFreq(r), 2.4, 0.14);
+          playRhodesNote(midiToFreq(r + sc.intervals[2]), 2.4, 0.10);
+          playRhodesNote(midiToFreq(r + sc.intervals[4]), 2.4, 0.10);
+        }
+
+        // Sparse nocturnal melody
+        if (Math.random() < 0.58) {
+          const pick = sc.intervals[Math.floor(Math.random() * sc.intervals.length)];
+          const noteMidi = sc.rootMidi + 12 + pick;
+          playRhodesNote(midiToFreq(noteMidi), 0.85, 0.09);
+        }
+        lofiStep++;
+      }, 420);
+    }
+
+    function toggleLofiSynth() {
+      lofiEnabled = !lofiEnabled;
+      const btn = document.getElementById('lofiToggleBtn');
+      btn.classList.toggle('active', lofiEnabled);
+      btn.textContent = `🎹 Generative Lo-Fi Rhodes & Brush Beat: ${lofiEnabled ? 'ON' : 'OFF'}`;
+      updateMixer();
+    }
+
+    function triggerThunderClap() {
+      if (!isPowered) togglePower();
+      const now = audioCtx.currentTime;
+      const sr = audioCtx.sampleRate;
+      const duration = 6.2;
+      const len = Math.floor(sr * duration);
+
+      // Synthesize a realistic jagged N-wave acoustic thunder buffer (zero tonal oscillators)
+      const thunderBuf = audioCtx.createBuffer(2, len, sr);
+      // 5 distinct acoustic arrivals from different altitudes of the lightning channel
+      const lobes = [
+        { tPeak: 0.14, width: 0.09, amp: 0.85, crackle: 0.7 }, // Initial close sky-tear crack
+        { tPeak: 0.42, width: 0.28, amp: 1.00, crackle: 0.4 }, // Primary shockwave boom
+        { tPeak: 1.18, width: 0.52, amp: 0.72, crackle: 0.2 }, // First harbour/hill reflection
+        { tPeak: 2.25, width: 0.78, amp: 0.48, crackle: 0.1 }, // Mid-distance roll
+        { tPeak: 3.65, width: 1.15, amp: 0.28, crackle: 0.0 }  // Low horizon rumble
+      ];
+
+      for (let ch = 0; ch < 2; ch++) {
+        const data = thunderBuf.getChannelData(ch);
+        let brown1 = 0, brown2 = 0, lp = 0;
+        let gustEnv = 0;
+        const chOffset = ch === 0 ? 0 : 0.028; // Stereo arrival width across the window
+
+        for (let i = 0; i < len; i++) {
+          const t = (i / sr) - chOffset;
+          if (t < 0) continue;
+
+          // Integrated Brownian noise (1/f^2 deep atmospheric pressure turbulence)
+          const white = Math.random() * 2 - 1;
+          brown1 = (brown1 + 0.028 * white) / 1.028;
+          brown2 = (brown2 + 0.012 * brown1) / 1.012;
+
+          // Erratic turbulent gust modulation (gives the ragged "rolling/tearing" texture)
+          if (i % 180 === 0) {
+            gustEnv = 0.55 + Math.pow(Math.random(), 1.4) * 0.85;
+          }
+
+          // Sum the multi-altitude arrival lobes
+          let env = 0;
+          let crackEnv = 0;
+          for (let k = 0; k < lobes.length; k++) {
+            const lb = lobes[k];
+            const dt = t - lb.tPeak;
+            const asymWidth = dt < 0 ? lb.width * 0.32 : lb.width; // Fast shock attack, long decay
+            const g = Math.exp(-(dt * dt) / (2 * asymWidth * asymWidth));
+            env += g * lb.amp;
+            crackEnv += g * lb.crackle;
+          }
+
+          // Progressive atmospheric lowpass darkening over time (highs absorbed with distance)
+          const alpha = Math.max(0.018, 0.18 * Math.exp(-t * 0.55));
+          const raw = (brown2 * 18.0 + brown1 * 4.5 * crackEnv) * gustEnv * env;
+          lp = lp + alpha * (raw - lp);
+
+          // Soft tanh pressure saturation for warm chest-thump without harsh clipping
+          data[i] = Math.tanh(lp * 1.65) * 0.72;
+        }
+      }
+
+      const src = audioCtx.createBufferSource();
+      src.buffer = thunderBuf;
+
+      // Resonant window-pane / room cabinet lowpass contour
+      const bodyFilter = audioCtx.createBiquadFilter();
+      bodyFilter.type = 'lowpass';
+      bodyFilter.frequency.setValueAtTime(520, now);
+      bodyFilter.frequency.exponentialRampToValueAtTime(68, now + 4.8);
+      bodyFilter.Q.value = 0.9;
+
+      const outGain = audioCtx.createGain();
+      outGain.gain.value = 0.95;
+
+      src.connect(bodyFilter);
+      bodyFilter.connect(outGain);
+      outGain.connect(masterGain);
+      src.start(now);
+
+      // Realistic double-flicker sheet lightning on the rain-streaked window
+      const vp = document.getElementById('viewportBg');
+      vp.style.filter = 'brightness(1.75) contrast(1.25)';
+      setTimeout(() => { vp.style.filter = 'brightness(0.95) contrast(1.08)'; }, 70);
+      setTimeout(() => { vp.style.filter = 'brightness(1.45) contrast(1.18)'; }, 140);
+      setTimeout(() => { vp.style.filter = 'brightness(0.88) contrast(1.08)'; }, 290);
+    }
+
+    // =========================================================================
+    // 5. INTERACTIVE DIAL, FLYWHEEL DRAG (MOUSE + MOBILE TOUCH) & XBOX POLLING
+    // =========================================================================
+    function ensureMobileAudioAwake() {
+      if (!isPowered) togglePower();
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    (function setupHardwareControls() {
+      const mainKnob = document.getElementById('mainKnob');
+      const bfoKnob = document.getElementById('bfoKnob');
+      const dialGlass = document.getElementById('dialGlass');
+
+      let draggingMain = false;
+      let draggingBfo = false;
+      let draggingDial = false;
+      let lastX = 0;
+
+      function getClientX(e) {
+        if (e.touches && e.touches.length > 0) return e.touches[0].clientX;
+        if (e.changedTouches && e.changedTouches.length > 0) return e.changedTouches[0].clientX;
+        return e.clientX;
+      }
+
+      function onStartMain(e) {
+        if (e.cancelable) e.preventDefault();
+        ensureMobileAudioAwake();
+        draggingMain = true;
+        lastX = getClientX(e);
+      }
+
+      function onStartBfo(e) {
+        if (e.cancelable) e.preventDefault();
+        ensureMobileAudioAwake();
+        draggingBfo = true;
+        lastX = getClientX(e);
+      }
+
+      function onStartDial(e) {
+        if (e.cancelable) e.preventDefault();
+        ensureMobileAudioAwake();
+        draggingDial = true;
+        const cx = getClientX(e);
+        const rect = dialGlass.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
+        setFrequency(2.0 + ratio * 18.0);
+      }
+
+      function onMove(e) {
+        if (!draggingMain && !draggingBfo && !draggingDial) return;
+        const cx = getClientX(e);
+        if (draggingMain) {
+          const dx = cx - lastX;
+          lastX = cx;
+          setFrequency(currentFreq + dx * 0.018);
+        } else if (draggingBfo) {
+          const dx = cx - lastX;
+          lastX = cx;
+          currentBfo = Math.max(-5.0, Math.min(5.0, currentBfo + dx * 0.05));
+          updateRadioDsp();
+        } else if (draggingDial) {
+          const rect = dialGlass.getBoundingClientRect();
+          const ratio = Math.max(0, Math.min(1, (cx - rect.left) / rect.width));
+          setFrequency(2.0 + ratio * 18.0);
+        }
+      }
+
+      function onEnd() {
+        draggingMain = false;
+        draggingBfo = false;
+        draggingDial = false;
+      }
+
+      mainKnob.addEventListener('mousedown', onStartMain);
+      mainKnob.addEventListener('touchstart', onStartMain, { passive: false });
+
+      bfoKnob.addEventListener('mousedown', onStartBfo);
+      bfoKnob.addEventListener('touchstart', onStartBfo, { passive: false });
+
+      dialGlass.addEventListener('mousedown', onStartDial);
+      dialGlass.addEventListener('touchstart', onStartDial, { passive: false });
+
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('touchmove', onMove, { passive: false });
+
+      window.addEventListener('mouseup', onEnd);
+      window.addEventListener('touchend', onEnd);
+      window.addEventListener('touchcancel', onEnd);
+
+      dialGlass.addEventListener('wheel', e => {
+        e.preventDefault();
+        ensureMobileAudioAwake();
+        setFrequency(currentFreq + (e.deltaY < 0 ? 0.025 : -0.025));
+      }, { passive: false });
+
+      mainKnob.addEventListener('wheel', e => {
+        e.preventDefault();
+        ensureMobileAudioAwake();
+        setFrequency(currentFreq + (e.deltaY < 0 ? 0.025 : -0.025));
+      }, { passive: false });
+
+      window.addEventListener('keydown', e => {
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+        if (e.code === 'ArrowRight') { setFrequency(currentFreq + 0.025); }
+        else if (e.code === 'ArrowLeft') { setFrequency(currentFreq - 0.025); }
+        else if (e.code === 'Space') { e.preventDefault(); cwKeyDown(); }
+      });
+
+      window.addEventListener('keyup', e => {
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+        if (e.code === 'Space') { e.preventDefault(); cwKeyUp(); }
+      });
+    })();
+
+    // =========================================================================
+    // 6. 60FPS CANVASES: SLIDE-RULE DIAL, WATERFALL SPECTROGRAM & WINDOW RAIN
+    // =========================================================================
+    const dialCanvas = document.getElementById('dialCanvas');
+    const dialCtx = dialCanvas.getContext('2d');
+    const wfCanvas = document.getElementById('waterfallCanvas');
+    const wfCtx = wfCanvas.getContext('2d');
+    const rainCanvas = document.getElementById('rainCanvas');
+    const rainCtx = rainCanvas.getContext('2d');
+
+    const raindrops = Array.from({ length: 75 }, () => ({
+      x: Math.random() * 800,
+      y: Math.random() * 320,
+      len: 10 + Math.random() * 18,
+      speed: 4.5 + Math.random() * 5.5
+    }));
+
+    function drawSlideRuleDial() {
+      const w = dialCanvas.width = dialCanvas.clientWidth;
+      const h = dialCanvas.height = dialCanvas.clientHeight;
+      dialCtx.clearRect(0, 0, w, h);
+
+      // Amber backlit scale lines
+      dialCtx.strokeStyle = 'rgba(229, 189, 104, 0.35)';
+      dialCtx.lineWidth = 1;
+      dialCtx.beginPath();
+      dialCtx.moveTo(0, 26); dialCtx.lineTo(w, 26);
+      dialCtx.moveTo(0, 56); dialCtx.lineTo(w, 56);
+      dialCtx.stroke();
+
+      // Frequency ticks (2 MHz to 20 MHz)
+      dialCtx.fillStyle = '#e5bd68';
+      dialCtx.font = '11px Consolas, monospace';
+      for (let f = 2; f <= 20; f++) {
+        const x = ((f - 2) / 18) * (w - 36) + 18;
+        dialCtx.strokeStyle = 'rgba(255, 170, 51, 0.65)';
+        dialCtx.beginPath();
+        dialCtx.moveTo(x, 18);
+        dialCtx.lineTo(x, 34);
+        dialCtx.stroke();
+        if (f % 2 === 0) {
+          dialCtx.fillText(f + 'M', x - 9, 14);
+        }
+      }
+
+      // Station beacon pips on the glass scale
+      STATIONS.forEach(st => {
+        const sx = ((st.freq - 2) / 18) * (w - 36) + 18;
+        dialCtx.fillStyle = '#4af683';
+        dialCtx.fillRect(sx - 2, 42, 4, 12);
+        dialCtx.fillStyle = 'rgba(244, 234, 213, 0.72)';
+        dialCtx.font = '9px Consolas, monospace';
+        dialCtx.fillText(st.callsign.split(' ')[0], sx - 14, 69);
+      });
+
+      // Red Traveling Pointer Needle
+      const needleX = ((currentFreq - 2) / 18) * (w - 36) + 18;
+      dialCtx.strokeStyle = '#ff4444';
+      dialCtx.lineWidth = 2.5;
+      dialCtx.shadowColor = '#ff4444';
+      dialCtx.shadowBlur = 8;
+      dialCtx.beginPath();
+      dialCtx.moveTo(needleX, 2);
+      dialCtx.lineTo(needleX, h - 2);
+      dialCtx.stroke();
+      dialCtx.shadowBlur = 0;
+    }
+
+    function drawWaterfallAndRain() {
+      // 1. Window Rain Overlay
+      const rw = rainCanvas.width = rainCanvas.clientWidth;
+      const rh = rainCanvas.height = rainCanvas.clientHeight;
+      rainCtx.clearRect(0, 0, rw, rh);
+      const rainLevel = Number(document.getElementById('faderRain').value) / 100;
+      if (rainLevel > 0.02) {
+        rainCtx.strokeStyle = `rgba(195, 225, 255, ${0.18 + rainLevel * 0.35})`;
+        rainCtx.lineWidth = 1.2;
+        rainCtx.beginPath();
+        raindrops.forEach(d => {
+          rainCtx.moveTo(d.x, d.y);
+          rainCtx.lineTo(d.x - 2.5, d.y + d.len);
+          d.y += d.speed * (0.6 + rainLevel * 0.8);
+          d.x -= 0.4;
+          if (d.y > rh) { d.y = -20; d.x = Math.random() * rw; }
+        });
+        rainCtx.stroke();
+      }
+
+      // 2. RF Waterfall Spectrogram
+      const ww = wfCanvas.width;
+      const wh = wfCanvas.height;
+      if (ww !== wfCanvas.clientWidth || wh !== wfCanvas.clientHeight) {
+        wfCanvas.width = wfCanvas.clientWidth;
+        wfCanvas.height = wfCanvas.clientHeight;
+      }
+      // Shift waterfall image down by 1px
+      wfCtx.drawImage(wfCanvas, 0, 1, wfCanvas.width, wfCanvas.height - 1, 0, 2, wfCanvas.width, wfCanvas.height - 2);
+
+      // Draw new top scanline
+      for (let x = 0; x < wfCanvas.width; x += 3) {
+        const f = 2.0 + (x / wfCanvas.width) * 18.0;
+        let energy = Math.random() * 0.22;
+        STATIONS.forEach(st => {
+          const dist = Math.abs(f - st.freq);
+          if (dist < 0.18) {
+            energy += Math.pow(1 - dist / 0.18, 2) * (0.65 + Math.random() * 0.35);
+          }
+        });
+        const g = Math.min(255, Math.floor(energy * 235));
+        const r = Math.min(255, Math.floor(energy * 165));
+        wfCtx.fillStyle = `rgb(${r}, ${g}, ${Math.floor(g * 0.45)})`;
+        wfCtx.fillRect(x, 0, 3, 2);
+      }
+
+      // Red tuning cursor hairline at top of waterfall
+      const cx = ((currentFreq - 2.0) / 18.0) * wfCanvas.width;
+      wfCtx.fillStyle = '#ff4444';
+      wfCtx.fillRect(cx - 1, 0, 3, 10);
+
+      // Auto-Scanner step
+      if (isScanning) {
+        currentFreq += 0.014;
+        if (currentFreq > 20.0) currentFreq = 2.0;
+        const near = findNearestStation(currentFreq);
+        if (near && near.diff < 0.012) {
+          currentFreq = near.station.freq;
+          isScanning = false;
+          document.getElementById('scanBtn').classList.remove('active');
+          selectScene(near.station.sceneIdx);
+        }
+        updateRadioDsp();
+      }
+
+      // Poll Xbox Series X Controller if connected
+      const gps = navigator.getGamepads ? navigator.getGamepads() : [];
+      if (gps && gps[0]) {
+        const gp = gps[0];
+        document.getElementById('gamepadPill').textContent = '🎮 Xbox Controller: Active';
+        if (Math.abs(gp.axes[0]) > 0.15) {
+          setFrequency(currentFreq + gp.axes[0] * 0.035);
+        }
+        if (Math.abs(gp.axes[2]) > 0.15) {
+          currentBfo = Math.max(-5, Math.min(5, currentBfo + gp.axes[2] * 0.08));
+          updateRadioDsp();
+        }
+      }
+
+      drawSlideRuleDial();
+      requestAnimationFrame(drawWaterfallAndRain);
+    }
+
+    // =========================================================================
+    // 7. NUMBERS STATION CIPHER DECODER & BRASS CW MORSE KEYER
+    // =========================================================================
+    function loadStationCipher(stIdx) {
+      tuneToStation(stIdx);
+      if (stIdx === 1) {
+        document.getElementById('cipherInput').value = 'ULCly Pumslja Aol Rlf Dvyk';
+        document.getElementById('cipherShift').value = -7;
+      } else {
+        document.getElementById('cipherInput').value = 'SPZIBYUWLJPS';
+        document.getElementById('cipherShift').value = -7;
+      }
+      runCipherDecode();
+    }
+
+    function runCipherDecode() {
+      const raw = document.getElementById('cipherInput').value.toUpperCase();
+      const shift = Number(document.getElementById('cipherShift').value) || 0;
+      let out = '';
+      for (let i = 0; i < raw.length; i++) {
+        const c = raw.charCodeAt(i);
+        if (c >= 65 && c <= 90) {
+          const decoded = ((c - 65 + shift + 260) % 26) + 65;
+          out += String.fromCharCode(decoded);
+        } else {
+          out += raw[i];
+        }
+      }
+      document.getElementById('cipherTape').textContent = `DECRYPTED [SHIFT ${shift}] → ${out}`;
+    }
+
+    // CW Morse Keyer
+    const MORSE_MAP = {
+      '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E',
+      '..-.': 'F', '--.': 'G', '....': 'H', '..': 'I', '.---': 'J',
+      '-.-': 'K', '.-..': 'L', '--': 'M', '-.': 'N', '---': 'O',
+      '.--.': 'P', '--.-': 'Q', '.-.': 'R', '...': 'S', '-': 'T',
+      '..-': 'U', '...-': 'V', '.--': 'W', '-..-': 'X', '-.--': 'Y', '--..': 'Z',
+      '.----': '1', '..---': '2', '...--': '3', '....-': '4', '.....': '5'
+    };
+    let cwDownTime = 0;
+    let cwSymbols = '';
+    let cwLetterTimer = null;
+
+    function cwKeyDown(e) {
+      if (e && e.cancelable) e.preventDefault();
+      if (!isPowered) togglePower();
+      if (cwDownTime > 0) return;
+      cwDownTime = performance.now();
+      document.getElementById('cwKeyBtn').classList.add('pressed');
+      if (cwGain && audioCtx) cwGain.gain.setTargetAtTime(0.25, audioCtx.currentTime, 0.008);
+      if (cwLetterTimer) clearTimeout(cwLetterTimer);
+    }
+
+    function cwKeyUp(e) {
+      if (e && e.cancelable) e.preventDefault();
+      if (cwDownTime === 0) return;
+      const heldMs = performance.now() - cwDownTime;
+      cwDownTime = 0;
+      document.getElementById('cwKeyBtn').classList.remove('pressed');
+      if (cwGain && audioCtx) cwGain.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.008);
+
+      cwSymbols += (heldMs < 175 ? '.' : '-');
+      document.getElementById('morseBufferLabel').textContent = `CW Buffer: ${cwSymbols}`;
+
+      cwLetterTimer = setTimeout(() => {
+        const ch = MORSE_MAP[cwSymbols] || '?';
+        const tape = document.getElementById('morseTape');
+        tape.textContent = (tape.textContent + ' ' + ch).slice(-52);
+        cwSymbols = '';
+        document.getElementById('morseBufferLabel').textContent = 'Spacebar / Hold Button';
+      }, 420);
+    }
+
+    function loadPiratePreset(lang) {
+      const langSel = document.getElementById('pirateTxLang');
+      const txtEl = document.getElementById('pirateTxText');
+      langSel.value = lang;
+      if (lang === 'ja') {
+        txtEl.value = 'こちらは横浜・深夜海賊放送。直感を信じろ、暗闇の中のパターンを見抜け。';
+      } else if (lang === 'tr') {
+        txtEl.value = 'Burası Beyoğlu gece yarısı korsan radyo. İçgüdülerine güven, karanlıktaki düzeni gör.';
+      } else {
+        txtEl.value = 'Broadcasting live from the mahogany desk in Lisburn. Never inflect the key word.';
+      }
+    }
+
+    async function transmitCustomPirateVoice() {
+      const text = document.getElementById('pirateTxText').value.trim();
+      const lang = (document.getElementById('pirateTxLang') || {}).value || 'en';
+      if (!text) return;
+      if (!isPowered) togglePower();
+      document.getElementById('morseTape').textContent = `SYNTHESIZING 14.250 MHz [${lang.toUpperCase()}] PIRATE TX...`;
+      try {
+        const res = await fetch('http://localhost:8080/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, lang, outputName: 'pirate-tx-' + lang + '-' + Date.now() })
+        });
+        const data = await res.json();
+        if (data.relativeUrl) {
+          currentFreq = 14.250;
+          updateRadioDsp();
+          const txAudio = new Audio(data.relativeUrl + '?t=' + Date.now());
+          const src = audioCtx.createMediaElementSource(txAudio);
+          src.connect(voiceFilterNode);
+          txAudio.play();
+          document.getElementById('liveStationHeader').textContent = `14.250 MHz · LIVE PIRATE TX [${lang.toUpperCase()}]`;
+          document.getElementById('liveTranscriptText').textContent = `“${text}”`;
+          document.getElementById('morseTape').textContent = `ON AIR 14.250 [${lang.toUpperCase()}] · ` + text.slice(0, 32);
+        }
+      } catch (err) {
+        document.getElementById('morseTape').textContent = 'LOCAL RELAY NOTE: ' + text.slice(0, 38);
+      }
+    }
+
+    // =========================================================================
+    // 7B. DUAL-555 HARDWARE DUB SIREN & 10" DUBPLATE PRE-AMP CONSOLE
+    // =========================================================================
+    function createSawtoothWave(ctx, direction) {
+      // Custom Fourier series for Rising (+1) or Falling (-1) Ramp LFO
+      const N = 32;
+      const real = new Float32Array(N);
+      const imag = new Float32Array(N);
+      for (let n = 1; n < N; n++) {
+        imag[n] = (direction * (n % 2 === 0 ? -1 : 1)) * (2 / (n * Math.PI));
+      }
+      return ctx.createPeriodicWave(real, imag);
+    }
+
+    function applySirenLfoShape(lfoOsc) {
+      if (!audioCtx || !lfoOsc) return;
+      if (sirenMode === 'step' || sirenMode === 'lick') {
+        lfoOsc.type = 'square';
+      } else if (sirenMode === 'ramp') {
+        lfoOsc.setPeriodicWave(createSawtoothWave(audioCtx, 1));
+      } else if (sirenMode === 'laser') {
+        lfoOsc.setPeriodicWave(createSawtoothWave(audioCtx, -1));
+      }
+    }
+
+    function setSirenMode(mode, btnEl) {
+      sirenMode = mode;
+      document.querySelectorAll('#sirenModeBtns .hw-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      if (mode === 'lick') {
+        document.getElementById('sirenRateSlider').value = 115; // 11.5 Hz fast trill
+        document.getElementById('sirenDepthSlider').value = 190;
+      } else if (mode === 'step') {
+        document.getElementById('sirenRateSlider').value = 34;  // 3.4 Hz classic 2-tone
+        document.getElementById('sirenDepthSlider').value = 280;
+      } else if (mode === 'ramp') {
+        document.getElementById('sirenRateSlider').value = 26;
+        document.getElementById('sirenDepthSlider').value = 460;
+      } else if (mode === 'laser') {
+        document.getElementById('sirenRateSlider').value = 68;
+        document.getElementById('sirenDepthSlider').value = 540;
+      }
+      updateSirenParams();
+    }
+
+    function updateSirenParams() {
+      const baseHz = Number(document.getElementById('sirenPitchSlider').value);
+      const rateHz = Number(document.getElementById('sirenRateSlider').value) / 10;
+      const depthHz = Number(document.getElementById('sirenDepthSlider').value);
+
+      document.getElementById('valSirenPitch').textContent = baseHz + ' Hz';
+      document.getElementById('valSirenRate').textContent = rateHz.toFixed(1) + ' Hz';
+      document.getElementById('valSirenDepth').textContent = depthHz + ' Hz';
+
+      if (sirenActiveNodes && audioCtx) {
+        const now = audioCtx.currentTime;
+        sirenActiveNodes.vco.frequency.setTargetAtTime(baseHz, now, 0.015);
+        sirenActiveNodes.lfo.frequency.setTargetAtTime(rateHz, now, 0.015);
+        sirenActiveNodes.lfoGain.gain.setTargetAtTime(depthHz, now, 0.015);
+        applySirenLfoShape(sirenActiveNodes.lfo);
+      }
+    }
+
+    function startDubSiren(e) {
+      if (e && e.cancelable) e.preventDefault();
+      if (!isPowered) togglePower();
+      if (sirenActiveNodes) return;
+
+      const now = audioCtx.currentTime;
+      const baseHz = Number(document.getElementById('sirenPitchSlider').value);
+      const rateHz = Number(document.getElementById('sirenRateSlider').value) / 10;
+      const depthHz = Number(document.getElementById('sirenDepthSlider').value);
+
+      // 555 Timer #1: Carrier VCO (Square + Sub Octave warmth)
+      const vco = audioCtx.createOscillator();
+      vco.type = 'square';
+      vco.frequency.setValueAtTime(baseHz, now);
+
+      // 555 Timer #2: Modulating LFO
+      const lfo = audioCtx.createOscillator();
+      applySirenLfoShape(lfo);
+      lfo.frequency.setValueAtTime(rateHz, now);
+
+      const lfoGain = audioCtx.createGain();
+      lfoGain.gain.setValueAtTime(depthHz, now);
+
+      // Warm analog filter (rounds off raw square harshness into authentic NJD box tone)
+      const toneFilter = audioCtx.createBiquadFilter();
+      toneFilter.type = 'lowpass';
+      toneFilter.frequency.setValueAtTime(2350, now);
+      toneFilter.Q.value = 3.2;
+
+      const envGain = audioCtx.createGain();
+      envGain.gain.setValueAtTime(0.001, now);
+      envGain.gain.linearRampToValueAtTime(0.28, now + 0.015);
+
+      lfo.connect(lfoGain);
+      lfoGain.connect(vco.frequency);
+      vco.connect(toneFilter);
+      toneFilter.connect(envGain);
+
+      // Route to both dry speaker AND directly into the RE-201 Space Echo delay line!
+      envGain.connect(masterGain);
+      if (dubDelayNode) {
+        const sirenEchoSend = audioCtx.createGain();
+        sirenEchoSend.gain.value = 0.72;
+        envGain.connect(sirenEchoSend);
+        sirenEchoSend.connect(dubDelayNode);
+      }
+
+      vco.start(now);
+      lfo.start(now);
+
+      sirenActiveNodes = { vco, lfo, lfoGain, envGain };
+      document.getElementById('sirenFireBtn').classList.add('pressed');
+      document.getElementById('sirenStateLabel').textContent = '🔥 FIRING (' + sirenMode.toUpperCase() + ')';
+    }
+
+    function stopDubSiren(e) {
+      if (e && e.cancelable) e.preventDefault();
+      if (sirenLatched || !sirenActiveNodes) return;
+      const nodes = sirenActiveNodes;
+      sirenActiveNodes = null;
+      const now = audioCtx.currentTime;
+      nodes.envGain.gain.setTargetAtTime(0.0001, now, 0.03);
+      setTimeout(() => {
+        try { nodes.vco.stop(); nodes.lfo.stop(); nodes.vco.disconnect(); } catch (_) {}
+      }, 140);
+      document.getElementById('sirenFireBtn').classList.remove('pressed');
+      document.getElementById('sirenStateLabel').textContent = 'ECHO TAIL';
+    }
+
+    function toggleSirenLatch() {
+      sirenLatched = !sirenLatched;
+      const btn = document.getElementById('sirenLatchBtn');
+      btn.classList.toggle('active', sirenLatched);
+      btn.textContent = `🔒 Latch: ${sirenLatched ? 'ON' : 'OFF'}`;
+      if (sirenLatched) {
+        startDubSiren();
+      } else {
+        stopDubSiren();
+      }
+    }
+
+    // 10" Dubplate Pre-Amp, Wheel-Up Reload & Spring Tank
+    function updateDubPreamp() {
+      const hpfHz = Number(document.getElementById('tubbyHpfSlider').value);
+      const echoMs = Number(document.getElementById('echoTimeSlider').value);
+      const echoFb = Number(document.getElementById('echoFbSlider').value);
+
+      document.getElementById('valTubbyHpf').textContent = hpfHz <= 35 ? '20 Hz (Full)' : hpfHz + ' Hz';
+      document.getElementById('valEchoTime').textContent = echoMs + ' ms';
+      document.getElementById('valEchoFb').textContent = echoFb + '%';
+
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      if (tubbyHpfNode) {
+        tubbyHpfNode.frequency.setTargetAtTime(subKilled ? Math.max(380, hpfHz) : hpfHz, now, 0.03);
+      }
+      if (dubDelayNode) {
+        dubDelayNode.delayTime.setTargetAtTime(echoMs / 1000, now, 0.06);
+      }
+      if (dubFbGainNode) {
+        dubFbGainNode.gain.setTargetAtTime(echoFb / 100, now, 0.03);
+      }
+    }
+
+    function momentaryVoiceDubThrow(active) {
+      if (!isPowered) togglePower();
+      const btn = document.getElementById('dubThrowBtn');
+      btn.classList.toggle('pressed', active);
+      if (dubSendGain && audioCtx) {
+        const target = active ? 0.92 : (dubEchoActive ? 0.68 : 0.0);
+        dubSendGain.gain.setTargetAtTime(target, audioCtx.currentTime, 0.02);
+      }
+    }
+
+    function momentaryDubRunaway(active) {
+      if (!isPowered) togglePower();
+      const btn = document.getElementById('dubRunawayBtn');
+      btn.classList.toggle('active', active);
+      if (dubFbGainNode && audioCtx) {
+        const sliderFb = Number(document.getElementById('echoFbSlider').value) / 100;
+        dubFbGainNode.gain.setTargetAtTime(active ? 0.96 : sliderFb, audioCtx.currentTime, 0.02);
+      }
+    }
+
+    function toggleRadioDubEcho() {
+      if (!isPowered) togglePower();
+      dubEchoActive = !dubEchoActive;
+      const btn = document.getElementById('dubEchoBtn');
+      btn.classList.toggle('active', dubEchoActive);
+      btn.textContent = `🌊 Latch Echo Send: ${dubEchoActive ? 'ON (RE-201)' : 'OFF'}`;
+      if (dubSendGain && audioCtx) {
+        dubSendGain.gain.setTargetAtTime(dubEchoActive ? 0.68 : 0.0, audioCtx.currentTime, 0.04);
+      }
+    }
+
+    function toggleKillSwitch(band) {
+      if (!isPowered) togglePower();
+      if (band === 'sub') {
+        subKilled = !subKilled;
+        document.getElementById('killSubBtn').classList.toggle('active', subKilled);
+        updateDubPreamp();
+      } else if (band === 'mid') {
+        midKilled = !midKilled;
+        document.getElementById('killMidBtn').classList.toggle('active', midKilled);
+        if (voiceGainNode && audioCtx) {
+          voiceGainNode.gain.setTargetAtTime(midKilled ? 0.0 : 1.45, audioCtx.currentTime, 0.02);
+        }
+      }
+    }
+
+    function setDubplateSpeed(rpmFactor, labelText, btnEl) {
+      nominalPlateRpm = rpmFactor;
+      dubplateSpeedFactor = rpmFactor;
+      document.getElementById('plateRpmLabel').textContent = labelText;
+      document.querySelectorAll('#rpmBtns .hw-btn').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      updateRadioDsp();
+    }
+
+    function engagePlateBrake(engaged) {
+      if (!isPowered) togglePower();
+      document.getElementById('plateBrakeBtn').classList.toggle('active', engaged);
+      dubplateSpeedFactor = engaged ? 0.08 : nominalPlateRpm;
+      document.getElementById('plateRpmLabel').textContent = engaged ? '🛑 BRAKING TO 0 RPM...' : `RPM: ${nominalPlateRpm.toFixed(2)}x`;
+      updateRadioDsp();
+    }
+
+    function wheelUpPullUp() {
+      if (!isPowered) togglePower();
+      const now = audioCtx.currentTime;
+      const sr = audioCtx.sampleRate;
+      document.getElementById('plateRpmLabel').textContent = '⚡ WHEEL UP! REWINDING PLATE...';
+
+      // 1. Synthesize authentic accelerating vinyl backspin friction & pitch whip
+      const dur = 0.85;
+      const len = Math.floor(sr * dur);
+      const spinBuf = audioCtx.createBuffer(1, len, sr);
+      const d = spinBuf.getChannelData(0);
+      let phase = 0;
+      for (let i = 0; i < len; i++) {
+        const t = i / sr;
+        const accel = 180 + Math.pow(t / dur, 2.2) * 1650;
+        phase += (2 * Math.PI * accel) / sr;
+        const grooveNoise = (Math.random() * 2 - 1) * 0.45;
+        const vinylWhip = Math.sin(phase) * 0.35 + Math.sin(phase * 1.62) * 0.22;
+        const env = Math.sin((t / dur) * Math.PI);
+        d[i] = (vinylWhip + grooveNoise) * env * 0.65;
+      }
+
+      const spinSrc = audioCtx.createBufferSource();
+      spinSrc.buffer = spinBuf;
+      const bp = audioCtx.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.setValueAtTime(600, now);
+      bp.frequency.exponentialRampToValueAtTime(2400, now + dur);
+      bp.Q.value = 1.4;
+
+      spinSrc.connect(bp);
+      bp.connect(masterGain);
+      if (dubDelayNode) bp.connect(dubDelayNode);
+      spinSrc.start(now);
+
+      // 2. Cut active station voice during the backspin, then slam it back in from 0:00!
+      const nearest = findNearestStation(currentFreq);
+      if (nearest && stationAudios[nearest.station.id]) {
+        const bundle = stationAudios[nearest.station.id];
+        bundle.gainNode.gain.setTargetAtTime(0.0, now, 0.02);
+        setTimeout(() => {
+          dubplateSpeedFactor = nominalPlateRpm;
+          startStationSource(nearest.station.id, 0);
+          updateRadioDsp();
+          document.getElementById('plateRpmLabel').textContent = '🔥 DROP FROM THE TOP!';
+        }, 920);
+      }
+    }
+
+    function kickSpringTank() {
+      if (!isPowered) togglePower();
+      const now = audioCtx.currentTime;
+      const sr = audioCtx.sampleRate;
+      const dur = 2.4;
+      const len = Math.floor(sr * dur);
+      const springBuf = audioCtx.createBuffer(1, len, sr);
+      const d = springBuf.getChannelData(0);
+
+      // Dispersive metallic spring coil boing + tank rattle
+      for (let i = 0; i < len; i++) {
+        const t = i / sr;
+        const chirp1 = Math.sin(2 * Math.PI * (1450 * Math.exp(-t * 9.5) + 118) * t);
+        const chirp2 = Math.sin(2 * Math.PI * (2280 * Math.exp(-t * 12.0) + 174) * t);
+        const coilNoise = (Math.random() * 2 - 1) * Math.exp(-t * 3.8);
+        const env = Math.exp(-t * 2.1);
+        d[i] = Math.tanh((chirp1 * 0.55 + chirp2 * 0.4 + coilNoise * 0.65) * env * 2.1) * 0.52;
+      }
+
+      const src = audioCtx.createBufferSource();
+      src.buffer = springBuf;
+      src.connect(masterGain);
+      if (dubDelayNode) src.connect(dubDelayNode);
+      src.start(now);
+    }
+
+    function beamStationToTapeLab(autoStartSequencer) {
+      const nearest = findNearestStation(currentFreq);
+      const st = nearest ? nearest.station : STATIONS[2];
+      const payload = {
+        type: 'GARETH_SHORTWAVE_PATCH',
+        audioUrl: st.audioUrl,
+        callsign: st.callsign,
+        title: `${st.freq.toFixed(3)} MHz · ${st.langs}`,
+        rootKey: st.rootKey || 'F#',
+        scaleLock: st.scaleLock || 'minor',
+        autoStartSequencer: Boolean(autoStartSequencer)
+      };
+
+      if (patchChannel) {
+        try { patchChannel.postMessage(payload); } catch (_) {}
+      }
+      const iframe = document.getElementById('tapeLabIframe');
+      if (iframe && iframe.contentWindow) {
+        try { iframe.contentWindow.postMessage(payload, '*'); } catch (_) {}
+      }
+      document.getElementById('patchStatusBadge').textContent =
+        `✓ Beamed ${st.callsign} (${st.freq.toFixed(3)} MHz · Key ${payload.rootKey}) → Tape Lab Pad 01`;
+    }
+
+    function toggleTapeLabDock() {
+      const sec = document.getElementById('tapeLabDockSection');
+      const iframe = document.getElementById('tapeLabIframe');
+      const btn = document.getElementById('dockTapeLabBtn');
+      const isHidden = sec.style.display === 'none';
+      if (isHidden) {
+        sec.style.display = 'block';
+        if (!iframe.getAttribute('src')) {
+          iframe.setAttribute('src', 'belfast-tape-lab.html');
+          iframe.onload = () => setTimeout(() => beamStationToTapeLab(false), 350);
+        } else {
+          beamStationToTapeLab(false);
+        }
+        btn.textContent = '🎛️ Hide Docked Tape Lab 2.0';
+        sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        sec.style.display = 'none';
+        btn.textContent = '🎛️ Dock Belfast Tape Lab 2.0 Below';
+      }
+    }
+
+    // =========================================================================
+    // 8. C1 PART 4 INTERCEPT CHALLENGES (PIRATE VESSEL MV RHETORICA)
+    // =========================================================================
+    const C1_INTERCEPTS = [
+      {
+        s1: '1. Generic essay templates bore the examiner, and they also strip your prose of its rhythm.',
+        kw: 'ONLY',
+        lead: '2. Not ',
+        tail: ' the examiner, but they also strip your prose of its rhythm.',
+        valid: ['only do generic essay templates bore', 'only do generic templates bore']
+      },
+      {
+        s1: '1. I would prefer you to send your first draft without using spell check.',
+        kw: 'RATHER',
+        lead: '2. I ',
+        tail: ' your first draft without using spell check.',
+        valid: ['would rather you sent']
+      },
+      {
+        s1: '1. People say that the ship vanished in a severe gale off Malin Head.',
+        kw: 'SAID',
+        lead: '2. The ship ',
+        tail: ' in a severe gale off Malin Head.',
+        valid: ['is said to have vanished']
+      },
+      {
+        s1: '1. If the pressure seal failed at this depth, no surface vessel could reach us.',
+        kw: 'WERE',
+        lead: '2. ',
+        tail: ' at this depth, no surface vessel could reach us.',
+        valid: ['were the pressure seal to fail']
+      }
+    ];
+    let c1Idx = 0;
+    let c1Solved = 0;
+
+    function renderC1Intercept() {
+      const item = C1_INTERCEPTS[c1Idx];
+      document.getElementById('c1Sentence1').innerHTML =
+        `${item.s1} <span class="c1-keyword-pill">${item.kw}</span>`;
+      document.getElementById('c1PromptLead').innerHTML =
+        `${item.lead}<input type="text" id="c1Input" class="input-dark" style="width: 245px; display: inline-block; padding: 0.22rem 0.5rem;" placeholder="3 to 6 words..." />${item.tail}`;
+      document.getElementById('c1Feedback').textContent = '';
+    }
+
+    function checkC1Intercept() {
+      const val = (document.getElementById('c1Input').value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+      const item = C1_INTERCEPTS[c1Idx];
+      const fb = document.getElementById('c1Feedback');
+      if (item.valid.includes(val)) {
+        c1Solved = Math.min(4, c1Solved + 1);
+        document.getElementById('c1ScoreBadge').textContent = `Decoded: ${c1Solved} / 4`;
+        fb.style.color = 'var(--phosphor-green)';
+        fb.textContent = `✓ SPOT ON! Exact Cambridge C1 inversion/structure locked: "${item.valid[0].toUpperCase()}"`;
+      } else {
+        fb.style.color = 'var(--amber-glow)';
+        fb.textContent = `✕ Static interference: Keep "${item.kw}" unchanged (3–6 words) & check tense/inversion harmony.`;
+      }
+    }
+
+    function revealC1Intercept() {
+      const item = C1_INTERCEPTS[c1Idx];
+      document.getElementById('c1Input').value = item.valid[0];
+      const fb = document.getElementById('c1Feedback');
+      fb.style.color = 'var(--brass-bright)';
+      fb.textContent = `👁️ Cambridge Model: "${item.valid[0]}" (3–6 words, keyword ${item.kw} unchanged).`;
+    }
+
+    function nextC1Intercept() {
+      c1Idx = (c1Idx + 1) % C1_INTERCEPTS.length;
+      renderC1Intercept();
+    }
+
+    // Boot UI
+    buildStationStrip();
+    renderC1Intercept();
+    updateRadioDsp();
+    requestAnimationFrame(drawWaterfallAndRain);
+  </script>
+</body>
+</html>
