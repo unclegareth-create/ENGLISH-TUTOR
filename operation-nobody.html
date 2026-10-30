@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Operation Nobody: Indefinite Pronouns Interactive Mission | Gareth English Lab</title>
+<meta name="description" content="Sample bespoke interactive English lesson from Gareth Montgomery's desk: crack the code of indefinite pronouns (some-, any-, no-, every-) through riddles, word builders, and speed trials." />
+<meta name="author" content="Gareth Montgomery" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://garethenglish.com/operation-nobody.html" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #05070d; --panel: rgba(12, 20, 36, 0.82); --line: rgba(0, 255, 200, 0.18);
+    --neon: #00ffc8; --neon2: #ff2bd6; --amber: #ffc93c; --red: #ff4d6d; --ink: #e6f1ff; --dim: #8aa0bd;
+    --mono: 'JetBrains Mono', monospace; --disp: 'Orbitron', sans-serif; --sans: 'Plus Jakarta Sans', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
+  /* Animated grid + scanline */
+  body::before { content: ""; position: fixed; inset: 0; z-index: -2;
+    background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 46px 46px; animation: gridMove 18s linear infinite; opacity: .45; }
+  body::after { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(circle at 20% 10%, rgba(255,43,214,.16), transparent 45%), radial-gradient(circle at 85% 70%, rgba(0,255,200,.12), transparent 45%); }
+  @keyframes gridMove { to { background-position: 46px 46px; } }
+  .scan { position: fixed; left: 0; right: 0; height: 120px; top: -120px; z-index: -1; pointer-events: none;
+    background: linear-gradient(transparent, rgba(0,255,200,.07), transparent); animation: scan 7s linear infinite; }
+  @keyframes scan { to { top: 100vh; } }
+
+  /* HUD */
+  .hud { position: sticky; top: 0; z-index: 50; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 22px; background: rgba(5,7,13,.88); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: .85rem; }
+  .hud-left { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .back-lab { color: var(--ink); text-decoration: none; border: 1px solid var(--line); padding: 4px 10px; border-radius: 7px; font-size: .78rem; transition: all .15s; }
+  .back-lab:hover { border-color: var(--neon); color: var(--neon); }
+  .hud .id { color: var(--neon); letter-spacing: .12em; }
+  .hud .xp { display: flex; align-items: center; gap: 10px; }
+  .bar { width: 140px; height: 10px; border: 1px solid var(--neon); border-radius: 6px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--neon), var(--neon2)); transition: width .5s; }
+  .btn-sm { background: transparent; color: var(--ink); border: 1px solid var(--dim); border-radius: 8px; padding: 5px 12px; font-family: var(--mono); cursor: pointer; }
+  .btn-sm:hover { border-color: var(--neon); color: var(--neon); }
+
+  main { max-width: 980px; margin: 0 auto; padding: 30px 18px 80px; }
+
+  /* Showcase Context Pill */
+  .desk-banner { max-width: 680px; margin: 0 auto 22px; padding: 10px 16px; border-radius: 12px; border: 1px solid rgba(255,201,60,.35);
+    background: rgba(255,201,60,.06); font-size: .84rem; color: var(--ink); text-align: center; }
+  .desk-banner b { color: var(--amber); font-family: var(--mono); letter-spacing: .06em; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 20px 10px 30px; }
+  .radar { width: 140px; height: 140px; margin: 0 auto 18px; position: relative; border-radius: 50%; border: 2px solid var(--neon);
+    box-shadow: 0 0 30px rgba(0,255,200,.35), inset 0 0 30px rgba(0,255,200,.15);
+    background: radial-gradient(circle, transparent 30%, rgba(0,255,200,.05) 31%, transparent 32%, transparent 60%, rgba(0,255,200,.05) 61%, transparent 62%); overflow: hidden; }
+  .radar::before { content: ""; position: absolute; inset: 0; background: conic-gradient(from 0deg, rgba(0,255,200,.55), transparent 25%); animation: spin 3s linear infinite; }
+  .radar .blip { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: var(--neon2); box-shadow: 0 0 12px var(--neon2); animation: blink 1.5s infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes blink { 50% { opacity: .15; } }
+  .classified { display: inline-block; font-family: var(--mono); color: var(--red); border: 2px solid var(--red); padding: 2px 12px; transform: rotate(-3deg); letter-spacing: .25em; font-size: .8rem; margin-bottom: 14px; }
+
+  /* Interactive Agent Name Customizer */
+  .codename-box { max-width: 440px; margin: 0 auto 16px; display: flex; align-items: center; gap: 8px; justify-content: center; flex-wrap: wrap;
+    background: rgba(12,20,36,.9); border: 1px solid var(--line); padding: 8px 12px; border-radius: 12px; }
+  .codename-box label { font-family: var(--mono); font-size: .76rem; color: var(--neon); letter-spacing: .12em; }
+  .codename-box input { width: 170px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--neon); background: rgba(0,0,0,.6);
+    color: #fff; font-family: var(--disp); font-size: .88rem; letter-spacing: .08em; text-transform: uppercase; text-align: center; }
+  .codename-box input:focus { outline: none; box-shadow: 0 0 12px rgba(0,255,200,.45); }
+
+  .agent-for { font-family: var(--mono); color: var(--dim); letter-spacing: .3em; font-size: .85rem; margin-top: 6px; }
+  .agent-name { font-family: var(--disp); font-weight: 800; font-size: clamp(2.4rem, 8.5vw, 5.2rem); line-height: 1.05; letter-spacing: .08em; color: #fff;
+    margin: 4px 0 18px; text-shadow: 0 0 12px var(--neon), 0 0 34px var(--neon), 0 0 70px rgba(255,43,214,.6); animation: namePulse 2.6s ease-in-out infinite; word-break: break-word; }
+  @keyframes namePulse { 50% { text-shadow: 0 0 16px var(--neon2), 0 0 44px var(--neon2), 0 0 90px rgba(0,255,200,.6); } }
+  h1 { font-family: var(--disp); font-size: clamp(1.4rem, 4vw, 2.2rem); line-height: 1.1; letter-spacing: .04em;
+    background: linear-gradient(90deg, var(--neon), #fff, var(--neon2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { color: var(--dim); max-width: 640px; margin: 14px auto 0; font-size: 1.05rem; }
+  .typed { font-family: var(--mono); color: var(--neon); margin-top: 18px; min-height: 1.6em; }
+  .typed::after { content: "▌"; animation: blink 1s infinite; }
+  .start { margin-top: 24px; font-family: var(--disp); font-size: 1rem; letter-spacing: .15em; padding: 14px 34px; border-radius: 12px; cursor: pointer;
+    background: linear-gradient(90deg, var(--neon), var(--neon2)); color: #05070d; border: none; box-shadow: 0 0 25px rgba(0,255,200,.45); transition: transform .15s; }
+  .start:hover { transform: scale(1.05); }
+
+  /* Mission panels */
+  .mission { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 26px; margin: 28px 0; position: relative;
+    box-shadow: 0 20px 50px -20px rgba(0,0,0,.8); opacity: 0; transform: translateY(30px); transition: all .7s ease; }
+  .mission.show { opacity: 1; transform: none; }
+  .mission::before { content: ""; position: absolute; top: -1px; left: 26px; right: 26px; height: 2px; background: linear-gradient(90deg, transparent, var(--neon), transparent); }
+  .tag { font-family: var(--mono); font-size: .78rem; color: var(--neon2); letter-spacing: .2em; }
+  h2 { font-family: var(--disp); font-size: 1.45rem; margin: 4px 0 8px; }
+  .brief { color: var(--dim); margin-bottom: 18px; }
+
+  /* Formula blueprint */
+  .formula { font-family: var(--mono); background: rgba(0,0,0,.45); border: 1px dashed var(--neon); border-radius: 12px; padding: 16px; margin: 16px 0; text-align: center; font-size: 1.02rem; }
+  .formula b { color: var(--neon); } .formula em { color: var(--neon2); font-style: normal; } .formula small { display: block; color: var(--dim); margin-top: 6px; font-size: .82rem; }
+
+  /* Word builder */
+  .builder { display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: center; margin: 14px 0; }
+  .col { display: flex; flex-direction: column; gap: 8px; }
+  .chip { font-family: var(--mono); padding: 10px; border-radius: 10px; border: 1px solid var(--dim); background: rgba(255,255,255,.03); color: var(--ink); cursor: pointer; text-align: center; font-size: 1rem; transition: all .15s; }
+  .chip:hover { border-color: var(--neon); }
+  .chip.on { background: var(--neon); color: #05070d; border-color: var(--neon); box-shadow: 0 0 14px rgba(0,255,200,.5); }
+  .chip.on2 { background: var(--neon2); color: #05070d; border-color: var(--neon2); box-shadow: 0 0 14px rgba(255,43,214,.5); }
+  .plus { font-family: var(--disp); font-size: 2rem; color: var(--neon); }
+  .result { text-align: center; font-family: var(--disp); font-size: 2rem; min-height: 1.5em; margin-top: 8px; letter-spacing: .06em; }
+  .result small { display: block; font-family: var(--sans); font-size: .9rem; color: var(--dim); letter-spacing: 0; }
+  .found { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px; }
+  .found span { font-family: var(--mono); font-size: .8rem; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--neon); color: var(--neon); }
+
+  /* Cards / riddles */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
+  .card { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: rgba(0,0,0,.3); }
+  .card .q { font-weight: 600; margin-bottom: 10px; }
+  .card .q u { text-decoration-color: var(--neon2); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .num { font-family: var(--mono); color: var(--neon); font-size: .8rem; }
+  input[type=text].guess-input { width: 100%; padding: 9px 12px; border-radius: 9px; border: 1px solid var(--dim); background: rgba(0,0,0,.45); color: var(--ink); font-family: var(--mono); font-size: .95rem; }
+  input[type=text].guess-input:focus { outline: none; border-color: var(--neon); box-shadow: 0 0 10px rgba(0,255,200,.3); }
+  .reveal { margin-top: 10px; font-family: var(--mono); font-size: .85rem; padding: 7px 14px; border-radius: 9px; border: 1px solid var(--neon2); background: transparent; color: var(--neon2); cursor: pointer; }
+  .reveal:hover { background: rgba(255,43,214,.12); }
+  .ans { display: none; margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--neon); background: rgba(0,255,200,.07); border-radius: 6px; font-weight: 600; }
+  .ans.open { display: block; animation: pop .35s ease; }
+  @keyframes pop { from { opacity: 0; transform: scale(.96); } }
+
+  /* Rule table */
+  table { width: 100%; border-collapse: collapse; font-family: var(--mono); margin-top: 8px; }
+  th, td { border: 1px solid var(--line); padding: 10px; text-align: center; }
+  th { color: var(--neon); font-size: .85rem; letter-spacing: .1em; }
+  td.k { color: var(--neon2); font-weight: 700; }
+  td.cell { cursor: pointer; font-size: 1.2rem; color: var(--dim); transition: background .2s; }
+  td.cell:hover { background: rgba(0,255,200,.06); }
+  td.cell.done.y { color: var(--neon); } td.cell.done.n { color: var(--red); }
+  .note { font-size: .82rem; color: var(--dim); margin-top: 10px; }
+
+  /* Quiz */
+  .quiz-q { font-size: 1.2rem; font-weight: 600; margin: 8px 0 16px; min-height: 2.2em; }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .opt { padding: 13px; border-radius: 11px; border: 1px solid var(--dim); background: rgba(255,255,255,.03); color: var(--ink); font-family: var(--mono); font-size: 1rem; cursor: pointer; transition: all .15s; }
+  .opt:hover:not(:disabled) { border-color: var(--neon); transform: translateY(-2px); }
+  .opt.right { background: rgba(0,255,200,.18); border-color: var(--neon); color: var(--neon); }
+  .opt.wrong { background: rgba(255,77,109,.15); border-color: var(--red); color: var(--red); animation: shake .35s; }
+  @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .why { margin-top: 14px; color: var(--dim); min-height: 1.5em; font-size: .95rem; }
+  .qmeta { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .82rem; color: var(--dim); }
+  .next { margin-top: 16px; }
+
+  /* Interrogation spinner */
+  .spinner { text-align: center; }
+  .screen { font-size: 1.35rem; font-weight: 600; min-height: 3.6em; display: flex; align-items: center; justify-content: center; padding: 18px; border-radius: 14px; text-align: center;
+    border: 1px solid var(--neon2); background: rgba(255,43,214,.06); margin-bottom: 16px; }
+  .timer { font-family: var(--disp); font-size: 2.2rem; color: var(--amber); margin: 6px 0 10px; }
+  .big { font-family: var(--disp); letter-spacing: .12em; padding: 12px 26px; border-radius: 11px; border: 1px solid var(--neon); background: rgba(0,255,200,.1); color: var(--neon); cursor: pointer; margin: 4px; }
+  .big:hover { background: rgba(0,255,200,.2); }
+
+  /* Role-play */
+  .roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .dossier { border: 1px solid var(--amber); border-radius: 14px; padding: 18px; background: rgba(255,201,60,.05); }
+  .dossier h3 { font-family: var(--disp); color: var(--amber); font-size: 1rem; margin-bottom: 8px; letter-spacing: .08em; }
+  .ticks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .ticks .chip { font-size: .88rem; padding: 7px 12px; }
+
+  /* Warm-up */
+  .tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
+  .tip { border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: rgba(0,0,0,.3); font-size: .92rem; }
+  .tip b { color: var(--neon); display: block; font-family: var(--mono); font-size: .8rem; letter-spacing: .1em; margin-bottom: 4px; }
+
+  /* Final */
+  .final { text-align: center; border-color: var(--neon); }
+  .badge { width: 130px; height: 130px; margin: 10px auto 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3.5rem;
+    background: radial-gradient(circle, rgba(0,255,200,.25), transparent 70%); border: 3px solid var(--neon); box-shadow: 0 0 40px rgba(0,255,200,.5); animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 70px rgba(255,43,214,.6); border-color: var(--neon2); } }
+  #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
+  .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(120px); background: #05070d; border: 1px solid var(--neon); color: var(--neon);
+    font-family: var(--mono); padding: 10px 20px; border-radius: 10px; z-index: 90; transition: transform .35s; box-shadow: 0 0 20px rgba(0,255,200,.35); }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  footer { text-align: center; color: var(--dim); font-family: var(--mono); font-size: .78rem; margin-top: 40px; }
+  footer a { color: var(--neon); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+  @media (max-width: 600px) { .builder { grid-template-columns: 1fr; } .plus { text-align: center; } .bar { width: 90px; } }
+</style>
+</head>
+<body>
+<div class="scan"></div>
+<canvas id="confetti"></canvas>
+<div class="toast" id="toast"></div>
+
+<div class="hud">
+  <div class="hud-left">
+    <a href="lab.html#arcade" class="back-lab">← Back to Lab</a>
+    <span class="id" id="hudAgent">◉ AGENT: CIPHER · CLEARANCE B1+</span>
+  </div>
+  <span class="xp">XP <span class="bar"><i id="xpbar"></i></span> <b id="xp">0</b></span>
+  <button class="btn-sm" id="mute">🔊 Sound ON</button>
+</div>
+
+<main>
+  <div class="desk-banner">
+    <b>FROM THE BESPOKE DESK:</b> A live example of an interactive lesson built around one student’s love of spy thrillers and riddles. Enter your own codename below to personalise the mission file.
+  </div>
+
+  <section class="hero">
+    <div class="radar"><span class="blip" style="top:30%;left:62%"></span><span class="blip" style="top:66%;left:28%;animation-delay:.6s"></span></div>
+    <div class="classified">TOP SECRET</div>
+
+    <div class="codename-box">
+      <label for="agentInput">ENTER YOUR AGENT NAME:</label>
+      <input type="text" id="agentInput" maxlength="18" value="CIPHER" aria-label="Enter your agent name" />
+    </div>
+
+    <div class="agent-for">EYES ONLY · MISSION FILE FOR</div>
+    <div class="agent-name" id="heroAgentName">AGENT CIPHER</div>
+    <h1>OPERATION<br>NOBODY</h1>
+    <p>Somebody has hidden something somewhere. Nobody knows where. Everyone is looking. Your mission, <span id="introAgentName">Agent Cipher</span>: crack the code of the <b>indefinite pronouns</b>.</p>
+    <div class="typed" id="typed"></div>
+    <button class="start" id="startBtn">▶ ACCEPT MISSION</button>
+  </section>
+
+  <!-- MISSION 0 -->
+  <section class="mission" id="m0">
+    <div class="tag">MISSION 00 · VOICE ACTIVATION</div>
+    <h2>🎙️ 60-Second Field Report</h2>
+    <p class="brief">Before we touch any grammar, the microphone is yours. Talk for one minute — don't stop until the timer runs out.</p>
+    <div class="screen" style="border-color:var(--neon)"><span>Describe <u>somewhere</u> you would love to go where <u>nobody</u> knows who you are.</span></div>
+    <div class="tips">
+      <div class="tip"><b>01 · WHERE?</b>Name the place and how you would get there.</div>
+      <div class="tip"><b>02 · WHAT?</b>What is the first thing you would do there?</div>
+      <div class="tip"><b>03 · WHO?</b>Would you talk to anyone, or stay invisible?</div>
+      <div class="tip"><b>04 · WHY?</b>Why does that place call to you? Keep going until time's up!</div>
+    </div>
+    <div class="spinner" style="margin-top:16px">
+      <div class="timer" id="t0">01:00</div>
+      <button class="big" id="go0">⏱ START TIMER</button>
+    </div>
+  </section>
+
+  <!-- MISSION 1 -->
+  <section class="mission" id="m1">
+    <div class="tag">MISSION 01 · CODEBREAKER</div>
+    <h2>🧩 Seven Riddles</h2>
+    <p class="brief">Type your guess, then reveal the answer. Watch the <u>underlined</u> words — they are your targets for today.</p>
+    <div class="grid" id="riddles"></div>
+  </section>
+
+  <!-- MISSION 2 -->
+  <section class="mission" id="m2">
+    <div class="tag">MISSION 02 · THE WORD MACHINE</div>
+    <h2>⚙️ Build the Code Words</h2>
+    <p class="brief">Every target word is made from two parts. Pick one from each side and build all 16 words.</p>
+    <div class="formula"><b>SOME- / ANY- / NO- / EVERY-</b> + <em>-BODY / -ONE / -THING / -WHERE</em>
+      <small>-body = -one = a person &nbsp;·&nbsp; -thing = an object/idea &nbsp;·&nbsp; -where = a place</small></div>
+    <div class="builder">
+      <div class="col" id="pre"></div>
+      <div class="plus">+</div>
+      <div class="col" id="suf"></div>
+    </div>
+    <div class="result" id="built">— ? —<small>Choose two parts</small></div>
+    <div class="found" id="foundList"></div>
+  </section>
+
+  <!-- MISSION 3 -->
+  <section class="mission" id="m3">
+    <div class="tag">MISSION 03 · INTEL BRIEFING</div>
+    <h2>📡 Where Can Each Word Go?</h2>
+    <p class="brief">Click each cell. Decide first: ✔ or ✘? Then the system shows you the truth.</p>
+    <table>
+      <thead><tr><th>CODE</th><th>✚ POSITIVE</th><th>✖ NEGATIVE</th><th>? QUESTION</th></tr></thead>
+      <tbody id="rules"></tbody>
+    </table>
+    <p class="note">* <b>any-</b> in a positive sentence = "it doesn't matter which": <i>You can sit <u>anywhere</u>.</i> &nbsp;·&nbsp; * <b>some-</b> in questions = offers &amp; requests: <i>Would you like <u>something</u> to drink?</i></p>
+
+    <div class="formula" style="margin-top:22px"><b>EVERYBODY / NOBODY / SOMEONE …</b> + <em>SINGULAR VERB</em> (is · has · knows · was)
+      <small>✔ Everybody <u>knows</u> it. &nbsp; ✘ Everybody know it.</small></div>
+    <div class="formula"><b>NO-</b> word + <em>POSITIVE VERB</em> &nbsp;=&nbsp; <b>NOT</b> + <em>ANY-</em> word
+      <small>I have <u>nothing</u> to say. = I do<u>n't</u> have <u>anything</u> to say. &nbsp; ✘ I don't have nothing.</small></div>
+  </section>
+
+  <!-- MISSION 4 -->
+  <section class="mission" id="m4">
+    <div class="tag">MISSION 04 · BUG HUNT</div>
+    <h2>🐞 Eight Corrupted Messages</h2>
+    <p class="brief">Each message has one bug. Type the corrected sentence, then check it against the model.</p>
+    <div class="grid" id="bugs"></div>
+  </section>
+
+  <!-- MISSION 5 -->
+  <section class="mission" id="m5">
+    <div class="tag">MISSION 05 · SPEED TRIAL</div>
+    <h2>⚡ Choose Fast, Agent</h2>
+    <div class="qmeta"><span id="qcount">1 / 10</span><span id="qscore">Score: 0</span></div>
+    <div class="quiz-q" id="qq"></div>
+    <div class="opts" id="qo"></div>
+    <div class="why" id="qwhy"></div>
+    <button class="big next" id="qnext" style="display:none">NEXT ▶</button>
+  </section>
+
+  <!-- MISSION 6 -->
+  <section class="mission" id="m6">
+    <div class="tag">MISSION 06 · INTERROGATION ROOM</div>
+    <h2>🔦 Answer Under Pressure</h2>
+    <p class="brief">Spin for a question. Answer for 45 seconds — and give a reason or an example.</p>
+    <div class="spinner">
+      <div class="screen" id="iq"><span>Press SPIN to begin…</span></div>
+      <div class="timer" id="it">00:45</div>
+      <button class="big" id="spin">🎲 SPIN</button>
+      <button class="big" id="itGo">⏱ 45s</button>
+    </div>
+  </section>
+
+  <!-- MISSION 7 -->
+  <section class="mission" id="m7">
+    <div class="tag">MISSION 07 · UNDERCOVER ROLE-PLAY</div>
+    <h2>🎭 The Weekend From Hell</h2>
+    <div class="roles">
+      <div class="dossier">
+        <h3 id="roleAgentTitle">AGENT CIPHER</h3>
+        <p>You have just come back from a weekend trip where <b>everything</b> went wrong. Tell the story! Tick each word when you use it.</p>
+        <div class="ticks" id="tickV"></div>
+      </div>
+      <div class="dossier" style="border-color:var(--neon2);background:rgba(255,43,214,.05)">
+        <h3 style="color:var(--neon2)">HANDLER GARETH</h3>
+        <p>You want every detail of the trip. Ask questions and react with surprise.</p>
+        <div class="ticks" id="tickG"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section class="mission final" id="m8">
+    <div class="tag">MISSION STATUS</div>
+    <div class="badge">🕶️</div>
+    <h2 id="finalAgentTitle">MISSION COMPLETE, AGENT CIPHER</h2>
+    <p class="brief" style="margin-top:8px">Nobody cracked the code faster. Everything is now under control — and somewhere, somebody is very worried.</p>
+    <button class="start" id="finish">🏆 CLAIM YOUR BADGE</button>
+  </section>
+
+  <footer>Operation Nobody · From the Bespoke Desk of <a href="index.html">Gareth Montgomery</a> · <a href="lab.html">Return to Interactive Lab</a></footer>
+</main>
+
+<script>
+/* ========== SOUND ENGINE (Web Audio, zero files) ========== */
+let AC = null, muted = false;
+const ac = () => (AC = AC || new (window.AudioContext || window.webkitAudioContext)());
+function tone(f, d = .12, type = 'sine', vol = .12, delay = 0) {
+  if (muted) return;
+  const a = ac(), o = a.createOscillator(), g = a.createGain(), t = a.currentTime + delay;
+  o.type = type; o.frequency.setValueAtTime(f, t);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+  o.connect(g).connect(a.destination); o.start(t); o.stop(t + d + .02);
+}
+const sfx = {
+  click: () => tone(880, .05, 'square', .05),
+  type: () => tone(1400 + Math.random() * 400, .02, 'square', .025),
+  good: () => [523, 659, 784, 1046].forEach((f, i) => tone(f, .16, 'triangle', .12, i * .07)),
+  bad: () => { tone(160, .25, 'sawtooth', .09); tone(120, .3, 'sawtooth', .07, .08); },
+  reveal: () => { if (muted) return; const a = ac(), o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
+    o.type = 'sine'; o.frequency.setValueAtTime(300, t); o.frequency.exponentialRampToValueAtTime(1500, t + .25);
+    g.gain.setValueAtTime(.08, t); g.gain.exponentialRampToValueAtTime(.0001, t + .3); o.connect(g).connect(a.destination); o.start(t); o.stop(t + .32); },
+  alarm: () => [0, .3, .6].forEach(d => { tone(880, .18, 'square', .08, d); tone(660, .12, 'square', .06, d + .15); }),
+  fanfare: () => [392, 523, 659, 784, 659, 784, 1046].forEach((f, i) => tone(f, .22, 'triangle', .13, i * .12))
+};
+document.getElementById('mute').onclick = e => { muted = !muted; e.target.textContent = muted ? '🔇 Sound OFF' : '🔊 Sound ON'; };
+
+/* ========== AGENT CODENAME CUSTOMIZER ========== */
+let currentAgent = 'CIPHER';
+const urlAgent = new URLSearchParams(window.location.search).get('agent');
+if (urlAgent && urlAgent.trim()) {
+  currentAgent = urlAgent.trim().slice(0, 18).toUpperCase();
+  document.getElementById('agentInput').value = currentAgent;
+}
+
+function applyAgentName(raw) {
+  const clean = (raw || '').trim().replace(/[<>]/g, '').slice(0, 18) || 'CIPHER';
+  currentAgent = clean.toUpperCase();
+  const titleCase = clean.charAt(0).toUpperCase() + clean.slice(1).toLowerCase();
+  document.getElementById('heroAgentName').textContent = 'AGENT ' + currentAgent;
+  document.getElementById('hudAgent').textContent = `◉ AGENT: ${currentAgent} · CLEARANCE B1+`;
+  document.getElementById('introAgentName').textContent = 'Agent ' + titleCase;
+  document.getElementById('roleAgentTitle').textContent = 'AGENT ' + currentAgent;
+  document.getElementById('finalAgentTitle').textContent = 'MISSION COMPLETE, AGENT ' + currentAgent;
+  document.getElementById('typed').textContent = `> Decrypting file for Agent ${titleCase}… access granted.`;
+}
+
+document.getElementById('agentInput').addEventListener('input', e => {
+  sfx.type();
+  applyAgentName(e.target.value);
+});
+
+/* ========== XP + TOAST ========== */
+let xp = 0; const XPMAX = 400;
+function addXP(n, msg) {
+  xp = Math.min(XPMAX, xp + n);
+  document.getElementById('xp').textContent = xp;
+  document.getElementById('xpbar').style.width = (xp / XPMAX * 100) + '%';
+  if (msg) toast(msg);
+}
+function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1800); }
+
+/* ========== HERO TYPEWRITER ========== */
+applyAgentName(currentAgent);
+const initTitle = currentAgent.charAt(0) + currentAgent.slice(1).toLowerCase();
+const line = `> Decrypting file for Agent ${initTitle}… access granted.`;
+let ti = 0; (function type() { if (ti <= line.length && document.getElementById('agentInput').value.toUpperCase() === currentAgent) { document.getElementById('typed').textContent = line.slice(0, ti++); setTimeout(type, 45); } })();
+document.getElementById('startBtn').onclick = () => { sfx.fanfare(); addXP(10, '+10 XP · Mission accepted'); document.getElementById('m0').scrollIntoView({ behavior: 'smooth' }); };
+
+/* Reveal panels on scroll */
+const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('show')), { threshold: .12 });
+document.querySelectorAll('.mission').forEach(m => io.observe(m));
+
+/* ========== TIMER HELPER ========== */
+function timer(el, secs) {
+  let s = secs; clearInterval(el._i); sfx.click();
+  const fmt = n => '0' + Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0');
+  el.textContent = fmt(s); el.style.color = 'var(--amber)';
+  el._i = setInterval(() => {
+    s--; el.textContent = fmt(s);
+    if (s <= 10 && s > 0) { el.style.color = 'var(--red)'; tone(1200, .04, 'square', .04); }
+    if (s <= 0) { clearInterval(el._i); el.textContent = 'TIME!'; sfx.alarm(); addXP(25, '+25 XP · Report transmitted'); }
+  }, 1000);
+}
+document.getElementById('go0').onclick = () => timer(document.getElementById('t0'), 60);
+
+/* ========== MISSION 1 · RIDDLES ========== */
+const riddles = [
+  ['<u>Everyone</u> has it, but <u>no one</u> can lose it. What is it?', 'Your shadow 🌑'],
+  ['It belongs to you, but <u>everybody</u> else uses it more than you do. What is it?', 'Your name 🏷️'],
+  ['I can travel <u>anywhere</u> in the world, but I always stay in one corner. What am I?', 'A stamp ✉️'],
+  ['I have hands, but I can\'t hold <u>anything</u>. What am I?', 'A clock 🕰️'],
+  ['If you have me, you want to tell <u>somebody</u>. If you tell <u>everybody</u>, I become <u>nothing</u>. What am I?', 'A secret 🤫'],
+  ['The more you take, the more you leave behind. <u>Nobody</u> can walk <u>anywhere</u> without making them. What are they?', 'Footsteps 👣'],
+  ['I go <u>everywhere</u> in the city, but I never move. What am I?', 'A road 🛣️']
+];
+document.getElementById('riddles').innerHTML = riddles.map((r, i) => `
+  <div class="card"><div class="num">RIDDLE 0${i + 1}</div><div class="q">${r[0]}</div>
+  <input type="text" class="guess-input" placeholder="Your guess, agent…">
+  <button class="reveal" data-x="r">👁️ Reveal Answer</button><div class="ans">${r[1]}</div></div>`).join('');
+
+/* ========== MISSION 2 · WORD MACHINE ========== */
+const pres = ['some', 'any', 'no', 'every'], sufs = ['body', 'one', 'thing', 'where'];
+const meaning = { body: 'a person 🧍', one: 'a person 🧍', thing: 'an object / idea 📦', where: 'a place 📍' };
+let sp = null, ss = null; const found = new Set();
+const mk = (arr, id, cls) => document.getElementById(id).innerHTML = arr.map(w => `<button class="chip" data-${cls}="${w}">${id === 'pre' ? w.toUpperCase() + '-' : '-' + w.toUpperCase()}</button>`).join('');
+mk(pres, 'pre', 'p'); mk(sufs, 'suf', 's');
+document.querySelector('.builder').addEventListener('click', e => {
+  const b = e.target.closest('.chip'); if (!b) return; sfx.click();
+  if (b.dataset.p) { sp = b.dataset.p; document.querySelectorAll('#pre .chip').forEach(c => c.classList.toggle('on', c === b)); }
+  if (b.dataset.s) { ss = b.dataset.s; document.querySelectorAll('#suf .chip').forEach(c => c.classList.toggle('on2', c === b)); }
+  if (sp && ss) {
+    const w = (sp === 'no' && ss === 'one') ? 'no one' : sp + ss;
+    document.getElementById('built').innerHTML = `${w.toUpperCase()}<small>${meaning[ss]}${w === 'no one' ? ' · written as two words!' : ''}</small>`;
+    if (!found.has(w)) {
+      found.add(w); sfx.good(); addXP(5, `+5 XP · ${w} unlocked (${found.size}/16)`);
+      document.getElementById('foundList').innerHTML = [...found].map(f => `<span>${f}</span>`).join('');
+      if (found.size === 16) { setTimeout(() => { sfx.fanfare(); addXP(20, '+20 XP · All 16 code words built!'); }, 500); }
+    } else sfx.reveal();
+  }
+});
+
+/* ========== MISSION 3 · RULE TABLE ========== */
+const rules = [['NO-', 'y', 'n', 'n'], ['SOME-', 'y', 'n', 'y*'], ['ANY-', 'y*', 'y', 'y'], ['EVERY-', 'y', 'y', 'y']];
+document.getElementById('rules').innerHTML = rules.map(r => `<tr><td class="k">${r[0]}</td>${r.slice(1).map(v => `<td class="cell" data-v="${v}">?</td>`).join('')}</tr>`).join('');
+document.getElementById('rules').addEventListener('click', e => {
+  const c = e.target.closest('.cell'); if (!c || c.classList.contains('done')) return;
+  const yes = c.dataset.v.startsWith('y'); c.classList.add('done', yes ? 'y' : 'n');
+  c.textContent = yes ? '✔' + (c.dataset.v.includes('*') ? '*' : '') : '✘'; sfx.reveal(); addXP(3);
+});
+
+/* ========== MISSION 4 · BUG HUNT ========== */
+const bugs = [
+  ['Do anybody know the answer?', 'Does anybody know the answer? <br><small>→ anybody = singular (he/she/it)</small>'],
+  ['I rang the doorbell, but anybody answered.', 'I rang the doorbell, but nobody answered. <br><small>→ positive verb + no- word</small>'],
+  ['Where are everybody going?', 'Where is everybody going?'],
+  ['I haven\'t got nothing to say.', 'I haven\'t got anything to say. / I\'ve got nothing to say. <br><small>→ never two negatives</small>'],
+  ['Everybody were angry with me.', 'Everybody was angry with me.'],
+  ['Could we go anywhere sunny this weekend?', 'Could we go somewhere sunny this weekend? <br><small>→ request = some-</small>'],
+  ['There isn\'t nowhere I\'d rather be.', 'There isn\'t anywhere I\'d rather be. / There\'s nowhere I\'d rather be.'],
+  ['Nobody don\'t like Monday mornings.', 'Nobody likes Monday mornings.']
+];
+document.getElementById('bugs').innerHTML = bugs.map((b, i) => `
+  <div class="card"><div class="num">MESSAGE 0${i + 1} · ⚠ CORRUPTED</div><div class="q" style="color:var(--red)">${b[0]}</div>
+  <input type="text" class="guess-input" placeholder="Type the fixed sentence…">
+  <button class="reveal" data-x="b">👁️ Reveal Cambridge Model</button><div class="ans">✔ ${b[1]}</div></div>`).join('');
+
+/* Generic reveal handler */
+document.addEventListener('click', e => {
+  const b = e.target.closest('.reveal'); if (!b) return;
+  const a = b.nextElementSibling; if (a.classList.contains('open')) return;
+  a.classList.add('open'); sfx.reveal(); addXP(b.dataset.x === 'r' ? 8 : 6);
+});
+document.addEventListener('input', e => { if (e.target.matches('input.guess-input')) sfx.type(); });
+
+/* ========== MISSION 5 · SPEED TRIAL ========== */
+const quiz = [
+  ['🚪 ___ is at the door. Can you open it?', ['Somebody', 'Anybody', 'Nobody'], 0, 'Positive sentence about a real, unknown person → some-.'],
+  ['📱 I looked ___ for my phone, but I couldn\'t find it.', ['anywhere', 'everywhere', 'nowhere'], 1, 'Every place possible → everywhere.'],
+  ['🥤 Would you like ___ to drink?', ['anything', 'nothing', 'something'], 2, 'Offers use some- even in questions.'],
+  ['🧠 Everybody ___ the answer to that one.', ['know', 'knows', 'are knowing'], 1, 'Every- words take a singular verb.'],
+  ['🍕 There\'s ___ in the fridge. Let\'s order pizza.', ['nothing', 'anything', 'something'], 0, 'Positive verb (is) + no- word = empty fridge.'],
+  ['📞 Did ___ call me while I was out?', ['no one', 'anyone', 'someone'], 1, 'Neutral question → any-.'],
+  ['🏫 It\'s my first day. I don\'t know ___ here.', ['nobody', 'somebody', 'anybody'], 2, 'Negative verb (don\'t) + any-.'],
+  ['🌴 Let\'s go ___ quiet to talk.', ['somewhere', 'anywhere', 'nowhere'], 0, 'A suggestion → some-.'],
+  ['💺 The bus is empty — you can sit ___ you like.', ['somewhere', 'anywhere', 'nowhere'], 1, 'any- = it doesn\'t matter which.'],
+  ['🎉 I can\'t believe it — ___ remembered my birthday!', ['everybody', 'anybody', 'nothing'], 0, 'All the people → everybody (+ singular verb).']
+];
+let qi = 0, score = 0;
+function showQ() {
+  const [q, o] = quiz[qi];
+  document.getElementById('qcount').textContent = `${qi + 1} / ${quiz.length}`;
+  document.getElementById('qq').textContent = q; document.getElementById('qwhy').textContent = '';
+  document.getElementById('qnext').style.display = 'none';
+  document.getElementById('qo').innerHTML = o.map((t, i) => `<button class="opt" data-i="${i}">${t}</button>`).join('');
+}
+document.getElementById('qo').addEventListener('click', e => {
+  const b = e.target.closest('.opt'); if (!b || b.disabled) return;
+  const [, , right, why] = quiz[qi], all = document.querySelectorAll('.opt');
+  all.forEach(x => x.disabled = true); all[right].classList.add('right');
+  if (+b.dataset.i === right) { score++; sfx.good(); addXP(10, '+10 XP · Correct!'); } else { b.classList.add('wrong'); sfx.bad(); }
+  document.getElementById('qscore').textContent = 'Score: ' + score;
+  document.getElementById('qwhy').textContent = '💡 ' + why;
+  const nx = document.getElementById('qnext'); nx.style.display = 'inline-block';
+  nx.textContent = qi < quiz.length - 1 ? 'NEXT ▶' : `FINAL SCORE: ${score}/10 ↻`;
+});
+document.getElementById('qnext').onclick = () => {
+  sfx.click();
+  if (qi < quiz.length - 1) { qi++; } else { if (score >= 8) sfx.fanfare(); qi = 0; score = 0; document.getElementById('qscore').textContent = 'Score: 0'; }
+  showQ();
+};
+showQ();
+
+/* ========== MISSION 6 · INTERROGATION ========== */
+const qs = [
+  'Is there anything you could never live without? Why?',
+  'If you could go anywhere tomorrow, where would you go?',
+  'Is there something everybody seems to love, but you can\'t stand?',
+  'Have you ever met anyone famous — or would you like to?',
+  'Is there anywhere in your town where nobody ever goes? Why not?',
+  'What is something you can do that nobody in your family can?',
+  'Is there anything you used to love as a kid but now find boring?',
+  'If everyone in your class had to learn one skill, what should it be?',
+  'Is there somebody who has taught you something really important?',
+  'Describe a time when nothing went to plan.'
+];
+let lastQ = -1;
+document.getElementById('spin').onclick = () => {
+  const el = document.getElementById('iq'); let n = 0;
+  const roll = setInterval(() => {
+    let r; do { r = Math.floor(Math.random() * qs.length); } while (r === lastQ);
+    el.innerHTML = `<span>${qs[r]}</span>`; tone(400 + n * 40, .04, 'square', .05);
+    if (++n > 14) { clearInterval(roll); lastQ = r; sfx.reveal(); addXP(5); }
+  }, 70);
+};
+document.getElementById('itGo').onclick = () => timer(document.getElementById('it'), 45);
+
+/* ========== MISSION 7 · ROLE-PLAY TICKS ========== */
+const tick = (id, words) => {
+  const box = document.getElementById(id);
+  box.innerHTML = words.map(w => `<button class="chip">${w}</button>`).join('');
+  box.addEventListener('click', e => { const c = e.target.closest('.chip'); if (!c || c.classList.contains('on')) return; c.classList.add('on'); sfx.good(); addXP(6, `+6 XP · "${c.textContent}" deployed`); });
+};
+tick('tickV', ['nowhere', 'somebody', 'anything', 'everybody', 'nothing', 'everywhere']);
+tick('tickG', ['anywhere', 'anyone', 'something', 'everything']);
+
+/* ========== FINAL · CONFETTI ========== */
+const cv = document.getElementById('confetti'), cx = cv.getContext('2d');
+function confetti() {
+  cv.width = innerWidth; cv.height = innerHeight;
+  const cols = ['#00ffc8', '#ff2bd6', '#ffc93c', '#ffffff'];
+  const ps = Array.from({ length: 180 }, () => ({ x: Math.random() * cv.width, y: -20 - Math.random() * cv.height * .5, vx: (Math.random() - .5) * 4, vy: 2 + Math.random() * 4, s: 4 + Math.random() * 6, c: cols[Math.floor(Math.random() * 4)], r: Math.random() * 6 }));
+  let f = 0;
+  (function draw() {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    ps.forEach(p => { p.x += p.vx; p.y += p.vy; p.r += .1; cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); cx.restore(); });
+    if (++f < 260) requestAnimationFrame(draw); else cx.clearRect(0, 0, cv.width, cv.height);
+  })();
+}
+document.getElementById('finish').onclick = () => { sfx.fanfare(); confetti(); addXP(50, `🏆 Agent ${currentAgent} · Operation Nobody complete!`); };
+</script>
+</body>
+</html>
