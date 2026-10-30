@@ -457,6 +457,266 @@ body.lab-observatory {
   border-bottom: 1px solid rgba(148, 163, 184, 0.15);
 }
 
+/* ==========================================================================
+   STUDIO.html Visual Photography Cards (Unified Across Lab & Vault)
+   ========================================================================== */
+.visual-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.visual-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.visual-card {
+  background: #131b2e;
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  border-radius: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.55);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  min-width: 0;
+}
+
+.visual-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow: 0 22px 44px -10px rgba(14, 165, 233, 0.28);
+}
+
+.visual-art {
+  height: 148px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1;
+}
+
+.visual-card:hover .card-photo {
+  transform: scale(1.07);
+}
+
+.visual-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(11, 15, 25, 0.45) 0%, rgba(11, 15, 25, 0.15) 45%, rgba(11, 15, 25, 0.72) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.art-purple  { background: linear-gradient(135deg, #311068 0%, #6d28d9 55%, #a855f7 100%); }
+.art-blue    { background: linear-gradient(135deg, #0f2557 0%, #1d4ed8 55%, #38bdf8 100%); }
+.art-emerald { background: linear-gradient(135deg, #064e3b 0%, #059669 55%, #34d399 100%); }
+.art-amber   { background: linear-gradient(135deg, #451a03 0%, #b45309 55%, #f59e0b 100%); }
+.art-rose    { background: linear-gradient(135deg, #4c0519 0%, #be123c 55%, #fb7185 100%); }
+.art-slate   { background: linear-gradient(135deg, #0f172a 0%, #334155 55%, #64748b 100%); }
+.art-indigo  { background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #818cf8 100%); }
+
+.art-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: rgba(11, 15, 25, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  z-index: 3;
+}
+
+.visual-art:has(.art-star) .art-badge {
+  max-width: calc(100% - 118px);
+}
+
+.art-star {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #f59e0b;
+  color: #0f172a;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  z-index: 3;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+.art-topic-icon {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  z-index: 3;
+}
+
+.visual-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  gap: 10px;
+}
+
+.visual-title {
+  font-size: 1.04rem;
+  font-weight: 800;
+  line-height: 1.32;
+  letter-spacing: -0.01em;
+  color: #f8fafc;
+}
+
+.visual-sub {
+  font-size: 0.81rem;
+  color: #94a3b8;
+  font-weight: 500;
+  line-height: 1.45;
+  margin-top: 4px;
+}
+
+.visual-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.visual-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  margin-top: auto;
+}
+
+.visual-btn-primary {
+  flex: 1;
+  min-width: 105px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: #0ea5e9;
+  color: #082f49;
+  font-size: 0.77rem;
+  font-weight: 800;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: center;
+}
+
+.visual-btn-primary:hover {
+  background: #38bdf8;
+}
+
+.visual-btn-secondary {
+  flex: 1;
+  min-width: 105px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(30, 41, 59, 0.85);
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  text-align: center;
+}
+
+.visual-btn-secondary:hover {
+  border-color: #34d399;
+  background: rgba(6, 78, 59, 0.45);
+}
+
+@media (max-width: 1120px) {
+  .visual-grid,
+  .visual-grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .visual-grid,
+  .visual-grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .visual-art {
+    height: 140px;
+  }
+  .visual-body {
+    padding: 14px 16px;
+  }
+  .visual-title {
+    font-size: 1rem;
+  }
+}
+
 /* Chronicle '88 PC-88 Terminal & Cassette Styling */
 .pc88-terminal-frame {
   position: relative;
@@ -844,7 +1104,9 @@ body.lab-observatory {
   .arcade-cabinet,
   .arcade-viewport img,
   .cassette-art-screen img,
-  .holodeck-screen img {
+  .holodeck-screen img,
+  .visual-card,
+  .card-photo {
     transition: none !important;
     transform: none !important;
   }
