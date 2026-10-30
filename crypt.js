@@ -772,31 +772,26 @@
             const nameInput = $('player-name-input');
             const emailInput = $('player-email-input');
             const startBtn = $('btn-start-game');
-            
-            const validateStart = () => {
-                const n = nameInput.value.trim();
-                const e = emailInput ? emailInput.value.trim() : '';
-                startBtn.disabled = !(n.length > 0 && (e === '' || emailInput.checkValidity()));
-            };
-            
-            nameInput.addEventListener('input', validateStart);
-            if(emailInput) emailInput.addEventListener('input', validateStart);
-            
-            if(emailInput) emailInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !startBtn.disabled) startBtn.click();
-            });
-            
-            startBtn.addEventListener('click', () => {
-                const name = nameInput.value.trim();
-                const email = emailInput ? emailInput.value.trim() : '';
-                if (name) {
-                    state.playerName = name;
-                    state.playerEmail = email;
-                    saveState();
-                    nameScreen.classList.remove('open');
-                    refreshHud();
-                    sfx('epic');
+            startBtn.disabled = false;
+
+            const handleEnterKey = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    startBtn.click();
                 }
+            };
+            if (nameInput) nameInput.addEventListener('keydown', handleEnterKey);
+            if (emailInput) emailInput.addEventListener('keydown', handleEnterKey);
+
+            startBtn.addEventListener('click', () => {
+                const name = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Adventurer';
+                const email = emailInput ? emailInput.value.trim() : '';
+                state.playerName = name;
+                state.playerEmail = email;
+                saveState();
+                nameScreen.classList.remove('open');
+                refreshHud();
+                sfx('epic');
             });
         }
 

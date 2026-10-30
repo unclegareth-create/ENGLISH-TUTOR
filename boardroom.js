@@ -88,14 +88,16 @@
     let totalQuestions = 8;
     let isActive = false;
 
-    // --- Init ---
-    const validateStart = () => {
-        const n = nameInput.value.trim();
-        const e = emailInput.value.trim();
-        startBtn.disabled = !(n.length > 0 && e.includes('@') && e.includes('.'));
+    // --- Init (Instant Play — No Forced Sign-Up Gate) ---
+    startBtn.disabled = false;
+    const handleEnterStart = (e) => {
+        if (e.key === 'Enter' && startModal.classList.contains('open')) {
+            e.preventDefault();
+            startBtn.click();
+        }
     };
-    nameInput.addEventListener('input', validateStart);
-    emailInput.addEventListener('input', validateStart);
+    if (nameInput) nameInput.addEventListener('keydown', handleEnterStart);
+    if (emailInput) emailInput.addEventListener('keydown', handleEnterStart);
 
     startBtn.addEventListener('click', () => {
         startModal.classList.remove('open');
@@ -218,8 +220,8 @@
         
         document.getElementById('final-score').textContent = finalReputation;
         document.getElementById('lead-score').value = `Boardroom Pitch - Rep: ${finalReputation}%`;
-        document.getElementById('lead-email').value = emailInput.value.trim();
-        document.getElementById('lead-name').value = nameInput.value.trim();
+        document.getElementById('lead-email').value = emailInput ? emailInput.value.trim() : '';
+        document.getElementById('lead-name').value = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Executive Player';
         
         endModal.classList.add('open');
 
@@ -233,7 +235,7 @@
                     examImpact: 'In international executive meetings and Cambridge C2 speaking, blunt or informal phrasing undermines professional authority and reduces your discourse management score.',
                     onReplay: () => {
                         endModal.classList.remove('open');
-                        btnStart.click();
+                        startBtn.click();
                     }
                 });
             }, 600);

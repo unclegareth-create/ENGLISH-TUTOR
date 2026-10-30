@@ -30,9 +30,9 @@
     const LAST_FREE_TOOL_KEY = 'gm_last_free_tool';
 
     const FREE_GAME_RE = /(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch|abyssal-bathysphere|darjeeling-signal-box|midnight-study-desk|blueprint-vault|chronicle-88)\.html/i;
-    const EXAM_LAB_RE = /(^|\/)(fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson)\.html/i;
+    const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|preply-worksheets-backup\/[^/]+)\.html/i;
     const FREE_GOTHIC_RE = /(^|\/)(dracula-unit1-carpathian-threshold|frankenstein-unit1-spark-of-being|jekyll-unit1-soho-threshold|baskerville-unit1-curse-of-the-moors|alice-unit13-down-the-rabbit-hole)\.html/i;
-    const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark)\.(html|pdf)/i;
+    const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses)\.(html|pdf)/i;
 
     const getLastFreeTool = () => {
         try {

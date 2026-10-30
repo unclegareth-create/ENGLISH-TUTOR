@@ -356,8 +356,8 @@
       previewItem: {
         topic: 'Passive + Perfect Infinitive (Part 4 Preview)',
         keyWord: 'THOUGHT',
-        prompt: 'Independent auditors believe the recruitment algorithm penalized unconventional candidates.',
-        stemBefore: 'The recruitment algorithm',
+        prompt: 'Independent auditors believe the automated screening system penalized unconventional candidates.',
+        stemBefore: 'The automated screening system',
         stemAfter: 'unconventional candidates.',
         valid: 'is thought to have penalized|is thought to have penalised',
         model: 'is thought to have penalised'
@@ -393,7 +393,7 @@
       ],
       speakingPrompts: [
         'C2 Speaking Part 3 Card (2-Minute Long Turn): "How far can human character and leadership potential ever be reduced to quantifiable metrics?" (Target: It is widely contended that..., ostensibly, reductionist)',
-        'Part 3 Counter-Question: "Isn\'t an imperfect algorithm still fairer than the unconscious bias of a human interviewer?" (Target: Be that as it may..., alleged to be...)',
+        'Part 3 Counter-Question: "Isn\'t an automated screening system still fairer than the unconscious bias of a human interviewer?" (Target: Be that as it may..., alleged to be...)',
         'Register Upgrade Challenge: Convert 3 blunt claims about corporate hiring into impersonal C2 academic prose.'
       ],
       lessonPlan: [
@@ -700,8 +700,7 @@
       p.includes('cpe-psychometrics-passives.html') ||
       p.includes('business-english-meetings.html') ||
       p.includes('cae-essay-builder-v2.html') ||
-      p.includes('ielts-essay-masterclass.html') ||
-      p.includes('boardroom.html')
+      p.includes('ielts-essay-masterclass.html')
     );
   }
 

@@ -774,13 +774,13 @@
           </button>
         </form>
         <div id="gm-dossier-email-status" style="font-size:11.5px;color:#34d399;margin-top:6px;display:${state.savedEmail ? 'block' : 'none'};">
-          ✓ Diagnostic linked to ${state.savedEmail}. <a href="c1-c2-inversion-intensive.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Inversion Intensive Pack &rarr;</a>
+          ✓ Diagnostic linked to ${state.savedEmail}. <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Inversion Intensive Pack &rarr;</a>
         </div>
       </div>
 
       <div style="background:rgba(37,99,235,0.12);border:1px solid rgba(59,130,246,0.4);border-radius:12px;padding:14px;">
         <p style="margin:0 0 10px 0;font-size:12.5px;line-height:1.5;color:#e2e8f0;">
-          Your Lab results show a <strong style="color:#fbbf24;">${summary.weakestAccuracy}%</strong> accuracy rate on <strong style="color:#ffffff;">${summary.weakestSkill}</strong>. Book your £35 30-minute starter session and we will spend 30 minutes working on the exact areas your practice highlighted.
+          Your Lab results show a <strong style="color:#fbbf24;">${summary.weakestAccuracy}%</strong> accuracy rate on <strong style="color:#ffffff;">${summary.weakestSkill}</strong>. Book your £35 30-minute starter session and I will spend 30 minutes working on the exact areas your practice highlighted.
         </p>
         <a href="index.html?dossier=${ encodeURIComponent(summary.code) }#contact"
            id="gm-dossier-book-cta"
@@ -862,7 +862,7 @@
         const statusEl = document.getElementById('gm-dossier-email-status');
         if (statusEl) {
           statusEl.style.display = 'block';
-          statusEl.innerHTML = `✓ Diagnostic saved for <strong>${email}</strong>. <a href="c1-c2-inversion-intensive.html" style="color:#fbbf24;text-decoration:underline;">Access C1/C2 Inversion Intensive Pack &rarr;</a>`;
+          statusEl.innerHTML = `✓ Diagnostic saved for <strong>${email}</strong>. <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Access C1/C2 Inversion Intensive Pack &rarr;</a>`;
         }
       };
     }

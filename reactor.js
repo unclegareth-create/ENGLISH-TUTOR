@@ -41,14 +41,16 @@
     let lastTickTime = 0;
     let isActive = false;
 
-    // --- Init ---
-    const validateStart = () => {
-        const n = nameInput.value.trim();
-        const e = emailInput.value.trim();
-        startBtn.disabled = !(n.length > 0 && e.includes('@') && e.includes('.'));
+    // --- Init (Instant Play — No Forced Sign-Up Gate) ---
+    startBtn.disabled = false;
+    const handleEnterStart = (e) => {
+        if (e.key === 'Enter' && startModal.classList.contains('open')) {
+            e.preventDefault();
+            startBtn.click();
+        }
     };
-    nameInput.addEventListener('input', validateStart);
-    emailInput.addEventListener('input', validateStart);
+    if (nameInput) nameInput.addEventListener('keydown', handleEnterStart);
+    if (emailInput) emailInput.addEventListener('keydown', handleEnterStart);
 
     startBtn.addEventListener('click', () => {
         startModal.classList.remove('open');
@@ -219,8 +221,8 @@
         
         document.getElementById('final-score').textContent = score + "/10";
         document.getElementById('lead-score').value = `Phrasal Reactor - Score: ${score}/10`;
-        document.getElementById('lead-email').value = emailInput.value.trim();
-        document.getElementById('lead-name').value = nameInput.value.trim();
+        document.getElementById('lead-email').value = emailInput ? emailInput.value.trim() : '';
+        document.getElementById('lead-name').value = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Reactor Agent';
         
         endModal.classList.add('open');
 

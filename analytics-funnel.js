@@ -131,12 +131,12 @@
               </button>
             </form>
             <div id="gm-gate-email-confirm" style="display:none;font-size:12px;color:#34d399;margin-top:6px;">
-              ✓ Saved to your Candidate Dossier! <a href="c1-c2-inversion-intensive.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Cheat Sheet &rarr;</a>
+              ✓ Saved to your Candidate Dossier! <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Cheat Sheet &rarr;</a>
             </div>
           </div>
 
           <p style="font-size:13.5px;color:#d1d5db;margin-bottom:14px;line-height:1.5;">
-            Your Lab Dossier shows a <strong style="color:#fbbf24;">${diagnosedAccuracy}%</strong> accuracy rate on <strong style="color:#ffffff;">${diagnosedWeakness}</strong>. Book your £35 30-Min Live Diagnostic and we will spend 30 minutes fixing the exact weak points your gameplay just exposed:
+            Your Lab Dossier shows a <strong style="color:#fbbf24;">${diagnosedAccuracy}%</strong> accuracy rate on <strong style="color:#ffffff;">${diagnosedWeakness}</strong>. Book your £35 30-Min Live Diagnostic and I will spend 30 minutes fixing the exact weak points your gameplay just exposed:
           </p>
 
           <div style="display:grid;gap:10px;">
