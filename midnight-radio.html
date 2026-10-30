@@ -649,6 +649,9 @@
         <span id="powerLed" class="led"></span>
         <span id="powerLabel">POWER STANDBY (TAP TO IGNITE VALVES)</span>
       </button>
+      <button class="pill" onclick="killHangingFx()" style="border-color: var(--crimson); color: #ff8a80;">
+        🔇 Kill FX / Flush Echo
+      </button>
       <button id="dockTapeLabBtn" class="pill" onclick="toggleTapeLabDock()" style="border-color: var(--amber-glow); color: var(--amber-glow);">
         🎛️ Dock Belfast Tape Lab 2.0 Below
       </button>
@@ -951,8 +954,8 @@
             <input type="range" id="echoTimeSlider" min="90" max="780" value="360" oninput="updateDubPreamp()" />
           </div>
           <div class="fader-box">
-            <div class="fader-top"><span>♾️ Echo Feedback</span><span id="valEchoFb">64%</span></div>
-            <input type="range" id="echoFbSlider" min="10" max="94" value="64" oninput="updateDubPreamp()" />
+            <div class="fader-top"><span>♾️ Echo Feedback</span><span id="valEchoFb">45%</span></div>
+            <input type="range" id="echoFbSlider" min="10" max="75" value="45" oninput="updateDubPreamp()" />
           </div>
         </div>
 
@@ -960,17 +963,18 @@
         <div class="btn-strip">
           <button id="dubThrowBtn" class="hw-btn active"
             onmousedown="momentaryVoiceDubThrow(true)" onmouseup="momentaryVoiceDubThrow(false)" onmouseleave="momentaryVoiceDubThrow(false)"
-            ontouchstart="momentaryVoiceDubThrow(true)" ontouchend="momentaryVoiceDubThrow(false)">
+            ontouchstart="momentaryVoiceDubThrow(true)" ontouchend="momentaryVoiceDubThrow(false)" ontouchcancel="momentaryVoiceDubThrow(false)">
             🎙️ HOLD: VOICE DUB THROW
           </button>
           <button id="dubRunawayBtn" class="hw-btn"
             onmousedown="momentaryDubRunaway(true)" onmouseup="momentaryDubRunaway(false)" onmouseleave="momentaryDubRunaway(false)"
-            ontouchstart="momentaryDubRunaway(true)" ontouchend="momentaryDubRunaway(false)">
-            🔥 HOLD: ECHO RUNAWAY (95%)
+            ontouchstart="momentaryDubRunaway(true)" ontouchend="momentaryDubRunaway(false)" ontouchcancel="momentaryDubRunaway(false)">
+            🔥 HOLD: ECHO SWELL
           </button>
           <button id="dubEchoBtn" class="hw-btn" onclick="toggleRadioDubEcho()">🌊 Latch Echo Send: OFF</button>
           <button id="killSubBtn" class="hw-btn" onclick="toggleKillSwitch('sub')">🔇 Sub Kill</button>
           <button id="killMidBtn" class="hw-btn" onclick="toggleKillSwitch('mid')">🔇 Voice Kill</button>
+          <button class="hw-btn" style="border-color:var(--crimson); color:#ff8a80;" onclick="killHangingFx()">🔇 Kill FX</button>
           <button class="hw-btn active" onclick="beamStationToTapeLab(true)">📡 Beam &rarr; Tape Lab</button>
           <button class="hw-btn" onclick="toggleTapeLabDock()">🎹 Dock Tape Lab ↓</button>
         </div>
@@ -1315,27 +1319,30 @@
       voiceGainNode.connect(tubbyHpfNode);
       tubbyHpfNode.connect(masterGain);
 
-      // Roland RE-201 Space Echo Dub Delay Bus with Tape Saturation Loop
+      // Roland RE-201 Space Echo Dub Delay Bus with Zero-Bias Tape Saturation Loop
       dubSendGain = audioCtx.createGain();
       dubSendGain.gain.value = 0.0;
       dubDelayNode = audioCtx.createDelay(2.0);
       dubDelayNode.delayTime.value = 0.36;
       dubFbGainNode = audioCtx.createGain();
-      dubFbGainNode.gain.value = 0.64;
+      dubFbGainNode.gain.value = 0.45;
 
       const dubTone = audioCtx.createBiquadFilter();
       dubTone.type = 'bandpass';
       dubTone.frequency.value = 1150;
-      dubTone.Q.value = 0.95;
+      dubTone.Q.value = 0.85;
 
-      // Soft tape saturation curve so 95% runaway feedback never clips harshly
+      // Odd-length (1025) unity-slope tanh curve so x=0 maps strictly to 0.0 (no self-oscillation or hanging echo)
       const tapeShaper = audioCtx.createWaveShaper();
-      const curve = new Float32Array(1024);
-      for (let i = 0; i < 1024; i++) {
-        const x = (i * 2) / 1024 - 1;
-        curve[i] = Math.tanh(x * 1.85);
+      const curve = new Float32Array(1025);
+      for (let i = 0; i < 1025; i++) {
+        const x = (i / 512) - 1;
+        curve[i] = Math.tanh(x);
       }
       tapeShaper.curve = curve;
+
+      const dubReturnGain = audioCtx.createGain();
+      dubReturnGain.gain.value = 0.55;
 
       tubbyHpfNode.connect(dubSendGain);
       dubSendGain.connect(dubDelayNode);
@@ -1343,7 +1350,8 @@
       dubTone.connect(tapeShaper);
       tapeShaper.connect(dubFbGainNode);
       dubFbGainNode.connect(dubDelayNode);
-      tapeShaper.connect(masterGain);
+      tapeShaper.connect(dubReturnGain);
+      dubReturnGain.connect(masterGain);
 
       // Decode & start all 8 Trilingual Broadcasts from file://-safe Base64 bundle
       STATIONS.forEach(st => {
@@ -1414,23 +1422,27 @@
       const label = document.getElementById('powerLabel');
 
       if (isPowered) {
+        if (masterGain && audioCtx) masterGain.gain.setTargetAtTime(0.9, audioCtx.currentTime, 0.03);
         btn.classList.add('power-on');
         led.classList.add('on');
         label.textContent = 'VALVES WARM · RECEIVER ONLINE';
         STATIONS.forEach(st => startStationSource(st.id, 0));
+        updateMixer();
         updateRadioDsp();
       } else {
+        killHangingFx();
+        if (masterGain && audioCtx) masterGain.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.03);
         btn.classList.remove('power-on');
         led.classList.remove('on');
-        label.textContent = 'POWER STANDBY (CLICK TO IGNITE VALVES)';
+        label.textContent = 'POWER STANDBY (TAP TO IGNITE VALVES)';
         Object.values(stationAudios).forEach(obj => {
-          obj.gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+          obj.gainNode.gain.setTargetAtTime(0, audioCtx.currentTime, 0.03);
           if (obj.sourceNode) {
             try { obj.sourceNode.stop(); } catch (_) {}
             obj.sourceNode = null;
           }
         });
-        if (heterodyneGain) heterodyneGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+        if (heterodyneGain) heterodyneGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.02);
       }
     }
 
@@ -1546,14 +1558,9 @@
       const duckedStatic = userStaticSetting * (1.0 - signalStrength * 0.55);
       staticGainNode.gain.setTargetAtTime(duckedStatic * 0.55, now, 0.05);
 
-      // Heterodyne carrier beat whistle when tuning near a station
-      if (nearest && nearest.diff > 0.004 && nearest.diff < captureRadius) {
-        const beatHz = Math.max(60, Math.min(3200, nearest.diff * 11500 + Math.abs(currentBfo) * 180));
-        const whistleEnv = Math.sin((1 - nearest.diff / captureRadius) * Math.PI) * 0.075 * userVoiceSetting;
-        heterodyneOsc.frequency.setTargetAtTime(beatHz, now, 0.02);
-        heterodyneGain.gain.setTargetAtTime(whistleEnv, now, 0.03);
-      } else {
-        heterodyneGain.gain.setTargetAtTime(0.0, now, 0.03);
+      // Keep heterodyne whistle silenced so no hanging tone persists off-carrier
+      if (heterodyneGain) {
+        heterodyneGain.gain.setTargetAtTime(0.0, now, 0.02);
       }
     }
 
@@ -2334,18 +2341,24 @@
       document.getElementById('sirenStateLabel').textContent = '🔥 FIRING (' + sirenMode.toUpperCase() + ')';
     }
 
-    function stopDubSiren(e) {
+    function stopDubSiren(e, forceKill) {
       if (e && e.cancelable) e.preventDefault();
-      if (sirenLatched || !sirenActiveNodes) return;
+      if (!forceKill && sirenLatched) return;
+      if (!sirenActiveNodes) return;
       const nodes = sirenActiveNodes;
       sirenActiveNodes = null;
-      const now = audioCtx.currentTime;
-      nodes.envGain.gain.setTargetAtTime(0.0001, now, 0.03);
+      if (audioCtx) {
+        const now = audioCtx.currentTime;
+        try {
+          nodes.envGain.gain.cancelScheduledValues(now);
+          nodes.envGain.gain.setTargetAtTime(0.0001, now, 0.02);
+        } catch (_) {}
+      }
       setTimeout(() => {
-        try { nodes.vco.stop(); nodes.lfo.stop(); nodes.vco.disconnect(); } catch (_) {}
-      }, 140);
+        try { nodes.vco.stop(); nodes.lfo.stop(); nodes.vco.disconnect(); nodes.envGain.disconnect(); } catch (_) {}
+      }, 90);
       document.getElementById('sirenFireBtn').classList.remove('pressed');
-      document.getElementById('sirenStateLabel').textContent = 'ECHO TAIL';
+      document.getElementById('sirenStateLabel').textContent = 'READY';
     }
 
     function toggleSirenLatch() {
@@ -2356,15 +2369,65 @@
       if (sirenLatched) {
         startDubSiren();
       } else {
-        stopDubSiren();
+        stopDubSiren(null, true);
       }
     }
+
+    function killHangingFx() {
+      sirenLatched = false;
+      const latchBtn = document.getElementById('sirenLatchBtn');
+      if (latchBtn) {
+        latchBtn.classList.remove('active');
+        latchBtn.textContent = '🔒 Latch: OFF';
+      }
+      stopDubSiren(null, true);
+      cwKeyUp();
+      dubEchoActive = false;
+      const echoBtn = document.getElementById('dubEchoBtn');
+      if (echoBtn) {
+        echoBtn.classList.remove('active');
+        echoBtn.textContent = '🌊 Latch Echo Send: OFF';
+      }
+      document.getElementById('dubThrowBtn').classList.remove('pressed');
+      document.getElementById('dubRunawayBtn').classList.remove('active');
+      document.getElementById('plateBrakeBtn').classList.remove('active');
+      dubplateSpeedFactor = nominalPlateRpm;
+
+      if (audioCtx) {
+        const now = audioCtx.currentTime;
+        if (cwGain) cwGain.gain.setTargetAtTime(0.0, now, 0.01);
+        if (heterodyneGain) heterodyneGain.gain.setTargetAtTime(0.0, now, 0.01);
+        if (dubSendGain) dubSendGain.gain.setTargetAtTime(0.0, now, 0.01);
+        if (dubFbGainNode) {
+          dubFbGainNode.gain.cancelScheduledValues(now);
+          dubFbGainNode.gain.setValueAtTime(0.0, now);
+          const sliderFb = Math.min(0.75, Number(document.getElementById('echoFbSlider').value) / 100);
+          setTimeout(() => {
+            if (dubFbGainNode && audioCtx) {
+              dubFbGainNode.gain.setTargetAtTime(sliderFb, audioCtx.currentTime, 0.05);
+            }
+          }, 450);
+        }
+      }
+      document.getElementById('sirenStateLabel').textContent = 'FX FLUSHED';
+    }
+
+    // Global safety release so momentary buttons never hang if finger/cursor leaves button
+    ['mouseup', 'touchend', 'touchcancel', 'blur'].forEach(evtName => {
+      window.addEventListener(evtName, () => {
+        if (!sirenLatched && sirenActiveNodes) stopDubSiren(null, true);
+        if (cwDownTime > 0) cwKeyUp();
+        if (dubplateSpeedFactor < nominalPlateRpm) engagePlateBrake(false);
+        if (document.getElementById('dubThrowBtn').classList.contains('pressed')) momentaryVoiceDubThrow(false);
+        if (document.getElementById('dubRunawayBtn').classList.contains('active')) momentaryDubRunaway(false);
+      });
+    });
 
     // 10" Dubplate Pre-Amp, Wheel-Up Reload & Spring Tank
     function updateDubPreamp() {
       const hpfHz = Number(document.getElementById('tubbyHpfSlider').value);
       const echoMs = Number(document.getElementById('echoTimeSlider').value);
-      const echoFb = Number(document.getElementById('echoFbSlider').value);
+      const echoFb = Math.min(75, Number(document.getElementById('echoFbSlider').value));
 
       document.getElementById('valTubbyHpf').textContent = hpfHz <= 35 ? '20 Hz (Full)' : hpfHz + ' Hz';
       document.getElementById('valEchoTime').textContent = echoMs + ' ms';
@@ -2384,22 +2447,22 @@
     }
 
     function momentaryVoiceDubThrow(active) {
-      if (!isPowered) togglePower();
+      if (active && !isPowered) togglePower();
       const btn = document.getElementById('dubThrowBtn');
       btn.classList.toggle('pressed', active);
       if (dubSendGain && audioCtx) {
-        const target = active ? 0.92 : (dubEchoActive ? 0.68 : 0.0);
+        const target = active ? 0.78 : (dubEchoActive ? 0.55 : 0.0);
         dubSendGain.gain.setTargetAtTime(target, audioCtx.currentTime, 0.02);
       }
     }
 
     function momentaryDubRunaway(active) {
-      if (!isPowered) togglePower();
+      if (active && !isPowered) togglePower();
       const btn = document.getElementById('dubRunawayBtn');
       btn.classList.toggle('active', active);
       if (dubFbGainNode && audioCtx) {
-        const sliderFb = Number(document.getElementById('echoFbSlider').value) / 100;
-        dubFbGainNode.gain.setTargetAtTime(active ? 0.96 : sliderFb, audioCtx.currentTime, 0.02);
+        const sliderFb = Math.min(0.75, Number(document.getElementById('echoFbSlider').value) / 100);
+        dubFbGainNode.gain.setTargetAtTime(active ? 0.78 : sliderFb, audioCtx.currentTime, 0.02);
       }
     }
 
@@ -2410,7 +2473,7 @@
       btn.classList.toggle('active', dubEchoActive);
       btn.textContent = `🌊 Latch Echo Send: ${dubEchoActive ? 'ON (RE-201)' : 'OFF'}`;
       if (dubSendGain && audioCtx) {
-        dubSendGain.gain.setTargetAtTime(dubEchoActive ? 0.68 : 0.0, audioCtx.currentTime, 0.04);
+        dubSendGain.gain.setTargetAtTime(dubEchoActive ? 0.55 : 0.0, audioCtx.currentTime, 0.04);
       }
     }
 
@@ -2439,7 +2502,7 @@
     }
 
     function engagePlateBrake(engaged) {
-      if (!isPowered) togglePower();
+      if (engaged && !isPowered) togglePower();
       document.getElementById('plateBrakeBtn').classList.toggle('active', engaged);
       dubplateSpeedFactor = engaged ? 0.08 : nominalPlateRpm;
       document.getElementById('plateRpmLabel').textContent = engaged ? '🛑 BRAKING TO 0 RPM...' : `RPM: ${nominalPlateRpm.toFixed(2)}x`;
