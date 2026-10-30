@@ -500,14 +500,14 @@
     },
     spoken: {
       formula: 'What + Clause + is + Noun Phrase (Emphatic What-Cleft)',
-      beforeLabel: 'Student draft',
-      beforeMeta: 'Everyday Phrasing',
+      beforeLabel: 'What you said in our conversation',
+      beforeMeta: 'First-Pass Spoken Phrasing',
       beforeHtml: '&ldquo;In our clinic, the problem is that the new staff don\u2019t want to take responsibility when a patient complains, and it makes me very frustrated.&rdquo;',
-      beforeNote: 'Stringing clauses together with \u2018and it makes me...\u2019 weakens authority in meetings and Part 3.',
-      afterLabel: 'How we\u2019d improve it',
-      afterMeta: 'Clear & Natural',
+      beforeNote: 'Stringing clauses together with \u2018and it makes me...\u2019 dilutes your point when speaking in meetings or discussions.',
+      afterLabel: 'Live conversation upgrade',
+      afterMeta: 'C1 / Executive Precision',
       afterHtml: '&ldquo;<span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">What really holds the clinic back is</span> a <span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">reluctance among newer staff to take ownership</span> when a patient raises a complaint.&rdquo;',
-      tags: ['What-Cleft Opening', 'Natural Collocation', 'Clear Tone']
+      tags: ['Live Conversation Review', 'What-Cleft Opening', 'Precise Collocation']
     }
   };
 
