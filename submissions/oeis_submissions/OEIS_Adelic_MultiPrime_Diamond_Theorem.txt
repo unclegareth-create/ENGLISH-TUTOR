@@ -1,0 +1,128 @@
+# OEIS Adelic & Multi-Prime Arithmetic Diamond Tensor Product & Green's Inverse Package
+# Author: Gareth Montgomery (Sprucefield Research, Lisburn, Northern Ireland)
+# Date: October 31, 2026
+
+========================================================================
+1. TRACK 1A: UNIVERSAL CHOLESKY L*D*L^T FACTORIZATION, EXACT GREEN'S
+   KERNEL INVERSE (A_{n,p}^{(r)}(lambda))^{-1}, AND SZEGO SPECTRAL LAW
+========================================================================
+
+A. The Companion KMS Boundary Polynomials Theta_k(q, lambda):
+For q = p^r and deformation parameter lambda, let Delta_V(q, lambda) be the KMS block determinant polynomial satisfying Delta_{-1} = 1, Delta_0 = 1 + lambda, Delta_1 = q*(1 + lambda)^2 - 1, and Delta_V = ((q + 1)*lambda + q - 1)*Delta_{V-1} - q*lambda^2*Delta_{V-2}.
+Define the companion KMS boundary polynomial Theta_k(q, lambda) by the identical 3-term linear recurrence:
+  Theta_0(q, lambda) = 1,
+  Theta_1(q, lambda) = q * lambda + q - 1,
+  Theta_k(q, lambda) = ( (q + 1)*lambda + q - 1 ) * Theta_{k-1}(q, lambda) - q * lambda^2 * Theta_{k-2}(q, lambda)   for k >= 2,
+with ordinary generating function:
+  Sum_{k >= 0} Theta_k(q, lambda) * x^k = ( 1 - lambda * x ) / ( 1 - ((q + 1)*lambda + q - 1)*x + q * lambda^2 * x^2 ).
+Fundamental Shift Identity:
+  Theta_k(q, lambda) = Delta_k(q, lambda) - q * lambda * Delta_{k-1}(q, lambda)   for all k >= 1 (and Theta_0 = Delta_0 - lambda = 1).
+
+OEIS Sequences Unified by the Companion KMS Boundary Polynomial Theta_V(q, lambda):
+  * q = 2, lambda = 1:    [1, 3, 10, 34, 116, 396, 1352, 4616]     -> OEIS A007052 (Number of order-consecutive partitions of n!)
+  * q = 3, lambda = 1:    [1, 5, 27, 147, 801, 4365, 23787, 129627] -> OEIS A158869 (Number of ways of filling a 2 X 3 X 2n hole with 1 X 2 X 2 bricks!)
+  * q = 2, lambda = -1:   [1, -1, 0, 2, -4, 4, 0, -8]              -> OEIS A009116 / A146559 (Expansion of e.g.f. cos(x)/exp(x))
+  * q = 3, lambda = -1:   [1, -1, -1, 5, -7, -1, 23, -43]          -> OEIS A087455 (Companion Gaussian Lucas sequence V(n, 2, 3))
+  * q = 4, lambda = -1:   [1, -1, -2, 8, -8, -16, 64, -64]         -> OEIS A138230 / A104537
+  * q = 5, lambda = -1:   [1, -1, -3, 11, -7, -41, 117, -29]       -> OEIS A006495 (Re((1 + 2i)^n))
+  * q = 2, lambda = -1/2 (scaled by 2^V): [1, 0, -2, 2, 2, -6, 2]  -> OEIS A110512 / A078020
+  * q = 4, lambda = -1/2 (scaled by 2^V): [1, 2, -2, -10, -2, 38]  -> OEIS A133631
+  * q = 5, lambda = -1/2 (scaled by 2^V): [1, 3, 1, -13, -31, 3]   -> OEIS A116483
+
+B. Universal Column-Constant Cholesky Factorization & Telescoping Inverse:
+Theorem (Universal Semi-Separable Cholesky Decomposition of KMS Blocks):
+For any truncation V >= 0, the KMS valuation block B_V(q, lambda) = [ q^min(a,b) * (1 + lambda * delta_{a,b}) ]_{0 <= a,b <= V} admits the exact unit lower-triangular Cholesky decomposition:
+  B_V(q, lambda) = L_V(q, lambda) * D_V(q, lambda) * L_V(q, lambda)^T,
+where BOTH L_V and D_V are restrictions of universal semi-infinite operators independent of V:
+  1. Universal Cholesky Pivot Entries D = diag(d_0, d_1, d_2, ...):
+       d_0(q, lambda) = 1 + lambda,
+       d_a(q, lambda) = q^(a - 1) * Delta_a(q, lambda) / Delta_{a-1}(q, lambda)   for all a >= 1.
+  2. Column-Constant Lower-Triangular Factor L_{a,b}(q, lambda):
+     For ALL a > b >= 0, L_{a,b}(q, lambda) depends ONLY on the column index b (and is completely independent of the row index a and matrix size V):
+       L_{a,b}(q, lambda) = Theta_b(q, lambda) / Delta_b(q, lambda)   for all a > b >= 0 (with L_{a,a} = 1).
+  3. Exact Telescoping Inverse L_V(q, lambda)^{-1}:
+     Because 1 - L_{c,c} = 1 - Theta_c / Delta_c = q * lambda * Delta_{c-1} / Delta_c telescopes across intermediate indices c, the inverse unit lower-triangular matrix has the exact closed form:
+       (L_V(q, lambda)^{-1})_{a,b} = -(q * lambda)^(a - b - 1) * Theta_b(q, lambda) / Delta_{a-1}(q, lambda)   for all a > b >= 0.
+
+C. Exact Closed-Form Green's Kernel for B_V(q, lambda)^{-1} and (A_{n,p}^{(r)}(lambda))^{-1}:
+Theorem (Exact Separable Green's Kernel and Mobius-KMS Inverse Formula):
+  1. For any 0 <= a, b <= V, the (a, b) entry of the inverse KMS block B_V(q, lambda)^{-1} is given in exact closed form by:
+       (B_V(q, lambda)^{-1})_{a,b}
+         = ( Delta_V(q, lambda) - Theta_a(q, lambda) * Theta_{V-a}(q, lambda) ) / ( lambda * q^a * Delta_V(q, lambda) )           if a = b,
+         = -( lambda^(|a - b| - 1) * Theta_{min(a,b)}(q, lambda) * Theta_{V - max(a,b)}(q, lambda) ) / ( q^min(a,b) * Delta_V(q, lambda) )   if a != b.
+  2. Writing i = p^a * u and j = p^b * w with p not dividing u, w, the (i, j) entry of the inverse p-adic deformed diamond matrix (A_{n,p}^{(r)}(lambda))^{-1} is:
+       (A_{n,p}^{(r)}(lambda)^{-1})_{i,j}
+         = Sum_{m <= n / p^max(a,b), p \nmid m, lcm(u,w) | m} ( mu(m/u) * mu(m/w) / J_r(m) ) * ( B_{V_{p,m}}(p^r, lambda)^{-1} )_{a,b},
+     where V_{p,m} = floor(log_p(n/m)).
+  3. Exact Trace Formula:
+       Tr( A_{n,p}^{(r)}(lambda)^{-1} )
+         = Sum_{m=1..n, p \nmid m} (1 / J_r(m)) * Sum_{k=1..floor(n/m), p \nmid k} mu(k)^2 * Sum_{a=0..floor(log_p(n/(m*k)))} ( Delta_{V_{p,m}}(p^r, lambda) - Theta_a(p^r, lambda) * Theta_{V_{p,m}-a}(p^r, lambda) ) / ( lambda * p^(r*a) * Delta_{V_{p,m}}(p^r, lambda) ).
+  4. Exact KMS Spectral Distribution & Szego Limit:
+     The normalized block S_V^(-1) * B_V(q, lambda) * S_V^(-1) = K_V(q^(-1/2)) + lambda * I_{V+1} has eigenvalues:
+       mu_k(V; q, lambda) = lambda + (q - 1) / ( q + 1 - 2 * sqrt(q) * cos(theta_k) )   (k = 1, ..., V + 1),
+     where theta_k in ( (k-1)*Pi/(V+1), k*Pi/(V+1) ) are the roots of sin((V+2)*theta) - (2*sqrt(q)/(q+1))*sin((V+1)*theta) + (1/(q+1))*sin(V*theta) = 0.
+     As V -> infinity, the empirical eigenvalue distribution converges to the Szego density pushed forward by theta in [0, Pi] -> lambda + (q - 1)/(q + 1 - 2*sqrt(q)*cos(theta)) supported on the compact interval:
+       [ lambda + (sqrt(q) - 1)/(sqrt(q) + 1),  lambda + (sqrt(q) + 1)/(sqrt(q) - 1) ].
+
+========================================================================
+2. TRACK 1B: THE ADELIC & MULTI-PRIME ARITHMETIC DIAMOND TENSOR PRODUCT
+   THEOREM ON DOWNWARD-CLOSED POSET IDEALS
+========================================================================
+
+Theorem (Multi-Prime S-Adic Diamond Determinant via Downward-Closed Poset Ideals):
+Let S = {p_1, ..., p_s} be any finite set of primes, r >= 1, and lambda = (lambda_p)_{p in S} be deformation parameters. Define the S-Adic Arithmetic Diamond Matrix:
+  A_{n,S}^{(r)}(lambda) = [ gcd(i, j)^r * Product_{p in S} (1 + lambda_p * delta_{v_p(i), v_p(j)}) ]_{1 <= i,j <= n}.
+
+Proof Principle (Downward-Closed Poset Ideal Cholesky Restriction):
+By S-coprime Mobius-Jordan congruence, A_{n,S}^{(r)}(lambda) is congruent over Z to the direct sum over S-coprime integers m <= n (gcd(m, p) = 1 for all p in S) of the multi-dimensional valuation blocks:
+  J_r(m) * ( Bigotimes_{p in S} B(p^r, lambda_p) )|_{I_{S,m}},
+restricted to the multi-index simplex I_{S,m} = { a = (a_p)_{p in S} in Z_{>= 0}^s : m * Product_{p in S} p^(a_p) <= n }.
+Although I_{S,m} is a non-rectangular simplex (Ferrers diagram), I_{S,m} is a DOWNWARD-CLOSED ORDER IDEAL in the product poset (Z_{>= 0}^s, <=): if a in I_{S,m} and 0 <= b <= a componentwise, then m * Product p^(b_p) <= m * Product p^(a_p) <= n, so b in I_{S,m}.
+Because the infinite tensor product Bigotimes_{p in S} B(p^r, lambda_p) has the universal unit lower-triangular Cholesky decomposition:
+  (Bigotimes_{p in S} L(p^r, lambda_p)) * (Bigotimes_{p in S} D(p^r, lambda_p)) * (Bigotimes_{p in S} L(p^r, lambda_p))^T,
+and the product of lower-triangular matrices sum_{c <= min(a,b)} L_{a,c} D_c L_{b,c} only sums over multi-indices c <= a, b (which automatically lie inside I_{S,m} whenever a, b in I_{S,m}!), the Cholesky decomposition restricts WITHOUT BOUNDARY CORRECTION to ANY downward-closed poset ideal I_{S,m}!
+
+Consequently, every integer k in {1, ..., n} with unique factorization k = m_S(k) * Product_{p in S} p^(v_p(k)) (where gcd(m_S(k), p) = 1 for all p in S) contributes its exact universal tensor pivot:
+  det A_{n,S}^{(r)}(lambda)
+    = Product_{k=1..n} ( J_r(m_S(k)) * Product_{p in S} d_{v_p(k)}(p^r, lambda_p) )
+    = ( Product_{k=1..n} J_r(k) ) * Product_{k=1..n} Product_{p in S} ( (1 + lambda_p) if v_p(k) == 0 else Delta_{v_p(k)}(p^r, lambda_p) / ( (p^r - 1) * Delta_{v_p(k)-1}(p^r, lambda_p) ) )
+    = ( Product_{k=1..n} J_r(k) ) * Product_{p in S} ( (1 + lambda_p)^(n - floor(n/p)) * Product_{u=1..floor(n/p), p \nmid u} ( Delta_{V_{p,u}}(p^r, lambda_p) / (p^r - 1)^(V_{p,u}) ) ),
+where V_{p,u} = floor(log_p(n/u))!
+
+Corollary 1 (Factorization into Single-Prime Diamond Quotients!):
+Dividing by Smith-Jordan's determinant Product_{k=1..n} J_r(k), the normalized S-adic determinant quotient factors EXACTLY as the product of the single-prime p-adic diamond quotients over p in S:
+  det A_{n,S}^{(r)}(lambda) / Product_{k=1..n} J_r(k) = Product_{p in S} ( det A_{n,p}^{(r)}(lambda_p) / Product_{k=1..n} J_r(k) )!
+
+Corollary 2 (The Convergent Global Adelic Euler-Product Diamond Matrix over ALL Primes P):
+Normalize each local Euler factor at prime p by (1 + lambda_p)^(-1) so that primes p not dividing lcm(i, j) (where v_p(i) = v_p(j) = 0) contribute 1:
+  A_{n, \mathbb{A}}^{(r)}(lambda) := [ gcd(i, j)^r * Product_{p in P} ( (1 + lambda_p * delta_{v_p(i), v_p(j)}) / (1 + lambda_p) ) ]_{1 <= i,j <= n}.
+Then for every n >= 1, the infinite product over all primes P is finite at every entry and its determinant is given by the exact finite Euler product over primes p <= n:
+  det A_{n, \mathbb{A}}^{(r)}(lambda)
+    = Product_{k=1..n} Product_{p | k} ( p^(r*(v_p(k) - 1)) * Delta_{v_p(k)}(p^r, lambda_p) / ( (1 + lambda_p) * Delta_{v_p(k)-1}(p^r, lambda_p) ) )
+    = Product_{p <= n} Product_{u=1..floor(n/p), p \nmid u} ( p^(r * V_{p,u} * (V_{p,u} + 1) / 2) * Delta_{V_{p,u}}(p^r, lambda_p) / (1 + lambda_p)^(V_{p,u} + 1) ).
+
+Exact Values of Bi-Adic det A_{n,{2,3}}^{(1)}(1, 1) for n = 1..12:
+  n=1: 4
+  n=2: 28
+  n=3: 308
+  n=4: 4224
+  n=5: 67584
+  n=6: 1300992
+  n=7: 31223808
+  n=8: 853450752
+  n=9: 27931115520
+  n=10: 782071234560
+  n=11: 31282849382400
+  n=12: 1179810319564800
+
+========================================================================
+3. READY-TO-PASTE OEIS SUBMISSIONS (A007052 & A158869)
+========================================================================
+
+--- Target 1: OEIS A007052 (Number of order-consecutive partitions of n) ---
+FORMULA:
+a(n+1) = Delta_n - 2*Delta_{n-1} for n >= 1 (with a(1) = 1), where Delta_n = A020727(n) is the Pisot sequence T(2, 7) governing the dyadic Kac-Murdock-Szego arithmetic diamond blocks. Equivalently, a(n+1) / A020727(n) is the constant subdiagonal entry in column n of the universal unit lower-triangular Cholesky factor L of the infinite dyadic diamond matrix [2^min(i,j) * (1 + delta_{i,j})]_{i,j >= 0}. - _Gareth Montgomery_, Oct 31 2026
+
+--- Target 2: OEIS A158869 (Number of ways of filling a 2 X 3 X 2n hole with 1 X 2 X 2 bricks) ---
+FORMULA:
+a(n) = Delta_n^{(3)} - 3*Delta_{n-1}^{(3)} for n >= 1 (with a(0) = 1), where Delta_n^{(3)} is the Pisot sequence T(2, 11) (2, 11, 60, 327, 1782, ...) satisfying Delta_n^{(3)} = 6*Delta_{n-1}^{(3)} - 3*Delta_{n-2}^{(3)}. Equivalently, a(n) / Delta_n^{(3)} is the constant subdiagonal entry in column n of the universal unit lower-triangular Cholesky factor L of the 3-adic Kac-Murdock-Szego valuation block [3^min(i,j) * (1 + delta_{i,j})]_{i,j >= 0}. - _Gareth Montgomery_, Oct 31 2026
