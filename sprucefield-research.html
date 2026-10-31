@@ -228,15 +228,15 @@
       <!-- Theorems Overview -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-3">
-          <div class="text-xs font-bold uppercase tracking-wider text-slate-700 mono-font">Theorem 2.2 (Arithmetic Diamond Master Formula)</div>
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-700 mono-font">Theorem 2.2 (Universal Jordan-Pisot Power Diamond Formula)</div>
           <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
-            By the 2-adic resonance identity \(\gcd(i+j, |i-j|) = \gcd(i,j)(1 + \delta_{v_2(i), v_2(j)})\), odd-divisor M&ouml;bius congruence reduces \(A_n = [\gcd(i+j, |i-j|)]_{1\le i,j\le n}\) to a direct sum of dyadic Kac-Murdock-Szeg&#337; (KMS) Toeplitz blocks at the critical coupling \(\rho = 1/\sqrt{2}\):
+            For any integer exponent \(r \ge 1\), the 2-adic resonance \(\gcd(i^r+j^r, |i^r-j^r|) = \gcd(i,j)^r(1 + \delta_{v_2(i), v_2(j)})\) and odd-divisor Jordan totient \(J_r(m)\) M&ouml;bius congruence reduce \(A_n^{(r)} = [\gcd(i^r+j^r, |i^r-j^r|)]_{1\le i,j\le n}\) to dyadic Kac-Murdock-Szeg&#337; (KMS) Toeplitz blocks at coupling \(\rho_r = 2^{-r/2}\):
           </p>
           <div class="bg-white border border-slate-200 rounded-lg p-3 text-xs sm:text-sm overflow-x-auto">
-            $$\det\big[\gcd(i+j, \, |i-j|)\big]_{1\le i,j\le n} = \left(\prod_{k=1}^n \phi(k)\right) \prod_{\substack{m=1 \\ m\text{ odd}}}^{n} \Delta_{\lfloor \log_2(n/m)\rfloor}$$
+            $$\det\big[\gcd(i^r+j^r, \, |i^r-j^r|)\big]_{1\le i,j\le n} = \prod_{\substack{m=1 \\ m\text{ odd}}}^{n} J_r(m)^{V_m + 1} \, 2^{r V_m(V_m - 1)/2} \, \Delta_{V_m}^{(r)}, \quad V_m = \lfloor \log_2(n/m)\rfloor$$
           </div>
           <p class="text-xs text-slate-600 leading-relaxed">
-            Here \(\Delta_V = 4\Delta_{V-1} - 2\Delta_{V-2}\) (\(\Delta_0 = 2, \Delta_1 = 7\)) is the Pisot sequence \(P(2,7)\) (OEIS <a href="https://oeis.org/A020727" target="_blank" rel="noopener" class="underline font-semibold text-amber-900">A020727</a>: \(2, 7, 24, 82, 280, 956, \dots\)), equivalently the interleaved Pell (A000129) and companion Pell (A001333) numbers scaled by \(2^{\lfloor V/2\rfloor}\).
+            Here \(\Delta_V^{(r)} = 2^{r+1}\Delta_{V-1}^{(r)} - 2^r\Delta_{V-2}^{(r)}\) (\(\Delta_0^{(r)} = 2, \Delta_1^{(r)} = 2^{r+2}-1\)) satisfies the universal Cassini identity \((\Delta_V^{(r)})^2 - \Delta_{V+1}^{(r)}\Delta_{V-1}^{(r)} = 2^{r(V-1)}\), proving that \(\Delta_V^{(r)}\) is the exact Pisot sequence \(T(2, 2^{r+2}-1)\) for every \(r \ge 1\): OEIS <a href="https://oeis.org/A020727" target="_blank" rel="noopener" class="underline font-semibold text-amber-900">A020727</a> (\(T(2,7)\) for \(r=1\)) and OEIS <a href="https://oeis.org/A022026" target="_blank" rel="noopener" class="underline font-semibold text-amber-900">A022026</a> (\(T(2,15): 2, 15, 112, 836, 6240, \dots\) for \(r=2\)).
           </p>
         </div>
 
@@ -261,7 +261,14 @@
             <span class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Interactive Verifier 01 &middot; Exact BigInt Bareiss vs Closed-Form KMS Product</span>
             <h3 class="text-lg font-bold text-slate-900 mt-0.5">Arithmetic Diamond Determinant &amp; Shifted Smith 2-Adic Corank Explorer</h3>
           </div>
-          <div class="flex items-center gap-2 text-xs font-bold">
+          <div class="flex flex-wrap items-center gap-2 text-xs font-bold">
+            <label for="nt-r-select" class="text-slate-700 mono-font">Power \(r\):</label>
+            <select id="nt-r-select" onchange="runNumberTheoryVerifier()" class="bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-900 mono-font">
+              <option value="1" selected>r = 1 (Pisot T(2,7) · A020727)</option>
+              <option value="2">r = 2 (Pisot T(2,15) · A022026)</option>
+              <option value="3">r = 3 (Pisot T(2,31))</option>
+              <option value="4">r = 4 (Pisot T(2,63))</option>
+            </select>
             <label for="nt-n-select" class="text-slate-700 mono-font">Dimension \(n\):</label>
             <select id="nt-n-select" onchange="runNumberTheoryVerifier()" class="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-900 mono-font">
               <option value="1">n = 1</option>
@@ -471,30 +478,34 @@
             </p>
           </div>
 
-          <!-- Discoveries 6-9: Arithmetic Diamond & Shifted Smith OEIS Packages -->
+          <!-- Discoveries 6-10: Arithmetic Diamond, Jordan-Pisot T(2,15) & Shifted Smith OEIS Packages -->
           <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 space-y-3">
             <div class="flex items-center justify-between gap-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-amber-900 mono-font">6-9. OEIS <a href="https://oeis.org/A020727" target="_blank" rel="noopener" class="underline">A020727</a> &amp; Three New GCD Matrix Sequences</span>
-              <span class="text-[11px] font-bold mono-font text-emerald-800">4 Raw OEIS Packages</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-amber-900 mono-font">6-10. OEIS <a href="https://oeis.org/A020727" target="_blank" rel="noopener" class="underline">A020727</a>, <a href="https://oeis.org/A022026" target="_blank" rel="noopener" class="underline">A022026</a> &amp; GCD Matrix Packages</span>
+              <span class="text-[11px] font-bold mono-font text-emerald-800">5 Raw OEIS Packages</span>
             </div>
             <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
-              Complete OEIS sequence packages derived from Theorems 2.2 and 3.1 above, linking Pisot sequence \(P(2,7)\) (`A020727`) to dyadic Kac-Murdock-Szeg&#337; determinants and documenting the \(n=14\) 2-adic corank phase transition:
+              Complete OEIS sequence packages derived from Theorems 2.2 and 3.1 above, linking Pisot sequences \(T(2, 2^{r+2}-1)\) (`A020727` at \(r=1\), `A022026` at \(r=2\)) to dyadic Kac-Murdock-Szeg&#337; determinants and documenting the \(n=14\) 2-adic corank phase transition:
             </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs mono-font">
               <a href="submissions/oeis_submissions/OEIS_A020727_New_Determinant_Formula.txt" class="p-2.5 rounded-lg bg-white border border-slate-200 hover:border-amber-600 text-slate-800 transition flex items-center justify-between">
-                <span><strong>6. A020727:</strong> \(\det[2^{\min(i,j)}(1+\delta_{i,j})]\)</span>
+                <span><strong>6. A020727:</strong> \(T(2,7)\) KMS Det (\(r=1\))</span>
+                <span class="text-amber-800 font-bold">&rarr;</span>
+              </a>
+              <a href="submissions/oeis_submissions/OEIS_A022026_Jordan_KMS_Power_Diamond_Theorem.txt" class="p-2.5 rounded-lg bg-amber-50/70 border border-amber-300 hover:border-amber-600 text-amber-950 transition flex items-center justify-between">
+                <span><strong>7. A022026:</strong> \(T(2,15)\) Power KMS (\(r\ge 1\))</span>
                 <span class="text-amber-800 font-bold">&rarr;</span>
               </a>
               <a href="submissions/oeis_submissions/OEIS_New_Sequence_1_Diamond_GCD_Determinant.txt" class="p-2.5 rounded-lg bg-white border border-slate-200 hover:border-amber-600 text-slate-800 transition flex items-center justify-between">
-                <span><strong>7. New Seq #1:</strong> \(\det[\gcd(i+j,|i-j|)]\)</span>
+                <span><strong>8. New Seq #1:</strong> \(\det[\gcd(i+j,|i-j|)]\)</span>
                 <span class="text-amber-800 font-bold">&rarr;</span>
               </a>
               <a href="submissions/oeis_submissions/OEIS_New_Sequence_2_Diamond_Smith_Quotient.txt" class="p-2.5 rounded-lg bg-white border border-slate-200 hover:border-amber-600 text-slate-800 transition flex items-center justify-between">
-                <span><strong>8. New Seq #2:</strong> \(\prod_{m\text{ odd}} \Delta_{\lfloor \log_2(n/m)\rfloor}\)</span>
+                <span><strong>9. New Seq #2:</strong> \(\prod_{m\text{ odd}} \Delta_{\lfloor \log_2(n/m)\rfloor}\)</span>
                 <span class="text-amber-800 font-bold">&rarr;</span>
               </a>
-              <a href="submissions/oeis_submissions/OEIS_New_Sequence_3_Shifted_Smith_Excess_Corank.txt" class="p-2.5 rounded-lg bg-white border border-slate-200 hover:border-amber-600 text-slate-800 transition flex items-center justify-between">
-                <span><strong>9. New Seq #3:</strong> \(\max(0,\lfloor n/2\rfloor-2-\pi_{3,4}^*)\)</span>
+              <a href="submissions/oeis_submissions/OEIS_New_Sequence_3_Shifted_Smith_Excess_Corank.txt" class="sm:col-span-2 p-2.5 rounded-lg bg-white border border-slate-200 hover:border-amber-600 text-slate-800 transition flex items-center justify-between">
+                <span><strong>10. New Seq #3:</strong> \(\max(0,\lfloor n/2\rfloor-2-\pi_{3,4}^*(n-1))\) (\(n=14\) Transition)</span>
                 <span class="text-amber-800 font-bold">&rarr;</span>
               </a>
             </div>
@@ -969,14 +980,35 @@
       return result;
     }
 
-    // Pisot sequence P(2,7) (OEIS A020727): Delta_0 = 2, Delta_1 = 7, Delta_V = 4*Delta_{V-1} - 2*Delta_{V-2}
-    function pisotDelta(V) {
+    // Jordan's totient function J_r(k) = k^r * prod_{p | k} (1 - p^{-r})
+    function jordanTotientBigInt(r, k) {
+      let res = BigInt(k) ** BigInt(r);
+      let temp = k;
+      for (let p = 2; p * p <= temp; p++) {
+        if (temp % p === 0) {
+          while (temp % p === 0) temp = Math.floor(temp / p);
+          const pr = BigInt(p) ** BigInt(r);
+          res = (res * (pr - 1n)) / pr;
+        }
+      }
+      if (temp > 1) {
+        const pr = BigInt(temp) ** BigInt(r);
+        res = (res * (pr - 1n)) / pr;
+      }
+      return res;
+    }
+
+    // Generalized Pisot T-sequence T(2, 2^{r+2}-1) (A020727 for r=1, A022026 for r=2):
+    // Delta_0^{(r)} = 2, Delta_1^{(r)} = 2^{r+2}-1, Delta_V^{(r)} = 2^{r+1}*Delta_{V-1}^{(r)} - 2^r*Delta_{V-2}^{(r)}
+    function pisotDeltaPower(r, V) {
+      const q = 1n << BigInt(r);
       if (V === 0) return 2n;
-      if (V === 1) return 7n;
+      const d1Init = 4n * q - 1n;
+      if (V === 1) return d1Init;
       let d0 = 2n;
-      let d1 = 7n;
+      let d1 = d1Init;
       for (let k = 2; k <= V; k++) {
-        const next = 4n * d1 - 2n * d0;
+        const next = 2n * q * d1 - q * d0;
         d0 = d1;
         d1 = next;
       }
@@ -1054,53 +1086,57 @@
 
     function runNumberTheoryVerifier() {
       const n = parseInt(document.getElementById('nt-n-select').value, 10) || 6;
+      const rExp = parseInt((document.getElementById('nt-r-select') || {}).value, 10) || 1;
       const shiftK = Math.max(0, parseInt(document.getElementById('nt-shift-k').value, 10) || 0);
 
-      // 1. Build Arithmetic Diamond Matrix A_n = [gcd(i+j, |i-j|)]
+      // 1. Build Power Arithmetic Diamond Matrix A_n^(r) = [gcd(i^r+j^r, |i^r-j^r|)]
       const A = [];
       for (let i = 1; i <= n; i++) {
         const row = [];
+        const ir = Math.pow(i, rExp);
         for (let j = 1; j <= n; j++) {
-          row.push(gcdInt(i + j, Math.abs(i - j)));
+          const jr = Math.pow(j, rExp);
+          row.push(gcdInt(ir + jr, Math.abs(ir - jr)));
         }
         A.push(row);
       }
 
       const detBareiss = bareissDetBigInt(A);
 
-      // 2. Closed-Form Pisot P(2,7) KMS Formula
-      let smithBase = 1n;
-      for (let k = 1; k <= n; k++) {
-        smithBase *= BigInt(eulerPhi(k));
-      }
-      let diamondQuot = 1n;
+      // 2. Universal Jordan-Pisot T(2, 2^{r+2}-1) KMS Formula
+      let jordanBase = 1n;
+      let pisotProduct = 1n;
       const oddFactorsDesc = [];
       for (let m = 1; m <= n; m += 2) {
         const Vm = Math.floor(Math.log2(n / m));
-        const deltaVm = pisotDelta(Vm);
-        diamondQuot *= deltaVm;
-        oddFactorsDesc.push(`m=${m}: Δ_${Vm}=${deltaVm.toString()}`);
+        const jrm = jordanTotientBigInt(rExp, m);
+        const dyadicScale = 1n << BigInt(rExp * Vm * (Vm - 1) / 2);
+        jordanBase *= (jrm ** BigInt(Vm + 1)) * dyadicScale;
+        const deltaVm = pisotDeltaPower(rExp, Vm);
+        pisotProduct *= deltaVm;
+        oddFactorsDesc.push(`m=${m}: Δ_${Vm}^(${rExp})=${deltaVm.toString()}`);
       }
-      const detFormula = smithBase * diamondQuot;
+      const detFormula = jordanBase * pisotProduct;
 
       document.getElementById('nt-det-bareiss').textContent = detBareiss.toLocaleString('en-GB');
       document.getElementById('nt-det-formula').textContent = detFormula.toLocaleString('en-GB');
-      document.getElementById('nt-smith-base').textContent = smithBase.toLocaleString('en-GB');
-      document.getElementById('nt-diamond-quot').textContent = diamondQuot.toLocaleString('en-GB');
-      document.getElementById('nt-factors-sub').textContent = `${smithBase.toString()} × ${diamondQuot.toString()}`;
+      document.getElementById('nt-smith-base').textContent = jordanBase.toLocaleString('en-GB');
+      document.getElementById('nt-diamond-quot').textContent = pisotProduct.toLocaleString('en-GB');
+      document.getElementById('nt-factors-sub').textContent = `${jordanBase.toString()} × ${pisotProduct.toString()}`;
       document.getElementById('nt-odd-blocks-list').textContent = oddFactorsDesc.join(' · ');
 
       const matchBadge = document.getElementById('nt-match-badge');
       if (detBareiss === detFormula) {
-        matchBadge.textContent = '✓ EXACT IDENTITY VERIFIED';
+        matchBadge.textContent = `✓ EXACT r=${rExp} IDENTITY VERIFIED`;
         matchBadge.className = 'text-[11px] text-emerald-700 font-bold mt-1 mono-font';
       } else {
         matchBadge.textContent = 'MISMATCH';
         matchBadge.className = 'text-[11px] text-rose-700 font-bold mt-1 mono-font';
       }
 
-      // Render Matrix A_n
-      document.getElementById('nt-matrix-title').textContent = `Arithmetic Diamond Matrix A_${n} (${n}×${n})`;
+      // Render Matrix A_n^(r)
+      const supStr = rExp === 1 ? '' : `^(${rExp})`;
+      document.getElementById('nt-matrix-title').textContent = `Arithmetic Diamond Matrix A_${n}${supStr} (${n}×${n})`;
       let tableHtml = '<table class="w-full text-center border-collapse text-xs mono-font">';
       for (let i = 0; i < n; i++) {
         tableHtml += '<tr>';

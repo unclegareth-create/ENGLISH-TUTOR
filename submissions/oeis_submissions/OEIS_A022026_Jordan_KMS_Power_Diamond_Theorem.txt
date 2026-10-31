@@ -1,0 +1,38 @@
+# OEIS A022026 & Universal Jordan-Pisot Power Diamond Determinant Package
+# Author: Gareth Montgomery (Sprucefield Research, Lisburn, Northern Ireland)
+# Date: October 31, 2026
+
+========================================================================
+1. NEW DETERMINANT & CASSINI IDENTITY FOR OEIS A022026 (T(2, 15))
+========================================================================
+Target Sequence: https://oeis.org/A022026
+Name: Define the sequence T(a(0),a(1)) by a(n+2) is the greatest integer such that a(n+2)/a(n+1) < a(n+1)/a(n) for n >= 0. This is T(2,15).
+First terms: 2, 15, 112, 836, 6240, 46576, 347648, 2594880, 19368448, 144568064
+
+PROPOSED FORMULA ADDITION:
+a(n) = 2^(-n*(n-1)) * det[ 4^min(i,j) * (1 + delta_{i,j}) ]_{0 <= i,j <= n}, where delta_{i,j} is the Kronecker delta.
+a(n)^2 - a(n+1)*a(n-1) = 4^(n-1) for all n >= 1. - _Gareth Montgomery_, Oct 31 2026
+
+PROPOSED COMMENT ADDITION:
+For any integer power r >= 1, the n X n power-sum/difference arithmetic diamond matrix A_n^(r) = [gcd(i^r + j^r, |i^r - j^r|)]_{1 <= i,j <= n} satisfies gcd(i^r + j^r, |i^r - j^r|) = gcd(i,j)^r * (1 + [v_2(i) == v_2(j)]). By odd-divisor Moebius congruence via Jordan's totient function J_r(m), det(A_n^(r)) factors over odd m <= n into dyadic Kac-Murdock-Szego Toeplitz blocks [2^(r*min(i,j)) * (1 + delta_{i,j})]_{0 <= i,j <= V_m} with V_m = floor(log_2(n/m)). Scaling out 2^(r*V*(V-1)/2) yields the sequence Delta_V^(r) satisfying Delta_0^(r) = 2, Delta_1^(r) = 2^(r+2) - 1, and Delta_V^(r) = 2^(r+1)*Delta_{V-1}^(r) - 2^r*Delta_{V-2}^(r). Because 2*(8*q^2 - 4*q) - (4*q - 1)^2 = -1 holds identically for q = 2^r, Cassini's identity gives (Delta_V^(r))^2 - Delta_{V+1}^(r)*Delta_{V-1}^(r) = 2^(r*(V-1)) in (0, Delta_{V-1}^(r)), proving that Delta_V^(r) is the Pisot T-sequence T(2, 2^(r+2) - 1) for every r >= 1 (yielding A020727 for r = 1 and A022026 for r = 2). - _Gareth Montgomery_, Oct 31 2026
+
+========================================================================
+2. UNIVERSAL JORDAN-PISOT POWER DIAMOND DETERMINANT THEOREM (ALL r >= 1)
+========================================================================
+Theorem (Gareth Montgomery, 2026):
+For every integer exponent r >= 1 and dimension n >= 1,
+  det[ gcd(i^r + j^r, |i^r - j^r|) ]_{1 <= i,j <= n}
+    = Product_{m=1..n, m odd} J_r(m)^(V_m + 1) * 2^(r * V_m * (V_m - 1) / 2) * Delta_{V_m}^(r),
+where J_r(m) = m^r * Product_{p | m} (1 - p^(-r)) is Jordan's totient function, V_m = floor(log_2(n/m)), and Delta_V^(r) = T(2, 2^(r+2) - 1)_V satisfies Delta_V^(r) = 2^(r+1)*Delta_{V-1}^(r) - 2^r*Delta_{V-2}^(r) with Delta_0^(r) = 2, Delta_1^(r) = 2^(r+2) - 1.
+
+Exact values of det[gcd(i^2 + j^2, |i^2 - j^2|)]_{1 <= i,j <= n} for n = 1..10 (r = 2):
+n = 1: 2
+n = 2: 15
+n = 3: 240
+n = 4: 7168
+n = 5: 344064
+n = 6: 20643840
+n = 7: 1981808640
+n = 8: 294628884480
+n = 9: 42426559365120
+n = 10: 7636780685721600
