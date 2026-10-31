@@ -13,6 +13,17 @@
   <meta property="og:description" content="Exact determinants of Arithmetic Diamond and Shifted Smith matrices, Poisson-Bernoulli pharmacokinetic washout laws in adaptive oncology, and Split-Mark Poset identifiability in Cambridge psychometrics." />
   <meta property="og:url" content="https://garethenglish.com/sprucefield-research.html" />
   <meta property="og:image" content="https://garethenglish.com/og-image.png" />
+  <!-- Google Scholar / Highwire Press Academic Citation Meta Tags -->
+  <meta name="citation_title" content="The Dyadic Kac-Murdock-Szego Spectrum of Arithmetic Diamond Matrices and the n=14 Phase Transition in Shifted Smith Determinants" />
+  <meta name="citation_author" content="Montgomery, Gareth" />
+  <meta name="citation_publication_date" content="2026/10/23" />
+  <meta name="citation_online_date" content="2026/10/31" />
+  <meta name="citation_technical_report_institution" content="Sprucefield Research, Lisburn, Northern Ireland, UK" />
+  <meta name="citation_doi" content="10.5281/zenodo.23611255" />
+  <meta name="citation_pdf_url" content="https://garethenglish.com/submissions/oeis_submissions/Montgomery_2026_Arithmetic_Diamond_and_Shifted_GCD_Determinants.pdf" />
+  <meta name="citation_fulltext_html_url" content="https://garethenglish.com/sprucefield-research.html" />
+  <meta name="citation_language" content="en" />
+  <meta name="citation_keywords" content="Smith determinant; GCD matrix; Kac-Murdock-Szego Toeplitz matrix; Pisot sequence A020727; 2-adic valuation; Lipschitz quaternions A227477; permutation circulant A392191; coprime Hamiltonian paths A109813" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -200,6 +211,9 @@
           <a href="submissions/oeis_submissions/JIS_Manuscript_Montgomery.tex" class="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-800 border border-slate-300 hover:bg-slate-200 transition mono-font">
             TeX Source
           </a>
+          <button onclick="copyBibtex('nt', this)" class="px-3.5 py-2 rounded-xl bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100 transition mono-font">
+            📚 Copy BibTeX
+          </button>
         </div>
       </div>
 
@@ -509,6 +523,9 @@
                 <option value="50">n = 50 (Extended A109813 milestone)</option>
                 <option value="900">n = 900 (Smallest p = 5 witness in A236864)</option>
               </select>
+              <button onclick="copyDeepLinkN(this)" class="px-3 py-1.5 rounded-lg bg-amber-50 border border-amber-300 hover:bg-amber-100 text-amber-950 transition mono-font">
+                🔗 Share Deep-Link
+              </button>
               <button onclick="toggleReveal('oeis-modular-reveal')" class="px-3 py-1.5 rounded-lg bg-white border border-slate-300 hover:border-amber-600 text-slate-800 transition">
                 👁️ Reveal Proof &amp; Cambridge Model
               </button>
@@ -1824,8 +1841,47 @@
       }).join('');
     }
 
-    // Initialise all 4 live verifiers on page load
+    const BIBTEX_ENTRIES = {
+      nt: `@article{Montgomery2026DiamondSmith,\n  author = {Montgomery, Gareth},\n  title = {The Dyadic Kac-Murdock-Szego Spectrum of Arithmetic Diamond Matrices and the n=14 Phase Transition in Shifted Smith Determinants},\n  year = {2026},\n  institution = {Sprucefield Research, Lisburn, Northern Ireland},\n  doi = {10.5281/zenodo.23611255},\n  url = {https://garethenglish.com/sprucefield-research.html}\n}`
+    };
+
+    function copyBibtex(key, btn) {
+      const text = BIBTEX_ENTRIES[key] || BIBTEX_ENTRIES.nt;
+      navigator.clipboard.writeText(text).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ BibTeX Copied!';
+        setTimeout(() => { btn.innerHTML = orig; }, 1600);
+      });
+    }
+
+    function copyDeepLinkN(btn) {
+      const n = document.getElementById('oeis-n-input').value || '13';
+      const url = `https://garethenglish.com/sprucefield-research.html?n=${encodeURIComponent(n)}#oeis-ledger`;
+      navigator.clipboard.writeText(url).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = `✓ Copied ?n=${n}`;
+        setTimeout(() => { btn.innerHTML = orig; }, 1600);
+      });
+    }
+
+    // Initialise all 4 live verifiers on page load and apply any URL query parameters (?n=29, ?dim=12, ?k=3)
     window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('dim')) {
+        const dimEl = document.getElementById('nt-n-select');
+        if (dimEl) dimEl.value = params.get('dim');
+      }
+      if (params.has('k')) {
+        const kEl = document.getElementById('nt-shift-k');
+        if (kEl) kEl.value = params.get('k');
+      }
+      if (params.has('n')) {
+        const nVal = params.get('n');
+        const nInput = document.getElementById('oeis-n-input');
+        const nPreset = document.getElementById('oeis-preset-select');
+        if (nInput) nInput.value = nVal;
+        if (nPreset) nPreset.value = nVal;
+      }
       runNumberTheoryVerifier();
       renderA109813Table();
       runOeisModularVerifier();

@@ -768,7 +768,7 @@
   <!-- Top Sticky Nav -->
   <header class="top-nav">
     <div class="top-nav-inner">
-      <a href="../../index.html" class="hub-link teacher-only">
+      <a href="../index.html" class="hub-link teacher-only">
         &larr; All Students Master Portal
       </a>
       <div class="nav-actions">
@@ -875,6 +875,7 @@
     </div>
 
     
+
 
 
 
@@ -1103,7 +1104,7 @@
           <p class="res-desc">Confirmed Band 7.0 baseline (6.88 raw)! Wh-cleft & It-cleft triumph, with 5 surgical C1/C2 upgrades to secure your 7.5 cushion.</p>
         </div>
         <div class="card-actions">
-          <a class="btn-card solid-blue" href="https://docs.google.com/document/d/1Rjvr0E9kUj4ZdQ9kr8TMdqgQBa9uzTznt2LdQw3EgtM/edit?tab=t.0" target="_blank" rel="noopener noreferrer">Open Resource &rarr;</a>
+          <a class="btn-card solid-blue" href="https://docs.google.com/document/d/1Rjvr0E9kUj4ZdQ9kr8TMdqgQBa9uzTznt2LdQw3EgtM/edit?tab=t.0" target="_blank">Open Resource &rarr;</a>
           <button class="btn-card ghost" onclick="copyCardLink(this, 'https://docs.google.com/document/d/1Rjvr0E9kUj4ZdQ9kr8TMdqgQBa9uzTznt2LdQw3EgtM/edit?tab=t.0')">Copy Link</button>
         </div>
       </article>
@@ -1132,6 +1133,7 @@
     </div>
 
     
+
 
 
 
@@ -1275,7 +1277,7 @@
         </div>
         <div class="form-group">
           <label>Resource Link / File Path</label>
-          <input type="text" id="new-res-link" class="form-input" placeholder="e.g. lesson-deck.html or https://garethenglish.com/..." />
+          <input type="text" id="new-res-link" class="form-input" placeholder="e.g. file:///C:/path/to/file.html or https://..." />
         </div>
         <div class="form-group">
           <label>Description &amp; Brief</label>
@@ -1462,16 +1464,6 @@
       document.getElementById('new-res-desc').value = '';
     }
 
-    function escapeHtml(str) {
-      return String(str || '').replace(/[&<>"']/g, function(c) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-      });
-    }
-    function safeUrl(u) {
-      const s = String(u || '').trim();
-      if (/^(javascript|data|vbscript):/i.test(s)) return '#';
-      return escapeHtml(s);
-    }
     function renderCustomResources() {
       const saved = JSON.parse(localStorage.getItem('gareth_resources_' + STUDENT_ID) || '[]');
       const grid = document.getElementById('resources-grid');
@@ -1483,14 +1475,14 @@
         card.innerHTML = 
           '<div>' +
             '<div class="card-meta-row">' +
-              '<span class="card-category" style="color: var(--navy-800);">' + escapeHtml(item.cat || 'Custom') + '</span>' +
-              '<span class="card-status-pill">' + escapeHtml(item.date || 'Collated') + '</span>' +
+              '<span class="card-category" style="color: var(--navy-800);">' + (item.cat || 'Custom') + '</span>' +
+              '<span class="card-status-pill">' + (item.date || 'Collated') + '</span>' +
             '</div>' +
-            '<h3 class="res-title">' + escapeHtml(item.title) + '</h3>' +
-            '<p class="res-desc">' + escapeHtml(item.desc || 'Collated custom resource.') + '</p>' +
+            '<h3 class="res-title">' + item.title + '</h3>' +
+            '<p class="res-desc">' + (item.desc || 'Collated custom resource.') + '</p>' +
           '</div>' +
           '<div class="card-actions">' +
-            '<a class="btn-card solid-blue" href="' + safeUrl(item.link) + '" target="_blank" rel="noopener noreferrer">Open Resource &rarr;</a>' +
+            '<a class="btn-card solid-blue" href="' + item.link + '" target="_blank">Open Resource &rarr;</a>' +
             '<button class="btn-card ghost" onclick="copyCardLink(this, \'' + item.link.replace(/'/g, "\\'") + '\')">Copy</button>' +
             '<button class="btn-card ghost" style="color: #ef4444;" onclick="deleteCustomResource(' + idx + ')">&#128465;&#65039;</button>' +
           '</div>';
