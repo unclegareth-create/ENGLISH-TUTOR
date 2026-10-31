@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Fordow Hash | Executive C1 &amp; IELTS Mastery Pack | GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --surface-alt: #f0eee8;
+      --ink: #141619;
+      --ink-muted: #4b505b;
+      --accent: #0f4c5c;
+      --accent-dark: #093540;
+      --accent-light: #e6f0f2;
+      --amber: #b45309;
+      --amber-bg: #fef3c7;
+      --emerald: #065f46;
+      --emerald-bg: #d1fae5;
+      --rose: #9f1239;
+      --rose-bg: #ffe4e6;
+      --border: #e2dfd7;
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(20, 22, 25, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.65;
+      padding-bottom: 4rem;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.6rem;
+      color: var(--ink);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .brand span {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .container {
+      max-width: 940px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .hero-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+
+    .hero-img-wrap {
+      position: relative;
+      height: 310px;
+      background: #14181f;
+      overflow: hidden;
+    }
+
+    .hero-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.82;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(14, 18, 24, 0.94) 0%, rgba(14, 18, 24, 0.22) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 2.25rem;
+      color: #fff;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(6px);
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 2.65rem;
+      font-weight: 400;
+      line-height: 1.15;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1.02rem;
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 720px;
+    }
+
+    .section-pane {
+      display: none;
+    }
+
+    .section-pane.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-size: 1.95rem;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    h3 {
+      font-size: 1.08rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--ink);
+    }
+
+    .rubric {
+      color: var(--ink-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Speaking Warm-Up & Timer */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    .rule-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+    }
+
+    .rule-box .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    .cue-card {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      padding: 1.5rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.5rem 0;
+    }
+
+    .cue-card h3 {
+      color: var(--accent);
+      margin-bottom: 0.65rem;
+    }
+
+    .cue-card ul {
+      margin-left: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .cue-card li {
+      margin-bottom: 0.3rem;
+    }
+
+    .timer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-top: 1.25rem;
+    }
+
+    .timer-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 90px;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .note-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .note-strip input {
+      padding: 0.6rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      background: #fff;
+    }
+
+    /* Prose & C1 Inspector */
+    .toolbar-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .prose p {
+      margin-bottom: 1.25rem;
+      font-size: 1.06rem;
+      color: #202328;
+    }
+
+    .c1-highlight {
+      background: var(--amber-bg);
+      border-bottom: 2px solid var(--amber);
+      padding: 0.05rem 0.25rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .c1-highlight:hover {
+      background: #fde68a;
+    }
+
+    .c1-tag {
+      display: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: var(--amber);
+      color: #fff;
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      margin-left: 0.35rem;
+      vertical-align: middle;
+    }
+
+    .show-tags .c1-tag {
+      display: inline-block;
+    }
+
+    .img-inline {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin: 1.25rem 0;
+      border: 1px solid var(--border);
+    }
+
+    /* Scoreboard & Part 4 Workout */
+    .score-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--accent);
+      color: #fff;
+      padding: 1rem 1.35rem;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-Readout {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .formula-banner {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.85rem 1.15rem;
+      margin-bottom: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+    }
+
+    .kwt-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      background: #fff;
+      transition: border-color 0.2s ease;
+    }
+
+    .kwt-item.correct {
+      border-color: var(--emerald);
+      background: #f8fdfa;
+    }
+
+    .kwt-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      margin-bottom: 0.45rem;
+    }
+
+    .kwt-s1 {
+      font-size: 1.02rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .kwt-keyword {
+      display: inline-block;
+      background: var(--ink);
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      padding: 0.2rem 0.65rem;
+      border-radius: 4px;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+      font-size: 0.88rem;
+    }
+
+    .kwt-s2 {
+      font-size: 1.02rem;
+      margin-bottom: 1rem;
+      font-weight: 500;
+      line-height: 2;
+    }
+
+    .kwt-input {
+      border: none;
+      border-bottom: 2px solid var(--accent);
+      background: var(--accent-light);
+      padding: 0.3rem 0.65rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.94rem;
+      width: 280px;
+      max-width: 100%;
+      color: var(--ink);
+      border-radius: 4px 4px 0 0;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .reveal-btn {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      padding: 0.48rem 0.95rem;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .reveal-btn:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .check-btn {
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: #fff;
+      padding: 0.48rem 0.95rem;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .check-btn:hover {
+      background: var(--accent-dark);
+    }
+
+    .feedback-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .feedback-pill.pass {
+      display: inline-block;
+      background: var(--emerald-bg);
+      color: var(--emerald);
+    }
+
+    .feedback-pill.fail {
+      display: inline-block;
+      background: var(--rose-bg);
+      color: var(--rose);
+    }
+
+    .model-box {
+      display: none;
+      margin-top: 1rem;
+      padding: 1.15rem;
+      background: var(--emerald-bg);
+      border-left: 4px solid var(--emerald);
+      border-radius: 0 8px 8px 0;
+      font-size: 0.92rem;
+    }
+
+    .model-box.open {
+      display: block;
+    }
+
+    .model-answer {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--emerald);
+      margin-bottom: 0.5rem;
+    }
+
+    .steps-list {
+      list-style: none;
+      margin-top: 0.5rem;
+      display: grid;
+      gap: 0.3rem;
+      color: #1f2937;
+    }
+
+    /* Comparison Data Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      font-size: 0.92rem;
+    }
+
+    .data-table th,
+    .data-table td {
+      border: 1px solid var(--border);
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: var(--surface-alt);
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 2rem; }
+      header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="brand">Gareth<span>English</span></a>
+    <nav class="nav-tabs" aria-label="Module Navigation">
+      <button class="tab-btn active" onclick="switchTab('warmup', this)">1. Speaking Warm-Up</button>
+      <button class="tab-btn" onclick="switchTab('story', this)">2. Short Story: The Fordow Hash</button>
+      <button class="tab-btn" onclick="switchTab('part4', this)">3. C1 Part 4 Workout</button>
+      <button class="tab-btn" onclick="switchTab('essay', this)">4. Editorial Essay: Energy Arbitrage</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="hero-card">
+      <div class="hero-img-wrap">
+        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80" alt="High-voltage power grid and server infrastructure in desert mountains">
+        <div class="hero-overlay">
+          <div class="badge-row">
+            <span class="badge">Cambridge C1 Advanced</span>
+            <span class="badge">IELTS Band 7.5–9.0</span>
+            <span class="badge">Executive English &amp; Geopolitics</span>
+          </div>
+          <h1>The Fordow Hash: Energy, Mountains &amp; Sovereign Compute</h1>
+          <p class="subtitle">An original geopolitical thriller short, non-fiction editorial essay, and interactive C1 structural workout on how stranded energy powers digital currencies and deep-earth data centres.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANE 1: ACTIVE SPEAKING WARM-UP -->
+    <section id="pane-warmup" class="section-pane active">
+      <div class="card">
+        <h2>Step 1: IELTS Speaking Part 2 Long Turn</h2>
+        <p class="rubric">Take 1 minute to prepare your four trigger keywords below, then speak for up to 2 minutes using the live timer.</p>
+
+        <div class="grid-3">
+          <div class="rule-box">
+            <span class="num">Rule 01 · The 1-Minute Note Secret</span>
+            <strong>4 Trigger Keywords Only</strong>
+            <p style="font-size: 0.88rem; color: var(--ink-muted); margin-top: 0.35rem;">Write only four single trigger words down the margin (one per bullet). Never write full sentences on your notepad.</p>
+          </div>
+          <div class="rule-box">
+            <span class="num">Rule 02 · The 3-Act Story Arc</span>
+            <strong>30s &rarr; 45s &rarr; 45s</strong>
+            <p style="font-size: 0.88rem; color: var(--ink-muted); margin-top: 0.35rem;">Past Context (30s) &rarr; Sensory Snapshot / Core Scene (45s) &rarr; Reflection / 'So What?' (45s).</p>
+          </div>
+          <div class="rule-box">
+            <span class="num">Rule 03 · The Cambridge Anchor</span>
+            <strong>Springboards, Not Checklists</strong>
+            <p style="font-size: 0.88rem; color: var(--ink-muted); margin-top: 0.35rem;">Bullet points are springboards, not an interrogation checklist. If you finish early, deepen your reflection and comparison until halted.</p>
+          </div>
+        </div>
+
+        <div class="cue-card">
+          <h3>Part 2 Cue Card</h3>
+          <p style="margin-bottom: 0.75rem;"><strong>Describe a piece of critical infrastructure, a power plant, or a technological facility that made a strong impression on you.</strong></p>
+          <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">You should say:</p>
+          <ul>
+            <li>where this facility or piece of infrastructure is located</li>
+            <li>what kind of energy, data, or service it produces</li>
+            <li>how it affects the surrounding environment or economy</li>
+          </ul>
+          <p><strong>and explain why this particular site or technology stood out to you.</strong></p>
+        </div>
+
+        <div class="note-strip" aria-label="1-Minute Trigger Keywords">
+          <input type="text" placeholder="1. Location keyword...">
+          <input type="text" placeholder="2. Output/Service keyword...">
+          <input type="text" placeholder="3. Impact keyword...">
+          <input type="text" placeholder="4. Reflection keyword...">
+        </div>
+
+        <div class="timer-bar">
+          <div>
+            <strong id="timer-label" style="display:block; font-size:0.85rem; color:var(--ink-muted);">LIVE SPEAKING CLOCK</strong>
+            <div id="timer-readout" class="timer-display">01:00</div>
+          </div>
+          <div class="timer-controls">
+            <button class="reveal-btn" onclick="startTimer(60, '1-Minute Prep Time')">⏱️ Start 1-Min Prep</button>
+            <button class="check-btn" onclick="startTimer(120, '2-Minute Long Turn')">🎙️ Start 2-Min Long Turn</button>
+            <button class="reveal-btn" onclick="resetTimer()">↺ Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Step 2: Part 3 Discussion (A.R.E.A. Challenge)</h2>
+        <p class="rubric">Answer &rarr; Reason &rarr; Example &rarr; Alternative. Aim to include at least one C1 structural shift (cleft sentence or passive reporting) in each response.</p>
+
+        <div class="kwt-item">
+          <div class="kwt-num">QUESTION 01 · ENERGY &amp; COMPUTE</div>
+          <p class="kwt-s1"><strong>Why are major technology companies and sovereign governments now competing so fiercely to secure electricity grids and power stations?</strong></p>
+          <div class="formula-banner">Target Frame: What has transformed the energy market is + [Noun Phrase / Clause]</div>
+          <button class="reveal-btn" onclick="toggleModel('p3-1')">👁️ Reveal Cambridge Model</button>
+          <div id="p3-1" class="model-box">
+            <p><strong>Model Response:</strong> "<em>What has transformed the modern energy market is</em> the sheer appetite of artificial intelligence and cryptographic data centres. Whereas software companies once needed little more than office space, today they are believed to consume as much electricity as entire industrial cities, forcing them to buy direct access to nuclear and hydroelectric plants."</p>
+          </div>
+        </div>
+
+        <div class="kwt-item">
+          <div class="kwt-num">QUESTION 02 · DIGITAL CURRENCIES &amp; SOVEREIGNTY</div>
+          <p class="kwt-s1"><strong>Do you think digital currencies and decentralised networks weaken a government's control over its economy, or can states use them to their own advantage?</strong></p>
+          <div class="formula-banner">Target Frame: Not only do [Plural Noun] + [Base Verb]..., but they also...</div>
+          <button class="reveal-btn" onclick="toggleModel('p3-2')">👁️ Reveal Cambridge Model</button>
+          <div id="p3-2" class="model-box">
+            <p><strong>Model Response:</strong> "It cuts both ways. While retail crypto trading can bypass local capital controls, <em>not only do resource-rich states use industrial mining to monetise trapped natural gas</em>, but they also use those digital reserves to settle cross-border trade outside traditional banking networks."</p>
+          </div>
+        </div>
+
+        <div class="kwt-item">
+          <div class="kwt-num">QUESTION 03 · NATIONAL INFRASTRUCTURE PRIORITIES</div>
+          <p class="kwt-s1"><strong>Should governments restrict industrial data centres when domestic households face rising electricity bills or summer power shortages?</strong></p>
+          <div class="formula-banner">Target Frame: It is widely argued that... / Were governments to + [Base Verb]...</div>
+          <button class="reveal-btn" onclick="toggleModel('p3-3')">👁️ Reveal Cambridge Model</button>
+          <div id="p3-3" class="model-box">
+            <p><strong>Model Response:</strong> "<em>It is widely argued that</em> domestic households and hospitals must come first on any national grid. <em>Were governments to allow</em> private server farms to drain subsidised electricity during peak summer demand, public trust would evaporate overnight—unless those facilities build their own off-grid generation."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANE 2: THRILLER SHORT STORY -->
+    <section id="pane-story" class="section-pane">
+      <div class="card prose" id="story-card">
+        <div class="toolbar-row">
+          <button class="reveal-btn" onclick="toggleSyntaxTags()">🔍 Toggle C1 Structure Labels</button>
+          <button class="reveal-btn" onclick="copyText('story-content')">📋 Copy Clean Story Text</button>
+        </div>
+        <h2>The Fordow Hash</h2>
+        <p class="rubric">Read the story below. Highlighted sentences demonstrate high-scoring C1 structures in action; click "Toggle C1 Structure Labels" above to inspect the grammar patterns.</p>
+
+        <img class="img-inline" src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80" alt="Underground server corridor and industrial cooling pipes">
+
+        <div id="story-content">
+          <p>For twelve years, Western satellite analysts had stared at the limestone ridges north of Qom and seen exactly what Tehran wanted them to see.</p>
+
+          <p>Buried eighty metres beneath the mountain wall lay the Fordow Fuel Enrichment Plant: a labyrinth of blast doors, air-locks, and reinforced concrete designed to shrug off the heaviest bunker-buster in the American arsenal. Every six months, the rituals of international suspicion played out like clockwork. Convoys of silver SUVs carrying inspectors from Vienna wound their way up the desert switchbacks; environmental swipe cloths were dabbed across stainless-steel cascades in Hall B; and within forty-eight hours, the diplomatic cables hummed with the familiar, comforting dread of six-percent uranium hexafluoride.</p>
+
+          <p><span class="c1-highlight">What none of the physicists from Vienna ever questioned was the substation on the western perimeter.<span class="c1-tag">Wh- Cleft Sentence</span></span></p>
+
+          <p><span class="c1-highlight">It was an electrical engineer named Lukas Vance—seconded to the agency on a routine metering audit—who first noticed that the numbers made no sense.<span class="c1-tag">It-Cleft + Reduced Relative Clause</span></span></p>
+
+          <p>Sitting in a windowless briefing room in Vienna three nights before departure, Vance had spread the satellite thermography and the regional grid blueprints across the mahogany table. Beside him, the senior nuclear inspector barely glanced up from his tablet.</p>
+
+          <p>"Three thousand IR-6 centrifuges," Vance said, tapping the chart with the cap of his red pen. "Once those rotors are spinning in a vacuum, they draw less than a hundred watts apiece. You could run the entire enrichment hall on three megawatts and still have enough juice left over to boil every kettle in Qom."</p>
+
+          <p>"They have redundant transformers, Lukas," the senior inspector replied wearily. "Military paranoia. We've known about the twin 400-kilovolt lines since 2012."</p>
+
+          <p>"Redundancy doesn't pull current," Vance said. He slid the infrared print across the wood. "Those twin lines aren't sitting idle. They are running at ninety percent load, twenty-four hours a day, seven days a week. That mountain is swallowing two hundred and forty megawatts of flared-gas electricity every single hour. If you pumped two hundred and forty megawatts into Hall B, the centrifuges would melt through the floor."</p>
+
+          <p><span class="c1-highlight">Never before had an inspector asked to trace the secondary busbars<span class="c1-tag">Negative Inversion</span></span> behind the northern blast wall, and until the morning of the fourteenth, Tehran had seen no reason to worry that anyone would.</p>
+
+          <p>When the inspection team descended the main tunnel at 09:00, the air smelled of ozone, dry dust, and machine oil. While the senior physicists busied themselves with their yellow containment seals around the familiar rows of silver centrifuge tubes in Hall B, Vance lingered by the rear utility bulkhead.</p>
+
+          <p><span class="c1-highlight">It was not the hum of the rotors that gave the secret away, but the vibration beneath the soles of his boots.<span class="c1-tag">Contrastive It-Cleft</span></span></p>
+
+          <p>Centrifuges spin at supersonic speeds on magnetic bearings; they whisper at a high, mosquito-like pitch. What reverberated through the bedrock behind Bulkhead 4 was a deep, chest-rattling roar—the unmistakable acoustic signature of industrial liquid-cooling pumps shifting ten thousand litres of dielectric fluid a minute, paired with the hurricane shriek of a hundred thousand high-static server fans.</p>
+
+          <p>When the escorting colonel stepped into the corridor to take a phone call, Vance didn't reach for a Geiger counter. He pulled a pocket spectrum analyser from his jacket and pressed the antenna flat against the conduit seam running above the doorframe.</p>
+
+          <p>A nuclear facility is an island. By necessity and paranoia, <span class="c1-highlight">its control computers are strictly air-gapped, thereby preventing another Stuxnet worm from slipping through the copper<span class="c1-tag">Resultative Participle Clause</span></span> and shattering the rotors.</p>
+
+          <p>Yet the conduit above Vance's head was alive.</p>
+
+          <p>Every ten minutes, almost to the second, a tight, encrypted burst of packet traffic surged down the fibre-optic trunk toward the microwave relay on the peak above. Not sensor telemetry. Not centrifuge revolutions. They were cryptographic block headers—synchronized, timestamped, and broadcast to the global ledger.</p>
+
+          <p>Vance stared at the little green screen in the dim tunnel light, a slow, cold grin breaking across his face.</p>
+
+          <p>For a decade, Washington and Tel Aviv had spent billions of dollars designing thirty-thousand-pound penetrator bombs, tasking spy satellites, and writing exquisite malware to cripple a handful of showcase centrifuges in the front parlour. And all the while, behind fifty feet of dolomite rock, the Revolutionary Guard had wired stranded, unsellable Persian Gulf gas straight into the largest sovereign ASIC mining cavern on earth.</p>
+
+          <p>No tankers for the Navy to seize in the Strait of Hormuz. No SWIFT accounts for the Treasury to freeze in Zurich. Just cheap desert gas, a nuclear decoy that kept the world's eyes glued to the front door, and a mountain that quietly minted half a billion dollars in borderless, untraceable gold out of thin air.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANE 3: CAMBRIDGE C1 PART 4 WORKOUT -->
+    <section id="pane-part4" class="section-pane">
+      <div class="card">
+        <h2>Cambridge C1 Reading &amp; Use of English: Part 4</h2>
+        <p class="rubric">Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. <strong>Do not change the word given.</strong> You must use between <strong>three and six words</strong>, including the word given.</p>
+
+        <div class="score-banner">
+          <div>
+            <strong>Interactive Cambridge Part 4 Validator</strong>
+            <div style="font-size: 0.84rem; opacity: 0.9;">Checks exact C1 syntax, 3-to-6 word count limit, and unchanged keyword integrity.</div>
+          </div>
+          <div class="score-Readout" id="score-readout">Score: 0 / 12 Marks (2 marks per item)</div>
+        </div>
+
+        <div class="formula-banner">
+          Gareth's 4-Step Strategy: 1. Strike Out Echoes &rarr; 2. Inspect Tense Harmony &rarr; 3. Check Voice Shift &rarr; 4. Solve the Pattern
+        </div>
+
+        <!-- Q1 -->
+        <div class="kwt-item" id="item-1">
+          <div class="kwt-num">TRANSFORMATION 01 · NEGATIVE INVERSION</div>
+          <div class="formula-banner">Formula: Never before + Auxiliary (had) + Subject + Past Participle</div>
+          <p class="kwt-s1">1. None of the visiting physicists had ever asked to inspect the secondary power cables before.</p>
+          <span class="kwt-keyword">ASKED</span>
+          <p class="kwt-s2">Never before <input type="text" id="input-1" class="kwt-input" placeholder="3 to 6 words"> to inspect the secondary power cables.</p>
+          <div class="btn-row">
+            <button class="check-btn" onclick="checkKwt(1, 'ASKED', ['had a visiting physicist asked', 'had any visiting physicists asked', 'had any visiting physicist asked'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-1')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-1" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-1" class="model-box">
+            <div class="model-answer">had a visiting physicist asked / had any visiting physicists asked (5 words)</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"before"</em> and <em>"to inspect the secondary power cables"</em>.</li>
+              <li><strong>Step 2 (Tense):</strong> Past perfect (<em>had asked</em>) remains past perfect.</li>
+              <li><strong>Step 3 &amp; 4 (Inversion):</strong> Opening with negative adverbial <em>"Never before"</em> forces subject-auxiliary inversion: <em>had + subject + asked</em>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="kwt-item" id="item-2">
+          <div class="kwt-num">TRANSFORMATION 02 · WH- CLEFT SENTENCE</div>
+          <div class="formula-banner">Formula: What + Clause + BE + Noun Phrase</div>
+          <p class="kwt-s1">2. The vibration beneath his boots, rather than the sound of the rotors, revealed the secret.</p>
+          <span class="kwt-keyword">GAVE</span>
+          <p class="kwt-s2">What <input type="text" id="input-2" class="kwt-input" placeholder="3 to 6 words"> the vibration beneath his boots, not the sound of the rotors.</p>
+          <div class="btn-row">
+            <button class="check-btn" onclick="checkKwt(2, 'GAVE', ['gave the secret away was', 'gave away the secret was'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-2')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-2" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-2" class="model-box">
+            <div class="model-answer">gave the secret away was / gave away the secret was (5 words)</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"the vibration beneath his boots"</em> and <em>"the sound of the rotors"</em>.</li>
+              <li><strong>Step 2 (Tense):</strong> Past simple (<em>revealed</em>) &rarr; <em>gave ... was</em>.</li>
+              <li><strong>Step 4 (Collocation):</strong> Phrasal verb <em>give away a secret</em> inside a <em>What</em>-cleft frame.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="kwt-item" id="item-3">
+          <div class="kwt-num">TRANSFORMATION 03 · PASSIVE REPORTING VERB</div>
+          <div class="formula-banner">Formula: Subject + BE + Past Participle (thought) + to be + -ing</div>
+          <p class="kwt-s1">3. Intelligence analysts believe that the underground facility is consuming over two hundred megawatts of electricity.</p>
+          <span class="kwt-keyword">THOUGHT</span>
+          <p class="kwt-s2">The underground facility <input type="text" id="input-3" class="kwt-input" placeholder="3 to 6 words"> over two hundred megawatts of electricity.</p>
+          <div class="btn-row">
+            <button class="check-btn" onclick="checkKwt(3, 'THOUGHT', ['is thought to be consuming'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-3')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-3" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-3" class="model-box">
+            <div class="model-answer">is thought to be consuming (5 words)</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"The underground facility"</em> and <em>"over two hundred megawatts of electricity"</em>.</li>
+              <li><strong>Step 2 (Tense &amp; Aspect):</strong> Present continuous (<em>is consuming</em>) shifts to continuous infinitive (<em>to be consuming</em>).</li>
+              <li><strong>Step 3 (Voice):</strong> Active reporting (<em>analysts believe</em>) shifts to passive reporting (<em>is thought</em>).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="kwt-item" id="item-4">
+          <div class="kwt-num">TRANSFORMATION 04 · PARTICIPLE CLAUSE OF RESULT</div>
+          <div class="formula-banner">Formula: Main Clause + , thereby + -ing Participle</div>
+          <p class="kwt-s1">4. State operators convert flared gas into digital currency, and as a result they bypass international banking sanctions.</p>
+          <span class="kwt-keyword">THEREBY</span>
+          <p class="kwt-s2">State operators convert flared gas into digital currency, <input type="text" id="input-4" class="kwt-input" placeholder="3 to 6 words"> banking sanctions.</p>
+          <div class="btn-row">
+            <button class="check-btn" onclick="checkKwt(4, 'THEREBY', ['thereby bypassing international'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-4')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-4" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-4" class="model-box">
+            <div class="model-answer">thereby bypassing international (3 words)</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"State operators convert flared gas into digital currency"</em> and <em>"banking sanctions"</em>.</li>
+              <li><strong>Step 4 (Pattern):</strong> Replace <em>"and as a result they bypass"</em> with <em>thereby + -ing participle</em> (<em>thereby bypassing international</em>).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="kwt-item" id="item-5">
+          <div class="kwt-num">TRANSFORMATION 05 · NOUN + PREPOSITION + GERUND</div>
+          <div class="formula-banner">Formula: have no intention of + -ing</div>
+          <p class="kwt-s1">5. The ministry does not intend to disconnect the high-voltage lines before winter.</p>
+          <span class="kwt-keyword">INTENTION</span>
+          <p class="kwt-s2">The ministry <input type="text" id="input-5" class="kwt-input" placeholder="3 to 6 words"> the high-voltage lines before winter.</p>
+          <div class="btn-row">
+            <button class="check-btn" onclick="checkKwt(5, 'INTENTION', ['has no intention of disconnecting', 'have no intention of disconnecting'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-5')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-5" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-5" class="model-box">
+            <div class="model-answer">has no intention of disconnecting (5 words)</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"The ministry"</em> and <em>"the high-voltage lines before winter"</em>.</li>
+              <li><strong>Step 2 (Tense):</strong> Present simple negative (<em>does not intend</em>) &rarr; <em>has no intention</em>.</li>
+              <li><strong>Step 4 (Pattern):</strong> Noun <em>intention</em> takes preposition <em>of + gerund (-ing)</em>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="kwt-item" id="item-6">
+          <div class="kwt-num">TRANSFORMATION 06 · CONTRAST &amp; NOMINALISATION</div>
+          <div class="formula-banner">Formula: in spite of + Noun Phrase / the fact that</div>
+          <p class="kwt-s1">6. Although the government invested heavily in power stations, summer blackouts continued across the capital.</p>
+          <span class="kwt-keyword">SPITE</span>
+          <p class="kwt-s2">Summer blackouts continued across the capital <input type="text" id="input-6" class="kwt-input" placeholder="3 to 6 words"> in power stations.</p>
+          <div class="btn-row">
+            <button class="check-btn" onclick="checkKwt(6, 'SPITE', ['in spite of heavy investment', 'in spite of the heavy investment'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-6')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-6" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-6" class="model-box">
+            <div class="model-answer">in spite of heavy investment (5 words)</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"Summer blackouts continued across the capital"</em> and <em>"in power stations"</em>.</li>
+              <li><strong>Step 4 (Nominalisation):</strong> Verb + adverb (<em>invested heavily</em>) shifts to adjective + noun (<em>heavy investment</em>) after <em>in spite of</em>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANE 4: NON-FICTION EDITORIAL ESSAY -->
+    <section id="pane-essay" class="section-pane">
+      <div class="card prose">
+        <div class="toolbar-row">
+          <span style="font-family:'JetBrains Mono', monospace; font-size:0.8rem; color:var(--ink-muted);">BY GARETH MONTGOMERY · GARETHENGLISH.COM</span>
+          <button class="reveal-btn" onclick="copyText('essay-content')">📋 Copy Clean Essay Text</button>
+        </div>
+        <h2>The Ghost in the Grid: How Stranded Energy Became Sovereign Currency</h2>
+        <p class="rubric">Non-fiction companion essay contrasting the thriller premise with the real physics and economics of modern energy arbitrage.</p>
+
+        <img class="img-inline" src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=1200&q=80" alt="High voltage transmission towers at dusk">
+
+        <div id="essay-content">
+          <p>If you want to know what a country is really up to in the twenty-first century, stop listening to its diplomats and look at its electricity meter.</p>
+
+          <p>Whenever students ask me for a genuine, real-world topic to sink their teeth into for Cambridge C1 Advanced or IELTS Task 2—something miles away from the mind-numbing textbook essays about plastic bags and city parks—I point them toward energy arbitrage. Right off the bat, it sounds like dry city-desk economics. In the cold light of day, however, it is one of the strangest geopolitical loopholes on earth.</p>
+
+          <p>Consider a state sitting under heavy international sanctions. It has vast reserves of natural gas and crude oil beneath its feet, yet it is locked out of the Western banking system. Every oil tanker that leaves its ports can be tracked by satellite and seized at sea; every dollar-denominated bank account in Europe can be frozen with the stroke of a pen. On paper, that energy is trapped.</p>
+
+          <p>What the microchip has done over the past decade is turn trapped electricity directly into borderless cash.</p>
+
+          <p>Instead of pumping natural gas into a pipeline or onto a ship, a state—or a private grid operator in Texas, Kazakhstan, or Scandinavia—pipes that gas into a turbine on site, generates dirt-cheap electricity at less than a penny per kilowatt-hour, and feeds that current into warehouses packed with tens of thousands of specialised computers. Whether those racks are mining Bitcoin or training frontier artificial intelligence models, the physical trick is identical: heavy, immobile molecules of fuel go in one end, and weightless, high-value digital packets come out the other via fibre-optic cable.</p>
+
+          <p>Of course, physics always collects its debt. In my short story <em>The Fordow Hash</em>, I played with a thriller writer's premise: what if a deeply buried nuclear enrichment bunker like Iran's Fordow plant were actually a decoy for a sovereign cryptocurrency cavern? On the page, it makes for a cracking twist. In reality, the laws of thermodynamics and electrical engineering tell a very different story.</p>
+
+          <table class="data-table" aria-label="Physics Comparison: Centrifuge Plant vs Industrial Compute">
+            <thead>
+              <tr>
+                <th>Engineering Metric</th>
+                <th>Fordow Enrichment Plant (3,000 IR-6 Centrifuges)</th>
+                <th>Industrial ASIC / AI Compute Facility</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Power Draw</strong></td>
+                <td>~2 to 5 Megawatts total (~80W per rotor in vacuum)</td>
+                <td>150 to 500+ Megawatts continuous load</td>
+              </tr>
+              <tr>
+                <td><strong>Thermal Signature</strong></td>
+                <td>Low — easily contained inside deep rock tunnels</td>
+                <td>Massive — requires surface cooling towers or immersion arrays</td>
+              </tr>
+              <tr>
+                <td><strong>Network Profile</strong></td>
+                <td>100% air-gapped (zero external internet link)</td>
+                <td>Continuous 24/7 global packet traffic</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>First, there is the power mismatch. People naturally assume that a nuclear enrichment plant devours vast amounts of electricity. That was true in the 1940s, when gaseous diffusion plants required their own dedicated power stations. Modern carbon-fibre gas centrifuges, by contrast, spin in a near-vacuum on magnetic bearings and draw less than a hundred watts each—barely more than an old household lightbulb. Three thousand centrifuges at a site like Fordow need only a few megawatts to run. An industrial Bitcoin or AI data centre, on the other hand, swallows hundreds of megawatts. Second, there is the heat. Put two hundred megawatts of silicon processors eighty metres beneath solid limestone without gigantic cooling towers on the surface, and you do not have a secret vault; you have a brick oven.</p>
+
+          <p>Yet the underlying economic story is not fiction at all. For years, state-backed industrial mining farms across Iran—housed in above-ground factories, power stations, and military compounds—quietly generated hundreds of millions of dollars in digital assets to pay for imports without ever touching a Western bank. So ravenous was the electricity draw that during the peak summer months, the government had to pull the plug on warehouse after warehouse just to keep the air conditioning running in Tehran.</p>
+
+          <p>And here is where the story comes home to the rest of us. Today, the biggest players playing the energy-to-compute game are no longer sanctioned states looking for a back door; they are the richest technology companies in the world. Across North America and Europe, old Bitcoin mining companies that locked in cheap, high-voltage power contracts years ago are now leasing those exact electrical substations to AI giants desperate for megawatts.</p>
+
+          <p>Money, intelligence, and state power used to be measured in gold bars and barrels of crude. Today, it is measured in transformers, cooling water, and whoever holds the switch to the grid.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let timerInterval = null;
+    const solvedItems = new Set();
+
+    function switchTab(tabId, btnEl) {
+      document.querySelectorAll('.section-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('pane-' + tabId).classList.add('active');
+      btnEl.classList.add('active');
+    }
+
+    function toggleModel(id) {
+      const box = document.getElementById(id);
+      if (box) {
+        box.classList.toggle('open');
+      }
+    }
+
+    function toggleSyntaxTags() {
+      const card = document.getElementById('story-card');
+      if (card) {
+        card.classList.toggle('show-tags');
+      }
+    }
+
+    function startTimer(seconds, labelText) {
+      clearInterval(timerInterval);
+      let remaining = seconds;
+      const readout = document.getElementById('timer-readout');
+      const label = document.getElementById('timer-label');
+      label.textContent = labelText.toUpperCase();
+
+      function render() {
+        const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const s = String(remaining % 60).padStart(2, '0');
+        readout.textContent = m + ':' + s;
+      }
+
+      render();
+      timerInterval = setInterval(() => {
+        remaining--;
+        if (remaining <= 0) {
+          clearInterval(timerInterval);
+          readout.textContent = '00:00';
+          label.textContent = 'TIME UP — DEEPEN REFLECTION OR WRAP UP';
+        } else {
+          render();
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      document.getElementById('timer-readout').textContent = '01:00';
+      document.getElementById('timer-label').textContent = 'LIVE SPEAKING CLOCK';
+    }
+
+    function checkKwt(num, keyword, validAnswers) {
+      const inputEl = document.getElementById('input-' + num);
+      const fbEl = document.getElementById('fb-' + num);
+      const itemEl = document.getElementById('item-' + num);
+      const raw = (inputEl.value || '').trim().replace(/\s+/g, ' ');
+      const lower = raw.toLowerCase();
+      const words = raw ? raw.split(' ') : [];
+
+      if (!raw) {
+        fbEl.className = 'feedback-pill fail';
+        fbEl.textContent = 'Type 3 to 6 words first.';
+        return;
+      }
+
+      if (!lower.includes(keyword.toLowerCase())) {
+        fbEl.className = 'feedback-pill fail';
+        fbEl.textContent = 'Must include unchanged keyword: ' + keyword + ' (0 marks)';
+        return;
+      }
+
+      if (words.length < 3 || words.length > 6) {
+        fbEl.className = 'feedback-pill fail';
+        fbEl.textContent = 'Word count (' + words.length + ') outside 3–6 word limit.';
+        return;
+      }
+
+      const isMatch = validAnswers.some(ans => ans.toLowerCase() === lower);
+      if (isMatch) {
+        fbEl.className = 'feedback-pill pass';
+        fbEl.textContent = '✓ Spot on! 2/2 Cambridge Marks (' + words.length + ' words)';
+        itemEl.classList.add('correct');
+        solvedItems.add(num);
+        document.getElementById('score-readout').textContent =
+          'Score: ' + (solvedItems.size * 2) + ' / 12 Marks (2 marks per item)';
+      } else {
+        fbEl.className = 'feedback-pill fail';
+        fbEl.textContent = 'Not quite — check tense harmony & voice shift.';
+      }
+    }
+
+    function copyText(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const clone = el.cloneNode(true);
+      clone.querySelectorAll('.c1-tag').forEach(t => t.remove());
+      navigator.clipboard.writeText(clone.innerText.trim()).then(() => {
+        alert('Copied cleanly to clipboard!');
+      });
+    }
+  </script>
+</body>
+</html>
