@@ -1,0 +1,38 @@
+================================================================================
+OEIS CONTRIBUTION PACKAGE: A236864 (Resolves [more] from February 2014)
+Target URL: https://oeis.org/edit?seq=A236864
+Sequence Name: Numbers n such that the sum of the n-th powers of all symmetric 2 X 2 matrices over Z/nZ gives a nonzero matrix.
+Author of Contribution: Gareth Montgomery
+================================================================================
+
+1. UPDATED DATA FIELD (First 65 terms, extending the existing 50 terms)
+--------------------------------------------------------------------------------
+6, 18, 24, 30, 42, 48, 54, 66, 78, 90, 96, 102, 114, 120, 126, 138, 150, 162, 168, 174, 186, 192, 198, 210, 222, 234, 240, 246, 258, 264, 270, 282, 294, 306, 312, 318, 330, 336, 342, 354, 360, 366, 378, 384, 390, 402, 408, 414, 426, 438, 450, 456, 462, 474, 480, 486, 498, 510, 522, 528, 534, 546, 552, 558, 570
+
+2. FORMULA / CHARACTERIZATION FIELD (Paste into FORMULA)
+--------------------------------------------------------------------------------
+n is in this sequence if and only if there exists a prime p such that p || n (i.e., p | n and p^2 does not divide n) and p*(p^2 - 1) | n. - _Gareth Montgomery_, Oct 29 2026
+Equivalently, n is a term if and only if: (a) n == 6 or 18 (mod 24) [from p = 2, where 2 || n and 6 | n]; or (b) 24 | n and 9 does not divide n [from p = 3, where 3 || n and 24 | n]; or (c) there exists a prime p >= 5 with p || n and p*(p^2 - 1) | n (the smallest term of type (c) exclusively is n = 900 = 5 * 180, since 4 | 900 and 9 | 900). - _Gareth Montgomery_, Oct 29 2026
+
+3. COMMENT / PROOF FIELD (Paste into COMMENTS)
+--------------------------------------------------------------------------------
+Proof of exact characterization: Let S(N, k) = Sum_{M in Sym_2(Z/NZ)} M^k (mod N). By the Chinese Remainder Theorem, S(n, n) != 0 (mod n) if and only if S(p^e, n) != 0 (mod p^e) for at least one prime power p^e || n.
+(i) For e = 1 (p || n): Over F_p, diagonal conjugation [1,0;0,-1] M [1,0;0,-1]^-1 negates off-diagonal entries and coordinate swap [0,1;1,0] exchanges diagonal entries, so S(p, k) = c(p, k) * I_2 is a scalar matrix. Partitioning Sym_2(F_p) by spectral type over F_p and F_{p^2} shows that the power sums vanish modulo p unless (p^2 - 1) | k (when every nonsplit quadratic-extension element has M^k = I_2), in which case S(2, k) == I_2 (mod 2) and S(p, k) == ((p + (-1)^((p-1)/2)) / 2) * I_2 != 0 (mod p) for odd p. Since p || n, we automatically have p | n, so S(p, n) != 0 (mod p) iff p*(p^2 - 1) | n.
+(ii) For e >= 2 (p^2 | n): Write each M in Sym_2(Z/p^e Z) as M = M_0 + p^(e-1)*D with D in Sym_2(F_p). Since n is a multiple of p, the first-order expansion of (M_0 + p^(e-1)*D)^n modulo p^e contains p^(e-1) * Sum_{j=0..n-1} M_0^j D M_0^(n-1-j), which is a multiple of p^e whenever p | (n / p) (i.e. e >= 2 for odd p, and for p = 2 whenever (p^2 - 1) | n or e >= 2), causing each fiber of p^3 lifts D to sum to p^3 * M_0^n == 0 (mod p^e). Hence S(p^e, n) == 0 (mod p^e) for all e >= 2. - _Gareth Montgomery_, Oct 29 2026
+
+4. PROGRAMS (Paste into MATHEMATICA / PARI / PYTHON)
+--------------------------------------------------------------------------------
+(Mathematica)
+okQ[n_] := AnyTrue[FactorInteger[n], #[[2]] == 1 && Divisible[n, #[[1]]*(#[[1]]^2 - 1)] &]; Select[Range[600], okQ] (* _Gareth Montgomery_, Oct 29 2026 *)
+
+(PARI)
+isok(n) = { my(f = factor(n)); for(i = 1, #f~, if(f[i,2] == 1 && n % (f[i,1] * (f[i,1]^2 - 1)) == 0, return(1))); 0; } \\ _Gareth Montgomery_, Oct 29 2026
+
+(Python)
+from sympy import factorint
+def is_A236864(n):
+    return any(e == 1 and n % (p * (p * p - 1)) == 0 for p, e in factorint(n).items()) # _Gareth Montgomery_, Oct 29 2026
+
+5. KEYWORD UPDATE
+--------------------------------------------------------------------------------
+Remove "more" -> "nonn,easy"

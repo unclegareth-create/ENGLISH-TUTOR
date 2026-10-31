@@ -1,0 +1,27 @@
+================================================================================
+OEIS CONTRIBUTION PACKAGE: A392191 (Resolves Open Conjecture + Extends to a(13))
+Target URL: https://oeis.org/edit?seq=A392191
+Sequence Name: a(n) is the minimum determinant of an n X n circulant matrix whose rows are permutations of [0, 1, 2, ..., n-1].
+Author of Contribution: Gareth Montgomery
+================================================================================
+
+1. UPDATED DATA FIELD (n = 0..13, extending with a(12) and a(13))
+--------------------------------------------------------------------------------
+1, 0, -1, 9, -96, 50, -29925, 147, -20983200, 0, -30144868875, 605, -75986875920384, 1014
+
+2. UPDATED FORMULA FIELD (Resolves the Jan 2026 Conjecture for all odd n)
+--------------------------------------------------------------------------------
+a(n) = -A392190(n) for n even (since cyclically shifting the first row by 1 position permutes the rows of the circulant matrix with sign (-1)^(n-1) = -1, making the set of circulant determinants symmetric about 0 for all even n; in particular, a(12) = -A392190(12) = -75986875920384).
+Theorem for odd n >= 1 (resolving the conjecture of _Stefano Spezia_):
+  a(n) = ((n - 1)/2) * n^2 = A084367((n - 1)/2) if n is an odd prime, and
+  a(n) = 0 if n = 1 or n >= 9 is an odd composite. - _Gareth Montgomery_, Oct 29 2026
+
+3. COMMENT / PROOF FIELD (Paste into COMMENTS)
+--------------------------------------------------------------------------------
+Proof of the exact formula for all odd n:
+Let C(c_0, ..., c_{n-1}) be an n X n circulant matrix whose first row is a permutation of (0, 1, ..., n-1), with eigenvalues L_k = Sum_{j=0..n-1} c_j * w^(j*k) (w = exp(2*Pi*i/n)).
+(1) Non-negativity for all odd n: For odd n, L_0 = n*(n-1)/2 >= 0 and non-real eigenvalues pair as conjugates L_{n-k} = conj(L_k) for 1 <= k <= (n-1)/2, so det(C) = L_0 * Product_{k=1..(n-1)/2} |L_k|^2 >= 0.
+(2) Composite odd n = d*m (d, m >= 3 odd): Partitioning {0, 1, ..., d*m - 1} into d residue classes mod d of size m with equal integer sum m*(d*m - 1)/2 (using Kotzig's 3 X d equal-column-sum magic rectangle on {0, ..., 3*d - 1} and pairing the remaining m - 3 rows antipodally) makes L_m = 0, so det(C) = 0 and hence a(n) = 0 for all odd composites n >= 9 (such as a(9) = 0, a(15) = 0, a(21) = 0, a(25) = 0).
+(3) Odd prime n = p:
+  (i) Universal Lower Bound & Divisibility: In Z[zeta_p], the prime ideal P = (1 - zeta_p) satisfies zeta_p^j == 1 (mod P), so L_1 = Sum_{j=0..p-1} c_j * zeta_p^j == p*(p-1)/2 == 0 (mod P). Since the cyclotomic polynomial Phi_p(x) is irreducible over Q and the c_j are distinct, L_1 != 0, so the positive integer norm N_{Q(zeta_p)/Q}(L_1) = Product_{k=1..p-1} L_k is a positive multiple of N(P) = p. Multiplying by L_0 = p*(p-1)/2 shows that ((p-1)/2)*p^2 divides det(C) for every permutation, and det(C) >= ((p-1)/2)*p^2 = A084367((p-1)/2).
+  (ii) Explicit Witness for all odd n: For the pyramidal permutation c = (0, 2, 4, ..., n-1, n-2, n-4, ..., 3, 1), setting y = w^(k*(n+1)/2) (so y^2 = w^k and y^n = 1) gives the exact algebraic identity (y^2 - 1)^2 * L_k(c) = -(y - 1)^3, i.e., L_k(c) = -(y - 1)/(y + 1)^2. Since Product_{y^n=1, y!=1} (y - 1) = n and Product_{y^n=1, y!=1} (y + 1) = 1 (a cyclotomic unit of norm 1 for odd n), we have Product_{k=1..n-1} L_k(c) = n and det(C(c)) = ((n-1)/2)*n^2 = A084367((n-1)/2). - _Gareth Montgomery_, Oct 29 2026

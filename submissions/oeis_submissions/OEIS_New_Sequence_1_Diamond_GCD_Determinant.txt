@@ -1,0 +1,36 @@
+# ==============================================================================
+# OFFICIAL OEIS NEW SEQUENCE SUBMISSION #1
+# Submit at: https://oeis.org/Submit.html
+# ==============================================================================
+
+%I AXXXXXX
+%S AXXXXXX 2, 7, 28, 192, 1536, 10752, 129024, 1763328, 21159936, 296239104, 5924782080, 81254154240, 1950099701760, 40952093736960, 655233499791360, 17899061457715200, 572769966646886400, 12028169299584614400, 433014094785046118400, 11876958028389836390400
+%N AXXXXXX Determinant of the n X n arithmetic diamond matrix A_n with entries A_n(i,j) = gcd(i+j, |i-j|) for 1 <= i, j <= n.
+%C AXXXXXX Whereas H. J. S. Smith's classical GCD matrix G_n = [gcd(i,j)]_{1<=i,j<=n} has determinant Product_{k=1..n} phi(k) (A001088), coupling additive sum and difference inside the greatest common divisor produces the identity gcd(i+j, |i-j|) = gcd(i,j) * (1 + [v_2(i) == v_2(j)]), where v_2(k) = A007814(k) is the 2-adic valuation.
+%C AXXXXXX Under unit lower-triangular congruence over the odd divisors, A_n decomposes into a direct sum of dyadic Kac-Murdock-Szego (KMS) Toeplitz blocks D_V(a,b) = 2^{min(a,b)}(1 + delta_{a,b}) (0 <= a,b <= V), whose normalized determinants are governed by the Pisot sequence P(2,7) (A020727), equivalently the interleaved Pell numbers (A000129) and companion Pell numbers (A001333).
+%C AXXXXXX Even though consecutive ratios a(n)/a(n-1) are non-integral rationals introducing and later cancelling companion Pell prime factors (7 at n=2..3 cancelled at n=4; 41 at n=8..15 cancelled at n=16; 239 at n=32..63 cancelled at n=64), Smith's determinant A001088(n) = Product_{k=1..n} phi(k) divides a(n) for every n >= 1.
+%F AXXXXXX a(n) = Product_{m=1..n, m odd} ( phi(m)^(V_m + 1) * 2^(floor(V_m^2 / 2)) * W(V_m + 2) ), where V_m = floor(log_2(n/m)) and W(k) = A000129(k) (k even) or A001333(k) (k odd).
+%F AXXXXXX a(n) = A001088(n) * Product_{m=1..n, m odd} A020727(floor(log_2(n/m))).
+%F AXXXXXX For n = 2^v * m with m odd and v = A007814(n), a(n)/a(n-1) = phi(m) * A020727(v) * 2^(v-1) / A020727(v-1) for v >= 1, and a(n)/a(n-1) = 2 * phi(m) for v = 0.
+%e AXXXXXX For n = 2, A_2 = [[2, 1], [1, 4]], so a(2) = 2*4 - 1*1 = 7.
+%e AXXXXXX For n = 3, A_3 = [[2, 1, 2], [1, 4, 1], [2, 1, 6]], so a(3) = 28.
+%o AXXXXXX (Python)
+%o AXXXXXX import math
+%o AXXXXXX from sympy import totient
+%o AXXXXXX def A020727(v):
+%o AXXXXXX     a, b = 2, 7
+%o AXXXXXX     for _ in range(v): a, b = b, 4*b - 2*a
+%o AXXXXXX     return a
+%o AXXXXXX def a(n):
+%o AXXXXXX     ans = 1
+%o AXXXXXX     for m in range(1, n + 1, 2):
+%o AXXXXXX         v = (n // m).bit_length() - 1
+%o AXXXXXX         ans *= (int(totient(m))**(v + 1)) * (2**(v*(v - 1)//2)) * A020727(v)
+%o AXXXXXX     return ans
+%o AXXXXXX (PARI)
+%o AXXXXXX delta(v) = if(v==0, 2, if(v==1, 7, 4*delta(v-1) - 2*delta(v-2)));
+%o AXXXXXX a(n) = prod(k=1, (n+1)\2, my(m=2*k-1, v=logint(n\m, 2)); eulerphi(m)^(v+1) * 2^(v*(v-1)\2) * delta(v));
+%Y AXXXXXX Cf. A001088 (det of Smith's GCD matrix), A020727 (dyadic KMS core), A000129 (Pell numbers), A001333 (companion Pell numbers), A000010 (Euler totient), A007814 (2-adic valuation).
+%K AXXXXXX nonn,easy
+%O AXXXXXX 1,1
+%A AXXXXXX Gareth Montgomery, Oct 23 2026
