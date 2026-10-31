@@ -56,6 +56,19 @@
     .hud-right { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
     .hud-rule { font-size: 0.76rem; font-weight: 700; color: var(--amber-text); background: var(--amber-bg); border: 1px solid var(--amber-border); padding: 0.25rem 0.65rem; border-radius: 6px; }
     .score-pill { font-size: 0.8rem; font-weight: 800; color: var(--emerald-text); background: var(--emerald-bg); border: 1.5px solid var(--emerald-border); padding: 0.24rem 0.75rem; border-radius: 999px; }
+    .split-pill { font-size: 0.76rem; font-weight: 700; color: var(--navy-900); background: var(--navy-50); border: 1px solid #bfdbfe; padding: 0.22rem 0.65rem; border-radius: 999px; font-family: 'Consolas', monospace; }
+    .fp-launch-btn { background: var(--navy-900); color: #fff; border: 1.5px solid var(--navy-900); font-size: 0.76rem; font-weight: 800; padding: 0.26rem 0.75rem; border-radius: 999px; cursor: pointer; transition: background 0.15s; }
+    .fp-launch-btn:hover { background: var(--navy-700); border-color: var(--navy-700); }
+    .fp-card { background: #f8fafc; border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 1.1rem 1.3rem; margin-top: 0.5rem; }
+    .fp-step-row { display: flex; gap: 0.45rem; margin-bottom: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .fp-step-badge { font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--ink-500); }
+    .fp-step-badge.active { background: var(--navy-800); color: #fff; border-color: var(--navy-800); }
+    .fp-step-badge.done { background: var(--emerald-bg); color: var(--emerald-text); border-color: var(--emerald-border); }
+    .fp-skill-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.55rem; margin: 0.75rem 0; }
+    @media (max-width: 820px) { .fp-skill-grid { grid-template-columns: 1fr 1fr; } }
+    .fp-skill-box { background: #fff; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.6rem 0.7rem; font-size: 0.76rem; }
+    .fp-skill-box.mastered { background: var(--emerald-bg); border-color: var(--emerald-border); color: var(--emerald-text); }
+    .fp-skill-box.review { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber-text); }
     .slide-stage { flex: 1; display: flex; justify-content: center; align-items: center; padding: 1.3rem 1.2rem; max-width: 1120px; margin: 0 auto; width: 100%; }
     .slide-viewport { width: 100%; min-height: 590px; background: var(--paper-bg); border: 1px solid #d8e0ea; border-radius: 12px; padding: 1.8rem 2.2rem; box-shadow: 0 12px 32px rgba(15,37,87,0.07); display: flex; flex-direction: column; justify-content: space-between; }
     .slide { display: none; flex-direction: column; }
@@ -121,7 +134,9 @@
       <span class="hud-title">Part 4: Top 10 Tested Patterns</span>
     </div>
     <div class="hud-right">
+      <button type="button" class="fp-launch-btn" onclick="openFingerprintSlide()">⚡ 3-Question Level Check</button>
       <span class="hud-rule">3–6 words &bull; key word unchanged &bull; 1 + 1 split</span>
+      <span class="split-pill" id="split-tuple-pill" title="Left-Half Marks (Structure/Verb) | Right-Half Marks (Preposition/Complement)">L:0 | R:0</span>
       <span class="score-pill" id="total-score-pill">Score: 0 / 40</span>
     </div>
   </div>
@@ -154,7 +169,60 @@
           </div>
           <div class="mini-card amber">
             <div class="card-title-sm" style="color: var(--amber-text);">🎯 How the 2 Marks Work (The <code>|</code> Split)</div>
-            Every Part 4 answer is divided into two halves worth <strong>1 mark each</strong> (shown as <code>|</code> in the key). Type your answer on the next 10 slides and press <strong>Enter</strong> or click <strong>✓ Check (1+1)</strong> to test whether you scored <code>0/2</code>, <code>1/2</code>, or <code>2/2</code> marks.
+            Every Part 4 answer is divided into two halves worth <strong>1 mark each</strong> (shown as <code>|</code> in the key): the opening structural/verbal frame on the left, and the dependent preposition or gerund on the right. Want to test where your grammar stands right now?
+            <div style="margin-top: 0.55rem;">
+              <button type="button" class="check-btn" onclick="openFingerprintSlide()">⚡ Take the 3-Question Syntactic Fingerprint Check &rarr;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 12: 3-Question Adaptive Syntactic Fingerprint -->
+      <div class="slide" id="slide-12">
+        <div class="slide-tag">⚡ 3-Question Diagnostic &bull; Adaptive 1+1 Split-Mark Routing</div>
+        <h2 class="slide-title">Your 3-Question Syntactic Fingerprint</h2>
+        <p class="slide-desc" style="margin-bottom: 0.45rem;">You do not need a 50-question grammar test to see where you stand. Because Cambridge splits every Part 4 answer down the middle (<code>Left Half | Right Half</code>), I can pinpoint your control across the five core C1/C2 grammar families in just <strong>three targeted sentences</strong>. Each question adapts to which half of the previous sentence you got right.</p>
+
+        <div class="fp-card" id="fp-stage-card">
+          <div class="fp-step-row">
+            <span class="fp-step-badge active" id="fp-badge-1">Question 1 of 3</span>
+            <span class="fp-step-badge" id="fp-badge-2">Question 2 of 3</span>
+            <span class="fp-step-badge" id="fp-badge-3">Question 3 of 3</span>
+            <span style="margin-left: auto; font-size: 0.75rem; font-weight: 700; color: var(--navy-800);" id="fp-route-note">Starting Pivot: Inversion + Passive Idiom</span>
+          </div>
+
+          <div class="kwt" id="fp-question-box" style="margin-bottom: 0; background: #fff;">
+            <div class="kwt-top">
+              <span class="kwt-num" id="fp-q-tag">Diagnostic Prompt 1 of 3</span>
+              <div class="kwt-actions">
+                <button type="button" class="check-btn" id="fp-submit-btn" onclick="submitFingerprintAnswer()">✓ Submit &amp; Route (1+1)</button>
+                <button type="button" class="reveal-btn" onclick="resetFingerprint()">↺ Restart 3-Q Check</button>
+              </div>
+            </div>
+            <div class="kwt-s1" id="fp-s1"></div>
+            <span class="kwt-key" id="fp-key"></span>
+            <div class="kwt-s2" id="fp-s2"></div>
+            <div class="answer-row">
+              <input class="answer-input" id="fp-input" oninput="count(this)" onkeydown="if(event.key==='Enter')submitFingerprintAnswer()" placeholder="Type your 3–6 word answer (including the unchanged key word) &amp; press Enter…">
+              <span class="wc" id="fp-wc">0 words</span>
+            </div>
+            <div class="grade-feedback" id="fp-feedback"></div>
+            <div style="display: none; margin-top: 0.55rem;" id="fp-next-row">
+              <button type="button" class="nav-btn" id="fp-next-btn" onclick="advanceFingerprintStep()">Continue to Next Diagnostic Question &rarr;</button>
+            </div>
+          </div>
+
+          <div id="fp-result-panel" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.45rem;">
+              <div>
+                <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--navy-800);">Diagnostic Complete &bull; 3-Item Split-Mark Profile</div>
+                <div style="font-size: 1.2rem; font-weight: 800; color: var(--navy-900);" id="fp-ceiling-title">Estimated Structural Ceiling: C1 Advanced</div>
+              </div>
+              <button type="button" class="reveal-btn" onclick="resetFingerprint()">↺ Retake 3-Question Check</button>
+            </div>
+            <p style="font-size: 0.84rem; color: var(--ink-700); margin-bottom: 0.55rem;" id="fp-ceiling-summary"></p>
+            <div class="fp-skill-grid" id="fp-skill-grid"></div>
+            <div class="mini-card accent" style="font-size: 0.81rem;" id="fp-recommendation-box"></div>
           </div>
         </div>
       </div>
@@ -560,7 +628,7 @@
       </div>
 
       <div class="nav-bar">
-        <div class="nav-counter">Slide <span id="current-slide-num" style="color: var(--navy-700); font-weight: 800;">1</span> of 11</div>
+        <div class="nav-counter">Slide <span id="current-slide-num" style="color: var(--navy-700); font-weight: 800;">1</span> of 12</div>
         <div class="nav-buttons">
           <button class="nav-btn" id="prev-btn" onclick="prevSlide()" disabled>&larr; Previous</button>
           <button class="nav-btn" id="next-btn" onclick="nextSlide()">Next &rarr;</button>
@@ -572,12 +640,30 @@
 
   <script>
     let currentSlide = 1;
-    const totalSlides = 11;
+    const totalSlides = 12;
     const itemScores = {};
+    const itemSplitVectors = {};
+    const SPLIT_STORAGE_KEY = 'gareth_cpe_part4_split_vectors_v1';
+
+    try {
+      const saved = localStorage.getItem(SPLIT_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          Object.keys(parsed).forEach(k => {
+            if (Array.isArray(parsed[k]) && parsed[k].length === 2) {
+              itemSplitVectors[k] = [parsed[k][0] ? 1 : 0, parsed[k][1] ? 1 : 0];
+              itemScores[k] = itemSplitVectors[k][0] + itemSplitVectors[k][1];
+            }
+          });
+        }
+      }
+    } catch (e) {}
 
     function showSlide(n) {
       document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-      document.getElementById('slide-' + n).classList.add('active');
+      const target = document.getElementById('slide-' + n);
+      if (target) target.classList.add('active');
       currentSlide = n;
       document.getElementById('current-slide-num').textContent = n;
       document.getElementById('prev-btn').disabled = (n === 1);
@@ -585,6 +671,10 @@
     }
     function nextSlide() { if (currentSlide < totalSlides) showSlide(currentSlide + 1); }
     function prevSlide() { if (currentSlide > 1) showSlide(currentSlide - 1); }
+    function openFingerprintSlide() {
+      showSlide(12);
+      if (!fpCurrentItem) resetFingerprint();
+    }
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT') return;
       if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
@@ -620,6 +710,13 @@
       return s.toLowerCase().replace(/[.,!?;:]+$/g, '').replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim();
     }
 
+    function recordSplitVector(num, mL, mR) {
+      itemSplitVectors[num] = [mL ? 1 : 0, mR ? 1 : 0];
+      try {
+        localStorage.setItem(SPLIT_STORAGE_KEY, JSON.stringify(itemSplitVectors));
+      } catch (e) {}
+    }
+
     function checkItem(num) {
       const box = document.getElementById('item-' + num);
       const input = box.querySelector('.answer-input');
@@ -633,8 +730,9 @@
 
       if (!userNorm) {
         fb.className = 'grade-feedback m0';
-        fb.textContent = '0 / 2 Marks — Type an answer above before checking.';
+        fb.textContent = '0 / 2 Marks (0, 0) — Type an answer above before checking.';
         itemScores[num] = 0;
+        recordSplitVector(num, 0, 0);
         updateTotalScore();
         return;
       }
@@ -642,16 +740,18 @@
       const keyRegex = new RegExp('(^|\\s)' + escapeRegex(key.toLowerCase()) + '(\\s|$)');
       if (!keyRegex.test(userNorm)) {
         fb.className = 'grade-feedback m0';
-        fb.textContent = '0 / 2 Marks — The key word "' + key + '" must be included completely unchanged.';
+        fb.textContent = '0 / 2 Marks (0, 0) — The key word "' + key + '" must be included completely unchanged.';
         itemScores[num] = 0;
+        recordSplitVector(num, 0, 0);
         updateTotalScore();
         return;
       }
 
       if (wc < 3 || wc > 6) {
         fb.className = 'grade-feedback m0';
-        fb.textContent = '0 / 2 Marks — Word count is ' + wc + ' words (strictly requires 3 to 6 words).';
+        fb.textContent = '0 / 2 Marks (0, 0) — Word count is ' + wc + ' words (strictly requires 3 to 6 words).';
         itemScores[num] = 0;
+        recordSplitVector(num, 0, 0);
         updateTotalScore();
         return;
       }
@@ -669,8 +769,9 @@
 
       if (fullMatch) {
         fb.className = 'grade-feedback m2';
-        fb.textContent = '✓ 2 / 2 Marks (Left half ✓ 1 mark | Right half ✓ 1 mark)';
+        fb.textContent = '✓ 2 / 2 Marks · Split Tuple (1, 1) — Left half ✓ 1 mark | Right half ✓ 1 mark';
         itemScores[num] = 2;
+        recordSplitVector(num, 1, 1);
         updateTotalScore();
         return;
       }
@@ -680,20 +781,24 @@
 
       if (leftOk && !rightOk) {
         fb.className = 'grade-feedback m1';
-        fb.textContent = '◐ 1 / 2 Marks (Left half ✓ 1 mark | Right half ✗ 0 marks — check the preposition or complement after the split)';
+        fb.textContent = '◐ 1 / 2 Marks · Split Tuple (1, 0) — Left half ✓ 1 mark | Right half ✗ 0 marks (check the preposition or complement after the split)';
         itemScores[num] = 1;
+        recordSplitVector(num, 1, 0);
       } else if (!leftOk && rightOk) {
         fb.className = 'grade-feedback m1';
-        fb.textContent = '◐ 1 / 2 Marks (Left half ✗ 0 marks | Right half ✓ 1 mark — check the opening verb, tense, or determiner before the split)';
+        fb.textContent = '◐ 1 / 2 Marks · Split Tuple (0, 1) — Left half ✗ 0 marks | Right half ✓ 1 mark (check the opening verb, tense, or determiner before the split)';
         itemScores[num] = 1;
+        recordSplitVector(num, 0, 1);
       } else if (leftOk && rightOk) {
         fb.className = 'grade-feedback m1';
-        fb.textContent = '◐ 1 / 2 Marks — Both parts are recognisable, but there are extra or misplaced words between the two halves.';
+        fb.textContent = '◐ 1 / 2 Marks · Split Tuple (1, 0) — Both parts are recognisable, but there are extra or misplaced words between the two halves.';
         itemScores[num] = 1;
+        recordSplitVector(num, 1, 0);
       } else {
         fb.className = 'grade-feedback m0';
-        fb.textContent = '✗ 0 / 2 Marks (Left half ✗ | Right half ✗) — Try again or click Reveal Key to inspect the | split.';
+        fb.textContent = '✗ 0 / 2 Marks · Split Tuple (0, 0) — Left half ✗ | Right half ✗. Try again or click Reveal Key to inspect the | split.';
         itemScores[num] = 0;
+        recordSplitVector(num, 0, 0);
       }
       updateTotalScore();
     }
@@ -701,6 +806,18 @@
     function updateTotalScore() {
       const total = Object.values(itemScores).reduce((a, b) => a + b, 0);
       document.getElementById('total-score-pill').textContent = 'Score: ' + total + ' / 40';
+      let leftSum = 0;
+      let rightSum = 0;
+      Object.values(itemSplitVectors).forEach(vec => {
+        if (Array.isArray(vec)) {
+          leftSum += (vec[0] || 0);
+          rightSum += (vec[1] || 0);
+        }
+      });
+      const splitPill = document.getElementById('split-tuple-pill');
+      if (splitPill) {
+        splitPill.textContent = 'L:' + leftSum + ' | R:' + rightSum;
+      }
     }
 
     function reveal(id, btn) {
@@ -711,6 +828,355 @@
       btn.style.background = hidden ? 'var(--navy-800)' : '#ffffff';
       btn.style.color = hidden ? '#ffffff' : 'var(--navy-800)';
     }
+
+    // =========================================================================
+    // 3-QUESTION ADAPTIVE SYNTACTIC FINGERPRINT ENGINE (10-State Poset + (m_L, m_R))
+    // =========================================================================
+    const FP_SKILLS = [
+      { id: 'a1', name: '1. Clause & Concession', desc: 'Subordinating frames & prepositional shifts' },
+      { id: 'a2', name: '2. Unreal Past Backshift', desc: 'Subjunctive wishes, preferences & past modals' },
+      { id: 'a3', name: '3. Passive Reporting', desc: 'Impersonal passives & perfect infinitive raising' },
+      { id: 'a4', name: '4. Negative Inversion', desc: 'Fronted negative openers + auxiliary inversion' },
+      { id: 'a5', name: '5. Nominalisation & Prep', desc: 'Abstract noun shifts + dependent prepositions' }
+    ];
+
+    const FP_STATES = [
+      { state: [0,0,0,0,0], cefr: 'B1 (Pre-Threshold)', summary: 'You are still building core clause and tense stability. Start with clear sentence connectors before tackling C1/C2 inversions.' },
+      { state: [1,0,0,0,0], cefr: 'B2 (Vantage — Core Clause Control)', summary: 'Your basic clause and concessive control is steady, but C1 unreal past backshifts, passive reporting, and abstract noun frames need deliberate practice.' },
+      { state: [1,0,1,0,0], cefr: 'B2+ (Passive Voice Established)', summary: 'You handle passive voice shifts well, though unreal past subjunctive frames (would rather / high time) and negative inversions are still slipping.' },
+      { state: [1,0,1,0,1], cefr: 'C1 Advanced (Nominalisation & Passive Strong)', summary: 'You have strong control of C1/C2 passive structures and abstract noun + preposition frames. Tightening your unreal past and negative inversions will push you to C2.' },
+      { state: [1,1,0,0,0], cefr: 'B2+ (Tense & Subjunctive Established)', summary: 'Your tense backshifts and unreal past preferences are accurate, but passive reporting infinitives and noun + preposition collocations need work.' },
+      { state: [1,1,0,1,0], cefr: 'C1 Advanced (Inversion & Tense Mastered)', summary: 'You handle negative auxiliary inversions and unreal past shifts cleanly. Your main mark leaks are in passive reporting and noun + preposition collocations.' },
+      { state: [1,1,1,0,0], cefr: 'C1 Advanced (Core C1 Grammar Solid)', summary: 'You have solid command of clause structure, unreal past backshifts, and passive reporting. The final step to Grade A / C2 is mastering negative inversions and abstract noun frames.' },
+      { state: [1,1,1,0,1], cefr: 'C1+ / Borderline C2 (Nominalisation Mastered)', summary: 'Your nominalisation, prepositional gerunds, and passive reporting are spot on. Locking in negative auxiliary inversions will complete your C2 toolkit.' },
+      { state: [1,1,1,1,0], cefr: 'C1+ / Borderline C2 (Syntactic Inversion Mastered)', summary: 'You control negative inversions, passive reporting, and subjunctive backshifts with confidence. Focus on C2 abstract noun + preposition collocations (Slides 2–4) to secure full marks.' },
+      { state: [1,1,1,1,1], cefr: 'C2 Proficiency (Full 5-Skill Structural Mastery)', summary: 'Spot on across the board. You handled negative inversion, passive reporting, and nominalised prepositional frames without dropping a single half-mark.' }
+    ];
+
+    // Exact 6-Item Calibrated Diagnostic Bank matching the 10-State Poset Q-Matrix
+    const FP_ITEMS = [
+      {
+        id: 'J1',
+        kw: 'SPITE',
+        tag: 'Concessive Prepositional Shift',
+        s1: 'Although the weather was freezing, Clara walked to the station.',
+        s2Pre: 'In ',
+        s2Post: ', Clara walked to the station.',
+        leftOpts: ['spite of'],
+        rightOpts: ['the freezing weather', 'it being freezing'],
+        qLeft:  [1, 0, 0, 0, 0],
+        qRight: [1, 0, 0, 0, 0],
+        model: 'spite of | the freezing weather (5 words)'
+      },
+      {
+        id: 'J2',
+        kw: 'RATHER',
+        tag: 'Unreal Past Subjunctive Preference',
+        s1: 'I would prefer it if you did not mention this letter to the committee.',
+        s2Pre: 'I ',
+        s2Post: ' mention this letter to the committee.',
+        leftOpts: ['would rather you', 'would rather that you'],
+        rightOpts: ['did not', "didn't"],
+        qLeft:  [1, 0, 0, 0, 0],
+        qRight: [0, 1, 0, 0, 0],
+        model: 'would rather you | did not (5 words)'
+      },
+      {
+        id: 'J3',
+        kw: 'BELIEVED',
+        tag: 'Impersonal Passive Reporting + Perfect Infinitive',
+        s1: 'Historians widely believe that the charter was forged in the nineteenth century.',
+        s2Pre: 'The charter ',
+        s2Post: ' forged in the nineteenth century.',
+        leftOpts: ['is widely believed', 'is believed'],
+        rightOpts: ['to have been'],
+        qLeft:  [1, 0, 1, 0, 0],
+        qRight: [0, 1, 1, 0, 0],
+        model: 'is widely believed | to have been (6 words)'
+      },
+      {
+        id: 'J4',
+        kw: 'SOONER',
+        tag: 'Negative Inversion + Past Perfect Sequence',
+        s1: 'As soon as the archivist unlocked the vault, the alarm went off.',
+        s2Pre: 'No ',
+        s2Post: ' the vault than the alarm went off.',
+        leftOpts: ['sooner had the archivist', 'sooner had he', 'sooner had she'],
+        rightOpts: ['unlocked', 'opened'],
+        qLeft:  [1, 1, 0, 1, 0],
+        qRight: [1, 1, 0, 0, 0],
+        model: 'sooner had the archivist | unlocked (5 words)'
+      },
+      {
+        id: 'J5',
+        kw: 'INTENTION',
+        tag: 'Negative Nominalisation + Prepositional Gerund',
+        s1: 'The headmaster definitely did not intend to cancel the autumn debate.',
+        s2Pre: 'The headmaster ',
+        s2Post: ' the autumn debate.',
+        leftOpts: ['had no intention', 'had little intention'],
+        rightOpts: ['of cancelling', 'of canceling', 'of calling off'],
+        qLeft:  [1, 1, 0, 0, 1],
+        qRight: [1, 0, 1, 0, 1],
+        model: 'had no intention | of cancelling (5 words)'
+      },
+      {
+        id: 'J6',
+        kw: 'ACCOUNT',
+        tag: 'Negative Inversion + Passive Prepositional Frame',
+        s1: 'Spectators must never leave the main gallery unattended.',
+        s2Pre: 'On ',
+        s2Post: ' left unattended.',
+        leftOpts: ['no account must the gallery', 'no account should the gallery', 'no account must it', 'no account should it'],
+        rightOpts: ['be', 'ever be'],
+        qLeft:  [1, 1, 0, 1, 0],
+        qRight: [1, 0, 1, 0, 1],
+        model: 'no account must the gallery | be (6 words)'
+      }
+    ];
+
+    let fpHistory = [];
+    let fpCurrentItem = null;
+    let fpAwaitingNext = false;
+
+    function fpConjunctive(stateVec, qVec) {
+      for (let k = 0; k < 5; k++) {
+        if (qVec[k] === 1 && stateVec[k] === 0) return 0;
+      }
+      return 1;
+    }
+
+    function fpIdealTuple(stateVec, item) {
+      return [
+        fpConjunctive(stateVec, item.qLeft),
+        fpConjunctive(stateVec, item.qRight)
+      ];
+    }
+
+    function fpComputePosterior() {
+      const slip = 0.08;
+      const guess = 0.05;
+      const logProbs = FP_STATES.map(st => {
+        let ll = 0;
+        fpHistory.forEach(h => {
+          const ideal = fpIdealTuple(st.state, h.item);
+          const pL = ideal[0] === 1 ? (h.mL === 1 ? 1 - slip : slip) : (h.mL === 1 ? guess : 1 - guess);
+          const pR = ideal[1] === 1 ? (h.mR === 1 ? 1 - slip : slip) : (h.mR === 1 ? guess : 1 - guess);
+          ll += Math.log(pL) + Math.log(pR);
+        });
+        return ll;
+      });
+      const maxLog = Math.max(...logProbs);
+      const weights = logProbs.map(lp => Math.exp(lp - maxLog));
+      const sumW = weights.reduce((a, b) => a + b, 0);
+      return weights.map(w => w / sumW);
+    }
+
+    function fpSelectNextItem() {
+      if (fpHistory.length === 0) {
+        return FP_ITEMS.find(it => it.id === 'J6');
+      }
+      const usedIds = new Set(fpHistory.map(h => h.item.id));
+      const post = fpComputePosterior();
+      let bestItem = null;
+      let bestEntropy = -1;
+
+      FP_ITEMS.forEach(cand => {
+        if (usedIds.has(cand.id)) return;
+        const outcomeMass = { '0,0': 0, '1,0': 0, '0,1': 0, '1,1': 0 };
+        FP_STATES.forEach((st, idx) => {
+          const ideal = fpIdealTuple(st.state, cand);
+          const key = ideal[0] + ',' + ideal[1];
+          outcomeMass[key] += post[idx];
+        });
+        let ent = 0;
+        Object.values(outcomeMass).forEach(p => {
+          if (p > 1e-9) ent -= p * Math.log2(p);
+        });
+        if (ent > bestEntropy) {
+          bestEntropy = ent;
+          bestItem = cand;
+        }
+      });
+      return bestItem || FP_ITEMS.find(it => !usedIds.has(it.id));
+    }
+
+    function renderFingerprintStep() {
+      const stepNum = fpHistory.length + 1;
+      for (let i = 1; i <= 3; i++) {
+        const b = document.getElementById('fp-badge-' + i);
+        if (!b) continue;
+        if (i < stepNum) b.className = 'fp-step-badge done';
+        else if (i === stepNum) b.className = 'fp-step-badge active';
+        else b.className = 'fp-step-badge';
+      }
+
+      fpCurrentItem = fpSelectNextItem();
+      fpAwaitingNext = false;
+
+      document.getElementById('fp-question-box').style.display = 'block';
+      document.getElementById('fp-result-panel').style.display = 'none';
+      document.getElementById('fp-next-row').style.display = 'none';
+      document.getElementById('fp-submit-btn').disabled = false;
+
+      document.getElementById('fp-route-note').textContent = 'Target Focus: ' + fpCurrentItem.tag;
+      document.getElementById('fp-q-tag').textContent = 'Adaptive Prompt ' + stepNum + ' of 3 · ' + fpCurrentItem.tag;
+      document.getElementById('fp-s1').textContent = fpCurrentItem.s1;
+      document.getElementById('fp-key').textContent = fpCurrentItem.kw;
+      document.getElementById('fp-s2').innerHTML = fpCurrentItem.s2Pre + '<span class="gap"></span>' + fpCurrentItem.s2Post;
+
+      const inp = document.getElementById('fp-input');
+      inp.value = '';
+      inp.disabled = false;
+      count(inp);
+      const fb = document.getElementById('fp-feedback');
+      fb.className = 'grade-feedback';
+      fb.textContent = '';
+      inp.focus();
+    }
+
+    function submitFingerprintAnswer() {
+      if (fpAwaitingNext || !fpCurrentItem) return;
+      const inp = document.getElementById('fp-input');
+      const fb = document.getElementById('fp-feedback');
+      const userNorm = normText(inp.value);
+      const wc = getWordCount(inp.value);
+      const key = fpCurrentItem.kw;
+
+      if (!userNorm) {
+        fb.className = 'grade-feedback m0';
+        fb.textContent = 'Please type a 3–6 word transformation (or your best attempt at either half) before submitting.';
+        return;
+      }
+
+      const keyRegex = new RegExp('(^|\\s)' + escapeRegex(key.toLowerCase()) + '(\\s|$)');
+      const hasKey = keyRegex.test(userNorm);
+      const wcValid = (wc >= 3 && wc <= 6);
+
+      const leftOpts = fpCurrentItem.leftOpts.map(normText);
+      const rightOpts = fpCurrentItem.rightOpts.map(normText);
+
+      let mL = 0;
+      let mR = 0;
+
+      if (hasKey && wcValid) {
+        for (const l of leftOpts) {
+          for (const r of rightOpts) {
+            if (userNorm === l + ' ' + r) {
+              mL = 1;
+              mR = 1;
+              break;
+            }
+          }
+          if (mL && mR) break;
+        }
+        if (!(mL && mR)) {
+          if (leftOpts.some(l => new RegExp('(^|\\s)' + escapeRegex(l) + '(\\s|$)').test(userNorm))) mL = 1;
+          if (rightOpts.some(r => new RegExp('(^|\\s)' + escapeRegex(r) + '(\\s|$)').test(userNorm))) mR = 1;
+        }
+      }
+
+      const sumMarks = mL + mR;
+      if (sumMarks === 2) {
+        fb.className = 'grade-feedback m2';
+        fb.textContent = '✓ 2 / 2 Marks · Split Tuple (1, 1) — Model: ' + fpCurrentItem.model;
+      } else if (sumMarks === 1) {
+        fb.className = 'grade-feedback m1';
+        fb.textContent = '◐ 1 / 2 Marks · Split Tuple (' + mL + ', ' + mR + ') — Model: ' + fpCurrentItem.model;
+      } else {
+        fb.className = 'grade-feedback m0';
+        fb.textContent = '✗ 0 / 2 Marks · Split Tuple (0, 0) — Model: ' + fpCurrentItem.model;
+      }
+
+      fpHistory.push({ item: fpCurrentItem, mL, mR });
+      fpAwaitingNext = true;
+      inp.disabled = true;
+      document.getElementById('fp-submit-btn').disabled = true;
+
+      const nextRow = document.getElementById('fp-next-row');
+      const nextBtn = document.getElementById('fp-next-btn');
+      nextRow.style.display = 'block';
+      if (fpHistory.length >= 3) {
+        nextBtn.textContent = 'View Your 5-Skill Syntactic Fingerprint &rarr;';
+      } else {
+        nextBtn.innerHTML = 'Next Adaptive Question (Question ' + (fpHistory.length + 1) + ' of 3) &rarr;';
+      }
+    }
+
+    function advanceFingerprintStep() {
+      if (fpHistory.length >= 3) {
+        renderFingerprintResult();
+      } else {
+        renderFingerprintStep();
+      }
+    }
+
+    function renderFingerprintResult() {
+      for (let i = 1; i <= 3; i++) {
+        const b = document.getElementById('fp-badge-' + i);
+        if (b) b.className = 'fp-step-badge done';
+      }
+      document.getElementById('fp-question-box').style.display = 'none';
+      const panel = document.getElementById('fp-result-panel');
+      panel.style.display = 'block';
+
+      const post = fpComputePosterior();
+      let bestIdx = 0;
+      for (let i = 1; i < post.length; i++) {
+        if (post[i] > post[bestIdx]) bestIdx = i;
+      }
+      const winner = FP_STATES[bestIdx];
+      const confPct = Math.round(post[bestIdx] * 100);
+
+      // Compute marginal mastery probability for each of the 5 syntactic skills
+      const skillProbs = [0, 0, 0, 0, 0];
+      FP_STATES.forEach((st, idx) => {
+        for (let k = 0; k < 5; k++) {
+          if (st.state[k] === 1) skillProbs[k] += post[idx];
+        }
+      });
+
+      const tupleSummary = fpHistory.map((h, i) => 'Q' + (i + 1) + ' [' + h.item.kw + ']: (' + h.mL + ',' + h.mR + ')').join(' · ');
+      document.getElementById('fp-route-note').textContent = tupleSummary;
+      document.getElementById('fp-ceiling-title').textContent = 'Estimated Structural Ceiling: ' + winner.cefr + ' (' + confPct + '% Posterior Fit)';
+      document.getElementById('fp-ceiling-summary').textContent = winner.summary;
+
+      const grid = document.getElementById('fp-skill-grid');
+      grid.innerHTML = '';
+      FP_SKILLS.forEach((sk, k) => {
+        const p = Math.round(skillProbs[k] * 100);
+        const mastered = winner.state[k] === 1;
+        const box = document.createElement('div');
+        box.className = 'fp-skill-box ' + (mastered ? 'mastered' : 'review');
+        box.innerHTML =
+          '<div style="font-weight: 800; margin-bottom: 0.2rem;">' + sk.name + '</div>' +
+          '<div style="font-size: 0.72rem; margin-bottom: 0.3rem; opacity: 0.9;">' + sk.desc + '</div>' +
+          '<div style="font-family: Consolas, monospace; font-weight: 800; font-size: 0.75rem;">' +
+            (mastered ? '✓ Established (' + p + '%)' : '⚑ Priority Drill (' + p + '%)') +
+          '</div>';
+        grid.appendChild(box);
+      });
+
+      const recBox = document.getElementById('fp-recommendation-box');
+      if (winner.state[4] === 0) {
+        recBox.innerHTML = '<strong>Gareth’s Next Step for You:</strong> Your biggest mark-winner today is <strong>Nominalisation &amp; Prepositional Phrases</strong> (turning verbs/adjectives into nouns + prepositions). Jump straight to <strong>Slides 2, 3, and 4</strong> to drill those exact frames.';
+      } else if (winner.state[3] === 0) {
+        recBox.innerHTML = '<strong>Gareth’s Next Step for You:</strong> Your noun and passive frames are working well, so focus next on <strong>Negative Inversions &amp; C2 Conditionals</strong> on <strong>Slides 9 and 10</strong> (<em>At no time, On no account, But for</em>).';
+      } else {
+        recBox.innerHTML = '<strong>Gareth’s Next Step for You:</strong> All five core syntactic families are firing cleanly. Test your stamina across all 20 past-paper transformations on <strong>Slides 2 to 11</strong> to lock in a 36+/40 score.';
+      }
+    }
+
+    function resetFingerprint() {
+      fpHistory = [];
+      fpCurrentItem = null;
+      fpAwaitingNext = false;
+      renderFingerprintStep();
+    }
+
+    // Initialise HUD score and adaptive diagnostic on page load
+    updateTotalScore();
+    resetFingerprint();
   </script>
   <script src="analytics.js" defer></script>
 </body>

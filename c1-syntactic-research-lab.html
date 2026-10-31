@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en-GB" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The C1/C2 Syntactic Research Lab · Empirical Notes from the Red Pen | Gareth Montgomery</title>
+  <meta name="description" content="Three empirical findings from 19 years of marking Cambridge C1/C2 and IELTS essays: the Macro/Micro Decoupling Paradox, the 80-item Part 4 Split-Mark Anatomy, and a live Sentence-Level EFSR &amp; L1 Micro-Scrubber sandbox." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,700;1,6..72,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script src="tools/agents/essay-pipeline/l1-micro-scrubber.js"></script>
+  <style>
+    :root {
+      --serif: 'Newsreader', Georgia, serif;
+      --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'JetBrains Mono', Consolas, monospace;
+    }
+    body {
+      font-family: var(--sans);
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .display-serif {
+      font-family: var(--serif);
+    }
+    .mono-font {
+      font-family: var(--mono);
+    }
+    .reveal-box {
+      display: none;
+    }
+    .reveal-box.open {
+      display: block;
+      animation: fadeSlide 0.18s ease-out;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    del.red-pen {
+      color: #be123c;
+      background-color: #ffe4e6;
+      padding: 0 4px;
+      border-radius: 3px;
+      text-decoration: line-through;
+    }
+    ins.green-pen {
+      color: #065f46;
+      background-color: #d1fae5;
+      padding: 0 5px;
+      border-radius: 3px;
+      text-decoration: none;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="antialiased selection:bg-amber-200 selection:text-slate-900">
+
+  <!-- Top Navigation Bar -->
+  <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="text-sm font-bold text-slate-900 hover:text-amber-800 transition flex items-center gap-2">
+          <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-900 text-white text-xs mono-font">GM</span>
+          <span>GarethEnglish.com</span>
+        </a>
+        <span class="text-slate-300">/</span>
+        <span class="text-xs font-semibold uppercase tracking-wider text-amber-800 mono-font">C1/C2 Empirical Research Lab</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2 text-xs font-semibold">
+        <a href="#finding-1" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 transition">1. The Decoupling Paradox</a>
+        <a href="#finding-2" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 transition">2. Part 4 Split-Mark Audit</a>
+        <a href="#finding-3" class="px-3 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white transition shadow-sm">3. Live Essay Scrubber</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section with Desk Visual -->
+  <header class="bg-white border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 md:py-14">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div class="lg:col-span-7 space-y-4">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold mono-font">
+            <span>Monograph &amp; Interactive Diagnostic Sandbox</span>
+            <span>&middot;</span>
+            <span>Sprucefield Desk</span>
+          </div>
+          <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold display-serif text-slate-900 leading-tight">
+            What the Red Pen Actually Finds at the B2-to-C2 Boundary
+          </h1>
+          <p class="text-base sm:text-lg text-slate-700 leading-relaxed">
+            I have spent nineteen years marking exam scripts (fifteen of them lecturing at Belfast Metropolitan College) with a red pen and a mug of strong tea. When you mark forty scripts before lunch, you quickly realise that half the advice sold online is snake oil. Memorised "Band 9 vocabulary lists" (<em>plethora, conundrum, ubiquitous</em>) and robotic paragraph templates put examiners to sleep.
+          </p>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            Below are three empirical findings from my longitudinal student mark-ups and an 80-item audit of official Cambridge past papers, paired with a live diagnostic tool you can test on your own writing right off the bat.
+          </p>
+        </div>
+
+        <!-- Clean Visual Card -->
+        <div class="lg:col-span-5">
+          <div class="bg-slate-900 text-white rounded-2xl overflow-hidden shadow-lg border border-slate-800">
+            <img src="gareth-portrait.webp" alt="Gareth Montgomery at the study desk" class="w-full h-56 object-cover object-top opacity-95" onerror="this.style.display='none'" />
+            <div class="p-6 space-y-3">
+              <div class="flex items-center justify-between text-xs mono-font text-amber-300">
+                <span>CORPUS BENCHMARK SUMMARY</span>
+                <span>N = 67 SENTS / 80 KWT</span>
+              </div>
+              <div class="grid grid-cols-3 gap-3 pt-1">
+                <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700">
+                  <div class="text-xl font-bold mono-font text-emerald-400">96.9%</div>
+                  <div class="text-[11px] text-slate-300 mt-0.5">C1 Macro-Frame Accuracy</div>
+                </div>
+                <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700">
+                  <div class="text-xl font-bold mono-font text-rose-400">21.4%</div>
+                  <div class="text-[11px] text-slate-300 mt-0.5">Pre-Scrub EFSR Floor</div>
+                </div>
+                <div class="bg-slate-800/90 p-3 rounded-xl border border-slate-700">
+                  <div class="text-xl font-bold mono-font text-amber-300">85.0%</div>
+                  <div class="text-[11px] text-slate-300 mt-0.5">Part 4 Prep Rate</div>
+                </div>
+              </div>
+              <p class="text-xs text-slate-300 leading-relaxed pt-1">
+                "High-scoring English is confident, restrained, and purposeful. Three or four well-placed structural shifts will do the work, provided your small habits don't trip you up."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-14">
+
+    <!-- ================= SECTION 1: THE MACRO/MICRO DECOUPLING PARADOX ================= -->
+    <section id="finding-1" class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 md:p-10 shadow-sm space-y-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-6">
+        <div class="space-y-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Finding 01 &middot; The B2-to-C1/C2 Accuracy Bottleneck</div>
+          <h2 class="text-2xl sm:text-3xl font-bold display-serif text-slate-900">
+            The Macro/Micro Decoupling Paradox
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+            Why mastering cleft sentences and negative inversions will not save your Grammatical Range &amp; Accuracy mark if four small first-language habits crash your Error-Free Sentence Ratio (EFSR).
+          </p>
+        </div>
+        <div class="shrink-0 bg-slate-100 px-4 py-2.5 rounded-xl border border-slate-200 text-xs mono-font text-slate-700">
+          <div>Fisher Exact <em>p</em> = <strong>0.7258</strong> (Post-Toolkit)</div>
+          <div>&chi;&sup2; = <strong>0.3113</strong>, OR = <strong>1.474</strong> (<em>N</em> = 47)</div>
+        </div>
+      </div>
+
+      <!-- Plain-English Explanation + Real Case Study -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-6 space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed">
+          <h3 class="text-lg font-bold text-slate-900">What University Theories Predict vs. What Happens on Paper</h3>
+          <p>
+            In applied linguistics, a well-known theory (Peter Skehan's <em>Limited Attentional Capacity Model</em>, 1998) argues that when a student tries to write a complex grammatical structure, the mental effort steals attention away from basic accuracy. If that were the whole story, we would expect students' grammar mistakes to cluster heavily inside their hardest C1 and C2 sentences.
+          </p>
+          <p>
+            In the cold light of day, my marked scripts show something altogether different. When I give a student clear structural formulas (a <em>Wh-cleft</em> topic sentence, a <em>Not only...</em> negative inversion, an <em>It is widely argued that...</em> passive frame, or a <em>, thereby + -ing</em> resultative participle), they learn the big frame remarkably fast. Across 32 target C1 and C2 frames in our longitudinal post-toolkit scripts, students built the big syntactic frame cleanly <strong>96.9% of the time (31 out of 32)</strong>.
+          </p>
+          <p>
+            Yet in one fourth-lesson IELTS essay on public cultural institutions (14 sentences total), the student deployed all five C1 blueprints without a single structural flaw, and still had only <strong>3 out of 14 completely error-free sentences (21.4% EFSR)</strong>. Because Cambridge and IELTS Band 7+ descriptors explicitly require <em>"frequent error-free sentences"</em>, her Grammatical Range &amp; Accuracy mark was held down at Band 6.0.
+          </p>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-xs sm:text-sm text-amber-950 space-y-1.5">
+            <div class="font-bold uppercase tracking-wider mono-font text-amber-900">The Core Takeaway for Candidates</div>
+            <p>
+              Once you know 4 or 5 reliable C1 sentence frames, <strong>stop trying to force fancier grammar into your essay</strong>. What pulls your mark down is almost never the C1 structure itself: it is three or four quiet first-language habits (articles, uncountable plurals, false friends, or prepositions) sitting inside an otherwise spot-on sentence. Fixing just four small habits in that 14-sentence essay jumped the Error-Free Sentence Ratio from <strong>21.4% (3/14) to 85.7% (12/14)</strong> in two minutes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Interactive 2x2 Contingency Explorer -->
+        <div class="lg:col-span-6 space-y-4">
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="font-bold text-slate-900 text-base">Interactive 2&times;2 Sentence Contingency Explorer</h3>
+                <p class="text-xs text-slate-500">Test whether micro-errors cluster inside C1 macro-frames or distribute evenly across the script.</p>
+              </div>
+              <select id="contingency-selector" onchange="updateContingencyView()" class="text-xs font-bold bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-slate-800">
+                <option value="post47">Post-Toolkit C1/C2 Scripts (N = 47 sentences)</option>
+                <option value="all67">All 5 Full-Text C1/C2 Scripts (N = 67 sentences)</option>
+                <option value="ynnning14">Single Script: Essay 4 Cultural Institutions (N = 14)</option>
+              </select>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs sm:text-sm bg-white rounded-xl overflow-hidden border border-slate-200">
+                <thead>
+                  <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
+                    <th class="p-3 font-bold">Sentence Condition</th>
+                    <th class="p-3 font-bold text-center text-rose-800">Has Micro-Slip (+Err)</th>
+                    <th class="p-3 font-bold text-center text-emerald-800">100% Clean (-Err)</th>
+                    <th class="p-3 font-bold text-center">Micro-Slip Rate</th>
+                  </tr>
+                </thead>
+                <tbody id="contingency-tbody" class="divide-y divide-slate-200 mono-font">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div id="contingency-interpretation" class="bg-white border border-slate-200 rounded-xl p-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- L1 Interference Matrix Tabs -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="font-bold text-slate-900 text-base">The Three L1 Micro-Habit Profiles</h3>
+              <div class="flex gap-1.5">
+                <button onclick="switchL1Profile('mandarin')" id="l1-btn-mandarin" class="px-3 py-1 rounded-lg text-xs font-bold bg-slate-900 text-white">Mandarin / East Asian</button>
+                <button onclick="switchL1Profile('romance')" id="l1-btn-romance" class="px-3 py-1 rounded-lg text-xs font-bold bg-white border border-slate-300 text-slate-700">Italian / Romance</button>
+                <button onclick="switchL1Profile('slavic')" id="l1-btn-slavic" class="px-3 py-1 rounded-lg text-xs font-bold bg-white border border-slate-300 text-slate-700">Slavic + German L2</button>
+              </div>
+            </div>
+            <div id="l1-profile-box" class="bg-white border border-slate-200 rounded-xl p-4 text-xs sm:text-sm space-y-2.5">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Workout Box for Section 1 (Enforcing Rule 2: Formula + Reveal Button) -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Live Red-Pen Workout &middot; Spot the Hidden Micro-Slips Inside a C1 Frame</span>
+            <h3 class="text-base sm:text-lg font-bold text-slate-900 mt-0.5">The C1 Inversion and Cleft Are Spot On. Can You Fix the Three Small Slips?</h3>
+          </div>
+          <button onclick="toggleReveal('workout-1-reveal')" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:border-amber-600 text-xs font-bold text-slate-800 shadow-sm transition">
+            👁️ Reveal Cambridge Model
+          </button>
+        </div>
+        <div class="bg-blue-50/80 border border-blue-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm mono-font text-blue-950">
+          <strong>Structural Blueprint:</strong> <code>Not only + Auxiliary + Subject + Infinitive..., but + Subject + also + Verb | Uncountable Noun = NO -s | General Plural = NO "the"</code>
+        </div>
+        <p class="text-sm sm:text-base italic text-slate-800 pl-3 border-l-4 border-amber-700">
+          "Not only would the owners and <strong>staffs</strong> have clearer incentives to innovate in <strong>the society</strong>, but <strong>culture institutions</strong> would also have greater autonomy."
+        </p>
+        <div id="workout-1-reveal" class="reveal-box bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs sm:text-sm text-emerald-950 space-y-1.5">
+          <div><strong>Corrected C1 Sentence (100% Error-Free):</strong> "Not only would the owners and <ins class="green-pen">staff</ins> have clearer incentives to innovate in <ins class="green-pen">society</ins>, but <ins class="green-pen">cultural institutions</ins> would also have greater autonomy."</div>
+          <div class="text-slate-600">Notice how the auxiliary inversion (<code>would the owners and staff have</code>) was already Band 8.0. Removing the plural <em>-s</em> on uncountable <em>staff</em>, dropping <em>the</em> before general <em>society</em>, and using the adjective <em>cultural</em> saves the sentence mark.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 2: CAMBRIDGE PART 4 SPLIT-MARK ANATOMY ================= -->
+    <section id="finding-2" class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 md:p-10 shadow-sm space-y-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-6">
+        <div class="space-y-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Finding 02 &middot; 80-Item Official Past-Paper Audit</div>
+          <h2 class="text-2xl sm:text-3xl font-bold display-serif text-slate-900">
+            The Cambridge Part 4 Split-Mark (<code>|</code>) Anatomy
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+            Most grammar workbooks drill you endlessly on <em>wish / would rather</em>, modal perfects, and causatives. When I tallied 80 keyed past-paper Part 4 transformations (including 48 official updated Cambridge Proficiency items), those three categories accounted for <strong>0% of primary items</strong>.
+          </p>
+        </div>
+        <div class="shrink-0 bg-slate-100 px-4 py-2.5 rounded-xl border border-slate-200 text-xs mono-font text-slate-700">
+          <div>Keyed Items Audited: <strong>N = 80</strong> (Official <strong>n = 48</strong>)</div>
+          <div>Answers Requiring a Preposition: <strong>68 / 80 (85.0%)</strong></div>
+        </div>
+      </div>
+
+      <!-- Bar Chart Breakdown + The Split-Mark Vector -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Empirical Frequency Table -->
+        <div class="lg:col-span-7 space-y-4">
+          <h3 class="text-base sm:text-lg font-bold text-slate-900">What Official Part 4 Papers Actually Test (Primary Construct)</h3>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div class="space-y-1">
+              <div class="flex justify-between font-semibold text-slate-800">
+                <span>1. Nominalisation (Verb/Adj &rarr; Noun + Preposition, e.g. <em>bore no | resemblance to</em>)</span>
+                <span class="mono-font text-amber-900">35.4% Official (32.5% All)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-amber-600 rounded-full" style="width: 35.4%"></div></div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between font-semibold text-slate-800">
+                <span>2. Fixed Idioms &amp; Phraseological Frames (e.g. <em>took no | notice of</em>, <em>at a | loss to</em>)</span>
+                <span class="mono-font text-amber-900">25.0% Official (25.0% All)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-amber-500 rounded-full" style="width: 25.0%"></div></div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between font-semibold text-slate-800">
+                <span>3. Verb/Adj + Dependent Preposition &amp; Phrasal Verbs (e.g. <em>singled out | for</em>)</span>
+                <span class="mono-font text-slate-700">10.5% Official (22.5% All)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-blue-600 rounded-full" style="width: 22.5%"></div></div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between font-semibold text-slate-800">
+                <span>4. Conditionals (<em>But for his dislike of... |</em>, <em>Providing there is no... |</em>)</span>
+                <span class="mono-font text-slate-700">8.3% Official (6.3% All)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-600 rounded-full" style="width: 8.3%"></div></div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between font-semibold text-slate-800">
+                <span>5. Negative Inversion &amp; Clefts (<em>At no time was there... |</em>, <em>not until | darkness fell</em>)</span>
+                <span class="mono-font text-slate-700">10.5% Official (6.3% All)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full" style="width: 10.5%"></div></div>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between font-semibold text-slate-500">
+                <span>6. Unreal Past (<em>wish / would rather</em>), Modal Perfects &amp; Causatives (Primary)</span>
+                <span class="mono-font text-rose-700 font-bold">0.0% Official (0 / 80)</span>
+              </div>
+              <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-rose-500 rounded-full" style="width: 1%"></div></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2">
+            <div class="font-bold text-slate-900">Why 68 out of 80 Answers Hinge on a Preposition</div>
+            <p>
+              Every Cambridge Part 4 item is worth <strong>2 marks</strong>, divided by a vertical bar (<code>|</code>) in the examiner's marking key into a left slot (<span class="mono-font">m_L</span>, 1 mark) and a right slot (<span class="mono-font">m_R</span>, 1 mark). Across the 80 items, <strong>85.0% (68/80)</strong> contain an obligatory preposition, and in <strong>32.5% (26/80)</strong> the <code>|</code> split sits right beside that preposition (for example: <code>has no intention | of climbing</code>, <code>showed no sign | of nervousness</code>, <code>bore no | resemblance to</code>).
+            </p>
+          </div>
+        </div>
+
+        <!-- The 4-Step Method & Split-Mark Vector Diagnostic -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-900 text-white rounded-2xl p-6 space-y-4">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-300 mono-font">My 4-Step Part 4 Deconstruction Strategy</div>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Instead of staring at Sentence 1 hoping for inspiration, treat every Part 4 question as a two-slot puzzle (<span class="mono-font">m_L | m_R</span>):
+            </p>
+            <ol class="space-y-2.5 text-xs sm:text-sm text-slate-200">
+              <li class="flex gap-2.5">
+                <span class="mono-font font-bold text-amber-400">Step 1:</span>
+                <span><strong>Strike Out the Echoes:</strong> Cross out every word in Sentence 1 that already appears in Sentence 2. What remains is the exact meaning you must pack into the gap.</span>
+              </li>
+              <li class="flex gap-2.5">
+                <span class="mono-font font-bold text-amber-400">Step 2:</span>
+                <span><strong>Inspect Tense Harmony (<span class="mono-font">m_L</span>):</strong> Match the tense of Sentence 1 (past simple stays past; present perfect stays present perfect).</span>
+              </li>
+              <li class="flex gap-2.5">
+                <span class="mono-font font-bold text-amber-400">Step 3:</span>
+                <span><strong>Check Voice &amp; Nominal Shift (<span class="mono-font">m_L</span>):</strong> Did a verb or adjective turn into a noun (<em>resemble &rarr; resemblance</em>, <em>intend &rarr; intention</em>)? Or did the subject move to the front (active &rarr; passive)?</span>
+              </li>
+              <li class="flex gap-2.5">
+                <span class="mono-font font-bold text-amber-400">Step 4:</span>
+                <span><strong>Lock the Preposition Boundary (<span class="mono-font">m_R</span>):</strong> Check the preposition that glues your noun/verb to the words after the gap (<em>intention <u>of</u> + -ing</em>, <em>resemblance <u>to</u></em>, <em>charge <u>of</u></em>).</span>
+              </li>
+            </ol>
+          </div>
+
+          <!-- Interactive 3-Item Split-Mark Vector Diagnostic -->
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+            <h3 class="text-sm sm:text-base font-bold text-slate-900">Quick 3-Item Split-Mark Vector Check (<span class="mono-font">m_L | m_R</span>)</h3>
+            <p class="text-xs text-slate-600">Type your 3-to-6-word answer (keep the key word unchanged!) to see whether you win the Left Mark (<span class="mono-font">m_L</span>), the Right Mark (<span class="mono-font">m_R</span>), or both:</p>
+
+            <div class="space-y-3 text-xs">
+              <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-1.5">
+                <div class="text-slate-700">1. Susan doesn't intend to climb that mountain again. <strong class="mono-font text-amber-900">[HAS]</strong></div>
+                <div class="text-slate-900 font-medium">Susan <input id="kwt-1" type="text" placeholder="3 to 6 words..." class="border border-slate-300 rounded px-2 py-1 text-xs mono-font w-48 focus:outline-none focus:border-amber-600" /> that mountain again.</div>
+              </div>
+
+              <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-1.5">
+                <div class="text-slate-700">2. The role played by the PR company was never acknowledged officially. <strong class="mono-font text-amber-900">[OFFICIAL]</strong></div>
+                <div class="text-slate-900 font-medium">At no time <input id="kwt-2" type="text" placeholder="3 to 6 words..." class="border border-slate-300 rounded px-2 py-1 text-xs mono-font w-52 focus:outline-none focus:border-amber-600" /> the role the PR company played.</div>
+              </div>
+
+              <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-1.5">
+                <div class="text-slate-700">3. My father said that the portrait did not look like him. <strong class="mono-font text-amber-900">[RESEMBLANCE]</strong></div>
+                <div class="text-slate-900 font-medium">My father said that the portrait <input id="kwt-3" type="text" placeholder="3 to 6 words..." class="border border-slate-300 rounded px-2 py-1 text-xs mono-font w-48 focus:outline-none focus:border-amber-600" /> him.</div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 pt-1">
+              <button onclick="scoreKwtVector()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+                Score My (m_L, m_R) Vector
+              </button>
+              <button onclick="toggleReveal('kwt-reveal-keys')" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:border-amber-600 text-slate-800 text-xs font-bold transition">
+                👁️ Reveal Cambridge Model
+              </button>
+            </div>
+
+            <div id="kwt-vector-output" class="hidden bg-white border border-slate-200 rounded-xl p-3.5 text-xs space-y-1.5"></div>
+            <div id="kwt-reveal-keys" class="reveal-box bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-950 space-y-1 mono-font">
+              <div>1. <strong>has no intention | of climbing</strong> (or <em>of ever climbing</em>) [Nom + Prep]</div>
+              <div>2. <strong>was there any official | acknowledgement of</strong> (or <em>an official | acknowledgement of</em>) [Inversion + Nom/Prep]</div>
+              <div>3. <strong>bore no | resemblance to</strong> [Past Tense Verb + Nom/Prep]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECTION 3: LIVE ESSAY SCRUBBER & RESTRAINT SANDBOX ================= -->
+    <section id="finding-3" class="bg-white border-2 border-amber-600/80 rounded-2xl p-6 sm:p-8 md:p-10 shadow-md space-y-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+        <div class="space-y-1.5">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Finding 03 &middot; Actionable Restraint &amp; Live Diagnostic Sandbox</div>
+          <h2 class="text-2xl sm:text-3xl font-bold display-serif text-slate-900">
+            Test Your Writing: Sentence-Level EFSR &amp; L1 Micro-Scrubber
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+            Paste a paragraph or full essay below (or load one of our three authentic student benchmark scripts). The engine highlights your C1/C2 macro-structures in green, scrubs high-frequency L1 micro-slips in red, and calculates your Error-Free Sentence Ratio before and after the 2-minute check.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-1.5 shrink-0">
+          <button onclick="loadPreset('ynnning_e4_mandarin')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
+            Load Mandarin L1 Sample (Essay 4)
+          </button>
+          <button onclick="loadPreset('gaia_cpe_romance')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
+            Load Italian L1 Sample (CPE)
+          </button>
+          <button onclick="loadPreset('oksana_anna_slavic_german')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">
+            Load Slavic + German L2 Sample
+          </button>
+        </div>
+      </div>
+
+      <!-- Input Controls -->
+      <div class="space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <label for="essay-input" class="text-xs font-bold uppercase tracking-wider text-slate-700 mono-font">Your Draft Text (No Spell-Check Needed)</label>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="text-slate-600 font-semibold">L1 Lens:</span>
+            <select id="scrubber-l1-filter" onchange="runLiveScrubber()" class="bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1 font-bold text-slate-800">
+              <option value="all">All L1 Profiles Combined</option>
+              <option value="mandarin">Mandarin / East Asian L1 Focus</option>
+              <option value="romance">Romance (Italian / French / Spanish) L1 Focus</option>
+              <option value="slavic_german">Slavic (Polish / Ukrainian / Russian) + German L2 Focus</option>
+            </select>
+          </div>
+        </div>
+        <textarea id="essay-input" rows="6" class="w-full rounded-xl border border-slate-300 p-4 text-sm text-slate-800 leading-relaxed focus:outline-none focus:border-amber-700 bg-slate-50/50" placeholder="Paste your IELTS or Cambridge C1/C2 paragraph here..."></textarea>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <button onclick="runLiveScrubber()" class="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs sm:text-sm font-bold shadow-sm transition">
+            Run Red-Pen EFSR &amp; L1 Micro-Scrubber
+          </button>
+          <span class="text-xs text-slate-500">Runs 100% locally in your browser via <code>l1-micro-scrubber.js</code>.</span>
+        </div>
+      </div>
+
+      <!-- Live Metrics Dashboard -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <div class="text-xs font-bold uppercase text-slate-500 mono-font">EFSR (Before &rarr; After)</div>
+          <div class="text-xl sm:text-2xl font-bold mono-font text-slate-900 mt-1" id="metric-efsr">--</div>
+          <div class="text-xs text-emerald-700 font-semibold mt-0.5" id="metric-efsr-sub">--</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <div class="text-xs font-bold uppercase text-slate-500 mono-font">C1/C2 Macro-Frames</div>
+          <div class="text-xl sm:text-2xl font-bold mono-font text-emerald-800 mt-1" id="metric-c1">--</div>
+          <div class="text-xs text-slate-600 mt-0.5" id="metric-c1-sub">--</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <div class="text-xs font-bold uppercase text-slate-500 mono-font">L1 Micro-Slips Caught</div>
+          <div class="text-xl sm:text-2xl font-bold mono-font text-rose-700 mt-1" id="metric-slips">--</div>
+          <div class="text-xs text-slate-600 mt-0.5" id="metric-slips-sub">--</div>
+        </div>
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <div class="text-xs font-bold uppercase text-slate-500 mono-font">Syntactic Restraint</div>
+          <div class="text-base sm:text-lg font-bold text-slate-900 mt-1" id="metric-restraint">--</div>
+          <div class="text-xs text-slate-600 mt-0.5" id="metric-restraint-sub">--</div>
+        </div>
+      </div>
+
+      <!-- Sentence-by-Sentence Audit Output -->
+      <div class="space-y-3 pt-2">
+        <h3 class="text-base font-bold text-slate-900">Sentence-by-Sentence X-Ray</h3>
+        <div id="scrubber-sentence-list" class="space-y-2.5"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 mt-16 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div>&copy; Gareth Montgomery (GarethEnglish.com) &middot; Sprucefield, Northern Ireland &middot; CELTA, 19 Years Teaching</div>
+      <div class="flex gap-4">
+        <a href="index.html" class="hover:text-slate-900 font-semibold">Home &amp; 1-to-1 Coaching</a>
+        <a href="dark-academia-index.html" class="hover:text-slate-900 font-semibold">Self-Paced C1/C2 Literature Course</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 1. Contingency Datasets from Authentic Marked Scripts
+    const CONTINGENCY_DATA = {
+      post47: {
+        a: 23, b: 6, c: 13, d: 5,
+        summary: 'Across the 47 sentences in our post-toolkit C1/C2 scripts (Mandarin and Italian L1), micro-level slips occur in 79.3% of C1-framed sentences (23/29) and 72.2% of non-C1 sentences (13/18). Fisher two-sided p = 0.7258 (Chi-square = 0.3113, Odds Ratio = 1.474): there is no statistically significant difference between the two rows. The C1 frames themselves are 96.9% accurate, while L1 micro-habits hit both rows evenly.'
+      },
+      all67: {
+        a: 26, b: 7, c: 20, d: 14,
+        summary: 'Across all 67 sentences in our 5 full-text C1/C2 scripts (including the pre-toolkit Essay 2 baseline), 100% (33/33) of completed C1/C2 macro-frames are structurally sound, while micro-slips appear in 78.8% of C1-framed sentences vs 58.8% of simpler sentences (Chi-square = 3.1017, Fisher two-sided p = 0.1142, not significant at alpha = 0.05).'
+      },
+      ynnning14: {
+        a: 7, b: 2, c: 4, d: 1,
+        summary: 'In Essay 4 (Public Cultural Institutions, N = 14 sentences), 9 sentences deploy C1 macro-frames (Wh-cleft, negative inversion, preparatory It, resultative participles, gerund concession) with 0 macro-structural errors. Yet 7 of 9 C1 sentences (77.8%) and 4 of 5 non-C1 sentences (80.0%) contain a small micro-slip (Fisher two-sided p = 1.0000).'
+      }
+    };
+
+    function updateContingencyView() {
+      const key = document.getElementById('contingency-selector').value;
+      const d = CONTINGENCY_DATA[key];
+      const r1 = d.a + d.b;
+      const r2 = d.c + d.d;
+      const rate1 = ((100 * d.a) / r1).toFixed(1) + '%';
+      const rate2 = ((100 * d.c) / r2).toFixed(1) + '%';
+
+      document.getElementById('contingency-tbody').innerHTML = `
+        <tr>
+          <td class="p-3 font-bold text-slate-900">[+C1/C2 Macro-Frame] (n = ${r1})</td>
+          <td class="p-3 text-center font-bold text-rose-700">${d.a}</td>
+          <td class="p-3 text-center font-bold text-emerald-700">${d.b}</td>
+          <td class="p-3 text-center font-bold text-slate-900">${rate1}</td>
+        </tr>
+        <tr>
+          <td class="p-3 font-bold text-slate-900">[-C1/C2 Macro-Frame] (n = ${r2})</td>
+          <td class="p-3 text-center font-bold text-rose-700">${d.c}</td>
+          <td class="p-3 text-center font-bold text-emerald-700">${d.d}</td>
+          <td class="p-3 text-center font-bold text-slate-900">${rate2}</td>
+        </tr>
+      `;
+      document.getElementById('contingency-interpretation').textContent = d.summary;
+    }
+
+    // 2. L1 Profile Switcher
+    const L1_PROFILES = {
+      mandarin: {
+        title: 'Mandarin / East Asian L1 · Top 3 Micro-Traps',
+        items: [
+          '<strong>1. Rogue "the" before general concepts:</strong> <del class="red-pen">in the society</del> &rarr; <ins class="green-pen">in society</ins>; <del class="red-pen">funded by the governments</del> &rarr; <ins class="green-pen">funded by governments</ins>; <del class="red-pen">interests in the literature</del> &rarr; <ins class="green-pen">interests in literature</ins>.',
+          '<strong>2. Uncountable noun pluralisation:</strong> <del class="red-pen">staffs</del> &rarr; <ins class="green-pen">staff</ins>; <del class="red-pen">infrastructures</del> &rarr; <ins class="green-pen">infrastructure</ins>; <del class="red-pen">researches / advices / equipments</del> &rarr; <ins class="green-pen">research / advice / equipment</ins>.',
+          '<strong>3. Noun-for-adjective modifiers &amp; partitives:</strong> <del class="red-pen">culture institutions</del> &rarr; <ins class="green-pen">cultural institutions</ins>; <del class="red-pen">each of the remaining worker</del> &rarr; <ins class="green-pen">each of the remaining workers</ins>.'
+        ]
+      },
+      romance: {
+        title: 'Italian / Romance L1 · Top 3 Micro-Traps',
+        items: [
+          '<strong>1. Academic False Friends (Falsi Amici):</strong> <del class="red-pen">Suggested implements</del> (hand tools) &rarr; <ins class="green-pen">Suggested improvements</ins>; <del class="red-pen">frequenters / attendees</del> &rarr; <ins class="green-pen">regular patrons / users</ins>; <del class="red-pen">attending a degree</del> (<em>frequentare</em>) &rarr; <ins class="green-pen">pursuing a degree</ins>; <del class="red-pen">Instead,</del> (<em>Invece</em>) &rarr; <ins class="green-pen">By contrast,</ins>.',
+          '<strong>2. Collective Quantifier Agreement:</strong> <del class="red-pen">A number of attendees has...</del> &rarr; <ins class="green-pen">A number of regular users have...</ins>; <del class="red-pen">A third of the students has...</del> &rarr; <ins class="green-pen">A third of the students have...</ins>.',
+          '<strong>3. Prepositional &amp; Countability Calques:</strong> <del class="red-pen">on the short run</del> &rarr; <ins class="green-pen">in the short term</ins>; <del class="red-pen">open your eyes on</del> &rarr; <ins class="green-pen">open your eyes to</ins>; <del class="red-pen">advertisings / lacks</del> &rarr; <ins class="green-pen">advertising / shortcomings</ins>.'
+        ]
+      },
+      slavic: {
+        title: 'Slavic (Ukrainian / Russian / Polish) L1 + German L2 · Top 3 Micro-Traps',
+        items: [
+          '<strong>1. Bare Singular Countable Nouns vs. Uncountable "a":</strong> <del class="red-pen">there is cafe / is Planetarium</del> &rarr; <ins class="green-pen">there is a café / is the Planetarium</ins>; <del class="red-pen">What a wonderful news!</del> &rarr; <ins class="green-pen">What wonderful news!</ins>.',
+          '<strong>2. Directional/Temporal Prepositions &amp; Cognates:</strong> <del class="red-pen">arrive to Armenia</del> &rarr; <ins class="green-pen">arrive in Armenia</ins>; <del class="red-pen">plans on next month</del> &rarr; <ins class="green-pen">plans for next month</ins>; <del class="red-pen">career perspectives</del> &rarr; <ins class="green-pen">career prospects</ins>.',
+          '<strong>3. German L2-to-L3 Transfer (when living/working in DACH):</strong> Mid-sentence capitalised common nouns (<del class="red-pen">many Restaurants and Bars within 10 Minutes</del> &rarr; <ins class="green-pen">many restaurants and bars within 10 minutes</ins>) and pied-piping calques (<del class="red-pen">for what Bochum is famous</del> &rarr; <ins class="green-pen">what Bochum is famous for</ins>).'
+        ]
+      }
+    };
+
+    function switchL1Profile(profileKey) {
+      ['mandarin', 'romance', 'slavic'].forEach(k => {
+        const btn = document.getElementById('l1-btn-' + k);
+        if (k === profileKey) {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-slate-900 text-white';
+        } else {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-bold bg-white border border-slate-300 text-slate-700';
+        }
+      });
+      const p = L1_PROFILES[profileKey];
+      document.getElementById('l1-profile-box').innerHTML = `
+        <div class="font-bold text-slate-900">${p.title}</div>
+        <ul class="space-y-2 text-slate-700 list-disc pl-4">${p.items.map(i => `<li>${i}</li>`).join('')}</ul>
+      `;
+    }
+
+    // 3. KWT Split-Mark Vector Scorer
+    function scoreKwtVector() {
+      const a1 = (document.getElementById('kwt-1').value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+      const a2 = (document.getElementById('kwt-2').value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+      const a3 = (document.getElementById('kwt-3').value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+
+      const s1L = /\bhas no intention\b/.test(a1) ? 1 : 0;
+      const s1R = /\bof (ever )?climbing\b/.test(a1) ? 1 : 0;
+
+      const s2L = /\bwas there (any |an )?official\b/.test(a2) ? 1 : 0;
+      const s2R = /\backnowledg(e)?ment (of|as to|regarding)\b/.test(a2) ? 1 : 0;
+
+      const s3L = /\bbore no\b/.test(a3) ? 1 : 0;
+      const s3R = /\bresemblance to\b/.test(a3) ? 1 : 0;
+
+      const mL = s1L + s2L + s3L;
+      const mR = s1R + s2R + s3R;
+      const total = mL + mR;
+
+      let diagnosis = '';
+      if (total === 6) {
+        diagnosis = 'Spot on (6/6)! You locked in both the grammatical/nominal pivots (m_L = 3/3) and the dependent preposition boundaries (m_R = 3/3).';
+      } else if (mL > mR) {
+        diagnosis = `Your Left-Mark grammatical pivot is strong (m_L = ${mL}/3), but you lost marks on the Right-Mark preposition/gerund boundary (m_R = ${mR}/3). Focus on Step 4 (noun + dependent preposition + -ing).`;
+      } else if (mR > mL) {
+        diagnosis = `You know the target collocations (m_R = ${mR}/3), but lost marks on the Left-Mark tense/inversion pivot (m_L = ${mL}/3). Check Step 2 (past tense "bore" and auxiliary inversion "was there").`;
+      } else {
+        diagnosis = `Current Split-Mark Vector: (m_L = ${mL}/3, m_R = ${mR}/3). Click "Reveal Cambridge Model" to see how the 2-mark bar (|) splits each answer.`;
+      }
+
+      const out = document.getElementById('kwt-vector-output');
+      out.classList.remove('hidden');
+      out.innerHTML = `
+        <div class="font-bold text-slate-900 mono-font">Split-Mark Vector: (m_L = ${mL}/3, m_R = ${mR}/3) &middot; Total: ${total} / 6 Marks</div>
+        <div class="text-slate-700">${diagnosis}</div>
+      `;
+    }
+
+    // 4. Live Scrubber Integration
+    function toggleReveal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('open');
+    }
+
+    function loadPreset(presetKey) {
+      if (!window.L1MicroScrubber) return;
+      const sample = window.L1MicroScrubber.BENCHMARK_SAMPLES[presetKey];
+      if (!sample) return;
+      document.getElementById('essay-input').value = sample.text;
+      document.getElementById('scrubber-l1-filter').value = 'all';
+      runLiveScrubber();
+    }
+
+    function runLiveScrubber() {
+      if (!window.L1MicroScrubber) return;
+      const text = document.getElementById('essay-input').value;
+      const l1Filter = document.getElementById('scrubber-l1-filter').value;
+      const res = window.L1MicroScrubber.analyzeAndScrub(text, { l1Filter });
+
+      document.getElementById('metric-efsr').textContent = `${res.summary.efsrBeforePct}% → ${res.summary.efsrAfterPct}%`;
+      document.getElementById('metric-efsr-sub').textContent = `${res.summary.errorFreeBeforeCount}/${res.summary.sentenceCount} clean sentences (+${res.summary.efsrGainPct}% lift)`;
+
+      document.getElementById('metric-c1').textContent = `${res.summary.c1SentenceCount} / ${res.summary.sentenceCount} sents`;
+      document.getElementById('metric-c1-sub').textContent = `${res.summary.c1FrameCount} C1/C2 frames (${res.summary.c1DensityPct}% density)`;
+
+      document.getElementById('metric-slips').textContent = `${res.summary.totalMicroHits} slips`;
+      document.getElementById('metric-slips-sub').textContent = `Man: ${res.summary.l1Breakdown.mandarin} · Rom: ${res.summary.l1Breakdown.romance} · Slv/Ger: ${res.summary.l1Breakdown.slavic_german}`;
+
+      document.getElementById('metric-restraint').textContent = res.summary.restraintVerdict;
+      document.getElementById('metric-restraint-sub').textContent = `Opener variety: ${res.summary.openerVarietyPct}% · Clichés: ${res.summary.clicheCount}`;
+
+      const listEl = document.getElementById('scrubber-sentence-list');
+      listEl.innerHTML = res.sentences.map(s => {
+        let annotated = s.original;
+        s.microErrors.forEach(err => {
+          const esc = err.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          annotated = annotated.replace(
+            new RegExp(esc),
+            `<del class="red-pen">${err.original}</del> <ins class="green-pen">${err.replacement}</ins>`
+          );
+        });
+
+        const frameBadges = s.c1Frames.map(f =>
+          `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-bold text-[11px] mono-font">✓ ${f.label}</span>`
+        ).join(' ');
+
+        const statusBadge = s.hasMicroError
+          ? `<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-900 font-bold text-[11px] mono-font">${s.microErrors.length} Micro-Slip${s.microErrors.length > 1 ? 's' : ''} Fixed</span>`
+          : `<span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-bold text-[11px] mono-font">100% Error-Free</span>`;
+
+        const notesHtml = s.microErrors.length > 0
+          ? `<div class="mt-2 pt-2 border-t border-slate-200/80 text-xs text-slate-600 space-y-1">
+               ${s.microErrors.map(e => `<div><strong class="text-slate-800">[${e.category}]</strong> <code>${e.formula}</code>: ${e.note}</div>`).join('')}
+             </div>`
+          : '';
+
+        return `
+          <div class="p-4 rounded-xl border ${s.hasMicroError ? 'border-rose-200 bg-rose-50/30' : 'border-emerald-200 bg-emerald-50/20'}">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="text-xs font-bold mono-font text-slate-500">S${s.index} (${s.wordCount}w)</span>
+                ${frameBadges}
+              </div>
+              ${statusBadge}
+            </div>
+            <div class="text-sm text-slate-800 leading-relaxed">${annotated}</div>
+            ${notesHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', function () {
+      updateContingencyView();
+      switchL1Profile('mandarin');
+      loadPreset('ynnning_e4_mandarin');
+    });
+  </script>
+</body>
+</html>
