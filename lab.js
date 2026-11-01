@@ -705,25 +705,36 @@ const LabObservatory = (() => {
       });
     }
 
-    // Lazy-load prosody-lab.js only when the bottom extra-tools drawer opens
-    const extraDrawer = document.getElementById('extra-tools-drawer') || document.querySelector('details.young-learners-quarantine');
-    if (extraDrawer) {
-      if (extraDrawer.open) {
+    // Lazy-load prosody-lab.js when #prosody-lab approaches the viewport
+    const prosodySec = document.getElementById('prosody-lab');
+    if (prosodySec) {
+      if ('IntersectionObserver' in window) {
+        const prosodyObs = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                ensureProsodyLabLoaded();
+                obs.disconnect();
+              }
+            });
+          },
+          { rootMargin: '400px 0px' }
+        );
+        prosodyObs.observe(prosodySec);
+      } else {
         ensureProsodyLabLoaded();
       }
-      extraDrawer.addEventListener('toggle', () => {
-        if (extraDrawer.open) {
-          ensureProsodyLabLoaded();
-        }
-      });
     }
+
+    const extraDrawer = document.getElementById('extra-tools-drawer') || document.querySelector('details.young-learners-quarantine');
 
     // Support legacy anchor hashes and auto-open bottom drawer when deep-linked
     if (window.location.hash) {
       const mappedHash = LEGACY_HASH_MAP[window.location.hash] || window.location.hash;
-      if (mappedHash === '#prosody-lab' || mappedHash === '#professor-west') {
-        if (extraDrawer) extraDrawer.open = true;
+      if (mappedHash === '#prosody-lab') {
         ensureProsodyLabLoaded();
+      } else if (mappedHash === '#professor-west') {
+        if (extraDrawer) extraDrawer.open = true;
       }
       if (LEGACY_HASH_MAP[window.location.hash]) {
         const legacyTarget = document.querySelector(mappedHash);
