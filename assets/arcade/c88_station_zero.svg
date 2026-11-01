@@ -1,50 +1,207 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" shape-rendering="crispEdges">
   <defs>
-    <linearGradient id="spaceBg" x1="0" y1="0" x2="0" y2="360" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#020712"/>
-      <stop offset="55%" stop-color="#071930"/>
-      <stop offset="100%" stop-color="#030814"/>
-    </linearGradient>
-    <pattern id="crtLines3" width="4" height="4" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="4" y2="0" stroke="#000000" stroke-opacity="0.28" stroke-width="1"/>
+    <pattern id="ditherSpace" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#000000"/>
+      <rect x="0" y="0" width="1" height="1" fill="#0000ff"/>
+      <rect x="2" y="2" width="1" height="1" fill="#0000ff"/>
+    </pattern>
+    <pattern id="ditherDeck" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#000000"/>
+      <rect x="0" y="0" width="2" height="2" fill="#0000ff"/>
+      <rect x="2" y="2" width="2" height="2" fill="#0000ff"/>
+    </pattern>
+    <pattern id="ditherAI" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#000000"/>
+      <rect x="0" y="0" width="1" height="1" fill="#00ff00"/>
+      <rect x="2" y="2" width="1" height="1" fill="#00ff00"/>
+    </pattern>
+    <pattern id="ditherSkin3" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#ffff00"/>
+      <rect x="0" y="0" width="1" height="1" fill="#ff0000"/>
+      <rect x="2" y="2" width="1" height="1" fill="#ff0000"/>
+    </pattern>
+    <pattern id="scanlines3" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect x="0" y="2" width="4" height="2" fill="#000000" fill-opacity="0.32"/>
     </pattern>
   </defs>
 
-  <rect width="640" height="360" fill="url(#spaceBg)"/>
+  <!-- PC-88 Outer Frame -->
+  <rect width="640" height="360" fill="#000000"/>
+  <rect x="2" y="2" width="636" height="356" fill="none" stroke="#ffffff" stroke-width="2"/>
+  <rect x="6" y="6" width="628" height="348" fill="none" stroke="#0000ff" stroke-width="2"/>
 
-  <!-- Left Viewport: Orbital Space Window & Ringed Planet -->
-  <rect x="34" y="24" width="310" height="190" rx="6" fill="#030917" stroke="#38bdf8" stroke-width="2.2"/>
-  <!-- Stars -->
-  <g fill="#e0f2fe" opacity="0.8">
-    <circle cx="68" cy="52" r="1.5"/><circle cx="124" cy="44" r="1"/><circle cx="280" cy="58" r="1.5"/>
-    <circle cx="88" cy="168" r="1.2"/><circle cx="305" cy="142" r="1.5"/><circle cx="245" cy="185" r="1"/>
+  <!-- Top Status Bar -->
+  <rect x="8" y="8" width="624" height="22" fill="#0000ff"/>
+  <text x="16" y="23" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">TAPE 3 · SCENE 1/3 · ORBITAL STATION ZERO</text>
+  <text x="624" y="23" text-anchor="end" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">Passive, Causative &amp; Future</text>
+
+  <!-- ================= PIXEL SCENE CANVAS (y: 30..234) ================= -->
+  <g transform="translate(0, 30)">
+    <rect x="8" y="0" width="624" height="158" fill="url(#ditherSpace)"/>
+    <!-- Pixel Starfield -->
+    <g fill="#ffffff">
+      <rect x="44" y="38" width="2" height="2"/><rect x="112" y="20" width="2" height="2"/>
+      <rect x="196" y="14" width="2" height="2"/><rect x="364" y="18" width="2" height="2"/>
+      <rect x="442" y="34" width="2" height="2"/><rect x="380" y="48" width="2" height="2"/>
+    </g>
+    <g fill="#ffff00">
+      <rect x="292" y="12" width="2" height="2"/><rect x="412" y="16" width="2" height="2"/>
+    </g>
+
+    <!-- Station Deck Floor -->
+    <rect x="8" y="158" width="624" height="46" fill="url(#ditherDeck)"/>
+    <rect x="8" y="158" width="624" height="2" fill="#00ffff"/>
+
+    <!-- Location Badge Top-Left -->
+    <rect x="16" y="8" width="212" height="22" fill="#000000" stroke="#ffff00" stroke-width="2"/>
+    <text x="24" y="23" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="12" font-weight="bold">DECK A • AIRLOCK TERMINAL</text>
+
+    <!-- BAY 1 Airlock Bulkhead (IN PROGRESS - Repair Bots Sealing Leak) -->
+    <g transform="translate(24, 36)">
+      <rect x="0" y="0" width="152" height="122" fill="#ffffff"/>
+      <rect x="4" y="4" width="144" height="114" fill="url(#ditherDeck)"/>
+      <!-- Yellow Hazard Stripes at Bottom of Bulkhead -->
+      <g fill="#ffff00">
+        <rect x="8" y="108" width="10" height="6"/><rect x="24" y="108" width="10" height="6"/>
+        <rect x="40" y="108" width="10" height="6"/><rect x="56" y="108" width="10" height="6"/>
+        <rect x="72" y="108" width="10" height="6"/><rect x="88" y="108" width="10" height="6"/>
+        <rect x="104" y="108" width="10" height="6"/><rect x="120" y="108" width="10" height="6"/>
+        <rect x="134" y="108" width="10" height="6"/>
+      </g>
+      <rect x="14" y="12" width="124" height="22" fill="#000000" stroke="#ffff00" stroke-width="2"/>
+      <text x="76" y="27" text-anchor="middle" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="14" font-weight="bold">BAY 1</text>
+      <!-- Status Window: IN PROGRESS + Drone-9 Welding Sparks -->
+      <rect x="14" y="42" width="124" height="58" fill="#000000" stroke="#ff0000" stroke-width="2"/>
+      <rect x="20" y="48" width="112" height="16" fill="#ff0000"/>
+      <text x="76" y="60" text-anchor="middle" fill="#ffff00" font-family="'Courier New', monospace" font-size="10" font-weight="bold">IN PROGRESS NOW</text>
+      <!-- Welding Drone-9 + Bright Sparks -->
+      <rect x="44" y="74" width="28" height="12" fill="#00ffff"/>
+      <rect x="72" y="78" width="12" height="4" fill="#ffff00"/>
+      <rect x="86" y="72" width="4" height="4" fill="#ffffff"/>
+      <rect x="92" y="82" width="4" height="4" fill="#ffff00"/>
+      <rect x="88" y="86" width="3" height="3" fill="#ff0000"/>
+      <text x="20" y="96" fill="#00ffff" font-family="'Courier New', monospace" font-size="9">BOTS SEALING LEAK</text>
+    </g>
+
+    <!-- BAY 2 Airlock Bulkhead (COMPLETED JUST NOW - New Seals Fitted) -->
+    <g transform="translate(192, 36)">
+      <rect x="0" y="0" width="152" height="122" fill="#ffffff"/>
+      <rect x="4" y="4" width="144" height="114" fill="url(#ditherDeck)"/>
+      <!-- Yellow Hazard Stripes -->
+      <g fill="#ffff00">
+        <rect x="8" y="108" width="10" height="6"/><rect x="24" y="108" width="10" height="6"/>
+        <rect x="40" y="108" width="10" height="6"/><rect x="56" y="108" width="10" height="6"/>
+        <rect x="72" y="108" width="10" height="6"/><rect x="88" y="108" width="10" height="6"/>
+        <rect x="104" y="108" width="10" height="6"/><rect x="120" y="108" width="10" height="6"/>
+        <rect x="134" y="108" width="10" height="6"/>
+      </g>
+      <rect x="14" y="12" width="124" height="22" fill="#000000" stroke="#00ff00" stroke-width="2"/>
+      <text x="76" y="27" text-anchor="middle" fill="#00ff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="14" font-weight="bold">BAY 2</text>
+      <!-- Status Window: COMPLETED -->
+      <rect x="14" y="42" width="124" height="58" fill="#000000" stroke="#00ff00" stroke-width="2"/>
+      <rect x="20" y="48" width="112" height="16" fill="#00ff00"/>
+      <text x="76" y="60" text-anchor="middle" fill="#000000" font-family="'Courier New', monospace" font-size="10" font-weight="bold">COMPLETED (NOW)</text>
+      <rect x="52" y="70" width="48" height="14" fill="#0000ff" stroke="#00ffff" stroke-width="1.5"/>
+      <text x="76" y="80" text-anchor="middle" fill="#ffffff" font-family="'Courier New', monospace" font-size="9" font-weight="bold">SEALED OK</text>
+      <text x="20" y="96" fill="#00ff00" font-family="'Courier New', monospace" font-size="9">NEW SEALS FITTED</text>
+    </g>
+
+    <!-- Telemetry & O2 Warning Console (Center-Right) -->
+    <g transform="translate(362, 18)">
+      <rect x="0" y="0" width="128" height="26" fill="#ff0000" stroke="#ffffff" stroke-width="2"/>
+      <text x="64" y="18" text-anchor="middle" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="15" font-weight="bold">O2: 81% · RAD 9.4</text>
+
+      <rect x="0" y="34" width="128" height="104" fill="#ffffff"/>
+      <rect x="2" y="36" width="124" height="100" fill="#000000"/>
+      <rect x="6" y="40" width="116" height="16" fill="#0000ff"/>
+      <text x="10" y="52" fill="#00ffff" font-family="'Courier New', monospace" font-size="10" font-weight="bold">AI PROTOCOL LOG</text>
+      <text x="10" y="70" fill="#ffff00" font-family="'Courier New', monospace" font-size="9" font-weight="bold">PASSIVE REQUIRED:</text>
+      <text x="10" y="84" fill="#ffffff" font-family="'Courier New', monospace" font-size="9">• IS BEING + V3</text>
+      <text x="10" y="98" fill="#ffffff" font-family="'Courier New', monospace" font-size="9">• HAVE BEEN + V3</text>
+      <text x="10" y="112" fill="#00ff00" font-family="'Courier New', monospace" font-size="9">• HAVE OBJ WELDED</text>
+      <!-- Blinking Console LEDs -->
+      <rect x="10" y="122" width="10" height="6" fill="#ff0000"/>
+      <rect x="26" y="122" width="10" height="6" fill="#00ff00"/>
+      <rect x="42" y="122" width="10" height="6" fill="#ffff00"/>
+      <rect x="58" y="122" width="10" height="6" fill="#00ffff"/>
+    </g>
+
+    <!-- Commander Yuki Sprite on Deck (White Suit, Cyan Hair, Green Visor) -->
+    <g transform="translate(356, 128)">
+      <rect x="2" y="0" width="20" height="6" fill="#00ffff"/>
+      <rect x="0" y="5" width="24" height="14" fill="url(#ditherSkin3)"/>
+      <rect x="2" y="8" width="20" height="4" fill="#00ff00"/>
+      <rect x="-4" y="19" width="32" height="22" fill="#ffffff"/>
+      <rect x="8" y="19" width="8" height="10" fill="#ff0000"/>
+      <rect x="2" y="41" width="8" height="16" fill="#0000ff"/>
+      <rect x="14" y="41" width="8" height="16" fill="#0000ff"/>
+    </g>
+
+    <!-- Right-Hand Talking Character Portrait Window (MOTHER-88 AI CORE) -->
+    <g transform="translate(506, 10)">
+      <rect x="-2" y="-2" width="122" height="122" fill="#000000"/>
+      <rect x="0" y="0" width="118" height="118" fill="#00ffff"/>
+      <rect x="2" y="2" width="114" height="114" fill="#ffffff"/>
+      <rect x="4" y="4" width="110" height="96" fill="#000000"/>
+      <!-- AI Mainframe Chassis (Exact drawPortrait robot=true from chronicle-88.html) -->
+      <rect x="29" y="18" width="60" height="68" fill="#ffffff"/>
+      <rect x="33" y="22" width="52" height="60" fill="url(#ditherAI)"/>
+      <!-- Glowing Optical Lens -->
+      <circle cx="59" cy="48" r="16" fill="#00ffff"/>
+      <circle cx="59" cy="48" r="9" fill="#ff0000"/>
+      <rect x="55" y="44" width="4" height="4" fill="#ffff00"/>
+      <!-- Equalizer / Voice Modulation Bars -->
+      <rect x="37" y="72" width="6" height="5" fill="#ffff00"/>
+      <rect x="45" y="72" width="6" height="5" fill="#00ff00"/>
+      <rect x="53" y="72" width="6" height="5" fill="#ffff00"/>
+      <rect x="61" y="72" width="6" height="5" fill="#00ff00"/>
+      <rect x="69" y="72" width="6" height="5" fill="#ffff00"/>
+      <rect x="77" y="72" width="6" height="5" fill="#00ff00"/>
+      <!-- Portrait Nameplate -->
+      <rect x="2" y="100" width="114" height="16" fill="#000000"/>
+      <rect x="2" y="100" width="114" height="2" fill="#00ffff"/>
+      <text x="10" y="112" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="11" font-weight="bold">MOTHER-88 [AI]</text>
+      <rect x="106" y="106" width="5" height="5" fill="#00ff00"/>
+    </g>
+
+    <!-- Rescue Cruiser 06:00 Countdown Badge Below Portrait -->
+    <g transform="translate(506, 138)">
+      <rect x="0" y="0" width="118" height="54" fill="#000000" stroke="#00ffff" stroke-width="2"/>
+      <text x="10" y="18" fill="#ffff00" font-family="'DotGothic16', monospace" font-size="12" font-weight="bold">CRUISER ETA: 06:00</text>
+      <text x="10" y="34" fill="#00ff00" font-family="'Courier New', monospace" font-size="9" font-weight="bold">LIFE-SUP: 05:50 OK</text>
+      <text x="10" y="47" fill="#ff00ff" font-family="'Courier New', monospace" font-size="9" font-weight="bold">STORM: 05:55–06:15</text>
+    </g>
   </g>
-  <!-- Ringed Gas Giant Planet -->
-  <g transform="translate(188, 118)">
-    <ellipse cx="0" cy="0" rx="92" ry="22" stroke="#38bdf8" stroke-width="3" stroke-opacity="0.55" transform="rotate(-16)"/>
-    <circle cx="0" cy="0" r="44" fill="#0c4a6e" stroke="#7dd3fc" stroke-width="2"/>
-    <path d="M-40 -12 Q0 -24 40 -12" stroke="#0284c7" stroke-width="6" fill="none"/>
-    <path d="M-43 8 Q0 -4 43 8" stroke="#38bdf8" stroke-width="4" fill="none" opacity="0.6"/>
-  </g>
 
-  <!-- Right Panel: MOTHER-88 AI Core Mainframe -->
-  <rect x="362" y="24" width="244" height="190" rx="6" fill="#040d1a" stroke="#38bdf8" stroke-width="2.2"/>
-  <rect x="370" y="32" width="228" height="22" rx="3" fill="#0c4a6e"/>
-  <text x="380" y="47" fill="#bae6fd" font-family="monospace, sans-serif" font-size="11" font-weight="900">TAPE 03 // AI: MOTHER-88</text>
+  <!-- Divider Line Between CG Viewport & Lower Split Window -->
+  <rect x="8" y="234" width="624" height="2" fill="#ffffff"/>
 
-  <!-- Glowing AI Optical Lens -->
-  <circle cx="484" cy="108" r="36" fill="#082f49" stroke="#38bdf8" stroke-width="2.5"/>
-  <circle cx="484" cy="108" r="22" fill="#0284c7" stroke="#bae6fd" stroke-width="1.5"/>
-  <circle cx="484" cy="108" r="9" fill="#e0f2fe"/>
+  <!-- ================= LOWER SPLIT WINDOW (y: 236..352) ================= -->
+  <!-- Left Text Window -->
+  <rect x="8" y="236" width="462" height="116" fill="#000000"/>
+  <text x="20" y="258" fill="#00ffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="14" font-weight="bold">『COMMANDER YUKI → MOTHER-88』</text>
+  <text x="20" y="282" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13">“Bay 1 </text>
+  <text x="68" y="282" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">is being repaired</text>
+  <text x="198" y="282" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13"> right now, and Bay 2’s seals</text>
 
-  <text x="484" y="166" text-anchor="middle" fill="#7dd3fc" font-family="monospace, sans-serif" font-size="11" font-weight="900">OXYGEN: 92% • HULL: SEALED</text>
-  <text x="484" y="186" text-anchor="middle" fill="#34d399" font-family="monospace, sans-serif" font-size="10" font-weight="800">PROTOCOL: PASSIVE VOICE ONLY</text>
+  <text x="20" y="306" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">have just been replaced</text>
+  <text x="194" y="306" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13">.”</text>
 
-  <!-- Bottom PC-98 Dialogue Frame -->
-  <rect x="34" y="232" width="572" height="104" rx="6" fill="#030814" stroke="#38bdf8" stroke-width="2.2"/>
-  <text x="52" y="258" fill="#38bdf8" font-family="monospace, sans-serif" font-size="12" font-weight="900">MOTHER-88 MAINFRAME [ORBITAL STATION ZERO // 1988]:</text>
-  <text x="52" y="282" fill="#f8fafc" font-family="monospace, sans-serif" font-size="13" font-weight="700">“Airlock 4 IS BEING PRESSURISED. Have the hull breach WELDED.”</text>
-  <text x="52" y="312" fill="#fbbf24" font-family="monospace, sans-serif" font-size="11" font-weight="800">▶ B1–B2 PASSIVE VOICE • CAUSATIVE HAVE/GET • FUTURE PERFECT</text>
+  <text x="20" y="334" fill="#00ff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="12" font-weight="bold">▶ LOG ACCEPTED: Passive Voice + Causative + Future Perfect</text>
+  <text x="448" y="340" fill="#ffff00" font-family="monospace" font-size="14">▼</text>
 
-  <rect width="640" height="360" fill="url(#crtLines3)" pointer-events="none"/>
+  <!-- Vertical Split Border -->
+  <rect x="470" y="236" width="2" height="116" fill="#ffffff"/>
+
+  <!-- Right Command Menu Window -->
+  <rect x="472" y="236" width="160" height="116" fill="#000000"/>
+  <text x="484" y="255" fill="#ff00ff" font-family="'DotGothic16', 'Courier New', monospace" font-size="12" font-weight="bold">COMMAND</text>
+  <text x="484" y="276" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13"><tspan fill="#ffff00">1</tspan> LOOK</text>
+  <text x="484" y="296" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13"><tspan fill="#ffff00">2</tspan> TALK</text>
+  <text x="484" y="316" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13"><tspan fill="#ffff00">3</tspan> EXAMINE</text>
+  <rect x="478" y="323" width="148" height="22" fill="#0000ff"/>
+  <text x="484" y="339" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">▶ 4 REPORT</text>
+
+  <!-- Authentic CRT Scanline Overlay -->
+  <rect width="640" height="360" fill="url(#scanlines3)" pointer-events="none"/>
 </svg>

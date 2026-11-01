@@ -1,68 +1,211 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" shape-rendering="crispEdges">
   <defs>
-    <linearGradient id="citadelBg" x1="0" y1="0" x2="0" y2="360" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#04130f"/>
-      <stop offset="55%" stop-color="#09261e"/>
-      <stop offset="100%" stop-color="#040d0b"/>
-    </linearGradient>
-    <pattern id="crtLines2" width="4" height="4" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="4" y2="0" stroke="#000000" stroke-opacity="0.28" stroke-width="1"/>
+    <pattern id="ditherBrick" width="40" height="24" patternUnits="userSpaceOnUse">
+      <rect width="40" height="24" fill="#000000"/>
+      <rect x="0" y="0" width="38" height="10" fill="#0000ff" fill-opacity="0.45"/>
+      <rect x="20" y="12" width="20" height="10" fill="#0000ff" fill-opacity="0.45"/>
+      <rect x="0" y="12" width="18" height="10" fill="#0000ff" fill-opacity="0.45"/>
+    </pattern>
+    <pattern id="ditherFloor" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#000000"/>
+      <rect x="0" y="0" width="1" height="1" fill="#0000ff"/>
+      <rect x="2" y="2" width="1" height="1" fill="#0000ff"/>
+    </pattern>
+    <pattern id="ditherWeb" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="1" height="1" fill="#ffffff"/>
+      <rect x="2" y="2" width="1" height="1" fill="#ffffff"/>
+    </pattern>
+    <pattern id="ditherRust" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="2" height="2" fill="#ff0000"/>
+      <rect x="2" y="2" width="2" height="2" fill="#ffff00"/>
+    </pattern>
+    <pattern id="ditherGuardian" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#000000"/>
+      <rect x="0" y="0" width="1" height="1" fill="#ff00ff"/>
+      <rect x="2" y="2" width="1" height="1" fill="#ff00ff"/>
+    </pattern>
+    <pattern id="ditherSkin2" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="#ffff00"/>
+      <rect x="0" y="0" width="1" height="1" fill="#ff0000"/>
+      <rect x="2" y="2" width="1" height="1" fill="#ff0000"/>
+    </pattern>
+    <pattern id="scanlines2" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect x="0" y="2" width="4" height="2" fill="#000000" fill-opacity="0.32"/>
     </pattern>
   </defs>
 
-  <rect width="640" height="360" fill="url(#citadelBg)"/>
+  <!-- PC-88 Outer Frame -->
+  <rect width="640" height="360" fill="#000000"/>
+  <rect x="2" y="2" width="636" height="356" fill="none" stroke="#ffffff" stroke-width="2"/>
+  <rect x="6" y="6" width="628" height="348" fill="none" stroke="#0000ff" stroke-width="2"/>
 
-  <!-- Stone Chamber Frame (PC-98 Dungeon Crawler Viewport) -->
-  <rect x="34" y="24" width="330" height="190" rx="6" fill="#061512" stroke="#10b981" stroke-width="2.2"/>
-  <path d="M74 214 L74 88 Q74 42 199 42 Q324 42 324 88 L324 214 Z" fill="#030b09" stroke="#059669" stroke-width="2"/>
+  <!-- Top Status Bar -->
+  <rect x="8" y="8" width="624" height="22" fill="#0000ff"/>
+  <text x="16" y="23" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">TAPE 2 · SCENE 1/3 · CITADEL OF ECHOES</text>
+  <text x="624" y="23" text-anchor="end" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">Passive Modals of Deduction</text>
 
-  <!-- 3 Pedestal Levers Inside Dungeon Room -->
-  <rect x="104" y="168" width="190" height="34" rx="4" fill="#11221c" stroke="#10b981" stroke-width="1.5"/>
+  <!-- ================= PIXEL SCENE CANVAS (y: 30..234) ================= -->
+  <g transform="translate(0, 30)">
+    <!-- Stone Brick Dungeon Wall & Floor -->
+    <rect x="8" y="0" width="624" height="150" fill="url(#ditherBrick)"/>
+    <rect x="8" y="150" width="624" height="54" fill="url(#ditherFloor)"/>
+    <rect x="8" y="150" width="624" height="2" fill="#ffffff"/>
 
-  <!-- Lever 1 (Left - Rusty/Cobwebbed) -->
-  <line x1="138" y1="168" x2="122" y2="118" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
-  <circle cx="122" cy="116" r="7" fill="#94a3b8"/>
+    <!-- Location Badge Top-Left -->
+    <rect x="16" y="8" width="212" height="22" fill="#000000" stroke="#ffff00" stroke-width="2"/>
+    <text x="24" y="23" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="12" font-weight="bold">FLOOR B1 • THE THREE LEVERS</text>
 
-  <!-- Lever 2 (Center - Glowing Sapphire Defining Clause Lever!) -->
-  <circle cx="199" cy="112" r="24" fill="#38bdf8" fill-opacity="0.25"/>
-  <line x1="199" y1="168" x2="199" y2="112" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>
-  <circle cx="199" cy="110" r="9" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+    <!-- Flaming Dungeon Torches (Left & Right of Rune Gate) -->
+    <g transform="translate(36, 54)">
+      <rect x="0" y="12" width="8" height="24" fill="#ffffff"/>
+      <rect x="2" y="14" width="4" height="20" fill="#ff0000"/>
+      <ellipse cx="4" cy="4" rx="8" ry="7" fill="#ffff00"/>
+      <ellipse cx="4" cy="6" rx="4" ry="4" fill="#ff0000"/>
+    </g>
+    <g transform="translate(472, 54)">
+      <rect x="0" y="12" width="8" height="24" fill="#ffffff"/>
+      <rect x="2" y="14" width="4" height="20" fill="#ff0000"/>
+      <ellipse cx="4" cy="4" rx="8" ry="7" fill="#ffff00"/>
+      <ellipse cx="4" cy="6" rx="4" ry="4" fill="#ff0000"/>
+    </g>
 
-  <!-- Lever 3 (Right - Broken) -->
-  <line x1="260" y1="168" x2="278" y2="122" stroke="#64748b" stroke-width="5" stroke-linecap="round"/>
-  <circle cx="278" cy="120" r="7" fill="#94a3b8"/>
+    <!-- Center Sealed Stone Gate ("ONLY TRUTH OPENS THE WAY") -->
+    <rect x="188" y="18" width="168" height="132" fill="#ffffff"/>
+    <rect x="192" y="22" width="160" height="128" fill="#000000"/>
+    <!-- Iron Portcullis Bars -->
+    <g fill="#00ffff">
+      <rect x="206" y="46" width="4" height="104"/>
+      <rect x="224" y="46" width="4" height="104"/>
+      <rect x="242" y="46" width="4" height="104"/>
+      <rect x="260" y="46" width="4" height="104"/>
+      <rect x="278" y="46" width="4" height="104"/>
+      <rect x="296" y="46" width="4" height="104"/>
+      <rect x="314" y="46" width="4" height="104"/>
+      <rect x="332" y="46" width="4" height="104"/>
+    </g>
+    <rect x="196" y="26" width="152" height="18" fill="#0000ff"/>
+    <text x="272" y="39" text-anchor="middle" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="12" font-weight="bold">GATE: TRUTH OPENS</text>
 
-  <!-- Right Panel: Fighting Fantasy 2d6 Adventure Sheet & Dice -->
-  <rect x="382" y="24" width="224" height="190" rx="6" fill="#05100e" stroke="#34d399" stroke-width="2.2"/>
-  <rect x="390" y="32" width="208" height="22" rx="3" fill="#064e3b"/>
-  <text x="400" y="47" fill="#a7f3d0" font-family="monospace, sans-serif" font-size="11" font-weight="900">TAPE 02 // 2D6 LUCK CHECK</text>
+    <!-- LEVER 1 (Left: Thick Unbroken Cobwebs) -->
+    <g transform="translate(118, 0)">
+      <rect x="-24" y="80" width="48" height="58" fill="url(#ditherWeb)"/>
+      <rect x="-16" y="138" width="32" height="12" fill="#ffffff"/>
+      <rect x="-14" y="140" width="28" height="8" fill="#0000ff"/>
+      <rect x="-2" y="94" width="4" height="44" fill="#ffffff"/>
+      <ellipse cx="0" cy="92" rx="7" ry="5" fill="#ff0000"/>
+      <rect x="-32" y="156" width="64" height="16" fill="#000000" stroke="#ffffff" stroke-width="1"/>
+      <text x="0" y="168" text-anchor="middle" fill="#ffffff" font-family="'Courier New', monospace" font-size="9" font-weight="bold">1: COBWEBS</text>
+    </g>
 
-  <!-- Two 3D Polyhedral 6-Sided Dice (Showing 5 + 4 = 9) -->
-  <g transform="translate(418, 72)">
-    <rect width="58" height="58" rx="10" fill="#064e3b" stroke="#34d399" stroke-width="2.5"/>
-    <circle cx="16" cy="16" r="4.5" fill="#ecfdf5"/>
-    <circle cx="42" cy="16" r="4.5" fill="#ecfdf5"/>
-    <circle cx="29" cy="29" r="4.5" fill="#34d399"/>
-    <circle cx="16" cy="42" r="4.5" fill="#ecfdf5"/>
-    <circle cx="42" cy="42" r="4.5" fill="#ecfdf5"/>
+    <!-- LEVER 2 (Center: Warm Oil + Fresh Muddy Footprints!) -->
+    <g transform="translate(272, 0)">
+      <rect x="-18" y="138" width="36" height="12" fill="#ffff00"/>
+      <rect x="-16" y="140" width="32" height="8" fill="#0000ff"/>
+      <rect x="-3" y="90" width="6" height="48" fill="#00ff00"/>
+      <ellipse cx="0" cy="88" rx="8" ry="6" fill="#ffff00"/>
+      <!-- Warm Oil Drops -->
+      <rect x="5" y="102" width="3" height="5" fill="#ffff00"/>
+      <rect x="5" y="116" width="3" height="5" fill="#ffff00"/>
+      <!-- Fresh Muddy Footprints in front of Lever 2 -->
+      <rect x="-20" y="160" width="8" height="4" fill="#ff0000"/>
+      <rect x="-8" y="166" width="8" height="4" fill="#ff0000"/>
+      <rect x="4" y="160" width="8" height="4" fill="#ff0000"/>
+      <rect x="16" y="166" width="8" height="4" fill="#ff0000"/>
+      <rect x="-40" y="174" width="80" height="16" fill="#000000" stroke="#00ff00" stroke-width="1.5"/>
+      <text x="0" y="186" text-anchor="middle" fill="#00ff00" font-family="'Courier New', monospace" font-size="9" font-weight="bold">2: WARM OIL!</text>
+    </g>
+
+    <!-- LEVER 3 (Right: Rusted Solid) -->
+    <g transform="translate(422, 0)">
+      <rect x="-16" y="138" width="32" height="12" fill="#ffffff"/>
+      <rect x="-14" y="140" width="28" height="8" fill="#0000ff"/>
+      <rect x="-4" y="94" width="8" height="44" fill="url(#ditherRust)"/>
+      <ellipse cx="0" cy="92" rx="7" ry="5" fill="#ff00ff"/>
+      <rect x="-32" y="156" width="64" height="16" fill="#000000" stroke="#ff0000" stroke-width="1"/>
+      <text x="0" y="168" text-anchor="middle" fill="#ff0000" font-family="'Courier New', monospace" font-size="9" font-weight="bold">3: RUSTED</text>
+    </g>
+
+    <!-- Traveller Sprite (Left: Cyan Cloak, Yellow Hair) -->
+    <g transform="translate(46, 122)">
+      <rect x="2" y="0" width="20" height="6" fill="#ffff00"/>
+      <rect x="0" y="5" width="24" height="14" fill="url(#ditherSkin2)"/>
+      <rect x="4" y="8" width="4" height="3" fill="#000000"/>
+      <rect x="14" y="8" width="4" height="3" fill="#000000"/>
+      <rect x="-4" y="19" width="32" height="24" fill="#00ffff"/>
+      <rect x="8" y="19" width="8" height="10" fill="#ffffff"/>
+      <rect x="2" y="43" width="8" height="16" fill="#ffffff"/>
+      <rect x="14" y="43" width="8" height="16" fill="#ffffff"/>
+    </g>
+
+    <!-- Right-Hand Talking Character Portrait Window (THE GUARDIAN) -->
+    <g transform="translate(506, 10)">
+      <rect x="-2" y="-2" width="122" height="122" fill="#000000"/>
+      <rect x="0" y="0" width="118" height="118" fill="#ffff00"/>
+      <rect x="2" y="2" width="114" height="114" fill="#ffffff"/>
+      <rect x="4" y="4" width="110" height="96" fill="url(#ditherGuardian)"/>
+      <!-- Red Hood & Crimson Armor Shoulders -->
+      <rect x="17" y="72" width="84" height="28" fill="#ff0000"/>
+      <rect x="43" y="72" width="32" height="28" fill="#ffffff"/>
+      <rect x="53" y="74" width="12" height="26" fill="#ffff00"/>
+      <ellipse cx="59" cy="44" rx="30" ry="26" fill="#ff0000"/>
+      <rect x="29" y="44" width="60" height="30" fill="#ff0000"/>
+      <!-- Face & Glowing Red Visor -->
+      <rect x="41" y="30" width="36" height="34" fill="url(#ditherSkin2)"/>
+      <rect x="37" y="20" width="44" height="12" fill="#ffff00"/>
+      <rect x="41" y="39" width="36" height="8" fill="#000000"/>
+      <rect x="43" y="41" width="32" height="4" fill="#ff0000"/>
+      <rect x="55" y="41" width="8" height="2" fill="#ffffff"/>
+      <rect x="54" y="56" width="10" height="3" fill="#000000"/>
+      <!-- Portrait Nameplate -->
+      <rect x="2" y="100" width="114" height="16" fill="#000000"/>
+      <rect x="2" y="100" width="114" height="2" fill="#ffff00"/>
+      <text x="10" y="112" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="11" font-weight="bold">THE GUARDIAN</text>
+      <rect x="106" y="106" width="5" height="5" fill="#00ff00"/>
+    </g>
+
+    <!-- 2d6 Composure Roll Mini Badge Below Portrait -->
+    <g transform="translate(506, 138)">
+      <rect x="0" y="0" width="118" height="54" fill="#000000" stroke="#00ff00" stroke-width="2"/>
+      <rect x="8" y="8" width="28" height="28" fill="#000000" stroke="#ffffff" stroke-width="2"/>
+      <text x="22" y="27" text-anchor="middle" fill="#ffff00" font-family="'DotGothic16', monospace" font-size="15" font-weight="bold">3</text>
+      <rect x="42" y="8" width="28" height="28" fill="#000000" stroke="#ffffff" stroke-width="2"/>
+      <text x="56" y="27" text-anchor="middle" fill="#ffff00" font-family="'DotGothic16', monospace" font-size="15" font-weight="bold">4</text>
+      <text x="76" y="20" fill="#00ff00" font-family="'Courier New', monospace" font-size="10" font-weight="bold">2D6 = 7</text>
+      <text x="76" y="33" fill="#ffffff" font-family="'Courier New', monospace" font-size="9">CMP: 7</text>
+      <text x="8" y="48" fill="#00ffff" font-family="'Courier New', monospace" font-size="9" font-weight="bold">HAZARD ROLL: PASS</text>
+    </g>
   </g>
-  <g transform="translate(508, 72)">
-    <rect width="58" height="58" rx="10" fill="#064e3b" stroke="#34d399" stroke-width="2.5"/>
-    <circle cx="16" cy="16" r="4.5" fill="#ecfdf5"/>
-    <circle cx="42" cy="16" r="4.5" fill="#ecfdf5"/>
-    <circle cx="16" cy="42" r="4.5" fill="#ecfdf5"/>
-    <circle cx="42" cy="42" r="4.5" fill="#ecfdf5"/>
-  </g>
 
-  <text x="494" y="156" text-anchor="middle" fill="#6ee7b7" font-family="monospace, sans-serif" font-size="12" font-weight="900">ROLLED: 5 + 4 = 9 (PASS!)</text>
-  <text x="494" y="178" text-anchor="middle" fill="#cbd5e1" font-family="monospace, sans-serif" font-size="10">COMPOSURE: 10 • LUCK: 9</text>
-  <text x="494" y="196" text-anchor="middle" fill="#fbbf24" font-family="monospace, sans-serif" font-size="10" font-weight="800">REWIND TOKENS: 3</text>
+  <!-- Divider Line Between CG Viewport & Lower Split Window -->
+  <rect x="8" y="234" width="624" height="2" fill="#ffffff"/>
 
-  <!-- Bottom PC-98 Dialogue Frame -->
-  <rect x="34" y="232" width="572" height="104" rx="6" fill="#040d0b" stroke="#10b981" stroke-width="2.2"/>
-  <text x="52" y="258" fill="#34d399" font-family="monospace, sans-serif" font-size="12" font-weight="900">CITADEL INSCRIPTION [FIGHTING FANTASY // 1988]:</text>
-  <text x="52" y="282" fill="#f8fafc" font-family="monospace, sans-serif" font-size="13" font-weight="700">“Pull the lever WHICH GLOWS BLUE — the others CAN’T HAVE been used.”</text>
-  <text x="52" y="312" fill="#fbbf24" font-family="monospace, sans-serif" font-size="11" font-weight="800">▶ B1–B2 MODALS OF DEDUCTION • RELATIVE CLAUSES • CONDITIONALS</text>
+  <!-- ================= LOWER SPLIT WINDOW (y: 236..352) ================= -->
+  <!-- Left Text Window -->
+  <rect x="8" y="236" width="462" height="116" fill="#000000"/>
+  <text x="20" y="258" fill="#00ffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="14" font-weight="bold">『THE CITADEL』</text>
+  <text x="20" y="282" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13">“Lever 1 </text>
+  <text x="82" y="282" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">can’t have been touched</text>
+  <text x="252" y="282" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13"> (thick cobwebs)...</text>
 
-  <rect width="640" height="360" fill="url(#crtLines2)" pointer-events="none"/>
+  <text x="20" y="306" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13">so Lever 2 </text>
+  <text x="98" y="306" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">must have been pulled</text>
+  <text x="258" y="306" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13"> by the goblin scout!”</text>
+
+  <text x="20" y="334" fill="#00ff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="12" font-weight="bold">▶ Passive Past Deduction + Defining Clauses + Mixed Conditionals</text>
+  <text x="448" y="340" fill="#ffff00" font-family="monospace" font-size="14">▼</text>
+
+  <!-- Vertical Split Border -->
+  <rect x="470" y="236" width="2" height="116" fill="#ffffff"/>
+
+  <!-- Right Command Menu Window -->
+  <rect x="472" y="236" width="160" height="116" fill="#000000"/>
+  <text x="484" y="255" fill="#ff00ff" font-family="'DotGothic16', 'Courier New', monospace" font-size="12" font-weight="bold">COMMAND</text>
+  <text x="484" y="276" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13"><tspan fill="#ffff00">1</tspan> LOOK</text>
+  <text x="484" y="296" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13"><tspan fill="#ffff00">2</tspan> TALK</text>
+  <text x="484" y="316" fill="#ffffff" font-family="'DotGothic16', 'Courier New', monospace" font-size="13"><tspan fill="#ffff00">3</tspan> EXAMINE</text>
+  <rect x="478" y="323" width="148" height="22" fill="#0000ff"/>
+  <text x="484" y="339" fill="#ffff00" font-family="'DotGothic16', 'Courier New', monospace" font-size="13" font-weight="bold">▶ 4 DEDUCE</text>
+
+  <!-- Authentic CRT Scanline Overlay -->
+  <rect width="640" height="360" fill="url(#scanlines2)" pointer-events="none"/>
 </svg>

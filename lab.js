@@ -61,17 +61,17 @@ const LabObservatory = (() => {
       ]
     },
     {
-      badge: 'Young Learners (A1–B1) • Interactive 3D Room',
-      title: 'Professor West’s 3D Study & Pencil the Cat',
-      desc: 'Watch the 4-Act animated intro with a British storyteller (synthetic voice) and play 6 word games inside a 3D room.',
-      img: 'assets/study/act4_study.jpg',
-      alt: 'Professor West and Pencil the Cat inside the warm mahogany 3D Study',
-      url: 'professor-west-study.html?v=6&intro=1',
-      quizTag: 'Quick one: Word quest',
-      prompt: 'Which word means “curious and eager to learn new things”?',
+      badge: 'Cambridge B2–C2 & IELTS 7.0–8.5 • Free Modules',
+      title: 'Timed C1 Essay Builder & IELTS Task 2 Masterclass',
+      desc: 'Build Band 8.0+ and C1/C2 essay paragraphs against the clock and test 50 Part 4 transformation patterns.',
+      img: 'assets/arcade/boardroom_pitch.svg',
+      alt: 'Interactive Exam Lab screen showing C1/C2 syntactic upgrading and live Band 8.0+ scoring telemetry',
+      url: '#exam-lab',
+      quizTag: 'Quick one: C1 passive reporting',
+      prompt: 'Rewrite without “People”: “People widely believe that urban green spaces reduce stress.” → “Urban green spaces _______ reduce stress.”',
       options: [
-        { text: 'A) Inquisitive', correct: true, explain: 'Purr-fect! Professor West awards you +10 Golden Scarabs!' },
-        { text: 'B) Exhausted', correct: false, explain: '“Exhausted” means very tired. Try “Inquisitive”!' }
+        { text: 'A) are widely believed to', correct: true, explain: 'Spot on! Subject + passive reporting verb (“are widely believed”) + to-infinitive is a classic Band 8.0+ / C1 academic structure.' },
+        { text: 'B) widely believe to', correct: false, explain: 'Careful—“spaces” are the receiver of the belief, so you need the passive voice: “are widely believed to”.' }
       ]
     }
   ];
@@ -203,8 +203,9 @@ const LabObservatory = (() => {
     if (sfxOn) playTone(880, 0.06, 'triangle', 0.04);
   }
 
-  function setHolodeck(idx) {
-    const safeIdx = idx % HOLODECK_WORLDS.length;
+  function setHolodeck(idx, focusTab = false) {
+    const len = HOLODECK_WORLDS.length;
+    const safeIdx = ((idx % len) + len) % len;
     const w = HOLODECK_WORLDS[safeIdx];
     playTone(540 + safeIdx * 90, 0.06, 'triangle', 0.035);
 
@@ -212,6 +213,10 @@ const LabObservatory = (() => {
       const isSelected = i === safeIdx;
       t.classList.toggle('active', isSelected);
       t.setAttribute('aria-selected', String(isSelected));
+      t.setAttribute('tabindex', isSelected ? '0' : '-1');
+      if (focusTab && isSelected) {
+        t.focus();
+      }
     });
 
     const panel = document.getElementById('holodeck-panel');
@@ -334,7 +339,7 @@ const LabObservatory = (() => {
     if (sampleAudio && !sampleAudio.paused) {
       sampleAudio.pause();
       const lbl = document.getElementById('da-preview-audio-label');
-      if (lbl) lbl.textContent = 'Hear audio sample';
+      if (lbl) lbl.textContent = 'Hear MP3 sample (synthetic voice)';
     }
   }
 
@@ -346,16 +351,16 @@ const LabObservatory = (() => {
     }
     if (!sampleAudio.paused) {
       sampleAudio.pause();
-      if (lbl) lbl.textContent = 'Hear audio sample';
+      if (lbl) lbl.textContent = 'Hear MP3 sample (synthetic voice)';
       return;
     }
     sampleAudio.src = b.audio;
-    if (lbl) lbl.textContent = '⏹ Stop audio';
+    if (lbl) lbl.textContent = '⏹ Stop MP3 sample';
     sampleAudio.onended = () => {
-      if (lbl) lbl.textContent = 'Hear audio sample';
+      if (lbl) lbl.textContent = 'Hear MP3 sample (synthetic voice)';
     };
     sampleAudio.play().catch(() => {
-      if (lbl) lbl.textContent = 'Hear audio sample';
+      if (lbl) lbl.textContent = 'Hear MP3 sample (synthetic voice)';
     });
   }
 
@@ -477,34 +482,62 @@ const LabObservatory = (() => {
     const input = document.getElementById('da-sample-kwt-input');
     const feedback = document.getElementById('da-sample-kwt-feedback');
     if (!feedback) return;
-    const raw = input ? String(input.value || '').trim().replace(/\s+/g, ' ').replace(/[.,;!?]+$/, '') : '';
+
+    const raw = input
+      ? String(input.value || '')
+          .trim()
+          .replace(/,?\s*the road received very little sunlight\.?$/i, '')
+          .replace(/\s+/g, ' ')
+          .replace(/^[.,;!?'"“”‘’]+|[.,;!?'"“”‘’]+$/g, '')
+      : '';
     const norm = raw.toLowerCase();
-    const valid = [
-      'hemmed in by dense pine forests',
-      'hemmed in by the dense pine forests'
-    ];
+    const words = norm ? norm.split(' ') : [];
+    const wordCount = words.length;
+    const modelHtml =
+      '<div class="mt-1.5 pt-1.5 border-t border-[#c5a059]/25 text-[#e8dec8]"><strong class="text-amber-300">Model answer (6 words):</strong> <code class="text-white font-bold">Hemmed in by dense pine forests</code> <span class="text-[#d6cbb8]">(also accepted: <code class="text-white">Hemmed in by pine forests</code>)</span></div>';
+
+    // Forgiving C1 Part 4 pattern: 3 to 6 words, keeps HEMMED unchanged, forms a valid participle clause
+    const isPatternMatch =
+      wordCount >= 3 &&
+      wordCount <= 6 &&
+      /^(?:being\s+|closely\s+)?hemmed\s+in\s+by\s+(?:the\s+)?(?:dense\s+)?(?:pine\s+)?(?:forests?|trees|woods|pines)$/i.test(norm);
 
     feedback.classList.remove('hidden');
     if (revealModel) {
       playTone(620, 0.06, 'triangle', 0.035);
       if (input && !raw) input.value = 'Hemmed in by dense pine forests';
-      feedback.innerHTML = '<strong class="text-amber-300">Cambridge Model (6 words):</strong> <code class="text-white font-bold">Hemmed in by dense pine forests</code><br><span class="text-[#d6cbb8]">Why it scores 2/2: Replaces “was closely surrounded by” with the past participle opener <em>Hemmed in by...</em> while keeping the key word <strong>HEMMED</strong> unchanged.</span>';
+      feedback.innerHTML =
+        '<strong class="text-amber-300">Cambridge Model (6 words):</strong> <code class="text-white font-bold">Hemmed in by dense pine forests</code> <span class="text-[#d6cbb8]">(or 5 words: <code class="text-white">Hemmed in by pine forests</code>)</span><br><span class="text-[#d6cbb8]">Why it scores 2/2: Replaces “Because it was closely surrounded by” with the past participle opener <em>Hemmed in by...</em> while keeping the key word <strong>HEMMED</strong> unchanged.</span>';
       return;
     }
 
-    if (valid.includes(norm)) {
+    if (isPatternMatch) {
       playTone(660, 0.08, 'triangle', 0.05);
       setTimeout(() => playTone(880, 0.12, 'triangle', 0.05), 70);
-      feedback.innerHTML = '<strong class="text-emerald-400">✓ 2/2 Marks! Spot on.</strong> <code class="text-white font-bold">Hemmed in by dense pine forests</code> uses the past participle phrase at the start of the sentence with the unchanged key word <strong>HEMMED</strong>.';
+      feedback.innerHTML =
+        '<strong class="text-emerald-400">✓ 2/2 Marks! Spot on.</strong> Your participle opener <code class="text-white font-bold">' +
+        raw.replace(/[<>&"']/g, '') +
+        '</code> is 3–6 words and keeps the key word <strong>HEMMED</strong> unchanged.';
     } else if (!norm) {
       playTone(320, 0.07, 'sine', 0.03);
-      feedback.innerHTML = 'Type 3–6 words using <strong>HEMMED</strong> (for example, how do we shorten <em>“was closely surrounded by”</em> into a participle phrase?), or click <strong>Show model answer</strong>.';
-    } else if (!norm.includes('hemmed')) {
+      feedback.innerHTML =
+        'Type 3–6 words using <strong>HEMMED</strong> to replace <em>“Because it was closely surrounded by dense pine forests”</em>.' +
+        modelHtml;
+    } else if (!/\bhemmed\b/.test(norm)) {
       playTone(220, 0.1, 'sawtooth', 0.04);
-      feedback.innerHTML = '<strong class="text-rose-400">Remember the golden Part 4 rule:</strong> You must include the exact key word <strong>HEMMED</strong> without changing its form.';
+      feedback.innerHTML =
+        '<strong class="text-rose-400">Remember the Part 4 rule:</strong> Include the exact key word <strong>HEMMED</strong> without changing its form.' +
+        modelHtml;
+    } else if (wordCount < 3 || wordCount > 6) {
+      playTone(260, 0.1, 'sawtooth', 0.04);
+      feedback.innerHTML =
+        `<strong class="text-amber-300">Check your word count (${wordCount} words):</strong> Part 4 answers must be between 3 and 6 words.` +
+        modelHtml;
     } else {
       playTone(260, 0.1, 'sawtooth', 0.04);
-      feedback.innerHTML = '<strong class="text-amber-300">Almost there!</strong> Use the past participle opener <code class="text-white">Hemmed in by...</code> + <code class="text-white">dense pine forests</code> (6 words).';
+      feedback.innerHTML =
+        '<strong class="text-amber-300">Close!</strong> Start with the past participle phrase <code class="text-white">Hemmed in by...</code> followed by the noun phrase.' +
+        modelHtml;
     }
   }
 
@@ -602,10 +635,103 @@ const LabObservatory = (() => {
     rafId = requestAnimationFrame(renderLoop);
   }
 
+  let prosodyLoaded = false;
+  function ensureProsodyLabLoaded() {
+    if (prosodyLoaded) return;
+    prosodyLoaded = true;
+    const s = document.createElement('script');
+    s.src = 'prosody-lab.js';
+    s.defer = true;
+    document.body.appendChild(s);
+  }
+
+  const LEGACY_HASH_MAP = {
+    '#gothic-course': '#courses',
+    '#interactive-tools': '#arcade',
+    '#resources': '#study-guides'
+  };
+
   document.addEventListener('DOMContentLoaded', () => {
     syncSFXButtons();
     setHolodeck(0);
     initHeroParticles();
+
+    // Roving tabindex & arrow-key navigation for Hero Holodeck tabs (ARIA role="tablist")
+    const tablist = document.querySelector('.holodeck-tabs[role="tablist"]');
+    if (tablist) {
+      tablist.addEventListener('keydown', (e) => {
+        const tabs = Array.from(tablist.querySelectorAll('.holodeck-tab[role="tab"]'));
+        if (!tabs.length) return;
+        const currentIdx = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
+        const idx = currentIdx >= 0 ? currentIdx : 0;
+        let nextIdx = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          nextIdx = (idx + 1) % tabs.length;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          nextIdx = (idx - 1 + tabs.length) % tabs.length;
+        } else if (e.key === 'Home') {
+          nextIdx = 0;
+        } else if (e.key === 'End') {
+          nextIdx = tabs.length - 1;
+        }
+        if (nextIdx !== null) {
+          e.preventDefault();
+          setHolodeck(nextIdx, true);
+        }
+      });
+    }
+
+    // Regulation 37 UK Consumer Contracts Regulations cooling-off consent & acknowledgement check
+    const coolingCheckbox = document.getElementById('da-cooling-off-consent');
+    const coolingAlert = document.getElementById('da-cooling-off-alert');
+    const stripeBtn = document.getElementById('da-stripe-checkout-btn');
+    if (coolingCheckbox && coolingAlert) {
+      coolingCheckbox.addEventListener('change', () => {
+        if (coolingCheckbox.checked) {
+          coolingAlert.classList.add('hidden');
+        }
+      });
+    }
+    if (stripeBtn && coolingCheckbox) {
+      stripeBtn.addEventListener('click', (e) => {
+        if (!coolingCheckbox.checked) {
+          e.preventDefault();
+          if (coolingAlert) {
+            coolingAlert.classList.remove('hidden');
+          }
+          coolingCheckbox.focus();
+          playTone(240, 0.1, 'sawtooth', 0.04);
+        }
+      });
+    }
+
+    // Lazy-load prosody-lab.js only when the bottom extra-tools drawer opens
+    const extraDrawer = document.getElementById('extra-tools-drawer') || document.querySelector('details.young-learners-quarantine');
+    if (extraDrawer) {
+      if (extraDrawer.open) {
+        ensureProsodyLabLoaded();
+      }
+      extraDrawer.addEventListener('toggle', () => {
+        if (extraDrawer.open) {
+          ensureProsodyLabLoaded();
+        }
+      });
+    }
+
+    // Support legacy anchor hashes and auto-open bottom drawer when deep-linked
+    if (window.location.hash) {
+      const mappedHash = LEGACY_HASH_MAP[window.location.hash] || window.location.hash;
+      if (mappedHash === '#prosody-lab' || mappedHash === '#professor-west') {
+        if (extraDrawer) extraDrawer.open = true;
+        ensureProsodyLabLoaded();
+      }
+      if (LEGACY_HASH_MAP[window.location.hash]) {
+        const legacyTarget = document.querySelector(mappedHash);
+        if (legacyTarget) {
+          setTimeout(() => legacyTarget.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+        }
+      }
+    }
 
     // Show confirmation banner when redirected back from FormSubmit (?subscribed=true) or pre-filter wing (?wing=teens)
     try {
@@ -670,6 +796,7 @@ const LabObservatory = (() => {
       if (hash === '#prosody-lab' || hash === '#professor-west' || targetEl.closest('details.young-learners-quarantine')) {
         const drawer = document.querySelector('details.young-learners-quarantine');
         if (drawer) drawer.open = true;
+        ensureProsodyLabLoaded();
       }
     });
 

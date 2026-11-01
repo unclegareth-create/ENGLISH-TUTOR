@@ -683,6 +683,7 @@ class DarkAcademiaEngine {
     this.injectHelperStyles();
     DarkAcademiaGate.checkUrlUnlock();
     DarkAcademiaGate.enforceGate(this.unitId);
+    this.mountLessonEnhancements();
     this.renderSortTask();
     this.renderStyleShiftDrills();
     this.initKWTScaffolds();
@@ -696,6 +697,204 @@ class DarkAcademiaEngine {
     }
 
     window.resetAll = () => this.resetAll();
+  }
+
+  mountLessonEnhancements() {
+    const pack = LESSON_UPGRADE_PACKS[this.unitId];
+    if (!pack) return;
+
+    // 1. Stage 0 Active Speaking Warm-Up (inject before Section 1 if not already present)
+    const sec1Heading = document.getElementById('section1-heading');
+    const sec1Card = sec1Heading ? sec1Heading.closest('section.card') : null;
+    if (sec1Card && !document.getElementById('speaking-heading') && pack.speaking) {
+      const sp = pack.speaking;
+      const speakingSec = document.createElement('section');
+      speakingSec.className = 'card da-speaking-card';
+      speakingSec.setAttribute('aria-labelledby', 'speaking-heading');
+      speakingSec.innerHTML = `
+        <div class="card-header">
+          <h2 id="speaking-heading">0. Active Speaking Warm-Up: ${sp.title}</h2>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <span class="badge badge-core">Core • 5 Mins</span>
+            <span class="pill">IELTS Part 2 • C1/C2 Spoken Fluency</span>
+          </div>
+        </div>
+        <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1rem;">
+          ${sp.introHtml}
+        </p>
+        <div class="da-speaking-grid">
+          <div class="da-cue-card-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+              <span class="badge badge-canon-dracula" style="font-size:0.74rem;">IELTS SPEAKING PART 2 CUE CARD</span>
+              <div class="da-timer-bar">
+                <span id="da-speaking-timer" class="da-timer-display" aria-live="off">01:00</span>
+                <button type="button" class="da-timer-btn" onclick="darkEngine.startSpeakingTimer(60)">⏱ 1m Prep</button>
+                <button type="button" class="da-timer-btn" onclick="darkEngine.startSpeakingTimer(120)">🎙️ 2m Speak</button>
+                <button type="button" class="da-timer-btn" onclick="darkEngine.resetSpeakingTimer()">↺</button>
+              </div>
+            </div>
+            <p style="font-weight:700; color:#f8fafc; font-size:0.98rem; margin-bottom:0.5rem;">
+              ${sp.prompt}
+            </p>
+            <p style="font-size:0.84rem; color:#cbd5e1; margin-bottom:0.35rem;">You should say:</p>
+            <ul style="font-size:0.86rem; color:#cbd5e1; padding-left:1.2rem; margin:0 0 0.85rem 0; line-height:1.55;">
+              ${sp.bullets.map(b => `<li>${b}</li>`).join('')}
+            </ul>
+            <div class="da-keyword-slots" aria-label="1-Minute Note Trigger Keywords">
+              <input type="text" class="da-kw-input" placeholder="1. Keyword" aria-label="Trigger keyword 1">
+              <input type="text" class="da-kw-input" placeholder="2. Keyword" aria-label="Trigger keyword 2">
+              <input type="text" class="da-kw-input" placeholder="3. Keyword" aria-label="Trigger keyword 3">
+              <input type="text" class="da-kw-input" placeholder="4. Keyword" aria-label="Trigger keyword 4">
+            </div>
+          </div>
+          <div class="da-structuring-box">
+            <h3 style="font-size:0.95rem; color:#fbbf24; margin:0 0 0.6rem 0;">🧭 How to Structure a High-Scoring 2-Minute Turn:</h3>
+            <ol style="font-size:0.85rem; color:#e2e8f0; padding-left:1.15rem; margin:0 0 0.85rem 0; line-height:1.55;">
+              <li style="margin-bottom:0.35rem;"><strong>The 1-Minute Note Secret:</strong> Write only 4 single trigger keywords in the boxes—never write full sentences or you will end up reading aloud in a flat monotone.</li>
+              <li style="margin-bottom:0.35rem;"><strong>The 3-Act Story Arc:</strong> <em>Past Context (30s)</em> &rarr; <em>Sensory Snapshot / Core Scene (45s)</em> &rarr; <em>Reflection / 'So What?' (45s)</em>.</li>
+              <li><strong>The Cambridge Anchor:</strong> The bullet points are springboards, not an interrogation checklist. If you finish early, compare that experience with your perspective today.</li>
+            </ol>
+            <div style="font-size:0.82rem; color:#94a3b8; border-top:1px solid rgba(148,163,184,0.2); padding-top:0.6rem;">
+              <strong>Natural Spoken Frames:</strong> ${sp.spokenFramesHtml}
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.75rem;">
+              <button type="button" class="da-reveal-btn" aria-expanded="false" onclick="darkEngine.toggleReveal(this, 'speaking-model-reveal')">
+                👁️ Reveal Band 8.5 Spoken Model
+              </button>
+              <button type="button" class="da-reveal-btn" onclick="DarkAcademiaAtmosphere.playPiperAudio('assets/audio/tts/speaking_${this.unitId}.mp3?v=3', this, '🎧 Listen (Piper British Neural)')">
+                🎧 Listen (Piper British Neural)
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="speaking-model-reveal" class="da-reveal-panel" hidden>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.65rem;">
+            <div style="font-size:0.8rem; font-weight:700; color:#34d399; text-transform:uppercase; letter-spacing:0.04em;">
+              🎙️ Band 8.5 Spoken Long Turn (~235 words • ~1m50s at natural pace):
+            </div>
+            <audio controls preload="none" src="assets/audio/tts/speaking_${this.unitId}.mp3?v=3" style="height:32px; max-width:260px;" aria-label="Piper British Neural audio for Band 8.5 Spoken Long Turn"></audio>
+          </div>
+          <p id="speaking-model-text" style="font-size:0.9rem; color:#e2e8f0; line-height:1.65; margin:0;">
+            ${sp.modelHtml}
+          </p>
+        </div>
+      `;
+      sec1Card.parentNode.insertBefore(speakingSec, sec1Card);
+    }
+
+    // 2. Section 1 Close-Reading Breakdown & Syntax Lens
+    if (sec1Card && !sec1Card.querySelector('.da-close-reading-box') && pack.closeReading) {
+      const cr = pack.closeReading;
+      const readingFrame = sec1Card.querySelector('.reading-frame');
+      if (readingFrame) {
+        const crBox = document.createElement('div');
+        crBox.className = 'da-close-reading-box';
+        crBox.innerHTML = `
+          <h3 style="font-size:0.98rem; color:#f8fafc; margin:0 0 0.65rem 0;">🔍 Close-Reading Breakdown: ${cr.heading}</h3>
+          <div class="da-close-reading-grid">
+            ${cr.cards.map(c => `
+              <div class="da-cr-card">
+                <strong>${c.title}</strong>
+                <p>${c.bodyHtml}</p>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        readingFrame.insertAdjacentElement('afterend', crBox);
+      }
+    }
+
+    // 3. Section 2 C2 Nuance Box & Interactive Live Drill Workout
+    const sec2Heading = document.getElementById('section2-heading');
+    const sec2Card = sec2Heading ? sec2Heading.closest('section.card') : null;
+    if (sec2Card && !sec2Card.querySelector('.da-workout-box') && pack.section2) {
+      const s2 = pack.section2;
+      const pillarsGrid = sec2Card.querySelector('.pillars-grid');
+      if (pillarsGrid) {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `
+          <div class="da-c2-exception-box">
+            <div class="da-c2-badge">C2 PROFICIENCY NUANCE • ${s2.nuanceBadge}</div>
+            <h3 style="font-size:0.98rem; color:#f8fafc; margin:0.35rem 0 0.5rem 0;">${s2.nuanceTitle}</h3>
+            <p style="font-size:0.88rem; color:#cbd5e1; margin:0 0 0.65rem 0; line-height:1.55;">
+              ${s2.nuanceIntroHtml}
+            </p>
+            <div class="da-c2-exception-grid">
+              ${s2.nuanceCards.map(nc => `
+                <div>
+                  <strong>${nc.title}</strong>
+                  <span>${nc.bodyHtml}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="da-workout-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+              <h3 style="font-size:1.02rem; color:#f8fafc; margin:0;">🏋️ Interactive Practice Workout: Combine &amp; Upgrade Before the Quiz</h3>
+              <span style="font-size:0.78rem; color:#94a3b8;">Try rewriting aloud or in your notebook first, then reveal the model</span>
+            </div>
+            ${s2.workouts.map((w, idx) => `
+              <div class="da-workout-item">
+                <p style="font-size:0.9rem; color:#e2e8f0; margin:0 0 0.45rem 0;">
+                  <strong>Workout ${idx + 1} (${w.label}):</strong> ${w.promptHtml}
+                </p>
+                <button type="button" class="da-reveal-btn" aria-expanded="false" onclick="darkEngine.toggleReveal(this, 'workout-reveal-${this.unitId}-${idx}')">
+                  👁️ Reveal Cambridge Model
+                </button>
+                <div id="workout-reveal-${this.unitId}-${idx}" class="da-reveal-panel" hidden>
+                  ${w.modelHtml}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        pillarsGrid.insertAdjacentElement('afterend', wrap);
+      }
+    }
+
+    // 4. Section 3 Gareth's 4-Step Part 4 Strategy Bar & Per-Question Breakdowns
+    const sec3Heading = document.getElementById('section3-heading');
+    const sec3Card = sec3Heading ? sec3Heading.closest('section.card') : null;
+    if (sec3Card && !sec3Card.querySelector('.da-strategy-bar')) {
+      const firstKwt = sec3Card.querySelector('.kwt-card');
+      if (firstKwt) {
+        const stratBar = document.createElement('div');
+        stratBar.className = 'da-strategy-bar';
+        stratBar.innerHTML = `
+          <div style="font-size:0.82rem; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.45rem;">
+            🎯 Gareth's 4-Step Part 4 Elimination &amp; Deconstruction Method
+          </div>
+          <div class="da-strategy-steps">
+            <div><strong>1. Strike Out the Echoes:</strong> Cross out words in Sentence 1 that already appear in Sentence 2 to isolate the exact meaning gap.</div>
+            <div><strong>2. Inspect Tense Harmony:</strong> Check the verb tense of Sentence 1 so your transformation keeps the exact timeframe.</div>
+            <div><strong>3. Check Voice &amp; Inversion:</strong> Spot whether the new opening forces an auxiliary inversion, passive shift, or subjunctive.</div>
+            <div><strong>4. Solve the C1 Frame:</strong> Lock the unchanged keyword into its required preposition, collocation, or grammatical frame (1 + 1 marks).</div>
+          </div>
+        `;
+        sec3Card.insertBefore(stratBar, firstKwt);
+      }
+
+      if (Array.isArray(pack.kwtBreakdowns)) {
+        const kwtCards = sec3Card.querySelectorAll('.kwt-card');
+        kwtCards.forEach((card, idx) => {
+          const bData = pack.kwtBreakdowns[idx];
+          if (!bData || card.querySelector('.da-kwt-breakdown')) return;
+          const bWrap = document.createElement('div');
+          bWrap.innerHTML = `
+            <button type="button" class="da-reveal-btn da-reveal-sm" aria-expanded="false" onclick="darkEngine.toggleReveal(this, 'kwt-steps-${this.unitId}-${idx}')">
+              🔍 Show 4-Step Deconstruction
+            </button>
+            <div id="kwt-steps-${this.unitId}-${idx}" class="da-reveal-panel da-kwt-breakdown" hidden>
+              <strong>Step 1 (Echoes):</strong> ${bData.s1}<br>
+              <strong>Step 2 &amp; 3 (Tense &amp; Structure):</strong> ${bData.s23}<br>
+              <strong>Step 4 (1+1 Split Credit):</strong> ${bData.s4}
+            </div>
+          `;
+          card.appendChild(bWrap);
+        });
+      }
+    }
   }
 
   /**
@@ -826,6 +1025,15 @@ class DarkAcademiaEngine {
       const inputRow = card.querySelector('.kwt-input-row');
       if (!checkBtn || !input || !inputRow) return;
 
+      input.setAttribute('autocapitalize', 'off');
+      input.setAttribute('autocorrect', 'off');
+      input.setAttribute('spellcheck', 'false');
+
+      const fbBox = card.querySelector('.feedback-box');
+      if (fbBox && !fbBox.getAttribute('aria-live')) {
+        fbBox.setAttribute('aria-live', 'polite');
+      }
+
       const onclickAttr = checkBtn.getAttribute('onclick') || '';
       const match = onclickAttr.match(/handleKWT\(\s*this\s*,\s*'((?:\\'|[^'])*)'\s*,\s*'((?:\\'|[^'])*)'/);
       if (!match) return;
@@ -859,9 +1067,9 @@ class DarkAcademiaEngine {
       const firstTwo = modelWords.slice(0, 2).join(' ');
       helperWrap.innerHTML = `
         <div class="kwt-helper-top">
-          <span class="kwt-helper-label">Tap words to build your answer (or type directly): <strong style="color:#cbd5e1;">${modelWords.length} words needed</strong> (+1 extra decoy word)</span>
+          <span class="kwt-helper-label">Tap words to build your answer (or type directly): <strong style="color:#cbd5e1;">${modelWords.length} words in model</strong> (+1 decoy tile)</span>
           <div class="kwt-helper-actions">
-            <button type="button" class="kwt-mini-btn kwt-hint-btn">💡 Hint</button>
+            <button type="button" class="kwt-mini-btn kwt-hint-btn" aria-expanded="false">💡 Hint</button>
             <button type="button" class="kwt-mini-btn kwt-clear-btn">↺ Clear</button>
           </div>
         </div>
@@ -919,7 +1127,8 @@ class DarkAcademiaEngine {
       const hintBox = helperWrap.querySelector('.kwt-hint-box');
 
       hintBtn.addEventListener('click', () => {
-        hintBox.classList.toggle('visible');
+        const isVis = hintBox.classList.toggle('visible');
+        hintBtn.setAttribute('aria-expanded', isVis ? 'true' : 'false');
       });
 
       clearBtn.addEventListener('click', () => {
@@ -1146,8 +1355,9 @@ class DarkAcademiaEngine {
     if (!container || !this.sortItems.length) return;
 
     container.innerHTML = '';
-    const arsenalLabel = (this.sortLabels && this.sortLabels.arsenal) || '✓ Modern C1/C2 Word';
-    const museumLabel = (this.sortLabels && this.sortLabels.museum) || '🏛 Old-Fashioned Word';
+    const arsenalLabel = (this.sortLabels && this.sortLabels.arsenal) || '✓ Modern C1/C2';
+    const literaryLabel = (this.sortLabels && this.sortLabels.literary) || '📜 Literary / Stylistic';
+    const museumLabel = (this.sortLabels && this.sortLabels.museum) || '🏛 Archaic / Period';
 
     this.sortItems.forEach((item, index) => {
       const row = document.createElement('div');
@@ -1162,6 +1372,9 @@ class DarkAcademiaEngine {
         <div class="sort-controls" role="group" aria-label="Classify ${item.word}">
           <button type="button" class="btn-sort" data-choice="arsenal" aria-label="Mark as ${arsenalLabel}">
             ${arsenalLabel}
+          </button>
+          <button type="button" class="btn-sort" data-choice="literary" aria-label="Mark as ${literaryLabel}">
+            ${literaryLabel}
           </button>
           <button type="button" class="btn-sort" data-choice="museum" aria-label="Mark as ${museumLabel}">
             ${museumLabel}
@@ -1192,6 +1405,12 @@ class DarkAcademiaEngine {
 
     buttons.forEach((b) => (b.disabled = true));
 
+    const labelMap = {
+      arsenal: 'Modern C1/C2 Register',
+      literary: 'Literary / Stylistic Only',
+      museum: 'Archaic / Period Noun'
+    };
+
     if (choice === item.type) {
       btnElement.classList.add('correct');
       this.score += 1;
@@ -1207,12 +1426,15 @@ class DarkAcademiaEngine {
           correct: true,
           game: 'Dark Academia (' + (this.unitId || 'Gothic Canon') + ')',
           prompt: item.word + ' — ' + (item.sub || ''),
-          targetAnswer: item.type === 'arsenal' ? 'Modern C1/C2 Register' : 'Archaic Literary Register',
+          targetAnswer: labelMap[item.type] || 'Modern C1/C2 Register',
           explanation: item.exp
         });
       }
     } else {
       btnElement.classList.add('wrong');
+      buttons.forEach((b) => {
+        if (b.getAttribute('data-choice') === item.type) b.classList.add('correct');
+      });
       if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('miss');
       if (fb) {
         fb.textContent = `✗ Not quite. ${item.exp}`;
@@ -1223,10 +1445,10 @@ class DarkAcademiaEngine {
           category: 'register_shift',
           correct: false,
           game: 'Dark Academia (' + (this.unitId || 'Gothic Canon') + ')',
-          prompt: 'Classify C1/C2 vs Archaic register: "' + item.word + '" (' + (item.sub || '') + ')',
+          prompt: 'Classify register: "' + item.word + '" (' + (item.sub || '') + ')',
           keyword: item.word.toUpperCase(),
-          targetAnswer: item.type === 'arsenal' ? 'Modern C1/C2' : 'Archaic',
-          userAttempt: choice === 'arsenal' ? 'Modern C1/C2' : 'Archaic',
+          targetAnswer: labelMap[item.type] || 'Modern C1/C2',
+          userAttempt: labelMap[choice] || choice,
           explanation: item.exp
         });
       }
@@ -1379,31 +1601,55 @@ class DarkAcademiaEngine {
       return;
     }
 
+    const userWords = userNorm.split(' ').filter(Boolean);
+    const maxWords = parseInt(card.getAttribute('data-max-words') || '6', 10);
+    const minWords = parseInt(card.getAttribute('data-min-words') || '3', 10);
+    const withinWordLimit = userWords.length >= minWords && userWords.length <= maxWords;
+
+    const keyPill = card.querySelector('.kwt-key');
+    const keyWord = keyPill ? this.normalizeText(keyPill.textContent) : '';
+    const hasExactKeyword = !keyWord || userWords.includes(keyWord);
+
     const validList = (card.getAttribute('data-valid') || '')
       .split('|')
       .map((s) => this.normalizeText(s))
       .filter(Boolean);
 
-    const isExactMatch = validList.includes(userNorm);
+    const validRegexAttr = card.getAttribute('data-valid-regex');
+    let matchesRegex = false;
+    if (validRegexAttr) {
+      try {
+        const rx = new RegExp(`^(?:${validRegexAttr})$`, 'i');
+        matchesRegex = rx.test(userNorm);
+      } catch (e) {}
+    }
+
+    const isExactMatch = hasExactKeyword && withinWordLimit && (validList.includes(userNorm) || matchesRegex);
 
     let isPartialMatch = false;
-    const keyPill = card.querySelector('.kwt-key');
-    const keyWord = keyPill ? this.normalizeText(keyPill.textContent) : '';
     const modelWords = modelAnswer.trim().split(/\s+/);
+    const partialRegexAttr = card.getAttribute('data-partial-regex');
 
-    if (!isExactMatch && keyWord && userNorm.includes(keyWord)) {
-      const normModelWords = this.normalizeText(modelAnswer).split(' ');
-      const userWords = userNorm.split(' ');
-      const overlap = userWords.filter((w) => normModelWords.includes(w)).length;
-      if (overlap >= Math.ceil(normModelWords.length * 0.65) && userWords.length >= 3 && userWords.length <= 8) {
-        isPartialMatch = true;
+    if (!isExactMatch && hasExactKeyword && userWords.length >= minWords && userWords.length <= 8) {
+      if (partialRegexAttr) {
+        try {
+          const prx = new RegExp(partialRegexAttr, 'i');
+          if (prx.test(userNorm)) isPartialMatch = true;
+        } catch (e) {}
+      }
+      if (!isPartialMatch) {
+        const normModelWords = this.normalizeText(modelAnswer).split(' ');
+        const overlap = userWords.filter((w) => normModelWords.includes(w)).length;
+        if (overlap >= Math.ceil(normModelWords.length * 0.65)) {
+          isPartialMatch = true;
+        }
       }
     }
 
     const attempts = parseInt(card.dataset.attempts || '0', 10) + 1;
     card.dataset.attempts = String(attempts);
 
-    const kwtLead = card.querySelector('.kwt-lead');
+    const kwtLead = card.querySelector('.kwt-lead') || card.querySelector('.kwt-original');
     const kwtPromptText = kwtLead ? kwtLead.textContent.trim() : 'Key Word Transformation (' + (keyWord || '').toUpperCase() + ')';
     const inferCategory = (expStr) => {
       const low = String(expStr || '').toLowerCase();
@@ -1425,7 +1671,7 @@ class DarkAcademiaEngine {
       if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('seal');
       if (fb) {
         fb.className = 'feedback-box correct';
-        fb.innerHTML = `<strong>✓ Full Marks (+2/2):</strong> Excellent! <em>"${modelAnswer}"</em> — ${explanation}`;
+        fb.innerHTML = `<strong>✓ Full Marks (+2/2):</strong> Spot on! <em>"${rawUser.trim()}"</em> (${userWords.length} words) — ${explanation}`;
       }
       if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
         window.CandidateDossier.recordAttempt({
@@ -1448,9 +1694,17 @@ class DarkAcademiaEngine {
         input.style.borderColor = 'var(--amber)';
       }
       if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('quill');
+      let hintDiagnostic = `Start with <strong>"${firstTwo}..."</strong> (${minWords}–${maxWords} words allowed).`;
+      if (!hasExactKeyword && keyWord) {
+        hintDiagnostic = `Remember: you must include the exact unchanged key word <strong>${keyWord.toUpperCase()}</strong>!`;
+      } else if (!withinWordLimit) {
+        hintDiagnostic = `Your answer has <strong>${userWords.length} words</strong>—Cambridge Part 4 requires between <strong>${minWords} and ${maxWords} words</strong>.`;
+      } else if (isPartialMatch) {
+        hintDiagnostic = `You already have <strong>1 of the 2 marks</strong> (the core structure or key word phrase is there)! Check your preposition, article, or participle form to claim full 2/2 marks.`;
+      }
       if (fb) {
         fb.className = 'feedback-box partial';
-        fb.innerHTML = `<strong>⚡ Almost there! Try once more:</strong> Start with <strong>"${firstTwo}..."</strong> (${modelWords.length} words total). Tap the word tiles or adjust your answer and click <strong>Check</strong> again!`;
+        fb.innerHTML = `<strong>⚡ Second Chance:</strong> ${hintDiagnostic} Adjust your answer and click <strong>Check</strong> again.`;
       }
       return;
     }
@@ -1467,7 +1721,7 @@ class DarkAcademiaEngine {
       if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('quill');
       if (fb) {
         fb.className = 'feedback-box partial';
-        fb.innerHTML = `<strong>⚡ Partial Credit (+1/2):</strong> Good effort using the key word! Full answer: <strong>"${modelAnswer}"</strong>.<br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
+        fb.innerHTML = `<strong>⚡ Cambridge Split-Mark Credit (+1/2):</strong> You secured 1 mark for half the transformation! Full 2/2 model: <strong>"${modelAnswer}"</strong>.<br><span style="font-size:0.84rem; opacity:0.9;">Note: ${explanation}</span>`;
       }
       if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
         window.CandidateDossier.recordAttempt({
@@ -1526,7 +1780,7 @@ class DarkAcademiaEngine {
   }
 
   /**
-   * Section 5 (Unit 3s): Optional Writing Sandbox & Live Checklist
+   * Section 5: Writing Sandbox & Live Checklist
    */
   initCapstoneAudit() {
     const textarea = document.getElementById('capstone-input');
@@ -1538,12 +1792,12 @@ class DarkAcademiaEngine {
     const checkArsenal = document.getElementById('audit-arsenal');
 
     const defaultInversionRegex = /(scarcely\s+had|hardly\s+had|no\s+sooner\s+had|under\s+no\s+circumstances|little\s+did|seldom\s+had|rarely\s+did|nowhere\s+could|nowhere\s+was|not\s+only\s+did|only\s+after|not\s+until|never\s+before\s+had|never\s+had|had\s+he\s+not|had\s+i\s+not|had\s+victor|had\s+holmes|had\s+we|were\s+he\s+to|were\s+it\s+not|much\s+as|so\s+[a-z]+\s+was|what\s+[a-z]+\s+most\s+was|it\s+was\s+only)/i;
-    const defaultParticipleRegex = /(having\s+[a-z]+ed|having\s+been|hemmed\s+in|shrouded\s+in|driven\s+by|deprived\s+of|ostracised\s+by|compounded\s+by|confronted\s+with|confronted\s+by|grounded\s+upon|lashed\s+to|What\s+struck|What\s+drove|What\s+exposed|It\s+was\s+the|beyond\s+the|out\s+of\s+the)/i;
+    const defaultParticipleRegex = /(\bhaving\s+(?!a\b|an\b|the\b|to\b|no\b|some\b|any\b)(?:been\s+[a-z]{3,}|[a-z]{3,}(?:ed|en|wn|lt|pt|nt|st|nd|ld))\b|\b(?:hemmed\s+in|shrouded\s+in|driven\s+by|deprived\s+of|ostracis(?:ed|ed)\s+by|compounded\s+by|confronted\s+(?:with|by)|faced\s+with|burdened\s+(?:by|with)|exhausted\s+by|surrounded\s+by|filled\s+with|plunged\s+into|grounded\s+upon|lashed\s+to)\b)/i;
     const defaultArsenalList = [
-      'apprehensive', 'impenetrable', 'hemmed', 'sinister', 'formidable', 'trepidation',
+      'apprehensive', 'apprehension', 'impenetrable', 'hemmed', 'sinister', 'formidable', 'trepidation',
       'unaccountably', 'derelict', 'disclose', 'disclosed', 'catastrophe', 'convulsive',
       'unquenchable', 'delineate', 'abhorrence', 'inexorable', 'insolent', 'malevolence',
-      'benevolence', 'ostracise', 'ostracised', 'repudiate', 'repudiation', 'juggernaut',
+      'benevolence', 'ostracise', 'ostracised', 'ostracize', 'ostracized', 'repudiate', 'repudiation', 'juggernaut',
       'detestable', 'callous', 'audacity', 'duplicity', 'facade', 'repugnance', 'cerebral',
       'incongruous', 'depravity', 'abominable', 'imperious', 'extricate', 'pernicious',
       'plausible', 'circumstantial', 'calamity', 'treacherous', 'quagmire', 'melancholy',
@@ -1553,6 +1807,10 @@ class DarkAcademiaEngine {
     const invRegex = (this.capstoneConfig && this.capstoneConfig.invRegex) || defaultInversionRegex;
     const partRegex = (this.capstoneConfig && this.capstoneConfig.partRegex) || defaultParticipleRegex;
     const arsenalWords = (this.capstoneConfig && this.capstoneConfig.arsenalWords) || defaultArsenalList;
+    const minOptimal = (this.capstoneConfig && this.capstoneConfig.minWords) || 80;
+    const maxOptimal = (this.capstoneConfig && this.capstoneConfig.maxWords) || 280;
+    const invPassMsg = (this.capstoneConfig && this.capstoneConfig.invPassMsg) || '✓ Target grammar structure spotted!';
+    const partPassMsg = (this.capstoneConfig && this.capstoneConfig.partPassMsg) || '✓ Participle opener spotted — now verify your Same-Subject Rule below!';
 
     textarea.addEventListener('input', () => {
       const text = textarea.value.trim();
@@ -1560,7 +1818,7 @@ class DarkAcademiaEngine {
 
       if (wordCounter) {
         wordCounter.textContent = `${words} Words`;
-        if (words >= 150 && words <= 280) {
+        if (words >= minOptimal && words <= maxOptimal) {
           wordCounter.className = 'word-counter-pill optimal';
         } else {
           wordCounter.className = 'word-counter-pill';
@@ -1572,7 +1830,7 @@ class DarkAcademiaEngine {
         this.toggleAuditItem(
           checkInversion,
           hasInv,
-          hasInv ? '✓ Target grammar structure spotted!' : 'Try using one of the unit grammar structures.'
+          hasInv ? invPassMsg : 'Try using one of the target structures.'
         );
       }
 
@@ -1581,7 +1839,7 @@ class DarkAcademiaEngine {
         this.toggleAuditItem(
           checkParticiple,
           hasPart,
-          hasPart ? '✓ Second target structure spotted!' : 'Try adding a participle opener or emphasis structure.'
+          hasPart ? partPassMsg : 'Try opening a sentence with a participle clause followed by a comma.'
         );
       }
 
@@ -1652,7 +1910,12 @@ class DarkAcademiaEngine {
     } catch (e) {}
   }
 
-  resetAll() {
+  resetAll(skipConfirm = false) {
+    if (!skipConfirm && typeof window !== 'undefined' && typeof window.confirm === 'function') {
+      if (!window.confirm('Reset all answers and clear your score for this lesson?')) {
+        return;
+      }
+    }
     this.score = 0;
     this.updateScoreDisplay();
 
@@ -1715,9 +1978,12 @@ const DarkAcademiaAtmosphere = (() => {
   let noiseNode = null;
   let noiseGain = null;
   let musicPlaying = false;
-  let userMutedMusic = true;
+  let userMutedMusic = false;
+  try {
+    userMutedMusic = localStorage.getItem('da_music_muted') === '1';
+  } catch (e) {}
   let autoplayUnlockArmed = false;
-  let sfxEnabled = false;
+  let sfxEnabled = true;
   let currentTrackIdx = 0;
   let synthStep = 0;
   let clauseTimer = null;
@@ -2056,7 +2322,7 @@ const DarkAcademiaAtmosphere = (() => {
         if (!musicAudioEl.src || !musicAudioEl.src.endsWith(track.src)) {
           musicAudioEl.src = track.src;
         }
-        musicAudioEl.volume = 0.28;
+        musicAudioEl.volume = 0.20;
         const p = musicAudioEl.play();
         if (p && typeof p.catch === 'function') {
           p.catch(() => {
@@ -2097,9 +2363,11 @@ const DarkAcademiaAtmosphere = (() => {
   function toggleMusic() {
     if (musicPlaying) {
       userMutedMusic = true;
+      try { localStorage.setItem('da_music_muted', '1'); } catch (e) {}
       stopMusic(true);
     } else {
       userMutedMusic = false;
+      try { localStorage.setItem('da_music_muted', '0'); } catch (e) {}
       startMusic();
     }
   }
@@ -2267,7 +2535,11 @@ const DarkAcademiaAtmosphere = (() => {
     document.querySelectorAll('.da-reader-btn.speaking').forEach((btn) => {
       btn.classList.remove('speaking');
       const lbl = btn.querySelector('.da-reader-btn-label');
-      if (lbl && btn.dataset.defaultLabel) lbl.textContent = btn.dataset.defaultLabel;
+      if (lbl && btn.dataset.defaultLabel) {
+        lbl.textContent = btn.dataset.defaultLabel;
+      } else if (btn.dataset.defaultLabel) {
+        btn.textContent = btn.dataset.defaultLabel;
+      }
     });
     document.querySelectorAll('.da-pronounce-btn.speaking').forEach((btn) => {
       btn.classList.remove('speaking');
@@ -2549,6 +2821,89 @@ const DarkAcademiaAtmosphere = (() => {
     'yonder': [167.448, 168.6]
   };
 
+  const VOCAB_STANDALONE_MP3 = {
+    'frowning rocks': 'assets/audio/tts/vocab_frowning_rocks.mp3',
+    'lofty steeps': 'assets/audio/tts/vocab_lofty_steeps.mp3',
+    'calèche': 'assets/audio/tts/vocab_caleche.mp3',
+    'apprehensive': 'assets/audio/tts/vocab_apprehensive.mp3',
+    'impenetrable': 'assets/audio/tts/vocab_impenetrable.mp3',
+    'hemmed in (by)': 'assets/audio/tts/vocab_hemmed_in_by.mp3',
+    'waistcoat-pocket': 'assets/audio/tts/vocab_waistcoat_pocket.mp3',
+    'antipathies': 'assets/audio/tts/vocab_antipathies.mp3',
+    'pop down': 'assets/audio/tts/vocab_pop_down.mp3',
+    'precipitous': 'assets/audio/tts/vocab_precipitous.mp3',
+    'incongruous': 'assets/audio/tts/vocab_incongruous.mp3',
+    'disorienting': 'assets/audio/tts/vocab_disorienting.mp3',
+    'between whiles': 'assets/audio/tts/vocab_between_whiles.mp3',
+    'tea-things': 'assets/audio/tts/vocab_tea_things.mp3',
+    'twinkle': 'assets/audio/tts/vocab_twinkle.mp3',
+    'perpetual': 'assets/audio/tts/vocab_perpetual.mp3',
+    'arbitrary': 'assets/audio/tts/vocab_arbitrary.mp3',
+    'futile': 'assets/audio/tts/vocab_futile.mp3',
+    'herald': 'assets/audio/tts/vocab_herald.mp3',
+    'parchment scroll': 'assets/audio/tts/vocab_parchment_scroll.mp3',
+    'stuff and nonsense': 'assets/audio/tts/vocab_stuff_and_nonsense.mp3',
+    'unsubstantiated': 'assets/audio/tts/vocab_unsubstantiated.mp3',
+    'preposterous': 'assets/audio/tts/vocab_preposterous.mp3',
+    'intimidate': 'assets/audio/tts/vocab_intimidate.mp3'
+  };
+
+  function playPiperAudio(mp3Src, btnEl, defaultLabel) {
+    if (!mp3Src) return;
+    if (btnEl && btnEl.classList.contains('speaking')) {
+      stopNarration();
+      if (defaultLabel) btnEl.textContent = defaultLabel;
+      return;
+    }
+    stopNarration();
+
+    if (btnEl) {
+      btnEl.classList.add('da-reader-btn', 'speaking');
+      if (defaultLabel) btnEl.dataset.defaultLabel = defaultLabel;
+      const lbl = btnEl.querySelector('.da-reader-btn-label');
+      if (lbl) {
+        lbl.textContent = '⏹ Stop Audio';
+      } else {
+        btnEl.textContent = '⏹ Stop Audio';
+      }
+    }
+    setMusicDucking(true);
+    syncVoiceHUD(true);
+
+    try {
+      if (!voiceAudioEl) {
+        voiceAudioEl = new Audio();
+        voiceAudioEl.preload = 'auto';
+      }
+      voiceAudioEl.src = mp3Src;
+      voiceAudioEl.volume = 1.0;
+      voiceAudioEl.ontimeupdate = null;
+      voiceAudioEl.onended = () => {
+        if (btnEl && defaultLabel && !btnEl.querySelector('.da-reader-btn-label')) {
+          btnEl.textContent = defaultLabel;
+        }
+        stopNarration();
+      };
+      voiceAudioEl.onerror = () => {
+        if (btnEl && defaultLabel && !btnEl.querySelector('.da-reader-btn-label')) {
+          btnEl.textContent = defaultLabel;
+        }
+        stopNarration();
+      };
+      const p = voiceAudioEl.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {
+          if (btnEl && defaultLabel && !btnEl.querySelector('.da-reader-btn-label')) {
+            btnEl.textContent = defaultLabel;
+          }
+          stopNarration();
+        });
+      }
+    } catch (e) {
+      stopNarration();
+    }
+  }
+
   function pronounceText(text, triggerBtn) {
     if (!text) return;
     if (triggerBtn && triggerBtn.classList.contains('speaking')) {
@@ -2563,6 +2918,26 @@ const DarkAcademiaAtmosphere = (() => {
     syncVoiceHUD(true);
 
     const key = text.replace(/\s+/g, ' ').trim().toLowerCase();
+    const standaloneMp3 = VOCAB_STANDALONE_MP3[key];
+    if (standaloneMp3 && typeof Audio !== 'undefined') {
+      try {
+        if (!voiceAudioEl) {
+          voiceAudioEl = new Audio();
+          voiceAudioEl.preload = 'auto';
+        }
+        voiceAudioEl.src = standaloneMp3;
+        voiceAudioEl.volume = 1.0;
+        voiceAudioEl.ontimeupdate = null;
+        voiceAudioEl.onended = () => stopNarration();
+        voiceAudioEl.onerror = () => stopNarration();
+        const p = voiceAudioEl.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => stopNarration());
+        }
+        return;
+      } catch (e) {}
+    }
+
     const range = VOCAB_SPRITE_INDEX[key];
 
     if (range && typeof Audio !== 'undefined') {
@@ -2988,7 +3363,7 @@ const DarkAcademiaAtmosphere = (() => {
       const clone = readingFrame.cloneNode(true);
       clone.querySelectorAll('div, cite').forEach((n) => n.remove());
       const cleanExtractText = clone.textContent.replace(/\s+/g, ' ').trim();
-      const mp3Src = `assets/audio/extract_${unitId}.mp3?v=2`;
+      const mp3Src = `assets/audio/extract_${unitId}.mp3?v=3`;
 
       const readerBar = document.createElement('div');
       readerBar.className = 'da-audio-reader-bar';
@@ -3022,7 +3397,7 @@ const DarkAcademiaAtmosphere = (() => {
       const textEl = pane.querySelector('.shift-text');
       if (!labelEl || !textEl || labelEl.querySelector('.da-pronounce-btn')) return;
 
-      const shiftMp3 = `assets/audio/shift_${unitId}_${idx}.mp3?v=2`;
+      const shiftMp3 = `assets/audio/shift_${unitId}_${idx}.mp3?v=3`;
       const cleanShiftText = textEl.textContent.replace(/\s+/g, ' ').trim();
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -3107,12 +3482,954 @@ const DarkAcademiaAtmosphere = (() => {
     playCurrentBookOverview,
     toggleSceneBlueprint,
     pronounceText,
+    playPiperAudio,
     stopVoice: stopNarration,
     speakFallbackExplicit
   };
 })();
 
+const LESSON_UPGRADE_PACKS = {
+  dracula_unit2: {
+    speaking: {
+      title: 'Hospitality, First Impressions & Hidden Rules',
+      introHtml: 'Before we enter Castle Dracula, warm up your voice. Speak aloud for up to <strong>2 minutes</strong> on the IELTS Part 2 cue card below. Aim to drop <strong>one negative inversion</strong> (e.g. <em>Never before had I...</em> or <em>Not until... did I...</em>) naturally into your reflection.',
+      prompt: 'Describe a time when you were welcomed as a guest in an unusual or memorable home or building.',
+      bullets: [
+        'where the building was and why you were visiting',
+        'what the host or atmosphere was like when you arrived',
+        'what rules, customs, or details stood out to you',
+        'and explain why that visit left a lasting impression on you.'
+      ],
+      spokenFramesHtml: '<em>"Never before had I stepped into..."</em> • <em>"Not until we sat down did I notice..."</em>',
+      modelHtml: `"I'd like to talk about a weekend stay I had three years ago at a seventeenth-century manor house in North Yorkshire that had been converted into a small academic retreat. I was attending a three-day seminar there, and because my train had been delayed, I arrived well after midnight in pouring rain.<br><br>When the caretaker opened the heavy oak door, the contrast with the storm outside was remarkable. <strong>Never before had I</strong> stepped into a private library with floor-to-ceiling timber galleries and a log fire still burning at one in the morning. The host was extraordinarily courteous—almost old-fashioned in his manners—and insisted on bringing out hot soup before showing me to my room. What struck me most, though, was the strict set of house rules: guests were asked to hand in their phones at the front desk, and <strong>under no circumstances were we</strong> allowed to enter the east wing where the rare manuscripts were stored.<br><br>At first, that restriction felt slightly intimidating, but by the second afternoon I realised how refreshing it was to work without constant digital interruptions. That visit has stayed with me because it showed how quickly an environment can shape your focus and state of mind."`
+    },
+    closeReading: {
+      heading: 'How Stoker Uses Negative Inversion to Build Polite Menace',
+      cards: [
+        {
+          title: '1. "At no time did the Count touch food..."',
+          bodyHtml: 'By fronting the negative time phrase <em>At no time</em> and inverting the auxiliary <em>did</em> before <em>the Count</em>, Stoker turns an ordinary observation into an unsettling forensic clue.'
+        },
+        {
+          title: '2. "Under no circumstances must you fall asleep..."',
+          bodyHtml: 'The Count dresses up a lethal prison rule as fatherly concern. Fronting <em>Under no circumstances</em> + modal <em>must</em> makes the prohibition sound absolute and non-negotiable.'
+        },
+        {
+          title: '3. "Not until I looked into the shaving-glass did I realise..."',
+          bodyHtml: 'Notice where the inversion sits: the time clause (<em>Not until I looked...</em>) stays in normal order, and the inversion (<em>did I realise</em>) fires in the main clause for maximum shock.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'SUBORDINATE VS. MAIN CLAUSE INVERSION',
+      nuanceTitle: 'Why "Not until" and "Only when" Delay Inversion Until the Main Clause',
+      nuanceIntroHtml: 'One of the most common C1/C2 traps is inverting too early after <strong>Not until</strong>, <strong>Only when</strong>, or <strong>Only after</strong>. When these phrases introduce a full time clause, the first verb stays in normal order and only the <strong>second (main) clause</strong> inverts:',
+      nuanceCards: [
+        {
+          title: 'Subordinate Time Clause (Normal Order)',
+          bodyHtml: '<em>Not until Harker <strong>checked</strong> the mirror...</em> / <em>Only when the clock <strong>struck</strong> midnight...</em>'
+        },
+        {
+          title: 'Main Clause Trigger (Auxiliary Inversion)',
+          bodyHtml: '<em>...<strong>did he notice</strong> the Count standing behind him.</em> / <em>...<strong>did the wolves begin</strong> to howl.</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Negative Prohibition',
+          promptHtml: 'Rewrite starting with <strong>Under no circumstances</strong>: <em>"Visitors must not unlock the eastern gallery at night."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Under no circumstances must visitors unlock</strong> (or: <strong>are visitors to unlock</strong>) the eastern gallery at night."</em>'
+        },
+        {
+          label: 'Delayed Inversion',
+          promptHtml: 'Rewrite starting with <strong>Not until</strong>: <em>"He only understood the danger when he found the bolted doors."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Not until he found</strong> the bolted doors <strong>did he understand</strong> the danger."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "The Count... joined Harker at the dinner table". Deficit: "never once" + past tense.', s23: 'Past simple negative fronted ("At no time") triggers auxiliary "did" + subject + bare infinitive.', s4: '1 mark for "at no time did" + 1 mark for "the Count join".' },
+      { s1: 'Cross out "the castle doors were locked from the outside". Deficit: "Harker only realised... when he tried the handle".', s23: '"Not until" + time clause ("he tried the handle") + inverted main clause ("did Harker realise").', s4: '1 mark for "he tried the handle" + 1 mark for "did Harker/he realise".' },
+      { s1: 'Cross out "go into the old wing of the castle". Deficit: "You must never".', s23: 'Prepositional negative opener ("Under no circumstances") + inverted modal ("must you" / "should you").', s4: '1 mark for "no circumstances" + 1 mark for "must/should you".' },
+      { s1: 'Cross out "I had... seen such a cold and frightening smile". Deficit: "never before".', s23: 'Past perfect ("had seen") inverts after "Never before" -> "Never before had I seen".', s4: '1 mark for "Never before" + 1 mark for "had I seen".' },
+      { s1: 'Cross out "he noticed that there was no reflection in the mirror". Deficit: "As soon as he turned round".', s23: 'Correlative inversion: "No sooner had he turned round than...".', s4: '1 mark for "had he turned round" + 1 mark for "than".' }
+    ]
+  },
+
+  dracula_unit3: {
+    speaking: {
+      title: 'Crisis Leadership & Decisions Under Pressure',
+      introHtml: 'Before we read the Captain\'s log of the <em>Demeter</em>, warm up your voice for <strong>2 minutes</strong>. Aim to use <strong>one What-cleft or It-cleft</strong> (e.g. <em>What worried us most was...</em>) to spotlight the turning point of your story.',
+      prompt: 'Describe a situation when you or a team had to deal with unexpected bad weather or a sudden disruption to a plan.',
+      bullets: [
+        'when and where this happened and who was involved',
+        'what caused the disruption or difficulty',
+        'how the group or leader responded to the situation',
+        'and explain what you learned from how the crisis was handled.'
+      ],
+      spokenFramesHtml: '<em>"What caught everyone off guard was..."</em> • <em>"It was only when the power went out that..."</em>',
+      modelHtml: `"I'd like to tell you about a coastal sailing trip off Northern Ireland four summers ago that turned into a genuine test of nerve. Four of us had chartered a small yacht to cross from Bangor toward the Scottish coast, expecting light winds all afternoon.<br><br>About halfway across the channel, however, a thick bank of sea fog rolled in within twenty minutes, and the wind picked up sharply. <strong>What caught us completely off guard was</strong> not the swell itself, but how quickly the visibility dropped to less than fifty metres. At the same time, our main navigation tablet lost battery power, which left everyone feeling noticeably apprehensive.<br><br>Fortunately, our skipper stayed remarkably calm. <strong>It was his quiet authority that</strong> kept the crew focused: he immediately assigned one person to the radar reflector, switched to the backup compass, and had us reef the mainsail before the squall hit its peak. <strong>Having practised</strong> emergency drills the day before, we managed to bring the boat safely into harbour just before dark. Looking back, that crossing taught me that in any high-pressure situation, clear communication matters far more than optimism."`
+    },
+    closeReading: {
+      heading: 'How Cleft Sentences Spotlight Fear in the Captain\'s Log',
+      cards: [
+        {
+          title: '1. "What unnerved the crew most was not the howling gale..."',
+          bodyHtml: 'A <em>What</em>-cleft packages known background ("something unnerved the crew") into a noun clause so the true horror lands after <em>was</em> with full dramatic weight.'
+        },
+        {
+          title: '2. "It was only when the first mate vanished that..."',
+          bodyHtml: 'Combining an <em>It</em>-cleft with <em>only when</em> isolates the exact threshold where uneasy suspicion turned into open panic.'
+        },
+        {
+          title: '3. Maritime Precision vs. Modern Metaphor',
+          bodyHtml: 'Stoker grounds the supernatural in concrete sea-log terms (<em>coxswain, derelict</em>), while words like <em>inexorable</em> and <em>trepidation</em> transfer seamlessly into modern C1/C2 essays.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'VERB AGREEMENT & PLURAL FOCUS IN CLEFTS',
+      nuanceTitle: 'Singular vs. Plural BE in What-Clefts and It-Clefts',
+      nuanceIntroHtml: 'At C2 level, watch how verb agreement behaves differently in <strong>It-clefts</strong> versus <strong>What-clefts</strong> when the focused noun phrase is plural:',
+      nuanceCards: [
+        {
+          title: 'It-Clefts: Always Singular "It is / was"',
+          bodyHtml: 'Even when focusing a plural noun, <em>It</em> takes a singular verb: <em>"<strong>It was</strong> the sudden disappearances <strong>that</strong> broke their morale."</em>'
+        },
+        {
+          title: 'What-Clefts: Can Take Plural BE Before a Plural Noun',
+          bodyHtml: 'When a <em>What</em>-clause is followed by a plural noun, formal English allows <em>was</em> or <em>were</em>: <em>"<strong>What</strong> mattered most <strong>were</strong> the captain\'s final log entries."</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'What-Cleft Focus',
+          promptHtml: 'Rewrite starting with <strong>What</strong> to emphasise the cause: <em>"The total silence below deck frightened the sailors most."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>What frightened the sailors most was</strong> the total silence below deck."</em>'
+        },
+        {
+          label: 'It-Cleft Time Focus',
+          promptHtml: 'Rewrite starting with <strong>It was not until</strong>: <em>"The coastguard only discovered the logbook when they boarded the wreck."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>It was not until</strong> the coastguard boarded the wreck <strong>that</strong> they discovered the logbook."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "frightened the sailors" and "the total silence below deck".', s23: 'Build a What-cleft subject clause ("What frightened the sailors most") + copula ("was") + "the".', s4: '1 mark for "What frightened the sailors (most)" + 1 mark for "was the".' },
+      { s1: 'Cross out "the ship crashed into Whitby harbour" and "the storm finally died down".', s23: 'It-cleft time focus: "It was not until... that..." (no inversion after "that"!).', s4: '1 mark for "not until" + 1 mark for "that".' },
+      { s1: 'Cross out "There was nothing the captain could do" -> "The captain was powerless".', s23: 'Collocation: "stop/prevent the crew (from) panicking" + adjective "inexorable".', s4: '1 mark for "stop/prevent the crew (from) panicking" + 1 mark for "inexorable".' },
+      { s1: 'Cross out "the captain tied himself to the wheel". Deficit: "Because he knew no one else was left".', s23: 'Present participle opener ("Knowing that...") shares the same subject ("the captain").', s4: '1 mark for "Knowing (that) there was" + 1 mark for "no one / nobody".' },
+      { s1: 'Cross out "The crew were" and "that they refused to go below deck". Deficit: "filled with such fear".', s23: 'Fronted degree inversion: "Such was the crew\'s trepidation" (or "So great was their trepidation").', s4: '1 mark for "Such was" / "So great was" + 1 mark for "trepidation".' }
+    ]
+  },
+
+  frankenstein_unit1: {
+    speaking: {
+      title: 'Ambition, Breakthroughs & Unexpected Consequences',
+      introHtml: 'Before we step into Victor Frankenstein\'s laboratory, warm up your voice for <strong>2 minutes</strong>. Try to include <strong>one counterfactual conditional</strong> (e.g. <em>Had I known how long it would take...</em>) when reflecting on your experience.',
+      prompt: 'Describe an ambitious project, experiment, or goal that you worked hard to complete.',
+      bullets: [
+        'what the project or goal was and why you chose it',
+        'what preparation or effort it required from you',
+        'how you felt at the moment you finally finished it',
+        'and explain whether the final result matched your original expectations.'
+      ],
+      spokenFramesHtml: '<em>"Had I realised at the start how..."</em> • <em>"exhausted by months of preparation..."</em>',
+      modelHtml: `"I'd like to talk about a software prototype I built with two university friends during our final year of engineering. Our goal was to design an automated sensor system that could monitor soil moisture for local community gardens and send alerts before crops dried out.<br><br>At the beginning, we were completely swept up in the excitement of the idea. We spent nearly four months soldering circuit boards in a cramped basement lab and debugging code late into the night. <strong>Had we anticipated</strong> how temperamental the wireless sensors would be in cold weather, we would have designed a much simpler casing from the outset. By the final week before the demonstration, all three of us were running on four hours of sleep.<br><br>Curiously enough, when the system finally went live and worked on stage, my immediate reaction wasn't triumph—it was sheer exhaustion and a strange sense of anticlimax. Looking at the tangle of wires inside the box, I could only see the flaws we hadn't had time to fix. Still, that project taught me a vital lesson: single-minded ambition can get a project across the finish line, but sustainable pacing is what keeps the quality intact."`
+    },
+    closeReading: {
+      heading: 'How Mary Shelley Contrasts Obsessive Hope with Instant Regret',
+      cards: [
+        {
+          title: '1. "Hardly had the creature opened its dull yellow eye when..."',
+          bodyHtml: 'The instant Victor succeeds, the dream collapses. Fronting <em>Hardly had... when</em> compresses two years of labour into a single second of revulsion.'
+        },
+        {
+          title: '2. "Had I foreseen the misery my ambition would unleash..."',
+          bodyHtml: 'By dropping <em>if</em> and inverting <em>Had I foreseen</em>, Shelley elevates Victor\'s hindsight into a formal tragic confession.'
+        },
+        {
+          title: '3. Sensory Contrast: "dull yellow eye" vs. "lustrous black hair"',
+          bodyHtml: 'Notice why the Creature is terrifying: Victor selected individual parts that were "beautiful" in isolation, but in combination they look <em>incongruous</em> and unnatural.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'NEGATIVE INVERTED CONDITIONALS',
+      nuanceTitle: 'Why You Must Never Contract "Hadn\'t" in Inverted Conditionals',
+      nuanceIntroHtml: 'In spoken English, <em>"If I hadn\'t seen it..."</em> is natural. In formal C1/C2 inverted conditionals, however, <strong>not</strong> must stay separated after the subject—never contracted onto <em>Had</em>:',
+      nuanceCards: [
+        {
+          title: 'Correct C1/C2 Formal Order',
+          bodyHtml: '<em>"<strong>Had Victor not abandoned</strong> the Creature on that first night, the tragedy might have been averted."</em>'
+        },
+        {
+          title: 'Exam Error to Avoid',
+          bodyHtml: '✗ <em>"Hadn\'t Victor abandoned..."</em> (Contracting <em>Hadn\'t</em> at the start of a statement turns it into a negative question).'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Inverted 3rd Conditional',
+          promptHtml: 'Rewrite omitting <strong>if</strong>: <em>"If the researchers had tested the vaccine earlier, the outbreak would have been contained."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Had the researchers tested</strong> the vaccine earlier, the outbreak would have been contained."</em>'
+        },
+        {
+          label: 'Correlative Time Inversion',
+          promptHtml: 'Rewrite starting with <strong>Hardly</strong>: <em>"The machine had scarcely been switched on when the main fuse blew."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Hardly had the machine been</strong> switched on <strong>when</strong> the main fuse blew."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "he would never have created the monster". Deficit: "If Victor had known how much suffering it would cause".', s23: 'Drop "If" and invert past perfect: "Had Victor known/realised how much suffering".', s4: '1 mark for "Had Victor known/realised" + 1 mark for "how much suffering".' },
+      { s1: 'Cross out "the creature opened its eyes" and "Victor rushed out".', s23: '"Hardly had [subject] [V3] when..." (remember: Hardly pairs with WHEN, whereas No sooner pairs with THAN).', s4: '1 mark for "Hardly had the creature opened" + 1 mark for "its eyes when".' },
+      { s1: 'Cross out "his health would not have failed so quickly". Deficit: "If Victor had not worked so obsessively".', s23: 'Negative inverted conditional: "Had Victor not worked" (place NOT after the subject).', s4: '1 mark for "Had Victor not" + 1 mark for "worked so obsessively".' },
+      { s1: 'Cross out "Victor immediately felt deep disgust". Deficit: "On seeing the creature move".', s23: 'Replace "disgust" with C1 noun "abhorrence": "filled Victor with abhorrence".', s4: '1 mark for "filled Victor" + 1 mark for "with abhorrence".' },
+      { s1: 'Cross out "he forgot to eat or sleep for days". Deficit: "Victor\'s desire for knowledge was so unquenchable that".', s23: 'Fronted degree inversion: "So unquenchable was Victor\'s desire" (or "Such was Victor\'s unquenchable desire").', s4: '1 mark for "So unquenchable was" + 1 mark for "Victor\'s desire".' }
+    ]
+  },
+
+  frankenstein_unit2: {
+    speaking: {
+      title: 'Sublime Landscapes & Resolve Dual Perspectives',
+      introHtml: 'Before we ascend the Mer de Glace in the Alps, warm up your voice for <strong>2 minutes</strong>. Aim to include <strong>one concession structure</strong> (e.g. <em>Much as I admired..., Cold though the wind was...</em>) during your description.',
+      prompt: 'Describe a dramatic natural landscape (such as mountains, a coastline, or a forest) that you have visited.',
+      bullets: [
+        'where this landscape is and when you went there',
+        'what the physical surroundings and weather were like',
+        'what you did while you were there',
+        'and explain how being in that landscape made you feel.'
+      ],
+      spokenFramesHtml: '<em>"Exhausting though the climb was..."</em> • <em>"Much as I enjoy city life..."</em>',
+      modelHtml: `"I'd like to describe a hike I took two summers ago across the Glencoe ridge in the Scottish Highlands. I drove up early on a Saturday morning with a close friend because we wanted to reach the summit plateau before the afternoon clouds rolled in.<br><br>As we climbed above the valley floor, the scale of the landscape changed dramatically. On either side of the trail stood sheer basalt cliffs cut by narrow waterfalls, and the wind coming off the snow patches at the top was bitingly cold. <strong>Exhausting though the final scramble was</strong>, stepping out onto the high ridge gave us an unforgettable view across three different lochs stretching toward the coast.<br><br>We spent about an hour sitting behind a stone cairn drinking hot tea and watching the mist shift across the peaks. <strong>Much as I appreciate</strong> the convenience of living in a busy city, being up on that exposed granite ridge made everyday career stresses feel remarkably small. Even when a sudden hail shower forced us to hurry back down the path, the sense of mental clarity stayed with me for weeks afterwards."`
+    },
+    closeReading: {
+      heading: 'How Shelley Balances Concession and Conflict on the Glacier',
+      cards: [
+        {
+          title: '1. "Detestable though the creature appeared..."',
+          bodyHtml: 'Fronting the adjective <em>Detestable</em> before <em>though</em> lets Shelley acknowledge Victor\'s physical revulsion first, so the Creature\'s eloquence hits with unexpected moral force.'
+        },
+        {
+          title: '2. "Much as I loathed my creation..."',
+          bodyHtml: '<em>Much as + subject + verb</em> concedes an intense emotion up front before pivoting to duty: Victor cannot deny that he owes the Creature a hearing.'
+        },
+        {
+          title: '3. Archaic "Thou / Wilt" vs. Modern Formal Register',
+          bodyHtml: 'The Creature speaks in Miltonic <em>thou/thee/thy</em> to sound like fallen Adam in <em>Paradise Lost</em>—a literary device to recognize in reading, while keeping <em>benevolent</em>, <em>callous</em>, and <em>abhor</em> for your own essays.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'ADJECTIVE VS. ADVERB FRONTING WITH AS / THOUGH',
+      nuanceTitle: 'When to Use "Adjective + as/though" vs. "Much as"',
+      nuanceIntroHtml: 'In Cambridge Part 4, pay close attention to the part of speech you are fronting when building a formal concession clause:',
+      nuanceCards: [
+        {
+          title: 'Adjective / Adverb + as / though + Subject + Verb',
+          bodyHtml: 'Never put <em>Although</em> before the adjective! Write: <em>"<strong>Formidable though</strong> the glacier was..."</em> (NOT <em>Although formidable though...</em>).'
+        },
+        {
+          title: 'Much as + Subject + Verb (For Verbs of Feeling)',
+          bodyHtml: 'When conceding a verb like <em>admire, respect, detest,</em> or <em>regret</em>, open with <strong>Much as</strong>: <em>"<strong>Much as</strong> Victor <strong>abhorred</strong> the sight, he listened."</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Fronted Adjective Concession',
+          promptHtml: 'Rewrite starting with the adjective <strong>Bleak</strong>: <em>"Although the alpine valley looked bleak, it offered Victor temporary peace."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Bleak though</strong> (or: <strong>Bleak as</strong>) the alpine valley looked, it offered Victor temporary peace."</em>'
+        },
+        {
+          label: 'Prepositional Concession',
+          promptHtml: 'Rewrite using <strong>notwithstanding</strong>: <em>"Despite his creator\'s hostility, the Creature spoke with calm precision."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Notwithstanding his creator\'s hostility</strong>, the Creature spoke with calm precision."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "the creature looked" and "its words were surprisingly gentle". Deficit: "Although... terrifying".', s23: 'Front the adjective before "though/as": "Terrifying though/as the creature looked".', s4: '1 mark for "Terrifying though/as" + 1 mark for "the creature looked".' },
+      { s1: 'Cross out "Victor hated the creature" and "he felt forced to listen".', s23: 'Concessive verb opener: "Much as Victor hated/abhorred the creature".', s4: '1 mark for "Much as" + 1 mark for "Victor hated/abhorred".' },
+      { s1: 'Cross out "the freezing wind on the glacier" and "Victor continued his climb".', s23: 'Formal prepositional concession: "In spite of" or "Notwithstanding" + noun phrase.', s4: '1 mark for "In spite of" + 1 mark for "the freezing wind".' },
+      { s1: 'Cross out "Victor refused to show any kindness". Deficit: "Even though the creature begged for help".', s23: 'Use C1 adjective "callous" ("remained callous to") or verb "spurned".', s4: '1 mark for "remained callous" + 1 mark for "to the creature\'s pleas".' },
+      { s1: 'Cross out "The creature had originally been" and "before people drove him away".', s23: 'Replace "kind and gentle" with C1 noun/adjective "benevolent / full of benevolence".', s4: '1 mark for "full of benevolence / benevolent by" + 1 mark for "nature".' }
+    ]
+  },
+
+  frankenstein_unit3: {
+    speaking: {
+      title: 'Social Inclusion, First Languages & Belonging',
+      introHtml: 'Before we read the Creature\'s account of how he secretly learned language at the De Lacey cottage, warm up your voice for <strong>2 minutes</strong>. Aim to include <strong>one passive reporting verb or cleft sentence</strong>.',
+      prompt: 'Describe a time when learning a new skill or language helped you understand another culture or group of people.',
+      bullets: [
+        'what the skill or language was and how you learned it',
+        'what difficulties you faced in the early stages',
+        'a specific moment when you realised you had made real progress',
+        'and explain how that experience changed your perspective.'
+      ],
+      spokenFramesHtml: '<em>"What made the biggest difference was..."</em> • <em>"It is often assumed that..., yet..."</em>',
+      modelHtml: `"I'd like to talk about the year I spent learning conversational German while working at a research institute in Munich. Before moving there, I had only studied grammar from textbooks, so during my first month I felt quite isolated whenever colleagues chatted over coffee.<br><br><strong>What made the biggest difference was</strong> joining a local evening rowing club where nobody spoke English during training. For the first six weeks, I mostly listened closely to how people phrased everyday requests and jokes—almost like an observer piecing together a code. <strong>Difficult though it was</strong> to keep up with regional idioms at first, having to respond in real time forced me to stop translating word-for-word in my head.<br><br>The turning point came one Saturday morning when our boat's rudder jammed mid-river and I managed to explain the mechanical problem clearly in German without hesitating. <strong>It is often assumed that</strong> fluency is just about passing exams, but that experience showed me that language is fundamentally about shared trust and belonging."`
+    },
+    closeReading: {
+      heading: 'How the Creature Uses Formal Rhetoric to Appeal for Justice',
+      cards: [
+        {
+          title: '1. "What I required of my creator was not indulgence, but justice..."',
+          bodyHtml: 'The Creature rejects pity. Using a contrastive <em>What</em>-cleft (<em>What I required... was not X, but Y</em>), he frames his demand as a legal and moral right.'
+        },
+        {
+          title: '2. "Driven from every human dwelling, I learned to abhor..."',
+          bodyHtml: 'A past participle clause (<em>Driven from...</em>) places the blame squarely on society\'s rejection before stating the Creature\'s retaliation.'
+        },
+        {
+          title: '3. Sociological Precision: "ostracism" & "repudiate"',
+          bodyHtml: 'Shelley\'s central thesis—that <em>ostracism</em> breeds hostility—gives you two of the sharpest C1/C2 words for modern essays on crime, education, and social policy.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'CONTRASTIVE CLEFTS & PASSIVE REPORTING',
+      nuanceTitle: 'Combining "What... was not X, but Y" with Impersonal Reporting',
+      nuanceIntroHtml: 'In high-scoring C1/C2 discursive essays, you can pair a contrastive <strong>What-cleft</strong> with an <strong>impersonal passive</strong> to refute a simplistic popular belief and state your thesis cleanly:',
+      nuanceCards: [
+        {
+          title: 'Step 1: Distance the Myth (Impersonal Passive)',
+          bodyHtml: '<em>"<strong>It is widely assumed that</strong> harsher sentences deter youth offending..."</em>'
+        },
+        {
+          title: 'Step 2: Deliver the Counter-Thesis (Contrastive What-Cleft)',
+          bodyHtml: '<em>"...yet <strong>what actually reduces recidivism is not</strong> isolation, <strong>but</strong> structured rehabilitation."</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Contrastive What-Cleft',
+          promptHtml: 'Rewrite starting with <strong>What drove</strong>: <em>"Cruel social rejection, rather than natural malice, drove the Creature to revenge."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>What drove the Creature to revenge was not</strong> natural malice, <strong>but</strong> cruel social rejection."</em>'
+        },
+        {
+          label: 'Participle + Vocabulary Upgrade',
+          promptHtml: 'Combine using <strong>Ostracised by</strong>: <em>"The villagers excluded him because of his appearance. He hid in the forest."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Ostracised by the villagers</strong> because of his appearance, he hid in the forest."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "hurt the creature most" and "being rejected by the De Lacey family".', s23: 'Nominal What-cleft: "What hurt the creature most" + "was" + gerund phrase.', s4: '1 mark for "What hurt the creature (most)" + 1 mark for "was being".' },
+      { s1: 'Cross out "he decided to seek revenge". Deficit: "Because he had been rejected by everyone".', s23: 'Passive perfect participle opener: "Having been rejected/ostracised/spurned by everyone".', s4: '1 mark for "Having been" + 1 mark for "rejected/ostracised/spurned by".' },
+      { s1: 'Cross out "Victor refused to accept his responsibility".', s23: 'Replace "refused to accept" with C1 verb "repudiated" (or "chose to repudiate").', s4: '1 mark for "repudiated his" + 1 mark for "responsibility".' },
+      { s1: 'Cross out "People often believe that" and "monsters are born evil".', s23: 'Impersonal passive reporting: "It is often believed/assumed that..." or personal "Monsters are often believed to be...".', s4: '1 mark for "It is often believed" + 1 mark for "that" (or "are believed to be").' },
+      { s1: 'Cross out "the creature\'s loneliness" and "he begged Victor for a companion".', s23: 'Fronted degree inversion: "So intense/great was the creature\'s loneliness that...".', s4: '1 mark for "So intense/great was" + 1 mark for "that".' }
+    ]
+  },
+
+  jekyll_unit1: {
+    speaking: {
+      title: 'Urban Architecture, Contrasts & Hidden Histories',
+      introHtml: 'Before we walk through the fog-bound streets of Soho with Mr Utterson, warm up your voice for <strong>2 minutes</strong>. Aim to use <strong>one passive reporting structure</strong> (e.g. <em>is rumoured to have been..., is thought to date back to...</em>).',
+      prompt: 'Describe an older building or street in a city you know that contrasts strongly with the modern buildings around it.',
+      bullets: [
+        'where this building or street is located',
+        'what its exterior appearance and architecture look like',
+        'what it is used for today (or what it is rumoured to have been in the past)',
+        'and explain why it stands out so sharply from its surroundings.'
+      ],
+      spokenFramesHtml: '<em>"The building is thought to have been..."</em> • <em>"Behind its respectable facade..."</em>',
+      modelHtml: `"I'd like to tell you about an old timber-and-brick apothecary building tucked away down a narrow cobbled entries alley in the Cathedral Quarter of Belfast. Whenever you walk past the surrounding glass office blocks and busy cafés, this narrow frontage looks as though it belongs to a completely different century.<br><br>On the outside, the brickwork is darkened by decades of coal smoke, with tall sash windows and worn stone steps. <strong>The building is rumoured to have been</strong> a ship's chandlery and medical dispensary back in the 1880s, and <strong>it is said to have</strong> connected to the old docks through a series of cellar vaults. For years, its peeling wooden doors gave it a slightly sinister, neglected air compared with the polished shopfronts nearby.<br><br>Recently, however, a local historical trust restored the ground floor into a small archive and reading room while leaving the original exterior untouched. What I love about that spot is how it reminds you that cities aren't built all at once—beneath the tidy modern <strong>facade</strong> of any commercial district, there are layers of older history waiting to be noticed."`
+    },
+    closeReading: {
+      heading: 'How Stevenson Uses Passive Reporting to Build Urban Rumour',
+      cards: [
+        {
+          title: '1. "The blistered door was rumoured to lead into..."',
+          bodyHtml: 'Stevenson never reveals the connection between Jekyll and Hyde directly in Chapter 1; instead, passive reporting verbs (<em>was rumoured to, was said to</em>) filter the truth through polite Victorian gossip.'
+        },
+        {
+          title: '2. Architectural Dualism: Front Square vs. Soho Back Door',
+          bodyHtml: 'Dr Jekyll\'s house has two faces: a stately, respectable square in front (the public <em>facade</em>) and a windowless, discoloured laboratory door in a dingy Soho alley (the hidden shadow).'
+        },
+        {
+          title: '3. "He is thought to have paid the family off..."',
+          bodyHtml: 'Pairing a present passive reporting verb (<em>is thought</em>) with the perfect infinitive (<em>to have paid</em>) allows Utterson to weigh up a past scandal with legal detachment.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'INFINITIVE ASPECT IN PASSIVE REPORTING',
+      nuanceTitle: 'Choosing Between Simple, Continuous, and Perfect Infinitives',
+      nuanceIntroHtml: 'When converting an active rumour into a personal passive reporting structure (<em>Subject + BE + V3 + to-infinitive</em>), the form of the infinitive depends on whether the reported action is <strong>simultaneous</strong> or <strong>earlier</strong>:',
+      nuanceCards: [
+        {
+          title: 'Simultaneous State / Action: to + V1 / to be + V-ing',
+          bodyHtml: '<em>"Hyde <strong>is believed to hold</strong> a key to the laboratory."</em> / <em>"He <strong>is rumoured to be hiding</strong> in Soho."</em>'
+        },
+        {
+          title: 'Earlier Completed Action: to have + V3 (or to have been + V3)',
+          bodyHtml: '<em>"The cheque <strong>is known to have been signed</strong> by Dr Jekyll himself."</em> (Passive perfect infinitive).'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Personal Passive + Perfect Infinitive',
+          promptHtml: 'Rewrite starting with <strong>The mysterious stranger</strong>: <em>"Witnesses claim that the mysterious stranger entered through the laboratory door."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>The mysterious stranger is claimed</strong> (or: <strong>was claimed</strong>) <strong>to have entered</strong> through the laboratory door."</em>'
+        },
+        {
+          label: 'Passive Infinitive Shift',
+          promptHtml: 'Rewrite starting with <strong>The signature</strong>: <em>"Clerks suspect that someone forged the signature on the will."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>The signature is suspected to have been forged</strong> on the will."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "People rumour that" and "the mysterious Mr Hyde uses the back door".', s23: 'Personal passive reporting with simultaneous action: "is rumoured to use".', s4: '1 mark for "is rumoured" + 1 mark for "to use".' },
+      { s1: 'Cross out "Everyone believes that" and "Dr Jekyll wrote the strange will himself".', s23: 'Earlier past action ("wrote") requires perfect infinitive: "is believed to have written".', s4: '1 mark for "is believed" + 1 mark for "to have written".' },
+      { s1: 'Cross out "Witnesses say that" and "the cheque was signed by a respectable doctor".', s23: 'Earlier passive action ("was signed") -> passive perfect infinitive: "is said to have been signed".', s4: '1 mark for "is said to" + 1 mark for "have been signed".' },
+      { s1: 'Cross out "Nobody could explain why" -> "It was impossible to explain".', s23: 'Use C1 noun "repugnance": "felt such (strong/intense) repugnance towards".', s4: '1 mark for "felt such repugnance" + 1 mark for "towards/for".' },
+      { s1: 'Cross out "Dr Jekyll\'s respectable reputation was only a false front".', s23: 'Replace "false front" with C1 noun "facade": "was nothing more than a facade".', s4: '1 mark for "nothing more than" + 1 mark for "a facade".' }
+    ]
+  },
+
+  jekyll_unit2: {
+    speaking: {
+      title: 'Scientific Ethics, Curiosity & Professional Boundaries',
+      introHtml: 'Before we open Dr Lanyon\'s sealed narrative, warm up your voice for <strong>2 minutes</strong>. Aim to include <strong>one degree inversion or correlative structure</strong> (e.g. <em>So startling was the result that...</em> or <em>No sooner had... than...</em>).',
+      prompt: 'Describe a scientific discovery, medical breakthrough, or technological invention that changed how people live or think.',
+      bullets: [
+        'what the discovery or invention is',
+        'how people used to manage before it existed',
+        'what positive changes it brought to society',
+        'and explain any ethical questions or risks that came with it.'
+      ],
+      spokenFramesHtml: '<em>"So transformative was this breakthrough that..."</em> • <em>"No sooner had it become widespread than..."</em>',
+      modelHtml: `"I'd like to talk about the development of CRISPR gene-editing technology over the past decade, which I first read about in depth during a university bioethics module. Before tools like CRISPR existed, modifying genetic sequences was slow, expensive, and imprecise, meaning that many inherited blood disorders could only be managed with lifelong symptom care rather than cured at the root.<br><br><strong>So rapid has been</strong> the progress in this field that clinical trials are now successfully treating patients with sickle-cell disease who previously had very few options. What makes the technology so remarkable is the sheer precision with which researchers can target a single faulty gene.<br><br>At the same time, however, <strong>no sooner had</strong> the first clinical successes been announced <strong>than</strong> serious ethical debates emerged around where to draw the line. Many scientists like Dr Lanyon in Stevenson's novel warn that when our technical capability outpaces our regulatory safeguards, we risk unintended consequences. For me, it's the clearest modern example of why scientific audacity always needs transparent ethical oversight."`
+    },
+    closeReading: {
+      heading: 'How Lanyon\'s Eyewitness Account Uses Degree & Sequence Inversion',
+      cards: [
+        {
+          title: '1. "No sooner had he swallowed the draught than..."',
+          bodyHtml: 'Dr Lanyon is a sceptical materialist physician. Using <em>No sooner had... than</em> shows that the physical transformation was instantaneous—leaving no room for hallucination.'
+        },
+        {
+          title: '2. "Such was the horror of the sight that my mind reeled..."',
+          bodyHtml: 'Fronting <em>Such + BE + Noun Phrase + that</em> elevates Lanyon\'s clinical shock into an existential collapse that literally costs him his life.'
+        },
+        {
+          title: '3. Apothecary Precision vs. C1 Evaluative Lexis',
+          bodyHtml: 'Stevenson anchors the scene with Victorian pharmacy terms (<em>phial, minim, draught</em>), paired with timeless C1 nouns like <em>trepidation</em> and <em>audacity</em>.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'SO + ADJECTIVE VS. SUCH + NOUN INVERSION',
+      nuanceTitle: 'Mastering the Exact Switch Between "So... that" and "Such... that"',
+      nuanceIntroHtml: 'Cambridge Part 4 regularly tests whether candidates can switch between <strong>So</strong> and <strong>Such</strong> at the start of an inverted result sentence without mixing up adjectives and nouns:',
+      nuanceCards: [
+        {
+          title: 'Formula A: So + Adjective / Adverb + BE + Subject + that',
+          bodyHtml: '<em>"<strong>So violent was</strong> the chemical reaction <strong>that</strong> the glass cracked."</em> (Adjective sits immediately after <em>So</em>).'
+        },
+        {
+          title: 'Formula B: Such + BE + Noun Phrase + that',
+          bodyHtml: '<em>"<strong>Such was the violence of</strong> the chemical reaction <strong>that</strong> the glass cracked."</em> (Verb <em>was</em> sits immediately after <em>Such</em>).'
+        }
+      ],
+      workouts: [
+        {
+          label: 'So -> Such Transformation',
+          promptHtml: 'Rewrite starting with <strong>Such</strong>: <em>"The visitor\'s impatience was so great that he seized the graduated glass."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Such was the visitor\'s impatience that</strong> he seized the graduated glass."</em>'
+        },
+        {
+          label: 'No sooner... than',
+          promptHtml: 'Rewrite starting with <strong>No sooner</strong>: <em>"As soon as the red liquid touched the powder, the mixture began to boil."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>No sooner had</strong> the red liquid touched the powder <strong>than</strong> the mixture began to boil."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "he drank the potion" and "his face began to change". Deficit: "As soon as".', s23: 'Correlative past perfect inversion: "No sooner had he drunk the potion than...".', s4: '1 mark for "No sooner had he drunk" + 1 mark for "the potion than".' },
+      { s1: 'Cross out "Lanyon\'s shock" and "that he could not sleep for weeks". Deficit: "was so great".', s23: 'Noun phrase ("Lanyon\'s shock") requires "Such was Lanyon\'s shock that...".', s4: '1 mark for "Such was" + 1 mark for "Lanyon\'s shock that".' },
+      { s1: 'Cross out "The visitor was" and "that his hands were shaking". Deficit: "so desperate for the powder".', s23: 'Fronted adjective inversion: "So desperate was the visitor (for the powder) that...".', s4: '1 mark for "So desperate was" + 1 mark for "the visitor".' },
+      { s1: 'Cross out "Hyde asked Lanyon if he wanted to let him go or know the secret".', s23: 'Use C1 verb "disclose": "offered to disclose the secret" (or "asked whether he should disclose").', s4: '1 mark for "disclose" + 1 mark for "the secret".' },
+      { s1: 'Cross out "Lanyon opened the drawer" and "with a strong feeling of fear".', s23: 'Replace "fear/unease" with C1 prepositional phrase "with great/considerable trepidation".', s4: '1 mark for "with (great)" + 1 mark for "trepidation".' }
+    ]
+  },
+
+  jekyll_unit3: {
+    speaking: {
+      title: 'Habits, Self-Discipline & Breaking Bad Routines',
+      introHtml: 'Before we read Henry Jekyll\'s final confession, warm up your voice for <strong>2 minutes</strong>. Aim to include <strong>one "Little did I..." or "Only when..." inversion</strong> as you describe how a habit or routine developed.',
+      prompt: 'Describe a habit, routine, or lifestyle change you decided to make to improve your daily life.',
+      bullets: [
+        'what the old routine or habit was and how it started',
+        'when you realised that it needed to change',
+        'what steps you took to break the old habit or build the new one',
+        'and explain how that change has affected your focus or wellbeing today.'
+      ],
+      spokenFramesHtml: '<em>"Little did I realise how much..."</em> • <em>"Only when I left my phone in another room did I..."</em>',
+      modelHtml: `"I'd like to talk about how I broke the habit of checking work messages late at night about two years ago. It started quite innocently during a busy winter term when I kept my laptop on the kitchen table just in case an urgent email came through after dinner.<br><br><strong>Little did I realise at the time</strong> how quickly that small convenience would turn into an automatic reflex. Within a few months, I was scrolling through notifications at eleven o'clock every evening, which left my sleep fragmented and my concentration noticeably worse the next morning. <strong>Only when I caught myself</strong> replying to a routine spreadsheet query at midnight on a Sunday <strong>did I recognise</strong> how <strong>pernicious</strong> the habit had become.<br><br>To extricate myself from that cycle, I set a strict rule: at eight o'clock every evening, my phone and laptop go into a charging dock in the hallway, and I read a physical book for an hour before bed instead. The first week felt strangely uncomfortable, but within a fortnight my energy levels improved dramatically. It taught me that self-discipline works best when you change your physical environment rather than relying on willpower alone."`
+    },
+    closeReading: {
+      heading: 'How Jekyll\'s Final Statement Uses "Little did..." & "Only when..."',
+      cards: [
+        {
+          title: '1. "Little did I dream that I would soon be trapped..."',
+          bodyHtml: 'Jekyll begins his experiment believing he can step back into his respectable life at will. Fronting <em>Little did I dream</em> captures his fatal overconfidence.'
+        },
+        {
+          title: '2. "Only when I woke up in my own bed with Hyde\'s gnarled hand..."',
+          bodyHtml: 'The subordinate time clause builds the morning scene in normal word order before the main clause inversion (<em>did I realise</em>) delivers the psychological turning point.'
+        },
+        {
+          title: '3. High-Utility C1 Essay Vocabulary: "pernicious", "duplicity", "extricate"',
+          bodyHtml: 'Jekyll\'s confession is a masterclass in vocabulary for modern essays on addiction, corporate ethics, and digital habits: <em>a pernicious influence</em>, <em>extricate oneself from a trap</em>.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'COGNITIVE VERBS WITH "LITTLE" & REFLEXIVE "EXTRICATE"',
+      nuanceTitle: 'Using "Little did..." Naturally & Mastering Reflexive Prepositions',
+      nuanceIntroHtml: 'In C1/C2 writing, <strong>Little</strong> only inverts when it means <em>"not at all"</em> before a verb of knowing or thinking, and <strong>extricate</strong> almost always requires a reflexive pronoun + <strong>from</strong>:',
+      nuanceCards: [
+        {
+          title: 'Little + did / had + Subject + Cognitive Verb',
+          bodyHtml: 'Pairs with <em>know, realise, suspect, dream, imagine, foresee</em>: <em>"<strong>Little did Jekyll suspect</strong> that the original salt was impure."</em>'
+        },
+        {
+          title: 'Extricate + oneself / someone + from + Noun',
+          bodyHtml: '<em>"By autumn, Jekyll could no longer <strong>extricate himself from</strong> the consequences of his <strong>duplicity</strong>."</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Little did... Inversion',
+          promptHtml: 'Rewrite starting with <strong>Little</strong>: <em>"Dr Jekyll had no idea that the first batch of chemicals contained a rare impurity."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Little did Dr Jekyll know</strong> (or: <strong>realise / suspect</strong>) that the first batch of chemicals contained a rare impurity."</em>'
+        },
+        {
+          label: 'Only when... Delayed Inversion',
+          promptHtml: 'Rewrite starting with <strong>Only when</strong>: <em>"He only understood the full danger when the supply of salt ran out."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Only when the supply of salt ran out did he understand</strong> the full danger."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "that the potion would soon stop working". Deficit: "Jekyll had no idea".', s23: 'Cognitive negative inversion: "Little did Jekyll know/realise/suspect".', s4: '1 mark for "Little did Jekyll" + 1 mark for "know/realise/suspect".' },
+      { s1: 'Cross out "he saw his hand in the morning light" and "Jekyll realised he had changed in his sleep".', s23: '"Only when" + subordinate clause (normal order) + inverted main clause ("did Jekyll realise").', s4: '1 mark for "he saw his hand" + 1 mark for "did Jekyll/he realise".' },
+      { s1: 'Cross out "Jekyll found it impossible to" and "the trap he had created".', s23: 'Reflexive C1 verb frame: "extricate himself from".', s4: '1 mark for "extricate himself" + 1 mark for "from".' },
+      { s1: 'Cross out "Jekyll was" and "living a double life". Deficit: "exhausted by the dishonesty of".', s23: 'Replace "dishonesty" with C1 noun "duplicity": "exhausted by the duplicity of".', s4: '1 mark for "exhausted by" + 1 mark for "the duplicity of".' },
+      { s1: 'Cross out "The drug had" and "on his mind and body". Deficit: "such a harmful effect".', s23: 'Use C1 adjective "pernicious": "such a pernicious effect on".', s4: '1 mark for "such a pernicious" + 1 mark for "effect on".' }
+    ]
+  },
+
+  baskerville_unit1: {
+    speaking: {
+      title: 'Solving Mysteries & Weighing Up Clues',
+      introHtml: 'Before we join Holmes and Watson at 221B Baker Street, warm up your voice for <strong>2 minutes</strong>. Aim to use <strong>at least two past modals of deduction</strong> (e.g. <em>must have been, can\'t have been, might well have...</em>).',
+      prompt: 'Describe a time when you had to figure out the explanation for a puzzling problem, lost item, or misunderstanding.',
+      bullets: [
+        'what the problem or puzzle was and when it happened',
+        'what initial clues or evidence you noticed',
+        'what theories you ruled out as impossible',
+        'and explain how you finally discovered the real explanation.'
+      ],
+      spokenFramesHtml: '<em>"At first I thought it must have been..."</em> • <em>"It can\'t have been a coincidence that..."</em>',
+      modelHtml: `"I'd like to tell you about a puzzling incident that happened at our local community library last winter when an entire box of rare local history photographs went missing just two days before an exhibition. Because the archive room was locked with a keypad, everyone was initially baffled.<br><br>At first, several volunteers assumed the box <strong>must have been</strong> misplaced during the renovation work the week before. However, when we checked the sign-in log, we realised that <strong>can't have been</strong> the case because the curator had photographed the open box on the table the previous afternoon. Looking more closely at the table, I noticed two stacks of green recycling crates sitting right beside the archive shelves.<br><br>It suddenly occurred to me that the evening cleaning crew <strong>might well have</strong> mistaken the plain cardboard archive box for empty packaging—Wait: not empty packaging, because it was heavy, so they <strong>must have thought</strong> it was old magazines meant for the charity book sale downstairs! Sure enough, when we walked down to the basement sorting room, there was the box sitting untouched on the donation table. It was a great reminder that the most <strong>plausible</strong> explanation is almost always human routine rather than malice."`
+    },
+    closeReading: {
+      heading: 'How Sherlock Holmes Uses Physical Clues to Reconstruct the Past',
+      cards: [
+        {
+          title: '1. Cigar Ash Dropped Twice -> "He must have been waiting..."',
+          bodyHtml: 'Holmes never guesses blindly: two heaps of cigar ash prove duration, justifying the continuous deduction <em>must have been waiting</em>.'
+        },
+        {
+          title: '2. Running on His Toes -> Logical Impossibility ("can\'t have walked")',
+          bodyHtml: 'Deep toe-prints in damp gravel rule out a calm evening stroll: Sir Charles <em>cannot have been walking</em> casually—he was fleeing for his life.'
+        },
+        {
+          title: '3. Analytical Essay Lexis: "plausible" & "circumstantial"',
+          bodyHtml: 'Weighing up whether a theory is <em>plausible</em> or rests merely on <em>circumstantial evidence</em> is one of the highest-scoring moves in IELTS Task 2 and C1/C2 essays.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'MODALS OF DEDUCTION VS. CRITICISM',
+      nuanceTitle: 'Don\'t Confuse "can\'t have", "mustn\'t have", and "shouldn\'t have"',
+      nuanceIntroHtml: 'In Cambridge exams, examiners frequently test whether you can separate <strong>epistemic deduction</strong> (what we deduce happened) from <strong>deontic criticism</strong> (what was a mistake):',
+      nuanceCards: [
+        {
+          title: 'Logical Impossibility: can\'t / couldn\'t have + V3',
+          bodyHtml: '<em>"The butler <strong>can\'t have heard</strong> the gunshot from the cellar."</em> (= It is logically impossible that he heard it).'
+        },
+        {
+          title: 'Past Regret / Criticism: should not / ought not to have + V3',
+          bodyHtml: '<em>"Sir Charles <strong>should not have waited</strong> by the gate alone."</em> (= He DID wait there, and it was unwise).'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Continuous Past Deduction',
+          promptHtml: 'Rewrite using <strong>must have been</strong>: <em>"The mud on his boots proves that he was walking across the moor in the rain."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"Judging by the mud on his boots, he <strong>must have been walking</strong> across the moor in the rain."</em>'
+        },
+        {
+          label: 'Strengthened Possibility (may well have)',
+          promptHtml: 'Rewrite using <strong>well</strong>: <em>"It is very plausible that sudden panic triggered his heart failure."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"Sudden panic <strong>may well have triggered</strong> (or: <strong>might/could well have triggered</strong>) his heart failure."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "Based on the cigar ash, Sir Charles" and "at the gate". Deficit: "Holmes was certain that... had been standing expectantly... for someone".', s23: 'Certainty about past action in progress -> "must have been waiting for someone".', s4: '1 mark for "must have been waiting" + 1 mark for "for someone/somebody".' },
+      { s1: 'Cross out "It" and "giant footprints were found near the alley". Deficit: "is logically impossible that... happened purely by chance".', s23: 'Logical impossibility in the past -> "cannot / can\'t / could not have been a coincidence that".', s4: '1 mark for "cannot/can\'t/could not have been" + 1 mark for "a coincidence that".' },
+      { s1: 'Cross out "Sir Charles stood out in the cold rain". Deficit: "Nobody could offer a reasonable explanation for why".', s23: 'Noun phrase after "There was": "no plausible explanation for why / as to why".', s4: '1 mark for "no plausible explanation" + 1 mark for "for/as to why".' },
+      { s1: 'Cross out "Sir Charles\'s heart attack" and "by sudden terror". Deficit: "It is very likely that... was brought on".', s23: 'Strong passive past possibility: "might/may/could well have been brought on".', s4: '1 mark for "might/may/could well" + 1 mark for "have been brought on".' },
+      { s1: 'Cross out "Holmes refused to jump to conclusions" and "alone". Deficit: "when there was only indirect evidence".', s23: 'Prepositional collocation: "on the basis/strength of circumstantial evidence".', s4: '1 mark for "on the basis/strength of" + 1 mark for "circumstantial evidence".' }
+    ]
+  },
+
+  baskerville_unit2: {
+    speaking: {
+      title: 'Atmospheric Places & Navigating Difficult Terrain',
+      introHtml: 'Before we cross Dartmoor and Grimpen Mire with Dr Watson, warm up your voice for <strong>2 minutes</strong>. Aim to include <strong>one place inversion</strong> (e.g. <em>Beyond the town lay..., At the top of the hill stood...</em>).',
+      prompt: 'Describe a remote or wild place in the countryside that you have visited or travelled through.',
+      bullets: [
+        'where this place is and what took you there',
+        'what the terrain, weather, and horizon looked like',
+        'what sounds or details you noticed while walking or travelling through it',
+        'and explain why that place felt memorable or atmospheric.'
+      ],
+      spokenFramesHtml: '<em>"Beyond the last village lay..."</em> • <em>"Nowhere along the road was..."</em>',
+      modelHtml: `"I'd like to talk about a winter walk I took across the Mourne Mountains in County Down a couple of Januaries ago. A friend and I set off early from a quiet forestry car park hoping to follow the old granite wall up toward Hare's Gap before dusk.<br><br>Once we climbed past the treeline, the scenery opened out into a vast, <strong>desolate</strong> upland basin. <strong>Beyond the lower ridges lay</strong> miles of heather and peat bog dusted with frost, and <strong>at the head of the valley stood</strong> a line of jagged granite tors half-hidden in low cloud. Because the ground near the stream was marshy, some stretches of the path were quite <strong>treacherous</strong> underfoot, so we had to pick our way carefully from stone to stone.<br><br>What made the walk so memorable was the extraordinary stillness of the afternoon. <strong>Nowhere along the five-mile trail was</strong> a single house or road in sight, and the only sound coming out of the mist was the call of ravens echoing off the cliffs. Even though our boots were soaked by the time we got back to the car, that quiet, <strong>melancholy</strong> landscape completely cleared my head."`
+    },
+    closeReading: {
+      heading: 'How Conan Doyle Uses Place Inversion like a Camera Lens',
+      cards: [
+        {
+          title: '1. "Over the green squares of the fields... there rose in the distance a grey, melancholy hill"',
+          bodyHtml: 'By placing the landscape frame first and delaying the subject until the end of the clause, Doyle makes the reader scan the horizon before spotting Dartmoor.'
+        },
+        {
+          title: '2. "there came out of the heart of the great bog a strange, deep, melancholy cry"',
+          bodyHtml: 'Directional inversion (<em>out of the bog came a cry</em>) mirrors how we experience sound in fog: we hear the direction before we know what made the noise.'
+        },
+        {
+          title: '3. Literal Bog -> Modern Essay Metaphor ("quagmire")',
+          bodyHtml: 'Grimpen Mire is a literal <em>quagmire</em> (bog), which gives modern C1/C2 writers the classic metaphor <em>a legal, bureaucratic, or political quagmire</em>.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'INTRANSITIVE POSITION VERBS & THE PRONOUN RESTRICTION',
+      nuanceTitle: 'Why Positive Place Inversion Never Uses "Did" and Rejects Pronouns',
+      nuanceIntroHtml: 'Unlike negative inversion (<em>Never did he...</em>), <strong>positive place inversion</strong> swaps the whole main verb before a full noun subject—and has two strict C1/C2 constraints:',
+      nuanceCards: [
+        {
+          title: '1. No Auxiliary "Did" with Position/Motion Verbs',
+          bodyHtml: 'Use the simple verb (<em>stood, lay, rose, hung, emerged, came</em>) directly: <em>"<strong>Beyond the ridge lay</strong> the mire"</em> (NEVER <em>did lie</em>).'
+        },
+        {
+          title: '2. Full Noun Subjects Only (Never Short Pronouns)',
+          bodyHtml: 'Write <em>"Out of the mist emerged <strong>a tall figure</strong>"</em>—but if the subject is a pronoun, keep normal order: <em>"Out of the mist <strong>he emerged</strong>."</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Positive Place Inversion',
+          promptHtml: 'Rewrite starting with <strong>At the edge of the moor</strong>: <em>"The stone towers of Baskerville Hall stood at the edge of the moor."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>At the edge of the moor stood</strong> the stone towers of Baskerville Hall."</em>'
+        },
+        {
+          label: 'Negative Place Inversion ("Nowhere")',
+          promptHtml: 'Rewrite starting with <strong>Nowhere</strong>: <em>"We could not see a single shepherd\'s hut anywhere on the hillside."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Nowhere on the hillside could we see</strong> (or: <strong>was there</strong>) a single shepherd\'s hut."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "Just" and "treacherous quagmire of Grimpen Mire". Deficit: "was situated... beyond the granite hills".', s23: 'Positive place inversion: "beyond the granite hills/tors" + past tense of lie ("lay") + "the".', s4: '1 mark for "beyond the granite hills/tors" + 1 mark for "lay the".' },
+      { s1: 'Cross out "a low, melancholy cry that echoed across the valley". Deficit: "came out of the swirling moorland fog".', s23: 'Directional phrase opener + inverted motion verb: "Out of the swirling/rolling mist came/rose".', s4: '1 mark for "Out of the swirling/rolling mist" + 1 mark for "came/rose".' },
+      { s1: 'Cross out "seen along the desolate horizon". Deficit: "Not a single cottage or dwelling could be... anywhere".', s23: 'Negative place opener "Nowhere" triggers auxiliary inversion: "Nowhere was a single/any house to be".', s4: '1 mark for "Nowhere was" + 1 mark for "a single/any house to be".' },
+      { s1: 'Cross out "Ahead of us," and "twin towers of Baskerville Hall". Deficit: "stood... completely wrapped in thick fog".', s23: 'Fronted participle + inverted position verb: "shrouded in thick/dense fog stood the".', s4: '1 mark for "shrouded in thick/dense fog" + 1 mark for "stood the".' },
+      { s1: 'Cross out "even the moorland ponies were afraid to cross it". Deficit: "The quagmire was so full of hidden dangers that".', s23: 'Fronted adjective inversion: "So treacherous was the quagmire/mire that".', s4: '1 mark for "So treacherous was" + 1 mark for "the quagmire/mire that".' }
+    ]
+  },
+
+  baskerville_unit3: {
+    speaking: {
+      title: 'Debunking Myths & Evidence-Based Thinking',
+      introHtml: 'Before we watch Holmes solve the case of the phosphorus hound, warm up your voice for <strong>2 minutes</strong>. Aim to use <strong>one "Had it not been for / But for" conditional</strong> and <strong>one evidence word</strong> (e.g. <em>corroborate, fallacy, plausible</em>).',
+      prompt: 'Describe a popular myth, misconception, or rumour that you later discovered was untrue.',
+      bullets: [
+        'what the myth or misconception was and why people believed it',
+        'how you first heard about it',
+        'what evidence or experience proved that it was false',
+        'and explain why people are often drawn to dramatic myths rather than simple facts.'
+      ],
+      spokenFramesHtml: '<em>"What exposed the fallacy was..."</em> • <em>"Had it not been for independent testing..."</em>',
+      modelHtml: `"I'd like to talk about a widespread workplace myth I used to believe—namely, the idea that multitasking and keeping ten browser tabs open at once makes you more productive. When I started my first office job, almost everyone prided themselves on answering instant messages while drafting reports.<br><br>For a long time, I assumed that working that way was essential. <strong>Had it not been for</strong> a cognitive psychology seminar I attended two years ago, I might still be doing it today. During the workshop, the lecturer ran a timed experiment comparing people who switched tasks every two minutes with those who worked on one task at a time. The results <strong>corroborated</strong> what neuroscientists have argued for years: every time you switch context, your brain pays a measurable attention penalty.<br><br><strong>What exposed the fallacy of multitasking for me was</strong> seeing my own error rate drop by half when I simply turned off notifications for ninety-minute blocks. I think people cling to myths like multitasking—or superstitions in general—because dramatic stories flatter our ego or our fears, whereas the real explanation is usually much simpler and more disciplined."`
+    },
+    closeReading: {
+      heading: 'How Holmes Replaces Supernatural Superstition with Forensic Proof',
+      cards: [
+        {
+          title: '1. Counterfactual Ambush: "If it reached the path... our ambush would be useless"',
+          bodyHtml: 'The rolling Dartmoor fog nearly ruins Holmes\'s plan—a moment naturally expressed in formal C1/C2 prose as <em>"But for their quick reaction..."</em> or <em>"Had they delayed a moment longer..."</em>.'
+        },
+        {
+          title: '2. The Chemical Trick: Odourless Phosphorus',
+          bodyHtml: 'Stapleton\'s "demon hound" is a coldly <em>premeditated</em> fraud: a giant bloodhound painted with glowing phosphorus to exploit the Baskerville family legend.'
+        },
+        {
+          title: '3. High-Precision C1 Argument Verbs: "corroborate" & "expose a fallacy"',
+          bodyHtml: 'Instead of writing "prove" five times in an essay, use <em>corroborate a claim</em> (confirm with evidence) and <em>expose the fallacy that...</em> (disprove a myth).'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'BUT FOR + NOUN PHRASE VS. HAD IT NOT BEEN FOR',
+      nuanceTitle: 'Choosing Between "But for", "Had it not been for", and "If not for"',
+      nuanceIntroHtml: 'When compressing a counterfactual condition into a noun phrase in Cambridge Part 4, watch the exact grammatical complement and main-clause tense:',
+      nuanceCards: [
+        {
+          title: 'Noun Phrase Complement (Never a Full Verb Clause)',
+          bodyHtml: 'Follow <strong>But for</strong> or <strong>Had it not been for</strong> with a noun phrase (or <em>the fact that + clause</em>): <em>"<strong>But for Holmes\'s vigilance</strong>, Sir Henry would have perished."</em>'
+        },
+        {
+          title: 'Past vs. Present Consequence (Mixed Conditional)',
+          bodyHtml: 'Past outcome: <em>"...would have died."</em> Present outcome of a past event: <em>"<strong>Had it not been for</strong> the portrait, the motive <strong>would still be</strong> unknown today."</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Compact "But for" Conditional',
+          promptHtml: 'Rewrite starting with <strong>But for</strong>: <em>"If the family portrait had not hung in the dining hall, Holmes would have missed the likeness."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>But for the family portrait</strong> in the dining hall, Holmes would have missed the likeness."</em>'
+        },
+        {
+          label: 'What-Cleft + "expose the fallacy"',
+          promptHtml: 'Combine starting with <strong>What exposed</strong>: <em>"The glowing phosphorus on Watson\'s fingers proved that the supernatural curse was a myth."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>What exposed the fallacy of</strong> the supernatural curse was the glowing phosphorus on Watson\'s fingers."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "in the portrait, Stapleton\'s motive would have gone undetected". Deficit: "If Holmes had not noticed the strong family likeness".', s23: 'Negative inverted 3rd conditional: "Had Holmes not noticed/spotted the family resemblance".', s4: '1 mark for "Had Holmes not noticed/spotted" + 1 mark for "the family resemblance".' },
+      { s1: 'Cross out "Stapleton" and "by the quagmire during his flight in the dark". Deficit: "The police believe that... swallowed up".', s23: 'Personal passive reporting + passive perfect infinitive: "is/was presumed to have been swallowed up".', s4: '1 mark for "is/was presumed" + 1 mark for "to have been swallowed up".' },
+      { s1: 'Cross out "thick moorland fog, their plan would have worked". Deficit: "If the... had not arrived so suddenly".', s23: 'Compact counterfactual noun phrase: "But for the sudden arrival of the" (or "Had it not been for the arrival of the").', s4: '1 mark for "But for / Had it not been for" + 1 mark for "the (sudden) arrival of the".' },
+      { s1: 'Cross out "Holmes\'s theory" and "Sir Henry\'s stolen boot in the mire". Deficit: "Discovering... fully confirmed".', s23: 'Passive shift + nominalisation: "was (fully) corroborated by the discovery of".', s4: '1 mark for "was (fully) corroborated by" + 1 mark for "the discovery of".' },
+      { s1: 'Cross out "curse was the phosphorus paint on the hound\'s muzzle". Deficit: "proved that the belief in a supernatural... was false".', s23: 'Nominal What-cleft: "What exposed/disproved the fallacy of a supernatural".', s4: '1 mark for "What exposed/disproved" + 1 mark for "the fallacy of a supernatural".' }
+    ]
+  },
+
+  alice_unit1: {
+    speaking: {
+      title: 'Stepping Into the Unknown & Adapting to New Environments',
+      introHtml: 'Before we follow Alice down the rabbit-hole, warm up your voice for <strong>2 minutes</strong>. Aim to include <strong>one negative or restrictive inversion</strong> (e.g. <em>Never before had I..., Little did I suspect..., Only when... did I...</em>).',
+      prompt: 'Describe a time when you entered a completely unfamiliar environment (such as a new school, job, or country) where the rules or customs felt very different.',
+      bullets: [
+        'what the new environment was and why you went there',
+        'what surprised or disoriented you most on your first day',
+        'how you adapted to the unfamiliar rules or expectations',
+        'and explain what that transition taught you about adaptability.'
+      ],
+      spokenFramesHtml: '<em>"Never before had I experienced..."</em> • <em>"Only after the first week did I realise..."</em>',
+      modelHtml: `"I'd like to talk about my first week as an exchange student at a technical university in Zurich a few years ago. I had travelled out with two suitcases and a basic grasp of high-school German, assuming that university life there would feel broadly similar to home.<br><br><strong>Little did I suspect</strong> how different the daily academic culture would be. On my very first morning, I walked into a mathematics lecture theatre at eight o'clock sharp, only to discover that students knocked on their wooden desks with their knuckles instead of clapping at the end of a lecture. <strong>Never before had I</strong> seen a timetable where seminars ran with railway precision and students were expected to defend their problem sets on the chalkboard in week one. At first, the speed of the Swiss-German dialect in the corridors was genuinely <strong>disorienting</strong>.<br><br><strong>Only by joining</strong> a small study group in the library <strong>did I manage</strong> to find my footing and realise how supportive my classmates actually were beneath that formal exterior. Looking back, stepping into an environment that initially felt slightly <strong>incongruous</strong> taught me not to panic when familiar reference points disappear."`
+    },
+    closeReading: {
+      heading: 'How Lewis Carroll Uses Inversion to Turn Logic Upside Down',
+      cards: [
+        {
+          title: '1. "never before had she seen a rabbit with either a waistcoat-pocket, or a watch"',
+          bodyHtml: 'Carroll uses formal Victorian syntax to describe a surreal event: the contrast between dignified grammar (<em>never before had she seen</em>) and a talking rabbit in a waistcoat creates deadpan comedy.'
+        },
+        {
+          title: '2. "So deep was the shaft that she had plenty of time..."',
+          bodyHtml: 'Fronting <em>So deep was the shaft</em> suspends the law of gravity, turning a terrifying vertical fall into a leisurely Victorian drawing-room inspection.'
+        },
+        {
+          title: '3. High-Value C1/C2 Adjectives: "precipitous", "incongruous", "disorienting"',
+          bodyHtml: 'While <em>waistcoat-pocket</em> belongs to 1865, <em>a precipitous decline</em> and <em>an incongruous policy</em> are top-tier C1/C2 collocations for modern essays.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'ONLY BY / ONLY WHEN & NEGATIVE COGNITION',
+      nuanceTitle: 'Separating Prepositional "Only by" from Clausal "Only when"',
+      nuanceIntroHtml: 'When starting a sentence with <strong>Only</strong>, check whether it is followed by a short prepositional phrase or a full subordinate verb clause:',
+      nuanceCards: [
+        {
+          title: 'Only by + -ing Phrase -> Invert Immediately After the Phrase',
+          bodyHtml: '<em>"<strong>Only by drinking</strong> from the bottle <strong>could Alice pass</strong> through the tiny door."</em>'
+        },
+        {
+          title: 'Only when / after + Subject + Verb -> Invert in the Second Clause',
+          bodyHtml: '<em>"<strong>Only when she finished</strong> the cake <strong>did she begin</strong> to grow."</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Only by + Gerund Inversion',
+          promptHtml: 'Rewrite starting with <strong>Only by</strong>: <em>"Regulators can prevent sudden market crashes only by enforcing strict transparency rules."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Only by enforcing</strong> strict transparency rules <strong>can regulators prevent</strong> sudden market crashes."</em>'
+        },
+        {
+          label: 'Fronted "So + Adjective" Inversion',
+          promptHtml: 'Rewrite starting with <strong>So precipitous</strong>: <em>"The drop in temperature was so precipitous that the river froze overnight."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>So precipitous was</strong> the drop in temperature <strong>that</strong> the river froze overnight."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "Never" and "a creature that carried an ornamental pocket watch". Deficit: "Alice had... previously encountered".', s23: 'Fronted negative time adverbial: "Never before had Alice/she encountered".', s4: '1 mark for "before had Alice/she" + 1 mark for "encountered/met/come across".' },
+      { s1: 'Cross out "Only when she saw maps hanging from the walls" and "how far she had plummeted". Deficit: "Alice only realized".', s23: 'Main-clause inversion after "Only when": "did Alice/she realize/realise".', s4: '1 mark for "did Alice/she" + 1 mark for "realize/realise".' },
+      { s1: 'Cross out "Under" and "to squeeze through the fifteen-inch door". Deficit: "It was completely impossible for Alice".', s23: 'Negative prepositional phrase "Under no circumstances" + inverted verb "was Alice able".', s4: '1 mark for "no circumstances" + 1 mark for "was Alice able".' },
+      { s1: 'Cross out "So" and "that Alice had plenty of time". Deficit: "The subterranean shaft was... deep".', s23: 'Fronted result inversion: "So deep was the (subterranean) shaft".', s4: '1 mark for "deep was" + 1 mark for "the (subterranean) shaft".' },
+      { s1: 'Cross out "that drinking from the labeled bottle would alter her physical proportions". Deficit: "Alice had no idea".', s23: 'Negative cognition inversion: "Little did Alice/she suspect/know/imagine".', s4: '1 mark for "Little did Alice/she" + 1 mark for "suspect/know/imagine".' }
+    ]
+  },
+
+  alice_unit2: {
+    speaking: {
+      title: 'Time Management, Bureaucracy & Overdue Reforms',
+      introHtml: 'Before we take a seat at the Mad Hatter\'s tea-table, warm up your voice for <strong>2 minutes</strong>. Aim to include <strong>one unreal past subjunctive</strong> (<em>It is high time..., I\'d rather people didn\'t...</em>) and <strong>one formal conditional</strong>.',
+      prompt: 'Describe an outdated rule, habit, or bureaucratic process in work, travel, or education that you think is long overdue for change.',
+      bullets: [
+        'what the rule or process is and where you encounter it',
+        'why it feels inefficient, arbitrary, or pointless today',
+        'what would happen if organisations reformed or simplified it',
+        'and explain why you think it has stayed in place for so long.'
+      ],
+      spokenFramesHtml: '<em>"It is high time institutions stopped..."</em> • <em>"Were companies to simplify..."</em>',
+      modelHtml: `"I'd like to talk about a bureaucratic habit that still frustrates millions of job applicants every year: requiring candidates to upload a full CV PDF and then manually type every single job title and date all over again into twenty separate web boxes.<br><br>Whenever I encounter one of those portals, I'm reminded of the Mad Hatter's tea-table—everyone is kept busy moving from box to box, yet the exercise is completely <strong>futile</strong> because the document is already attached. <strong>Had it not been for</strong> poorly designed recruitment software from fifteen years ago, this duplicate data entry would never have become standard practice.<br><br>In my view, <strong>it is high time employers abolished</strong> redundant application forms and respected candidates' time. <strong>Were companies to streamline</strong> the initial screening process into a simple one-click upload, they would attract far more experienced professionals who currently walk away from <strong>arbitrary</strong> forty-minute forms. I think the only reason the system persists is institutional inertia—nobody in the department has to fill out the form themselves."`
+    },
+    closeReading: {
+      heading: 'How Carroll Uses Hypotheticals & Subjunctives at Six O\'Clock',
+      cards: [
+        {
+          title: '1. "He inspected the timepiece as though its stubborn hands were mocking him"',
+          bodyHtml: 'After <em>as if / as though</em>, the unreal past subjunctive (<em>were mocking</em>) shows a hypothetical comparison that contradicts reality.'
+        },
+        {
+          title: '2. "Had it not been for that catastrophic concert... / were they to stop moving"',
+          bodyHtml: 'Carroll\'s tea-party is a closed conditional loop: a past quarrel froze the clock (3rd conditional), and any change in their present routine is hypothetical (<em>Were they to...</em>).'
+        },
+        {
+          title: '3. Institutional Critique Lexis: "perpetual", "arbitrary", "futile"',
+          bodyHtml: 'These three adjectives allow you to critique inefficient systems in IELTS Task 2 and C1 reports with calm, analytical authority.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'UNREAL PAST TENSE BACKSHIFT IN SUBJUNCTIVES',
+      nuanceTitle: 'Why Present Urgency ("It is high time") Takes a Past-Tense Verb',
+      nuanceIntroHtml: 'In English, stepping one tense backward (from present to past simple) signals <strong>psychological distance or unreality</strong>. That is why three high-frequency Part 4 frames use the past simple for <strong>present/future</strong> meaning:',
+      nuanceCards: [
+        {
+          title: 'Present/Future Critique: Past Simple (stopped / did not)',
+          bodyHtml: '<em>"It is <strong>high time you stopped</strong> guessing."</em> / <em>"I <strong>would rather you didn\'t interrupt</strong> right now."</em>'
+        },
+        {
+          title: 'Past Regret About Someone Else: Past Perfect (had not)',
+          bodyHtml: 'When regretting something that <strong>already happened</strong> in the past, step back to the past perfect: <em>"Alice <strong>would rather the Hatter had told</strong> her the truth earlier."</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'It is high time + Past Simple',
+          promptHtml: 'Rewrite using <strong>high time</strong>: <em>"Municipal authorities really ought to replace these arbitrary parking rules now."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>It is high time municipal authorities replaced</strong> these arbitrary parking rules."</em>'
+        },
+        {
+          label: 'Were + Subject + to-Infinitive',
+          promptHtml: 'Rewrite omitting <strong>If</strong>: <em>"If the committee delayed its decision again, the funding would be lost."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"<strong>Were the committee to delay</strong> its decision again, the funding would be lost."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "According to the Hatter, it is" and "for logical explanations at the tea-table". Deficit: "Alice ought to stop asking".', s23: 'Unreal past after "It is (high/about) time": subject ("Alice") + past simple ("stopped") + "-ing" ("asking").', s4: '1 mark for "(high/about) time Alice/she" + 1 mark for "stopped asking".' },
+      { s1: 'Cross out "Alice would" and "interrupt her with riddles". Deficit: "prefer the Hatter not to".', s23: '"Would rather" + new subject ("the Hatter") + past simple negative ("did not / didn\'t").', s4: '1 mark for "rather the Hatter/he" + 1 mark for "did not / didn\'t".' },
+      { s1: 'Cross out "Had" and "Hatter\'s quarrel with Time last March, the clock would not stand at six".', s23: 'Inverted 3rd conditional noun phrase: "Had it not been for the".', s4: '1 mark for "it not been" + 1 mark for "for the".' },
+      { s1: 'Cross out "up suddenly, the entire tea-table would be thrown into confusion". Deficit: "If the Dormouse woke".', s23: 'Inverted 2nd conditional with action verb: "Were the Dormouse to wake".', s4: '1 mark for "Were the Dormouse" + 1 mark for "to wake".' },
+      { s1: 'Cross out "The March Hare addressed Alice" and "the riddle\'s answer all along". Deficit: "as if he knew".', s23: 'Unreal manner comparison: "as though he knew / had known".', s4: '1 mark for "as though" + 1 mark for "he knew / had known".' }
+    ]
+  },
+
+  alice_unit3: {
+    speaking: {
+      title: 'Fairness, Evidence & Standing Up to Unfair Rules',
+      introHtml: 'Before we enter the Queen of Hearts\' courtroom for the final lesson of the course, warm up your voice for <strong>2 minutes</strong>. Aim to include <strong>one What-cleft</strong> and <strong>one passive reporting verb or subjunctive</strong>.',
+      prompt: 'Describe a time when you saw someone make a fair, well-reasoned argument to resolve a dispute or challenge an unfair decision.',
+      bullets: [
+        'what the dispute or unfair decision was about',
+        'who spoke up and how they presented their evidence',
+        'how the other people in the room reacted',
+        'and explain why calm evidence is more persuasive than shouting or intimidation.'
+      ],
+      spokenFramesHtml: '<em>"What settled the argument was..."</em> • <em>"He insisted that the facts be checked..."</em>',
+      modelHtml: `"I'd like to tell you about a student council hearing I attended at university when a campus photography society was threatened with having its funding cut. A rumour had circulated that members of the club <strong>were alleged to have</strong> damaged lighting equipment in the main studio, and the administrator wanted to suspend their room bookings immediately.<br><br>At the meeting, the atmosphere was initially quite tense. However, the club treasurer stood up with a folder of dated booking logs and timestamped photos from the previous Friday. <strong>What completely changed the tone of the room was</strong> her calm, methodical approach: rather than getting defensive, she <strong>insisted that the maintenance records be</strong> compared against the keycard swipe log.<br><br>Within five minutes, the log proved that the studio had actually been used by an external film crew the night the lights were broken, showing that the accusation against the students was wholly <strong>unsubstantiated</strong>. The administrator apologised on the spot. That afternoon stayed with me because it showed that when you are faced with an <strong>arbitrary</strong> or <strong>preposterous</strong> claim, quiet, verifiable evidence is always stronger than loud bluster."`
+    },
+    closeReading: {
+      heading: 'How Carroll Satirises Kangaroo Courts Through Legal Syntax',
+      cards: [
+        {
+          title: '1. "The prisoner was alleged to have purloined the royal tarts"',
+          bodyHtml: 'The courtroom uses grand legal syntax (<em>was alleged to have...</em>) while possessing zero actual evidence—exposing the gap between pompous form and empty substance.'
+        },
+        {
+          title: '2. "the King immediately demanded that the jury consider their verdict"',
+          bodyHtml: 'The mandative subjunctive (<em>demanded that the jury consider</em>) mimics a real judge\'s decree, even though not a single witness has testified yet.'
+        },
+        {
+          title: '3. "What astonished the courtroom was... her refusal to be intimidated"',
+          bodyHtml: 'A nominal <em>What</em>-cleft spotlights the moral climax of the novel: Alice outgrows the bullying illusion of the court and calls them what they are—a pack of cards.'
+        }
+      ]
+    },
+    section2: {
+      nuanceBadge: 'MANDATIVE SUBJUNCTIVE (ACTIVE, PASSIVE & NEGATIVE)',
+      nuanceTitle: 'Forming Passive and Negative Mandative Subjunctives Cleanly',
+      nuanceIntroHtml: 'After verbs and adjectives of formal demand or recommendation (<em>demand, insist, recommend, propose, essential, vital, imperative</em>), the <strong>that-clause</strong> uses the bare infinitive in all forms:',
+      nuanceCards: [
+        {
+          title: 'Active & Passive Bare Infinitive (consider / be considered)',
+          bodyHtml: 'Active: <em>"...demanded that the jury <strong>consider</strong> the evidence."</em><br>Passive: <em>"...insisted that the verdict <strong>be recorded</strong> in ink."</em>'
+        },
+        {
+          title: 'Negative Subjunctive: "not + bare infinitive" (No "do/does"!)',
+          bodyHtml: 'Place <strong>not</strong> directly before the bare infinitive: <em>"The judge ordered that the witness <strong>not leave</strong> the courtroom."</em>'
+        }
+      ],
+      workouts: [
+        {
+          label: 'Passive Mandative Subjunctive',
+          promptHtml: 'Rewrite using <strong>insisted that</strong>: <em>"The defence lawyer demanded the immediate dismissal of all unsubstantiated charges."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"The defence lawyer <strong>insisted that all unsubstantiated charges be dismissed</strong> immediately."</em>'
+        },
+        {
+          label: 'Have no intention of + Passive Gerund',
+          promptHtml: 'Rewrite using <strong>intention</strong>: <em>"Alice refused to let the Queen\'s threats intimidate her."</em>',
+          modelHtml: '✓ <strong>Cambridge C1/C2 Model:</strong> <em>"Alice <strong>had no intention of being intimidated</strong> by the Queen\'s threats."</em>'
+        }
+      ]
+    },
+    kwtBreakdowns: [
+      { s1: 'Cross out "The Knave of Hearts" and "the royal tarts before noon". Deficit: "The prosecutor claimed that... had stolen".', s23: 'Personal passive reporting + perfect infinitive: "was/is alleged to have stolen".', s4: '1 mark for "was/is alleged" + 1 mark for "to have stolen".' },
+      { s1: 'Cross out "The King of Hearts" and "their verdict immediately". Deficit: "\'The jury must consider...!\' shouted".', s23: 'Mandative subjunctive: "demanded (that) the jury consider".', s4: '1 mark for "demanded (that)" + 1 mark for "the jury consider".' },
+      { s1: 'Cross out "Queen\'s insistence on passing sentence before the verdict". Deficit: "outraged Alice".', s23: 'Nominal What-cleft: "What outraged Alice was the".', s4: '1 mark for "What outraged Alice" + 1 mark for "was the".' },
+      { s1: 'Cross out "Alice had" and "by a pack of playing cards any longer". Deficit: "refused to be intimidated".', s23: 'Collocation + passive gerund: "(had) no intention of being intimidated".', s4: '1 mark for "no intention of" + 1 mark for "being intimidated".' },
+      { s1: 'Cross out "In" and "evidence, the King ordered the witness to stand down". Deficit: "Even though the King lacked any credible".', s23: 'Prepositional contrast + gerund/noun: "spite of lacking any credible" (or "spite of his/the lack of").', s4: '1 mark for "spite of" + 1 mark for "lacking any credible / his lack of".' }
+    ]
+  }
+};
+
 window.DarkAcademiaAtmosphere = DarkAcademiaAtmosphere;
+
 
 function initDarkAcademiaBootstrap() {
   DarkAcademiaGate.checkUrlUnlock();

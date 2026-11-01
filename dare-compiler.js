@@ -47,13 +47,8 @@
         return;
       }
 
-      const { meta, blueprint, reading, grammar, kwt, registerShift, navigation } = manifest;
+      const { meta, blueprint, reading, grammar, kwt, registerShift, capstone, navigation } = manifest;
       const theme = meta.theme || 'baskerville';
-
-      // Update document title if present
-      if (meta.title && meta.seriesTitle) {
-        document.title = `${meta.seriesTitle} — ${meta.title} | Dark Academia C1/C2`;
-      }
 
       root.innerHTML = `
         <!-- Nav Breadcrumb -->
@@ -71,7 +66,7 @@
             <div class="header-badges">
               <span class="badge badge-canon-${theme}">${meta.badgeLabel || `Lesson ${meta.lessonNumber}`}</span>
               <span class="badge badge-cefr">${meta.cefr || 'C1 Advanced / C2 Proficiency'}</span>
-              <span class="badge badge-time">⏱ ${meta.duration || '20 Mins'}</span>
+              <span class="badge badge-time">⏱ ${meta.duration || '45 Mins (25m Core + 20m Stretch)'}</span>
             </div>
             <h1>${meta.title}</h1>
             <p>${meta.subtitleHtml}</p>
@@ -110,17 +105,20 @@
         <section class="card" aria-labelledby="section1-heading">
           <div class="card-header">
             <h2 id="section1-heading">1. Read the Scene &amp; Useful Vocabulary</h2>
-            <span class="pill">${reading.pill || ''}</span>
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <span class="badge badge-core">Core • 10 Mins</span>
+              <span class="pill">${reading.pill || ''}</span>
+            </div>
           </div>
           <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1rem;">${reading.intro}</p>
           <div class="reading-frame ${theme}-frame">
             <div style="margin-bottom:0.75rem;">
-              <span class="badge badge-verbatim">Original Novel Extract</span>
+              <span class="badge badge-verbatim">${reading.extractBadge || 'Novel Extract &amp; Study Adaptation (1865)'}</span>
             </div>
             ${reading.passageHtml}
             <cite>
               <span>— ${reading.citation}</span>
-              <span class="attribution-label attr-verbatim">Original Text</span>
+              <span class="attribution-label attr-verbatim">${reading.attributionLabel || 'Original + Study Framing'}</span>
             </cite>
           </div>
 
@@ -155,7 +153,7 @@
           </div>
 
           <div class="sort-instruction">
-            <strong>Task 1: Vocabulary Check (4 Marks).</strong> Classify each word as a <strong>Modern C1/C2 Word</strong> or an <strong>Old-Fashioned Word</strong>:
+            <strong>Task 1: 3-Way Register &amp; Vocabulary Check (4 Marks).</strong> Classify each item as <strong>✓ Modern C1/C2 (Use in Exams)</strong>, <strong>📜 Literary / Stylistic (Formal / Narrative)</strong>, or <strong>🏛 Archaic / Period (1865 / Colloquial Only)</strong>:
           </div>
           <div class="sort-container" id="sorting-container"></div>
         </section>
@@ -164,7 +162,10 @@
         <section class="card" aria-labelledby="section2-heading">
           <div class="card-header">
             <h2 id="section2-heading">2. ${grammar.title}</h2>
-            <span class="pill">${grammar.pill || 'C1/C2 Structural Focus'}</span>
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <span class="badge badge-core">Core • 10 Mins</span>
+              <span class="pill">${grammar.pill || 'C1/C2 Structural Focus'}</span>
+            </div>
           </div>
           <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1.35rem;">${grammar.introHtml}</p>
           <div class="pillars-grid">
@@ -196,14 +197,17 @@
         <!-- Section 3: Key Word Transformations -->
         <section class="card" aria-labelledby="section3-heading">
           <div class="card-header">
-            <h2 id="section3-heading">3. Cambridge Use of English Part 4: Key Word Transformations</h2>
-            <span class="pill">2 Marks Each (10 Marks Total)</span>
+            <h2 id="section3-heading">3. Reading and Use of English Part 4: Key Word Transformations</h2>
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <span class="badge badge-core">Core • 15 Mins</span>
+              <span class="pill">2 Marks Each (1+1 Split Credit • 10 Marks Total)</span>
+            </div>
           </div>
           <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1.35rem;">
-            Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. <strong>Do not change the word given.</strong> Use between <strong>3 and 6 words</strong>, including the key word.
+            Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. <strong>Do not change the word given.</strong> Use between <strong>3 and 6 words</strong> (up to 8 words accepted for C2 Proficiency variants), including the key word.
           </p>
           ${(kwt || []).map((item, kIdx) => `
-            <div class="kwt-card ${theme}" data-kwt-idx="${kIdx}" data-valid="${item.validAnswers.join('|')}">
+            <div class="kwt-card ${theme}" data-kwt-idx="${kIdx}" data-valid="${item.validAnswers.join('|')}" ${item.validRegex ? `data-valid-regex="${item.validRegex}"` : ''} ${item.partialRegex ? `data-partial-regex="${item.partialRegex}"` : ''}>
               <div class="kwt-original">${item.number}. ${item.original}</div>
               <span class="kwt-key">${item.keyWord}</span>
               <div class="kwt-input-row">
@@ -221,7 +225,10 @@
         <section class="card" aria-labelledby="section4-heading">
           <div class="card-header">
             <h2 id="section4-heading">4. From Classic Fiction to Modern Exam Writing</h2>
-            <span class="pill">Real-World C1/C2 Application</span>
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <span class="badge badge-stretch">Stretch • 10 Mins</span>
+              <span class="pill">Real-World C1/C2 Application</span>
+            </div>
           </div>
           <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1rem;">${registerShift.introHtml}</p>
           <div class="shift-comparison">
@@ -243,6 +250,68 @@
           </div>
         </section>
 
+        ${capstone ? `
+        <section class="card" aria-labelledby="capstone-heading">
+          <div class="card-header">
+            <h2 id="capstone-heading">5. Optional Writing Practice: Put Lessons 13–15 Together</h2>
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+              <span class="badge badge-stretch">Stretch • 15 Mins</span>
+              <span class="pill">150–220 Words</span>
+            </div>
+          </div>
+          <div class="capstone-box">
+            <h3>✍️ ${capstone.title || 'Short Essay or Review Practice'}</h3>
+            <p class="capstone-prompt">${capstone.promptHtml}</p>
+            <div class="capstone-workspace">
+              <label for="capstone-input" style="display:block; font-size:0.88rem; font-weight:700; color:#e2e8f0; margin-bottom:0.5rem;">
+                Your Practice Draft (Live Grammar &amp; Vocabulary Checklist):
+              </label>
+              <textarea id="capstone-input" class="capstone-textarea" placeholder="Write your 150–220 word essay or review here..."></textarea>
+              <div class="capstone-stats-bar">
+                <span id="capstone-word-counter" class="word-counter-pill">0 Words</span>
+                <button class="btn-main ${theme}" style="padding:0.45rem 1rem; font-size:0.82rem;" onclick="darkEngine.toggleModelAnswer()">
+                  👁️ View Sample C1/C2 Model Answer
+                </button>
+              </div>
+              <div class="capstone-audit-list">
+                <div class="audit-check-item" id="audit-inversion">
+                  <span class="audit-badge">○</span>
+                  <div>
+                    <strong>${capstone.target1Title}</strong>
+                    <div class="audit-note" style="font-size:0.82rem; color:#94a3b8;">${capstone.target1Note}</div>
+                  </div>
+                </div>
+                <div class="audit-check-item" id="audit-participle">
+                  <span class="audit-badge">○</span>
+                  <div>
+                    <strong>${capstone.target2Title}</strong>
+                    <div class="audit-note" style="font-size:0.82rem; color:#94a3b8;">${capstone.target2Note}</div>
+                  </div>
+                </div>
+                <div class="audit-check-item" id="audit-arsenal">
+                  <span class="audit-badge">○</span>
+                  <div>
+                    <strong>${capstone.target3Title}</strong>
+                    <div class="audit-note" style="font-size:0.82rem; color:#94a3b8;">${capstone.target3Note}</div>
+                  </div>
+                </div>
+              </div>
+              <label class="da-self-check-box" for="capstone-subject-check">
+                <input type="checkbox" id="capstone-subject-check">
+                <span><strong>Grammar &amp; Inversion Self-Check:</strong> ${capstone.selfCheckText}</span>
+              </label>
+              <div id="capstone-model-panel" class="model-answer-panel">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
+                  <h4 style="color:#ffffff; font-size:1.15rem; margin:0;">${capstone.modelTitle}</h4>
+                  <span class="badge badge-verbatim">Natural C1/C2 Example</span>
+                </div>
+                <div class="model-text-box">${capstone.modelHtml}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        ` : ''}
+
         <div id="dynamic-completion-card" class="da-completion-card"></div>
 
         <!-- Footer -->
@@ -250,14 +319,15 @@
           <div>
             <strong style="color:white; font-size:1.05rem;">${navigation.seriesName}</strong>
             <p style="font-size:0.85rem; color:#cbd5e1; margin-top:0.25rem;">
-              Next Lesson: <a href="${navigation.nextUrl}" style="color:#fde047; text-decoration:none; font-weight:700;">${navigation.nextTitle} →</a> (${navigation.nextTopicHtml}).
+              Up Next: ${navigation.nextTitle} (${navigation.nextTopicHtml}).
             </p>
           </div>
-          <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
             <a href="dark-academia-index.html" class="btn-main" style="background:#334155; text-decoration:none;">← Course Hub</a>
             <a href="the-gothic-canon-c1-c2-compendium.html" class="dossier-pill-btn">📖 Study Guide</a>
             <button class="btn-main" style="background:#475569;" onclick="resetAll()">Reset Lesson</button>
-            <button class="btn-main ${theme}" onclick="window.print()">Print / PDF</button>
+            <button class="btn-main" style="background:#334155;" onclick="window.print()">Print / PDF</button>
+            <a href="${navigation.nextUrl}" class="btn-main ${theme} btn-primary" style="text-decoration:none; font-weight:800;">Next: ${navigation.nextButtonLabel || navigation.nextTitle} →</a>
           </div>
         </footer>
       `;

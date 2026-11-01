@@ -1,0 +1,2687 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Phraxos: The Bourani Godgame | 3D Myst &amp; The Magus Grammar World | Gareth English</title>
+  <meta name="description" content="Inspired by Myst and John Fowles’s The Magus: explore three sun-drenched Aegean headlands at Villa Bourani, inspect Conchis’s clues, and unmask the Godgame by sliding carved marble word-tablets into ancient altars. Includes C1/C2 & IELTS Syntax Mode and A1–B1 Foundations Mode." />
+  <meta name="author" content="Gareth Montgomery" />
+  <meta name="theme-color" content="#0b2239" />
+  <link rel="canonical" href="https://garethenglish.com/myst-island.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Phraxos: The Bourani Godgame | 3D Myst &amp; Fowles Grammar Mystery" />
+  <meta property="og:description" content="Explore three Aegean headlands at Villa Bourani, inspect Conchis’s clues, and unmask the Godgame with C1/C2 syntax. Built by CELTA tutor Gareth Montgomery." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://garethenglish.com/myst-island.html" />
+  <meta property="og:image" content="https://garethenglish.com/assets/arcade/myst_island.svg" />
+
+  <link rel="stylesheet" href="assets/fonts/fontawesome-local.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <style>
+    :root {
+      --bg-aegean: #07192e;
+      --panel-bg: rgba(10, 23, 40, 0.88);
+      --panel-border: rgba(217, 155, 67, 0.52);
+      --terracotta: #c2593f;
+      --limestone: #fbfaf6;
+      --brass-light: #fde68a;
+      --brass-mid: #d99b43;
+      --brass-dark: #78350f;
+      --aegean-cyan: #38bdf8;
+      --emerald-glow: #34d399;
+      --parchment: #f8f1df;
+      --font-serif: Georgia, 'Times New Roman', serif;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-aegean);
+      color: #f8fafc;
+      font-family: var(--font-sans);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #webgl-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 1;
+      cursor: grab;
+      touch-action: none;
+    }
+    #webgl-canvas:active {
+      cursor: grabbing;
+    }
+
+    /* ================= HUD LAYER ================= */
+    .hud-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0.7rem 0.95rem;
+    }
+
+    .interactive {
+      pointer-events: auto;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 0.52rem 0.85rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.36rem 0.68rem;
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.38);
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 0.76rem;
+      font-weight: 700;
+      transition: 0.18s;
+    }
+    .back-link:hover {
+      border-color: var(--brass-light);
+      color: #fff;
+    }
+
+    .era-badge {
+      font-family: var(--font-serif);
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--brass-light);
+      letter-spacing: 0.01em;
+    }
+
+    .nav-pills {
+      display: flex;
+      align-items: center;
+      gap: 0.32rem;
+      flex-wrap: wrap;
+    }
+
+    .hud-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.32rem;
+      padding: 0.38rem 0.66rem;
+      border-radius: 9px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(217, 155, 67, 0.4);
+      color: #f1f5f9;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .hud-btn:hover {
+      background: rgba(217, 155, 67, 0.24);
+      border-color: var(--brass-light);
+      transform: translateY(-1px);
+    }
+    .hud-btn.active {
+      background: linear-gradient(135deg, #b45309, #78350f);
+      border-color: var(--brass-light);
+      color: #fef3c7;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+    }
+    .hud-btn.mode-btn {
+      background: rgba(14, 116, 144, 0.38);
+      border-color: rgba(56, 189, 248, 0.55);
+      color: #e0f2fe;
+    }
+    .hud-btn.light-btn {
+      background: rgba(194, 89, 63, 0.32);
+      border-color: rgba(251, 191, 36, 0.5);
+      color: #fef3c7;
+    }
+
+    /* Status / Effect Banner + Conchis Clue Strip */
+    .effect-strip {
+      margin-top: 0.42rem;
+      align-self: center;
+      max-width: 960px;
+      width: 100%;
+      background: rgba(8, 19, 34, 0.88);
+      border: 1px solid rgba(217, 155, 67, 0.42);
+      border-radius: 11px;
+      padding: 0.46rem 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      backdrop-filter: blur(8px);
+      font-size: 0.82rem;
+      color: #f1f5f9;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    .effect-strip.clash {
+      border-color: #f97316;
+      background: rgba(67, 20, 7, 0.9);
+      color: #ffedd5;
+    }
+    .effect-strip.solved {
+      border-color: #34d399;
+      background: rgba(6, 46, 34, 0.9);
+      color: #d1fae5;
+    }
+    .effect-strip.clue {
+      border-color: #fde68a;
+      background: rgba(45, 27, 14, 0.92);
+      color: #fef3c7;
+    }
+
+    /* Center Reticle */
+    .center-reticle {
+      align-self: center;
+      text-align: center;
+      pointer-events: none;
+    }
+    .reticle-diamond {
+      font-size: 1.05rem;
+      color: rgba(253, 230, 138, 0.68);
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+    }
+    .reticle-prompt {
+      margin-top: 0.25rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #fef3c7;
+      background: rgba(8, 19, 34, 0.88);
+      padding: 0.24rem 0.7rem;
+      border-radius: 7px;
+      border: 1px solid rgba(253, 230, 138, 0.45);
+      display: inline-block;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    }
+    .reticle-prompt:empty {
+      display: none;
+    }
+
+    /* ================= SLIM COMPACT BOTTOM ALTAR BAR ================= */
+    .altar-dock {
+      align-self: center;
+      max-width: 880px;
+      width: 100%;
+      background: rgba(8, 18, 32, 0.84);
+      border: 1px solid var(--panel-border);
+      border-radius: 13px;
+      padding: 0.42rem 0.68rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .altar-bar-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+    }
+
+    /* 3 Slim Inline Altar Sockets */
+    .sockets-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.4rem;
+      flex: 1 1 480px;
+    }
+
+    .socket-box {
+      background: rgba(6, 14, 26, 0.9);
+      border: 1.5px dashed rgba(217, 155, 67, 0.48);
+      border-radius: 8px;
+      padding: 0.26rem 0.5rem;
+      min-height: 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      position: relative;
+    }
+    .socket-box:hover {
+      border-color: var(--brass-light);
+      background: rgba(18, 33, 56, 0.92);
+    }
+    .socket-box.selected-slot {
+      border-style: solid;
+      border-color: var(--aegean-cyan);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+    }
+    .socket-box.filled {
+      border-style: solid;
+      border-color: var(--brass-mid);
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+    }
+    .socket-box.energized {
+      border-style: solid;
+      border-color: var(--emerald-glow);
+      box-shadow: 0 0 12px rgba(52, 211, 153, 0.35);
+    }
+    .socket-role {
+      font-size: 0.58rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      line-height: 1.1;
+    }
+    .socket-word {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: #f8fafc;
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    /* Collapsible 2D Word Rack Drawer (Hidden by default so 3D stones are unobstructed!) */
+    .rack-drawer {
+      display: none;
+      padding-top: 0.35rem;
+      border-top: 1px solid rgba(217, 155, 67, 0.22);
+    }
+    .rack-drawer.open {
+      display: block;
+    }
+    .rack-columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+    }
+    .rack-col {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      align-content: flex-start;
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 8px;
+      padding: 0.3rem;
+    }
+    .tablet-btn {
+      flex: 1 1 auto;
+      padding: 0.24rem 0.42rem;
+      border-radius: 6px;
+      background: linear-gradient(180deg, #273549, #152033);
+      border: 1px solid rgba(217, 155, 67, 0.44);
+      color: #f8fafc;
+      font-size: 0.68rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      text-align: center;
+    }
+    .tablet-btn:hover {
+      background: rgba(217, 155, 67, 0.28);
+      border-color: var(--brass-light);
+    }
+    .tablet-btn.in-use {
+      background: rgba(56, 189, 248, 0.26);
+      border-color: var(--aegean-cyan);
+      color: #bae6fd;
+    }
+
+    /* ================= THE BOURANI DOSSIER MODAL ================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgba(4, 10, 20, 0.84);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-backdrop.hidden {
+      display: none;
+    }
+
+    .linking-book {
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: linear-gradient(135deg, #1f150e 0%, #120c08 100%);
+      border: 2px solid var(--brass-mid);
+      border-radius: 20px;
+      padding: 1.45rem 1.7rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), inset 0 0 30px rgba(217, 155, 67, 0.12);
+      color: var(--parchment);
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.3rem;
+      margin-top: 0.95rem;
+    }
+
+    .book-page {
+      background: rgba(248, 241, 223, 0.06);
+      border: 1px solid rgba(217, 155, 67, 0.34);
+      border-radius: 14px;
+      padding: 1.05rem;
+    }
+
+    .book-page h3 {
+      font-family: var(--font-serif);
+      color: var(--brass-light);
+      font-size: 1.02rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(217, 155, 67, 0.25);
+      padding-bottom: 0.35rem;
+    }
+
+    .clue-pills {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.4rem;
+      margin-top: 0.65rem;
+    }
+    .clue-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(217, 155, 67, 0.3);
+      border-radius: 8px;
+      padding: 0.42rem 0.55rem;
+      font-size: 0.73rem;
+      cursor: pointer;
+      transition: 0.15s;
+      text-align: left;
+      color: #f1f5f9;
+    }
+    .clue-card:hover {
+      border-color: var(--brass-light);
+      background: rgba(217, 155, 67, 0.16);
+    }
+
+    .discovery-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.36rem;
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .discovery-item {
+      font-size: 0.75rem;
+      padding: 0.36rem 0.58rem;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(217, 155, 67, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .discovery-item.unlocked {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: rgba(52, 211, 153, 0.55);
+      color: #d1fae5;
+    }
+
+    .cta-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.3rem;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      border: 1px solid #fde68a;
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: 0.18s;
+    }
+    .cta-primary:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    /* ================= CINEMATIC INTRO TITLE SCREEN ================= */
+    .intro-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.2rem;
+      background:
+        radial-gradient(circle at 50% 38%, rgba(6, 20, 38, 0.25) 0%, rgba(4, 12, 24, 0.86) 78%),
+        url('assets/arcade/phraxos_bourani_intro.jpg') center/cover no-repeat;
+      transition: opacity 0.65s ease, visibility 0.65s ease;
+    }
+    .intro-screen.dismissed {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-card {
+      max-width: 820px;
+      width: 100%;
+      background: linear-gradient(160deg, rgba(8, 20, 36, 0.88) 0%, rgba(15, 23, 42, 0.94) 100%);
+      border: 1.5px solid rgba(243, 205, 130, 0.65);
+      border-radius: 22px;
+      padding: 1.75rem 2rem;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 28px 75px rgba(0, 0, 0, 0.85), inset 0 0 36px rgba(217, 155, 67, 0.14);
+      text-align: center;
+      color: #f8fafc;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro-banner-art {
+      width: 100%;
+      height: 215px;
+      border-radius: 14px;
+      border: 1px solid rgba(243, 205, 130, 0.5);
+      background: url('assets/arcade/phraxos_bourani_intro.jpg') center 42%/cover no-repeat;
+      margin-bottom: 1.15rem;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0.65rem 0.9rem;
+    }
+    .intro-banner-art::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(6,15,28,0.05) 0%, rgba(6,15,28,0.75) 100%);
+      pointer-events: none;
+    }
+    .intro-banner-tag {
+      position: relative;
+      z-index: 2;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #fef3c7;
+      background: rgba(10, 22, 38, 0.82);
+      border: 1px solid rgba(243, 205, 130, 0.45);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+    }
+
+    .intro-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--brass-light);
+      margin-bottom: 0.3rem;
+    }
+
+    .intro-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.85rem, 3.6vw, 2.75rem);
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+      text-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
+      line-height: 1.15;
+    }
+
+    .intro-epigraph {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 0.96rem;
+      color: #fde68a;
+      margin-top: 0.4rem;
+    }
+
+    .intro-desc {
+      font-size: 0.86rem;
+      line-height: 1.58;
+      color: #cbd5e1;
+      max-width: 660px;
+      margin: 0.65rem auto 1.1rem;
+    }
+
+    .intro-options-row {
+      display: flex;
+      justify-content: center;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+
+    .intro-enter-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      padding: 0.85rem 2.1rem;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 55%, #92400e 100%);
+      border: 1.5px solid #fef3c7;
+      color: #091322;
+      font-weight: 900;
+      font-size: 1.02rem;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      box-shadow: 0 10px 28px rgba(245, 158, 11, 0.42);
+      transition: all 0.2s ease;
+    }
+    .intro-enter-btn:hover {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 14px 34px rgba(245, 158, 11, 0.6);
+      filter: brightness(1.06);
+    }
+
+    @media (max-width: 768px) {
+      .book-grid, .clue-pills {
+        grid-template-columns: 1fr;
+      }
+      .sockets-row, .rack-columns {
+        grid-template-columns: 1fr;
+      }
+      .altar-dock {
+        max-height: 45vh;
+        overflow-y: auto;
+      }
+      .intro-banner-art {
+        height: 145px;
+      }
+      .intro-card {
+        padding: 1.2rem 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= CINEMATIC INTRO TITLE SCREEN ================= -->
+  <div class="intro-screen" id="intro-screen" role="dialog" aria-modal="true" aria-labelledby="intro-main-title">
+    <div class="intro-card">
+      <div class="intro-banner-art">
+        <span class="intro-banner-tag">🏛️ Villa Bourani · Island of Phraxos</span>
+        <span class="intro-banner-tag">3D WebGL &amp; Aegean Soundscape</span>
+      </div>
+
+      <div class="intro-eyebrow">Gareth English Interactive Lab &bull; Inspired by Myst &amp; John Fowles’s The Magus</div>
+      <h1 class="intro-title" id="intro-main-title">PHRAXOS: THE BOURANI GODGAME</h1>
+      <div class="intro-epigraph">“Wait. Watch. Nothing on Bourani is left by chance.”</div>
+
+      <p class="intro-desc">
+        Walk through the Aleppo pines to Maurice Conchis’s cliffside Aegean estate. Inspect the brass spyglass, horn gramophone, and 1943 cove amphitheatre, and slide carved Pentelic marble tablets into the four Altars to unmask the Godgame.
+      </p>
+
+      <div class="intro-options-row" aria-label="Select Grammar Mode and Lighting">
+        <button type="button" class="hud-btn active" id="intro-mode-c1" onclick="IsleGame.setLevelMode('c1')">
+          <span>🎓 C1/C2 &amp; IELTS Mystery (Inversions, Clefts &amp; Passives)</span>
+        </button>
+        <button type="button" class="hud-btn" id="intro-mode-a1" onclick="IsleGame.setLevelMode('a1')">
+          <span>🌱 A1–B1 Foundations (Present, Past &amp; Future)</span>
+        </button>
+        <button type="button" class="hud-btn light-btn" onclick="IsleGame.cycleLighting()">
+          <span id="intro-lighting-label">☀️ Time: Aegean Noon</span>
+        </button>
+      </div>
+
+      <div style="display:flex; justify-content:center; align-items:center; gap:0.85rem; flex-wrap:wrap;">
+        <button type="button" class="intro-enter-btn" onclick="IsleGame.enterIsland()">
+          <span>🏛️ Step Onto the Terrace &mdash; Begin</span>
+        </button>
+        <a href="lab.html#arcade" class="back-link" style="padding:0.65rem 1rem; font-size:0.82rem;">
+          <span>&larr; Back to Lab</span>
+        </a>
+      </div>
+
+      <div style="margin-top:0.9rem; font-size:0.73rem; color:#94a3b8;">
+        <strong>Controls:</strong> <code>WASD</code> / Arrow Keys to walk &bull; Drag view to look around &bull; Click any 3D stone tablet, Altar socket, or curiosity directly in 3D &bull; Press <code>L</code> to change time of day.
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D WebGL Viewport -->
+  <canvas id="webgl-canvas" aria-label="Phraxos: The Bourani Godgame 3D World"></canvas>
+
+  <!-- HUD Layer -->
+  <div class="hud-layer">
+    <div>
+      <!-- Top Bar -->
+      <header class="top-bar interactive">
+        <div class="brand-cluster">
+          <a href="lab.html#arcade" class="back-link" title="Return to Interactive English Lab">
+            <span>&larr; Lab</span>
+          </a>
+          <button type="button" class="hud-btn" onclick="IsleGame.showIntroScreen()" title="Return to Phraxos Intro Title Screen">
+            <span>🏛️ Intro</span>
+          </button>
+          <span class="era-badge" id="era-banner">☀️ Bourani Terrace (West): The Masque of Apollo</span>
+        </div>
+
+        <!-- Fast Travel across the 4 Stages of the Godgame -->
+        <nav class="nav-pills" aria-label="Bourani Headland Fast Travel">
+          <button type="button" class="hud-btn active" id="nav-altar-0" onclick="IsleGame.teleportToAltar(0)">
+            <span>1. West Terrace</span>
+          </button>
+          <button type="button" class="hud-btn" id="nav-altar-1" onclick="IsleGame.teleportToAltar(1)">
+            <span>2. East Colonnade</span>
+          </button>
+          <button type="button" class="hud-btn" id="nav-altar-2" onclick="IsleGame.teleportToAltar(2)">
+            <span>3. The 1943 Cove</span>
+          </button>
+          <button type="button" class="hud-btn" id="nav-altar-3" onclick="IsleGame.teleportToAltar(3)">
+            <span>4. The Trial Court</span>
+          </button>
+        </nav>
+
+        <!-- Aegean Light Dial, Level Switcher, Bourani Dossier & Audio -->
+        <div class="nav-pills">
+          <button type="button" class="hud-btn light-btn" id="lighting-btn" onclick="IsleGame.cycleLighting()" title="Cycle Aegean Time of Day (Noon / Pine Dusk / Moonlit Masque) [Key: L]">
+            <span id="lighting-label">☀️ Light: Aegean Noon</span>
+          </button>
+          <button type="button" class="hud-btn mode-btn" id="mode-toggle-btn" onclick="IsleGame.toggleLevelMode()" title="Switch between C1/C2 Godgame Mystery and A1-B1 Foundations">
+            <span id="mode-toggle-label">🎓 Mode: C1/C2 &amp; IELTS</span>
+          </button>
+          <button type="button" class="hud-btn" onclick="IsleGame.toggleJournal(true)">
+            <span>📜 Bourani Dossier (<span id="discovery-count">0/20</span>)</span>
+          </button>
+          <button type="button" class="hud-btn" id="audio-toggle-btn" onclick="IsleGame.toggleAudio()">
+            <span id="audio-toggle-label">🔊 Cicadas &amp; Surf: ON</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Live Feedback, Conchis Clue & World Effect Banner -->
+      <div class="effect-strip interactive" id="effect-strip" role="status" aria-live="polite">
+        <span id="effect-text">Click the angled 3D stone tablets on the rack in front of the Altar (or open ▲ Word Tray below) to assemble a sentence and test Conchis’s Godgame.</span>
+        <span id="dock-altar-formula" style="font-size:0.72rem; color:#fde68a; white-space:nowrap; font-weight:700;">[Negative Adverbial] + [Inverted Auxiliary] + [Clause]</span>
+      </div>
+    </div>
+
+    <!-- Center Reticle -->
+    <div class="center-reticle">
+      <div class="reticle-diamond">◈</div>
+      <div class="reticle-prompt" id="reticle-prompt"></div>
+    </div>
+
+    <!-- Slim Single-Row Bottom Altar Bar (Drawer collapsed by default so 3D stones are unobstructed) -->
+    <section class="altar-dock interactive" aria-label="Active Altar Stone Sockets">
+      <span id="dock-altar-title" style="display:none;">Act I</span>
+      <div class="altar-bar-main">
+        <!-- 3 Compact Inline Sockets -->
+        <div class="sockets-row" id="sockets-row">
+          <div class="socket-box selected-slot" id="socket-ui-0" onclick="IsleGame.selectSlot(0)" title="Click to select or clear Tablet 1">
+            <span class="socket-role" id="socket-role-0">1. Opening Frame</span>
+            <span class="socket-word" id="socket-word-0">[ Empty ]</span>
+          </div>
+          <div class="socket-box" id="socket-ui-1" onclick="IsleGame.selectSlot(1)" title="Click to select or clear Tablet 2">
+            <span class="socket-role" id="socket-role-1">2. Pivot / Auxiliary</span>
+            <span class="socket-word" id="socket-word-1">[ Empty ]</span>
+          </div>
+          <div class="socket-box" id="socket-ui-2" onclick="IsleGame.selectSlot(2)" title="Click to select or clear Tablet 3">
+            <span class="socket-role" id="socket-role-2">3. Resolution</span>
+            <span class="socket-word" id="socket-word-2">[ Empty ]</span>
+          </div>
+        </div>
+
+        <!-- Compact Action Buttons -->
+        <div class="nav-pills">
+          <button type="button" class="hud-btn" id="rack-drawer-btn" onclick="IsleGame.toggleRackDrawer()" title="Show or hide 2D word tablet buttons">
+            <span id="rack-drawer-label">▲ Word Tray</span>
+          </button>
+          <button type="button" class="hud-btn" onclick="IsleGame.inspectCuriosity()" title="Inspect Conchis’s clue near this altar">
+            <span>🔭 Clue</span>
+          </button>
+          <button type="button" class="hud-btn" onclick="IsleGame.loadSampleCombination()" title="Stage one working sentence on this altar">
+            <span>🎭 Demo</span>
+          </button>
+          <button type="button" class="hud-btn" onclick="IsleGame.clearCurrentAltar()" title="Clear Altar [Key: R]">
+            <span>↺</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Optional Collapsible 2D Word Tray -->
+      <div class="rack-drawer" id="rack-drawer">
+        <div class="rack-columns">
+          <div class="rack-col" id="rack-col-0" aria-label="Column 1 Tablets"></div>
+          <div class="rack-col" id="rack-col-1" aria-label="Column 2 Tablets"></div>
+          <div class="rack-col" id="rack-col-2" aria-label="Column 3 Tablets"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= THE BOURANI DOSSIER (MODAL — HIDDEN BY DEFAULT) ================= -->
+  <div class="modal-backdrop hidden" id="journal-modal" role="dialog" aria-modal="true" aria-labelledby="journal-heading">
+    <div class="linking-book">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:0.74rem; text-transform:uppercase; letter-spacing:0.12em; color:#fbbf24; font-weight:800;">
+            Villa Bourani, Island of Phraxos &bull; A 3D Literary &amp; Syntactic Mystery
+          </div>
+          <h1 id="journal-heading" style="font-family:var(--font-serif); font-size:1.65rem; color:#fff; margin-top:0.2rem;">
+            The Bourani Dossier: Unmasking the Godgame
+          </h1>
+        </div>
+        <button type="button" class="cta-primary" onclick="IsleGame.toggleJournal(false)">
+          <span>Step onto the Terrace &rarr;</span>
+        </button>
+      </div>
+
+      <p style="margin-top:0.55rem; font-size:0.86rem; line-height:1.55; color:#e2e8f0;">
+        Inspired by <em>Myst</em> and John Fowles’s <em>The Magus</em>. You have walked through the Aleppo pines of Phraxos to <strong>Bourani</strong>, the cliffside villa of the enigmatic <strong>Maurice Conchis</strong>. Around the whitewashed colonnades, the 1943 cove amphitheatre, and the subterranean Trial court, Conchis has staged a psychological <em>Godgame</em>. Every carved marble sentence you assemble strips away an illusion and physically transforms the island.
+      </p>
+
+      <div class="book-grid">
+        <!-- Left Page: Conchis's Curiosities, Level Switcher & Structural Blueprints -->
+        <div class="book-page">
+          <h3>🎭 Conchis’s Blueprints &amp; Curiosities</h3>
+          <div style="display:flex; gap:0.45rem; flex-wrap:wrap; margin-bottom:0.7rem;">
+            <button type="button" class="hud-btn active" id="book-mode-c1" onclick="IsleGame.setLevelMode('c1')">
+              <span>🎓 C1/C2 &amp; IELTS Godgame (Default)</span>
+            </button>
+            <button type="button" class="hud-btn" id="book-mode-a1" onclick="IsleGame.setLevelMode('a1')">
+              <span>🌱 A1–B1 Foundations (AM / WAS / WILL BE)</span>
+            </button>
+          </div>
+
+          <div id="book-blueprint-details" style="font-size:0.76rem; line-height:1.5; color:#f1f5f9; display:grid; gap:0.4rem;"></div>
+
+          <div style="margin-top:0.75rem; font-size:0.75rem; color:#fde68a; font-weight:700;">
+            🔍 Click any object left on the estate to inspect it in 3D:
+          </div>
+          <div class="clue-pills">
+            <button type="button" class="clue-card" onclick="IsleGame.triggerCuriosity(0); IsleGame.toggleJournal(false);">
+              <strong>🔭 Brass Spyglass (West Terrace)</strong><br/>
+              <span style="color:#cbd5e1;">Aimed at the hidden cove below Bourani.</span>
+            </button>
+            <button type="button" class="clue-card" onclick="IsleGame.triggerCuriosity(1); IsleGame.toggleJournal(false);">
+              <strong>🎺 Horn Gramophone (East Pines)</strong><br/>
+              <span style="color:#cbd5e1;">Plays Conchis’s harpsichord prelude.</span>
+            </button>
+            <button type="button" class="clue-card" onclick="IsleGame.triggerCuriosity(2); IsleGame.toggleJournal(false);">
+              <strong>📘 Underlined Pamphlet (1943 Cove)</strong><br/>
+              <span style="color:#cbd5e1;">Red-ink notes on truth, rumour &amp; memory.</span>
+            </button>
+            <button type="button" class="clue-card" onclick="IsleGame.triggerCuriosity(3); IsleGame.toggleJournal(false);">
+              <strong>🃏 Tarot Card: I. The Magus (Trial)</strong><br/>
+              <span style="color:#cbd5e1;">“Freedom begins when the mask falls.”</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Page: The 20 Acts of the Masque -->
+        <div class="book-page">
+          <h3>✨ The 20 Acts of the Masque (<span id="journal-progress-label">0 / 20 Unmasked</span>)</h3>
+          <p style="font-size:0.75rem; color:#cbd5e1; margin-bottom:0.5rem;">
+            Assemble all 20 syntactic keys across the 4 Altars of Phraxos:
+          </p>
+          <div class="discovery-list" id="journal-discovery-list"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.0rem; padding-top:0.8rem; border-top:1px solid rgba(217,155,67,0.25); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; font-size:0.77rem; color:#cbd5e1;">
+        <span><strong>Controls:</strong> Walk with <code>WASD</code> / Arrows &bull; Drag view to look &bull; Press <code>L</code> to shift Aegean Noon / Dusk / Night &bull; Click any 3D curiosity or Altar.</span>
+        <button type="button" class="cta-primary" onclick="IsleGame.toggleJournal(false)">
+          <span>Enter the Godgame &rarr;</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  // ============================================================================
+  // PHRAXOS: THE BOURANI GODGAME — Three.js WebGL & Aegean Audio Engine
+  // Inspired by Myst & John Fowles's The Magus | Built for GarethEnglish.com
+  // ============================================================================
+  const IsleGame = (() => {
+    let levelMode = 'c1'; // 'c1' (The Magus C1/C2 Mystery) or 'a1' (Foundations)
+    let lightingMode = 0; // 0 = Blinding Aegean Noon, 1 = Amber Pine Dusk, 2 = Moonlit Masque
+    let currentAltarId = 0;
+    let selectedSlotIdx = 0;
+    const discovered = new Set();
+
+    const altarState = [
+      [null, null, null],
+      [null, null, null],
+      [null, null, null],
+      [null, null, null]
+    ];
+    const activeWonder = [-1, -1, -1, -1];
+
+    // ==========================================================================
+    // CONCHIS'S LEFT-BEHIND CURIOSITIES (Interactive Clues on each Headland)
+    // ==========================================================================
+    const CURIOSITIES = [
+      {
+        altarId: 0,
+        name: "🔭 Conchis’s Brass Spyglass",
+        note: "🔭 [Conchis’s Brass Spyglass]: Aimed down at the private cove. Engraved on the brass barrel: \"When a negative adverbial opens the sentence, invert the auxiliary before the subject—and remember that 'No sooner' demands 'than', never 'when'.\""
+      },
+      {
+        altarId: 1,
+        name: "🎺 The Pine-Shade Horn Gramophone",
+        note: "🎺 [The Horn Gramophone]: A harpsichord melody drifts through the Aleppo pines. Under the lid is a card in Lily’s handwriting: \"A participle phrase at the start of a sentence must describe the very next noun after the comma—and 'What' clefts take singular 'was'.\""
+      },
+      {
+        altarId: 2,
+        name: "📘 The Underlined Pamphlet ('Deukalion')",
+        note: "📘 [Conchis’s Underlined Pamphlet]: Marked in red ink on the stone bench: \"On Phraxos, rumour becomes history through impersonal passives ('is believed to have survived', 'are thought to have been...') and past modal deduction ('must have anchored').\""
+      },
+      {
+        altarId: 3,
+        name: "🃏 Tarot Bronze Relief — I. The Magus & 0. The Fool",
+        note: "🃏 [Tarot Relief — The Magus]: Carved into the Trial lectern: \"In the highest register, drop 'if' and invert the conditional: 'Were you to drop the mask...', 'Should the curtain fall...', 'Had I questioned the script...'.\""
+      }
+    ];
+
+    // ==========================================================================
+    // CURRICULUM: C1/C2 GODGAME MYSTERY & A1-B1 FOUNDATIONS
+    // ==========================================================================
+    const CURRICULUM = {
+      c1: [
+        {
+          id: 0,
+          eraBanner: "☀️ Bourani Terrace (West): The Masque of Apollo",
+          title: "Act I — The Masque of Apollo (Negative Inversion C1/C2)",
+          formula: "[Negative Adverbial] + [Inverted Auxiliary + Subject] + [Clause]",
+          blueprint: "<strong>Act I — West Terrace (Negative Inversion):</strong> Open with a restrictive or negative adverbial (<em>Scarcely, At no point, No sooner, Little, Only when</em>) and invert the auxiliary and subject.",
+          roles: ["1. Negative Trigger", "2. Inverted Auxiliary", "3. Resolution"],
+          pos: { x: -5.5, y: 2.95, z: 12.4, yaw: 0 },
+          altarPos: { x: -5.5, y: 0.7, z: 6.8 },
+          col0: ["SCARCELY", "AT NO POINT", "NO SOONER", "LITTLE", "ONLY WHEN"],
+          col1: ["HAD I CROSSED THE PINES", "WAS THE SPYGLASS", "HAD THE HARPSICHORD PLAYED", "DID THE SCHOOLMASTER GUESS", "THE CICADAS FELL SILENT"],
+          col2: ["WHEN BOURANI APPEARED", "LEFT THERE BY CHANCE", "THAN THE MASQUE BEGAN", "THE SCALE OF THE GODGAME", "DID THE AEGEAN FREEZE"],
+          wonders: [
+            { name: "The Sunlit Colonnade", msg: "☀️ [ SCARCELY HAD I CROSSED THE PINES WHEN BOURANI APPEARED ] — Whitewashed limestone colonnades and Apollonian terrace beacons blaze to life!" },
+            { name: "The Spyglass Optical Beam", msg: "🔭 [ AT NO POINT WAS THE SPYGLASS LEFT THERE BY CHANCE ] — Passive inversion! Conchis’s spyglass fires an optical sight-line and levitates the cove stones!" },
+            { name: "The Harpsichord Sirocco", msg: "🎶 [ NO SOONER HAD THE HARPSICHORD PLAYED THAN THE MASQUE BEGAN ] — Harpsichord notes chime across the pines and wind-borne speed surges through your stride!" },
+            { name: "The Obelisk of Hermes", msg: "🗿 [ LITTLE DID THE SCHOOLMASTER GUESS THE SCALE OF THE GODGAME ] — The bronze obelisk of Hermes rises and elevates your vantage over all Phraxos!" },
+            { name: "The Glass Sea of Phraxos", msg: "🌊 [ ONLY WHEN THE CICADAS FELL SILENT DID THE AEGEAN FREEZE ] — Note the main-clause inversion ('did the Aegean freeze')! The sea stills into turquoise glass!" }
+          ],
+          explainClash(i0, i1, i2) {
+            if (i0 === 0 && i2 !== 0) return "⚡ C1 Collocation: 'SCARCELY + past perfect' pairs with 'WHEN...' ('WHEN BOURANI APPEARED').";
+            if (i0 === 2 && i2 !== 2) return "⚡ Classic Cambridge Part 4 Trap: 'NO SOONER' must pair with 'THAN...' ('THAN THE MASQUE BEGAN'), never 'when'.";
+            if (i0 === 4 && i2 !== 4) return "⚡ 'ONLY WHEN' takes a non-inverted time clause first ('THE CICADAS FELL SILENT') and inverts the main clause ('DID THE AEGEAN FREEZE').";
+            return "⚡ Check tense & clause harmony: match the negative trigger in Tablet 1 with its inverted auxiliary and matching completion.";
+          }
+        },
+        {
+          id: 1,
+          eraBanner: "🌿 Bourani Colonnade (East): The Masque of Lily & Julie",
+          title: "Act II — The Twin Sisters (Clefts & Participle Clauses C1/C2)",
+          formula: "[Cleft / Participle Opening] + [Focus Subject / Linker] + [Outcome]",
+          blueprint: "<strong>Act II — East Colonnade (Clefts &amp; Participles):</strong> Pierce the twin sisters’ illusion using <em>What</em>-clefts, preparatory <em>It</em>-clefts, and fronted participle clauses.",
+          roles: ["1. Cleft / Participle Frame", "2. Pivot / Subject", "3. Resolution"],
+          pos: { x: 5.5, y: 2.95, z: 12.4, yaw: 0 },
+          altarPos: { x: 5.5, y: 0.7, z: 6.8 },
+          col0: ["WHAT CONCHIS HAD STAGED", "IT WAS THE SCARLET RIBBON", "STEPPING FROM THE SHADE,", "DRAWN INTO THE GODGAME,", "CAST IN ANCIENT BRONZE,"],
+          col1: ["WAS A THEATRE", "THAT BETRAYED", "THE TERRACE STAIRWAY", "THE ARMILLARY SPHERE", "THE FOUR HERMS"],
+          col2: ["WITHOUT WALLS", "THE TWIN SISTER", "ROSE FROM THE STONE", "ALIGNED WITH THE STARS", "ENCLOSED THE VILLA"],
+          wonders: [
+            { name: "The Theatre Without Walls", msg: "🔥 [ WHAT CONCHIS HAD STAGED WAS A THEATRE WITHOUT WALLS ] — Wh-cleft focus! The bronze terrace brazier ignites and ten Aegean lanterns rise!" },
+            { name: "The Twin Sisters' Arc", msg: "🌉 [ IT WAS THE SCARLET RIBBON THAT BETRAYED THE TWIN SISTER ] — It-cleft focus! A luminous turquoise optical arch links the West and East terraces!" },
+            { name: "The Pentelic Marble Steps", msg: "🏛️ [ STEPPING FROM THE SHADE, THE TERRACE STAIRWAY ROSE FROM THE STONE ] — An 8-step Pentelic marble staircase ascends out of the courtyard!" },
+            { name: "Conchis’s Armillary Sphere", msg: "🧭 [ DRAWN INTO THE GODGAME, THE ARMILLARY SPHERE ALIGNED WITH THE STARS ] — Conchis’s giant 3-ring brass astrolabe awakens overhead!" },
+            { name: "The Hermetic Canopy", msg: "🛡️ [ CAST IN ANCIENT BRONZE, THE FOUR HERMS ENCLOSED THE VILLA ] — Four classical boundary pillars rise and project a geometric sky-canopy!" }
+          ],
+          explainClash(i0, i1, i2) {
+            if (i0 === 0 && i1 !== 0) return "⚡ Wh-Cleft Rule: 'WHAT CONCHIS HAD STAGED' is a singular noun clause subject and requires 'WAS A THEATRE...'.";
+            if (i0 === 1 && i1 !== 1) return "⚡ It-Cleft Rule: 'IT WAS THE SCARLET RIBBON' must be followed by the defining relative 'THAT BETRAYED...'.";
+            return "⚡ Avoid dangling participles: match the opening participle or cleft frame with its logical subject and completion.";
+          }
+        },
+        {
+          id: 2,
+          eraBanner: "⏳ The 1943 Cove & Amphitheatre: The Dossier of Memory",
+          title: "Act III — The 1943 Occupation (Passives & Past Modals C1/IELTS)",
+          formula: "[Subject] + [Passive Reporting / Modal Perfect] + [Past Infinitive]",
+          blueprint: "<strong>Act III — The Cove Amphitheatre (Passive Reporting):</strong> Separate rumour from historical fact with C1 impersonal reporting (<code>is believed to have...</code>) and past modal deduction (<code>must have anchored</code>).",
+          roles: ["1. Island Subject", "2. Reporting / Modal Frame", "3. Perfect Infinitive"],
+          pos: { x: 0.0, y: 2.95, z: -19.6, yaw: 0 },
+          altarPos: { x: 0.0, y: 0.7, z: -25.2 },
+          col0: ["THE RUINED CHAPEL ARCH", "THE PAMPHLET PASSAGES", "THE GREEK CAIQUE", "THE BRONZE POSEIDON", "THE CHAPEL PENDULUM"],
+          col1: ["IS BELIEVED TO", "ARE THOUGHT TO", "MUST HAVE", "IS SAID TO", "COULD NOT HAVE"],
+          col2: ["HAVE SURVIVED THE QUAKE", "HAVE BEEN UNDERLINED THEN", "ANCHORED IN THE COVE", "HAVE RISEN FROM THE SEA", "SWUNG WITHOUT A HAND"],
+          wonders: [
+            { name: "Reconstructed Chapel Arch", msg: "⏳ [ THE RUINED CHAPEL ARCH IS BELIEVED TO HAVE SURVIVED THE QUAKE ] — The fallen limestone columns and lintel levitate to rebuild the arch!" },
+            { name: "Inscribed Greek Stelae", msg: "✨ [ THE PAMPHLET PASSAGES ARE THOUGHT TO HAVE BEEN UNDERLINED THEN ] — Four inscribed marble stelae ignite around the cove amphitheatre!" },
+            { name: "The Midnight Caique", msg: "⛵ [ THE GREEK CAIQUE MUST HAVE ANCHORED IN THE COVE ] — Past modal deduction! A timber-and-brass Greek caique materializes in the eastern cove!" },
+            { name: "The Bronze of Artemision", msg: "🔱 [ THE BRONZE POSEIDON IS SAID TO HAVE RISEN FROM THE SEA ] — The classical bronze dais and rotating trident crown rise from the sunken stage!" },
+            { name: "The Hidden Belfry Gears", msg: "🔔 [ THE CHAPEL PENDULUM COULD NOT HAVE SWUNG WITHOUT A HAND ] — The cliffside belfry’s bronze escapement gears and pendulum swing into motion!" }
+          ],
+          explainClash(i0, i1, i2) {
+            if (i0 === 1 && (i1 === 0 || i1 === 3)) return "⚡ Agreement Trap: 'THE PAMPHLET PASSAGES' is plural, so pair it with plural 'ARE THOUGHT TO'.";
+            if (i0 !== 1 && i1 === 1) return "⚡ Agreement Trap: Singular subject in Tablet 1 cannot take plural 'ARE THOUGHT TO'.";
+            if ((i1 === 2 || i1 === 4) && (i2 !== 2 && i2 !== 4)) return "⚡ Modal Perfect Rule: 'MUST HAVE / COULD NOT HAVE' already contains 'HAVE', so Tablet 3 must start directly with the past participle!";
+            return "⚡ Match the subject in Tablet 1 with its corresponding passive reporting or modal deduction structure.";
+          }
+        },
+        {
+          id: 3,
+          eraBanner: "⚖️ The Subterranean Trial Court: Disintoxication & Freedom",
+          title: "Act IV — The Trial & Eleutheria (Inverted Conditionals C1/C2)",
+          formula: "[Were / Should / Had...] + [Main Clause Subject] + [Modal Outcome]",
+          blueprint: "<strong>Act IV — The Trial Court (Inverted Conditionals):</strong> Strip away the final mask using inverted conditionals: <code>Were you to drop the mask...</code> (2nd), <code>Should the curtain fall...</code> (1st), <code>Had I questioned...</code> (3rd).",
+          roles: ["1. Inverted Conditional", "2. Main Clause Subject", "3. Modal Outcome"],
+          pos: { x: 0.0, y: 2.95, z: -53.6, yaw: 0 },
+          altarPos: { x: 0.0, y: 0.7, z: -59.2 },
+          col0: ["WERE YOU TO DROP THE MASK,", "SHOULD THE CURTAIN FALL,", "HAD I DOUBTED THE SCRIPT,", "WERE ALL THREE MASQUES", "SHOULD YOU CHOOSE FREEDOM,"],
+          col1: ["THE PRISM OF TRUTH", "SIX AEGEAN ISLES", "THE ATHENS SCHOONER", "TO CONVERGE AT DUSK,", "THE GROVE OF ELEUTHERIA"],
+          col2: ["WOULD SHATTER THE ILLUSION", "WOULD EMERGE FROM THE HAZE", "WOULD HAVE SAILED AT DAWN", "LIGHT WOULD UNITE PHRAXOS", "WOULD BLOOM IN THE SUN"],
+          wonders: [
+            { name: "The Prism of Disintoxication", msg: "💎 [ WERE YOU TO DROP THE MASK, THE PRISM OF TRUTH WOULD SHATTER THE ILLUSION ] — Inverted 2nd conditional! The crystalline prism ascends above the Trial court!" },
+            { name: "The Six Cycladic Isles", msg: "🏝️ [ SHOULD THE CURTAIN FALL, SIX AEGEAN ISLES WOULD EMERGE FROM THE HAZE ] — Six whitewashed Cycladic islands emerge around the horizon!" },
+            { name: "The Athens Schooner", msg: "⛵ [ HAD I DOUBTED THE SCRIPT, THE ATHENS SCHOONER WOULD HAVE SAILED AT DAWN ] — Inverted 3rd conditional! The white schooner docks at the western jetty!" },
+            { name: "The Triad of Bourani Light", msg: "✨ [ WERE ALL THREE MASQUES TO CONVERGE AT DUSK, LIGHT WOULD UNITE PHRAXOS ] — Twin beams of golden-cyan light unite the Villa, Cove, and Trial Court!" },
+            { name: "The Grove of Eleutheria", msg: "🫒 [ SHOULD YOU CHOOSE FREEDOM, THE GROVE OF ELEUTHERIA WOULD BLOOM IN THE SUN ] — Golden olive and cypress trees burst into bloom around the court!" }
+          ],
+          explainClash(i0, i1, i2) {
+            if (i0 === 2 && i2 !== 2) return "⚡ 3rd Conditional Rule: 'HAD I DOUBTED THE SCRIPT,' (past perfect) requires 'WOULD HAVE + past participle' ('WOULD HAVE SAILED AT DAWN').";
+            if (i0 !== 2 && i2 === 2) return "⚡ Conditional Tense Clash: 'WOULD HAVE SAILED AT DAWN' requires the 3rd conditional opening 'HAD I DOUBTED THE SCRIPT,'.";
+            return "⚡ Match the inverted conditional in Tablet 1 with its logical subject and modal outcome.";
+          }
+        }
+      ],
+
+      // A1-B1 Foundations Mode (Preserves all 20 original AM / ARE / WAS / WERE / WILL BE combinations)
+      a1: [
+        {
+          id: 0,
+          eraBanner: "☀️ Bourani Terrace (West): Present Singular (I + AM + Adjective)",
+          title: "Act I — Present Self (A1–B1 Foundations)",
+          formula: "[ Subject: I ] + [ Verb: AM ] + [ Adjective ]",
+          blueprint: "<strong>Act I (Present Singular):</strong> Pair singular <code>I</code> with <code>AM</code> and an adjective (<em>LUMINOUS, WEIGHTLESS, SWIFT, COLOSSAL, FROZEN</em>).",
+          roles: ["1. Subject", "2. Present Verb", "3. Adjective"],
+          pos: { x: -5.5, y: 2.95, z: 12.4, yaw: 0 },
+          altarPos: { x: -5.5, y: 0.7, z: 6.8 },
+          col0: ["I", "I", "I", "I", "WE (Clash Test)"],
+          col1: ["AM", "AM", "AM", "AM", "ARE (Clash Test)"],
+          col2: ["LUMINOUS", "WEIGHTLESS", "SWIFT", "COLOSSAL", "FROZEN"],
+          wonders: [
+            { name: "The Sunlit Colonnade", msg: "☀️ [ I AM LUMINOUS ] — Golden Aegean light illuminates the whitewashed columns and terrace beacons!" },
+            { name: "The Spyglass Optical Beam", msg: "🪶 [ I AM WEIGHTLESS ] — Gravity drops and glowing cove stones levitate! Press [SPACE] to soar!" },
+            { name: "The Harpsichord Sirocco", msg: "💨 [ I AM SWIFT ] — Wind-borne velocity surges through your stride across the limestone causeways!" },
+            { name: "The Obelisk of Hermes", msg: "🗿 [ I AM COLOSSAL ] — Your vantage rises and the bronze obelisk ascends above the terrace!" },
+            { name: "The Glass Sea of Phraxos", msg: "❄️ [ I AM FROZEN ] — The rippling Aegean waves crystallise into translucent turquoise glass!" }
+          ]
+        },
+        {
+          id: 1,
+          eraBanner: "🌿 Bourani Colonnade (East): Present Plural (WE + ARE + Noun)",
+          title: "Act II — Present Fellowship (A1–B1 Foundations)",
+          formula: "[ Subject: WE ] + [ Verb: ARE ] + [ Plural Noun ]",
+          blueprint: "<strong>Act II (Present Plural):</strong> Pair plural <code>WE</code> with <code>ARE</code> and a plural group noun (<em>FAMILY, FRIENDS, BUILDERS, EXPLORERS, GUARDIANS</em>).",
+          roles: ["1. Plural Subject", "2. Present Verb", "3. Plural Noun"],
+          pos: { x: 5.5, y: 2.95, z: 12.4, yaw: 0 },
+          altarPos: { x: 5.5, y: 0.7, z: 6.8 },
+          col0: ["WE", "WE", "WE", "WE", "I (Clash Test)"],
+          col1: ["ARE", "ARE", "ARE", "ARE", "AM (Clash Test)"],
+          col2: ["FAMILY", "FRIENDS", "BUILDERS", "EXPLORERS", "GUARDIANS"],
+          wonders: [
+            { name: "The Theatre Without Walls", msg: "🔥 [ WE ARE FAMILY ] — The central hearth-brazier ignites and ten golden lanterns rise!" },
+            { name: "The Twin Sisters' Arc", msg: "🌉 [ WE ARE FRIENDS ] — A glowing turquoise energy arch links the West and East terraces!" },
+            { name: "The Pentelic Marble Steps", msg: "🏛️ [ WE ARE BUILDERS ] — A Pentelic marble stairway rises right out of the courtyard stone!" },
+            { name: "Conchis’s Armillary Sphere", msg: "🧭 [ WE ARE EXPLORERS ] — A giant rotating brass Armillary Sphere awakens in the Aegean sky!" },
+            { name: "The Hermetic Canopy", msg: "🛡️ [ WE ARE GUARDIANS ] — Bronze boundary pillars rise and project a cyan canopy overhead!" }
+          ]
+        },
+        {
+          id: 2,
+          eraBanner: "⏳ The 1943 Cove: Past Simple (WAS / WERE)",
+          title: "Act III — The Altar of Memory (Past WAS / WERE)",
+          formula: "[ I / THE TOWER / WE ] + [ WAS / WERE ] + [ Past State ]",
+          blueprint: "<strong>Act III (Past Simple):</strong> Singular subjects (<code>I</code>, <code>THE TOWER</code>) take <code>WAS</code>; plural <code>WE</code> takes <code>WERE</code>.",
+          roles: ["1. Subject", "2. Past Verb", "3. Past State"],
+          pos: { x: 0.0, y: 2.95, z: -19.6, yaw: 0 },
+          altarPos: { x: 0.0, y: 0.7, z: -25.2 },
+          col0: ["THE TOWER", "WE", "WE", "WE", "I"],
+          col1: ["WAS", "WERE", "WERE", "WERE", "WAS"],
+          col2: ["SHATTERED", "FORGOTTEN", "NOMADS", "KINGS", "SILENT"],
+          wonders: [
+            { name: "Reconstructed Chapel Arch", msg: "⏳ [ THE TOWER WAS SHATTERED ] — The fallen limestone archway levitates upward to rebuild!" },
+            { name: "Inscribed Greek Stelae", msg: "✨ [ WE WERE FORGOTTEN ] — Four ancient Greek marble stelae ignite around the amphitheatre!" },
+            { name: "The Midnight Caique", msg: "⛵ [ WE WERE NOMADS ] — A timber-and-brass Greek caique rises in the eastern cove!" },
+            { name: "The Bronze of Artemision", msg: "🔱 [ WE WERE KINGS ] — A bronze dais and rotating solar crown emerge from the stage!" },
+            { name: "The Hidden Belfry Gears", msg: "🔔 [ I WAS SILENT ] — The cliffside belfry’s bronze gears and pendulum swing across time!" }
+          ]
+        },
+        {
+          id: 3,
+          eraBanner: "⚖️ The Trial Court: Future Simple (WILL BE)",
+          title: "Act IV — The Altar of Prophecy (Future WILL BE)",
+          formula: "[ I / WE / THE WORLD ] + [ WILL BE ] + [ Future Destiny ]",
+          blueprint: "<strong>Act IV (Future Simple):</strong> Notice how <code>WILL BE</code> works with every subject (<code>I</code>, <code>WE</code>, <code>THE WORLD</code>).",
+          roles: ["1. Subject", "2. Future Verb", "3. Future Destiny"],
+          pos: { x: 0.0, y: 2.95, z: -53.6, yaw: 0 },
+          altarPos: { x: 0.0, y: 0.7, z: -59.2 },
+          col0: ["THE WORLD", "THE WORLD", "WE", "WE", "THE WORLD"],
+          col1: ["WILL BE", "WILL BE", "WILL BE", "WILL BE", "WILL BE"],
+          col2: ["ETERNAL", "INFINITE", "VOYAGERS", "UNITED", "REBORN"],
+          wonders: [
+            { name: "The Prism of Disintoxication", msg: "💎 [ THE WORLD WILL BE ETERNAL ] — The crystalline prism ascends and spins above the court!" },
+            { name: "The Six Cycladic Isles", msg: "🏝️ [ THE WORLD WILL BE INFINITE ] — Six whitewashed Cycladic islands emerge on the horizon!" },
+            { name: "The Athens Schooner", msg: "⛵ [ WE WILL BE VOYAGERS ] — The white schooner docks at the western jetty!" },
+            { name: "The Triad of Bourani Light", msg: "✨ [ WE WILL BE UNITED ] — Twin beams of golden-cyan light link all three headlands!" },
+            { name: "The Grove of Eleutheria", msg: "🫒 [ THE WORLD WILL BE REBORN ] — Golden olive and cypress trees bloom around the court!" }
+          ]
+        }
+      ]
+    };
+
+    // ==========================================================================
+    // 1. AEGEAN SOUNDSCAPE: SURF + PINE CICADAS + HARPSICHORD + STONE TABLETS
+    // ==========================================================================
+    let audioCtx = null;
+    let audioEnabled = true;
+    let surfGain = null;
+    let cicadaGain = null;
+
+    function initAudio() {
+      if (audioCtx) return;
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AC();
+
+        // 1) Rolling Aegean Surf (Filtered Brown Noise + Slow Swell LFO)
+        const bufferSize = audioCtx.sampleRate * 4;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        let lastOut = 0.0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          output[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = output[i];
+          output[i] *= 1.7;
+        }
+
+        const surfSource = audioCtx.createBufferSource();
+        surfSource.buffer = noiseBuffer;
+        surfSource.loop = true;
+
+        const surfFilter = audioCtx.createBiquadFilter();
+        surfFilter.type = 'lowpass';
+        surfFilter.frequency.value = 320;
+
+        const surfLfo = audioCtx.createOscillator();
+        surfLfo.frequency.value = 0.13;
+        const surfLfoGain = audioCtx.createGain();
+        surfLfoGain.gain.value = 170;
+        surfLfo.connect(surfFilter.frequency);
+        surfLfo.start();
+
+        surfGain = audioCtx.createGain();
+        surfGain.gain.value = audioEnabled ? 0.08 : 0.0;
+        surfSource.connect(surfFilter);
+        surfFilter.connect(surfGain);
+        surfGain.connect(audioCtx.destination);
+        surfSource.start();
+
+        // 2) Subtle Aegean Pine Cicada Chorus (High Bandpass Shimmer Pulsed by LFO)
+        const cicadaSource = audioCtx.createBufferSource();
+        cicadaSource.buffer = noiseBuffer;
+        cicadaSource.loop = true;
+
+        const cicadaFilter = audioCtx.createBiquadFilter();
+        cicadaFilter.type = 'bandpass';
+        cicadaFilter.frequency.value = 4200;
+        cicadaFilter.Q.value = 6.5;
+
+        const cicadaPulse = audioCtx.createOscillator();
+        cicadaPulse.frequency.value = 3.2; // Rhythmic Greek cicada pulse
+        const cicadaPulseGain = audioCtx.createGain();
+        cicadaPulseGain.gain.value = 0.012;
+
+        cicadaGain = audioCtx.createGain();
+        cicadaGain.gain.value = audioEnabled ? 0.018 : 0.0;
+        cicadaPulse.connect(cicadaGain.gain);
+        cicadaPulse.start();
+
+        cicadaSource.connect(cicadaFilter);
+        cicadaFilter.connect(cicadaGain);
+        cicadaGain.connect(audioCtx.destination);
+        cicadaSource.start();
+      } catch (e) {
+        // Ignore if autoplay blocked
+      }
+    }
+
+    function playStoneSlide() {
+      if (!audioEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(75, now + 0.16);
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.19);
+    }
+
+    // Plays a plucked harpsichord-like motif (Conchis's gramophone / masque chime)
+    function playHarpsichordArpeggio(notes = [293.66, 349.23, 440.0, 587.33, 659.25, 587.33, 440.0]) {
+      if (!audioEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      notes.forEach((freq, i) => {
+        const t = now + i * 0.11;
+        const osc = audioCtx.createOscillator();
+        const filter = audioCtx.createBiquadFilter();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, t);
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2100, t);
+        filter.frequency.exponentialRampToValueAtTime(450, t + 0.42);
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.065, t + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0008, t + 0.48);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.5);
+      });
+    }
+
+    function playChord(freqs, duration = 0.65, wave = 'sine') {
+      if (!audioEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      freqs.forEach((f, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = wave;
+        osc.frequency.setValueAtTime(f, now + idx * 0.045);
+        gain.gain.setValueAtTime(0.001, now + idx * 0.045);
+        gain.gain.linearRampToValueAtTime(0.11 / freqs.length, now + idx * 0.045 + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + duration + idx * 0.045);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + idx * 0.045);
+        osc.stop(now + duration + idx * 0.045 + 0.05);
+      });
+    }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      initAudio();
+      if (audioCtx) {
+        if (surfGain) surfGain.gain.setTargetAtTime(audioEnabled ? 0.08 : 0.0, audioCtx.currentTime, 0.1);
+        if (cicadaGain) cicadaGain.gain.setTargetAtTime(audioEnabled ? 0.018 : 0.0, audioCtx.currentTime, 0.1);
+      }
+      document.getElementById('audio-toggle-label').textContent = audioEnabled
+        ? '🔊 Cicadas & Surf: ON'
+        : '🔇 Cicadas & Surf: OFF';
+    }
+
+    // ==========================================================================
+    // 2. THREE.JS 3D PHRAXOS WORLD, AEGEAN LIGHTING & CONCHIS'S CURIOSITIES
+    // ==========================================================================
+    let scene, camera, renderer, raycaster;
+    let skyMat, waterUniforms, hemiLight, sunLight, playerLight;
+    const interactables = [];
+    const tabletMeshes3D = [[], [], [], []];
+    const rackMeshes3D = [[], [], [], []]; // [altarId][colIdx][rowIdx]
+    const curiosityMarkers = [];
+
+    const player = {
+      x: -5.5,
+      y: 2.95,
+      z: 12.4,
+      vy: 0,
+      yaw: 0,
+      pitch: -0.22,
+      targetEyeHeight: 2.95,
+      speedMultiplier: 1.0,
+      gravityMultiplier: 1.0,
+      onGround: true
+    };
+    const keys = {};
+    let isDraggingLook = false;
+    let prevMouse = { x: 0, y: 0 };
+
+    const wonderGroups = {
+      floatingStones: null,
+      centralObelisk: null,
+      obeliskTargetY: 0.4,
+      hearthLanterns: null,
+      energyArch: null,
+      marbleStairs: null,
+      stairsTargetY: -6.5,
+      astrolabeGroup: null,
+      astrolabeRings: [],
+      aegisDome: null,
+      shatteredArch: null,
+      archTargetY: 0.0,
+      runicStelae: null,
+      windShip: null,
+      sovereignDais: null,
+      clockworkActive: false,
+      clockPendulum: null,
+      clockGear1: null,
+      timePrism: null,
+      skyIslands: null,
+      skyArk: null,
+      triadBeams: null,
+      goldenGrove: null
+    };
+
+    function makeProceduralTexture(c1, c2, veining = false) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = c1;
+      ctx.fillRect(0, 0, 256, 256);
+      for (let i = 0; i < 800; i++) {
+        ctx.fillStyle = i % 2 === 0 ? c2 : c1;
+        ctx.globalAlpha = 0.13;
+        ctx.fillRect(Math.random() * 256, Math.random() * 256, 8 + Math.random() * 18, 8 + Math.random() * 18);
+      }
+      if (veining) {
+        ctx.strokeStyle = c2;
+        ctx.globalAlpha = 0.25;
+        ctx.lineWidth = 2;
+        for (let v = 0; v < 9; v++) {
+          ctx.beginPath();
+          ctx.moveTo(Math.random() * 256, 0);
+          ctx.bezierCurveTo(Math.random() * 256, 85, Math.random() * 256, 170, Math.random() * 256, 256);
+          ctx.stroke();
+        }
+      }
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(3, 3);
+      return tex;
+    }
+
+    function makeStoneTabletTexture(wordText, roleLabel = '', isSocketed = false, isEnergized = false) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 512;
+      canvas.height = 192;
+      const ctx = canvas.getContext('2d');
+
+      // Deep carved stone background (obsidian slate on rack, warm bronze-gold when socketed/energized)
+      const grad = ctx.createLinearGradient(0, 0, 0, 192);
+      if (isEnergized) {
+        grad.addColorStop(0, '#0c3b5e');
+        grad.addColorStop(1, '#082038');
+      } else if (isSocketed) {
+        grad.addColorStop(0, '#3b2610');
+        grad.addColorStop(1, '#1e150a');
+      } else {
+        grad.addColorStop(0, '#1e293b');
+        grad.addColorStop(1, '#0f172a');
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 512, 192);
+
+      // Subtle stone grain
+      for (let i = 0; i < 140; i++) {
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.08)';
+        ctx.fillRect(Math.random() * 512, Math.random() * 192, 10 + Math.random() * 22, 4 + Math.random() * 10);
+      }
+
+      // Classical Greek double border
+      ctx.strokeStyle = isEnergized ? '#38bdf8' : '#d99b43';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(8, 8, 496, 176);
+      ctx.strokeStyle = isEnergized ? 'rgba(125,211,252,0.45)' : 'rgba(243,205,130,0.4)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(18, 18, 476, 156);
+
+      // Role subheader at top
+      if (roleLabel) {
+        ctx.font = '700 20px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = isEnergized ? '#7dd3fc' : '#f3cd82';
+        ctx.textAlign = 'center';
+        ctx.fillText(roleLabel.toUpperCase(), 256, 46);
+      }
+
+      // Auto-scale main carved inscription so even long C1 clauses are bold and unmistakable
+      const cleanText = String(wordText || '');
+      let fontSize = 44;
+      if (cleanText.length > 22) fontSize = 27;
+      else if (cleanText.length > 16) fontSize = 32;
+      else if (cleanText.length > 11) fontSize = 38;
+
+      ctx.font = `700 ${fontSize}px "Cinzel", Georgia, serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Chiseled shadow + bright ivory/gold lettering
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+      ctx.fillText(cleanText, 258, roleLabel ? 118 : 100);
+      ctx.fillStyle = isEnergized ? '#e0f2fe' : '#fef3c7';
+      ctx.fillText(cleanText, 256, roleLabel ? 115 : 97);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.anisotropy = 4;
+      tex.needsUpdate = true;
+      return tex;
+    }
+
+    function init3D() {
+      const canvas = document.getElementById('webgl-canvas');
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.18;
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x164a78);
+      scene.fog = new THREE.FogExp2(0x4a82a8, 0.0065);
+
+      camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 320);
+      raycaster = new THREE.Raycaster();
+
+      // Aegean Sky Dome (Supports Noon, Pine Dusk, and Moonlit Masque)
+      const skyGeo = new THREE.SphereGeometry(240, 32, 24);
+      skyMat = new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        uniforms: {
+          topColor: { value: new THREE.Color(0x0c4a8a) },
+          midColor: { value: new THREE.Color(0x3898d8) },
+          horizonColor: { value: new THREE.Color(0xdbeafe) }
+        },
+        vertexShader: `
+          varying vec3 vWorldPos;
+          void main() {
+            vec4 wp = modelMatrix * vec4(position, 1.0);
+            vWorldPos = wp.xyz;
+            gl_Position = projectionMatrix * viewMatrix * wp;
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 topColor;
+          uniform vec3 midColor;
+          uniform vec3 horizonColor;
+          varying vec3 vWorldPos;
+          void main() {
+            float h = normalize(vWorldPos).y;
+            vec3 col = mix(horizonColor, midColor, smoothstep(0.0, 0.28, max(h, 0.0)));
+            col = mix(col, topColor, smoothstep(0.28, 0.85, max(h, 0.0)));
+            gl_FragColor = vec4(col, 1.0);
+          }
+        `
+      });
+      scene.add(new THREE.Mesh(skyGeo, skyMat));
+
+      hemiLight = new THREE.HemisphereLight(0xffffff, 0x334155, 0.88);
+      scene.add(hemiLight);
+
+      sunLight = new THREE.DirectionalLight(0xfff7ed, 1.45);
+      sunLight.position.set(-25, 52, -25);
+      scene.add(sunLight);
+
+      playerLight = new THREE.PointLight(0xfbbf24, 0.65, 16);
+      scene.add(playerLight);
+
+      // Materials: Sun-bleached Greek Whitewashed Limestone, Terracotta, Cypress, Brass
+      const texLoader = new THREE.TextureLoader();
+      const matWhitewash = new THREE.MeshStandardMaterial({
+        map: makeProceduralTexture('#fbfaf6', '#e2e8f0', true),
+        roughness: 0.32,
+        metalness: 0.08
+      });
+      texLoader.load('myst-grammar-island/assets/marble_diff.jpg', (t) => {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(3, 3);
+        matWhitewash.map = t;
+        matWhitewash.needsUpdate = true;
+      }, undefined, () => {});
+
+      const matLimestone = new THREE.MeshStandardMaterial({
+        map: makeProceduralTexture('#d6cfc2', '#a89f91', false),
+        roughness: 0.78,
+        metalness: 0.05
+      });
+      texLoader.load('myst-grammar-island/assets/ruin_stone_diff.jpg', (t) => {
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(3, 3);
+        matLimestone.map = t;
+        matLimestone.needsUpdate = true;
+      }, undefined, () => {});
+
+      const matPineEarth = new THREE.MeshStandardMaterial({
+        map: makeProceduralTexture('#4d6b31', '#364d21', false),
+        roughness: 0.88,
+        metalness: 0.02
+      });
+
+      const matCliff = new THREE.MeshStandardMaterial({
+        map: makeProceduralTexture('#78716c', '#44403c', true),
+        roughness: 0.85,
+        metalness: 0.05
+      });
+
+      const matTerracotta = new THREE.MeshStandardMaterial({
+        color: 0xc2593f,
+        roughness: 0.55,
+        metalness: 0.08
+      });
+
+      const matCypress = new THREE.MeshStandardMaterial({
+        color: 0x1b3b22,
+        roughness: 0.8,
+        metalness: 0.02
+      });
+
+      const matBrass = new THREE.MeshStandardMaterial({
+        color: 0xd99b43,
+        roughness: 0.24,
+        metalness: 0.86
+      });
+
+      const matCyanGlow = new THREE.MeshStandardMaterial({
+        color: 0x38bdf8,
+        emissive: 0x0284c7,
+        emissiveIntensity: 1.4,
+        roughness: 0.15
+      });
+
+      const matGoldGlow = new THREE.MeshStandardMaterial({
+        color: 0xfde68a,
+        emissive: 0xd97706,
+        emissiveIntensity: 1.5,
+        roughness: 0.15
+      });
+
+      // Cobalt-Turquoise Aegean Sea Shader
+      waterUniforms = {
+        uTime: { value: 0 },
+        uFreeze: { value: 0.0 },
+        uDeepColor: { value: new THREE.Color(0x063966) },
+        uShallowColor: { value: new THREE.Color(0x0ea5e9) }
+      };
+      const waterGeo = new THREE.PlaneGeometry(360, 360, 96, 96);
+      waterGeo.rotateX(-Math.PI / 2);
+      const waterMat = new THREE.ShaderMaterial({
+        uniforms: waterUniforms,
+        vertexShader: `
+          uniform float uTime;
+          uniform float uFreeze;
+          varying float vElev;
+          void main() {
+            vec3 pos = position;
+            float t = uTime * (1.0 - uFreeze * 0.92);
+            float w1 = sin(pos.x * 0.25 + t * 1.35) * cos(pos.z * 0.22 + t) * 0.17;
+            float w2 = sin(pos.x * 0.62 - t * 1.6 + pos.z * 0.5) * 0.06;
+            pos.y += (w1 + w2) * (1.0 - uFreeze * 0.88);
+            vElev = w1 + w2;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float uFreeze;
+          uniform vec3 uDeepColor;
+          uniform vec3 uShallowColor;
+          varying float vElev;
+          void main() {
+            vec3 foam = vec3(0.88, 0.96, 1.0);
+            float crest = smoothstep(0.05, 0.21, vElev);
+            vec3 waterCol = mix(uDeepColor, uShallowColor, 0.48 + vElev * 2.2);
+            waterCol = mix(waterCol, foam, crest * 0.48);
+            vec3 glassCol = vec3(0.68, 0.94, 0.98);
+            gl_FragColor = vec4(mix(waterCol, glassCol, uFreeze), 1.0);
+          }
+        `
+      });
+      const waterMesh = new THREE.Mesh(waterGeo, waterMat);
+      waterMesh.position.set(0, -0.35, -26);
+      scene.add(waterMesh);
+
+      // Helper to spawn Mediterranean Cypresses & Terracotta Amphorae
+      function spawnCypressAndAmphora(parent, x, z, h = 4.6) {
+        const cg = new THREE.Group();
+        cg.position.set(x, 0.4, z);
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.24, 1.2, 8), matLimestone);
+        trunk.position.y = 0.6;
+        cg.add(trunk);
+        const spire = new THREE.Mesh(new THREE.ConeGeometry(0.72, h, 10), matCypress);
+        spire.position.y = 1.0 + h * 0.5;
+        cg.add(spire);
+        // Terracotta Amphora at the base
+        const vase = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.16, 0.62, 12), matTerracotta);
+        vase.position.set(0.55, 0.31, 0.25);
+        cg.add(vase);
+        parent.add(cg);
+      }
+
+      // Helper to build each Aegean Promontory
+      function buildAegeanHeadland(cx, cz, radius, columnAngles) {
+        const g = new THREE.Group();
+        g.position.set(cx, 0, cz);
+        scene.add(g);
+
+        const cliff = new THREE.Mesh(new THREE.CylinderGeometry(radius + 2.4, radius + 3.8, 1.6, 32), matCliff);
+        cliff.position.y = -0.7;
+        g.add(cliff);
+
+        const earth = new THREE.Mesh(new THREE.CylinderGeometry(radius + 0.6, radius + 1.2, 0.55, 32), matPineEarth);
+        earth.position.y = 0.05;
+        g.add(earth);
+
+        const terrace = new THREE.Mesh(new THREE.CylinderGeometry(radius - 1.0, radius - 0.6, 0.26, 32), matWhitewash);
+        terrace.position.y = 0.34;
+        g.add(terrace);
+
+        // Coastal Limestone Boulders
+        for (let i = 0; i < 10; i++) {
+          const ang = (i / 10) * Math.PI * 2 + 0.25;
+          if (Math.abs(Math.sin(ang)) < 0.28) continue;
+          const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(1.4 + (i % 3) * 0.5, 1), matCliff);
+          rock.position.set(Math.sin(ang) * (radius + 1.2), 0.1, Math.cos(ang) * (radius + 1.2));
+          rock.scale.set(1.2, 0.75, 1.1);
+          g.add(rock);
+        }
+
+        // Whitewashed Greek Doric Colonnade + Terracotta Cornices
+        columnAngles.forEach((deg, idx) => {
+          const rad = (deg * Math.PI) / 180;
+          const px = Math.sin(rad) * (radius - 2.6);
+          const pz = Math.cos(rad) * (radius - 2.6);
+          const colGroup = new THREE.Group();
+          colGroup.position.set(px, 0.45, pz);
+
+          const base = new THREE.Mesh(new THREE.BoxGeometry(1.18, 0.36, 1.18), matLimestone);
+          base.position.y = 0.18;
+          colGroup.add(base);
+
+          const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.39, 0.45, 4.2, 16), matWhitewash);
+          shaft.position.y = 2.45;
+          colGroup.add(shaft);
+
+          const cap = new THREE.Mesh(new THREE.BoxGeometry(1.26, 0.32, 1.26), matTerracotta);
+          cap.position.y = 4.72;
+          colGroup.add(cap);
+
+          g.add(colGroup);
+
+          if (idx % 2 === 0) {
+            spawnCypressAndAmphora(g, px * 0.86, pz * 0.86, 4.4 + (idx % 3) * 0.6);
+          }
+        });
+      }
+
+      // Build the 3 Headlands of Phraxos
+      buildAegeanHeadland(0, 8.5, 16.5, [-145, -120, -95, -65, 65, 95, 120, 145]);
+      buildAegeanHeadland(0, -24.0, 15.0, [-135, -100, 100, 135]);
+      buildAegeanHeadland(0, -58.0, 15.0, [-150, -125, -100, 100, 125, 150]);
+
+      // Villa Bourani Colonnaded Facade at the South Edge of Promontory I (Z = +18.5)
+      const villa = new THREE.Group();
+      villa.position.set(0, 0.45, 18.8);
+      scene.add(villa);
+      const vWall = new THREE.Mesh(new THREE.BoxGeometry(14.0, 4.6, 2.2), matWhitewash);
+      vWall.position.y = 2.3;
+      villa.add(vWall);
+      const vRoof = new THREE.Mesh(new THREE.ConeGeometry(10.5, 2.2, 4), matTerracotta);
+      vRoof.rotation.y = Math.PI / 4;
+      vRoof.scale.set(1.0, 1.0, 0.35);
+      vRoof.position.y = 5.6;
+      villa.add(vRoof);
+
+      // Distant Aegean Horizon Sea-Stacks
+      [
+        [-34, 16, 14], [36, 14, 16], [-38, -14, 18], [39, -16, 17],
+        [-36, -46, 15], [36, -48, 17], [0, -88, 24]
+      ].forEach(([x, z, s]) => {
+        const crag = new THREE.Mesh(new THREE.ConeGeometry(s * 0.68, s * 1.35, 7), matCliff);
+        crag.position.set(x, s * 0.45 - 2, z);
+        scene.add(crag);
+      });
+
+      // Limestone Causeways Linking the 3 Headlands
+      function buildCauseway(zCenter, matRail) {
+        const deck = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.32, 13.5), matWhitewash);
+        deck.position.set(0, 0.42, zCenter);
+        scene.add(deck);
+        const railL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.65, 13.5), matRail);
+        railL.position.set(-1.75, 0.85, zCenter);
+        scene.add(railL);
+        const railR = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.65, 13.5), matRail);
+        railR.position.set(1.75, 0.85, zCenter);
+        scene.add(railR);
+      }
+      buildCauseway(-7.5, matLimestone);
+      buildCauseway(-41.0, matTerracotta);
+
+      // Build the 4 Altars of the Godgame + Conchis's Curiosities beside each Altar
+      const altarCoords = [
+        { id: 0, x: -5.5, z: 6.8, cx: -8.8, cz: 7.4 },
+        { id: 1, x: 5.5, z: 6.8, cx: 8.8, cz: 7.4 },
+        { id: 2, x: 0.0, z: -25.2, cx: -4.2, cz: -24.2 },
+        { id: 3, x: 0.0, z: -59.2, cx: -4.2, cz: -58.2 }
+      ];
+
+      altarCoords.forEach(({ id, x, z, cx, cz }) => {
+        const ag = new THREE.Group();
+        ag.position.set(x, 0.45, z);
+        scene.add(ag);
+
+        const pedestal = new THREE.Mesh(new THREE.BoxGeometry(6.3, 0.96, 1.85), matWhitewash);
+        pedestal.position.y = 0.48;
+        pedestal.userData = { interactType: 'altar', altarId: id };
+        ag.add(pedestal);
+        interactables.push(pedestal);
+
+        // Angled classical Greek lectern top so sockets & stones face the player's eyes
+        const lecternGroup = new THREE.Group();
+        lecternGroup.position.set(0, 1.02, 0.08);
+        lecternGroup.rotation.x = 0.52; // Tilted 30 degrees toward the player
+        ag.add(lecternGroup);
+
+        const brassTop = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.14, 1.55), matBrass);
+        lecternGroup.add(brassTop);
+
+        const defInit = CURRICULUM[levelMode][id];
+        for (let s = 0; s < 3; s++) {
+          const sx = (s - 1) * 1.92;
+          const socketMesh = new THREE.Mesh(
+            new THREE.BoxGeometry(1.74, 0.1, 0.96),
+            new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.35, metalness: 0.65 })
+          );
+          socketMesh.position.set(sx, 0.09, 0);
+          socketMesh.userData = { interactType: 'slot', altarId: id, slotIdx: s };
+          lecternGroup.add(socketMesh);
+          interactables.push(socketMesh);
+
+          const tabMat = new THREE.MeshStandardMaterial({
+            map: makeStoneTabletTexture('[ Empty ]', defInit.roles[s], true, false),
+            roughness: 0.22,
+            metalness: 0.25
+          });
+          const tabMesh = new THREE.Mesh(
+            new THREE.BoxGeometry(1.66, 0.24, 0.88),
+            tabMat
+          );
+          tabMesh.position.set(sx, 0.22, 0);
+          tabMesh.visible = false;
+          tabMesh.userData = { interactType: 'slot', altarId: id, slotIdx: s };
+          lecternGroup.add(tabMesh);
+          interactables.push(tabMesh);
+          tabletMeshes3D[id].push(tabMesh);
+        }
+
+        // 3D Angled Stone Tablet Rack right in front of the Altar (15 physical carved stones)
+        const rackGroup = new THREE.Group();
+        rackGroup.position.set(0, 0.0, 2.35);
+        ag.add(rackGroup);
+
+        const rackPlinth = new THREE.Mesh(new THREE.BoxGeometry(6.1, 0.54, 2.15), matLimestone);
+        rackPlinth.position.y = 0.27;
+        rackGroup.add(rackPlinth);
+
+        const rackTrim = new THREE.Mesh(new THREE.BoxGeometry(6.2, 0.08, 2.22), matBrass);
+        rackTrim.position.y = 0.56;
+        rackGroup.add(rackTrim);
+
+        rackMeshes3D[id] = [[], [], []];
+        const colsInit = [defInit.col0, defInit.col1, defInit.col2];
+        for (let c = 0; c < 3; c++) {
+          const colX = (c - 1) * 1.92;
+          for (let r = 0; r < 5; r++) {
+            const rowZ = -0.68 + r * 0.34;
+            const rowY = 0.96 - r * 0.08;
+            const stoneMat = new THREE.MeshStandardMaterial({
+              map: makeStoneTabletTexture(colsInit[c][r], defInit.roles[c], false, false),
+              roughness: 0.25,
+              metalness: 0.2
+            });
+            const stoneMesh = new THREE.Mesh(
+              new THREE.BoxGeometry(1.68, 0.14, 0.31),
+              stoneMat
+            );
+            stoneMesh.position.set(colX, rowY, rowZ);
+            stoneMesh.rotation.x = 0.68; // Tilted 39 degrees toward the player for effortless reading
+            stoneMesh.userData = {
+              interactType: 'rack_tablet',
+              altarId: id,
+              colIdx: c,
+              itemIdx: r,
+              baseY: rowY
+            };
+            rackGroup.add(stoneMesh);
+            interactables.push(stoneMesh);
+            rackMeshes3D[id][c].push(stoneMesh);
+          }
+        }
+
+        // Conchis's Interactive 3D Curiosity Pedestal beside each Altar
+        const curGroup = new THREE.Group();
+        curGroup.position.set(cx, 0.45, cz);
+        scene.add(curGroup);
+        const curPlinth = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.5, 1.05, 14), matLimestone);
+        curPlinth.position.y = 0.52;
+        curPlinth.userData = { interactType: 'curiosity', curiosityId: id };
+        curGroup.add(curPlinth);
+        interactables.push(curPlinth);
+
+        const curArtifact = new THREE.Mesh(new THREE.OctahedronGeometry(0.38, 0), matGoldGlow);
+        curArtifact.position.y = 1.35;
+        curArtifact.userData = { interactType: 'curiosity', curiosityId: id };
+        curGroup.add(curArtifact);
+        interactables.push(curArtifact);
+        curiosityMarkers.push(curArtifact);
+      });
+
+      // ========================================================================
+      // 3. ARCHITECTURAL & MECHANICAL WONDERS OF BOURANI
+      // ========================================================================
+      // Act I Wonders
+      wonderGroups.floatingStones = new THREE.Group();
+      wonderGroups.floatingStones.visible = false;
+      scene.add(wonderGroups.floatingStones);
+      for (let i = 0; i < 14; i++) {
+        const ang = (i / 14) * Math.PI * 2;
+        const m = new THREE.Mesh(new THREE.OctahedronGeometry(0.32, 0), matCyanGlow);
+        m.position.set(-5.5 + Math.cos(ang) * 4.5, 1.4 + (i % 4) * 0.8, 6.8 + Math.sin(ang) * 4.5);
+        wonderGroups.floatingStones.add(m);
+      }
+
+      wonderGroups.centralObelisk = new THREE.Group();
+      wonderGroups.centralObelisk.position.set(-5.5, 0.4, 2.8);
+      scene.add(wonderGroups.centralObelisk);
+      const obShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.65, 6.5, 4), matBrass);
+      obShaft.position.y = 3.25;
+      wonderGroups.centralObelisk.add(obShaft);
+      const obTip = new THREE.Mesh(new THREE.ConeGeometry(0.55, 1.2, 4), matGoldGlow);
+      obTip.position.y = 7.0;
+      wonderGroups.centralObelisk.add(obTip);
+
+      // Act II Wonders
+      wonderGroups.hearthLanterns = new THREE.Group();
+      wonderGroups.hearthLanterns.visible = false;
+      scene.add(wonderGroups.hearthLanterns);
+      const brazier = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.65, 0.9, 16), matTerracotta);
+      brazier.position.set(0, 0.8, 3.8);
+      wonderGroups.hearthLanterns.add(brazier);
+      const flameCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.65, 1), matGoldGlow);
+      flameCore.position.set(0, 1.55, 3.8);
+      wonderGroups.hearthLanterns.add(flameCore);
+      for (let i = 0; i < 10; i++) {
+        const l = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.18, 0.45, 8), matGoldGlow);
+        l.position.set(Math.cos(i * 0.62) * 4.5, 2.0 + (i % 5) * 1.1, 3.8 + Math.sin(i * 0.62) * 4.5);
+        wonderGroups.hearthLanterns.add(l);
+      }
+
+      wonderGroups.energyArch = new THREE.Group();
+      wonderGroups.energyArch.visible = false;
+      scene.add(wonderGroups.energyArch);
+      const archBeam = new THREE.Mesh(new THREE.TorusGeometry(5.5, 0.22, 12, 36, Math.PI), matCyanGlow);
+      archBeam.position.set(0, 1.0, 6.8);
+      wonderGroups.energyArch.add(archBeam);
+
+      wonderGroups.marbleStairs = new THREE.Group();
+      wonderGroups.marbleStairs.position.y = -6.5;
+      scene.add(wonderGroups.marbleStairs);
+      for (let s = 0; s < 8; s++) {
+        const step = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.34, 0.72), matWhitewash);
+        step.position.set(5.5, 0.6 + s * 0.42, 4.2 - s * 0.65);
+        wonderGroups.marbleStairs.add(step);
+      }
+
+      wonderGroups.astrolabeGroup = new THREE.Group();
+      wonderGroups.astrolabeGroup.position.set(0, 8.8, 5.2);
+      wonderGroups.astrolabeGroup.visible = false;
+      scene.add(wonderGroups.astrolabeGroup);
+      [3.4, 2.6, 1.8].forEach((r) => {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.12, 12, 42), matBrass);
+        wonderGroups.astrolabeGroup.add(ring);
+        wonderGroups.astrolabeRings.push(ring);
+      });
+      wonderGroups.astrolabeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(0.65, 16, 16), matGoldGlow));
+
+      wonderGroups.aegisDome = new THREE.Group();
+      wonderGroups.aegisDome.visible = false;
+      scene.add(wonderGroups.aegisDome);
+      const domeMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(14.5, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.5),
+        new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.45 })
+      );
+      domeMesh.position.set(0, 0.5, 8.5);
+      wonderGroups.aegisDome.add(domeMesh);
+
+      // Act III Wonders (1943 Cove Amphitheatre)
+      wonderGroups.shatteredArch = new THREE.Group();
+      wonderGroups.shatteredArch.position.set(0, 0, -29.5);
+      scene.add(wonderGroups.shatteredArch);
+      const pL = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.52, 3.8, 16), matWhitewash);
+      pL.position.set(-3.2, 2.2, 0);
+      wonderGroups.shatteredArch.add(pL);
+      const pR = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.52, 3.8, 16), matWhitewash);
+      pR.position.set(3.2, 2.2, 0);
+      wonderGroups.shatteredArch.add(pR);
+      const lintel = new THREE.Mesh(new THREE.BoxGeometry(7.6, 0.68, 1.15), matTerracotta);
+      lintel.position.set(0, 4.3, 0);
+      wonderGroups.shatteredArch.add(lintel);
+
+      wonderGroups.runicStelae = new THREE.Group();
+      wonderGroups.runicStelae.visible = false;
+      scene.add(wonderGroups.runicStelae);
+      [[-5.2, -22], [5.2, -22], [-5.8, -27.5], [5.8, -27.5]].forEach(([rx, rz]) => {
+        const stele = new THREE.Mesh(new THREE.BoxGeometry(0.85, 3.4, 0.42), matWhitewash);
+        stele.position.set(rx, 2.1, rz);
+        wonderGroups.runicStelae.add(stele);
+        const core = new THREE.Mesh(new THREE.BoxGeometry(0.45, 2.6, 0.48), matCyanGlow);
+        core.position.set(rx, 2.1, rz);
+        wonderGroups.runicStelae.add(core);
+      });
+
+      wonderGroups.windShip = new THREE.Group();
+      wonderGroups.windShip.position.set(14.0, 0.2, -24.0);
+      wonderGroups.windShip.visible = false;
+      scene.add(wonderGroups.windShip);
+      const hull = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1.2, 8.8), matTerracotta);
+      hull.position.y = 0.5;
+      wonderGroups.windShip.add(hull);
+      const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 6.8, 12), matLimestone);
+      mast.position.y = 3.8;
+      wonderGroups.windShip.add(mast);
+      const sail = new THREE.Mesh(new THREE.BoxGeometry(0.15, 4.4, 5.2), matWhitewash);
+      sail.position.y = 4.2;
+      wonderGroups.windShip.add(sail);
+
+      wonderGroups.sovereignDais = new THREE.Group();
+      wonderGroups.sovereignDais.position.set(6.5, 0.5, -27.2);
+      wonderGroups.sovereignDais.visible = false;
+      scene.add(wonderGroups.sovereignDais);
+      const throne = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.0, 1.2, 8), matBrass);
+      throne.position.y = 0.6;
+      wonderGroups.sovereignDais.add(throne);
+      const crown = new THREE.Mesh(new THREE.TorusKnotGeometry(0.85, 0.18, 64, 12), matGoldGlow);
+      crown.position.y = 2.6;
+      wonderGroups.sovereignDais.add(crown);
+
+      const belfry = new THREE.Group();
+      belfry.position.set(-6.8, 0.4, -27.5);
+      scene.add(belfry);
+      const bTower = new THREE.Mesh(new THREE.BoxGeometry(2.5, 5.8, 2.5), matWhitewash);
+      bTower.position.y = 2.9;
+      belfry.add(bTower);
+      const bRoof = new THREE.Mesh(new THREE.BoxGeometry(3.1, 0.55, 3.1), matTerracotta);
+      bRoof.position.y = 6.0;
+      belfry.add(bRoof);
+
+      wonderGroups.clockPendulum = new THREE.Group();
+      wonderGroups.clockPendulum.position.set(-6.8, 5.8, -26.1);
+      scene.add(wonderGroups.clockPendulum);
+      const pRod = new THREE.Mesh(new THREE.BoxGeometry(0.14, 3.6, 0.14), matBrass);
+      pRod.position.y = -1.8;
+      wonderGroups.clockPendulum.add(pRod);
+      const pBob = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.58, 0.24, 20), matGoldGlow);
+      pBob.rotation.x = Math.PI / 2;
+      pBob.position.y = -3.6;
+      wonderGroups.clockPendulum.add(pBob);
+
+      wonderGroups.clockGear1 = new THREE.Mesh(new THREE.TorusGeometry(0.85, 0.16, 8, 12), matBrass);
+      wonderGroups.clockGear1.position.set(-6.8, 4.4, -26.15);
+      scene.add(wonderGroups.clockGear1);
+
+      // Act IV Wonders (The Trial Court)
+      wonderGroups.timePrism = new THREE.Mesh(
+        new THREE.OctahedronGeometry(2.1, 0),
+        new THREE.MeshStandardMaterial({ color: 0xbae6fd, emissive: 0x0284c7, emissiveIntensity: 1.5, roughness: 0.1, metalness: 0.4 })
+      );
+      wonderGroups.timePrism.position.set(0, 5.5, -64.2);
+      wonderGroups.timePrism.visible = false;
+      scene.add(wonderGroups.timePrism);
+
+      wonderGroups.skyIslands = new THREE.Group();
+      wonderGroups.skyIslands.visible = false;
+      scene.add(wonderGroups.skyIslands);
+      for (let i = 0; i < 6; i++) {
+        const ang = (i / 6) * Math.PI * 2;
+        const isle = new THREE.Group();
+        isle.position.set(Math.cos(ang) * 18.5, 6.8 + (i % 3) * 1.8, -58.0 + Math.sin(ang) * 18.5);
+        isle.add(new THREE.Mesh(new THREE.CylinderGeometry(3.0, 1.4, 1.2, 16), matWhitewash));
+        const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.55, 12, 12), matCyanGlow);
+        beacon.position.y = 1.2;
+        isle.add(beacon);
+        wonderGroups.skyIslands.add(isle);
+      }
+
+      wonderGroups.skyArk = new THREE.Group();
+      wonderGroups.skyArk.position.set(-14.0, 1.8, -58.0);
+      wonderGroups.skyArk.visible = false;
+      scene.add(wonderGroups.skyArk);
+      wonderGroups.skyArk.add(new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.2, 9.6), matWhitewash));
+      const arkRing = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.16, 12, 32), matGoldGlow);
+      arkRing.rotation.y = Math.PI / 2;
+      wonderGroups.skyArk.add(arkRing);
+
+      wonderGroups.triadBeams = new THREE.Group();
+      wonderGroups.triadBeams.visible = false;
+      scene.add(wonderGroups.triadBeams);
+      const beamL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.28, 74.0), matCyanGlow);
+      beamL.position.set(-3.5, 4.2, -25.0);
+      wonderGroups.triadBeams.add(beamL);
+      const beamR = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.28, 74.0), matGoldGlow);
+      beamR.position.set(3.5, 4.2, -25.0);
+      wonderGroups.triadBeams.add(beamR);
+
+      wonderGroups.goldenGrove = new THREE.Group();
+      wonderGroups.goldenGrove.visible = false;
+      scene.add(wonderGroups.goldenGrove);
+      [[-7.5, -56], [7.5, -56], [-6.2, -62], [6.2, -62]].forEach(([tx, tz]) => {
+        const tg = new THREE.Group();
+        tg.position.set(tx, 0.4, tz);
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.35, 2.6, 10), matLimestone);
+        trunk.position.y = 1.3;
+        tg.add(trunk);
+        const canopy = new THREE.Mesh(new THREE.DodecahedronGeometry(1.55, 1), matGoldGlow);
+        canopy.position.y = 3.1;
+        tg.add(canopy);
+        wonderGroups.goldenGrove.add(tg);
+      });
+
+      // Input Listeners
+      window.addEventListener('resize', onResize);
+      window.addEventListener('keydown', (e) => {
+        keys[e.code] = true;
+        if (e.code === 'Digit1') teleportToAltar(0);
+        if (e.code === 'Digit2') teleportToAltar(1);
+        if (e.code === 'Digit3') teleportToAltar(2);
+        if (e.code === 'Digit4') teleportToAltar(3);
+        if (e.code === 'KeyL') cycleLighting();
+        if (e.code === 'KeyJ') {
+          const modal = document.getElementById('journal-modal');
+          toggleJournal(modal.classList.contains('hidden'));
+        }
+        if (e.code === 'KeyR') clearCurrentAltar();
+      });
+      window.addEventListener('keyup', (e) => { keys[e.code] = false; });
+
+      canvas.addEventListener('mousedown', (e) => {
+        isDraggingLook = true;
+        prevMouse.x = e.clientX;
+        prevMouse.y = e.clientY;
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (isDraggingLook) {
+          const dx = e.clientX - prevMouse.x;
+          const dy = e.clientY - prevMouse.y;
+          prevMouse.x = e.clientX;
+          prevMouse.y = e.clientY;
+          player.yaw -= dx * 0.0032;
+          player.pitch = Math.max(-1.1, Math.min(1.1, player.pitch - dy * 0.0028));
+          return;
+        }
+        // Hover raycast to highlight 3D Stone Tablets, Sockets & Curiosities
+        const rect = canvas.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+          ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        raycaster.setFromCamera(mouse, camera);
+        const hits = raycaster.intersectObjects(interactables, false);
+        const promptEl = document.getElementById('reticle-prompt');
+        if (hits.length > 0 && hits[0].object.visible) {
+          const data = hits[0].object.userData;
+          canvas.style.cursor = 'pointer';
+          if (promptEl && data) {
+            if (data.interactType === 'rack_tablet') {
+              const def = getAltarDef(data.altarId);
+              const cols = [def.col0, def.col1, def.col2];
+              promptEl.textContent = `🪨 Click to place: "${cols[data.colIdx][data.itemIdx]}"`;
+              promptEl.classList.add('show');
+            } else if (data.interactType === 'curiosity') {
+              promptEl.textContent = `🔭 Click to inspect: ${CURIOSITIES[data.curiosityId].name}`;
+              promptEl.classList.add('show');
+            } else if (data.interactType === 'slot') {
+              promptEl.textContent = `🏛️ Click Socket ${data.slotIdx + 1} to clear or select`;
+              promptEl.classList.add('show');
+            } else {
+              promptEl.classList.remove('show');
+            }
+          }
+        } else {
+          canvas.style.cursor = 'grab';
+          if (promptEl) promptEl.classList.remove('show');
+        }
+      });
+      window.addEventListener('mouseup', () => { isDraggingLook = false; });
+
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isDraggingLook = true;
+          prevMouse.x = e.touches[0].clientX;
+          prevMouse.y = e.touches[0].clientY;
+        }
+      }, { passive: true });
+      canvas.addEventListener('touchmove', (e) => {
+        if (!isDraggingLook || e.touches.length !== 1) return;
+        const dx = e.touches[0].clientX - prevMouse.x;
+        const dy = e.touches[0].clientY - prevMouse.y;
+        prevMouse.x = e.touches[0].clientX;
+        prevMouse.y = e.touches[0].clientY;
+        player.yaw -= dx * 0.0035;
+        player.pitch = Math.max(-1.0, Math.min(1.0, player.pitch - dy * 0.003));
+      }, { passive: true });
+      canvas.addEventListener('touchend', () => { isDraggingLook = false; });
+
+      // Click in 3D to pick up a 3D Stone Tablet on the Rack, inspect a Curiosity, or select a Socket
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const mouse = new THREE.Vector2(
+          ((e.clientX - rect.left) / rect.width) * 2 - 1,
+          -((e.clientY - rect.top) / rect.height) * 2 + 1
+        );
+        raycaster.setFromCamera(mouse, camera);
+        const hits = raycaster.intersectObjects(interactables, false);
+        if (hits.length > 0) {
+          const data = hits[0].object.userData;
+          if (!data) return;
+          if (data.interactType === 'curiosity') {
+            triggerCuriosity(data.curiosityId);
+            return;
+          }
+          if (data.interactType === 'rack_tablet') {
+            if (currentAltarId !== data.altarId) {
+              setActiveAltarUI(data.altarId);
+            }
+            placeTablet(data.colIdx, data.itemIdx);
+            return;
+          }
+          if (typeof data.altarId === 'number') {
+            if (currentAltarId !== data.altarId) {
+              setActiveAltarUI(data.altarId);
+            }
+            if (typeof data.slotIdx === 'number') {
+              selectSlot(data.slotIdx);
+            }
+          }
+        }
+      });
+    }
+
+    function onResize() {
+      if (!camera || !renderer) return;
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // ==========================================================================
+    // 3. AEGEAN TIME-OF-DAY LIGHTING DIAL (NOON / PINE DUSK / MOONLIT MASQUE)
+    // ==========================================================================
+    function cycleLighting() {
+      lightingMode = (lightingMode + 1) % 3;
+      const lbl = document.getElementById('lighting-label');
+
+      if (lightingMode === 0) {
+        // Blinding Aegean Noon
+        lbl.textContent = '☀️ Light: Aegean Noon';
+        skyMat.uniforms.topColor.value.setHex(0x0c4a8a);
+        skyMat.uniforms.midColor.value.setHex(0x3898d8);
+        skyMat.uniforms.horizonColor.value.setHex(0xdbeafe);
+        scene.fog.color.setHex(0x4a82a8);
+        hemiLight.intensity = 0.88;
+        sunLight.intensity = 1.45;
+        sunLight.color.setHex(0xfff7ed);
+        waterUniforms.uDeepColor.value.setHex(0x063966);
+        waterUniforms.uShallowColor.value.setHex(0x0ea5e9);
+      } else if (lightingMode === 1) {
+        // Amber Pine Dusk
+        lbl.textContent = '🌅 Light: Bourani Dusk';
+        skyMat.uniforms.topColor.value.setHex(0x0b192c);
+        skyMat.uniforms.midColor.value.setHex(0x4c2a4c);
+        skyMat.uniforms.horizonColor.value.setHex(0xf59e0b);
+        scene.fog.color.setHex(0x2d1e30);
+        hemiLight.intensity = 0.62;
+        sunLight.intensity = 1.25;
+        sunLight.color.setHex(0xfdba74);
+        waterUniforms.uDeepColor.value.setHex(0x091e36);
+        waterUniforms.uShallowColor.value.setHex(0x1d4e68);
+        playHarpsichordArpeggio([293.66, 349.23, 440.0, 587.33]);
+      } else {
+        // Moonlit Torch Masque
+        lbl.textContent = '🌙 Light: Moonlit Masque';
+        skyMat.uniforms.topColor.value.setHex(0x030712);
+        skyMat.uniforms.midColor.value.setHex(0x0f172a);
+        skyMat.uniforms.horizonColor.value.setHex(0x1e293b);
+        scene.fog.color.setHex(0x091122);
+        hemiLight.intensity = 0.35;
+        sunLight.intensity = 0.65;
+        sunLight.color.setHex(0x93c5fd);
+        waterUniforms.uDeepColor.value.setHex(0x020814);
+        waterUniforms.uShallowColor.value.setHex(0x0c2d48);
+        playChord([220.0, 329.63, 493.88], 0.55);
+      }
+    }
+
+    function triggerCuriosity(curId = currentAltarId) {
+      const cur = CURIOSITIES[curId] || CURIOSITIES[0];
+      if (currentAltarId !== cur.altarId) {
+        teleportToAltar(cur.altarId);
+      }
+      const strip = document.getElementById('effect-strip');
+      const textEl = document.getElementById('effect-text');
+      strip.className = 'effect-strip clue interactive';
+      textEl.textContent = cur.note;
+      playHarpsichordArpeggio();
+    }
+
+    function inspectCuriosity() {
+      triggerCuriosity(currentAltarId);
+    }
+
+    // ==========================================================================
+    // 4. ALTAR DOCK UI, LEVEL SWITCHER & GRAMMAR EVALUATION
+    // ==========================================================================
+    function getAltarDef(altarId = currentAltarId) {
+      return CURRICULUM[levelMode][altarId];
+    }
+
+    function refreshAll3DRackTextures() {
+      for (let a = 0; a < 4; a++) {
+        const def = CURRICULUM[levelMode][a];
+        const cols = [def.col0, def.col1, def.col2];
+        if (!rackMeshes3D[a]) continue;
+        for (let c = 0; c < 3; c++) {
+          if (!rackMeshes3D[a][c]) continue;
+          for (let r = 0; r < 5; r++) {
+            const mesh = rackMeshes3D[a][c][r];
+            if (mesh && mesh.material) {
+              mesh.material.map = makeStoneTabletTexture(cols[c][r], def.roles[c], false, false);
+              mesh.material.needsUpdate = true;
+            }
+          }
+        }
+      }
+    }
+
+    function toggleRackDrawer() {
+      const drawer = document.getElementById('rack-drawer');
+      const btn = document.getElementById('rack-drawer-btn');
+      if (!drawer) return;
+      const isOpen = drawer.classList.toggle('open');
+      if (btn) {
+        btn.textContent = isOpen ? '▼ Hide Tray' : '▲ Word Tray';
+      }
+    }
+
+    function setLevelMode(mode) {
+      if (mode !== 'c1' && mode !== 'a1') return;
+      levelMode = mode;
+      document.getElementById('mode-toggle-label').textContent =
+        levelMode === 'c1' ? '🎓 Mode: C1/C2 & IELTS' : '🌱 Mode: A1–B1 Foundations';
+      document.getElementById('book-mode-c1').classList.toggle('active', levelMode === 'c1');
+      document.getElementById('book-mode-a1').classList.toggle('active', levelMode === 'a1');
+      refreshAll3DRackTextures();
+      setActiveAltarUI(currentAltarId);
+      renderJournalContent();
+      playChord([392.0, 523.25], 0.35);
+    }
+
+    function toggleLevelMode() {
+      setLevelMode(levelMode === 'c1' ? 'a1' : 'c1');
+    }
+
+    function teleportToAltar(altarId) {
+      const def = getAltarDef(altarId);
+      player.x = def.pos.x;
+      player.z = def.pos.z;
+      player.yaw = def.pos.yaw;
+      player.pitch = -0.22;
+      setActiveAltarUI(altarId);
+      playChord([330.0, 440.0, 554.37], 0.3);
+    }
+
+    function setActiveAltarUI(altarId) {
+      currentAltarId = altarId;
+      for (let i = 0; i < 4; i++) {
+        const btn = document.getElementById(`nav-altar-${i}`);
+        if (btn) btn.classList.toggle('active', i === altarId);
+      }
+
+      const def = getAltarDef(altarId);
+      document.getElementById('era-banner').textContent = def.eraBanner;
+      document.getElementById('dock-altar-title').textContent = def.title;
+      document.getElementById('dock-altar-formula').textContent = def.formula;
+
+      for (let s = 0; s < 3; s++) {
+        document.getElementById(`socket-role-${s}`).textContent = def.roles[s];
+      }
+
+      renderSocketsAndRack();
+    }
+
+    function selectSlot(slotIdx) {
+      if (selectedSlotIdx === slotIdx && altarState[currentAltarId][slotIdx] !== null) {
+        altarState[currentAltarId][slotIdx] = null;
+        playStoneSlide();
+        evaluateAltar(currentAltarId);
+      } else {
+        selectedSlotIdx = slotIdx;
+      }
+      renderSocketsAndRack();
+    }
+
+    function placeTablet(colIdx, itemIdx) {
+      altarState[currentAltarId][colIdx] = itemIdx;
+      playStoneSlide();
+
+      for (let n = 0; n < 3; n++) {
+        const nextSlot = (colIdx + 1 + n) % 3;
+        if (altarState[currentAltarId][nextSlot] === null) {
+          selectedSlotIdx = nextSlot;
+          break;
+        }
+      }
+
+      renderSocketsAndRack();
+      evaluateAltar(currentAltarId);
+    }
+
+    function clearCurrentAltar() {
+      altarState[currentAltarId] = [null, null, null];
+      selectedSlotIdx = 0;
+      playStoneSlide();
+      evaluateAltar(currentAltarId);
+      renderSocketsAndRack();
+    }
+
+    function loadSampleCombination() {
+      const nextIdx = (activeWonder[currentAltarId] + 1) % 5;
+      altarState[currentAltarId] = [nextIdx, nextIdx, nextIdx];
+      playStoneSlide();
+      renderSocketsAndRack();
+      evaluateAltar(currentAltarId);
+    }
+
+    function renderSocketsAndRack() {
+      const def = getAltarDef(currentAltarId);
+      const slots = altarState[currentAltarId];
+      const cols = [def.col0, def.col1, def.col2];
+      const isEnergized = activeWonder[currentAltarId] !== -1;
+
+      for (let s = 0; s < 3; s++) {
+        const box = document.getElementById(`socket-ui-${s}`);
+        const wordEl = document.getElementById(`socket-word-${s}`);
+        const val = slots[s];
+
+        box.classList.toggle('selected-slot', s === selectedSlotIdx);
+        box.classList.toggle('filled', val !== null);
+        box.classList.toggle('energized', isEnergized);
+
+        wordEl.textContent = val !== null ? cols[s][val] : '[ Empty Socket ]';
+
+        if (tabletMeshes3D[currentAltarId] && tabletMeshes3D[currentAltarId][s]) {
+          const tMesh = tabletMeshes3D[currentAltarId][s];
+          tMesh.visible = (val !== null);
+          if (val !== null && tMesh.material) {
+            tMesh.material.map = makeStoneTabletTexture(cols[s][val], def.roles[s], true, isEnergized);
+            tMesh.material.needsUpdate = true;
+          }
+        }
+      }
+
+      // Update 3D Rack Stones in front of the Altar (dim/recess stone when socketed)
+      if (rackMeshes3D[currentAltarId]) {
+        for (let c = 0; c < 3; c++) {
+          for (let r = 0; r < 5; r++) {
+            const rMesh = rackMeshes3D[currentAltarId][c][r];
+            if (!rMesh) continue;
+            const inUse = (slots[c] === r);
+            rMesh.position.y = rMesh.userData.baseY - (inUse ? 0.055 : 0);
+            rMesh.scale.set(1, inUse ? 0.45 : 1, 1);
+          }
+        }
+      }
+
+      for (let c = 0; c < 3; c++) {
+        const container = document.getElementById(`rack-col-${c}`);
+        container.innerHTML = '';
+        const seen = new Set();
+        cols[c].forEach((label, idx) => {
+          if (seen.has(label)) return;
+          seen.add(label);
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'tablet-btn' + (slots[c] === idx ? ' in-use' : '');
+          btn.textContent = label;
+          btn.onclick = () => placeTablet(c, idx);
+          container.appendChild(btn);
+        });
+      }
+    }
+
+    function evaluateAltar(altarId) {
+      const def = getAltarDef(altarId);
+      const [i0, i1, i2] = altarState[altarId];
+      const strip = document.getElementById('effect-strip');
+      const textEl = document.getElementById('effect-text');
+
+      if (i0 === null || i1 === null || i2 === null) {
+        activeWonder[altarId] = -1;
+        applyWorldWonders();
+        strip.className = 'effect-strip interactive';
+        textEl.textContent = `Act ${altarId + 1}: Slide carved marble tablets into all 3 sockets (or click 🔭 Inspect Conchis’s Clue) to test the Godgame.`;
+        return;
+      }
+
+      const w0 = def.col0[i0];
+      const w1 = def.col1[i1];
+      const w2 = def.col2[i2];
+
+      let solvedIdx = -1;
+
+      if (levelMode === 'c1') {
+        if (i0 === i1 && i1 === i2) {
+          solvedIdx = i2;
+        }
+      } else {
+        const isClash = w0.includes('Clash') || w1.includes('Clash');
+        if (!isClash) {
+          if (altarId === 2) {
+            const singSubj = (w0 === 'I' || w0 === 'THE TOWER');
+            const plurSubj = (w0 === 'WE');
+            const plurComplement = (w2 === 'NOMADS' || w2 === 'KINGS');
+            if (singSubj && w1 === 'WAS' && !plurComplement) solvedIdx = i2;
+            if (plurSubj && w1 === 'WERE') solvedIdx = i2;
+          } else {
+            solvedIdx = i2;
+          }
+        }
+      }
+
+      if (solvedIdx !== -1) {
+        activeWonder[altarId] = solvedIdx;
+        const wonder = def.wonders[solvedIdx];
+        const discKey = `${altarId}_${solvedIdx}`;
+        discovered.add(discKey);
+        document.getElementById('discovery-count').textContent = `${discovered.size}/20`;
+
+        strip.className = 'effect-strip solved interactive';
+        textEl.textContent = wonder.msg;
+        playHarpsichordArpeggio([392.0, 493.88, 587.33, 783.99]);
+        applyWorldWonders();
+        renderSocketsAndRack();
+      } else {
+        activeWonder[altarId] = -1;
+        applyWorldWonders();
+        strip.className = 'effect-strip clash interactive';
+        const customHint = def.explainClash
+          ? def.explainClash(i0, i1, i2)
+          : `⚡ Agreement Clash: "${w0} ${w1} ${w2}" — Check singular vs. plural subject–verb agreement!`;
+        textEl.textContent = customHint;
+        playChord([195.0, 182.0], 0.35, 'sawtooth');
+        renderSocketsAndRack();
+      }
+    }
+
+    function applyWorldWonders() {
+      player.speedMultiplier = 1.0;
+      player.gravityMultiplier = 1.0;
+      player.targetEyeHeight = 2.95;
+      playerLight.intensity = 0.65;
+      if (waterUniforms) waterUniforms.uFreeze.value = 0.0;
+
+      const w0 = activeWonder[0];
+      if (wonderGroups.floatingStones) wonderGroups.floatingStones.visible = (w0 === 1);
+      wonderGroups.obeliskTargetY = (w0 === 3) ? 4.8 : 0.4;
+      if (w0 === 0) {
+        playerLight.intensity = 2.6;
+      } else if (w0 === 1) {
+        player.gravityMultiplier = 0.32;
+      } else if (w0 === 2) {
+        player.speedMultiplier = 2.1;
+      } else if (w0 === 3) {
+        player.targetEyeHeight = 5.2;
+      } else if (w0 === 4 && waterUniforms) {
+        waterUniforms.uFreeze.value = 1.0;
+      }
+
+      const w1 = activeWonder[1];
+      if (wonderGroups.hearthLanterns) wonderGroups.hearthLanterns.visible = (w1 === 0);
+      if (wonderGroups.energyArch) wonderGroups.energyArch.visible = (w1 === 1);
+      wonderGroups.stairsTargetY = (w1 === 2) ? 0.0 : -6.5;
+      if (wonderGroups.astrolabeGroup) wonderGroups.astrolabeGroup.visible = (w1 === 3);
+      if (wonderGroups.aegisDome) wonderGroups.aegisDome.visible = (w1 === 4);
+
+      const w2 = activeWonder[2];
+      wonderGroups.archTargetY = (w2 === 0) ? 3.2 : 0.0;
+      if (wonderGroups.runicStelae) wonderGroups.runicStelae.visible = (w2 === 1);
+      if (wonderGroups.windShip) wonderGroups.windShip.visible = (w2 === 2);
+      if (wonderGroups.sovereignDais) wonderGroups.sovereignDais.visible = (w2 === 3);
+      wonderGroups.clockworkActive = (w2 === 4);
+
+      const w3 = activeWonder[3];
+      if (wonderGroups.timePrism) wonderGroups.timePrism.visible = (w3 === 0);
+      if (wonderGroups.skyIslands) wonderGroups.skyIslands.visible = (w3 === 1);
+      if (wonderGroups.skyArk) wonderGroups.skyArk.visible = (w3 === 2);
+      if (wonderGroups.triadBeams) wonderGroups.triadBeams.visible = (w3 === 3);
+      if (wonderGroups.goldenGrove) wonderGroups.goldenGrove.visible = (w3 === 4);
+    }
+
+    // ==========================================================================
+    // 5. THE BOURANI DOSSIER RENDERING
+    // ==========================================================================
+    function renderJournalContent() {
+      const bpContainer = document.getElementById('book-blueprint-details');
+      const listContainer = document.getElementById('journal-discovery-list');
+      const progLabel = document.getElementById('journal-progress-label');
+
+      progLabel.textContent = `${discovered.size} / 20 Unmasked`;
+      bpContainer.innerHTML = CURRICULUM[levelMode]
+        .map((a) => `<div style="padding:0.42rem 0.6rem; background:rgba(0,0,0,0.32); border-radius:8px; border-left:3px solid #d99b43;">${a.blueprint}</div>`)
+        .join('');
+
+      const itemsHtml = [];
+      CURRICULUM[levelMode].forEach((altar, aIdx) => {
+        altar.wonders.forEach((w, wIdx) => {
+          const isUnlocked = discovered.has(`${aIdx}_${wIdx}`);
+          const sampleSentence = `${altar.col0[wIdx]} ${altar.col1[wIdx]} ${altar.col2[wIdx]}`;
+          itemsHtml.push(`
+            <div class="discovery-item ${isUnlocked ? 'unlocked' : ''}">
+              <div>
+                <strong>${isUnlocked ? '✓ ' : '🎭 '}${w.name}</strong>
+                <div style="font-size:0.7rem; color:#cbd5e1;">${isUnlocked ? sampleSentence : `Act ${aIdx + 1} (${altar.title.split('—')[0].trim()})`}</div>
+              </div>
+              <button type="button" class="hud-btn" onclick="IsleGame.teleportToAltar(${aIdx}); IsleGame.toggleJournal(false);">
+                Visit &rarr;
+              </button>
+            </div>
+          `);
+        });
+      });
+      listContainer.innerHTML = itemsHtml.join('');
+    }
+
+    function toggleJournal(show) {
+      initAudio();
+      const modal = document.getElementById('journal-modal');
+      if (show) {
+        renderJournalContent();
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    // ==========================================================================
+    // 6. MAIN ANIMATION & PHYSICS LOOP
+    // ==========================================================================
+    let lastTime = performance.now();
+
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+
+      if (waterUniforms) {
+        waterUniforms.uTime.value = now * 0.001;
+      }
+
+      // Spin Conchis's 3D Curiosity Markers gently
+      curiosityMarkers.forEach((m, i) => {
+        m.rotation.y += dt * 1.1;
+        m.position.y = 1.35 + Math.sin(now * 0.003 + i) * 0.08;
+      });
+
+      let moveForward = 0;
+      let moveRight = 0;
+      if (keys['KeyW'] || keys['ArrowUp']) moveForward += 1;
+      if (keys['KeyS'] || keys['ArrowDown']) moveForward -= 1;
+      if (keys['KeyD'] || keys['ArrowRight']) moveRight += 1;
+      if (keys['KeyA'] || keys['ArrowLeft']) moveRight -= 1;
+
+      const speed = 6.5 * player.speedMultiplier;
+      const sinY = Math.sin(player.yaw);
+      const cosY = Math.cos(player.yaw);
+
+      player.x += (-sinY * moveForward + cosY * moveRight) * speed * dt;
+      player.z += (-cosY * moveForward - sinY * moveRight) * speed * dt;
+
+      player.x = Math.max(-15.5, Math.min(15.5, player.x));
+      player.z = Math.max(-71.0, Math.min(22.0, player.z));
+
+      if (keys['Space'] && player.onGround) {
+        player.vy = 6.8;
+        player.onGround = false;
+        playChord([220.0, 330.0], 0.15);
+      }
+      if (!player.onGround) {
+        player.vy -= 15.0 * player.gravityMultiplier * dt;
+        player.y += player.vy * dt;
+        if (player.y <= player.targetEyeHeight) {
+          player.y = player.targetEyeHeight;
+          player.vy = 0;
+          player.onGround = true;
+        }
+      } else {
+        player.y += (player.targetEyeHeight - player.y) * 5.0 * dt;
+      }
+
+      if (player.z < -42.0 && currentAltarId !== 3) {
+        setActiveAltarUI(3);
+      } else if (player.z >= -42.0 && player.z < -8.0 && currentAltarId !== 2) {
+        setActiveAltarUI(2);
+      } else if (player.z >= -8.0 && (currentAltarId === 2 || currentAltarId === 3)) {
+        setActiveAltarUI(player.x >= 0 ? 1 : 0);
+      }
+
+      camera.position.set(player.x, player.y, player.z);
+      camera.rotation.order = 'YXZ';
+      camera.rotation.y = player.yaw;
+      camera.rotation.x = player.pitch;
+      playerLight.position.set(player.x, player.y + 0.6, player.z);
+
+      if (wonderGroups.centralObelisk) {
+        wonderGroups.centralObelisk.position.y += (wonderGroups.obeliskTargetY - wonderGroups.centralObelisk.position.y) * 3.0 * dt;
+      }
+      if (wonderGroups.marbleStairs) {
+        wonderGroups.marbleStairs.position.y += (wonderGroups.stairsTargetY - wonderGroups.marbleStairs.position.y) * 3.2 * dt;
+      }
+      if (wonderGroups.shatteredArch) {
+        wonderGroups.shatteredArch.position.y += (wonderGroups.archTargetY - wonderGroups.shatteredArch.position.y) * 2.8 * dt;
+      }
+      if (wonderGroups.astrolabeGroup && wonderGroups.astrolabeGroup.visible) {
+        wonderGroups.astrolabeRings.forEach((r, idx) => {
+          r.rotation.y += dt * (0.6 + idx * 0.3);
+          r.rotation.x += dt * (0.35 - idx * 0.15);
+        });
+      }
+      if (wonderGroups.clockworkActive && wonderGroups.clockPendulum) {
+        wonderGroups.clockPendulum.rotation.z = Math.sin(now * 0.0032) * 0.45;
+        if (wonderGroups.clockGear1) wonderGroups.clockGear1.rotation.z += dt * 1.4;
+      }
+      if (wonderGroups.timePrism && wonderGroups.timePrism.visible) {
+        wonderGroups.timePrism.rotation.y += dt * 0.85;
+        wonderGroups.timePrism.position.y = 5.5 + Math.sin(now * 0.0025) * 0.55;
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      init3D();
+      setActiveAltarUI(0);
+      renderJournalContent();
+      requestAnimationFrame(animate);
+    });
+
+    return {
+      teleportToAltar,
+      selectSlot,
+      clearCurrentAltar,
+      loadSampleCombination,
+      toggleRackDrawer,
+      toggleLevelMode,
+      setLevelMode,
+      toggleJournal,
+      toggleAudio,
+      cycleLighting,
+      inspectCuriosity,
+      triggerCuriosity
+    };
+  })();
+  </script>
+</body>
+</html>

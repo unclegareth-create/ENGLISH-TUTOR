@@ -9,7 +9,7 @@
      1. Any element carrying  data-course-bridge  (optional manual mount).
      2. A known finish panel: the end screen of Phrasal Reactor, Word Factory
         and Boardroom Pitch (#end-screen .modal-content), or the Grammar Crypt
-        debrief (#lead-modal .modal-panel).
+        debrief (#lead-modal .modal-panel, #endModal).
      3. Just before the page footer.
      4. Otherwise, at the end of <body>.
 
@@ -152,7 +152,7 @@
         }
 
         // 2. Known finish panels inside the arcade games.
-        const finish = document.querySelector('#end-screen .modal-content, #lead-modal .modal-panel');
+        const finish = document.querySelector('#end-screen .modal-content, #lead-modal .modal-panel, #endModal');
         if (finish) {
             finish.classList.add('gmcb-host-scroll');
             finish.appendChild(buildCard(true));
@@ -160,7 +160,7 @@
         }
 
         // 3. Just before the page footer; 4. otherwise the end of the page.
-        const footers = document.querySelectorAll('body > footer, footer');
+        const footers = document.querySelectorAll('body > footer, footer:not(.bottom-tray)');
         const footer = footers.length ? footers[footers.length - 1] : null;
         const card = buildCard(false);
         if (footer && footer.parentNode) {
