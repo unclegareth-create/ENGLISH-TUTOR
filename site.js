@@ -271,14 +271,14 @@
             goalInput.classList.add('ring-2', 'ring-emerald-400', 'border-emerald-400');
         }
         if (subjectInput) {
-            subjectInput.value = isWaitlist ? 'January Waitlist / Free 1-Paragraph Look: ' + pkg : 'Package Order / Enquiry: ' + pkg;
+            subjectInput.value = isWaitlist ? 'General Enquiry / Free 1-Paragraph Look: ' + pkg : 'Package Order / Enquiry: ' + pkg;
         }
         if (formTitle) {
-            formTitle.textContent = isWaitlist ? 'Join the Free January Waitlist' : 'Selected: ' + pkg;
+            formTitle.textContent = isWaitlist ? 'Ask a Question or Send a Short Paragraph' : 'Selected: ' + pkg;
         }
         if (formSubtitle) {
             formSubtitle.textContent = isWaitlist
-                ? 'No payment needed. Leave your details below (and paste one short paragraph of your writing if you would like a quick free note from me).'
+                ? 'No payment needed. Leave your question or goals below (and paste one short paragraph of your writing if you would like a quick free note from me).'
                 : isAudit
                     ? 'Complete your details below for your \u00a329 Stripe Payment Link and Google Doc essay upload instructions (Wise or PayPal also available on request).'
                     : 'Complete your details and preferred days/times below for your Stripe Payment Link (or request Wise / PayPal).';
@@ -286,20 +286,20 @@
         if (formBadge) {
             formBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
             formBadge.innerHTML = isWaitlist
-                ? '<i class="fa-regular fa-calendar-check" aria-hidden="true"></i> Free January Waitlist &bull; No Payment Required'
+                ? '<i class="fa-regular fa-comments" aria-hidden="true"></i> Direct Question &bull; No Payment Required'
                 : '<i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Package Checkout &amp; Scheduling';
         }
         if (pkgBanner && pkgNameEl) {
             pkgNameEl.textContent = pkg;
             if (pkgNextStepEl) {
                 if (isWaitlist) {
-                    pkgNextStepEl.textContent = 'No payment required today. Tell me your target exam or goal below — and paste one short paragraph of your writing (up to 120 words) if you would like a quick free note from me while you wait for January.';
+                    pkgNextStepEl.textContent = 'No payment required today. Tell me your target exam or goal below — and paste one short paragraph of your writing (up to 120 words) if you would like a quick free note from me.';
                 } else if (resolvedTier === 'sprint_10_650') {
-                    pkgNextStepEl.textContent = 'Click "Pay Full Pack (£650) via Stripe" to reserve for mid-January, or submit the form below to claim your £35 starter-session credit (£615 remaining balance), confirm January times, or request Wise/PayPal.';
+                    pkgNextStepEl.textContent = 'Click "Pay Full Pack (£650) via Stripe" to check out now, or submit the form below to claim your £35 starter-session credit (£615 remaining balance), confirm weekly lesson times, or request Wise/PayPal.';
                 } else if (resolvedTier === 'pack_12_780') {
-                    pkgNextStepEl.textContent = 'Click "Pay Full Pack (£780) via Stripe" to reserve for mid-January, or submit the form below to claim your £35 starter-session credit (£745 remaining balance), confirm January times, or request Wise/PayPal.';
+                    pkgNextStepEl.textContent = 'Click "Pay Full Pack (£780) via Stripe" to check out now, or submit the form below to claim your £35 starter-session credit (£745 remaining balance), confirm weekly lesson times, or request Wise/PayPal.';
                 } else if (resolvedTier === 'pack_5_375') {
-                    pkgNextStepEl.textContent = 'Click "Pay via Stripe" to reserve your £375 pack for mid-January, or submit the form below to confirm January times or request Wise/PayPal.';
+                    pkgNextStepEl.textContent = 'Click "Pay via Stripe" to check out now, or submit the form below to confirm weekly lesson times or request Wise/PayPal.';
                 } else {
                     pkgNextStepEl.textContent = stripeUrl
                         ? 'Click "Pay via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
@@ -323,7 +323,7 @@
         }
         if (submitBtn) {
             submitBtn.innerHTML = isWaitlist
-                ? 'Join Free January Waitlist &rarr;'
+                ? 'Send Question &rarr;'
                 : isAudit
                     ? 'Request \u00a329 Stripe Link &amp; Upload Details &rarr;'
                     : 'Request Payment Link &amp; Schedule &rarr;';
