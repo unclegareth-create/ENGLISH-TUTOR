@@ -1,10 +1,14 @@
 /* ==========================================================
-   Analytics, Click Tracking (GoatCounter) & Funnel Telemetry
+   Analytics, Click Tracking (GoatCounter + Optional GA4) &
+   LLM / AI Referral Telemetry
    ----------------------------------------------------------
    GoatCounter is free for personal sites and sets NO cookies,
    so no cookie-consent banner is needed under UK/EU rules.
-   Also provides window.trackFunnelEvent and window.showDiagnosticGate
-   for conversion attribution and in-game diagnostic modals.
+   If a GA4 Measurement ID (G-XXXXXXXXXX) is configured below
+   or via window.GA_MEASUREMENT_ID, GA4 loads with cookieless
+   Consent Mode v2 defaults (analytics_storage: 'denied').
+   Also tracks AI/LLM referrals (ChatGPT, Perplexity, Claude,
+   Gemini, Copilot) and attaches attribution to enquiries.
    ========================================================== */
 (() => {
     'use strict';
@@ -18,21 +22,89 @@
     }
 
     // UK ICO Children's Code (Age-Appropriate Design Code) Guard:
-    // Never load external analytics or store attribution trails on Young Learners pages (ages 6-12).
+    // Never load external analytics or store attribution trails on Young Learners pages (ages 6-12)
+    // or unlisted private student portals (/s/).
     const currentPath = (window.location.pathname || '').toLowerCase();
-    if (currentPath.includes('professor-west-study')) {
+    if (currentPath.includes('professor-west-study') || /(^|\/)s\//.test(currentPath)) {
         window.trackFunnelEvent = function () {};
         window.showDiagnosticGate = function () {};
         return;
     }
 
     const GOATCOUNTER_CODE = 'garethenglish';   // <-- Registered GoatCounter site code
+    const GA4_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || ''; // <-- Optional GA4 ID (e.g. 'G-XXXXXXXXXX')
     const LAST_FREE_TOOL_KEY = 'gm_last_free_tool';
+    const AI_REFERRER_KEY = 'gm_ai_referrer';
 
-    const FREE_GAME_RE = /(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch|abyssal-bathysphere|darjeeling-signal-box|midnight-study-desk|blueprint-vault|chronicle-88)\.html/i;
-    const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|preply-worksheets-backup\/[^/]+)\.html/i;
-    const FREE_GOTHIC_RE = /(^|\/)(dracula-unit1-carpathian-threshold|frankenstein-unit1-spark-of-being|jekyll-unit1-soho-threshold|baskerville-unit1-curse-of-the-moors|alice-unit13-down-the-rabbit-hole)\.html/i;
-    const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses)\.(html|pdf)/i;
+    // Optional Google Analytics 4 (GA4) Bootstrap with UK/EU Cookieless Consent Mode v2
+    if (GA4_MEASUREMENT_ID && /^G-[A-Z0-9]+$/i.test(GA4_MEASUREMENT_ID) && typeof window.gtag !== 'function') {
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { window.dataLayer.push(arguments); };
+        window.gtag('consent', 'default', {
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+            analytics_storage: 'denied',
+            wait_for_update: 500
+        });
+        window.gtag('js', new Date());
+        window.gtag('config', GA4_MEASUREMENT_ID, {
+            anonymize_ip: true,
+            allow_google_signals: false,
+            allow_ad_personalization_signals: false
+        });
+        const gaScript = document.createElement('script');
+        gaScript.async = true;
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(GA4_MEASUREMENT_ID);
+        document.head.appendChild(gaScript);
+    }
+
+    // Detect & Persist LLM / AI Search Engine Referrals (ChatGPT, Perplexity, Claude, Gemini, Copilot, etc.)
+    const detectAiSource = () => {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const utmSource = (params.get('utm_source') || params.get('ref') || '').toLowerCase();
+            const ref = (document.referrer || '').toLowerCase();
+
+            const aiMatchers = [
+                { id: 'chatgpt', re: /chatgpt\.com|chat\.openai\.com|openai/ },
+                { id: 'perplexity', re: /perplexity\.ai|perplexity/ },
+                { id: 'claude', re: /claude\.ai|anthropic/ },
+                { id: 'gemini', re: /gemini\.google\.com|bard\.google\.com/ },
+                { id: 'copilot', re: /copilot\.microsoft\.com|bing\.com\/chat/ },
+                { id: 'you_ai', re: /you\.com/ },
+                { id: 'phind', re: /phind\.com/ },
+                { id: 'mistral', re: /chat\.mistral\.ai/ },
+                { id: 'deepseek', re: /chat\.deepseek\.com/ },
+                { id: 'grok', re: /grok\.com|x\.ai/ }
+            ];
+
+            for (const m of aiMatchers) {
+                if (m.re.test(utmSource) || m.re.test(ref)) {
+                    const existing = sessionStorage.getItem(AI_REFERRER_KEY);
+                    try { localStorage.setItem(AI_REFERRER_KEY, m.id); } catch (_) {}
+                    try { sessionStorage.setItem(AI_REFERRER_KEY, m.id); } catch (_) {}
+                    return { source: m.id, isNewSessionHit: existing !== m.id, rawRef: ref || utmSource };
+                }
+            }
+        } catch (_) {}
+        return null;
+    };
+
+    const getAiSource = () => {
+        try {
+            return sessionStorage.getItem(AI_REFERRER_KEY) || localStorage.getItem(AI_REFERRER_KEY) || '';
+        } catch (_) {
+            return '';
+        }
+    };
+
+    const detectedAi = detectAiSource();
+
+    const FREE_GAME_RE = /(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch|abyssal-bathysphere|darjeeling-signal-box|midnight-study-desk|blueprint-vault|chronicle-88|myst-island|operation-nobody|midnight-radio|belfast-tape-lab)\.html/i;
+    const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
+    const FREE_GOTHIC_RE = /(^|\/)(dracula-unit[123]-[a-z-]+|frankenstein-unit[123]-[a-z-]+|jekyll-unit[123]-[a-z-]+|baskerville-unit[123]-[a-z-]+|alice-unit1[345]-[a-z-]+|the-gothic-canon-c1-c2-compendium|dark-academia-world)\.html/i;
+    const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses|key-word-transformations|word-formation|ielts-c1-structural-shifts|ielts-speaking-part-3|business-english-meetings)\.(html|pdf)/i;
 
     const getLastFreeTool = () => {
         try {
@@ -79,6 +151,46 @@
             }
         };
         s.addEventListener('load', () => { while (queue.length) send(queue.shift()); });
+
+        // Fire LLM / AI Referral Telemetry when a visitor lands from ChatGPT, Perplexity, Claude, Gemini, Copilot, etc.
+        if (detectedAi && detectedAi.isNewSessionHit) {
+            const landingPage = currentSlug || 'index.html';
+            send(`ai-referral: ${detectedAi.source} -> ${landingPage}`);
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'ai_referral_landing', {
+                    ai_source: detectedAi.source,
+                    landing_page: landingPage
+                });
+            }
+        }
+
+        // Attach AI referral & attribution trail into contact/booking forms automatically
+        const enrichFormsWithAttribution = () => {
+            const aiSrc = getAiSource();
+            const lastTool = getLastFreeTool();
+            const forms = document.querySelectorAll('#contact-form, #lead-form');
+            forms.forEach((form) => {
+                if (aiSrc && !form.querySelector('input[name="ai_referrer"]')) {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden';
+                    inp.name = 'ai_referrer';
+                    inp.value = aiSrc;
+                    form.appendChild(inp);
+                }
+                if (lastTool && !form.querySelector('input[name="last_free_tool"]')) {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden';
+                    inp.name = 'last_free_tool';
+                    inp.value = lastTool;
+                    form.appendChild(inp);
+                }
+            });
+        };
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', enrichFormsWithAttribution);
+        } else {
+            enrichFormsWithAttribution();
+        }
 
         const label = (el) => (el.textContent || el.getAttribute('aria-label') || '')
             .replace(/\s+/g, ' ').trim().slice(0, 60) || 'link';
@@ -152,10 +264,12 @@
         window.trackFunnelEvent = function (eventName, params) {
             params = params || {};
             const lastFreeTool = getLastFreeTool();
+            const aiReferrer = getAiSource();
             const payload = {
                 event: eventName,
                 path: window.location.pathname,
                 last_free_tool: lastFreeTool,
+                ...(aiReferrer ? { ai_referrer: aiReferrer } : {}),
                 timestamp: new Date().toISOString(),
                 ...params
             };
@@ -168,16 +282,21 @@
             } catch (e) {}
 
             if (typeof window.gtag === 'function') {
-                window.gtag('event', eventName, params);
+                window.gtag('event', eventName, {
+                    last_free_tool: lastFreeTool,
+                    ...(aiReferrer ? { ai_referrer: aiReferrer } : {}),
+                    ...params
+                });
             }
             if (typeof window.clarity === 'function') {
                 window.clarity('set', 'last_funnel_step', eventName);
                 if (params.tier) window.clarity('set', 'selected_tier', params.tier);
+                if (aiReferrer) window.clarity('set', 'ai_referrer', aiReferrer);
             }
             if (window.goatcounter && typeof window.goatcounter.count === 'function') {
                 try {
                     window.goatcounter.count({
-                        path: eventName + (params.tier ? '/' + params.tier : '') + (lastFreeTool ? '/from=' + lastFreeTool : ''),
+                        path: eventName + (params.tier ? '/' + params.tier : '') + (lastFreeTool ? '/from=' + lastFreeTool : '') + (aiReferrer ? '/ai=' + aiReferrer : ''),
                         title: 'Funnel Event: ' + eventName,
                         event: true
                     });
@@ -236,7 +355,7 @@
                        style="display:block;text-align:center;background:#78350f;border:1px solid #f59e0b;color:#fef3c7;font-weight:700;padding:13px;border-radius:10px;text-decoration:none;font-size:14px;">
                       Explore the C1/C2 Gothic Course (5 Free Lessons / &pound;24 Full Course) &rarr;
                     </a>
-                    <a href="index.html#book-trial"
+                    <a href="index.html#contact"
                        onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'trial_35', pct: ${pct} })"
                        style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:13px;border-radius:10px;text-decoration:none;font-size:14px;box-shadow:0 4px 6px -1px rgba(37,99,235,0.4);">
                       Book a 30-Min 1-to-1 Trial with Gareth (&pound;35) &rarr;

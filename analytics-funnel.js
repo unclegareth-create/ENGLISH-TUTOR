@@ -88,8 +88,8 @@
     const diagnosedAccuracy = typeof dossierSummary?.weakestAccuracy === 'number' ? dossierSummary.weakestAccuracy : pct;
     const dossierCode = dossierSummary?.code || '';
     const bookingHref = dossierCode
-      ? `index.html?dossier=${encodeURIComponent(dossierCode)}#book-diagnostic`
-      : 'index.html#book-diagnostic';
+      ? `index.html?dossier=${encodeURIComponent(dossierCode)}#contact`
+      : 'index.html#contact';
 
     // Fire telemetry event
     window.trackFunnelEvent('diagnostic_gate_shown', { gameName, score, maxScore, pct, cefrEstimate, dossierCode });

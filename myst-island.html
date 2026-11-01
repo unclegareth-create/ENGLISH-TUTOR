@@ -1276,10 +1276,11 @@
     }
 
     // ==========================================================================
-    // 2. THREE.JS 3D PHRAXOS WORLD, AEGEAN LIGHTING & CONCHIS'S CURIOSITIES
+    // 2. THREE.JS 3D PHRAXOS WORLD, PBR/SHADOWS, ARCHITECTURE & CURIOSITIES
     // ==========================================================================
     let scene, camera, renderer, raycaster;
-    let skyMat, waterUniforms, hemiLight, sunLight, playerLight;
+    let skyMat, waterUniforms, hemiLight, sunLight, playerLight, dustParticles;
+    let inIntroScreen = true;
     const interactables = [];
     const tabletMeshes3D = [[], [], [], []];
     const rackMeshes3D = [[], [], [], []]; // [altarId][colIdx][rowIdx]
@@ -1327,33 +1328,59 @@
       goldenGrove: null
     };
 
-    function makeProceduralTexture(c1, c2, veining = false) {
+    // High-resolution procedural flagstone, marble veining & bump texture generator
+    function makeProceduralTexture(c1, c2, veining = false, flagstones = false) {
       const canvas = document.createElement('canvas');
-      canvas.width = 256;
-      canvas.height = 256;
+      canvas.width = 512;
+      canvas.height = 512;
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = c1;
-      ctx.fillRect(0, 0, 256, 256);
-      for (let i = 0; i < 800; i++) {
+      ctx.fillRect(0, 0, 512, 512);
+
+      for (let i = 0; i < 1400; i++) {
         ctx.fillStyle = i % 2 === 0 ? c2 : c1;
-        ctx.globalAlpha = 0.13;
-        ctx.fillRect(Math.random() * 256, Math.random() * 256, 8 + Math.random() * 18, 8 + Math.random() * 18);
+        ctx.globalAlpha = 0.11;
+        ctx.fillRect(Math.random() * 512, Math.random() * 512, 6 + Math.random() * 24, 6 + Math.random() * 24);
       }
+
       if (veining) {
         ctx.strokeStyle = c2;
-        ctx.globalAlpha = 0.25;
-        ctx.lineWidth = 2;
-        for (let v = 0; v < 9; v++) {
+        ctx.globalAlpha = 0.28;
+        ctx.lineWidth = 2.2;
+        for (let v = 0; v < 14; v++) {
           ctx.beginPath();
-          ctx.moveTo(Math.random() * 256, 0);
-          ctx.bezierCurveTo(Math.random() * 256, 85, Math.random() * 256, 170, Math.random() * 256, 256);
+          ctx.moveTo(Math.random() * 512, 0);
+          ctx.bezierCurveTo(Math.random() * 512, 170, Math.random() * 512, 340, Math.random() * 512, 512);
           ctx.stroke();
         }
       }
+
+      if (flagstones) {
+        // Warm Pentelic stone flagstone mortar joints
+        ctx.strokeStyle = 'rgba(92, 77, 60, 0.42)';
+        ctx.globalAlpha = 0.55;
+        ctx.lineWidth = 3;
+        const step = 64;
+        for (let y = 0; y <= 512; y += step) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(512, y);
+          ctx.stroke();
+          const offset = (y / step) % 2 === 0 ? 0 : 32;
+          for (let x = offset; x <= 512; x += step) {
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y + step);
+            ctx.stroke();
+          }
+        }
+      }
+
       const tex = new THREE.CanvasTexture(canvas);
       tex.wrapS = THREE.RepeatWrapping;
       tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(3, 3);
+      tex.repeat.set(4, 4);
+      tex.anisotropy = 4;
       return tex;
     }
 
@@ -1363,7 +1390,6 @@
       canvas.height = 192;
       const ctx = canvas.getContext('2d');
 
-      // Deep carved stone background (obsidian slate on rack, warm bronze-gold when socketed/energized)
       const grad = ctx.createLinearGradient(0, 0, 0, 192);
       if (isEnergized) {
         grad.addColorStop(0, '#0c3b5e');
@@ -1378,13 +1404,11 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 512, 192);
 
-      // Subtle stone grain
       for (let i = 0; i < 140; i++) {
         ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.08)';
         ctx.fillRect(Math.random() * 512, Math.random() * 192, 10 + Math.random() * 22, 4 + Math.random() * 10);
       }
 
-      // Classical Greek double border
       ctx.strokeStyle = isEnergized ? '#38bdf8' : '#d99b43';
       ctx.lineWidth = 6;
       ctx.strokeRect(8, 8, 496, 176);
@@ -1392,7 +1416,6 @@
       ctx.lineWidth = 2;
       ctx.strokeRect(18, 18, 476, 156);
 
-      // Role subheader at top
       if (roleLabel) {
         ctx.font = '700 20px "Plus Jakarta Sans", sans-serif';
         ctx.fillStyle = isEnergized ? '#7dd3fc' : '#f3cd82';
@@ -1400,7 +1423,6 @@
         ctx.fillText(roleLabel.toUpperCase(), 256, 46);
       }
 
-      // Auto-scale main carved inscription so even long C1 clauses are bold and unmistakable
       const cleanText = String(wordText || '');
       let fontSize = 44;
       if (cleanText.length > 22) fontSize = 27;
@@ -1411,7 +1433,6 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Chiseled shadow + bright ivory/gold lettering
       ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
       ctx.fillText(cleanText, 258, roleLabel ? 118 : 100);
       ctx.fillStyle = isEnergized ? '#e0f2fe' : '#fef3c7';
@@ -1423,29 +1444,61 @@
       return tex;
     }
 
+    function enableShadowsRecursive(obj, cast = true, receive = true) {
+      obj.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = cast;
+          child.receiveShadow = receive;
+        }
+      });
+    }
+
     function init3D() {
       const canvas = document.getElementById('webgl-canvas');
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.outputEncoding = THREE.sRGBEncoding;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.18;
+      renderer.toneMappingExposure = 1.15;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x164a78);
-      scene.fog = new THREE.FogExp2(0x4a82a8, 0.0065);
+      scene.fog = new THREE.FogExp2(0x6c9dc0, 0.0042);
 
-      camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 320);
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 380);
       raycaster = new THREE.Raycaster();
 
-      // Aegean Sky Dome (Supports Noon, Pine Dusk, and Moonlit Masque)
-      const skyGeo = new THREE.SphereGeometry(240, 32, 24);
+      // Build Procedural PMREM Environment Map so Brass, Gold & Marble reflect real Aegean light
+      try {
+        const pmremGenerator = new THREE.PMREMGenerator(renderer);
+        pmremGenerator.compileEquirectangularShader();
+        const envScene = new THREE.Scene();
+        envScene.add(new THREE.HemisphereLight(0xdbeafe, 0xd99b43, 2.2));
+        const sunSphere = new THREE.Mesh(
+          new THREE.SphereGeometry(6, 16, 16),
+          new THREE.MeshBasicMaterial({ color: 0xfffbeb })
+        );
+        sunSphere.position.set(-28, 48, -28);
+        envScene.add(sunSphere);
+        scene.environment = pmremGenerator.fromScene(envScene, 0.04).texture;
+      } catch (e) {
+        // Fallback if PMREM unavailable
+      }
+
+      // Upgraded Aegean Sky Dome with Solar Disc, Mie Glow, Drifting Clouds & Night Stars
+      const skyGeo = new THREE.SphereGeometry(280, 40, 28);
       skyMat = new THREE.ShaderMaterial({
         side: THREE.BackSide,
         uniforms: {
-          topColor: { value: new THREE.Color(0x0c4a8a) },
-          midColor: { value: new THREE.Color(0x3898d8) },
-          horizonColor: { value: new THREE.Color(0xdbeafe) }
+          uTime: { value: 0 },
+          uNightMix: { value: 0.0 },
+          sunDir: { value: new THREE.Vector3(-0.42, 0.58, -0.48).normalize() },
+          topColor: { value: new THREE.Color(0x0a3d7a) },
+          midColor: { value: new THREE.Color(0x3b95d4) },
+          horizonColor: { value: new THREE.Color(0xfef3c7) }
         },
         vertexShader: `
           varying vec3 vWorldPos;
@@ -1456,84 +1509,176 @@
           }
         `,
         fragmentShader: `
+          uniform float uTime;
+          uniform float uNightMix;
+          uniform vec3 sunDir;
           uniform vec3 topColor;
           uniform vec3 midColor;
           uniform vec3 horizonColor;
           varying vec3 vWorldPos;
+
+          float hash(vec2 p) {
+            return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+          }
+          float noise(vec2 p) {
+            vec2 i = floor(p);
+            vec2 f = fract(p);
+            f = f * f * (3.0 - 2.0 * f);
+            return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+                       mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+          }
+
           void main() {
-            float h = normalize(vWorldPos).y;
-            vec3 col = mix(horizonColor, midColor, smoothstep(0.0, 0.28, max(h, 0.0)));
-            col = mix(col, topColor, smoothstep(0.28, 0.85, max(h, 0.0)));
+            vec3 dir = normalize(vWorldPos);
+            float h = max(dir.y, 0.0);
+            vec3 col = mix(horizonColor, midColor, smoothstep(0.0, 0.25, h));
+            col = mix(col, topColor, smoothstep(0.25, 0.85, h));
+
+            // Glowing Aegean Sun Disc & Warm Mie Halo
+            float sunAmt = max(dot(dir, sunDir), 0.0);
+            col += vec3(1.0, 0.85, 0.55) * pow(sunAmt, 10.0) * 0.42 * (1.0 - uNightMix * 0.65);
+            col += vec3(1.0, 0.98, 0.9) * smoothstep(0.996, 0.9992, sunAmt) * 1.6;
+
+            // Soft Mediterranean Cirrus Clouds
+            if (dir.y > 0.04) {
+              vec2 uv = dir.xz / (dir.y + 0.18) * 1.8 + vec2(uTime * 0.012, uTime * 0.006);
+              float c = noise(uv) * 0.6 + noise(uv * 2.3) * 0.4;
+              float cloudMask = smoothstep(0.54, 0.82, c) * smoothstep(0.04, 0.24, dir.y);
+              vec3 cloudCol = mix(vec3(1.0, 0.97, 0.9), vec3(0.98, 0.72, 0.45), uNightMix * 0.5);
+              col = mix(col, cloudCol, cloudMask * 0.35 * (1.0 - uNightMix * 0.6));
+            }
+
+            // Night Stars during Moonlit Masque
+            if (uNightMix > 0.2 && dir.y > 0.08) {
+              float starVal = pow(hash(floor(dir.xz * 260.0)), 22.0);
+              col += vec3(0.9, 0.95, 1.0) * starVal * uNightMix * smoothstep(0.08, 0.35, dir.y);
+            }
+
             gl_FragColor = vec4(col, 1.0);
           }
         `
       });
       scene.add(new THREE.Mesh(skyGeo, skyMat));
 
-      hemiLight = new THREE.HemisphereLight(0xffffff, 0x334155, 0.88);
+      hemiLight = new THREE.HemisphereLight(0xfffbeb, 0x334155, 0.82);
       scene.add(hemiLight);
 
-      sunLight = new THREE.DirectionalLight(0xfff7ed, 1.45);
-      sunLight.position.set(-25, 52, -25);
+      sunLight = new THREE.DirectionalLight(0xfff3d6, 1.65);
+      sunLight.position.set(-28, 42, -26);
+      sunLight.castShadow = true;
+      sunLight.shadow.mapSize.width = 2048;
+      sunLight.shadow.mapSize.height = 2048;
+      sunLight.shadow.camera.near = 2;
+      sunLight.shadow.camera.far = 150;
+      sunLight.shadow.camera.left = -46;
+      sunLight.shadow.camera.right = 46;
+      sunLight.shadow.camera.top = 75;
+      sunLight.shadow.camera.bottom = -75;
+      sunLight.shadow.bias = -0.0005;
       scene.add(sunLight);
 
-      playerLight = new THREE.PointLight(0xfbbf24, 0.65, 16);
+      playerLight = new THREE.PointLight(0xfbbf24, 0.65, 18);
       scene.add(playerLight);
 
-      // Materials: Sun-bleached Greek Whitewashed Limestone, Terracotta, Cypress, Brass
+      // High-Definition PBR Materials (Procedural + 1K Poly Haven Diffuse/Normal/Roughness Maps)
       const texLoader = new THREE.TextureLoader();
+      function applyPbrMaps(mat, baseName, rep = 4) {
+        texLoader.load(`myst-grammar-island/assets/${baseName}_diff.jpg`, (t) => {
+          t.wrapS = t.wrapT = THREE.RepeatWrapping;
+          t.repeat.set(rep, rep);
+          t.encoding = THREE.sRGBEncoding;
+          mat.map = t;
+          mat.needsUpdate = true;
+        }, undefined, () => {});
+        texLoader.load(`myst-grammar-island/assets/${baseName}_norm.jpg`, (t) => {
+          t.wrapS = t.wrapT = THREE.RepeatWrapping;
+          t.repeat.set(rep, rep);
+          mat.normalMap = t;
+          mat.normalScale = new THREE.Vector2(0.85, 0.85);
+          mat.needsUpdate = true;
+        }, undefined, () => {});
+        texLoader.load(`myst-grammar-island/assets/${baseName}_rough.jpg`, (t) => {
+          t.wrapS = t.wrapT = THREE.RepeatWrapping;
+          t.repeat.set(rep, rep);
+          mat.roughnessMap = t;
+          mat.needsUpdate = true;
+        }, undefined, () => {});
+      }
+
+      const flagstoneTex = makeProceduralTexture('#f7f2e7', '#dfd5c3', true, true);
       const matWhitewash = new THREE.MeshStandardMaterial({
-        map: makeProceduralTexture('#fbfaf6', '#e2e8f0', true),
-        roughness: 0.32,
+        map: flagstoneTex,
+        bumpMap: flagstoneTex,
+        bumpScale: 0.018,
+        roughness: 0.34,
         metalness: 0.08
       });
-      texLoader.load('myst-grammar-island/assets/marble_diff.jpg', (t) => {
-        t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(3, 3);
-        matWhitewash.map = t;
-        matWhitewash.needsUpdate = true;
-      }, undefined, () => {});
+      applyPbrMaps(matWhitewash, 'marble', 4);
 
+      const limestoneTex = makeProceduralTexture('#dcd3c2', '#b3a792', true, true);
       const matLimestone = new THREE.MeshStandardMaterial({
-        map: makeProceduralTexture('#d6cfc2', '#a89f91', false),
-        roughness: 0.78,
+        map: limestoneTex,
+        bumpMap: limestoneTex,
+        bumpScale: 0.028,
+        roughness: 0.72,
         metalness: 0.05
       });
-      texLoader.load('myst-grammar-island/assets/ruin_stone_diff.jpg', (t) => {
-        t.wrapS = t.wrapT = THREE.RepeatWrapping;
-        t.repeat.set(3, 3);
-        matLimestone.map = t;
-        matLimestone.needsUpdate = true;
-      }, undefined, () => {});
+      applyPbrMaps(matLimestone, 'ruin_stone', 4);
 
+      const earthTex = makeProceduralTexture('#526e34', '#384d21', false, false);
       const matPineEarth = new THREE.MeshStandardMaterial({
-        map: makeProceduralTexture('#4d6b31', '#364d21', false),
-        roughness: 0.88,
+        map: earthTex,
+        bumpMap: earthTex,
+        bumpScale: 0.03,
+        roughness: 0.86,
         metalness: 0.02
       });
+      applyPbrMaps(matPineEarth, 'moss_ground', 5);
 
+      const cliffTex = makeProceduralTexture('#8c7f70', '#544c43', true, false);
       const matCliff = new THREE.MeshStandardMaterial({
-        map: makeProceduralTexture('#78716c', '#44403c', true),
-        roughness: 0.85,
+        map: cliffTex,
+        bumpMap: cliffTex,
+        bumpScale: 0.045,
+        roughness: 0.82,
         metalness: 0.05
       });
+      applyPbrMaps(matCliff, 'cliff_rock', 4);
 
       const matTerracotta = new THREE.MeshStandardMaterial({
-        color: 0xc2593f,
-        roughness: 0.55,
-        metalness: 0.08
+        map: makeProceduralTexture('#c85d3f', '#9e4229', false, true),
+        roughness: 0.48,
+        metalness: 0.1
       });
 
       const matCypress = new THREE.MeshStandardMaterial({
-        color: 0x1b3b22,
-        roughness: 0.8,
+        color: 0x1b3d22,
+        roughness: 0.76,
+        metalness: 0.02
+      });
+
+      const matOliveFoliage = new THREE.MeshStandardMaterial({
+        color: 0x556b43,
+        roughness: 0.72,
+        metalness: 0.04
+      });
+
+      const matOliveTrunk = new THREE.MeshStandardMaterial({
+        map: makeProceduralTexture('#5c4938', '#3d2f22', true, false),
+        roughness: 0.85,
         metalness: 0.02
       });
 
       const matBrass = new THREE.MeshStandardMaterial({
-        color: 0xd99b43,
-        roughness: 0.24,
-        metalness: 0.86
+        color: 0xe0a64b,
+        roughness: 0.2,
+        metalness: 0.88
+      });
+
+      const matShutterBlue = new THREE.MeshStandardMaterial({
+        color: 0x1e5b7a,
+        roughness: 0.45,
+        metalness: 0.15
       });
 
       const matCyanGlow = new THREE.MeshStandardMaterial({
@@ -1550,14 +1695,16 @@
         roughness: 0.15
       });
 
-      // Cobalt-Turquoise Aegean Sea Shader
+      // Upgraded Aegean Sea Shader (Fresnel Sky Reflection + Sun Glitter Path + Island Shoreline Foam)
       waterUniforms = {
         uTime: { value: 0 },
         uFreeze: { value: 0.0 },
-        uDeepColor: { value: new THREE.Color(0x063966) },
-        uShallowColor: { value: new THREE.Color(0x0ea5e9) }
+        uSunDir: { value: new THREE.Vector3(-0.42, 0.58, -0.48).normalize() },
+        uDeepColor: { value: new THREE.Color(0x052e58) },
+        uShallowColor: { value: new THREE.Color(0x0ea5e9) },
+        uSunColor: { value: new THREE.Color(0xfff3c4) }
       };
-      const waterGeo = new THREE.PlaneGeometry(360, 360, 96, 96);
+      const waterGeo = new THREE.PlaneGeometry(420, 420, 128, 128);
       waterGeo.rotateX(-Math.PI / 2);
       const waterMat = new THREE.ShaderMaterial({
         uniforms: waterUniforms,
@@ -1565,27 +1712,60 @@
           uniform float uTime;
           uniform float uFreeze;
           varying float vElev;
+          varying vec3 vWorldPos;
           void main() {
             vec3 pos = position;
             float t = uTime * (1.0 - uFreeze * 0.92);
-            float w1 = sin(pos.x * 0.25 + t * 1.35) * cos(pos.z * 0.22 + t) * 0.17;
-            float w2 = sin(pos.x * 0.62 - t * 1.6 + pos.z * 0.5) * 0.06;
-            pos.y += (w1 + w2) * (1.0 - uFreeze * 0.88);
-            vElev = w1 + w2;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            float w1 = sin(pos.x * 0.28 + t * 1.4) * cos(pos.z * 0.24 + t * 1.1) * 0.16;
+            float w2 = sin(pos.x * 0.75 - t * 1.8 + pos.z * 0.62) * 0.055;
+            float w3 = cos(pos.x * 1.4 + pos.z * 1.2 + t * 2.3) * 0.025;
+            pos.y += (w1 + w2 + w3) * (1.0 - uFreeze * 0.88);
+            vElev = w1 + w2 + w3;
+            vec4 wp = modelMatrix * vec4(pos, 1.0);
+            vWorldPos = wp.xyz;
+            gl_Position = projectionMatrix * viewMatrix * wp;
           }
         `,
         fragmentShader: `
+          uniform float uTime;
           uniform float uFreeze;
+          uniform vec3 uSunDir;
           uniform vec3 uDeepColor;
           uniform vec3 uShallowColor;
+          uniform vec3 uSunColor;
           varying float vElev;
+          varying vec3 vWorldPos;
+
           void main() {
-            vec3 foam = vec3(0.88, 0.96, 1.0);
-            float crest = smoothstep(0.05, 0.21, vElev);
-            vec3 waterCol = mix(uDeepColor, uShallowColor, 0.48 + vElev * 2.2);
-            waterCol = mix(waterCol, foam, crest * 0.48);
-            vec3 glassCol = vec3(0.68, 0.94, 0.98);
+            // Distance to the 3 Phraxos headlands for turquoise shallows & white shoreline foam
+            float d1 = length(vWorldPos.xz - vec2(0.0, 8.5)) - 17.8;
+            float d2 = length(vWorldPos.xz - vec2(0.0, -24.0)) - 16.2;
+            float d3 = length(vWorldPos.xz - vec2(0.0, -58.0)) - 16.2;
+            float minDist = min(d1, min(d2, d3));
+
+            float shallowMask = 1.0 - smoothstep(0.0, 14.0, max(minDist, 0.0));
+            vec3 waterCol = mix(uDeepColor, uShallowColor, clamp(shallowMask * 0.72 + 0.28 + vElev * 1.8, 0.0, 1.0));
+
+            // Shoreline surf foam ring lapping against the limestone cliffs
+            float shoreFoam = (1.0 - smoothstep(0.0, 2.2, abs(minDist - 0.6 + sin(uTime * 2.2 + vWorldPos.x * 0.5) * 0.35)));
+            float crestFoam = smoothstep(0.07, 0.21, vElev);
+            vec3 foamCol = vec3(0.93, 0.98, 1.0);
+            waterCol = mix(waterCol, foamCol, clamp(shoreFoam * 0.68 + crestFoam * 0.38, 0.0, 1.0));
+
+            // Specular Aegean sun-glitter path across the waves
+            vec3 viewDir = normalize(cameraPosition - vWorldPos);
+            vec3 normal = normalize(vec3(
+              cos(vWorldPos.x * 0.8 + uTime * 1.7) * 0.16,
+              1.0,
+              sin(vWorldPos.z * 0.8 + uTime * 1.4) * 0.16
+            ));
+            vec3 halfVec = normalize(uSunDir + viewDir);
+            float spec = pow(max(dot(normal, halfVec), 0.0), 72.0);
+            float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.2);
+            waterCol += uSunColor * spec * 1.35 * (1.0 - uFreeze * 0.5);
+            waterCol = mix(waterCol, uShallowColor * 1.25, fresnel * 0.28);
+
+            vec3 glassCol = vec3(0.72, 0.95, 0.99);
             gl_FragColor = vec4(mix(waterCol, glassCol, uFreeze), 1.0);
           }
         `
@@ -1594,77 +1774,208 @@
       waterMesh.position.set(0, -0.35, -26);
       scene.add(waterMesh);
 
-      // Helper to spawn Mediterranean Cypresses & Terracotta Amphorae
-      function spawnCypressAndAmphora(parent, x, z, h = 4.6) {
+      // Lathe-turned Classical Two-Handled Greek Terracotta Amphora
+      const amphoraPoints = [
+        new THREE.Vector2(0.01, 0.0),
+        new THREE.Vector2(0.16, 0.02),
+        new THREE.Vector2(0.12, 0.12),
+        new THREE.Vector2(0.30, 0.38),
+        new THREE.Vector2(0.28, 0.62),
+        new THREE.Vector2(0.13, 0.78),
+        new THREE.Vector2(0.19, 0.92),
+        new THREE.Vector2(0.15, 0.94)
+      ];
+      const amphoraGeo = new THREE.LatheGeometry(amphoraGeoPoints(), 18);
+      function amphoraGeoPoints() { return amphoraPoints; }
+
+      function spawnAmphora(parent, x, y, z, scale = 1.0) {
+        const ag = new THREE.Group();
+        ag.position.set(x, y, z);
+        ag.scale.setScalar(scale);
+        const body = new THREE.Mesh(amphoraGeo, matTerracotta);
+        ag.add(body);
+        [-1, 1].forEach((side) => {
+          const handle = new THREE.Mesh(new THREE.TorusGeometry(0.11, 0.024, 8, 16, Math.PI * 1.15), matTerracotta);
+          handle.position.set(side * 0.18, 0.68, 0);
+          handle.rotation.z = side * -0.35;
+          ag.add(handle);
+        });
+        enableShadowsRecursive(ag);
+        parent.add(ag);
+      }
+
+      // Layered Multi-Tiered Mediterranean Cypress & Gnarled Olive Trees
+      function spawnCypressAndAmphora(parent, x, z, h = 5.2, withOlive = false) {
         const cg = new THREE.Group();
-        cg.position.set(x, 0.4, z);
-        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.24, 1.2, 8), matLimestone);
-        trunk.position.y = 0.6;
+        cg.position.set(x, 0.42, z);
+
+        const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.24, 1.35, 10), matOliveTrunk);
+        trunk.position.y = 0.65;
         cg.add(trunk);
-        const spire = new THREE.Mesh(new THREE.ConeGeometry(0.72, h, 10), matCypress);
-        spire.position.y = 1.0 + h * 0.5;
-        cg.add(spire);
-        // Terracotta Amphora at the base
-        const vase = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.16, 0.62, 12), matTerracotta);
-        vase.position.set(0.55, 0.31, 0.25);
-        cg.add(vase);
+
+        // 5 overlapping wind-sculpted cypress foliage tiers
+        for (let t = 0; t < 5; t++) {
+          const frac = t / 4;
+          const r = (0.82 - frac * 0.46) * (h / 5.0);
+          const tierH = h * 0.36;
+          const cone = new THREE.Mesh(new THREE.ConeGeometry(r, tierH, 12), matCypress);
+          cone.position.y = 1.15 + frac * (h * 0.68) + tierH * 0.4;
+          cg.add(cone);
+        }
+
+        spawnAmphora(cg, 0.62, 0.02, 0.28, 0.95);
+
+        if (withOlive) {
+          const og = new THREE.Group();
+          og.position.set(-1.35, 0, -0.45);
+          const oTrunk = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.32, 1.85, 9), matOliveTrunk);
+          oTrunk.position.y = 0.9;
+          oTrunk.rotation.z = 0.14;
+          og.add(oTrunk);
+          [
+            [0, 2.2, 0, 1.15],
+            [-0.65, 2.0, 0.35, 0.88],
+            [0.65, 2.1, -0.3, 0.92],
+            [0.15, 2.55, 0.4, 0.82]
+          ].forEach(([ox, oy, oz, orad]) => {
+            const crown = new THREE.Mesh(new THREE.DodecahedronGeometry(orad, 1), matOliveFoliage);
+            crown.scale.set(1.25, 0.68, 1.15);
+            crown.position.set(ox, oy, oz);
+            og.add(crown);
+          });
+          cg.add(og);
+        }
+
+        enableShadowsRecursive(cg);
         parent.add(cg);
       }
 
-      // Helper to build each Aegean Promontory
+      // Build each Aegean Promontory with Fluted Doric Peristyle, Architraves & Cliff Parapet Walls
       function buildAegeanHeadland(cx, cz, radius, columnAngles) {
         const g = new THREE.Group();
         g.position.set(cx, 0, cz);
         scene.add(g);
 
-        const cliff = new THREE.Mesh(new THREE.CylinderGeometry(radius + 2.4, radius + 3.8, 1.6, 32), matCliff);
-        cliff.position.y = -0.7;
-        g.add(cliff);
+        // Multi-tiered craggy limestone cliff base
+        const cliffLower = new THREE.Mesh(new THREE.CylinderGeometry(radius + 2.6, radius + 4.4, 2.2, 36), matCliff);
+        cliffLower.position.y = -0.95;
+        g.add(cliffLower);
 
-        const earth = new THREE.Mesh(new THREE.CylinderGeometry(radius + 0.6, radius + 1.2, 0.55, 32), matPineEarth);
+        const earth = new THREE.Mesh(new THREE.CylinderGeometry(radius + 0.7, radius + 1.4, 0.58, 36), matPineEarth);
         earth.position.y = 0.05;
         g.add(earth);
 
-        const terrace = new THREE.Mesh(new THREE.CylinderGeometry(radius - 1.0, radius - 0.6, 0.26, 32), matWhitewash);
-        terrace.position.y = 0.34;
+        // Stepped marble stylobate terrace
+        const stepOuter = new THREE.Mesh(new THREE.CylinderGeometry(radius - 0.5, radius - 0.2, 0.18, 40), matLimestone);
+        stepOuter.position.y = 0.26;
+        g.add(stepOuter);
+
+        const terrace = new THREE.Mesh(new THREE.CylinderGeometry(radius - 1.0, radius - 0.8, 0.26, 40), matWhitewash);
+        terrace.position.y = 0.36;
         g.add(terrace);
 
-        // Coastal Limestone Boulders
-        for (let i = 0; i < 10; i++) {
-          const ang = (i / 10) * Math.PI * 2 + 0.25;
-          if (Math.abs(Math.sin(ang)) < 0.28) continue;
-          const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(1.4 + (i % 3) * 0.5, 1), matCliff);
-          rock.position.set(Math.sin(ang) * (radius + 1.2), 0.1, Math.cos(ang) * (radius + 1.2));
-          rock.scale.set(1.2, 0.75, 1.1);
+        // Carved Stone Parapet Wall overlooking the sea cove (with gaps for the causeways)
+        const parapetRadius = radius - 1.35;
+        for (let deg = 0; deg < 360; deg += 15) {
+          if ((deg > 162 && deg < 198) || (deg > 342 || deg < 18)) continue;
+          const rad = (deg * Math.PI) / 180;
+          const wallSeg = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.62, 0.42), matLimestone);
+          wallSeg.position.set(Math.sin(rad) * parapetRadius, 0.72, Math.cos(rad) * parapetRadius);
+          wallSeg.rotation.y = rad;
+          g.add(wallSeg);
+
+          const coping = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.1, 0.52), matWhitewash);
+          coping.position.set(Math.sin(rad) * parapetRadius, 1.06, Math.cos(rad) * parapetRadius);
+          coping.rotation.y = rad;
+          g.add(coping);
+        }
+
+        // Coastal Limestone Boulders around the waterline
+        for (let i = 0; i < 14; i++) {
+          const ang = (i / 14) * Math.PI * 2 + 0.22;
+          if (Math.abs(Math.sin(ang)) < 0.24) continue;
+          const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(1.45 + (i % 3) * 0.55, 1), matCliff);
+          rock.position.set(Math.sin(ang) * (radius + 1.4), 0.05, Math.cos(ang) * (radius + 1.4));
+          rock.scale.set(1.3, 0.78, 1.15);
+          rock.rotation.set(i * 0.4, i * 0.9, 0);
           g.add(rock);
         }
 
-        // Whitewashed Greek Doric Colonnade + Terracotta Cornices
+        // Whitewashed Greek Doric Colonnade + Moulded Echinus Capitals + Continuous Architrave Beams
+        const colPositions = [];
         columnAngles.forEach((deg, idx) => {
           const rad = (deg * Math.PI) / 180;
           const px = Math.sin(rad) * (radius - 2.6);
           const pz = Math.cos(rad) * (radius - 2.6);
+          colPositions.push({ deg, px, pz });
+
           const colGroup = new THREE.Group();
           colGroup.position.set(px, 0.45, pz);
 
-          const base = new THREE.Mesh(new THREE.BoxGeometry(1.18, 0.36, 1.18), matLimestone);
-          base.position.y = 0.18;
-          colGroup.add(base);
+          // Stepped Stylobate Plinth
+          const base1 = new THREE.Mesh(new THREE.BoxGeometry(1.32, 0.22, 1.32), matLimestone);
+          base1.position.y = 0.11;
+          colGroup.add(base1);
+          const base2 = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.56, 0.2, 20), matWhitewash);
+          base2.position.y = 0.32;
+          colGroup.add(base2);
 
-          const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.39, 0.45, 4.2, 16), matWhitewash);
-          shaft.position.y = 2.45;
+          // Fluted Doric Column Shaft (20 flutes)
+          const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.46, 4.15, 20), matWhitewash);
+          shaft.position.y = 2.48;
           colGroup.add(shaft);
 
-          const cap = new THREE.Mesh(new THREE.BoxGeometry(1.26, 0.32, 1.26), matTerracotta);
-          cap.position.y = 4.72;
+          // Necking Ring & Flared Doric Echinus Capital
+          const necking = new THREE.Mesh(new THREE.TorusGeometry(0.39, 0.035, 8, 20), matLimestone);
+          necking.rotation.x = Math.PI / 2;
+          necking.position.y = 4.48;
+          colGroup.add(necking);
+
+          const echinus = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.39, 0.22, 20), matWhitewash);
+          echinus.position.y = 4.62;
+          colGroup.add(echinus);
+
+          // Square Abacus & Terracotta Cornice
+          const abacus = new THREE.Mesh(new THREE.BoxGeometry(1.28, 0.22, 1.28), matLimestone);
+          abacus.position.y = 4.82;
+          colGroup.add(abacus);
+
+          const cap = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.16, 1.36), matTerracotta);
+          cap.position.y = 5.0;
           colGroup.add(cap);
 
           g.add(colGroup);
 
           if (idx % 2 === 0) {
-            spawnCypressAndAmphora(g, px * 0.86, pz * 0.86, 4.4 + (idx % 3) * 0.6);
+            spawnCypressAndAmphora(g, px * 0.84, pz * 0.84, 4.8 + (idx % 3) * 0.65, idx % 4 === 0);
           }
         });
+
+        // Connect adjacent columns with Classical Stone Architrave & Cornice Lintel Beams
+        for (let i = 0; i < colPositions.length - 1; i++) {
+          const cA = colPositions[i];
+          const cB = colPositions[i + 1];
+          if (Math.abs(cB.deg - cA.deg) <= 38) {
+            const dx = cB.px - cA.px;
+            const dz = cB.pz - cA.pz;
+            const dist = Math.hypot(dx, dz);
+            const midX = (cA.px + cB.px) * 0.5;
+            const midZ = (cA.pz + cB.pz) * 0.5;
+            const yaw = Math.atan2(dx, dz);
+
+            const architrave = new THREE.Mesh(new THREE.BoxGeometry(0.86, 0.48, dist + 0.9), matWhitewash);
+            architrave.position.set(midX, 5.72, midZ);
+            architrave.rotation.y = yaw;
+            g.add(architrave);
+
+            const cornice = new THREE.Mesh(new THREE.BoxGeometry(1.06, 0.18, dist + 1.05), matTerracotta);
+            cornice.position.set(midX, 6.04, midZ);
+            cornice.rotation.y = yaw;
+            g.add(cornice);
+          }
+        }
+
+        enableShadowsRecursive(g);
       }
 
       // Build the 3 Headlands of Phraxos
@@ -1672,43 +1983,242 @@
       buildAegeanHeadland(0, -24.0, 15.0, [-135, -100, 100, 135]);
       buildAegeanHeadland(0, -58.0, 15.0, [-150, -125, -100, 100, 125, 150]);
 
-      // Villa Bourani Colonnaded Facade at the South Edge of Promontory I (Z = +18.5)
+      // Load Real Photogrammetry glTF Sculptures & Vessels when served over HTTP/LAN
+      if (typeof THREE.GLTFLoader === 'function') {
+        const gltfLoader = new THREE.GLTFLoader();
+        gltfLoader.load('myst-grammar-island/assets/models/gothic_statue/gothic_statue.gltf', (gltf) => {
+          [[-8.8, 0.48, 3.2, 0.4], [8.8, 0.48, 3.2, -0.4]].forEach(([sx, sy, sz, ry]) => {
+            const statue = gltf.scene.clone();
+            statue.scale.setScalar(2.4);
+            statue.position.set(sx, sy, sz);
+            statue.rotation.y = ry;
+            enableShadowsRecursive(statue);
+            scene.add(statue);
+          });
+        }, undefined, () => {});
+        gltfLoader.load('myst-grammar-island/assets/models/brass_vase_01/brass_vase_01.gltf', (gltf) => {
+          [[-3.2, 0.48, 15.6], [3.2, 0.48, 15.6]].forEach(([vx, vy, vz]) => {
+            const vase = gltf.scene.clone();
+            vase.scale.setScalar(2.2);
+            vase.position.set(vx, vy, vz);
+            enableShadowsRecursive(vase);
+            scene.add(vase);
+          });
+        }, undefined, () => {});
+      }
+
+      // Detailed Two-Storey Neoclassical Villa Bourani at the South Edge of Promontory I (Z = +18.8)
       const villa = new THREE.Group();
-      villa.position.set(0, 0.45, 18.8);
+      villa.position.set(0, 0.45, 19.2);
       scene.add(villa);
-      const vWall = new THREE.Mesh(new THREE.BoxGeometry(14.0, 4.6, 2.2), matWhitewash);
-      vWall.position.y = 2.3;
-      villa.add(vWall);
-      const vRoof = new THREE.Mesh(new THREE.ConeGeometry(10.5, 2.2, 4), matTerracotta);
+
+      // Villa Stylobate & Grand Entrance Steps
+      const vBase = new THREE.Mesh(new THREE.BoxGeometry(16.4, 0.55, 5.2), matLimestone);
+      vBase.position.y = 0.27;
+      villa.add(vBase);
+      for (let st = 0; st < 3; st++) {
+        const vStep = new THREE.Mesh(new THREE.BoxGeometry(5.6, 0.18, 0.45), matWhitewash);
+        vStep.position.set(0, 0.09 + st * 0.18, -2.75 + st * 0.35);
+        villa.add(vStep);
+      }
+
+      // Ground Floor Loggia & Upper Storey Main Block
+      const vMain = new THREE.Mesh(new THREE.BoxGeometry(15.2, 6.2, 4.2), matWhitewash);
+      vMain.position.y = 3.4;
+      villa.add(vMain);
+
+      // Front Colonnaded Portico Porch with 6 Columns & Balcony Balustrade
+      for (let c = -2.5; c <= 2.5; c += 1.0) {
+        const pCol = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.26, 3.0, 14), matWhitewash);
+        pCol.position.set(c * 2.4, 2.0, -2.35);
+        villa.add(pCol);
+      }
+      const balconyDeck = new THREE.Mesh(new THREE.BoxGeometry(13.6, 0.28, 1.2), matLimestone);
+      balconyDeck.position.set(0, 3.6, -2.2);
+      villa.add(balconyDeck);
+
+      // 5 Upper-Storey Shuttered Aegean Windows with Warm Glowing Lamps Inside
+      for (let w = -2; w <= 2; w++) {
+        const wx = w * 2.75;
+        const winGlow = new THREE.Mesh(new THREE.BoxGeometry(0.95, 1.45, 0.12), matGoldGlow);
+        winGlow.position.set(wx, 4.85, -2.12);
+        villa.add(winGlow);
+
+        const shutterL = new THREE.Mesh(new THREE.BoxGeometry(0.38, 1.48, 0.14), matShutterBlue);
+        shutterL.position.set(wx - 0.68, 4.85, -2.14);
+        villa.add(shutterL);
+
+        const shutterR = new THREE.Mesh(new THREE.BoxGeometry(0.38, 1.48, 0.14), matShutterBlue);
+        shutterR.position.set(wx + 0.68, 4.85, -2.14);
+        villa.add(shutterR);
+      }
+
+      // Classical Triangular Pediment & Terracotta Hipped Roof
+      const pediment = new THREE.Mesh(new THREE.ConeGeometry(4.4, 1.45, 4), matWhitewash);
+      pediment.rotation.y = Math.PI / 4;
+      pediment.scale.set(1.0, 1.0, 0.42);
+      pediment.position.set(0, 7.1, -1.5);
+      villa.add(pediment);
+
+      const vRoof = new THREE.Mesh(new THREE.ConeGeometry(11.6, 2.35, 4), matTerracotta);
       vRoof.rotation.y = Math.PI / 4;
-      vRoof.scale.set(1.0, 1.0, 0.35);
-      vRoof.position.y = 5.6;
+      vRoof.scale.set(1.0, 1.0, 0.38);
+      vRoof.position.y = 7.65;
       villa.add(vRoof);
 
-      // Distant Aegean Horizon Sea-Stacks
+      enableShadowsRecursive(villa);
+
+      // Standing Brass Armillary Sphere on the Central Terrace Overlook (matches the intro painting!)
+      const terraceArmillary = new THREE.Group();
+      terraceArmillary.position.set(0, 0.45, 3.2);
+      scene.add(terraceArmillary);
+      const armPedestal = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.48, 1.15, 16), matLimestone);
+      armPedestal.position.y = 0.58;
+      terraceArmillary.add(armPedestal);
+      [0.72, 0.56, 0.4].forEach((r, idx) => {
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(r, 0.032, 12, 32), matBrass);
+        ring.position.y = 1.68;
+        ring.rotation.set(idx * 0.5, idx * 0.7, 0.3);
+        terraceArmillary.add(ring);
+        wonderGroups.astrolabeRings.push(ring);
+      });
+      const armCore = new THREE.Mesh(new THREE.SphereGeometry(0.14, 16, 16), matGoldGlow);
+      armCore.position.y = 1.68;
+      terraceArmillary.add(armCore);
+      enableShadowsRecursive(terraceArmillary);
+
+      // Moored Greek Wooden Caique Fishing Boat in the Turquoise Cove Below
+      const coveBoat = new THREE.Group();
+      coveBoat.position.set(8.5, -0.22, -6.5);
+      coveBoat.rotation.y = -0.45;
+      scene.add(coveBoat);
+      const boatHull = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.55, 3.8, 12), matTerracotta);
+      boatHull.rotation.z = Math.PI / 2;
+      boatHull.scale.set(0.55, 1.0, 0.85);
+      coveBoat.add(boatHull);
+      const boatTrim = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.14, 1.35), matWhitewash);
+      boatTrim.position.y = 0.36;
+      coveBoat.add(boatTrim);
+      enableShadowsRecursive(coveBoat);
+
+      // Sculpted Cycladic Horizon Islands & Sea-Stacks
       [
-        [-34, 16, 14], [36, 14, 16], [-38, -14, 18], [39, -16, 17],
-        [-36, -46, 15], [36, -48, 17], [0, -88, 24]
+        [-38, 16, 15], [40, 14, 17], [-42, -14, 19], [42, -16, 18],
+        [-38, -46, 16], [38, -48, 18], [0, -92, 26]
       ].forEach(([x, z, s]) => {
-        const crag = new THREE.Mesh(new THREE.ConeGeometry(s * 0.68, s * 1.35, 7), matCliff);
-        crag.position.set(x, s * 0.45 - 2, z);
-        scene.add(crag);
+        const cragGroup = new THREE.Group();
+        cragGroup.position.set(x, -1.2, z);
+        const mainPeak = new THREE.Mesh(new THREE.DodecahedronGeometry(s * 0.72, 1), matCliff);
+        mainPeak.scale.set(1.35, 0.92, 1.15);
+        mainPeak.position.y = s * 0.38;
+        cragGroup.add(mainPeak);
+        const subPeak = new THREE.Mesh(new THREE.DodecahedronGeometry(s * 0.48, 1), matCliff);
+        subPeak.scale.set(1.2, 0.75, 1.1);
+        subPeak.position.set(s * 0.45, s * 0.22, s * 0.25);
+        cragGroup.add(subPeak);
+        scene.add(cragGroup);
       });
 
-      // Limestone Causeways Linking the 3 Headlands
+      // Limestone Causeways Linking the 3 Headlands with Classical Lantern Posts
       function buildCauseway(zCenter, matRail) {
-        const deck = new THREE.Mesh(new THREE.BoxGeometry(3.8, 0.32, 13.5), matWhitewash);
+        const cg = new THREE.Group();
+        scene.add(cg);
+        const deck = new THREE.Mesh(new THREE.BoxGeometry(4.1, 0.36, 13.8), matWhitewash);
         deck.position.set(0, 0.42, zCenter);
-        scene.add(deck);
-        const railL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.65, 13.5), matRail);
-        railL.position.set(-1.75, 0.85, zCenter);
-        scene.add(railL);
-        const railR = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.65, 13.5), matRail);
-        railR.position.set(1.75, 0.85, zCenter);
-        scene.add(railR);
+        cg.add(deck);
+        [-1.85, 1.85].forEach((rx) => {
+          const rail = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.68, 13.8), matRail);
+          rail.position.set(rx, 0.86, zCenter);
+          cg.add(rail);
+          [-5.2, 0, 5.2].forEach((dz) => {
+            const post = new THREE.Mesh(new THREE.BoxGeometry(0.46, 1.05, 0.46), matLimestone);
+            post.position.set(rx, 1.02, zCenter + dz);
+            cg.add(post);
+            const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), matGoldGlow);
+            lamp.position.set(rx, 1.62, zCenter + dz);
+            cg.add(lamp);
+          });
+        });
+        enableShadowsRecursive(cg);
       }
       buildCauseway(-7.5, matLimestone);
       buildCauseway(-41.0, matTerracotta);
+
+      // Helper to build bespoke 3D Curiosity Props (Spyglass on Tripod, Horn Gramophone, Dossier, Tarot Relief)
+      function buildCuriosityProp(id, curGroup) {
+        const hitTarget = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.65, 0.65, 1.9, 12),
+          new THREE.MeshBasicMaterial({ visible: false })
+        );
+        hitTarget.position.y = 0.95;
+        hitTarget.userData = { interactType: 'curiosity', curiosityId: id };
+        curGroup.add(hitTarget);
+        interactables.push(hitTarget);
+
+        if (id === 0) {
+          // 🔭 Conchis's Brass Spyglass on a 3-Legged Tripod aimed at the cove
+          for (let l = 0; l < 3; l++) {
+            const ang = (l / 3) * Math.PI * 2;
+            const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.025, 1.55, 8), matOliveTrunk);
+            leg.position.set(Math.sin(ang) * 0.26, 0.72, Math.cos(ang) * 0.26);
+            leg.rotation.x = Math.cos(ang) * 0.22;
+            leg.rotation.z = -Math.sin(ang) * 0.22;
+            curGroup.add(leg);
+          }
+          const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.095, 1.15, 16), matBrass);
+          barrel.rotation.x = Math.PI / 2 - 0.18;
+          barrel.rotation.z = -0.25;
+          barrel.position.y = 1.48;
+          barrel.userData = { interactType: 'curiosity', curiosityId: id };
+          curGroup.add(barrel);
+          interactables.push(barrel);
+          curiosityMarkers.push(barrel);
+        } else if (id === 1) {
+          // 🎺 The Pine-Shade Horn Gramophone on a carved stone plinth
+          const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.54, 0.96, 16), matLimestone);
+          plinth.position.y = 0.48;
+          curGroup.add(plinth);
+          const box = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.26, 0.56), matOliveTrunk);
+          box.position.y = 1.08;
+          curGroup.add(box);
+          const horn = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.75, 18, 1, true), matBrass);
+          horn.position.set(0, 1.58, 0.12);
+          horn.rotation.x = -0.65;
+          horn.userData = { interactType: 'curiosity', curiosityId: id };
+          curGroup.add(horn);
+          interactables.push(horn);
+          curiosityMarkers.push(horn);
+        } else if (id === 2) {
+          // 📘 The Underlined Pamphlet ('Deukalion') on a Reading Lectern
+          const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.5, 1.05, 16), matLimestone);
+          plinth.position.y = 0.52;
+          curGroup.add(plinth);
+          const book = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.08, 0.48), matTerracotta);
+          book.position.y = 1.12;
+          book.rotation.x = 0.45;
+          book.userData = { interactType: 'curiosity', curiosityId: id };
+          curGroup.add(book);
+          interactables.push(book);
+          const beacon = new THREE.Mesh(new THREE.OctahedronGeometry(0.24, 0), matGoldGlow);
+          beacon.position.y = 1.52;
+          beacon.userData = { interactType: 'curiosity', curiosityId: id };
+          curGroup.add(beacon);
+          interactables.push(beacon);
+          curiosityMarkers.push(beacon);
+        } else {
+          // 🃏 Tarot Bronze Relief — I. The Magus & 0. The Fool
+          const plinth = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.05, 0.55), matLimestone);
+          plinth.position.y = 0.52;
+          curGroup.add(plinth);
+          const tablet = new THREE.Mesh(new THREE.BoxGeometry(0.62, 0.88, 0.12), matBrass);
+          tablet.position.y = 1.48;
+          tablet.userData = { interactType: 'curiosity', curiosityId: id };
+          curGroup.add(tablet);
+          interactables.push(tablet);
+          curiosityMarkers.push(tablet);
+        }
+        enableShadowsRecursive(curGroup);
+      }
 
       // Build the 4 Altars of the Godgame + Conchis's Curiosities beside each Altar
       const altarCoords = [
@@ -1723,19 +2233,30 @@
         ag.position.set(x, 0.45, z);
         scene.add(ag);
 
-        const pedestal = new THREE.Mesh(new THREE.BoxGeometry(6.3, 0.96, 1.85), matWhitewash);
-        pedestal.position.y = 0.48;
+        // Stepped Classical Altar Base + Relief Frieze
+        const baseStep = new THREE.Mesh(new THREE.BoxGeometry(6.6, 0.22, 2.15), matLimestone);
+        baseStep.position.y = 0.11;
+        ag.add(baseStep);
+
+        const pedestal = new THREE.Mesh(new THREE.BoxGeometry(6.3, 0.88, 1.85), matWhitewash);
+        pedestal.position.y = 0.56;
         pedestal.userData = { interactType: 'altar', altarId: id };
         ag.add(pedestal);
         interactables.push(pedestal);
 
+        // Ornate Brass Medallion on Front of Altar (matches our intro painting!)
+        const medallion = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.06, 20), matBrass);
+        medallion.rotation.x = Math.PI / 2;
+        medallion.position.set(0, 0.56, 0.92);
+        ag.add(medallion);
+
         // Angled classical Greek lectern top so sockets & stones face the player's eyes
         const lecternGroup = new THREE.Group();
-        lecternGroup.position.set(0, 1.02, 0.08);
-        lecternGroup.rotation.x = 0.52; // Tilted 30 degrees toward the player
+        lecternGroup.position.set(0, 1.06, 0.08);
+        lecternGroup.rotation.x = 0.52;
         ag.add(lecternGroup);
 
-        const brassTop = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.14, 1.55), matBrass);
+        const brassTop = new THREE.Mesh(new THREE.BoxGeometry(6.05, 0.14, 1.55), matBrass);
         lecternGroup.add(brassTop);
 
         const defInit = CURRICULUM[levelMode][id];
@@ -1797,7 +2318,7 @@
               stoneMat
             );
             stoneMesh.position.set(colX, rowY, rowZ);
-            stoneMesh.rotation.x = 0.68; // Tilted 39 degrees toward the player for effortless reading
+            stoneMesh.rotation.x = 0.68;
             stoneMesh.userData = {
               interactType: 'rack_tablet',
               altarId: id,
@@ -1811,23 +2332,33 @@
           }
         }
 
-        // Conchis's Interactive 3D Curiosity Pedestal beside each Altar
+        enableShadowsRecursive(ag);
+
+        // Conchis's Interactive 3D Curiosity beside each Altar
         const curGroup = new THREE.Group();
         curGroup.position.set(cx, 0.45, cz);
         scene.add(curGroup);
-        const curPlinth = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.5, 1.05, 14), matLimestone);
-        curPlinth.position.y = 0.52;
-        curPlinth.userData = { interactType: 'curiosity', curiosityId: id };
-        curGroup.add(curPlinth);
-        interactables.push(curPlinth);
-
-        const curArtifact = new THREE.Mesh(new THREE.OctahedronGeometry(0.38, 0), matGoldGlow);
-        curArtifact.position.y = 1.35;
-        curArtifact.userData = { interactType: 'curiosity', curiosityId: id };
-        curGroup.add(curArtifact);
-        interactables.push(curArtifact);
-        curiosityMarkers.push(curArtifact);
+        buildCuriosityProp(id, curGroup);
       });
+
+      // Atmospheric Golden Aegean Sun-Motes / Pine Pollen Particles
+      const moteCount = 260;
+      const moteGeo = new THREE.BufferGeometry();
+      const motePositions = new Float32Array(moteCount * 3);
+      for (let i = 0; i < moteCount; i++) {
+        motePositions[i * 3] = (Math.random() - 0.5) * 42;
+        motePositions[i * 3 + 1] = 0.8 + Math.random() * 8.5;
+        motePositions[i * 3 + 2] = 20 - Math.random() * 88;
+      }
+      moteGeo.setAttribute('position', new THREE.BufferAttribute(motePositions, 3));
+      const moteMat = new THREE.PointsMaterial({
+        color: 0xfde68a,
+        size: 0.14,
+        transparent: true,
+        opacity: 0.68
+      });
+      dustParticles = new THREE.Points(moteGeo, moteMat);
+      scene.add(dustParticles);
 
       // ========================================================================
       // 3. ARCHITECTURAL & MECHANICAL WONDERS OF BOURANI
@@ -2172,46 +2703,68 @@
     function cycleLighting() {
       lightingMode = (lightingMode + 1) % 3;
       const lbl = document.getElementById('lighting-label');
+      const introLbl = document.getElementById('intro-lighting-label');
 
       if (lightingMode === 0) {
         // Blinding Aegean Noon
-        lbl.textContent = '☀️ Light: Aegean Noon';
-        skyMat.uniforms.topColor.value.setHex(0x0c4a8a);
-        skyMat.uniforms.midColor.value.setHex(0x3898d8);
-        skyMat.uniforms.horizonColor.value.setHex(0xdbeafe);
-        scene.fog.color.setHex(0x4a82a8);
-        hemiLight.intensity = 0.88;
-        sunLight.intensity = 1.45;
-        sunLight.color.setHex(0xfff7ed);
-        waterUniforms.uDeepColor.value.setHex(0x063966);
+        if (lbl) lbl.textContent = '☀️ Light: Aegean Noon';
+        if (introLbl) introLbl.textContent = '☀️ Time: Aegean Noon';
+        skyMat.uniforms.topColor.value.setHex(0x0a3d7a);
+        skyMat.uniforms.midColor.value.setHex(0x3b95d4);
+        skyMat.uniforms.horizonColor.value.setHex(0xfef3c7);
+        skyMat.uniforms.uNightMix.value = 0.0;
+        scene.fog.color.setHex(0x6c9dc0);
+        hemiLight.intensity = 0.85;
+        sunLight.intensity = 1.65;
+        sunLight.color.setHex(0xfff3d6);
+        waterUniforms.uDeepColor.value.setHex(0x052e58);
         waterUniforms.uShallowColor.value.setHex(0x0ea5e9);
       } else if (lightingMode === 1) {
         // Amber Pine Dusk
-        lbl.textContent = '🌅 Light: Bourani Dusk';
+        if (lbl) lbl.textContent = '🌅 Light: Bourani Dusk';
+        if (introLbl) introLbl.textContent = '🌅 Time: Bourani Dusk';
         skyMat.uniforms.topColor.value.setHex(0x0b192c);
         skyMat.uniforms.midColor.value.setHex(0x4c2a4c);
         skyMat.uniforms.horizonColor.value.setHex(0xf59e0b);
-        scene.fog.color.setHex(0x2d1e30);
+        skyMat.uniforms.uNightMix.value = 0.35;
+        scene.fog.color.setHex(0x382338);
         hemiLight.intensity = 0.62;
-        sunLight.intensity = 1.25;
+        sunLight.intensity = 1.35;
         sunLight.color.setHex(0xfdba74);
         waterUniforms.uDeepColor.value.setHex(0x091e36);
         waterUniforms.uShallowColor.value.setHex(0x1d4e68);
         playHarpsichordArpeggio([293.66, 349.23, 440.0, 587.33]);
       } else {
         // Moonlit Torch Masque
-        lbl.textContent = '🌙 Light: Moonlit Masque';
+        if (lbl) lbl.textContent = '🌙 Light: Moonlit Masque';
+        if (introLbl) introLbl.textContent = '🌙 Time: Moonlit Masque';
         skyMat.uniforms.topColor.value.setHex(0x030712);
         skyMat.uniforms.midColor.value.setHex(0x0f172a);
         skyMat.uniforms.horizonColor.value.setHex(0x1e293b);
+        skyMat.uniforms.uNightMix.value = 1.0;
         scene.fog.color.setHex(0x091122);
-        hemiLight.intensity = 0.35;
-        sunLight.intensity = 0.65;
+        hemiLight.intensity = 0.38;
+        sunLight.intensity = 0.72;
         sunLight.color.setHex(0x93c5fd);
         waterUniforms.uDeepColor.value.setHex(0x020814);
         waterUniforms.uShallowColor.value.setHex(0x0c2d48);
         playChord([220.0, 329.63, 493.88], 0.55);
       }
+    }
+
+    function enterIsland() {
+      initAudio();
+      inIntroScreen = false;
+      const introEl = document.getElementById('intro-screen');
+      if (introEl) introEl.classList.add('dismissed');
+      teleportToAltar(currentAltarId);
+      playHarpsichordArpeggio([293.66, 369.99, 440.0, 587.33]);
+    }
+
+    function showIntroScreen() {
+      inIntroScreen = true;
+      const introEl = document.getElementById('intro-screen');
+      if (introEl) introEl.classList.remove('dismissed');
     }
 
     function triggerCuriosity(curId = currentAltarId) {
@@ -2272,6 +2825,10 @@
         levelMode === 'c1' ? '🎓 Mode: C1/C2 & IELTS' : '🌱 Mode: A1–B1 Foundations';
       document.getElementById('book-mode-c1').classList.toggle('active', levelMode === 'c1');
       document.getElementById('book-mode-a1').classList.toggle('active', levelMode === 'a1');
+      const introC1 = document.getElementById('intro-mode-c1');
+      const introA1 = document.getElementById('intro-mode-a1');
+      if (introC1) introC1.classList.toggle('active', levelMode === 'c1');
+      if (introA1) introA1.classList.toggle('active', levelMode === 'a1');
       refreshAll3DRackTextures();
       setActiveAltarUI(currentAltarId);
       renderJournalContent();
@@ -2578,12 +3135,38 @@
       if (waterUniforms) {
         waterUniforms.uTime.value = now * 0.001;
       }
+      if (skyMat && skyMat.uniforms && skyMat.uniforms.uTime) {
+        skyMat.uniforms.uTime.value = now * 0.001;
+      }
+      if (dustParticles) {
+        dustParticles.rotation.y += dt * 0.015;
+        dustParticles.position.y = Math.sin(now * 0.0008) * 0.25;
+      }
 
       // Spin Conchis's 3D Curiosity Markers gently
       curiosityMarkers.forEach((m, i) => {
-        m.rotation.y += dt * 1.1;
-        m.position.y = 1.35 + Math.sin(now * 0.003 + i) * 0.08;
+        m.rotation.y += dt * 0.65;
       });
+
+      // Gently rotate the brass Armillary rings on the terrace
+      wonderGroups.astrolabeRings.forEach((r, idx) => {
+        r.rotation.y += dt * (0.35 + idx * 0.18);
+        r.rotation.x += dt * (0.22 - idx * 0.08);
+      });
+
+      if (inIntroScreen) {
+        // Sweeping aerial orbit camera around Villa Bourani while Intro Screen is open
+        const orbitAngle = now * 0.00016;
+        camera.position.set(
+          Math.sin(orbitAngle) * 21.5,
+          8.8 + Math.sin(orbitAngle * 1.3) * 1.2,
+          8.5 + Math.cos(orbitAngle) * 21.5
+        );
+        camera.lookAt(0, 2.2, 7.5);
+        playerLight.position.set(0, 6.0, 8.5);
+        renderer.render(scene, camera);
+        return;
+      }
 
       let moveForward = 0;
       let moveRight = 0;
@@ -2642,12 +3225,6 @@
       if (wonderGroups.shatteredArch) {
         wonderGroups.shatteredArch.position.y += (wonderGroups.archTargetY - wonderGroups.shatteredArch.position.y) * 2.8 * dt;
       }
-      if (wonderGroups.astrolabeGroup && wonderGroups.astrolabeGroup.visible) {
-        wonderGroups.astrolabeRings.forEach((r, idx) => {
-          r.rotation.y += dt * (0.6 + idx * 0.3);
-          r.rotation.x += dt * (0.35 - idx * 0.15);
-        });
-      }
       if (wonderGroups.clockworkActive && wonderGroups.clockPendulum) {
         wonderGroups.clockPendulum.rotation.z = Math.sin(now * 0.0032) * 0.45;
         if (wonderGroups.clockGear1) wonderGroups.clockGear1.rotation.z += dt * 1.4;
@@ -2668,6 +3245,8 @@
     });
 
     return {
+      enterIsland,
+      showIntroScreen,
       teleportToAltar,
       selectSlot,
       clearCurrentAltar,
@@ -2683,5 +3262,6 @@
     };
   })();
   </script>
+  <script src="analytics.js" defer></script>
 </body>
 </html>

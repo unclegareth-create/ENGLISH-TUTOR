@@ -723,28 +723,28 @@ class DarkAcademiaEngine {
           ${sp.introHtml}
         </p>
         <div class="da-speaking-grid">
-          <div class="da-cue-card-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+          <div class="da-cue-card da-cue-card-box">
+            <div class="da-cue-header">
               <span class="badge badge-canon-dracula" style="font-size:0.74rem;">IELTS SPEAKING PART 2 CUE CARD</span>
-              <div class="da-timer-bar">
-                <span id="da-speaking-timer" class="da-timer-display" aria-live="off">01:00</span>
-                <button type="button" class="da-timer-btn" onclick="darkEngine.startSpeakingTimer(60)">⏱ 1m Prep</button>
-                <button type="button" class="da-timer-btn" onclick="darkEngine.startSpeakingTimer(120)">🎙️ 2m Speak</button>
-                <button type="button" class="da-timer-btn" onclick="darkEngine.resetSpeakingTimer()">↺</button>
+              <div class="da-timer-controls da-timer-bar">
+                <span id="da-speaking-timer" class="da-timer-pill da-timer-display" aria-live="off">01:00</span>
+                <button type="button" class="kwt-mini-btn da-timer-btn" onclick="darkEngine.startSpeakingTimer(60)">⏱ 1m Prep</button>
+                <button type="button" class="kwt-mini-btn da-timer-btn" onclick="darkEngine.startSpeakingTimer(120)">🎙️ 2m Speak</button>
+                <button type="button" class="kwt-mini-btn da-timer-btn" onclick="darkEngine.resetSpeakingTimer()" aria-label="Reset timer">↺</button>
               </div>
             </div>
-            <p style="font-weight:700; color:#f8fafc; font-size:0.98rem; margin-bottom:0.5rem;">
+            <p class="da-cue-title" style="font-weight:700; color:#f8fafc; font-size:0.98rem; margin-bottom:0.5rem;">
               ${sp.prompt}
             </p>
             <p style="font-size:0.84rem; color:#cbd5e1; margin-bottom:0.35rem;">You should say:</p>
-            <ul style="font-size:0.86rem; color:#cbd5e1; padding-left:1.2rem; margin:0 0 0.85rem 0; line-height:1.55;">
+            <ul class="da-cue-list" style="font-size:0.86rem; color:#cbd5e1; padding-left:1.2rem; margin:0 0 0.85rem 0; line-height:1.55;">
               ${sp.bullets.map(b => `<li>${b}</li>`).join('')}
             </ul>
-            <div class="da-keyword-slots" aria-label="1-Minute Note Trigger Keywords">
-              <input type="text" class="da-kw-input" placeholder="1. Keyword" aria-label="Trigger keyword 1">
-              <input type="text" class="da-kw-input" placeholder="2. Keyword" aria-label="Trigger keyword 2">
-              <input type="text" class="da-kw-input" placeholder="3. Keyword" aria-label="Trigger keyword 3">
-              <input type="text" class="da-kw-input" placeholder="4. Keyword" aria-label="Trigger keyword 4">
+            <div class="da-keyword-grid da-keyword-slots" aria-label="1-Minute Note Trigger Keywords">
+              <input type="text" class="da-keyword-input da-kw-input" placeholder="1. Keyword" aria-label="Trigger keyword 1" autocapitalize="off" autocorrect="off">
+              <input type="text" class="da-keyword-input da-kw-input" placeholder="2. Keyword" aria-label="Trigger keyword 2" autocapitalize="off" autocorrect="off">
+              <input type="text" class="da-keyword-input da-kw-input" placeholder="3. Keyword" aria-label="Trigger keyword 3" autocapitalize="off" autocorrect="off">
+              <input type="text" class="da-keyword-input da-kw-input" placeholder="4. Keyword" aria-label="Trigger keyword 4" autocapitalize="off" autocorrect="off">
             </div>
           </div>
           <div class="da-structuring-box">
@@ -758,16 +758,16 @@ class DarkAcademiaEngine {
               <strong>Natural Spoken Frames:</strong> ${sp.spokenFramesHtml}
             </div>
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.75rem;">
-              <button type="button" class="da-reveal-btn" aria-expanded="false" onclick="darkEngine.toggleReveal(this, 'speaking-model-reveal')">
+              <button type="button" class="kwt-mini-btn da-reveal-btn" aria-expanded="false" onclick="darkEngine.toggleReveal(this, 'speaking-model-reveal')">
                 👁️ Reveal Band 8.5 Spoken Model
               </button>
-              <button type="button" class="da-reveal-btn" onclick="DarkAcademiaAtmosphere.playPiperAudio('assets/audio/tts/speaking_${this.unitId}.mp3?v=3', this, '🎧 Listen (Piper British Neural)')">
+              <button type="button" class="kwt-mini-btn da-reveal-btn" onclick="DarkAcademiaAtmosphere.playPiperAudio('assets/audio/tts/speaking_${this.unitId}.mp3?v=3', this, '🎧 Listen (Piper British Neural)')">
                 🎧 Listen (Piper British Neural)
               </button>
             </div>
           </div>
         </div>
-        <div id="speaking-model-reveal" class="da-reveal-panel" hidden>
+        <div id="speaking-model-reveal" class="da-spoken-model-box da-reveal-panel" hidden>
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.65rem;">
             <div style="font-size:0.8rem; font-weight:700; color:#34d399; text-transform:uppercase; letter-spacing:0.04em;">
               🎙️ Band 8.5 Spoken Long Turn (~235 words • ~1m50s at natural pace):
@@ -791,11 +791,11 @@ class DarkAcademiaEngine {
         crBox.className = 'da-close-reading-box';
         crBox.innerHTML = `
           <h3 style="font-size:0.98rem; color:#f8fafc; margin:0 0 0.65rem 0;">🔍 Close-Reading Breakdown: ${cr.heading}</h3>
-          <div class="da-close-reading-grid">
+          <div class="da-close-reading-grid is-open">
             ${cr.cards.map(c => `
-              <div class="da-cr-card">
+              <div class="da-close-note-card da-cr-card">
                 <strong>${c.title}</strong>
-                <p>${c.bodyHtml}</p>
+                <p style="margin:0;">${c.bodyHtml}</p>
               </div>
             `).join('')}
           </div>
@@ -839,10 +839,10 @@ class DarkAcademiaEngine {
                 <p style="font-size:0.9rem; color:#e2e8f0; margin:0 0 0.45rem 0;">
                   <strong>Workout ${idx + 1} (${w.label}):</strong> ${w.promptHtml}
                 </p>
-                <button type="button" class="da-reveal-btn" aria-expanded="false" onclick="darkEngine.toggleReveal(this, 'workout-reveal-${this.unitId}-${idx}')">
+                <button type="button" class="kwt-mini-btn da-reveal-btn" aria-expanded="false" onclick="darkEngine.toggleReveal(this, 'workout-reveal-${this.unitId}-${idx}')">
                   👁️ Reveal Cambridge Model
                 </button>
-                <div id="workout-reveal-${this.unitId}-${idx}" class="da-reveal-panel" hidden>
+                <div id="workout-reveal-${this.unitId}-${idx}" class="da-workout-reveal da-reveal-panel" hidden>
                   ${w.modelHtml}
                 </div>
               </div>
@@ -865,7 +865,7 @@ class DarkAcademiaEngine {
           <div style="font-size:0.82rem; font-weight:800; color:#fbbf24; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.45rem;">
             🎯 Gareth's 4-Step Part 4 Elimination &amp; Deconstruction Method
           </div>
-          <div class="da-strategy-steps">
+          <div class="da-strategy-grid da-strategy-steps">
             <div><strong>1. Strike Out the Echoes:</strong> Cross out words in Sentence 1 that already appear in Sentence 2 to isolate the exact meaning gap.</div>
             <div><strong>2. Inspect Tense Harmony:</strong> Check the verb tense of Sentence 1 so your transformation keeps the exact timeframe.</div>
             <div><strong>3. Check Voice &amp; Inversion:</strong> Spot whether the new opening forces an auxiliary inversion, passive shift, or subjunctive.</div>
@@ -882,7 +882,7 @@ class DarkAcademiaEngine {
           if (!bData || card.querySelector('.da-kwt-breakdown')) return;
           const bWrap = document.createElement('div');
           bWrap.innerHTML = `
-            <button type="button" class="da-reveal-btn da-reveal-sm" aria-expanded="false" onclick="darkEngine.toggleReveal(this, 'kwt-steps-${this.unitId}-${idx}')">
+            <button type="button" class="kwt-mini-btn da-reveal-btn da-reveal-sm" aria-expanded="false" onclick="darkEngine.toggleReveal(this, 'kwt-steps-${this.unitId}-${idx}')">
               🔍 Show 4-Step Deconstruction
             </button>
             <div id="kwt-steps-${this.unitId}-${idx}" class="da-reveal-panel da-kwt-breakdown" hidden>
@@ -893,6 +893,90 @@ class DarkAcademiaEngine {
           `;
           card.appendChild(bWrap);
         });
+      }
+    }
+  }
+
+  /**
+   * Starts the IELTS Part 2 Speaking Warm-Up countdown timer (60s Prep or 120s Speak)
+   */
+  startSpeakingTimer(seconds = 60) {
+    if (this.speakingTimerInterval) {
+      clearInterval(this.speakingTimerInterval);
+      this.speakingTimerInterval = null;
+    }
+    let remaining = Number(seconds) || 60;
+    const isSpeak = remaining > 60;
+    const display = document.getElementById('da-speaking-timer') || document.getElementById('drac1-timer-display');
+    const render = () => {
+      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const s = String(remaining % 60).padStart(2, '0');
+      if (display) {
+        display.textContent = `${m}:${s}`;
+        display.style.borderColor = isSpeak ? '#4ade80' : '#f59e0b';
+        display.style.color = remaining <= 10 ? '#f87171' : (isSpeak ? '#86efac' : '#fde68a');
+      }
+    };
+    render();
+    this.speakingTimerInterval = setInterval(() => {
+      remaining -= 1;
+      if (remaining <= 0) {
+        remaining = 0;
+        render();
+        clearInterval(this.speakingTimerInterval);
+        this.speakingTimerInterval = null;
+        if (window.DarkAcademiaAtmosphere && typeof window.DarkAcademiaAtmosphere.playSFX === 'function') {
+          window.DarkAcademiaAtmosphere.playSFX('seal');
+        }
+      } else {
+        render();
+      }
+    }, 1000);
+  }
+
+  /**
+   * Resets the IELTS Part 2 Speaking Warm-Up countdown timer to 01:00
+   */
+  resetSpeakingTimer() {
+    if (this.speakingTimerInterval) {
+      clearInterval(this.speakingTimerInterval);
+      this.speakingTimerInterval = null;
+    }
+    const display = document.getElementById('da-speaking-timer') || document.getElementById('drac1-timer-display');
+    if (display) {
+      display.textContent = '01:00';
+      display.style.borderColor = 'rgba(245, 158, 11, 0.4)';
+      display.style.color = '#fde68a';
+    }
+  }
+
+  /**
+   * Toggles reveal panels (Spoken Model, Section 2 Workout Models, and Section 3 4-Step Breakdowns)
+   */
+  toggleReveal(btn, panelId) {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+    const willOpen = panel.hasAttribute('hidden') ? true : !panel.classList.contains('is-open');
+    if (willOpen) {
+      panel.removeAttribute('hidden');
+      panel.classList.add('is-open');
+    } else {
+      panel.setAttribute('hidden', '');
+      panel.classList.remove('is-open');
+    }
+    if (btn) {
+      if (!btn.dataset.showLabel) {
+        btn.dataset.showLabel = btn.textContent.trim();
+      }
+      btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      if (willOpen) {
+        const orig = btn.dataset.showLabel;
+        if (orig.includes('Spoken Model')) btn.textContent = '▲ Hide Spoken Model';
+        else if (orig.includes('Cambridge Model')) btn.textContent = '▲ Hide Model';
+        else if (orig.includes('Deconstruction') || orig.includes('Breakdown')) btn.textContent = '▲ Hide Breakdown';
+        else btn.textContent = '▲ Hide';
+      } else {
+        btn.textContent = btn.dataset.showLabel;
       }
     }
   }
@@ -1003,6 +1087,33 @@ class DarkAcademiaEngine {
         background: rgba(16, 185, 129, 0.18) !important;
         color: #86efac !important;
         border: 1px solid #10b981 !important;
+      }
+      .da-c2-badge {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #c4b5fd;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .da-c2-exception-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.65rem;
+      }
+      .da-c2-exception-grid > div {
+        background: rgba(2, 6, 23, 0.55);
+        padding: 0.65rem 0.85rem;
+        border-radius: 6px;
+        border: 1px solid rgba(167, 139, 250, 0.22);
+      }
+      .da-c2-exception-grid strong {
+        display: block;
+        color: #ede9fe;
+        font-size: 0.84rem;
+        margin-bottom: 0.2rem;
+      }
+      .da-workout-item + .da-workout-item {
+        margin-top: 0.75rem;
       }
       @media print {
         .kwt-helper-wrap { display: none !important; }
@@ -1917,6 +2028,7 @@ class DarkAcademiaEngine {
       }
     }
     this.score = 0;
+    this.resetSpeakingTimer();
     this.updateScoreDisplay();
 
     this.renderSortTask();
