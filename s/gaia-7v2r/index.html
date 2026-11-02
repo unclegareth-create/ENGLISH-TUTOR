@@ -614,6 +614,159 @@
       });
     }
 
+    const DEFAULT_ROWS_gaia = [
+      {
+        err: "Digital billboards do not inform citizens; instead, they clutter historic city centres.",
+        clue: "Italian 'invece' watchpoint: After a negative clause ('do not X; rather, they Y'), 'rather' is much cleaner at C2 than 'instead'.",
+        model: "Digital billboards do not inform citizens; rather, they clutter historic city centres."
+      },
+      {
+        err: "Such commercials are highly deceivable, especially for children and vulnerable adults.",
+        clue: "Word formation: People are 'gullible / easily deceived'; the advertisements themselves are 'deceptive' or 'misleading'.",
+        model: "Such commercials are highly deceptive, particularly when aimed at children and vulnerable adults."
+      },
+      {
+        err: "The reading room lacks modern technological implements such as power sockets and fast Wi-Fi.",
+        clue: "Ambrosiana Report watchpoint: 'implements' = physical hand tools (spades, cutlery). Use 'facilities', 'equipment', or 'amenities'.",
+        model: "The reading room lacks modern technological facilities, such as desk power sockets and reliable Wi-Fi."
+      },
+      {
+        err: "Many regular frequenters of the library have complained about the dim lighting.",
+        clue: "Italian false friend ('frequentatori'): Use 'patrons', 'regular visitors', or 'users' in an English CPE Report.",
+        model: "Many regular patrons of the library have complained about the inadequate lighting."
+      },
+      {
+        err: "A growing number of university students has requested extended evening opening hours.",
+        clue: "Quantifier subject-verb agreement: 'A number of [plural] HAVE...' vs. 'The number of [plural] HAS...'.",
+        model: "A growing number of university students have requested extended evening opening hours."
+      },
+      {
+        err: "How does one decide which university path to follow when you are only eighteen?",
+        clue: "Pronoun consistency in Part 2 Letters/Articles: Never mix formal 'one' with 'you' in the same sentence.",
+        model: "How do you decide which university degree to pursue when you are barely eighteen?"
+      },
+      {
+        err: "Outdoor screens only grab customers' attention at the beginning because they are new.",
+        clue: "Part 1 Essay Paraphrase Rule: Never lift 'grab customers' attention' verbatim from the source text.",
+        model: "Digital displays merely capture public notice initially on account of their novelty."
+      },
+      {
+        err: "When I chose Mathematical Engineering in Milan, I didn't realise how demanding the first year would be.",
+        clue: "C2 Negative Inversion: Start with 'Little did I realise, upon choosing...'.",
+        model: "Little did I realise, upon enrolling in Mathematical Engineering in Milan, quite how demanding the first year would prove."
+      },
+      {
+        err: "If I hadn't chosen a quantitative degree, I wouldn't have the analytical mindset I rely on today.",
+        clue: "C2 Inverted Mixed Conditional (Past Choice -> Present Consequence): Start with 'Had I not opted for...'.",
+        model: "Had I not opted for a quantitative degree, I would not possess the analytical rigour I rely upon today."
+      },
+      {
+        err: "Pervasive street advertising targets impulsive desires, and this erodes children's ability to delay gratification.",
+        clue: "C2 Resultative Participle Clause: Replace ', and this erodes' with ', thereby eroding'.",
+        model: "Pervasive street advertising exploits impulsive desires, thereby eroding children's capacity to delay gratification."
+      }
+    ];
+
+    function toggleReveal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function getRepairRows_gaia() {
+      const custom = JSON.parse(localStorage.getItem('gareth_custom_rows_gaia') || '[]');
+      return DEFAULT_ROWS_gaia.concat(custom);
+    }
+
+    function renderRepairTable_gaia() {
+      const tbody = document.getElementById('gaia-error-tbody');
+      if (!tbody) return;
+      const rows = getRepairRows_gaia();
+      const savedAnswers = JSON.parse(localStorage.getItem('gareth_repair_answers_gaia') || '{}');
+      tbody.innerHTML = '';
+
+      rows.forEach(function(r, i) {
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid var(--border-hairline)';
+        const val = savedAnswers[i] || '';
+        const isCustom = i >= DEFAULT_ROWS_gaia.length;
+        tr.innerHTML =
+          '<td style="padding:12px 10px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); vertical-align:top;">' + (i + 1) + '</td>' +
+          '<td style="padding:12px 12px; color:var(--ink-950); vertical-align:top; line-height:1.45;">' +
+            '<span style="color:#e11d48; font-weight:600;">&ldquo;' + r.err + '&rdquo;</span>' +
+            (isCustom ? ' <button onclick="removeRepairRow_gaia(' + (i - DEFAULT_ROWS_gaia.length) + ')" style="border:none;background:none;color:var(--ink-400);cursor:pointer;font-size:0.75rem;" title="Remove custom row">&times;</button>' : '') +
+          '</td>' +
+          '<td style="padding:12px 12px; color:var(--ink-700); font-size:0.82rem; vertical-align:top; line-height:1.45;">' + r.clue + '</td>' +
+          '<td style="padding:12px 12px; vertical-align:top;">' +
+            '<textarea class="draft-textarea" rows="2" style="min-height:64px; margin-top:0; font-size:0.85rem; padding:8px 10px;" placeholder="1. Fix the sentence above...\n2. Write one C2 example of your own..." oninput="saveRepairAnswer_gaia(' + i + ', this.value)">' + val.replace(/</g, '&lt;') + '</textarea>' +
+          '</td>' +
+          '<td style="padding:12px 12px; vertical-align:top;">' +
+            '<button class="btn-nav" style="font-size:0.76rem; padding:5px 10px; margin-bottom:6px;" onclick="toggleReveal(\'gaia-mod-' + i + '\')">&#128065;&#65039; Reveal Model</button>' +
+            '<div id="gaia-mod-' + i + '" style="display:none; font-size:0.82rem; background:var(--emerald-soft); color:var(--ink-950); border-left:3px solid var(--emerald); padding:8px 10px; border-radius:0 6px 6px 0; line-height:1.45;">' +
+              r.model +
+            '</div>' +
+          '</td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function saveRepairAnswer_gaia(idx, val) {
+      const saved = JSON.parse(localStorage.getItem('gareth_repair_answers_gaia') || '{}');
+      saved[idx] = val;
+      localStorage.setItem('gareth_repair_answers_gaia', JSON.stringify(saved));
+    }
+
+    function addRepairRow_gaia() {
+      const errEl = document.getElementById('gaia-new-err');
+      const clueEl = document.getElementById('gaia-new-clue');
+      const modEl = document.getElementById('gaia-new-model');
+      const err = errEl.value.trim();
+      if (!err) {
+        alert('Enter the original sentence first.');
+        return;
+      }
+      const custom = JSON.parse(localStorage.getItem('gareth_custom_rows_gaia') || '[]');
+      custom.push({
+        err: err,
+        clue: clueEl.value.trim() || 'Live class correction',
+        model: modEl.value.trim() || 'Discuss and verify live in class.'
+      });
+      localStorage.setItem('gareth_custom_rows_gaia', JSON.stringify(custom));
+      errEl.value = '';
+      clueEl.value = '';
+      modEl.value = '';
+      renderRepairTable_gaia();
+    }
+
+    function removeRepairRow_gaia(customIdx) {
+      const custom = JSON.parse(localStorage.getItem('gareth_custom_rows_gaia') || '[]');
+      custom.splice(customIdx, 1);
+      localStorage.setItem('gareth_custom_rows_gaia', JSON.stringify(custom));
+      renderRepairTable_gaia();
+    }
+
+    function copyRepairTable_gaia() {
+      const rows = getRepairRows_gaia();
+      const saved = JSON.parse(localStorage.getItem('gareth_repair_answers_gaia') || '{}');
+      const lines = ['GAIA - C2 PROFICIENCY PERSONAL GRAMMAR & SENTENCE REPAIR LOG', '============================================================', ''];
+      rows.forEach(function(r, i) {
+        lines.push((i + 1) + '. Original: "' + r.err + '"');
+        lines.push('   Clue: ' + r.clue);
+        lines.push('   Repair: ' + (saved[i] ? saved[i].trim() : '[Not completed yet]'));
+        lines.push('   Model: ' + r.model);
+        lines.push('');
+      });
+      navigator.clipboard.writeText(lines.join('\n')).then(function() {
+        alert('Completed table copied to clipboard!');
+      });
+    }
+
+    function resetRepairTable_gaia() {
+      if (confirm('Clear your typed answers in the 10-point table?')) {
+        localStorage.removeItem('gareth_repair_answers_gaia');
+        renderRepairTable_gaia();
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       try {
         const saved = localStorage.getItem('gaia_c2_writing_draft');
@@ -623,6 +776,7 @@
           updateGaiaWordCount();
         }
       } catch(e) {}
+      renderRepairTable_gaia();
     });
   </script>
   <script id="env-guard">if (window.location.protocol !== 'file:') { document.documentElement.setAttribute('data-env', 'web'); }</script>
@@ -1103,6 +1257,70 @@
     </section>
 
   
+
+<!-- Section: Bespoke C2 Syntactic & False-Friend Repair Engine (Rule #6 Irreplaceable Craft) -->
+    <section style="background: var(--surface-card); border: 1px solid var(--border-hairline); border-radius: 14px; padding: 24px 28px; margin-top: 28px; margin-bottom: 28px; box-shadow: var(--shadow-card);">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+        <div>
+          <span class="badge-pill badge-amber" style="margin-bottom:6px;">Tailored to Gaia's CPE Mark-Ups</span>
+          <h3 style="font-family:var(--font-display); font-size:1.35rem; color:var(--ink-950);">
+            &#127919; 10-Point C2 False-Friend, Quantifier &amp; Syntactic Repair Table
+          </h3>
+          <p style="font-size:0.88rem; color:var(--ink-500); margin-top:2px;">
+            Built directly from your <strong>Ambrosiana Library Report</strong> and <strong>Full Practice Test (Advertising Essay &amp; Letter to the Editor)</strong>: targeting Italian-to-English false friends (<em>instead/rather, deceivable/deceptive, implements/facilities, frequenters/patrons</em>), quantifier agreement, and C2 Part 4 inversions.
+          </p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button class="btn-nav" onclick="copyRepairTable_gaia()">&#128203; Copy Completed Table</button>
+          <button class="btn-nav" onclick="resetRepairTable_gaia()">&#8634; Clear Inputs</button>
+        </div>
+      </div>
+
+      <!-- Quick Blueprint Strip -->
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:10px; margin-bottom:18px;">
+        <div style="background:var(--surface-subtle); border:1px solid var(--border-hairline); border-left:3px solid var(--navy-700); border-radius:8px; padding:10px 12px;">
+          <div style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--navy-800); letter-spacing:0.04em;">1. False Friends Watch</div>
+          <div style="font-family:var(--font-mono); font-size:0.8rem; color:var(--ink-950); margin-top:3px;">rather than (invece) | deceptive | patrons</div>
+        </div>
+        <div style="background:var(--surface-subtle); border:1px solid var(--border-hairline); border-left:3px solid var(--emerald); border-radius:8px; padding:10px 12px;">
+          <div style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--emerald); letter-spacing:0.04em;">2. Quantifier Agreement</div>
+          <div style="font-family:var(--font-mono); font-size:0.8rem; color:var(--ink-950); margin-top:3px;">A number of [Plural] HAVE | The number HAS</div>
+        </div>
+        <div style="background:var(--surface-subtle); border:1px solid var(--border-hairline); border-left:3px solid var(--amber); border-radius:8px; padding:10px 12px;">
+          <div style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--amber); letter-spacing:0.04em;">3. Negative Inversion</div>
+          <div style="font-family:var(--font-mono); font-size:0.8rem; color:var(--ink-950); margin-top:3px;">Little did [S] realise | At no point did...</div>
+        </div>
+        <div style="background:var(--surface-subtle); border:1px solid var(--border-hairline); border-left:3px solid var(--purple); border-radius:8px; padding:10px 12px;">
+          <div style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--purple); letter-spacing:0.04em;">4. Resultative Participle</div>
+          <div style="font-family:var(--font-mono); font-size:0.8rem; color:var(--ink-950); margin-top:3px;">[Main Clause], thereby eroding / fostering...</div>
+        </div>
+      </div>
+
+      <!-- Add New Live Sentence Bar -->
+      <div style="background:var(--surface-subtle); border:1px dashed var(--border-strong); border-radius:10px; padding:12px 14px; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+        <span style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--navy-800);">&#10133; Log a New Sentence from Class:</span>
+        <input type="text" id="gaia-new-err" class="draft-textarea" style="flex:2; min-width:210px; min-height:38px; margin-top:0; padding:7px 10px; font-size:0.85rem;" placeholder="Original sentence to improve..." />
+        <input type="text" id="gaia-new-clue" class="draft-textarea" style="flex:1; min-width:150px; min-height:38px; margin-top:0; padding:7px 10px; font-size:0.85rem;" placeholder="Grammar clue / target word..." />
+        <input type="text" id="gaia-new-model" class="draft-textarea" style="flex:2; min-width:210px; min-height:38px; margin-top:0; padding:7px 10px; font-size:0.85rem;" placeholder="Model correction..." />
+        <button class="btn-nav primary" onclick="addRepairRow_gaia()" style="padding:7px 14px;">Add Row</button>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.87rem;" id="gaia-error-table">
+          <thead>
+            <tr style="background:var(--surface-subtle); font-size:0.74rem; text-transform:uppercase; color:var(--ink-500); letter-spacing:0.04em; border-bottom:2px solid var(--border-strong);">
+              <th style="padding:10px 10px; text-align:left; width:36px;">#</th>
+              <th style="padding:10px 12px; text-align:left; width:28%;">Original Sentence (From Your Scripts)</th>
+              <th style="padding:10px 12px; text-align:left; width:20%;">C2 Rule &amp; Clue</th>
+              <th style="padding:10px 12px; text-align:left;">Your C2 Repair &amp; New Example</th>
+              <th style="padding:10px 12px; text-align:left; width:22%;">Cambridge C2 Model</th>
+            </tr>
+          </thead>
+          <tbody id="gaia-error-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
 
 <!-- STUDENT-RECENT-WORK-START -->
     <section style="background:var(--surface-card); border:1px solid var(--border-hairline); border-radius:14px; padding:24px 26px; margin-bottom:30px; box-shadow:var(--shadow-card);">
