@@ -162,7 +162,7 @@
                 '<i class="fa-solid fa-circle-check text-emerald-400 text-lg shrink-0" aria-hidden="true"></i>' +
                 '<span>Check your inbox! You can also access your guides &amp; PDF immediately below:</span>' +
                 '</div>' +
-                '<div class="flex flex-wrap gap-2 pt-1 text-xs font-semibold">' +
+                '<div class="flex flex-wrap gap-2 pt-1 text-sm font-semibold">' +
                 '<a href="cpe-inversion.html" class="px-3 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-white border border-emerald-400/40 transition">C1/C2 Inversion Guide &rarr;</a>' +
                 '<a href="c1-c2-common-mistakes.html" class="px-3 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-white border border-emerald-400/40 transition">10 Common C1 Mistakes &rarr;</a>' +
                 '<a href="ielts-7-syllabus.pdf" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-indigo-500/40 hover:bg-indigo-500/60 text-white border border-indigo-400/40 transition"><i class="fa-solid fa-file-pdf mr-1" aria-hidden="true"></i>Download Study Syllabus PDF</a>' +
@@ -211,6 +211,31 @@
 
         window.addEventListener('scroll', updateStickyVisibility, { passive: true });
         updateStickyVisibility();
+    }
+
+    /* ---------- Desktop Sub-Nav ScrollSpy ---------- */
+    const subnavLinks = document.querySelectorAll('.gs-subnav-link[href^="#"]');
+    if (subnavLinks.length && 'IntersectionObserver' in window) {
+        const setActiveSubnav = (id) => {
+            subnavLinks.forEach((l) => {
+                const isMatch = l.getAttribute('href') === '#' + id;
+                l.classList.toggle('active', isMatch);
+            });
+        };
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting && entry.target.id) {
+                    setActiveSubnav(entry.target.id);
+                }
+            });
+        }, { rootMargin: '-25% 0px -65% 0px' });
+
+        subnavLinks.forEach((link) => {
+            const targetId = link.getAttribute('href').slice(1);
+            const sec = document.getElementById(targetId);
+            if (sec) sectionObserver.observe(sec);
+            link.addEventListener('click', () => setActiveSubnav(targetId));
+        });
     }
 
     /* ---------- Stripe Payment Links & Pre-fill Package Intent ---------- */
@@ -284,7 +309,7 @@
                     : 'Complete your details and preferred days/times below for your Stripe Payment Link (or request Wise / PayPal).';
         }
         if (formBadge) {
-            formBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
+            formBadge.className = 'inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-sm font-bold bg-white text-emerald-800 border border-emerald-200 mb-2';
             formBadge.innerHTML = isWaitlist
                 ? '<i class="fa-regular fa-comments" aria-hidden="true"></i> Direct Question &bull; No Payment Required'
                 : '<i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Package Checkout &amp; Scheduling';
@@ -329,8 +354,8 @@
                     : 'Request Payment Link &amp; Schedule &rarr;';
         }
         if (enquiryCard) {
-            enquiryCard.classList.add('border-emerald-400/70', 'ring-2', 'ring-emerald-400/25');
-            enquiryCard.classList.remove('border-slate-700');
+            enquiryCard.classList.add('border-emerald-400', 'ring-2', 'ring-emerald-400/25');
+            enquiryCard.classList.remove('border-slate-200');
         }
         if (messageInput) {
             messageInput.placeholder = isWaitlist
@@ -389,21 +414,21 @@
             messageInput.value = prefillTemplate;
         }
 
-        const bannerHtml = '<span class="text-emerald-300 font-extrabold text-sm sm:text-base leading-relaxed">✓ Help with a receipt, access code or refund — send your details below and I’ll reply within 24 hours.</span>';
+        const bannerHtml = '<span class="text-emerald-900 font-extrabold text-sm sm:text-base leading-relaxed">✓ Help with a receipt, access code or refund — send your details below and I’ll reply within 24 hours.</span>';
         let supportBanner = document.getElementById('billing-support-banner');
         if (!supportBanner) {
             supportBanner = document.createElement('div');
             supportBanner.id = 'billing-support-banner';
             supportBanner.setAttribute('role', 'status');
             supportBanner.setAttribute('aria-live', 'polite');
-            supportBanner.className = 'mb-6 p-4 sm:p-5 rounded-2xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-100 flex items-start gap-3 shadow-lg';
+            supportBanner.className = 'mb-6 p-4 sm:p-5 rounded-2xl gs-bento-surface-sage border border-emerald-300 text-emerald-900 flex items-start gap-3';
             enquiryCard.insertBefore(supportBanner, enquiryCard.firstChild);
         }
         supportBanner.innerHTML = bannerHtml;
         supportBanner.classList.remove('hidden');
 
-        enquiryCard.classList.add('border-emerald-400/70', 'ring-2', 'ring-emerald-400/25');
-        enquiryCard.classList.remove('border-slate-700');
+        enquiryCard.classList.add('border-emerald-400', 'ring-2', 'ring-emerald-400/25');
+        enquiryCard.classList.remove('border-slate-200');
 
         setTimeout(() => {
             enquiryCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -455,14 +480,14 @@
             if (formTitle) formTitle.textContent = 'Ask a Question or Reserve a Lesson Pack';
             if (formSubtitle) formSubtitle.textContent = 'Select a lesson pack above or let me know your goals below. You can pay via Stripe Payment Link, Wise or PayPal.';
             if (formBadge) {
-                formBadge.className = 'hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-2';
+                formBadge.className = 'hidden items-center gap-1.5 px-3.5 py-1 rounded-full text-sm font-bold bg-white text-emerald-800 border border-emerald-200 mb-2';
             }
             if (stripeBtn) stripeBtn.classList.add('hidden');
             if (pkgBanner) pkgBanner.classList.add('hidden');
             if (submitBtn) submitBtn.innerHTML = 'Send Message &rarr;';
             if (enquiryCard) {
-                enquiryCard.classList.remove('border-emerald-400/70', 'ring-2', 'ring-emerald-400/25');
-                enquiryCard.classList.add('border-slate-700');
+                enquiryCard.classList.remove('border-emerald-400', 'ring-2', 'ring-emerald-400/25');
+                enquiryCard.classList.add('border-slate-200');
             }
             if (messageInput) {
                 messageInput.placeholder = 'Tell me a bit about your current level, goals, and time zone...';
@@ -503,7 +528,7 @@
       formula: 'have / had + NO + INTENTION + of + V-ing (3\u20136 words \u2022 Keyword unchanged)',
       beforeLabel: 'Student draft',
       beforeMeta: 'Keyword: INTENTION',
-      beforeHtml: '<span class="line-through text-slate-400">Sarah</span> <strong class="text-rose-700 not-italic">refused to apologise</strong> <span class="line-through text-slate-400">for the mistake she had made.</span><br><span class="text-xs font-mono text-slate-500 not-italic mt-1.5 block">Gap: Sarah ________________________ for the mistake she had made.</span>',
+      beforeHtml: '<span class="line-through text-slate-400">Sarah</span> <strong class="text-rose-700 not-italic">refused to apologise</strong> <span class="line-through text-slate-400">for the mistake she had made.</span><br><span class="text-sm font-mono text-slate-500 not-italic mt-1.5 block">Gap: Sarah ________________________ for the mistake she had made.</span>',
       beforeNote: 'Cross out the repeated words first: only \u201crefused to apologise\u201d (Past Simple) needs to be rewritten.',
       afterLabel: 'How we\u2019d improve it',
       afterMeta: '2/2 Marks \u2022 5 Words',
@@ -546,8 +571,8 @@
       const active = k === key;
       tab.setAttribute('aria-selected', String(active));
       tab.className = active
-        ? 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-indigo-600 text-white shadow-sm cursor-pointer'
-        : 'px-3 py-1.5 rounded-lg text-xs font-bold transition bg-slate-800 text-slate-300 hover:text-white cursor-pointer';
+        ? 'px-4 py-2 rounded-full text-sm font-bold transition bg-brand-600 text-white shadow-sm cursor-pointer'
+        : 'px-4 py-2 rounded-full text-sm font-bold transition text-slate-600 hover:text-slate-900 cursor-pointer';
     });
 
     const elFormula = document.getElementById('redpen-formula');
@@ -561,22 +586,33 @@
     const elTags = document.getElementById('redpen-tags');
 
     if (elFormula) elFormula.textContent = item.formula;
-    if (elBeforeLabel) elBeforeLabel.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> ' + item.beforeLabel;
+    if (elBeforeLabel) {
+      elBeforeLabel.textContent = '';
+      const dot = document.createElement('span');
+      dot.className = 'w-2 h-2 rounded-full bg-rose-500';
+      elBeforeLabel.appendChild(dot);
+      elBeforeLabel.appendChild(document.createTextNode(' ' + item.beforeLabel));
+    }
     if (elBeforeMeta) elBeforeMeta.textContent = item.beforeMeta;
     if (elBeforeText) elBeforeText.innerHTML = item.beforeHtml;
     if (elBeforeNote) elBeforeNote.textContent = item.beforeNote;
-    if (elAfterLabel) elAfterLabel.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-600"></span> ' + item.afterLabel;
+    if (elAfterLabel) {
+      elAfterLabel.textContent = '';
+      const dot = document.createElement('span');
+      dot.className = 'w-2 h-2 rounded-full bg-emerald-600';
+      elAfterLabel.appendChild(dot);
+      elAfterLabel.appendChild(document.createTextNode(' ' + item.afterLabel));
+    }
     if (elAfterMeta) elAfterMeta.textContent = item.afterMeta;
     if (elAfterText) elAfterText.innerHTML = item.afterHtml;
     if (elTags) {
-      elTags.innerHTML = item.tags.map((t, i) => {
-        const palettes = [
-          'bg-indigo-50 text-indigo-700 border-indigo-100',
-          'bg-emerald-50 text-emerald-800 border-emerald-100',
-          'bg-sky-50 text-sky-800 border-sky-100'
-        ];
-        return '<span class="px-2 py-0.5 rounded font-semibold border ' + palettes[i % 3] + '">' + t + '</span>';
-      }).join('');
+      elTags.textContent = '';
+      item.tags.forEach((t) => {
+        const span = document.createElement('span');
+        span.className = 'px-3 py-1 rounded-full font-semibold bg-white text-slate-800';
+        span.textContent = t;
+        elTags.appendChild(span);
+      });
     }
     if (typeof maskFirst === 'boolean') {
       setRedpenReveal(!maskFirst);
@@ -613,8 +649,8 @@
       if (btn) {
         btn.setAttribute('aria-selected', String(isActive));
         btn.className = isActive
-          ? 'res-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-slate-900 shadow-sm cursor-pointer'
-          : 'res-tab-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
+          ? 'res-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all bg-white text-slate-900 shadow-sm cursor-pointer'
+          : 'res-tab-btn px-4 py-2 rounded-xl text-sm font-bold transition-all text-slate-600 hover:text-slate-900 cursor-pointer';
       }
       if (panel) {
         panel.classList.toggle('hidden', !isActive);

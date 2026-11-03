@@ -309,11 +309,14 @@
 
         window.showDiagnosticGate = function (opts) {
             opts = opts || {};
-            const gameName = opts.gameName || 'Interactive Skill Test';
+            const esc = (str) => String(str || '').replace(/[&<>"']/g, (c) => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+            const gameName = esc(opts.gameName || 'Interactive Skill Test');
             const score = typeof opts.score === 'number' ? opts.score : 0;
             const maxScore = typeof opts.maxScore === 'number' ? opts.maxScore : 10;
-            const weakArea = opts.weakArea || 'C1/C2 Linguistic Precision under Time Pressure';
-            const examImpact = opts.examImpact || 'In Cambridge C1/C2 and IELTS examinations, hesitation and syntax friction reduce your Lexical Resource & Grammar scores by up to a full band.';
+            const weakArea = esc(opts.weakArea || 'C1/C2 Linguistic Precision under Time Pressure');
+            const examImpact = esc(opts.examImpact || 'In Cambridge C1/C2 and IELTS examinations, hesitation and syntax friction reduce your Lexical Resource & Grammar scores by up to a full band.');
             const onReplay = typeof opts.onReplay === 'function' ? opts.onReplay : null;
 
             const pct = Math.max(0, Math.min(100, Math.round((score / (maxScore || 1)) * 100)));
