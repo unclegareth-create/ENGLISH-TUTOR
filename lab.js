@@ -190,7 +190,7 @@ const LabObservatory = (() => {
       const lbl = btn.querySelector('[data-sfx-label]');
       const icon = btn.querySelector('[data-sfx-icon]');
       if (lbl) lbl.textContent = sfxOn ? 'SFX: ON' : 'SFX: OFF';
-      if (icon) icon.className = sfxOn ? 'fa-solid fa-volume-high text-xs' : 'fa-solid fa-volume-xmark text-xs';
+      if (icon) icon.className = sfxOn ? 'fa-solid fa-volume-high text-sm' : 'fa-solid fa-volume-xmark text-sm';
     });
   }
 
@@ -467,14 +467,14 @@ const LabObservatory = (() => {
         localStorage.setItem('da_canon_unlocked', 'true');
         localStorage.setItem('da_course_unlocked_v1', 'true');
       } catch (e) {}
-      feedback.className = 'text-xs font-bold text-emerald-400 mt-1.5';
+      feedback.className = 'text-sm font-bold text-emerald-700 mt-1.5';
       feedback.textContent = '✓ Access code verified! All 15 lessons unlocked—opening Course Hub...';
       setTimeout(() => {
         window.location.href = 'dark-academia-index.html?unlocked=true';
       }, 450);
     } else {
-      feedback.className = 'text-xs font-bold text-rose-400 mt-1.5';
-      feedback.innerHTML = '✗ Invalid access code. Check your confirmation screen or <a href="mailto:gareth@garethenglish.com?subject=Dark%20Academia%20Stripe%20Receipt%20%E2%80%94%20Access%20Code%20Request" class="underline text-amber-300 hover:text-white">email Gareth your Stripe receipt</a>.';
+      feedback.className = 'text-sm font-bold text-rose-700 mt-1.5';
+      feedback.innerHTML = '✗ Invalid access code. Check your confirmation screen or <a href="mailto:gareth@garethenglish.com?subject=Dark%20Academia%20Stripe%20Receipt%20%E2%80%94%20Access%20Code%20Request" class="underline text-brand-700 hover:text-brand-800">email Gareth your Stripe receipt</a>.';
     }
   }
 
@@ -494,7 +494,7 @@ const LabObservatory = (() => {
     const words = norm ? norm.split(' ') : [];
     const wordCount = words.length;
     const modelHtml =
-      '<div class="mt-1.5 pt-1.5 border-t border-[#c5a059]/25 text-[#e8dec8]"><strong class="text-amber-300">Model answer (6 words):</strong> <code class="text-white font-bold">Hemmed in by dense pine forests</code> <span class="text-[#d6cbb8]">(also accepted: <code class="text-white">Hemmed in by pine forests</code>)</span></div>';
+      '<div class="mt-2 pt-2 border-t border-slate-200 text-slate-700"><strong class="text-slate-900">Model answer (6 words):</strong> <code class="text-brand-700 font-bold">Hemmed in by dense pine forests</code> <span class="text-slate-600">(also accepted: <code class="text-slate-900">Hemmed in by pine forests</code>)</span></div>';
 
     // Forgiving C1 Part 4 pattern: 3 to 6 words, keeps HEMMED unchanged, forms a valid participle clause
     const isPatternMatch =
@@ -507,7 +507,7 @@ const LabObservatory = (() => {
       playTone(620, 0.06, 'triangle', 0.035);
       if (input && !raw) input.value = 'Hemmed in by dense pine forests';
       feedback.innerHTML =
-        '<strong class="text-amber-300">Cambridge Model (6 words):</strong> <code class="text-white font-bold">Hemmed in by dense pine forests</code> <span class="text-[#d6cbb8]">(or 5 words: <code class="text-white">Hemmed in by pine forests</code>)</span><br><span class="text-[#d6cbb8]">Why it scores 2/2: Replaces “Because it was closely surrounded by” with the past participle opener <em>Hemmed in by...</em> while keeping the key word <strong>HEMMED</strong> unchanged.</span>';
+        '<strong class="text-slate-900">Cambridge Model (6 words):</strong> <code class="text-brand-700 font-bold">Hemmed in by dense pine forests</code> <span class="text-slate-600">(or 5 words: <code class="text-slate-900">Hemmed in by pine forests</code>)</span><br><span class="text-slate-700">Why it scores 2/2: Replaces “Because it was closely surrounded by” with the past participle opener <em>Hemmed in by...</em> while keeping the key word <strong>HEMMED</strong> unchanged.</span>';
       return;
     }
 
@@ -515,7 +515,7 @@ const LabObservatory = (() => {
       playTone(660, 0.08, 'triangle', 0.05);
       setTimeout(() => playTone(880, 0.12, 'triangle', 0.05), 70);
       feedback.innerHTML =
-        '<strong class="text-emerald-400">✓ 2/2 Marks! Spot on.</strong> Your participle opener <code class="text-white font-bold">' +
+        '<strong class="text-emerald-700">✓ 2/2 Marks! Spot on.</strong> Your participle opener <code class="text-slate-900 font-bold">' +
         raw.replace(/[<>&"']/g, '') +
         '</code> is 3–6 words and keeps the key word <strong>HEMMED</strong> unchanged.';
     } else if (!norm) {
@@ -526,17 +526,17 @@ const LabObservatory = (() => {
     } else if (!/\bhemmed\b/.test(norm)) {
       playTone(220, 0.1, 'sawtooth', 0.04);
       feedback.innerHTML =
-        '<strong class="text-rose-400">Remember the Part 4 rule:</strong> Include the exact key word <strong>HEMMED</strong> without changing its form.' +
+        '<strong class="text-rose-700">Remember the Part 4 rule:</strong> Include the exact key word <strong>HEMMED</strong> without changing its form.' +
         modelHtml;
     } else if (wordCount < 3 || wordCount > 6) {
       playTone(260, 0.1, 'sawtooth', 0.04);
       feedback.innerHTML =
-        `<strong class="text-amber-300">Check your word count (${wordCount} words):</strong> Part 4 answers must be between 3 and 6 words.` +
+        `<strong class="text-amber-800">Check your word count (${wordCount} words):</strong> Part 4 answers must be between 3 and 6 words.` +
         modelHtml;
     } else {
       playTone(260, 0.1, 'sawtooth', 0.04);
       feedback.innerHTML =
-        '<strong class="text-amber-300">Close!</strong> Start with the past participle phrase <code class="text-white">Hemmed in by...</code> followed by the noun phrase.' +
+        '<strong class="text-amber-800">Close!</strong> Start with the past participle phrase <code class="text-slate-900 font-bold">Hemmed in by...</code> followed by the noun phrase.' +
         modelHtml;
     }
   }
@@ -777,7 +777,7 @@ const LabObservatory = (() => {
         }
         const feedback = document.getElementById('lab-da-access-code-feedback');
         if (feedback) {
-          feedback.className = 'text-xs font-bold text-emerald-400 mt-1.5';
+          feedback.className = 'text-sm font-bold text-emerald-700 mt-1.5';
           feedback.textContent = '✓ Full 15-lesson course unlocked on this browser!';
         }
       }
@@ -818,8 +818,8 @@ const LabObservatory = (() => {
         const active = b === btn;
         b.setAttribute('aria-pressed', String(active));
         b.className = active
-          ? 'lab-filter-btn px-3.5 py-1.5 rounded-full text-xs font-bold bg-sky-500 text-slate-950 shadow-sm transition cursor-pointer'
-          : 'lab-filter-btn px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-900 text-slate-300 border border-slate-700 hover:border-sky-400 transition cursor-pointer';
+          ? 'lab-filter-btn px-4 py-2 rounded-full text-sm font-bold bg-brand-600 text-white shadow-sm transition cursor-pointer'
+          : 'lab-filter-btn px-4 py-2 rounded-full text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 transition cursor-pointer';
       });
       document.querySelectorAll('.lab-card').forEach((card) => {
         const cardLevel = card.getAttribute('data-level') || '';
