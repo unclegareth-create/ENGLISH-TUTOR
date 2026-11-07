@@ -93,6 +93,24 @@
       text-decoration: none;
       font-weight: 700;
     }
+    .echo-span {
+      transition: all 0.18s ease;
+    }
+    .echo-struck .echo-span {
+      text-decoration: line-through;
+      color: #94a3b8;
+      background-color: #f1f5f9;
+      padding: 0 3px;
+      border-radius: 3px;
+    }
+    .echo-struck .deficit-span {
+      background-color: #fef3c7;
+      color: #92400e;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border-bottom: 2px solid #d97706;
+    }
   </style>
 </head>
 <body class="antialiased selection:bg-amber-200 selection:text-slate-900">
@@ -112,6 +130,7 @@
         <a href="#finding-1" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 transition">1. The Decoupling Paradox</a>
         <a href="#finding-2" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 transition">2. Part 4 Split-Mark Audit</a>
         <a href="#finding-3" class="px-3 py-1.5 rounded-lg bg-amber-700 hover:bg-amber-800 text-white transition shadow-sm">3. Live Essay Scrubber</a>
+        <a href="#workbench" class="px-3 py-1.5 rounded-lg bg-emerald-800 hover:bg-emerald-900 text-white transition shadow-sm">4. Live 10-KWT &amp; Clause Workbench</a>
         <a href="sprucefield-research.html" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white transition mono-font">Sprucefield Math &amp; Bio Papers &rarr;</a>
       </div>
     </div>
@@ -518,6 +537,123 @@
       </div>
     </section>
 
+    <!-- ================= SECTION 4: LIVE EMPIRICAL WORKBENCH (10 KWT + CLAUSE COMPRESSION) ================= -->
+    <section id="workbench" class="bg-white border-2 border-emerald-700/80 rounded-2xl p-6 sm:p-8 md:p-10 shadow-md space-y-10">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-6">
+        <div class="space-y-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-emerald-800 mono-font">Finding 04 &middot; Interactive Deconstruction &amp; Clause-Packing Lab</div>
+          <h2 class="text-2xl sm:text-3xl font-bold display-serif text-slate-900">
+            Live Empirical Workbench: 10 C1/C2 Split-Mark Key Word Transformations &amp; Clause-Packing Analyzer
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+            Put the 80-item past-paper audit into practice right off the bat. Below are ten calibrated C1/C2 Key Word Transformations built around my 4-Step Elimination &amp; Deconstruction Strategy, followed by a live Clause-to-Proposition Compression Bench where you can test how finite clauses pack cleanly into participle clauses, nominalisations, and clefts.
+          </p>
+        </div>
+        <div class="shrink-0 bg-emerald-50 px-4 py-3 rounded-xl border border-emerald-200 text-xs mono-font text-emerald-950 space-y-1">
+          <div class="font-bold">10-ITEM WORKBENCH SCORE</div>
+          <div class="text-base font-extrabold text-emerald-800" id="wb-kwt-score-pill">0 / 20 Marks (L:0 // R:0)</div>
+          <div class="text-[11px] text-slate-600" id="wb-kwt-mastery-sub">3 to 6 words &middot; Key word unchanged</div>
+        </div>
+      </div>
+
+      <!-- PART A: 10 INTERACTIVE PART 4 ITEMS WITH 4-STEP STRATEGY -->
+      <div class="space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900 text-white rounded-2xl p-5">
+          <div class="space-y-1">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-300 mono-font">Part A &middot; 10 Calibrated C1/C2 Split-Mark Transformations (1 mark // 1 mark)</div>
+            <p class="text-xs sm:text-sm text-slate-300">
+              Click <strong>✂️ Step 1: Strike Out the Echoes</strong> on any question to cross out the repeated language from Sentence 1 and inspect the Tense Harmony (Step 2), Voice/Nominal Shift (Step 3), and Preposition/Collocation Lock (Step 4).
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="toggleAllWorkbenchEchoes()" id="wb-strike-all-btn" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition shadow-sm">
+              ✂️ Strike Out All 10 Echoes
+            </button>
+            <button type="button" onclick="scoreAllWorkbenchKwt()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-sm">
+              ✓ Score All 10 Items
+            </button>
+            <button type="button" onclick="resetWorkbenchKwt()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-xs font-bold transition">
+              ↺ Reset
+            </button>
+          </div>
+        </div>
+
+        <div id="wb-kwt-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <!-- Populated dynamically by renderWorkbenchKwt() -->
+        </div>
+      </div>
+
+      <!-- PART B: LIVE CLAUSE-TO-PROPOSITION COMPRESSION BENCH -->
+      <div class="border-t-2 border-slate-200 pt-8 space-y-6">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div class="space-y-1.5">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Part B &middot; Syntactic Compression &amp; Clause-Packing Analyzer</div>
+            <h3 class="text-xl sm:text-2xl font-bold display-serif text-slate-900">
+              Clause-to-Proposition Compression Bench
+            </h3>
+            <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+              At Band 6.5 / B2, writers chain two or three finite clauses together with loose connectors (<em>and so, because, which means that</em>). At Band 8.0 / C1–C2, you compress secondary finite clauses into <strong>participle clauses</strong>, <strong>abstract nominalisations</strong>, or <strong>emphatic clefts</strong>. Test the six compression drills below or run your own sentence through the live Clause-Packing Analyzer.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-1.5 shrink-0">
+            <button type="button" onclick="filterCompressionBench('all')" id="comp-tab-all" class="px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold transition">All 6 Drills</button>
+            <button type="button" onclick="filterCompressionBench('participle')" id="comp-tab-participle" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">Participle Clauses (2)</button>
+            <button type="button" onclick="filterCompressionBench('nominalisation')" id="comp-tab-nominalisation" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">Nominalisations (2)</button>
+            <button type="button" onclick="filterCompressionBench('cleft')" id="comp-tab-cleft" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition">Cleft Sentences (2)</button>
+          </div>
+        </div>
+
+        <!-- 6 Interactive Clause-to-Proposition Compression Cards -->
+        <div id="compression-bench-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <!-- Populated dynamically by renderCompressionBench() -->
+        </div>
+
+        <!-- Live Custom Sentence Clause-Packing Analyzer -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-800 mono-font">Interactive Clause-Packing Sandbox</span>
+              <h4 class="text-base sm:text-lg font-bold text-slate-900 mt-0.5">Test How Any Multi-Clause Sentence Compresses</h4>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="loadClauseSample('b2_loose')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 hover:border-amber-600 text-xs font-bold text-slate-700 transition">Load Loose B2 Chain</button>
+              <button type="button" onclick="loadClauseSample('c1_participle')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 hover:border-emerald-600 text-xs font-bold text-slate-700 transition">Load C1 Participle + Nominal</button>
+              <button type="button" onclick="loadClauseSample('c2_cleft')" class="px-2.5 py-1 rounded-lg bg-white border border-slate-300 hover:border-emerald-600 text-xs font-bold text-slate-700 transition">Load C2 Cleft + Inversion</button>
+            </div>
+          </div>
+
+          <textarea id="clause-analyzer-input" rows="3" oninput="runClausePackingAnalyzer()" class="w-full rounded-xl border border-slate-300 p-3.5 text-sm text-slate-800 leading-relaxed focus:outline-none focus:border-emerald-700 bg-white" placeholder="Type or paste a sentence with 2 or 3 clauses (e.g. 'Because the council cut the budget, the museum closed early, and this disappointed local residents.')..."></textarea>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-white border border-slate-200 rounded-xl p-3">
+              <div class="text-[11px] font-bold uppercase text-slate-500 mono-font">Finite Clauses Est.</div>
+              <div class="text-lg font-bold mono-font text-slate-900 mt-0.5" id="cp-metric-clauses">--</div>
+              <div class="text-[11px] text-slate-500" id="cp-metric-clauses-sub">--</div>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-xl p-3">
+              <div class="text-[11px] font-bold uppercase text-slate-500 mono-font">Loose Connectors</div>
+              <div class="text-lg font-bold mono-font text-amber-800 mt-0.5" id="cp-metric-chaining">--</div>
+              <div class="text-[11px] text-slate-500" id="cp-metric-chaining-sub">--</div>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-xl p-3">
+              <div class="text-[11px] font-bold uppercase text-slate-500 mono-font">C1/C2 Compressions</div>
+              <div class="text-lg font-bold mono-font text-emerald-800 mt-0.5" id="cp-metric-packed">--</div>
+              <div class="text-[11px] text-slate-500" id="cp-metric-packed-sub">--</div>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-xl p-3">
+              <div class="text-[11px] font-bold uppercase text-slate-500 mono-font">Packing Profile</div>
+              <div class="text-sm font-bold text-slate-900 mt-1" id="cp-metric-verdict">--</div>
+              <div class="text-[11px] text-slate-500" id="cp-metric-verdict-sub">--</div>
+            </div>
+          </div>
+
+          <div id="cp-analyzer-recommendations" class="bg-white border border-slate-200 rounded-xl p-4 text-xs sm:text-sm text-slate-700 space-y-2">
+            <!-- Populated by runClausePackingAnalyzer() -->
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer class="bg-white border-t border-slate-200 mt-16 py-8">
@@ -729,11 +865,781 @@
       }).join('');
     }
 
+    // =========================================================================
+    // 5. LIVE EMPIRICAL WORKBENCH: 10 C1/C2 PART 4 TRANSFORMATIONS (4-STEP STRATEGY)
+    // =========================================================================
+    const WB_KWT_STORAGE_KEY = 'gareth_c1_lab_workbench_kwt_v1';
+    let wbEchoAllStruck = false;
+    const wbKwtState = {};
+
+    const WB_KWT_ITEMS = [
+      {
+        id: 1,
+        family: 'Nominalisation · Negative Noun + Of + -ing',
+        key: 'INTENTION',
+        blueprint: 'Subject + have + no / little + intention + of + V-ing',
+        s1Html: '<span class="echo-span">The director</span> <span class="deficit-span">definitely did not intend to resign</span> <span class="echo-span">before the end of the financial year.</span>',
+        s2Pre: 'The director ',
+        s2Post: ' before the end of the financial year.',
+        step1: 'Isolated Deficit: "definitely did not intend to resign" (the subject and time phrase are already echoed in Sentence 2).',
+        step2: 'Tense Harmony: Past simple "did not intend" requires past simple "had" in Sentence 2.',
+        step3: 'Voice / Nominal Shift: Verb "intend" shifts to the negative abstract noun phrase "had no intention".',
+        step4: 'Preposition / Collocation Lock: "intention" governs the dependent preposition "of" + gerund ("of resigning").',
+        leftOpts: ['had no intention', 'had little intention', 'had no intention whatsoever'],
+        rightOpts: ['of resigning', 'of stepping down'],
+        modelSplit: 'had no intention // of resigning',
+        wordNote: '5 words'
+      },
+      {
+        id: 2,
+        family: 'Negative Inversion · Existential Nominalisation',
+        key: 'OFFICIAL',
+        blueprint: 'At no time + was there + (any/an) + Adjective + Noun + of',
+        s1Html: '<span class="echo-span">The contribution made by the laboratory technicians</span> <span class="deficit-span">was never acknowledged officially.</span>',
+        s2Pre: 'At no time ',
+        s2Post: ' the contribution made by the laboratory technicians.',
+        step1: 'Isolated Deficit: "was never acknowledged officially".',
+        step2: 'Tense Harmony: Past passive "was never acknowledged" stays in the past simple ("was there").',
+        step3: 'Voice / Nominal Shift: Fronted negative "At no time" triggers auxiliary inversion ("was there"), and verb "acknowledged" nominalises to "acknowledgement".',
+        step4: 'Preposition / Collocation Lock: "acknowledgement" requires the preposition "of" to link to "the contribution".',
+        leftOpts: ['was there any official', 'was there an official'],
+        rightOpts: ['acknowledgement of', 'acknowledgment of'],
+        modelSplit: 'was there any official // acknowledgement of',
+        wordNote: '6 words'
+      },
+      {
+        id: 3,
+        family: 'Nominalisation · Verb to Abstract Noun + To',
+        key: 'RESEMBLANCE',
+        blueprint: 'bear / show / have + no + resemblance + to + Noun Phrase',
+        s1Html: '<span class="echo-span">Critics complained that the film adaptation</span> <span class="deficit-span">did not look at all like</span> <span class="echo-span">the original novel.</span>',
+        s2Pre: 'Critics complained that the film adaptation ',
+        s2Post: ' the original novel.',
+        step1: 'Isolated Deficit: "did not look at all like".',
+        step2: 'Tense Harmony: Past simple "did not look" maps to past simple "bore" (or "had / showed").',
+        step3: 'Voice / Nominal Shift: Everyday verb phrase "not look like" shifts to formal C1/C2 noun collocation "bore no resemblance".',
+        step4: 'Preposition / Collocation Lock: "resemblance" always takes the preposition "to" ("resemblance to").',
+        leftOpts: ['bore no', 'had no', 'showed no', 'bore little'],
+        rightOpts: ['resemblance to', 'resemblance whatsoever to'],
+        modelSplit: 'bore no // resemblance to',
+        wordNote: '4 words'
+      },
+      {
+        id: 4,
+        family: 'Passive Reporting · Perfect Infinitive Raising',
+        key: 'BELIEVED',
+        blueprint: 'Subject + is / are + (widely) believed + to have + Past Participle (V3)',
+        s1Html: '<span class="deficit-span">Archaeologists widely believe that</span> <span class="echo-span">the harbour wall</span> <span class="deficit-span">collapsed</span> <span class="echo-span">during a fourteenth-century storm.</span>',
+        s2Pre: 'The harbour wall ',
+        s2Post: ' during a fourteenth-century storm.',
+        step1: 'Isolated Deficit: "Archaeologists widely believe that ... collapsed".',
+        step2: 'Tense Harmony: Present reporting verb ("believe") + earlier past event ("collapsed") requires present passive + perfect infinitive ("to have collapsed").',
+        step3: 'Voice / Nominal Shift: Active reporting clause shifts to impersonal passive ("is widely believed") with subject raising.',
+        step4: 'Preposition / Collocation Lock: Perfect infinitive "to have collapsed" marks that the collapse happened before the present belief.',
+        leftOpts: ['is widely believed', 'is believed'],
+        rightOpts: ['to have collapsed'],
+        modelSplit: 'is widely believed // to have collapsed',
+        wordNote: '6 words'
+      },
+      {
+        id: 5,
+        family: 'C2 Counterfactual Conditional · But For + Nominalisation',
+        key: 'BUT',
+        blueprint: 'But for + the + Adjective + Nominalised Noun + of',
+        s1Html: '<span class="deficit-span">If</span> <span class="echo-span">the coastguard</span> <span class="deficit-span">had not intervened so swiftly,</span> <span class="echo-span">the trawler would have capsized.</span>',
+        s2Pre: '',
+        s2Post: ' the coastguard, the trawler would have capsized.',
+        step1: 'Isolated Deficit: "If ... had not intervened so swiftly".',
+        step2: 'Tense Harmony: Past counterfactual condition ("had not intervened") compresses into the prepositional conditional "But for".',
+        step3: 'Voice / Nominal Shift: Finite verb + adverb ("intervened so swiftly") nominalises into "the swift intervention".',
+        step4: 'Preposition / Collocation Lock: "intervention" links to the agent ("the coastguard") via "of".',
+        leftOpts: ['but for the'],
+        rightOpts: ['swift intervention of', 'prompt intervention of', 'rapid intervention of', 'timely intervention of'],
+        modelSplit: 'But for the // swift intervention of',
+        wordNote: '6 words'
+      },
+      {
+        id: 6,
+        family: 'Unreal Past Subjunctive · Distinct-Subject Preference',
+        key: 'RATHER',
+        blueprint: 'Subject_1 + would rather + Subject_2 + Past Subjunctive (did not + V1)',
+        s1Html: '<span class="echo-span">I</span> <span class="deficit-span">would prefer it if you did not discuss</span> <span class="echo-span">the audit findings outside this office.</span>',
+        s2Pre: 'I ',
+        s2Post: ' the audit findings outside this office.',
+        step1: 'Isolated Deficit: "would prefer it if you did not discuss".',
+        step2: 'Tense Harmony: Present preference with a second subject ("you") requires the unreal past subjunctive ("did not discuss").',
+        step3: 'Voice / Nominal Shift: "would prefer it if you" compacts into "would rather you".',
+        step4: 'Preposition / Collocation Lock: Bare infinitive "discuss" follows "did not" with no "to".',
+        leftOpts: ['would rather you', 'would rather that you'],
+        rightOpts: ['did not discuss', "didn't discuss"],
+        modelSplit: 'would rather you // did not discuss',
+        wordNote: '6 words'
+      },
+      {
+        id: 7,
+        family: 'Fixed Idiomatic Collocation · Passive Voice Shift',
+        key: 'ACCOUNT',
+        blueprint: 'Subject + Modal + be + taken + into account',
+        s1Html: '<span class="echo-span">The panel</span> <span class="deficit-span">must consider</span> <span class="echo-span">every safety objection before approving the tunnel design.</span>',
+        s2Pre: 'Every safety objection ',
+        s2Post: ' by the panel before approving the tunnel design.',
+        step1: 'Isolated Deficit: "must consider" (note how "every safety objection" has moved to the front of Sentence 2).',
+        step2: 'Tense Harmony: Modal obligation "must" remains "must be".',
+        step3: 'Voice / Nominal Shift: Because the object ("Every safety objection") is now the subject, active "consider" becomes passive "must be taken".',
+        step4: 'Preposition / Collocation Lock: Fixed C1/C2 idiom "take into account" supplies "into account".',
+        leftOpts: ['must be taken', 'has to be taken', 'should be taken'],
+        rightOpts: ['into account'],
+        modelSplit: 'must be taken // into account',
+        wordNote: '5 words'
+      },
+      {
+        id: 8,
+        family: 'Dependent Preposition To · Possessive Gerund Trap',
+        key: 'OBJECTION',
+        blueprint: 'have + any / an + objection + to + Possessive/Object + V-ing',
+        s1Html: '<span class="echo-span">Do you</span> <span class="deficit-span">mind if I record</span> <span class="echo-span">our interview for transcription purposes?</span>',
+        s2Pre: 'Do you ',
+        s2Post: ' our interview for transcription purposes?',
+        step1: 'Isolated Deficit: "mind if I record".',
+        step2: 'Tense Harmony: Present interrogative "Do you..." takes bare infinitive "have".',
+        step3: 'Voice / Nominal Shift: Verb "mind" nominalises to "have any objection".',
+        step4: 'Preposition / Collocation Lock: In "objection to", "to" is a preposition, so it must be followed by a gerund ("to my recording" or "to me recording"), never an infinitive.',
+        leftOpts: ['have any objection', 'have an objection'],
+        rightOpts: ['to my recording', 'to me recording'],
+        modelSplit: 'have any objection // to my recording',
+        wordNote: '6 words'
+      },
+      {
+        id: 9,
+        family: 'Negative Inversion · Past Perfect Sequence',
+        key: 'SOONER',
+        blueprint: 'No + sooner + had + Subject + Past Participle (V3) ... than',
+        s1Html: '<span class="deficit-span">As soon as</span> <span class="echo-span">the soloist</span> <span class="deficit-span">stepped onto</span> <span class="echo-span">the stage, the audience rose to applaud.</span>',
+        s2Pre: 'No ',
+        s2Post: ' the stage than the audience rose to applaud.',
+        step1: 'Isolated Deficit: "As soon as ... stepped onto".',
+        step2: 'Tense Harmony: Immediate past sequence with "No sooner" backshifts past simple "stepped" to past perfect "had ... stepped".',
+        step3: 'Voice / Nominal Shift: Negative opener "No sooner" forces auxiliary inversion ("sooner had the soloist").',
+        step4: 'Preposition / Collocation Lock: Past participle + directional preposition ("stepped onto") bridges into "the stage".',
+        leftOpts: ['sooner had the soloist', 'sooner had she', 'sooner had he'],
+        rightOpts: ['stepped onto', 'walked onto'],
+        modelSplit: 'sooner had the soloist // stepped onto',
+        wordNote: '6 words'
+      },
+      {
+        id: 10,
+        family: 'Emphatic It-Cleft · Not Until + Collocation',
+        key: 'FELL',
+        blueprint: 'It was not + until + darkness / night + fell + that + Clause',
+        s1Html: '<span class="echo-span">The rescue team</span> <span class="deficit-span">only</span> <span class="echo-span">spotted the flare</span> <span class="deficit-span">when it grew dark.</span>',
+        s2Pre: 'It was not ',
+        s2Post: ' the rescue team spotted the flare.',
+        step1: 'Isolated Deficit: "only ... when it grew dark".',
+        step2: 'Tense Harmony: Past simple "grew dark" stays past simple ("darkness fell").',
+        step3: 'Voice / Nominal Shift: Adjective "dark" nominalises to "darkness" (or "night") as the subject of "fell".',
+        step4: 'Preposition / Collocation Lock: The cleft frame "It was not until [clause]" requires the conjunction "that" before the main clause.',
+        leftOpts: ['until darkness fell', 'until night fell'],
+        rightOpts: ['that'],
+        modelSplit: 'until darkness fell // that',
+        wordNote: '4 words'
+      }
+    ];
+
+    function wbCountWords(txt) {
+      const trimmed = (txt || '').trim();
+      if (!trimmed) return 0;
+      let count = 0;
+      trimmed.split(/\s+/).forEach(w => {
+        const isContraction =
+          /[a-z]['’](t|re|ve|ll|d|m)$/i.test(w) ||
+          /n['’]t$/i.test(w) ||
+          /^(it|that|there|what|who|where|how|he|she|let)['’]s$/i.test(w);
+        count += isContraction ? 2 : 1;
+      });
+      return count;
+    }
+
+    function wbNorm(s) {
+      return (s || '').toLowerCase().replace(/[.,!?;:]+$/g, '').replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim();
+    }
+
+    function wbEscapeRegex(s) {
+      return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function loadWorkbenchState() {
+      try {
+        const raw = localStorage.getItem(WB_KWT_STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') {
+            Object.keys(parsed).forEach(k => {
+              wbKwtState[k] = parsed[k];
+            });
+          }
+        }
+      } catch (e) {}
+    }
+
+    function saveWorkbenchState() {
+      try {
+        localStorage.setItem(WB_KWT_STORAGE_KEY, JSON.stringify(wbKwtState));
+      } catch (e) {}
+    }
+
+    function renderWorkbenchKwt() {
+      const grid = document.getElementById('wb-kwt-grid');
+      if (!grid) return;
+      grid.innerHTML = WB_KWT_ITEMS.map(item => {
+        const st = wbKwtState[item.id] || { ans: '', mL: 0, mR: 0, checked: false, struck: false };
+        return `
+          <div id="wb-card-${item.id}" class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3.5 transition ${st.struck ? 'echo-struck' : ''}">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-md bg-slate-900 text-white text-xs font-bold mono-font">#${item.id < 10 ? '0' + item.id : item.id}</span>
+                <span class="text-xs font-bold text-slate-700">${item.family}</span>
+              </div>
+              <button type="button" onclick="toggleWorkbenchEcho(${item.id})" id="wb-echo-btn-${item.id}" class="px-2.5 py-1 rounded-lg border text-xs font-bold transition ${st.struck ? 'bg-amber-600 border-amber-600 text-white' : 'bg-white border-slate-300 hover:border-amber-600 text-slate-800'}">
+                ✂️ Step 1: Strike Out the Echoes
+              </button>
+            </div>
+
+            <div class="bg-blue-50/80 border border-blue-200 rounded-xl px-3.5 py-2 text-xs mono-font text-blue-950">
+              <strong>Blueprint:</strong> <code>${item.blueprint}</code>
+            </div>
+
+            <div class="space-y-2 bg-white border border-slate-200 rounded-xl p-3.5">
+              <div class="text-sm text-slate-800 leading-relaxed">${item.s1Html}</div>
+              <div class="flex items-center justify-between pt-1">
+                <span class="inline-block px-2.5 py-0.5 rounded bg-amber-900 text-amber-100 text-xs font-extrabold tracking-wider mono-font">${item.key}</span>
+                <span id="wb-keyguard-${item.id}" class="text-[11px] font-bold mono-font text-slate-500">Include "${item.key}" unchanged</span>
+              </div>
+              <div class="text-sm font-semibold text-slate-900 leading-relaxed">
+                ${item.s2Pre}<span class="inline-block min-w-[110px] border-b-2 border-dashed border-amber-700 mx-1 text-center text-amber-900 mono-font text-xs" id="wb-gap-preview-${item.id}">[ 3–6 words ]</span>${item.s2Post}
+              </div>
+            </div>
+
+            <!-- 4-Step Deconstruction Strip (Revealed when Step 1 is clicked) -->
+            <div id="wb-steps-${item.id}" class="${st.struck ? 'block' : 'hidden'} bg-amber-50/90 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-950 space-y-1.5">
+              <div><strong class="mono-font text-amber-900">✂️ Step 1 (Strike Echoes):</strong> ${item.step1}</div>
+              <div><strong class="mono-font text-amber-900">⏱️ Step 2 (Tense Harmony):</strong> ${item.step2}</div>
+              <div><strong class="mono-font text-amber-900">🔄 Step 3 (Voice / Nominal Shift):</strong> ${item.step3}</div>
+              <div><strong class="mono-font text-amber-900">🔗 Step 4 (Collocation Lock):</strong> ${item.step4}</div>
+            </div>
+
+            <!-- Live Input + Word Count + Guard -->
+            <div class="flex flex-wrap items-center gap-2">
+              <input
+                id="wb-input-${item.id}"
+                type="text"
+                value="${(st.ans || '').replace(/"/g, '&quot;')}"
+                oninput="onWorkbenchInput(${item.id})"
+                onkeydown="if(event.key==='Enter')scoreWorkbenchItem(${item.id})"
+                placeholder="Type 3–6 words (keep ${item.key} unchanged)..."
+                class="flex-1 min-w-[190px] rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm mono-font text-slate-900 focus:outline-none focus:border-emerald-700"
+              />
+              <span id="wb-wc-${item.id}" class="px-2.5 py-1.5 rounded-full border border-slate-300 bg-white text-xs font-bold mono-font text-slate-600">0 words</span>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 pt-0.5">
+              <div class="flex flex-wrap gap-2">
+                <button type="button" onclick="scoreWorkbenchItem(${item.id})" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+                  ✓ Check (1 mark // 1 mark)
+                </button>
+                <button type="button" onclick="toggleReveal('wb-model-${item.id}')" class="px-3.5 py-1.5 rounded-xl bg-white border border-slate-300 hover:border-emerald-700 text-slate-800 text-xs font-bold transition">
+                  👁️ Reveal Cambridge Model
+                </button>
+              </div>
+              <span id="wb-badge-${item.id}" class="text-xs font-bold mono-font text-slate-500">Unscored</span>
+            </div>
+
+            <div id="wb-feedback-${item.id}" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
+
+            <div id="wb-model-${item.id}" class="reveal-box bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-950 space-y-1.5">
+              <div class="font-bold mono-font text-emerald-900">
+                Cambridge Split-Mark Model (1 mark // 1 mark): <span class="bg-white px-2 py-0.5 rounded border border-emerald-300">${item.modelSplit}</span> <span class="text-slate-600 font-normal">(${item.wordNote})</span>
+              </div>
+              <div class="text-slate-700">${item.step3} ${item.step4}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      WB_KWT_ITEMS.forEach(item => {
+        onWorkbenchInput(item.id, true);
+        if (wbKwtState[item.id] && wbKwtState[item.id].checked) {
+          scoreWorkbenchItem(item.id, true);
+        }
+      });
+      updateWorkbenchScoreBanner();
+    }
+
+    function toggleWorkbenchEcho(id) {
+      const item = WB_KWT_ITEMS.find(x => x.id === id);
+      if (!item) return;
+      if (!wbKwtState[id]) wbKwtState[id] = { ans: '', mL: 0, mR: 0, checked: false, struck: false };
+      wbKwtState[id].struck = !wbKwtState[id].struck;
+      const card = document.getElementById('wb-card-' + id);
+      const steps = document.getElementById('wb-steps-' + id);
+      const btn = document.getElementById('wb-echo-btn-' + id);
+      if (card) card.classList.toggle('echo-struck', wbKwtState[id].struck);
+      if (steps) {
+        steps.classList.toggle('hidden', !wbKwtState[id].struck);
+        steps.classList.toggle('block', wbKwtState[id].struck);
+      }
+      if (btn) {
+        btn.className = 'px-2.5 py-1 rounded-lg border text-xs font-bold transition ' +
+          (wbKwtState[id].struck ? 'bg-amber-600 border-amber-600 text-white' : 'bg-white border-slate-300 hover:border-amber-600 text-slate-800');
+      }
+      saveWorkbenchState();
+    }
+
+    function toggleAllWorkbenchEchoes() {
+      wbEchoAllStruck = !wbEchoAllStruck;
+      WB_KWT_ITEMS.forEach(item => {
+        if (!wbKwtState[item.id]) wbKwtState[item.id] = { ans: '', mL: 0, mR: 0, checked: false, struck: false };
+        wbKwtState[item.id].struck = wbEchoAllStruck;
+        const card = document.getElementById('wb-card-' + item.id);
+        const steps = document.getElementById('wb-steps-' + item.id);
+        const btn = document.getElementById('wb-echo-btn-' + item.id);
+        if (card) card.classList.toggle('echo-struck', wbEchoAllStruck);
+        if (steps) {
+          steps.classList.toggle('hidden', !wbEchoAllStruck);
+          steps.classList.toggle('block', wbEchoAllStruck);
+        }
+        if (btn) {
+          btn.className = 'px-2.5 py-1 rounded-lg border text-xs font-bold transition ' +
+            (wbEchoAllStruck ? 'bg-amber-600 border-amber-600 text-white' : 'bg-white border-slate-300 hover:border-amber-600 text-slate-800');
+        }
+      });
+      const masterBtn = document.getElementById('wb-strike-all-btn');
+      if (masterBtn) {
+        masterBtn.textContent = wbEchoAllStruck ? '✂️ Restore All 10 Sentences' : '✂️ Strike Out All 10 Echoes';
+      }
+      saveWorkbenchState();
+    }
+
+    function onWorkbenchInput(id, skipSave) {
+      const item = WB_KWT_ITEMS.find(x => x.id === id);
+      const inp = document.getElementById('wb-input-' + id);
+      const wcPill = document.getElementById('wb-wc-' + id);
+      const keyGuard = document.getElementById('wb-keyguard-' + id);
+      const gapPrev = document.getElementById('wb-gap-preview-' + id);
+      if (!item || !inp || !wcPill || !keyGuard) return;
+
+      const raw = inp.value || '';
+      const wc = wbCountWords(raw);
+      const norm = wbNorm(raw);
+      const hasKey = new RegExp('(^|\\s)' + wbEscapeRegex(item.key.toLowerCase()) + '(\\s|$)').test(norm);
+
+      wcPill.textContent = wc + (wc === 1 ? ' word' : ' words');
+      if (wc === 0) {
+        wcPill.className = 'px-2.5 py-1.5 rounded-full border border-slate-300 bg-white text-xs font-bold mono-font text-slate-600';
+      } else if (wc >= 3 && wc <= 6) {
+        wcPill.className = 'px-2.5 py-1.5 rounded-full border border-emerald-400 bg-emerald-50 text-xs font-bold mono-font text-emerald-800';
+      } else {
+        wcPill.className = 'px-2.5 py-1.5 rounded-full border border-rose-400 bg-rose-50 text-xs font-bold mono-font text-rose-800';
+      }
+
+      if (!norm) {
+        keyGuard.textContent = 'Include "' + item.key + '" unchanged';
+        keyGuard.className = 'text-[11px] font-bold mono-font text-slate-500';
+        if (gapPrev) gapPrev.textContent = '[ 3–6 words ]';
+      } else if (hasKey) {
+        keyGuard.textContent = '✓ Key "' + item.key + '" unchanged';
+        keyGuard.className = 'text-[11px] font-bold mono-font text-emerald-700';
+        if (gapPrev) gapPrev.textContent = raw.trim();
+      } else {
+        keyGuard.textContent = '⚠️ Keep "' + item.key + '" exact!';
+        keyGuard.className = 'text-[11px] font-bold mono-font text-rose-700';
+        if (gapPrev) gapPrev.textContent = raw.trim();
+      }
+
+      if (!skipSave) {
+        if (!wbKwtState[id]) wbKwtState[id] = { ans: '', mL: 0, mR: 0, checked: false, struck: false };
+        wbKwtState[id].ans = raw;
+        saveWorkbenchState();
+      }
+    }
+
+    function scoreWorkbenchItem(id, silentSave) {
+      const item = WB_KWT_ITEMS.find(x => x.id === id);
+      const inp = document.getElementById('wb-input-' + id);
+      const fb = document.getElementById('wb-feedback-' + id);
+      const badge = document.getElementById('wb-badge-' + id);
+      if (!item || !inp || !fb || !badge) return;
+
+      const raw = inp.value || '';
+      const norm = wbNorm(raw);
+      const wc = wbCountWords(raw);
+      const hasKey = new RegExp('(^|\\s)' + wbEscapeRegex(item.key.toLowerCase()) + '(\\s|$)').test(norm);
+
+      let mL = 0;
+      let mR = 0;
+      let msg = '';
+
+      if (!norm) {
+        msg = '0 / 2 Marks (0 mark // 0 mark) — Type a 3-to-6-word transformation above first.';
+      } else if (!hasKey) {
+        msg = '0 / 2 Marks (0 mark // 0 mark) — Cambridge Rule: The key word "' + item.key + '" must appear completely unchanged.';
+      } else if (wc < 3 || wc > 6) {
+        msg = '0 / 2 Marks (0 mark // 0 mark) — Your answer has ' + wc + ' words (Cambridge strictly requires 3 to 6 words).';
+      } else {
+        const leftOpts = item.leftOpts.map(wbNorm);
+        const rightOpts = item.rightOpts.map(wbNorm);
+        let exact = false;
+        for (const l of leftOpts) {
+          for (const r of rightOpts) {
+            if (norm === l + ' ' + r) {
+              exact = true;
+              mL = 1;
+              mR = 1;
+              break;
+            }
+          }
+          if (exact) break;
+        }
+        if (!exact) {
+          if (leftOpts.some(l => new RegExp('(^|\\s)' + wbEscapeRegex(l) + '(\\s|$)').test(norm))) mL = 1;
+          if (rightOpts.some(r => new RegExp('(^|\\s)' + wbEscapeRegex(r) + '(\\s|$)').test(norm))) mR = 1;
+        }
+
+        if (mL === 1 && mR === 1 && exact) {
+          msg = '✓ 2 / 2 Marks (1 mark // 1 mark) — Spot on! Both the Left grammatical frame and Right preposition/complement boundary are exact.';
+        } else if (mL === 1 && mR === 0) {
+          msg = '◐ 1 / 2 Marks (1 mark // 0 mark) — You won the Left mark (Step 2/3 frame), but missed the Right mark (Step 4 preposition or gerund boundary).';
+        } else if (mL === 0 && mR === 1) {
+          msg = '◐ 1 / 2 Marks (0 mark // 1 mark) — You locked the Right collocation/preposition boundary, but missed the Left tense or inversion frame.';
+        } else if (mL === 1 && mR === 1 && !exact) {
+          mR = 0;
+          msg = '◐ 1 / 2 Marks (1 mark // 0 mark) — Both halves are recognisable, but there are extra or misplaced words between the split.';
+        } else {
+          msg = '✗ 0 / 2 Marks (0 mark // 0 mark) — Click "✂️ Step 1: Strike Out the Echoes" or "👁️ Reveal Cambridge Model" to inspect the 1 mark // 1 mark split.';
+        }
+      }
+
+      const sum = mL + mR;
+      fb.classList.remove('hidden');
+      if (sum === 2) {
+        fb.className = 'rounded-xl p-3 text-xs font-semibold bg-emerald-50 border border-emerald-300 text-emerald-950';
+        badge.textContent = '2/2 (1 // 1)';
+        badge.className = 'text-xs font-bold mono-font text-emerald-700';
+      } else if (sum === 1) {
+        fb.className = 'rounded-xl p-3 text-xs font-semibold bg-amber-50 border border-amber-300 text-amber-950';
+        badge.textContent = `1/2 (${mL} // ${mR})`;
+        badge.className = 'text-xs font-bold mono-font text-amber-700';
+      } else {
+        fb.className = 'rounded-xl p-3 text-xs font-semibold bg-rose-50 border border-rose-300 text-rose-950';
+        badge.textContent = '0/2 (0 // 0)';
+        badge.className = 'text-xs font-bold mono-font text-rose-700';
+      }
+      fb.textContent = msg;
+
+      if (!wbKwtState[id]) wbKwtState[id] = { ans: raw, mL: 0, mR: 0, checked: true, struck: false };
+      wbKwtState[id].ans = raw;
+      wbKwtState[id].mL = mL;
+      wbKwtState[id].mR = mR;
+      wbKwtState[id].checked = true;
+      if (!silentSave) saveWorkbenchState();
+      updateWorkbenchScoreBanner();
+    }
+
+    function scoreAllWorkbenchKwt() {
+      WB_KWT_ITEMS.forEach(item => scoreWorkbenchItem(item.id, true));
+      saveWorkbenchState();
+      updateWorkbenchScoreBanner();
+    }
+
+    function resetWorkbenchKwt() {
+      Object.keys(wbKwtState).forEach(k => delete wbKwtState[k]);
+      wbEchoAllStruck = false;
+      saveWorkbenchState();
+      renderWorkbenchKwt();
+    }
+
+    function updateWorkbenchScoreBanner() {
+      let lSum = 0;
+      let rSum = 0;
+      let masteredCount = 0;
+      WB_KWT_ITEMS.forEach(item => {
+        const st = wbKwtState[item.id];
+        if (st && st.checked) {
+          lSum += (st.mL || 0);
+          rSum += (st.mR || 0);
+          if ((st.mL || 0) + (st.mR || 0) === 2) masteredCount++;
+        }
+      });
+      const total = lSum + rSum;
+      const pill = document.getElementById('wb-kwt-score-pill');
+      const sub = document.getElementById('wb-kwt-mastery-sub');
+      if (pill) pill.textContent = `${total} / 20 Marks (L:${lSum} // R:${rSum})`;
+      if (sub) sub.textContent = `${masteredCount} of 10 Patterns Mastered · Saved locally`;
+    }
+
+    // =========================================================================
+    // 6. CLAUSE-TO-PROPOSITION COMPRESSION BENCH & LIVE ANALYZER
+    // =========================================================================
+    const WB_COMPRESSION_ITEMS = [
+      {
+        id: 'c1',
+        category: 'participle',
+        catLabel: 'Participle Clause · Resultative (, thereby + -ing)',
+        blueprint: 'Main Finite Clause + , thereby + Present Participle (-ing) + Object',
+        b2Loose: 'Public museums abolish entry fees, and as a result they widen access for low-income families.',
+        b2Clauses: '2 finite clauses ("abolish", "widen") joined by "and as a result"',
+        promptHint: 'Public museums abolish entry fees, thereby...',
+        acceptedRegex: /public museums abolish entry fees,\s*thereby widening access for low-income families/i,
+        keyFragmentRegex: /thereby widening access/i,
+        c1Model: 'Public museums abolish entry fees, thereby widening access for low-income families.',
+        explanation: 'Replaces the coordinate clause ", and as a result they widen..." with a non-finite resultative participle (", thereby widening..."), cutting 2 finite clauses down to 1.'
+      },
+      {
+        id: 'c2',
+        category: 'participle',
+        catLabel: 'Participle Clause · Fronted Perfect Participle (Having + V3)',
+        blueprint: 'Having + Past Participle (V3) + Object, Subject + Past Simple Verb',
+        b2Loose: 'After the archivist had verified the medieval seal, she catalogued the charter.',
+        b2Clauses: '2 finite clauses ("had verified", "catalogued") joined by "After"',
+        promptHint: 'Having verified the medieval seal, the archivist...',
+        acceptedRegex: /having verified the medieval seal,\s*the archivist catalogued the charter/i,
+        keyFragmentRegex: /having verified the medieval seal/i,
+        c1Model: 'Having verified the medieval seal, the archivist catalogued the charter.',
+        explanation: 'Compresses the temporal adverbial clause ("After the archivist had verified...") into a fronted perfect participle ("Having verified..."), immediately signalling C1/C2 syntactic control.'
+      },
+      {
+        id: 'c3',
+        category: 'nominalisation',
+        catLabel: 'Nominalisation · Causal Clause to Prepositional Noun Phrase',
+        blueprint: 'Owing to / Due to + the + Adjective + Abstract Noun + of + Noun Phrase, Main Clause',
+        b2Loose: 'Because regional railways expanded rapidly, rural towns attracted new investment.',
+        b2Clauses: '2 finite clauses ("expanded", "attracted") joined by "Because"',
+        promptHint: 'Owing to the rapid expansion of regional railways, rural towns...',
+        acceptedRegex: /(owing to|due to|because of) the rapid expansion of regional railways,\s*rural towns attracted new investment/i,
+        keyFragmentRegex: /rapid expansion of regional railways/i,
+        c1Model: 'Owing to the rapid expansion of regional railways, rural towns attracted new investment.',
+        explanation: 'Packs the finite subordinate clause ("Because regional railways expanded rapidly") into a dense prepositional noun phrase ("Owing to the rapid expansion of regional railways").'
+      },
+      {
+        id: 'c4',
+        category: 'nominalisation',
+        catLabel: 'Nominalisation · Object Clause to Abstract Noun + Preposition',
+        blueprint: 'Subject + Verb + the + Abstract Noun + of + Gerund / Noun Phrase',
+        b2Loose: 'The committee failed to see how important it was to preserve historic dialects.',
+        b2Clauses: '3 finite/infinitive predicates ("failed", "was", "to preserve")',
+        promptHint: 'The committee overlooked the importance of preserving...',
+        acceptedRegex: /the committee (overlooked|failed to recognise|failed to recognize|ignored) the importance of preserving historic dialects/i,
+        keyFragmentRegex: /importance of preserving historic dialects/i,
+        c1Model: 'The committee overlooked the importance of preserving historic dialects.',
+        explanation: 'Turns the adjective clause ("how important it was to preserve") into an abstract noun + dependent preposition + gerund ("the importance of preserving").'
+      },
+      {
+        id: 'c5',
+        category: 'cleft',
+        catLabel: 'Wh-Cleft · Focusing the Core Argument',
+        blueprint: 'What + Subject + Verb + is + (that) + Clause / Noun Phrase',
+        b2Loose: 'Commercial language schools often ignore the fact that students need syntactic restraint.',
+        b2Clauses: 'Loose noun-complement padding ("the fact that")',
+        promptHint: 'What commercial language schools often ignore is the need for...',
+        acceptedRegex: /what commercial language schools often ignore is (the need for syntactic restraint|that students need syntactic restraint)/i,
+        keyFragmentRegex: /^what commercial language schools often ignore is/i,
+        c1Model: 'What commercial language schools often ignore is the need for syntactic restraint.',
+        explanation: 'Fronts the verb phrase into a Wh-cleft ("What commercial language schools often ignore is...") and compresses the complement clause into a nominal phrase ("the need for syntactic restraint").'
+      },
+      {
+        id: 'c6',
+        category: 'cleft',
+        catLabel: 'It-Cleft · Emphatic Not-Until Temporal Focus',
+        blueprint: 'It was not until + Noun Phrase / Clause + that + Main Clause',
+        b2Loose: 'Local authorities did not upgrade the flood defences until the river burst its banks.',
+        b2Clauses: '2 finite clauses in flat chronological order',
+        promptHint: 'It was not until the river burst its banks that...',
+        acceptedRegex: /it was not until the river burst its banks that local authorities upgraded the flood defences/i,
+        keyFragmentRegex: /it was not until the river burst its banks that/i,
+        c1Model: 'It was not until the river burst its banks that local authorities upgraded the flood defences.',
+        explanation: 'Uses an emphatic "It was not until... that..." cleft to foreground the turning point ("the river burst its banks") and shift the main verb into clean affirmative past ("upgraded").'
+      }
+    ];
+
+    let activeCompressionFilter = 'all';
+
+    function renderCompressionBench() {
+      const grid = document.getElementById('compression-bench-grid');
+      if (!grid) return;
+      const items = activeCompressionFilter === 'all'
+        ? WB_COMPRESSION_ITEMS
+        : WB_COMPRESSION_ITEMS.filter(x => x.category === activeCompressionFilter);
+
+      grid.innerHTML = items.map(item => `
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-900 mono-font">${item.catLabel}</span>
+            <span class="px-2 py-0.5 rounded bg-slate-200 text-slate-800 text-[11px] font-bold mono-font">${item.b2Clauses}</span>
+          </div>
+          <div class="bg-blue-50/80 border border-blue-200 rounded-xl px-3.5 py-2 text-xs mono-font text-blue-950">
+            <strong>Blueprint:</strong> <code>${item.blueprint}</code>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-xl p-3.5 space-y-1">
+            <div class="text-[11px] font-bold uppercase text-rose-800 mono-font">Loose Multi-Clause B2 Draft:</div>
+            <div class="text-sm text-slate-800 italic">"${item.b2Loose}"</div>
+          </div>
+          <div class="space-y-2">
+            <input
+              id="comp-input-${item.id}"
+              type="text"
+              placeholder="${item.promptHint}"
+              onkeydown="if(event.key==='Enter')checkCompressionDrill('${item.id}')"
+              class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-700"
+            />
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap gap-2">
+                <button type="button" onclick="checkCompressionDrill('${item.id}')" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition">
+                  ✓ Check Compression
+                </button>
+                <button type="button" onclick="toggleReveal('comp-model-${item.id}')" class="px-3.5 py-1.5 rounded-xl bg-white border border-slate-300 hover:border-emerald-700 text-slate-800 text-xs font-bold transition">
+                  👁️ Reveal Cambridge Model
+                </button>
+              </div>
+              <button type="button" onclick="document.getElementById('comp-input-${item.id}').value = ${JSON.stringify(item.c1Model)}; checkCompressionDrill('${item.id}')" class="text-xs font-semibold text-emerald-800 hover:underline">
+                Fill Model &rarr;
+              </button>
+            </div>
+          </div>
+          <div id="comp-feedback-${item.id}" class="hidden rounded-xl p-3 text-xs font-semibold"></div>
+          <div id="comp-model-${item.id}" class="reveal-box bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-950 space-y-1.5">
+            <div><strong class="mono-font text-emerald-900">Compressed C1/C2 Model:</strong> "${item.c1Model}"</div>
+            <div class="text-slate-700">${item.explanation}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterCompressionBench(cat) {
+      activeCompressionFilter = cat;
+      ['all', 'participle', 'nominalisation', 'cleft'].forEach(k => {
+        const btn = document.getElementById('comp-tab-' + k);
+        if (!btn) return;
+        if (k === cat) {
+          btn.className = 'px-3 py-1.5 rounded-lg bg-slate-900 text-white text-xs font-bold transition';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition';
+        }
+      });
+      renderCompressionBench();
+    }
+
+    function checkCompressionDrill(id) {
+      const item = WB_COMPRESSION_ITEMS.find(x => x.id === id);
+      const inp = document.getElementById('comp-input-' + id);
+      const fb = document.getElementById('comp-feedback-' + id);
+      if (!item || !inp || !fb) return;
+
+      const val = (inp.value || '').trim();
+      fb.classList.remove('hidden');
+      if (!val) {
+        fb.className = 'rounded-xl p-3 text-xs font-semibold bg-rose-50 border border-rose-300 text-rose-950';
+        fb.textContent = 'Type your compressed C1 sentence above first (or click "Fill Model →" to test).';
+        return;
+      }
+      if (item.acceptedRegex.test(val)) {
+        fb.className = 'rounded-xl p-3 text-xs font-semibold bg-emerald-50 border border-emerald-300 text-emerald-950';
+        fb.textContent = '✓ Spot on! You compressed the loose finite clause into a clean C1/C2 structure ("' + item.c1Model + '").';
+      } else if (item.keyFragmentRegex.test(val)) {
+        fb.className = 'rounded-xl p-3 text-xs font-semibold bg-amber-50 border border-amber-300 text-amber-950';
+        fb.textContent = '◐ Good compression pivot! You used the target C1 structure — click "👁️ Reveal Cambridge Model" to compare your exact wording and punctuation.';
+      } else {
+        fb.className = 'rounded-xl p-3 text-xs font-semibold bg-rose-50 border border-rose-300 text-rose-950';
+        fb.textContent = '✗ Still using a loose clause or missing the target blueprint. Click "👁️ Reveal Cambridge Model" to see how the finite verb compresses.';
+      }
+    }
+
+    const CLAUSE_ANALYZER_SAMPLES = {
+      b2_loose: 'Because the municipal council cut the annual budget, the public library reduced its opening hours, and this decision frustrated local students who needed a quiet place to study.',
+      c1_participle: 'Owing to the municipal council’s severe budget cuts, the public library reduced its opening hours, thereby frustrating local students in need of quiet study space.',
+      c2_cleft: 'What frustrated local students most was not the reduction in opening hours itself, but the complete lack of public consultation before the library budget was cut.'
+    };
+
+    function loadClauseSample(key) {
+      const el = document.getElementById('clause-analyzer-input');
+      if (!el || !CLAUSE_ANALYZER_SAMPLES[key]) return;
+      el.value = CLAUSE_ANALYZER_SAMPLES[key];
+      runClausePackingAnalyzer();
+    }
+
+    function runClausePackingAnalyzer() {
+      const el = document.getElementById('clause-analyzer-input');
+      if (!el) return;
+      const text = (el.value || '').trim();
+      if (!text) return;
+
+      const words = text.split(/\s+/).filter(Boolean);
+      const looseConnectors = (text.match(/\b(and so|and this|and as a result|because|which means that|so that|who needed|after they|when it grew)\b/gi) || []);
+      const finiteIndicators = (text.match(/\b(is|are|was|were|has|have|had|will|would|can|could|should|must|cut|reduced|frustrated|needed|closed|expanded|attracted|abolish|widen|failed)\b/gi) || []);
+      const estClauses = Math.max(1, Math.min(5, Math.round(finiteIndicators.length * 0.65) || 1));
+
+      const compressions = [];
+      if (/\b(thereby|having\s+\w+ed)\b/i.test(text) || /,\s*\w+ing\b/i.test(text)) {
+        compressions.push('Participle Clause (, thereby -ing / Having + V3)');
+      }
+      if (/\b(owing to|due to|in spite of|despite|lack of|reduction in|expansion of|importance of|consultation)\b/i.test(text)) {
+        compressions.push('Abstract Nominalisation (+ Preposition)');
+      }
+      if (/^(what\s+[\w\s]+(is|was)|it\s+(is|was)\s+not\s+until)\b/i.test(text)) {
+        compressions.push('Cleft Focus Frame (Wh-Cleft / It-Cleft)');
+      }
+
+      document.getElementById('cp-metric-clauses').textContent = `${estClauses} clause${estClauses > 1 ? 's' : ''}`;
+      document.getElementById('cp-metric-clauses-sub').textContent = `${words.length} total words`;
+
+      document.getElementById('cp-metric-chaining').textContent = `${looseConnectors.length} found`;
+      document.getElementById('cp-metric-chaining-sub').textContent = looseConnectors.length > 0 ? looseConnectors.join(', ') : '0 loose chains';
+
+      document.getElementById('cp-metric-packed').textContent = `${compressions.length} active`;
+      document.getElementById('cp-metric-packed-sub').textContent = compressions.length > 0 ? 'C1/C2 compression detected' : 'No non-finite/nominal compression yet';
+
+      const verdictEl = document.getElementById('cp-metric-verdict');
+      const verdictSub = document.getElementById('cp-metric-verdict-sub');
+      const recBox = document.getElementById('cp-analyzer-recommendations');
+
+      if (compressions.length >= 2 && looseConnectors.length === 0) {
+        verdictEl.textContent = 'Band 8.0+ / C1–C2 Packed';
+        verdictEl.className = 'text-sm font-bold text-emerald-800 mt-1';
+        verdictSub.textContent = 'High propositional density, low finite chaining';
+        recBox.innerHTML = `
+          <div class="font-bold text-emerald-900">✓ Clean C1/C2 Clause-to-Proposition Packing Detected:</div>
+          <div class="text-slate-700">Active structures: <strong>${compressions.join(' · ')}</strong>. You have packed secondary propositions into noun phrases or non-finite participles instead of stringing finite clauses together with "and / because".</div>
+        `;
+      } else if (looseConnectors.length > 0) {
+        verdictEl.textContent = 'Loose Multi-Clause Chain (B2)';
+        verdictEl.className = 'text-sm font-bold text-amber-800 mt-1';
+        verdictSub.textContent = 'Ready for Participle or Nominal Compression';
+        recBox.innerHTML = `
+          <div class="font-bold text-amber-900">🔧 How to Compress This Sentence for C1/C2 Marks:</div>
+          <ul class="list-disc pl-5 space-y-1 text-slate-700">
+            <li><strong>Causal Clause &rarr; Nominalisation:</strong> Replace <code>Because [Subject + Verb]</code> with <code>Owing to the [Adjective + Abstract Noun] of...</code></li>
+            <li><strong>Coordinate Result &rarr; Participle Clause:</strong> Replace <code>, and this [Past Verb]...</code> with <code>, thereby [Present Participle -ing]...</code></li>
+            <li><strong>Relative Clause &rarr; Prepositional Phrase:</strong> Replace <code>who needed [Noun]</code> with <code>in need of [Noun]</code>.</li>
+          </ul>
+        `;
+      } else {
+        verdictEl.textContent = 'Balanced Simple/Compound';
+        verdictEl.className = 'text-sm font-bold text-slate-800 mt-1';
+        verdictSub.textContent = 'Clean baseline; optional cleft or participle upgrade';
+        recBox.innerHTML = `
+          <div class="font-bold text-slate-900">Syntactic Diagnostic:</div>
+          <div class="text-slate-700">Your sentence has zero loose clause chaining. If it is a paragraph topic sentence, you can foreground the main claim with a <strong>Wh-cleft</strong> (<code>What [Subject + Verb] is...</code>) or attach a consequence with <code>, thereby + -ing</code>.</div>
+        `;
+      }
+    }
+
     // Initialize on load
     window.addEventListener('DOMContentLoaded', function () {
       updateContingencyView();
       switchL1Profile('mandarin');
       loadPreset('ynnning_e4_mandarin');
+      loadWorkbenchState();
+      renderWorkbenchKwt();
+      renderCompressionBench();
+      loadClauseSample('b2_loose');
     });
   </script>
   <script src="analytics.js" defer></script>

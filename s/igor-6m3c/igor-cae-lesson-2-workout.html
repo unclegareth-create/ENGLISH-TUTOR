@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Igor S. · CAE Lesson 2: Part 4 Deconstruction &amp; Essay Lab | GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f5f1;
+      --card: #ffffff;
+      --subtle: #f8fafc;
+      --ink: #0f172a;
+      --muted: #475569;
+      --navy: #1e3a8a;
+      --navy-soft: #dbeafe;
+      --emerald: #059669;
+      --emerald-soft: #d1fae5;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --rose: #e11d48;
+      --rose-soft: #ffe4e6;
+      --border: #e2e8f0;
+      --radius: 14px;
+      --shadow: 0 8px 26px -6px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      padding-bottom: 64px;
+    }
+
+    .top-bar {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 14px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 3px solid #f59e0b;
+    }
+
+    .top-bar-inner {
+      max-width: 1060px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .top-bar a {
+      color: #93c5fd;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .step-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .step-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .step-btn.active, .step-btn:hover {
+      background: #f59e0b;
+      color: #0f172a;
+      border-color: #f59e0b;
+    }
+
+    .container {
+      max-width: 1060px;
+      margin: 28px auto 0;
+      padding: 0 20px;
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #ffffff;
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 780px) {
+      .hero-card { grid-template-columns: 1fr; }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      color: #fde68a;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: clamp(1.7rem, 3vw, 2.3rem);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .hero-img {
+      width: 100%;
+      height: 185px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .section-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px 28px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 1.35rem;
+      color: var(--ink);
+    }
+
+    .pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--navy-soft);
+      color: var(--navy);
+    }
+
+    .warmup-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 780px) {
+      .warmup-grid { grid-template-columns: 1fr; }
+    }
+
+    .cue-box {
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .rules-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .rules-strip { grid-template-columns: 1fr; }
+    }
+
+    .rule-mini {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+    }
+
+    .timer-box {
+      background: #0f172a;
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .timer-digits {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #fbbf24;
+      margin: 8px 0 14px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--ink);
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+
+    .btn-amber {
+      background: #f59e0b;
+      color: #0f172a;
+      border-color: #f59e0b;
+    }
+
+    .blueprint-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .bp-card {
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--navy);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .bp-card h4 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .bp-formula {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .kwt-item {
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .kwt-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .keyword-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 0.9rem;
+      background: #0f172a;
+      color: #fbbf24;
+      padding: 4px 12px;
+      border-radius: 6px;
+      letter-spacing: 0.06em;
+    }
+
+    .kwt-s1 {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 10px;
+    }
+
+    .kwt-s2 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.96rem;
+      margin-bottom: 12px;
+    }
+
+    .kwt-input {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      padding: 7px 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+      min-width: 260px;
+      background: #ffffff;
+      color: var(--ink);
+    }
+
+    .kwt-input:focus {
+      outline: none;
+      border-color: var(--navy);
+    }
+
+    .reveal-box {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--emerald-soft);
+      border: 1px solid #6ee7b7;
+      font-size: 0.86rem;
+      color: #064e3b;
+    }
+
+    .essay-textarea {
+      width: 100%;
+      min-height: 220px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem;
+      line-height: 1.65;
+      background: var(--subtle);
+      margin-top: 10px;
+    }
+
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .check-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--subtle);
+      border: 1px solid var(--border);
+      font-size: 0.84rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <a href="index.html">&larr; Back to Igor's Portal</a>
+      <div class="step-tabs">
+        <button class="step-btn active" onclick="scrollToSection('step1')">1. CAE Speaking Parts 2 &amp; 3 (10m)</button>
+        <button class="step-btn" onclick="scrollToSection('step2')">2. Part 4 Deconstruction (20m)</button>
+        <button class="step-btn" onclick="scrollToSection('step3')">3. Part 2 Open Cloze (10m)</button>
+        <button class="step-btn" onclick="scrollToSection('step4')">4. Live Essay Lab (10m)</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="hero-card">
+      <div>
+        <div class="hero-badge">Cambridge C1 Advanced (CAE) &bull; Interactive Session 2</div>
+        <!-- STUDENT-PIXEL-BADGE-START -->
+<div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:rgba(15,23,42,0.12); border:1px solid rgba(148,163,184,0.32); margin-bottom:10px; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; font-size:0.78rem; font-weight:700; line-height:1.2;">
+  <img src="avatar.svg" alt="Igor Slinko (Preply)" style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid rgba(255,255,255,0.28); flex-shrink:0;" />
+  <span>Igor Slinko (Preply) &bull; JetBrains (Cyprus) &bull; Conversation &amp; Error Clinic</span>
+</div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+<h1>Part 4 Mathematical Deconstruction &amp; Essay Lab</h1>
+        <p style="color:#cbd5e1; font-size:0.95rem;">
+          Today's session runs step-by-step on your screen: start with a <strong>CAE Speaking Part 2 (1-Minute Photo Comparison) &amp; Part 3 (5-Point Spider Diagram)</strong> warm-up, solve 8 high-frequency Use of English Part 4 transformations, and test your Part 1 Essay paragraphs against the C1 checklist.
+        </p>
+      </div>
+      <img class="hero-img" src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=900&q=80" alt="Stadium athletics track" />
+    </section>
+
+    <!-- STEP 1: CAE SPEAKING PART 2 (3 PHOTOS, COMPARE 2 IN 1 MIN) + PART 3 SPIDER DIAGRAM -->
+    <section class="section-card" id="step1">
+      <div class="section-header">
+        <h2 class="section-title">Step 1 · CAE Speaking Part 2 (1-Min Photo Comparison) &amp; Part 3 Spider Task</h2>
+        <span class="pill">Authentic Cambridge C1 Speaking Format</span>
+      </div>
+
+      <div class="warmup-grid">
+        <div class="cue-box">
+          <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--navy); margin-bottom:6px;">
+            CAE Speaking Part 2 · Choose 2 of the 3 Pictures &amp; Compare for 1 Minute
+          </div>
+          <h3 style="font-size:1.05rem; margin-bottom:10px;">
+            Here are three pictures showing people taking part in different sporting activities. Choose <strong>two</strong> of the pictures and compare them:
+          </h3>
+          <div style="background:#ffffff; border:1px solid var(--border); border-radius:8px; padding:10px 14px; margin-bottom:12px; font-size:0.88rem; font-weight:700; color:var(--navy);">
+            &bull; Why might the people have chosen to take part in these activities?<br>
+            &bull; How demanding might it be to prepare for them?
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-bottom:14px;">
+            <div style="background:#ffffff; border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+              <img src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=500&q=80" alt="Photo A Marathon" style="width:100%; height:95px; object-fit:cover;" />
+              <div style="padding:6px 8px; font-size:0.76rem; font-weight:700;">Photo A · City Marathon</div>
+            </div>
+            <div style="background:#ffffff; border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+              <img src="https://images.unsplash.com/photo-1526676037777-05a232554f77?auto=format&fit=crop&w=500&q=80" alt="Photo B Stadium Team" style="width:100%; height:95px; object-fit:cover;" />
+              <div style="padding:6px 8px; font-size:0.76rem; font-weight:700;">Photo B · Packed Stadium Final</div>
+            </div>
+            <div style="background:#ffffff; border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+              <img src="https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=500&q=80" alt="Photo C Rock Climbing" style="width:100%; height:95px; object-fit:cover;" />
+              <div style="padding:6px 8px; font-size:0.76rem; font-weight:700;">Photo C · Solo Mountain Climb</div>
+            </div>
+          </div>
+
+          <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--emerald); margin-bottom:6px;">
+            CAE Speaking Part 3 · Collaborative Spider Task (2 Mins + 1 Min Decision)
+          </div>
+          <div style="background:#ffffff; border:1px solid var(--border); border-radius:8px; padding:12px 14px; font-size:0.84rem;">
+            <div style="text-align:center; font-weight:800; color:var(--ink); margin-bottom:8px;">
+              Central Question: <em>"How do major sporting events benefit a country?"</em>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center;">
+              <span class="pill">1. Inspiring young people</span>
+              <span class="pill">2. Tourism &amp; local jobs</span>
+              <span class="pill">3. New transport &amp; stadiums</span>
+              <span class="pill">4. National pride &amp; unity</span>
+              <span class="pill">5. International prestige</span>
+            </div>
+            <div style="margin-top:8px; font-size:0.79rem; color:var(--muted); text-align:center;">
+              <strong>1-Min Decision Question:</strong> Which <strong>one</strong> of these benefits has the greatest long-term impact?
+            </div>
+          </div>
+        </div>
+
+        <div class="timer-box">
+          <div style="font-size:0.8rem; text-transform:uppercase; letter-spacing:0.06em; color:#94a3b8;" id="t-label">Part 2 Photo Compare (1:00)</div>
+          <div class="timer-digits" id="t-display">01:00</div>
+          <div class="btn-row">
+            <button class="btn" onclick="setClock(60, 'Part 2 Photo Compare (1:00)')">Part 2 (1m)</button>
+            <button class="btn btn-amber" onclick="setClock(120, 'Part 3 Spider Prompts (2:00)')">Part 3 (2m)</button>
+            <button class="btn" onclick="setClock(60, 'Part 3 Final Decision (1:00)')">Decision (1m)</button>
+            <button class="btn btn-primary" onclick="toggleClock()" id="t-btn">&#9654; Start</button>
+          </div>
+          <div style="margin-top:14px; text-align:left; font-size:0.78rem; color:#cbd5e1; line-height:1.5; background:rgba(255,255,255,0.06); padding:10px 12px; border-radius:8px;">
+            <strong style="color:#fbbf24;">C1 Speculation &amp; Comparison Moves:</strong><br>
+            &bull; <em>Both pictures show..., whereas in the second one...</em><br>
+            &bull; <em>They might well have chosen this because...</em><br>
+            &bull; <em>Preparing for this must be far more demanding than...</em>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: PART 4 KEY WORD TRANSFORMATIONS -->
+    <section class="section-card" id="step2">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Step 2 · Use of English Part 4: The 4-Step Elimination Method</h2>
+          <p style="font-size:0.86rem; color:var(--muted); margin-top:2px;">
+            Complete the second sentence using between <strong>3 and 6 words</strong>, including the key word in bold. <strong>Never change the key word.</strong>
+          </p>
+        </div>
+        <span class="pill">8 x 2 Marks = 16 Marks</span>
+      </div>
+
+      <!-- 4-Step Strategy Strip -->
+      <div class="blueprint-grid">
+        <div class="bp-card">
+          <h4>Step 1: Strike Out Echoes</h4>
+          <div class="bp-formula">Cross out words in S1 that are already repeated in S2.</div>
+        </div>
+        <div class="bp-card">
+          <h4>Step 2: Tense Harmony</h4>
+          <div class="bp-formula">Past Simple in S1 &rarr; Past Perfect / Modal Past in S2.</div>
+        </div>
+        <div class="bp-card">
+          <h4>Step 3: Check Voice Shift</h4>
+          <div class="bp-formula">Active &rarr; Passive reporting (is said to have + PP).</div>
+        </div>
+        <div class="bp-card">
+          <h4>Step 4: Word Count Check</h4>
+          <div class="bp-formula">Strictly 3 to 6 words. Contractions (didn't) = 2 words.</div>
+        </div>
+      </div>
+
+      <div id="kwt-container"></div>
+    </section>
+
+    <!-- STEP 3: PART 2 OPEN CLOZE MINI-WORKOUT -->
+    <section class="section-card" id="step3">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Step 3 · Use of English Part 2: Open Cloze Sprint (1 Word Per Gap)</h2>
+          <p style="font-size:0.86rem; color:var(--muted); margin-top:2px;">
+            Read the short C1 paragraph on hosting major sporting events and type <strong>one grammatical word</strong> into each gap.
+          </p>
+        </div>
+        <span class="pill">6 Gaps · Grammar Connectors</span>
+      </div>
+
+      <div style="background:var(--subtle); border:1px solid var(--border); border-radius:12px; padding:20px; font-size:0.98rem; line-height:2.1;">
+        Hosting an international tournament is widely regarded <strong>(1)</strong>
+        <input type="text" id="cloze-1" class="kwt-input" style="min-width:95px; width:105px; padding:4px 8px;" placeholder="(1)" />
+        a major prestige project, yet <strong>(2)</strong>
+        <input type="text" id="cloze-2" class="kwt-input" style="min-width:95px; width:105px; padding:4px 8px;" placeholder="(2)" />
+        always do host cities recover the billions invested in stadiums. In <strong>(3)</strong>
+        <input type="text" id="cloze-3" class="kwt-input" style="min-width:95px; width:105px; padding:4px 8px;" placeholder="(3)" />
+        of the enormous public expense, supporters argue that such events inspire young people to take <strong>(4)</strong>
+        <input type="text" id="cloze-4" class="kwt-input" style="min-width:95px; width:105px; padding:4px 8px;" placeholder="(4)" />
+        regular physical exercise. <strong>(5)</strong>
+        <input type="text" id="cloze-5" class="kwt-input" style="min-width:95px; width:105px; padding:4px 8px;" placeholder="(5)" />
+        makes the debate so complex is that long-term health benefits are far harder to measure <strong>(6)</strong>
+        <input type="text" id="cloze-6" class="kwt-input" style="min-width:95px; width:105px; padding:4px 8px;" placeholder="(6)" />
+        immediate construction costs.
+      </div>
+
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button class="btn btn-primary" onclick="checkCloze()">Check All 6 Gaps</button>
+        <button class="btn" onclick="document.getElementById('cloze-reveal').style.display='block'">&#128065;&#65039; Reveal Cambridge Model</button>
+        <span id="cloze-score" style="font-weight:700; font-size:0.9rem;"></span>
+      </div>
+
+      <div id="cloze-reveal" class="reveal-box">
+        <strong>Cambridge Key:</strong> (1) <code>as</code> (regarded as) &bull; (2) <code>rarely / seldom / not</code> (negative inversion: <em>not always / rarely do host cities...</em>) &bull; (3) <code>spite</code> (in spite of) &bull; (4) <code>up</code> (take up = start a sport/hobby) &bull; (5) <code>What</code> (What-cleft: <em>What makes... is...</em>) &bull; (6) <code>than</code> (harder to measure than).
+      </div>
+    </section>
+
+    <!-- STEP 4: PART 1 ESSAY LIVE DRAFT & DIAGNOSTIC CHECKER -->
+    <section class="section-card" id="step4">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Step 4 · CAE Writing Part 1: "The Role of Major Sporting Events"</h2>
+          <p style="font-size:0.86rem; color:var(--muted); margin-top:2px;">
+            Paste your homework draft below (or write 1 body paragraph live) and watch the automatic C1 structural detector light up.
+          </p>
+        </div>
+        <span class="pill" id="essay-wc">0 / 220–260 words</span>
+      </div>
+
+      <div style="background:var(--subtle); border:1px solid var(--border); border-radius:10px; padding:14px 16px; font-size:0.86rem; margin-bottom:10px;">
+        <strong>Prompt Reminder (Choose 2 of the 3 points and state which is most significant):</strong><br>
+        &bull; enriching people's lives &nbsp;|&nbsp; &bull; cost to host countries &nbsp;|&nbsp; &bull; influencing young children
+      </div>
+
+      <textarea id="essay-pad" class="essay-textarea" oninput="analyzeEssay()" placeholder="Paste or type your CAE Part 1 Essay here..."></textarea>
+
+      <div class="checklist-grid">
+        <div class="check-pill" id="chk-depers"><span>&#9898;</span> 100% Depersonalised (No I / my / we)</div>
+        <div class="check-pill" id="chk-pass"><span>&#9898;</span> Passive Reporting (It is argued / believed...)</div>
+        <div class="check-pill" id="chk-cleft"><span>&#9898;</span> Cleft / Inversion (What... is / Not only...)</div>
+        <div class="check-pill" id="chk-link"><span>&#9898;</span> C1 Contrast (Despite / Whereas / Albeit)</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Timer
+    let secondsLeft = 60;
+    let timerId = null;
+    function setClock(sec, label) {
+      clearInterval(timerId);
+      timerId = null;
+      secondsLeft = sec;
+      document.getElementById('t-label').textContent = label;
+      document.getElementById('t-btn').innerHTML = '&#9654; Start';
+      renderClock();
+    }
+    function renderClock() {
+      const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+      const s = String(secondsLeft % 60).padStart(2, '0');
+      document.getElementById('t-display').textContent = m + ':' + s;
+    }
+    function toggleClock() {
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+        document.getElementById('t-btn').innerHTML = '&#9654; Resume';
+      } else {
+        document.getElementById('t-btn').innerHTML = '&#9208; Pause';
+        timerId = setInterval(() => {
+          if (secondsLeft > 0) {
+            secondsLeft--;
+            renderClock();
+          } else {
+            clearInterval(timerId);
+            timerId = null;
+            document.getElementById('t-btn').innerHTML = '&#10004; Done';
+          }
+        }, 1000);
+      }
+    }
+
+    // 8 Part 4 Items
+    const kwtData = [
+      {
+        num: 1,
+        s1: "The organisers do not intend to raise ticket prices for students next year.",
+        kw: "INTENTION",
+        pre: "The organisers",
+        post: "ticket prices for students next year.",
+        ans: ["have no intention of raising", "do not have any intention of raising"],
+        model: "have no intention of raising",
+        explain: "Noun pattern: have no intention of + Verb-ing ('raise' becomes 'raising')."
+      },
+      {
+        num: 2,
+        s1: "I would prefer it if the government invested more money in local youth clubs.",
+        kw: "RATHER",
+        pre: "I",
+        post: "more money in local youth clubs.",
+        ans: ["would rather the government invested", "'d rather the government invested"],
+        model: "would rather the government invested",
+        explain: "Two-subject preference: Subject 1 + would rather + Subject 2 + Past Simple ('invested')."
+      },
+      {
+        num: 3,
+        s1: "People say that the new stadium cost over two billion euros to build.",
+        kw: "SAID",
+        pre: "The new stadium",
+        post: "over two billion euros to build.",
+        ans: ["is said to have cost"],
+        model: "is said to have cost",
+        explain: "Passive reporting of a past event: is said + Perfect Infinitive (to have cost)."
+      },
+      {
+        num: 4,
+        s1: "Although the weather was freezing, thousands of spectators turned up for the final.",
+        kw: "SPITE",
+        pre: "Thousands of spectators turned up for the final",
+        post: "weather.",
+        ans: ["in spite of the freezing"],
+        model: "in spite of the freezing",
+        explain: "Prepositional contrast: in spite of + determiner/adjective + noun ('the freezing')."
+      },
+      {
+        num: 5,
+        s1: "The referee never once lost control of the match.",
+        kw: "TIME",
+        pre: "At",
+        post: "control of the match.",
+        ans: ["no time did the referee lose"],
+        model: "no time did the referee lose",
+        explain: "Negative inversion: At no time + did + Subject + base verb ('lose')."
+      },
+      {
+        num: 6,
+        s1: "It was a mistake for the city council to demolish the old swimming pool.",
+        kw: "OUGHT",
+        pre: "The city council",
+        post: "the old swimming pool.",
+        ans: ["ought not to have demolished"],
+        model: "ought not to have demolished",
+        explain: "Past criticism modal: ought not to have + Past Participle ('demolished')."
+      },
+      {
+        num: 7,
+        s1: "The tournament not only boosted tourism, but it also created hundreds of jobs.",
+        kw: "ONLY",
+        pre: "Not",
+        post: "tourism, but it also created hundreds of jobs.",
+        ans: ["only did the tournament boost"],
+        model: "only did the tournament boost",
+        explain: "Negative inversion in Past Simple: Not only + did + Subject + base verb ('boost')."
+      },
+      {
+        num: 8,
+        s1: "It is impossible that the athlete broke the world record without years of strict training.",
+        kw: "HAVE",
+        pre: "The athlete",
+        post: "the world record without years of strict training.",
+        ans: ["cannot have broken", "can't have broken", "could not have broken", "couldn't have broken"],
+        model: "cannot have broken / couldn't have broken",
+        explain: "Past deduction of impossibility: cannot / couldn't have + Past Participle ('broken')."
+      }
+    ];
+
+    function renderKWT() {
+      const box = document.getElementById('kwt-container');
+      box.innerHTML = kwtData.map((item, idx) => `
+        <div class="kwt-item">
+          <div class="kwt-top">
+            <span style="font-weight:800; font-size:0.84rem; color:var(--navy);">Question ${item.num}</span>
+            <span class="keyword-badge">${item.kw}</span>
+          </div>
+          <div class="kwt-s1">${item.s1}</div>
+          <div class="kwt-s2">
+            <span>${item.pre}</span>
+            <input type="text" class="kwt-input" id="kwt-in-${idx}" placeholder="3 to 6 words including ${item.kw}..." />
+            <span>${item.post}</span>
+          </div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <button class="btn btn-primary" onclick="checkKWT(${idx})">Check Answer</button>
+            <button class="btn" onclick="toggleReveal(${idx})">&#128065;&#65039; Reveal Cambridge Model</button>
+            <span id="kwt-msg-${idx}" style="font-size:0.86rem; font-weight:700;"></span>
+          </div>
+          <div class="reveal-box" id="kwt-rev-${idx}">
+            <strong>Cambridge Key:</strong> <code>${item.model}</code><br>
+            <span>${item.explain}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function checkKWT(idx) {
+      const val = document.getElementById('kwt-in-' + idx).value.trim().replace(/\s+/g, ' ').toLowerCase();
+      const msg = document.getElementById('kwt-msg-' + idx);
+      const item = kwtData[idx];
+      if (!val) {
+        msg.style.color = '#d97706';
+        msg.textContent = 'Type your 3–6 word transformation first.';
+        return;
+      }
+      if (!val.includes(item.kw.toLowerCase())) {
+        msg.style.color = '#e11d48';
+        msg.textContent = 'Remember: you must include the exact keyword ' + item.kw + ' unchanged!';
+        return;
+      }
+      const match = item.ans.some(a => a.toLowerCase() === val);
+      if (match) {
+        msg.style.color = '#059669';
+        msg.textContent = '✓ Spot on! 2/2 Cambridge marks.';
+      } else {
+        msg.style.color = '#d97706';
+        msg.textContent = 'Close — check tense harmony or preposition and click Reveal to compare.';
+      }
+    }
+
+    function toggleReveal(idx) {
+      const el = document.getElementById('kwt-rev-' + idx);
+      el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function checkCloze() {
+      const expected = [
+        ['as'],
+        ['rarely', 'seldom', 'not', 'never'],
+        ['spite'],
+        ['up'],
+        ['what'],
+        ['than']
+      ];
+      let score = 0;
+      expected.forEach((valid, i) => {
+        const inp = document.getElementById('cloze-' + (i + 1));
+        const v = inp.value.trim().toLowerCase();
+        if (valid.includes(v)) {
+          inp.style.borderColor = '#059669';
+          inp.style.background = '#ecfdf5';
+          score++;
+        } else {
+          inp.style.borderColor = '#e11d48';
+          inp.style.background = '#fff1f2';
+        }
+      });
+      document.getElementById('cloze-score').textContent = `Score: ${score} / 6`;
+    }
+
+    function analyzeEssay() {
+      const text = document.getElementById('essay-pad').value.trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      document.getElementById('essay-wc').textContent = `${words} / 220–260 words`;
+
+      const hasPersonal = /\b(i|my|me|we|our)\b/i.test(text);
+      const hasPassive = /\b(is argued|is believed|is claimed|are thought|is considered|widely seen)\b/i.test(text);
+      const hasCleft = /\b(what makes|what is|not only|at no time|rarely do|seldom do)\b/i.test(text);
+      const hasContrast = /\b(despite|in spite of|whereas|albeit|nevertheless|nonetheless|while)\b/i.test(text);
+
+      setPill('chk-depers', words > 15 && !hasPersonal);
+      setPill('chk-pass', hasPassive);
+      setPill('chk-cleft', hasCleft);
+      setPill('chk-link', hasContrast);
+    }
+
+    function setPill(id, ok) {
+      const el = document.getElementById(id);
+      if (ok) {
+        el.style.background = '#d1fae5';
+        el.style.borderColor = '#10b981';
+        el.querySelector('span').innerHTML = '&#9989;';
+      } else {
+        el.style.background = '#f8fafc';
+        el.style.borderColor = '#e2e8f0';
+        el.querySelector('span').innerHTML = '&#9898;';
+      }
+    }
+
+    renderKWT();
+  </script>
+</body>
+</html>

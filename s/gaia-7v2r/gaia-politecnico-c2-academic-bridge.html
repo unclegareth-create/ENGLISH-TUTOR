@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="paper">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Gaia &middot; Politecnico di Milano C2 Academic &amp; Quantitative Bridge (GarethEnglish)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="paper"] {
+      --bg-base: #f5f3ef;
+      --bg-mesh: radial-gradient(circle at 12% 0%, rgba(217, 119, 6, 0.08) 0%, transparent 48%),
+                 radial-gradient(circle at 88% 12%, rgba(37, 99, 235, 0.06) 0%, transparent 45%);
+      --surface-card: #ffffff;
+      --surface-subtle: #faf8f5;
+      --surface-elevated: rgba(255, 255, 255, 0.94);
+      --navy-900: #0f2557;
+      --navy-800: #16377d;
+      --navy-700: #1d4ed8;
+      --navy-100: #dbeafe;
+      --navy-50: #f0f6ff;
+      --ink-950: #0c1222;
+      --ink-800: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --ink-400: #94a3b8;
+      --border-hairline: rgba(15, 23, 42, 0.09);
+      --border-strong: rgba(15, 23, 42, 0.16);
+      --amber: #b45309;
+      --amber-soft: rgba(217, 119, 6, 0.1);
+      --amber-border: #f59e0b;
+      --emerald: #059669;
+      --emerald-soft: rgba(5, 150, 105, 0.1);
+      --emerald-border: #10b981;
+      --purple: #7c3aed;
+      --purple-soft: rgba(124, 58, 237, 0.09);
+      --rose: #e11d48;
+      --rose-soft: rgba(225, 29, 72, 0.09);
+      --shadow-card: 0 10px 28px -6px rgba(12, 18, 34, 0.06), 0 2px 6px -1px rgba(12, 18, 34, 0.03);
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #090d16;
+      --bg-mesh: radial-gradient(circle at 12% 0%, rgba(245, 158, 11, 0.12) 0%, transparent 48%),
+                 radial-gradient(circle at 88% 12%, rgba(56, 189, 248, 0.08) 0%, transparent 45%);
+      --surface-card: #111827;
+      --surface-subtle: #182235;
+      --surface-elevated: rgba(17, 24, 39, 0.94);
+      --navy-900: #f8fafc;
+      --navy-800: #fef3c7;
+      --navy-700: #fbbf24;
+      --navy-100: #78350f;
+      --navy-50: #451a03;
+      --ink-950: #f8fafc;
+      --ink-800: #e2e8f0;
+      --ink-700: #cbd5e1;
+      --ink-500: #94a3b8;
+      --ink-400: #64748b;
+      --border-hairline: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.18);
+      --amber: #fbbf24;
+      --amber-soft: rgba(251, 191, 36, 0.14);
+      --amber-border: #fbbf24;
+      --emerald: #34d399;
+      --emerald-soft: rgba(52, 211, 153, 0.14);
+      --emerald-border: #34d399;
+      --purple: #c084fc;
+      --purple-soft: rgba(192, 132, 252, 0.14);
+      --rose: #fb7185;
+      --rose-soft: rgba(251, 113, 133, 0.14);
+      --shadow-card: 0 16px 36px -8px rgba(0, 0, 0, 0.55);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: var(--bg-mesh);
+      background-attachment: fixed;
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding-bottom: 72px;
+      min-height: 100vh;
+    }
+
+    .top-nav {
+      background: var(--surface-elevated);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .top-nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .back-link {
+      color: var(--ink-800);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.86rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 7px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+    }
+
+    .step-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .step-tab {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-700);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .step-tab.active {
+      background: #b45309;
+      color: #ffffff;
+      border-color: #b45309;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 24px auto 0;
+      padding: 0 20px;
+    }
+
+    .hero-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-top: 4px solid var(--amber-border);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .badge-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .badge-amber { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-border); }
+    .badge-emerald { background: var(--emerald-soft); color: var(--emerald); border: 1px solid var(--emerald-border); }
+    .badge-blue { background: var(--navy-50); color: var(--navy-800); border: 1px solid var(--navy-100); }
+    .badge-purple { background: var(--purple-soft); color: var(--purple); border: 1px solid rgba(124, 58, 237, 0.3); }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      line-height: 1.25;
+      margin-top: 6px;
+    }
+
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 26px 28px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      color: var(--ink-950);
+      margin-bottom: 6px;
+    }
+
+    .warmup-grid {
+      display: grid;
+      grid-template-columns: 1fr 290px;
+      gap: 22px;
+      align-items: start;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 820px) {
+      .warmup-grid { grid-template-columns: 1fr; }
+    }
+
+    .cue-box {
+      background: var(--surface-subtle);
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+
+    .cue-bullets {
+      list-style: none;
+      margin: 10px 0 14px;
+      font-size: 0.9rem;
+      color: var(--ink-700);
+    }
+
+    .cue-bullets li {
+      padding: 4px 0 4px 18px;
+      position: relative;
+    }
+
+    .cue-bullets li::before {
+      content: '\25B8';
+      position: absolute;
+      left: 0;
+      color: var(--amber);
+      font-weight: 800;
+    }
+
+    .rules-trio {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .rule-box {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      color: var(--ink-700);
+    }
+
+    .rule-box strong {
+      display: block;
+      color: var(--amber);
+      margin-bottom: 3px;
+      font-size: 0.82rem;
+    }
+
+    .timer-widget {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      margin: 8px 0;
+    }
+
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-800);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      border-color: var(--amber-border);
+      color: var(--amber);
+    }
+
+    .btn.primary {
+      background: #b45309;
+      color: #ffffff;
+      border-color: #b45309;
+    }
+
+    .btn.emerald {
+      background: var(--emerald);
+      color: #ffffff;
+      border-color: var(--emerald);
+    }
+
+    .blueprint-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-left: 4px solid var(--amber-border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .formula-code {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 600;
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      padding: 10px 14px;
+      border-radius: 7px;
+      color: var(--ink-950);
+      margin: 8px 0 12px;
+      display: block;
+    }
+
+    .drill-input, .drill-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      background: var(--surface-card);
+      color: var(--ink-950);
+      margin: 8px 0;
+    }
+
+    .drill-textarea {
+      min-height: 135px;
+      line-height: 1.55;
+      resize: vertical;
+    }
+
+    .reveal-box {
+      display: none;
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--emerald-soft);
+      border-left: 4px solid var(--emerald);
+      color: var(--ink-950);
+      font-size: 0.88rem;
+    }
+
+    .echo-word.struck {
+      text-decoration: line-through;
+      opacity: 0.42;
+      color: var(--ink-500);
+    }
+
+    .deficit-word {
+      font-weight: 700;
+      color: var(--amber);
+    }
+
+    .deficit-word.highlighted {
+      background: var(--amber-soft);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border-bottom: 2px solid var(--amber-border);
+    }
+
+    .kw-badge {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.86rem;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #b45309;
+      color: #ffffff;
+      display: inline-block;
+    }
+
+    .wc-pill {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+    }
+
+    .wc-pill.valid {
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      border-color: var(--emerald-border);
+    }
+
+    .wc-pill.invalid {
+      background: var(--rose-soft);
+      color: var(--rose);
+      border-color: var(--rose);
+    }
+
+    .step-footer-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-hairline);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="top-nav-inner">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <a href="index.html" class="back-link">&larr; Gaia's Portal</a>
+        <a href="00-Lesson-History-and-Links.html" class="back-link">&#128218; Lesson Archive</a>
+      </div>
+      <div class="step-tabs" role="tablist">
+        <button class="step-tab active" onclick="showStep(1)" id="tab-1">1. Seminar Defence (2m)</button>
+        <button class="step-tab" onclick="showStep(2)" id="tab-2">2. Quantitative Prose &amp; Detox</button>
+        <button class="step-tab" onclick="showStep(3)" id="tab-3">3. C2 Part 4 Clinic (8)</button>
+        <button class="step-tab" onclick="showStep(4)" id="tab-4">4. Abstract Synthesis</button>
+      </div>
+      <button class="btn" onclick="toggleTheme()">&#127769; Theme</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="hero-card">
+      <div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+          <span class="badge-pill badge-amber">&#127891; Post-CPE University Bridge</span>
+          <span class="badge-pill badge-emerald">Mathematical Engineering &bull; Politecnico di Milano</span>
+        </div>
+        <h1 class="hero-title">Gaia &middot; C2 Quantitative &amp; Academic English Bridge</h1>
+        <p style="font-size:0.94rem; color:var(--ink-700); margin-top:4px; max-width:740px;">
+          Bridging your Cambridge C2 Proficiency command directly into university-level Mathematical Engineering at Politecnico di Milano: 2-minute seminar defence signposting, C2 technical prose structures, Italian-to-English false-friend detox, and abstract synthesis.
+        </p>
+      </div>
+      <div style="text-align:right; background:var(--surface-subtle); padding:12px 18px; border-radius:10px; border:1px solid var(--border-hairline);">
+        <div style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--ink-500);">Academic Destination</div>
+        <div style="font-family:var(--font-mono); font-size:1.05rem; font-weight:700; color:var(--amber);">PoliMi &bull; C2 Bridge</div>
+      </div>
+    </section>
+
+    <!-- STEP 1: C2 ACADEMIC ORAL PRESENTATION & SEMINAR DEFENCE WARM-UP -->
+    <section class="step-panel active" id="step-1">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <span class="badge-pill badge-amber">Step 1 &bull; Active Voice First</span>
+            <h2 class="section-title" style="margin-top:4px;">2-Minute C2 Seminar Defence &amp; Discourse Signposts</h2>
+            <p style="font-size:0.88rem; color:var(--ink-500);">Choose a C2 prompt card, jot down 4 trigger keywords in 60 seconds, and deliver a structured 2-minute academic turn using C2 discourse signposts.</p>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn primary" id="prompt-btn-0" onclick="selectPrompt(0)">Card A: Mathematical Modelling</button>
+            <button class="btn" id="prompt-btn-1" onclick="selectPrompt(1)">Card B: Pure vs Applied Research</button>
+            <button class="btn" id="prompt-btn-2" onclick="selectPrompt(2)">Card C: Data &amp; Human Judgement</button>
+          </div>
+        </div>
+
+        <div class="warmup-grid">
+          <div class="cue-box">
+            <span class="badge-pill badge-emerald" id="cue-tag">C2 Prompt Card A &bull; Quantitative Modelling &amp; Reality</span>
+            <h3 style="font-size:1.18rem; font-weight:700; color:var(--ink-950); margin:8px 0;" id="cue-heading">
+              How far can mathematical models accurately predict complex real-world behaviour?
+            </h3>
+            <p style="font-size:0.82rem; font-weight:700; color:var(--ink-500);">Optional springboard angles:</p>
+            <ul class="cue-bullets" id="cue-list">
+              <li>the distinction between controlled physical laws and unpredictable human behaviour</li>
+              <li>the danger of mistaking a simplified equation for reality itself</li>
+              <li>how empirical data verification protects engineers from costly errors</li>
+              <li>and why critical human oversight remains indispensable in quantitative science.</li>
+            </ul>
+
+            <div style="margin-top:12px;">
+              <label style="font-size:0.76rem; font-weight:800; text-transform:uppercase; color:var(--amber); display:block; margin-bottom:6px;">
+                1-Minute Margin Notes (4 Single Trigger Keywords Only):
+              </label>
+              <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+                <input type="text" class="drill-input" style="margin:0; padding:7px 10px; font-size:0.84rem;" placeholder="1. Keyword..." id="kw-note-1" oninput="saveNotes()" />
+                <input type="text" class="drill-input" style="margin:0; padding:7px 10px; font-size:0.84rem;" placeholder="2. Keyword..." id="kw-note-2" oninput="saveNotes()" />
+                <input type="text" class="drill-input" style="margin:0; padding:7px 10px; font-size:0.84rem;" placeholder="3. Keyword..." id="kw-note-3" oninput="saveNotes()" />
+                <input type="text" class="drill-input" style="margin:0; padding:7px 10px; font-size:0.84rem;" placeholder="4. Keyword..." id="kw-note-4" oninput="saveNotes()" />
+              </div>
+            </div>
+
+            <div class="rules-trio">
+              <div class="rule-box">
+                <strong>1. The 1-Minute Note Secret</strong>
+                Write only 4 single trigger keywords down the margin (one per prompt bullet); never write full sentences.
+              </div>
+              <div class="rule-box">
+                <strong>2. The 3-Act Story Arc</strong>
+                Past Context (30s) &rarr; Sensory Snapshot / Core Scene (45s) &rarr; Reflection / 'So What?' (45s).
+              </div>
+              <div class="rule-box">
+                <strong>3. The Cambridge Anchor</strong>
+                Bullet points are springboards, not an interrogation checklist. If finished early, deepen the reflection and comparison until halted.
+              </div>
+            </div>
+          </div>
+
+          <div class="timer-widget">
+            <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--ink-500);" id="timer-label">Seminar Prep (60s)</div>
+            <div class="timer-display" id="timer-display">01:00</div>
+            <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:10px;">
+              <button class="btn primary" id="mode-prep-btn" onclick="setWarmupTimer(60, 'Seminar Prep (60s)')">60s Prep</button>
+              <button class="btn" id="mode-speak-btn" onclick="setWarmupTimer(120, '2-Min C2 Presentation (120s)')">120s Speak</button>
+            </div>
+            <div style="display:flex; gap:6px; justify-content:center;">
+              <button class="btn emerald" id="start-timer-btn" onclick="toggleWarmupTimer()">&#9654; Start</button>
+              <button class="btn" onclick="resetWarmupTimer()">&#8634; Reset</button>
+            </div>
+            <div style="margin-top:14px; text-align:left; font-size:0.77rem; color:var(--ink-700); background:var(--surface-card); padding:10px 12px; border-radius:8px; border:1px solid var(--border-hairline);">
+              <strong style="color:var(--amber); display:block; margin-bottom:4px;">C2 Discourse Signposts:</strong>
+              &bull; <strong>Framing:</strong> <em>"When considering..., one has to distinguish between..."</em><br/>
+              &bull; <strong>Pivoting:</strong> <em>"Closely bound up with this is..."</em><br/>
+              &bull; <strong>Landing:</strong> <em>"Ultimately, what this comes down to is..."</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-footer-nav">
+          <span style="font-size:0.82rem; color:var(--ink-500);">Stage 1 of 4 &bull; C2 Academic Seminar Defence</span>
+          <button class="btn primary" onclick="showStep(2)">Next: Step 2 Quantitative Prose &amp; False-Friend Detox &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: C2 QUANTITATIVE & TECHNICAL PROSE BLUEPRINTS -->
+    <section class="step-panel" id="step-2">
+      <div class="card">
+        <span class="badge-pill badge-amber">Step 2 &bull; C2 Quantitative &amp; Technical Prose Blueprints</span>
+        <h2 class="section-title" style="margin-top:4px;">4 High-Precision C2 Academic Structures &amp; False-Friend Detox</h2>
+        <p style="font-size:0.88rem; color:var(--ink-500); margin-bottom:18px;">
+          Practise the four structures below—designed for quantitative research reports, seminar papers, and eliminating Italian-to-English interference—then click <strong>&#128065;&#65039; Reveal Cambridge Model</strong>.
+        </p>
+
+        <!-- Blueprint 1 -->
+        <div class="blueprint-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <span class="badge-pill badge-amber">Blueprint 1 &bull; Contrastive It-Clefts</span>
+            <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-500);">Distinguishing Primary Causes</span>
+          </div>
+          <code class="formula-code">It is not so much + [Noun Phrase X] + as + [Noun Phrase Y] + that + [Verb Phrase]</code>
+          <p style="font-size:0.88rem; color:var(--ink-700);">
+            <strong>Upgrade This Sentence:</strong> <em>"Raw computing speed does not guarantee an accurate simulation; rather, well-chosen boundary conditions guarantee it."</em>
+          </p>
+          <input type="text" class="drill-input" id="bp-input-1" placeholder="Start with 'It is not so much raw computing speed as...'..." oninput="saveBlueprintInputs()" />
+          <button class="btn" onclick="toggleReveal('bp-rev-1')">&#128065;&#65039; Reveal Cambridge Model</button>
+          <div class="reveal-box" id="bp-rev-1">
+            <strong>C2 Academic Model:</strong> <u>It is not so much</u> raw computing speed <u>as</u> well-chosen boundary conditions <u>that</u> guarantee an accurate simulation.
+          </div>
+        </div>
+
+        <!-- Blueprint 2 -->
+        <div class="blueprint-card" style="border-left-color:var(--emerald);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <span class="badge-pill badge-emerald">Blueprint 2 &bull; Resultative Participle Chains</span>
+            <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-500);">Replacing ', which causes...'</span>
+          </div>
+          <code class="formula-code">[Main Technical Clause], thereby + [Present Participle -ing] + [Quantifiable Outcome]</code>
+          <p style="font-size:0.88rem; color:var(--ink-700);">
+            <strong>Upgrade This Sentence:</strong> <em>"Regularisation penalises overly complex parameters, and this prevents the statistical model from overfitting noisy data."</em>
+          </p>
+          <input type="text" class="drill-input" id="bp-input-2" placeholder="Combine using ', thereby preventing...'..." oninput="saveBlueprintInputs()" />
+          <button class="btn" onclick="toggleReveal('bp-rev-2')">&#128065;&#65039; Reveal Cambridge Model</button>
+          <div class="reveal-box" id="bp-rev-2">
+            <strong>C2 Academic Model:</strong> Regularisation penalises overly complex parameters, <u>thereby preventing</u> the statistical model from overfitting noisy data.
+          </div>
+        </div>
+
+        <!-- Blueprint 3 -->
+        <div class="blueprint-card" style="border-left-color:var(--navy-700);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <span class="badge-pill badge-blue">Blueprint 3 &bull; Passive Reporting with Prior Action</span>
+            <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-500);">Literature Review Register</span>
+          </div>
+          <code class="formula-code">Subject + is / are + [widely / generally] + thought / believed / known + to have + Past Participle (V3)</code>
+          <p style="font-size:0.88rem; color:var(--ink-700);">
+            <strong>Upgrade This Sentence:</strong> <em>"Historians of mathematics believe that early probability theory originated in seventeenth-century correspondence."</em>
+          </p>
+          <input type="text" class="drill-input" id="bp-input-3" placeholder="Start with 'Early probability theory is widely thought to have...'..." oninput="saveBlueprintInputs()" />
+          <button class="btn" onclick="toggleReveal('bp-rev-3')">&#128065;&#65039; Reveal Cambridge Model</button>
+          <div class="reveal-box" id="bp-rev-3">
+            <strong>C2 Academic Model:</strong> Early probability theory <u>is widely thought to have originated</u> in seventeenth-century correspondence.
+          </div>
+        </div>
+
+        <!-- Blueprint 4: False-Friend Detox -->
+        <div class="blueprint-card" style="border-left-color:var(--purple);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <span class="badge-pill badge-purple">Blueprint 4 &bull; Italian-to-English C2 False-Friend Detox</span>
+            <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-500);">Precision Register</span>
+          </div>
+          <code class="formula-code">instead (invece) &rarr; by contrast / rather  |  exaggerated (esagerato) &rarr; excessive  |  deceivable &rarr; deceptive  |  implements &rarr; facilities</code>
+          <p style="font-size:0.88rem; color:var(--ink-700);">
+            <strong>Repair All 3 False Friends:</strong> <em>"Linear models converge rapidly; instead, non-linear approximations require an exaggerated amount of time and can produce deceivable graphs."</em>
+          </p>
+          <input type="text" class="drill-input" id="bp-input-4" placeholder="Rewrite replacing 'instead', 'exaggerated', and 'deceivable'..." oninput="saveBlueprintInputs()" />
+          <button class="btn" onclick="toggleReveal('bp-rev-4')">&#128065;&#65039; Reveal Cambridge Model</button>
+          <div class="reveal-box" id="bp-rev-4">
+            <strong>C2 Academic Model:</strong> Linear models converge rapidly; <u>by contrast</u>, non-linear approximations require an <u>excessive</u> amount of time and can produce <u>deceptive</u> (<em>or:</em> misleading) graphs.
+          </div>
+        </div>
+
+        <div class="step-footer-nav">
+          <button class="btn" onclick="showStep(1)">&larr; Back to Step 1</button>
+          <button class="btn primary" onclick="showStep(3)">Next: Step 3 8-Item C2 Part 4 Clinic &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: 8-ITEM C2 PART 4 KEY WORD TRANSFORMATION CLINIC -->
+    <section class="step-panel" id="step-3">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+          <div>
+            <span class="badge-pill badge-emerald">Step 3 &bull; Strict Cambridge Part 4 Integrity</span>
+            <h2 class="section-title" style="margin-top:4px;">8-Item C2 Key Word Transformation Clinic (3&ndash;6 Words)</h2>
+            <p style="font-size:0.88rem; color:var(--ink-500);">
+              Complete the second sentence using between <strong>3 and 6 words</strong>, including the key word <strong>unchanged</strong>. Click <strong>&#9986;&#65039; Strike Out the Echoes</strong> to isolate the exact semantic deficit first.
+            </p>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="wc-pill" id="p4-score-pill">Solved: 0 / 8</span>
+            <button class="btn" onclick="strikeAllEchoes()">&#9986;&#65039; Strike All Echoes</button>
+          </div>
+        </div>
+
+        <div id="p4-clinic-container"></div>
+
+        <div class="step-footer-nav">
+          <button class="btn" onclick="showStep(2)">&larr; Back to Step 2</button>
+          <button class="btn primary" onclick="showStep(4)">Next: Step 4 Technical Abstract Synthesis Workbench &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: TECHNICAL ABSTRACT & EXECUTIVE SUMMARY SYNTHESIS WORKBENCH -->
+    <section class="step-panel" id="step-4">
+      <div class="card">
+        <span class="badge-pill badge-amber">Step 4 &bull; Politecnico di Milano Synthesis Workbench</span>
+        <h2 class="section-title" style="margin-top:4px;">Technical Abstract &amp; Executive Summary Synthesis</h2>
+        <p style="font-size:0.88rem; color:var(--ink-500); margin-bottom:16px;">
+          Synthesise the two research notes below into a concise <strong>75&ndash;115 word Executive Summary / Abstract</strong> suitable for a Politecnico di Milano research report. Avoid lifting phrases verbatim, avoid Italian false friends (<em>instead, exaggerated, deceivable, implements, frequenters</em>), and incorporate at least two C2 syntactic blueprints.
+        </p>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px; margin-bottom:16px;">
+          <div class="blueprint-card" style="margin-bottom:0;">
+            <span class="badge-pill badge-blue" style="margin-bottom:6px;">Source Note A &bull; Campus Study Facilities Audit</span>
+            <p style="font-size:0.86rem; color:var(--ink-700);">
+              The central engineering library attracts over 1,400 daily undergraduate visitors. However, 68% of surveyed students reported that desk power sockets are scarce and evening reading halls close too early during examination periods, forcing study groups to relocate to noisy cafés.
+            </p>
+          </div>
+          <div class="blueprint-card" style="margin-bottom:0; border-left-color:var(--emerald);">
+            <span class="badge-pill badge-emerald" style="margin-bottom:6px;">Source Note B &bull; Proposed Infrastructure Upgrade</span>
+            <p style="font-size:0.86rem; color:var(--ink-700);">
+              Installing modular acoustic pods, upgrading desk electrical outlets, and extending opening hours until midnight would increase seating capacity by 25% and significantly improve student concentration during quantitative coursework deadlines.
+            </p>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="wc-pill" id="wb-wc-pill">Words: 0 (Target: 75&ndash;115)</span>
+            <span class="wc-pill valid" id="wb-ff-pill">&#10003; Zero False Friends Detected</span>
+          </div>
+          <button class="btn" onclick="toggleReveal('wb-model-reveal')">&#128065;&#65039; Reveal Cambridge Model</button>
+        </div>
+
+        <textarea class="drill-textarea" id="wb-textarea" placeholder="Draft your 75-115 word C2 Executive Summary / Abstract here..." oninput="auditAbstract()"></textarea>
+
+        <div class="reveal-box" id="wb-model-reveal">
+          <strong>C2 Executive Summary Model (92 words):</strong><br/>
+          &ldquo;<u>While</u> the central engineering library serves over 1,400 undergraduate <u>patrons</u> daily, its current study <u>facilities</u> fall short of peak academic demand. <u>It is not so much</u> overall floor space <u>as</u> the scarcity of desk power outlets and restricted evening hours <u>that</u> compels students to work in noisy off-campus venues. <u>Not only would</u> installing modular acoustic pods and extending access until midnight expand seating capacity by a quarter, <u>but</u> retrofitting desk outlets would also eliminate technical bottlenecks, <u>thereby fostering</u> sustained concentration throughout intensive quantitative examination periods.&rdquo;
+        </div>
+
+        <div class="step-footer-nav">
+          <button class="btn" onclick="showStep(3)">&larr; Back to Step 3</button>
+          <a href="index.html" class="btn emerald">&#10003; Complete Bridge Workout &amp; Return to Portal</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const PROMPTS = [
+      {
+        tag: "C2 Prompt Card A \u2022 Quantitative Modelling & Reality",
+        heading: "How far can mathematical models accurately predict complex real-world behaviour?",
+        bullets: [
+          "the distinction between controlled physical laws and unpredictable human behaviour",
+          "the danger of mistaking a simplified equation for reality itself",
+          "how empirical data verification protects engineers from costly errors",
+          "and why critical human oversight remains indispensable in quantitative science."
+        ]
+      },
+      {
+        tag: "C2 Prompt Card B \u2022 Pure vs. Applied Scientific Research",
+        heading: "Should university funding prioritise immediate industrial applications or foundational theoretical research?",
+        bullets: [
+          "why foundational mathematics often precedes practical engineering by decades",
+          "the risk of short-term commercial pressure narrowing academic curiosity",
+          "how applied partnerships can nevertheless accelerate clean-energy breakthroughs",
+          "and how technical universities can strike a sustainable balance between both."
+        ]
+      },
+      {
+        tag: "C2 Prompt Card C \u2022 Quantitative Evidence & Public Policy",
+        heading: "Why does rigorous statistical evidence sometimes fail to persuade the general public?",
+        bullets: [
+          "the gap between probabilistic reasoning and everyday human intuition",
+          "how misleading visual graphs can distort public perception of risk",
+          "the responsibility of engineers and scientists to communicate uncertainty clearly",
+          "and how secondary education could strengthen statistical literacy."
+        ]
+      }
+    ];
+
+    const PART4_ITEMS = [
+      {
+        id: 1,
+        s1Html: '<span class="echo-word">The model\'s success</span> <span class="deficit-word">depends on</span> <span class="echo-word">clean empirical data</span> <span class="deficit-word">rather than</span> <span class="echo-word">raw computing power.</span>',
+        keyword: 'MUCH',
+        pre: 'It is',
+        post: 'raw computing power as clean empirical data that determines the model\'s success.',
+        answers: ['not so much', 'not so much on'],
+        model: 'not so much',
+        steps: '1. Echoes struck: "... raw computing power ... clean empirical data ... model\'s success." | 2. Deficit: "depends on ... rather than". | 3. C2 Pattern: Contrastive It-cleft It is not so much X as Y that... ("not so much" = 3 words).'
+      },
+      {
+        id: 2,
+        s1Html: '<span class="echo-word">When</span> <span class="deficit-word">the researchers</span> <span class="echo-word">published their initial proof,</span> <span class="deficit-word">they had no idea</span> <span class="echo-word">it would transform fluid dynamics.</span>',
+        keyword: 'LITTLE',
+        pre: '',
+        post: 'when they published their initial proof that it would transform fluid dynamics.',
+        answers: ['Little did the researchers realise', 'Little did the researchers know'],
+        model: 'Little did the researchers realise',
+        steps: '1. Echoes struck: "... when they published their initial proof ... it would transform fluid dynamics." | 2. Tense: Past Simple ("had no idea"). | 3. C2 Pattern: Negative inversion ("Little did the researchers realise" = 5 words).'
+      },
+      {
+        id: 3,
+        s1Html: '<span class="deficit-word">Historians of science believe that</span> <span class="echo-word">the theorem</span> <span class="deficit-word">originated</span> <span class="echo-word">in seventeenth-century correspondence.</span>',
+        keyword: 'THOUGHT',
+        pre: 'The theorem',
+        post: 'in seventeenth-century correspondence.',
+        answers: ['is widely thought to have originated', 'is thought to have originated'],
+        model: 'is widely thought to have originated',
+        steps: '1. Echoes struck: "The theorem ... in seventeenth-century correspondence." | 2. Voice & Aspect: Passive reporting verb + perfect infinitive for prior past action ("is widely thought to have originated" = 6 words).'
+      },
+      {
+        id: 4,
+        s1Html: '<span class="deficit-word">Without</span> <span class="echo-word">the new boundary conditions, the differential equation would have remained insoluble.</span>',
+        keyword: 'HAD',
+        pre: '',
+        post: 'the new boundary conditions, the differential equation would have remained insoluble.',
+        answers: ['Had it not been for'],
+        model: 'Had it not been for',
+        steps: '1. Echoes struck: "... the new boundary conditions, the differential equation would have remained insoluble." | 2. Tense: 3rd Conditional ("would have remained"). | 3. C2 Pattern: Inverted counterfactual ("Had it not been for" = 5 words).'
+      },
+      {
+        id: 5,
+        s1Html: '<span class="deficit-word">Whereas</span> <span class="echo-word">linear approximations fail under extreme turbulence, non-linear equations remain stable.</span>',
+        keyword: 'CONTRAST',
+        pre: 'Linear approximations fail under extreme turbulence;',
+        post: ', non-linear equations remain stable.',
+        answers: ['by way of contrast', 'in stark contrast', 'by stark contrast'],
+        model: 'by way of contrast',
+        steps: '1. Echoes struck: "Linear approximations fail under extreme turbulence; ... non-linear equations remain stable." | 2. Deficit: "Whereas" (formal contrast). | 3. C2 Pattern: "by way of contrast" (4 words) or "in stark contrast" (3 words).'
+      },
+      {
+        id: 6,
+        s1Html: '<span class="echo-word">The new insulation layer reduces thermal loss,</span> <span class="deficit-word">which lowers overall</span> <span class="echo-word">energy consumption by twenty percent.</span>',
+        keyword: 'THEREBY',
+        pre: 'The new insulation layer reduces thermal loss,',
+        post: 'energy consumption by twenty percent.',
+        answers: ['thereby lowering overall', 'thereby reducing overall', 'thereby curbing overall'],
+        model: 'thereby lowering overall',
+        steps: '1. Echoes struck: "The new insulation layer reduces thermal loss, ... energy consumption by twenty percent." | 2. Deficit: "which lowers overall". | 3. C2 Pattern: Resultative participle ("thereby lowering overall" = 3 words).'
+      },
+      {
+        id: 7,
+        s1Html: '<span class="echo-word">The faculty board</span> <span class="deficit-word">will certainly not lower</span> <span class="echo-word">the admission threshold for quantitative degrees.</span>',
+        keyword: 'INTENTION',
+        pre: 'The faculty board',
+        post: 'the admission threshold for quantitative degrees.',
+        answers: ['has no intention of lowering'],
+        model: 'has no intention of lowering',
+        steps: '1. Echoes struck: "The faculty board ... the admission threshold for quantitative degrees." | 2. Deficit: "will certainly not lower". | 3. C2 Pattern: have no intention of + -ing ("has no intention of lowering" = 5 words).'
+      },
+      {
+        id: 8,
+        s1Html: '<span class="echo-word">Experimental results</span> <span class="deficit-word">must never</span> <span class="echo-word">be extrapolated beyond the verified confidence interval.</span>',
+        keyword: 'ACCOUNT',
+        pre: 'On',
+        post: 'experimental results be extrapolated beyond the verified confidence interval.',
+        answers: ['no account must', 'no account should'],
+        model: 'no account must',
+        steps: '1. Echoes struck: "... experimental results be extrapolated beyond the verified confidence interval." | 2. Deficit: "must never". | 3. C2 Pattern: Negative inversion On no account + modal + subject + bare infinitive ("no account must" = 3 words).'
+      }
+    ];
+
+    function showStep(num) {
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById('step-' + i).classList.toggle('active', i === num);
+        document.getElementById('tab-' + i).classList.toggle('active', i === num);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectPrompt(idx) {
+      const p = PROMPTS[idx];
+      document.getElementById('cue-tag').textContent = p.tag;
+      document.getElementById('cue-heading').textContent = p.heading;
+      const list = document.getElementById('cue-list');
+      list.innerHTML = p.bullets.map(function(b) { return '<li>' + b + '</li>'; }).join('');
+      for (let i = 0; i < 3; i++) {
+        document.getElementById('prompt-btn-' + i).classList.toggle('primary', i === idx);
+      }
+    }
+
+    let warmupSeconds = 60;
+    let warmupDefault = 60;
+    let warmupTimer = null;
+
+    function setWarmupTimer(sec, label) {
+      clearInterval(warmupTimer);
+      warmupTimer = null;
+      warmupDefault = sec;
+      warmupSeconds = sec;
+      document.getElementById('timer-label').textContent = label;
+      document.getElementById('start-timer-btn').innerHTML = '&#9654; Start';
+      document.getElementById('mode-prep-btn').classList.toggle('primary', sec === 60);
+      document.getElementById('mode-speak-btn').classList.toggle('primary', sec === 120);
+      renderWarmupTime();
+    }
+
+    function toggleWarmupTimer() {
+      const btn = document.getElementById('start-timer-btn');
+      if (warmupTimer) {
+        clearInterval(warmupTimer);
+        warmupTimer = null;
+        btn.innerHTML = '&#9654; Resume';
+      } else {
+        btn.innerHTML = '&#9208; Pause';
+        warmupTimer = setInterval(function() {
+          warmupSeconds--;
+          if (warmupSeconds <= 0) {
+            clearInterval(warmupTimer);
+            warmupTimer = null;
+            btn.innerHTML = '&#8634; Done';
+            if (warmupDefault === 60) {
+              setWarmupTimer(120, '2-Min C2 Presentation (120s)');
+              toggleWarmupTimer();
+            }
+          }
+          renderWarmupTime();
+        }, 1000);
+      }
+    }
+
+    function resetWarmupTimer() {
+      clearInterval(warmupTimer);
+      warmupTimer = null;
+      warmupSeconds = warmupDefault;
+      document.getElementById('start-timer-btn').innerHTML = '&#9654; Start';
+      renderWarmupTime();
+    }
+
+    function renderWarmupTime() {
+      const m = String(Math.floor(warmupSeconds / 60)).padStart(2, '0');
+      const s = String(warmupSeconds % 60).padStart(2, '0');
+      document.getElementById('timer-display').textContent = m + ':' + s;
+    }
+
+    function toggleReveal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function renderPart4Clinic() {
+      const container = document.getElementById('p4-clinic-container');
+      const saved = JSON.parse(localStorage.getItem('gaia_bridge_p4_workout') || '{}');
+      container.innerHTML = PART4_ITEMS.map(function(item) {
+        const val = saved[item.id] || '';
+        return (
+          '<div class="blueprint-card" id="p4-card-' + item.id + '">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">' +
+              '<span style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:var(--amber);">Item #' + item.id + ' of 8</span>' +
+              '<div style="display:flex; gap:8px; align-items:center;">' +
+                '<button class="btn" style="padding:4px 10px; font-size:0.76rem;" onclick="toggleEcho(' + item.id + ')">&#9986;&#65039; Strike Out the Echoes</button>' +
+                '<span class="kw-badge">' + item.keyword + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<p style="font-size:0.95rem; color:var(--ink-950); margin-bottom:10px;" id="p4-s1-' + item.id + '">' + item.s1Html + '</p>' +
+            '<div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; font-size:0.94rem; color:var(--ink-950);">' +
+              (item.pre ? '<span>' + item.pre + '</span>' : '') +
+              '<input type="text" class="drill-input" style="flex:1; min-width:220px; margin:0;" id="p4-in-' + item.id + '" value="' + val.replace(/"/g, '&quot;') + '" placeholder="3 to 6 words (include ' + item.keyword + ' unchanged)..." oninput="onP4Input(' + item.id + ')" />' +
+              '<span>' + item.post + '</span>' +
+            '</div>' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
+              '<div style="display:flex; gap:8px; align-items:center;">' +
+                '<button class="btn primary" style="padding:6px 12px; font-size:0.78rem;" onclick="checkP4Item(' + item.id + ')">&#10003; Check Answer</button>' +
+                '<button class="btn" style="padding:6px 12px; font-size:0.78rem;" onclick="toggleReveal(\'p4-rev-' + item.id + '\')">&#128065;&#65039; Reveal Cambridge Model</button>' +
+                '<span id="p4-fb-' + item.id + '" style="font-size:0.82rem; font-weight:700;"></span>' +
+              '</div>' +
+              '<span class="wc-pill" id="p4-wc-' + item.id + '">0 words</span>' +
+            '</div>' +
+            '<div class="reveal-box" id="p4-rev-' + item.id + '">' +
+              '<strong>Cambridge C2 Model:</strong> <code>' + item.model + '</code><br/>' +
+              '<span style="font-size:0.82rem; color:var(--ink-700);">' + item.steps + '</span>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+      PART4_ITEMS.forEach(function(it) { onP4Input(it.id); });
+    }
+
+    function toggleEcho(id) {
+      const s1 = document.getElementById('p4-s1-' + id);
+      if (!s1) return;
+      s1.querySelectorAll('.echo-word').forEach(function(el) { el.classList.toggle('struck'); });
+      s1.querySelectorAll('.deficit-word').forEach(function(el) { el.classList.toggle('highlighted'); });
+    }
+
+    function strikeAllEchoes() {
+      PART4_ITEMS.forEach(function(it) {
+        const s1 = document.getElementById('p4-s1-' + it.id);
+        if (!s1) return;
+        s1.querySelectorAll('.echo-word').forEach(function(el) { el.classList.add('struck'); });
+        s1.querySelectorAll('.deficit-word').forEach(function(el) { el.classList.add('highlighted'); });
+      });
+    }
+
+    function onP4Input(id) {
+      const item = PART4_ITEMS.find(function(x) { return x.id === id; });
+      const el = document.getElementById('p4-in-' + id);
+      const wcEl = document.getElementById('p4-wc-' + id);
+      if (!el || !wcEl || !item) return;
+      const val = el.value.trim();
+      const words = val ? val.split(/\s+/).filter(Boolean) : [];
+      const count = words.length;
+      const hasKw = new RegExp('\\b' + item.keyword.toLowerCase() + '\\b').test(val.toLowerCase());
+      wcEl.textContent = count + (count === 1 ? ' word' : ' words') + (hasKw ? ' \u2022 Keyword OK' : ' \u2022 Missing ' + item.keyword);
+      wcEl.className = 'wc-pill ' + (count >= 3 && count <= 6 && hasKw ? 'valid' : (count > 0 ? 'invalid' : ''));
+
+      const saved = JSON.parse(localStorage.getItem('gaia_bridge_p4_workout') || '{}');
+      saved[id] = el.value;
+      localStorage.setItem('gaia_bridge_p4_workout', JSON.stringify(saved));
+      updateP4Score();
+    }
+
+    function norm(s) {
+      return s.trim().toLowerCase().replace(/[.,!?;:]+$/g, '').replace(/\s+/g, ' ');
+    }
+
+    function checkP4Item(id) {
+      const item = PART4_ITEMS.find(function(x) { return x.id === id; });
+      const el = document.getElementById('p4-in-' + id);
+      const fb = document.getElementById('p4-fb-' + id);
+      if (!item || !el || !fb) return;
+      const user = norm(el.value);
+      const words = user ? user.split(' ') : [];
+      if (words.length < 3 || words.length > 6) {
+        fb.style.color = 'var(--rose)';
+        fb.textContent = 'Must be 3 to 6 words (' + words.length + ' used).';
+        return;
+      }
+      const match = item.answers.some(function(a) { return norm(a) === user; });
+      if (match) {
+        fb.style.color = 'var(--emerald)';
+        fb.textContent = '\u2713 Spot on! Full 2/2 C2 marks.';
+      } else {
+        fb.style.color = 'var(--amber)';
+        fb.textContent = 'Compare closely with Reveal Cambridge Model.';
+      }
+      updateP4Score();
+    }
+
+    function updateP4Score() {
+      let solved = 0;
+      PART4_ITEMS.forEach(function(item) {
+        const el = document.getElementById('p4-in-' + item.id);
+        if (el) {
+          const u = norm(el.value);
+          if (item.answers.some(function(a) { return norm(a) === u; })) solved++;
+        }
+      });
+      const pill = document.getElementById('p4-score-pill');
+      if (pill) pill.textContent = 'Solved: ' + solved + ' / 8';
+    }
+
+    function auditAbstract() {
+      const el = document.getElementById('wb-textarea');
+      if (!el) return;
+      const txt = el.value.trim();
+      localStorage.setItem('gaia_bridge_abstract', el.value);
+      const words = txt ? txt.split(/\s+/).filter(Boolean) : [];
+      const wcPill = document.getElementById('wb-wc-pill');
+      wcPill.textContent = 'Words: ' + words.length + ' (Target: 75\u2013115)';
+      wcPill.className = 'wc-pill ' + (words.length >= 75 && words.length <= 115 ? 'valid' : (words.length > 0 ? 'invalid' : ''));
+
+      const hasFF = /\b(deceivable|frequenters|implements|exaggerated)\b/i.test(txt);
+      const ffPill = document.getElementById('wb-ff-pill');
+      if (hasFF) {
+        ffPill.className = 'wc-pill invalid';
+        ffPill.textContent = '\u26A0 False Friend Detected (Check patrons / facilities / excessive / deceptive)';
+      } else {
+        ffPill.className = 'wc-pill valid';
+        ffPill.textContent = '\u2713 Zero False Friends Detected';
+      }
+    }
+
+    function saveNotes() {
+      const notes = [1, 2, 3, 4].map(function(n) { return document.getElementById('kw-note-' + n).value; });
+      localStorage.setItem('gaia_bridge_notes', JSON.stringify(notes));
+    }
+
+    function saveBlueprintInputs() {
+      const vals = [1, 2, 3, 4].map(function(n) { return document.getElementById('bp-input-' + n).value; });
+      localStorage.setItem('gaia_bridge_bp_inputs', JSON.stringify(vals));
+    }
+
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'paper' : 'dark';
+      document.documentElement.setAttribute('data-theme', cur);
+      localStorage.setItem('gareth_studio_theme', cur);
+    }
+
+    (function init() {
+      const savedTheme = localStorage.getItem('gareth_studio_theme');
+      if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+      const notes = JSON.parse(localStorage.getItem('gaia_bridge_notes') || '[]');
+      notes.forEach(function(v, i) {
+        const el = document.getElementById('kw-note-' + (i + 1));
+        if (el) el.value = v;
+      });
+      const bps = JSON.parse(localStorage.getItem('gaia_bridge_bp_inputs') || '[]');
+      bps.forEach(function(v, i) {
+        const el = document.getElementById('bp-input-' + (i + 1));
+        if (el) el.value = v;
+      });
+      const abs = localStorage.getItem('gaia_bridge_abstract');
+      if (abs) {
+        document.getElementById('wb-textarea').value = abs;
+        auditAbstract();
+      }
+      renderPart4Clinic();
+    })();
+  </script>
+</body>
+</html>

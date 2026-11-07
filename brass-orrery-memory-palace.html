@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Grammar Courtyard: 3D Interactive World | Gareth English</title>
+  <meta name="description" content="Walk through a sunlit & lantern-lit 3D courtyard of 6 giant kinetic grammar machines. Physically test Subject-Verb Agreement, Simple vs Continuous, the Present Perfect Drawbridge, Past Interruptions, Articles, and AT/ON/IN Prepositions.">
+  <meta name="theme-color" content="#131829">
+  <link rel="canonical" href="https://garethenglish.com/brass-orrery-memory-palace.html">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+  <link rel="preload" href="assets/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/eb-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    @font-face {
+      font-family: 'Cormorant Garamond';
+      src: url('assets/fonts/cormorant-garamond-normal-latin.woff2') format('woff2');
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'EB Garamond';
+      src: url('assets/fonts/eb-garamond-normal-latin.woff2') format('woff2');
+      font-weight: 400 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    :root {
+      --ink-deep: rgba(14, 19, 34, 0.84);
+      --ink-card: rgba(20, 27, 46, 0.92);
+      --gold: #fbbf24;
+      --amber: #f59e0b;
+      --emerald: #10b981;
+      --emerald-bright: #34d399;
+      --sky: #38bdf8;
+      --rose: #f43f5e;
+      --violet: #a855f7;
+      --cream: #fdfbf7;
+      --muted: #cbd5e1;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-serif: 'EB Garamond', Georgia, serif;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #131829;
+      color: var(--cream);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+    }
+
+    #world-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: block;
+      cursor: grab;
+    }
+    #world-canvas:active {
+      cursor: grabbing;
+    }
+
+    /* Top Minimal Floating HUD */
+    .top-hud {
+      position: fixed;
+      top: 14px;
+      left: 18px;
+      right: 18px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      pointer-events: none;
+    }
+    .top-hud > * {
+      pointer-events: auto;
+    }
+
+    .brand-pill {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--ink-deep);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      padding: 7px 16px;
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    .brand-pill a {
+      text-decoration: none;
+      color: var(--gold);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding-right: 12px;
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .brand-pill a:hover {
+      color: #fff;
+    }
+    .brand-pill span {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Fast-Travel Pavilion Bar */
+    .pavilion-nav {
+      display: flex;
+      gap: 5px;
+      background: var(--ink-deep);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 5px 7px;
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+    .pav-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+    .pav-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .pav-btn.active {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0b0f19;
+      border-color: #fde68a;
+      box-shadow: 0 2px 12px rgba(245, 158, 11, 0.45);
+    }
+    .pav-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .right-hud {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .score-pill {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(52, 211, 153, 0.55);
+      color: var(--emerald-bright);
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      backdrop-filter: blur(10px);
+    }
+    .btn-top-action {
+      background: var(--ink-deep);
+      border: 1px solid rgba(251, 191, 36, 0.38);
+      color: #fff;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.16s ease;
+    }
+    .btn-top-action:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* Bottom-Left Walk Pad */
+    .walk-pad {
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      z-index: 20;
+      background: var(--ink-deep);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 30px);
+      grid-template-rows: repeat(2, 28px);
+      gap: 3px;
+    }
+    .dpad button {
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(251, 191, 36, 0.35);
+      color: #fff;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .dpad button:active {
+      background: var(--gold);
+      color: #000;
+    }
+    .walk-text {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.35;
+      max-width: 115px;
+    }
+    .walk-text strong {
+      color: var(--gold);
+    }
+
+    /* Bottom-Center Compact Game Console (Tactile Mode Switcher + 3D Block Launcher) */
+    .game-console {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(760px, calc(100vw - 32px));
+      z-index: 20;
+      background: var(--ink-card);
+      border: 1px solid rgba(251, 191, 36, 0.42);
+      border-radius: 20px;
+      padding: 13px 18px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Top Row of Console: 4 Instant 3D Machine Mode Buttons + Rule Card Button */
+    .console-modes-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-bottom: 9px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .mode-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .mode-pill {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .mode-pill:hover {
+      color: #fff;
+      border-color: var(--gold);
+    }
+    .mode-pill.active {
+      background: rgba(251, 191, 36, 0.22);
+      border-color: var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+    }
+    .btn-rule-card {
+      background: rgba(56, 189, 248, 0.16);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      color: var(--sky);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-rule-card:hover {
+      background: var(--sky);
+      color: #061320;
+    }
+
+    /* Bottom Row of Console: Live 3D Block Launch Challenge */
+    .challenge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .challenge-prompt-wrap {
+      flex: 1 1 280px;
+    }
+    .challenge-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .challenge-badge {
+      font-size: 0.66rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--emerald-bright);
+    }
+    .challenge-feedback {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .challenge-sentence {
+      font-family: var(--font-serif);
+      font-size: 1.16rem;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    .block-launchers {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .block-btn {
+      background: linear-gradient(180deg, #1e293b, #0f172a);
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      color: #fff;
+      padding: 8px 13px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      transition: all 0.14s ease;
+    }
+    .block-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold);
+      background: #334155;
+    }
+    .block-btn.correct {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-color: #a7f3d0;
+      color: #022c22;
+    }
+    .block-btn.wrong {
+      background: linear-gradient(135deg, #f43f5e, #be123c);
+      border-color: #fecdd3;
+      color: #fff;
+    }
+
+    .mini-actions {
+      display: flex;
+      gap: 5px;
+    }
+    .btn-icon-only {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--gold);
+      padding: 7px 10px;
+      border-radius: 9px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-icon-only:hover {
+      background: rgba(251, 191, 36, 0.2);
+    }
+
+    /* Pop-Up Visual Rule Card Modal */
+    .rule-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(6, 10, 20, 0.72);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .rule-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .rule-card {
+      width: min(540px, 100%);
+      background: linear-gradient(145deg, #162038, #0d1324);
+      border: 1px solid var(--gold);
+      border-radius: 20px;
+      padding: 22px 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+    }
+    .rule-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .rule-card-head h3 {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      color: var(--gold);
+    }
+    .btn-close-modal {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .rule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+    .rule-bullet {
+      background: rgba(255, 255, 255, 0.04);
+      border-left: 3px solid var(--sky);
+      padding: 8px 11px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+    .rule-bullet strong {
+      color: var(--gold);
+    }
+    .trap-box {
+      background: rgba(244, 63, 94, 0.14);
+      border: 1px solid rgba(244, 63, 94, 0.45);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.84rem;
+      color: #fecdd3;
+      line-height: 1.4;
+    }
+    .trap-box strong {
+      color: #fb7185;
+    }
+
+    /* Planetary Ring VII Astrolabe Drawer & Memory Palace Summary Drawer */
+    .orrery-drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background: rgba(6, 10, 20, 0.78);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .orrery-drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .orrery-drawer-panel {
+      width: min(920px, 100%);
+      max-height: 88vh;
+      overflow-y: auto;
+      background: linear-gradient(155deg, #131c33 0%, #0b1020 100%);
+      border: 1px solid rgba(251, 191, 36, 0.55);
+      border-radius: 20px;
+      padding: 22px 24px;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.85);
+      color: var(--cream);
+      user-select: text;
+    }
+    .orrery-drawer-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(251, 191, 36, 0.25);
+    }
+    .orrery-drawer-head h2 {
+      font-family: var(--font-display);
+      font-size: 1.65rem;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+    .astrolabe-kwt-card {
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(251, 191, 36, 0.28);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .astrolabe-kwt-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .echo-struck .echo-word {
+      text-decoration: line-through;
+      color: #64748b;
+      opacity: 0.55;
+      transition: all 0.2s ease;
+    }
+    .echo-struck .deficit-word {
+      background: rgba(251, 191, 36, 0.22);
+      border-bottom: 2px solid var(--gold);
+      color: #fef08a;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .astro-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .astro-step-pill {
+      font-size: 0.73rem;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      color: var(--muted);
+    }
+    .astro-step-pill strong {
+      color: var(--sky);
+    }
+    .astro-kw-guard {
+      font-family: monospace;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: rgba(244, 63, 94, 0.16);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+    }
+    .astro-kw-guard.ok {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6ee7b7;
+      border-color: var(--emerald);
+    }
+    .astro-word-pill {
+      font-family: monospace;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: rgba(148, 163, 184, 0.16);
+      color: var(--muted);
+    }
+    .astro-word-pill.valid {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6ee7b7;
+      border: 1px solid var(--emerald);
+    }
+    .astro-input {
+      flex: 1;
+      min-width: 210px;
+      background: #070b14;
+      border: 1px solid var(--gold);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+    .btn-astro-echo {
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-astro-echo.active, .btn-astro-echo:hover {
+      background: var(--gold);
+      color: #090d16;
+    }
+    .btn-astro-check {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: none;
+      color: #090d16;
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .btn-astro-reveal {
+      background: #1e293b;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #e2e8f0;
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .astro-feedback {
+      display: none;
+      margin-top: 8px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+    }
+    .astro-feedback.visible { display: block; }
+    .astro-feedback.correct {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--emerald);
+      color: #d1fae5;
+    }
+    .astro-feedback.wrong {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid var(--rose);
+      color: #ffe4e6;
+    }
+    .astro-model-drawer {
+      display: none;
+      margin-top: 8px;
+      padding: 10px 14px;
+      background: #080d1a;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      font-size: 0.84rem;
+    }
+    .astro-model-drawer.open { display: block; }
+    .astro-split-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid var(--emerald);
+      color: #a7f3d0;
+      font-family: monospace;
+      font-size: 0.8rem;
+      padding: 2px 9px;
+      border-radius: 6px;
+    }
+    .summary-grid-palace {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .summary-ring-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-left: 4px solid var(--gold);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.83rem;
+      line-height: 1.45;
+    }
+    .summary-ring-card h4 {
+      color: #fff;
+      font-size: 0.92rem;
+      margin-bottom: 4px;
+    }
+    .selftest-row {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-size: 0.86rem;
+    }
+
+    @media (max-width: 960px) {
+      .walk-pad {
+        display: none;
+      }
+      .pavilion-nav {
+        overflow-x: auto;
+        max-width: 92vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="world-canvas" aria-label="3D Interactive Grammar Courtyard"></canvas>
+
+  <!-- Minimal Floating Top HUD -->
+  <header class="top-hud">
+    <div class="brand-pill">
+      <a href="index.html">&larr; Study Desk</a>
+      <span>The Grammar Courtyard</span>
+    </div>
+
+    <nav class="pavilion-nav" aria-label="Grammar Pavilions">
+      <button type="button" class="pav-btn active" data-pav="0"><span class="pav-dot" style="background:#f59e0b"></span>1. Agreement Scale</button>
+      <button type="button" class="pav-btn" data-pav="1"><span class="pav-dot" style="background:#38bdf8"></span>2. Simple vs -ING</button>
+      <button type="button" class="pav-btn" data-pav="2"><span class="pav-dot" style="background:#10b981"></span>3. Perfect Bridge</button>
+      <button type="button" class="pav-btn" data-pav="3"><span class="pav-dot" style="background:#a855f7"></span>4. Past Interrupted</button>
+      <button type="button" class="pav-btn" data-pav="4"><span class="pav-dot" style="background:#f43f5e"></span>5. Articles (A/The/Ø)</button>
+      <button type="button" class="pav-btn" data-pav="5"><span class="pav-dot" style="background:#fb923c"></span>6. AT · ON · IN</button>
+      <button type="button" class="pav-btn" id="btn-ring-vii-nav"><span class="pav-dot" style="background:#fde047"></span>7. Ring VII: Part 4 Astrolabe</button>
+    </nav>
+
+    <div class="right-hud">
+      <div class="score-pill" id="score-pill">0 / 36 Solved</div>
+      <button type="button" class="btn-top-action" id="btn-open-summary-drawer">🏛️ Rule Summary &amp; Self-Test</button>
+      <button type="button" class="btn-top-action" id="btn-courtyard-map">Courtyard View</button>
+    </div>
+  </header>
+
+  <!-- Bottom-Left Walk Controller -->
+  <aside class="walk-pad">
+    <div class="dpad">
+      <div></div>
+      <button type="button" data-dir="up">&uarr;</button>
+      <div></div>
+      <button type="button" data-dir="left">&larr;</button>
+      <button type="button" data-dir="down">&darr;</button>
+      <button type="button" data-dir="right">&rarr;</button>
+    </div>
+    <div class="walk-text">
+      <strong>Walk &amp; Orbit:</strong> WASD / Arrows or drag screen. Click any 3D block!
+    </div>
+  </aside>
+
+  <!-- Compact Bottom Game Console (Never Obstructs the 3D Stage!) -->
+  <section class="game-console" aria-live="polite">
+    <div class="console-modes-bar">
+      <div class="mode-pills" id="mode-pills"></div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button type="button" class="btn-rule-card" id="btn-open-ring-vii" style="border-color:var(--gold); color:var(--gold); background:rgba(251,191,36,0.14);">🧭 Ring VII: Part 4 Astrolabe</button>
+        <button type="button" class="btn-rule-card" id="btn-open-rules">📖 Visual Rule Card</button>
+      </div>
+    </div>
+
+    <div class="challenge-row">
+      <div class="challenge-prompt-wrap">
+        <div class="challenge-meta">
+          <span class="challenge-badge" id="challenge-counter">Trial 1 / 5</span>
+          <span class="challenge-feedback" id="challenge-feedback">Click a 3D block below to launch it into the machine!</span>
+        </div>
+        <p class="challenge-sentence" id="challenge-sentence"></p>
+      </div>
+
+      <div class="block-launchers" id="block-launchers"></div>
+
+      <div class="mini-actions">
+        <button type="button" class="btn-icon-only" id="btn-reveal" title="Reveal Cambridge Model">👁️ Reveal Cambridge Model</button>
+        <button type="button" class="btn-icon-only" id="btn-next-q" title="Next Trial">Next &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pop-Up Rule Blueprint Card -->
+  <div class="rule-modal" id="rule-modal" role="dialog" aria-modal="true">
+    <div class="rule-card">
+      <div class="rule-card-head">
+        <h3 id="modal-title">Rule Blueprint</h3>
+        <button type="button" class="btn-close-modal" id="btn-close-modal">&times;</button>
+      </div>
+      <div class="rule-list" id="modal-rules"></div>
+      <div class="trap-box" id="modal-trap"></div>
+    </div>
+  </div>
+
+  <!-- Planetary Ring VII: The 4-Step Part 4 Astrolabe Calibration Drawer -->
+  <div class="orrery-drawer-backdrop" id="astrolabe-ring-drawer" role="dialog" aria-modal="true" aria-labelledby="astrolabe-drawer-title">
+    <div class="orrery-drawer-panel">
+      <div class="orrery-drawer-head">
+        <div>
+          <h2 id="astrolabe-drawer-title">Planetary Ring VII: The 4-Step Part 4 Astrolabe Calibration</h2>
+          <p style="font-size:0.88rem; color:var(--muted);">
+            Elevate the 6 Courtyard Foundations to C1/C2 Cambridge Part 4 mastery using Gareth's <strong>4-Step Elimination &amp; Deconstruction Strategy</strong>: (1) Strike out echoes, (2) Inspect tense harmony, (3) Check voice shift, and (4) Fit the 3–6 word gap with the unchanged keyword.
+          </p>
+        </div>
+        <button type="button" class="btn-close-modal" id="btn-close-astrolabe" title="Close Astrolabe Drawer">&times;</button>
+      </div>
+
+      <!-- Astrolabe KWT 1 -->
+      <div class="astrolabe-kwt-card" id="astro-card-1" data-keyword="ONLY" data-valid="only was the stone viaduct|only was the viaduct">
+        <div class="astrolabe-kwt-head">
+          <span style="font-size:0.92rem; color:#fff;">1. <span class="echo-word">The stone viaduct</span> <span class="deficit-word">was not only</span> <span class="echo-word">engineered for steam trains,</span> <span class="echo-word">but it also withstood severe earthquakes.</span></span>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-astro-echo" onclick="window.orreryAstrolabe.toggleEcho(1, this)">✂️ Strike Out the Echoes</button>
+            <span class="astro-kw-guard" id="astro-kw-1">KEYWORD: ONLY (MISSING)</span>
+            <span class="astro-word-pill" id="astro-pill-1">0 WORDS (3–6 REQ)</span>
+          </div>
+        </div>
+        <div class="astro-meta-row">
+          <span class="astro-step-pill"><strong>Ring I Agreement &amp; Inversion:</strong> Past Simple Passive (was engineered)</span>
+          <span class="astro-step-pill"><strong>Formula:</strong> Not only + was + Subject + V3</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <span style="font-size:0.9rem;">Not</span>
+          <input type="text" class="astro-input" id="astro-in-1" placeholder="3–6 words including ONLY..." oninput="window.orreryAstrolabe.trackWords(1)">
+          <span style="font-size:0.9rem;">engineered for steam trains, but it also withstood severe earthquakes.</span>
+          <button type="button" class="btn-astro-check" onclick="window.orreryAstrolabe.checkLock(1)">Calibrate</button>
+          <button type="button" class="btn-astro-reveal" onclick="window.orreryAstrolabe.toggleModel(1)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="astro-feedback" id="astro-fb-1"></div>
+        <div class="astro-model-drawer" id="astro-model-1">
+          <div><strong>Cambridge Model:</strong> <span class="astro-split-badge">only was (1 mark) // the (stone) viaduct (1 mark)</span></div>
+          <div style="margin-top:4px; color:var(--muted);">Fronting <em>Not only</em> inverts the singular passive auxiliary <em>was</em> before the subject.</div>
+        </div>
+      </div>
+
+      <!-- Astrolabe KWT 2 -->
+      <div class="astrolabe-kwt-card" id="astro-card-2" data-keyword="BOUND" data-valid="was bound to have known|is bound to have known">
+        <div class="astrolabe-kwt-head">
+          <span style="font-size:0.92rem; color:#fff;">2. <span class="deficit-word">I am certain that</span> <span class="echo-word">the chief horologist</span> <span class="deficit-word">knew</span> <span class="echo-word">about the gear misalignment.</span></span>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-astro-echo" onclick="window.orreryAstrolabe.toggleEcho(2, this)">✂️ Strike Out the Echoes</button>
+            <span class="astro-kw-guard" id="astro-kw-2">KEYWORD: BOUND (MISSING)</span>
+            <span class="astro-word-pill" id="astro-pill-2">0 WORDS (3–6 REQ)</span>
+          </div>
+        </div>
+        <div class="astro-meta-row">
+          <span class="astro-step-pill"><strong>Ring II State Verb &amp; Aspect:</strong> State verb (knew) &rarr; Perfect Infinitive (to have known)</span>
+          <span class="astro-step-pill"><strong>Formula:</strong> BE + bound to + have + V3</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <span style="font-size:0.9rem;">The chief horologist</span>
+          <input type="text" class="astro-input" id="astro-in-2" placeholder="3–6 words including BOUND..." oninput="window.orreryAstrolabe.trackWords(2)">
+          <span style="font-size:0.9rem;">about the gear misalignment.</span>
+          <button type="button" class="btn-astro-check" onclick="window.orreryAstrolabe.checkLock(2)">Calibrate</button>
+          <button type="button" class="btn-astro-reveal" onclick="window.orreryAstrolabe.toggleModel(2)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="astro-feedback" id="astro-fb-2"></div>
+        <div class="astro-model-drawer" id="astro-model-2">
+          <div><strong>Cambridge Model:</strong> <span class="astro-split-badge">was/is bound to (1 mark) // have known (1 mark)</span></div>
+          <div style="margin-top:4px; color:var(--muted);">Because <em>know</em> is a non-continuous state verb in the past, it takes the simple perfect infinitive <em>to have known</em>.</div>
+        </div>
+      </div>
+
+      <!-- Astrolabe KWT 3 -->
+      <div class="astrolabe-kwt-card" id="astro-card-3" data-keyword="BEEN" data-valid="has been five years since">
+        <div class="astrolabe-kwt-head">
+          <span style="font-size:0.92rem; color:#fff;">3. <span class="echo-word">The observatory last calibrated the brass astrolabe</span> <span class="deficit-word">five years ago.</span></span>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-astro-echo" onclick="window.orreryAstrolabe.toggleEcho(3, this)">✂️ Strike Out the Echoes</button>
+            <span class="astro-kw-guard" id="astro-kw-3">KEYWORD: BEEN (MISSING)</span>
+            <span class="astro-word-pill" id="astro-pill-3">0 WORDS (3–6 REQ)</span>
+          </div>
+        </div>
+        <div class="astro-meta-row">
+          <span class="astro-step-pill"><strong>Ring III Chasm Bridge:</strong> Past Simple (ago) &rarr; Present Perfect Bridge (has been... since)</span>
+          <span class="astro-step-pill"><strong>Formula:</strong> It + has been + [period] + since + Past Simple</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <span style="font-size:0.9rem;">It</span>
+          <input type="text" class="astro-input" id="astro-in-3" placeholder="3–6 words including BEEN..." oninput="window.orreryAstrolabe.trackWords(3)">
+          <span style="font-size:0.9rem;">the observatory last calibrated the brass astrolabe.</span>
+          <button type="button" class="btn-astro-check" onclick="window.orreryAstrolabe.checkLock(3)">Calibrate</button>
+          <button type="button" class="btn-astro-reveal" onclick="window.orreryAstrolabe.toggleModel(3)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="astro-feedback" id="astro-fb-3"></div>
+        <div class="astro-model-drawer" id="astro-model-3">
+          <div><strong>Cambridge Model:</strong> <span class="astro-split-badge">has been five years (1 mark) // since (1 mark)</span></div>
+          <div style="margin-top:4px; color:var(--muted);">Bridges the finished past event (<em>calibrated</em>) to the present moment using <em>It has been [duration] since</em>.</div>
+        </div>
+      </div>
+
+      <!-- Astrolabe KWT 4 -->
+      <div class="astrolabe-kwt-card" id="astro-card-4" data-keyword="SCARCELY" data-valid="scarcely had the astronomers begun">
+        <div class="astrolabe-kwt-head">
+          <span style="font-size:0.92rem; color:#fff;">4. <span class="deficit-word">The astronomers had barely begun</span> <span class="echo-word">their lunar observation when the storm shutters slammed shut.</span></span>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-astro-echo" onclick="window.orreryAstrolabe.toggleEcho(4, this)">✂️ Strike Out the Echoes</button>
+            <span class="astro-kw-guard" id="astro-kw-4">KEYWORD: SCARCELY (MISSING)</span>
+            <span class="astro-word-pill" id="astro-pill-4">0 WORDS (3–6 REQ)</span>
+          </div>
+        </div>
+        <div class="astro-meta-row">
+          <span class="astro-step-pill"><strong>Ring IV Interrupted Sequence:</strong> Past Perfect (had barely begun) &rarr; Inverted Past Perfect</span>
+          <span class="astro-step-pill"><strong>Formula:</strong> Scarcely + had + Subject + V3 ... when</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <input type="text" class="astro-input" id="astro-in-4" placeholder="3–6 words including SCARCELY..." oninput="window.orreryAstrolabe.trackWords(4)">
+          <span style="font-size:0.9rem;">their lunar observation when the storm shutters slammed shut.</span>
+          <button type="button" class="btn-astro-check" onclick="window.orreryAstrolabe.checkLock(4)">Calibrate</button>
+          <button type="button" class="btn-astro-reveal" onclick="window.orreryAstrolabe.toggleModel(4)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="astro-feedback" id="astro-fb-4"></div>
+        <div class="astro-model-drawer" id="astro-model-4">
+          <div><strong>Cambridge Model:</strong> <span class="astro-split-badge">Scarcely had (1 mark) // the astronomers begun (1 mark)</span></div>
+          <div style="margin-top:4px; color:var(--muted);"><em>Scarcely had + subject + V3</em> pairs with <em>when</em> + Past Simple interruption.</div>
+        </div>
+      </div>
+
+      <!-- Astrolabe KWT 5 -->
+      <div class="astrolabe-kwt-card" id="astro-card-5" data-keyword="LITTLE" data-valid="little did the apprentices know|little did the apprentices realise|little did the apprentices realize">
+        <div class="astrolabe-kwt-head">
+          <span style="font-size:0.92rem; color:#fff;">5. <span class="deficit-word">The apprentices had no idea</span> <span class="echo-word">how much precision the pendulum clock required.</span></span>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-astro-echo" onclick="window.orreryAstrolabe.toggleEcho(5, this)">✂️ Strike Out the Echoes</button>
+            <span class="astro-kw-guard" id="astro-kw-5">KEYWORD: LITTLE (MISSING)</span>
+            <span class="astro-word-pill" id="astro-pill-5">0 WORDS (3–6 REQ)</span>
+          </div>
+        </div>
+        <div class="astro-meta-row">
+          <span class="astro-step-pill"><strong>Ring V Quantifier Inversion:</strong> Past Simple (had no idea) &rarr; Negative Inversion (Little did... know)</span>
+          <span class="astro-step-pill"><strong>Formula:</strong> Little + did + Subject + V1 (know/realise)</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <input type="text" class="astro-input" id="astro-in-5" placeholder="3–6 words including LITTLE..." oninput="window.orreryAstrolabe.trackWords(5)">
+          <span style="font-size:0.9rem;">how much precision the pendulum clock required.</span>
+          <button type="button" class="btn-astro-check" onclick="window.orreryAstrolabe.checkLock(5)">Calibrate</button>
+          <button type="button" class="btn-astro-reveal" onclick="window.orreryAstrolabe.toggleModel(5)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="astro-feedback" id="astro-fb-5"></div>
+        <div class="astro-model-drawer" id="astro-model-5">
+          <div><strong>Cambridge Model:</strong> <span class="astro-split-badge">Little did (1 mark) // the apprentices know/realise (1 mark)</span></div>
+          <div style="margin-top:4px; color:var(--muted);">Fronting restrictive <em>Little</em> triggers <em>did + subject + bare infinitive</em>.</div>
+        </div>
+      </div>
+
+      <!-- Astrolabe KWT 6 -->
+      <div class="astrolabe-kwt-card" id="astro-card-6" data-keyword="FAULT" data-valid="it was the apprentice's fault that|it was the apprentice's fault">
+        <div class="astrolabe-kwt-head">
+          <span style="font-size:0.92rem; color:#fff;">6. <span class="echo-word">The curator</span> <span class="deficit-word">blamed the apprentice for</span> <span class="echo-word">damaging the brass sundial.</span></span>
+          <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-astro-echo" onclick="window.orreryAstrolabe.toggleEcho(6, this)">✂️ Strike Out the Echoes</button>
+            <span class="astro-kw-guard" id="astro-kw-6">KEYWORD: FAULT (MISSING)</span>
+            <span class="astro-word-pill" id="astro-pill-6">0 WORDS (3–6 REQ)</span>
+          </div>
+        </div>
+        <div class="astro-meta-row">
+          <span class="astro-step-pill"><strong>Ring VI Voice &amp; Frame Shift:</strong> Active Gerund (damaging) &rarr; Passive Clause (was damaged)</span>
+          <span class="astro-step-pill"><strong>Formula:</strong> it was + [person's] + fault (that)</span>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+          <span style="font-size:0.9rem;">According to the curator,</span>
+          <input type="text" class="astro-input" id="astro-in-6" placeholder="3–6 words including FAULT..." oninput="window.orreryAstrolabe.trackWords(6)">
+          <span style="font-size:0.9rem;">the brass sundial was damaged.</span>
+          <button type="button" class="btn-astro-check" onclick="window.orreryAstrolabe.checkLock(6)">Calibrate</button>
+          <button type="button" class="btn-astro-reveal" onclick="window.orreryAstrolabe.toggleModel(6)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="astro-feedback" id="astro-fb-6"></div>
+        <div class="astro-model-drawer" id="astro-model-6">
+          <div><strong>Cambridge Model:</strong> <span class="astro-split-badge">it was the apprentice's (1 mark) // fault (that) (1 mark)</span></div>
+          <div style="margin-top:4px; color:var(--muted);">Notice the active-to-passive shift at the end of Sentence 2 (<em>was damaged</em>), requiring a finite <em>that</em>-clause after <em>it was the apprentice's fault</em>.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1-Click Memory Palace Rule Summary & Self-Test Drawer -->
+  <div class="orrery-drawer-backdrop" id="memory-palace-summary-drawer" role="dialog" aria-modal="true" aria-labelledby="summary-drawer-title">
+    <div class="orrery-drawer-panel">
+      <div class="orrery-drawer-head">
+        <div>
+          <h2 id="summary-drawer-title">Memory Palace Rule Summary &amp; Self-Test Drawer</h2>
+          <p style="font-size:0.88rem; color:var(--muted);">
+            Review all 7 Planetary Rings at a glance and test your active recall before reveal.
+          </p>
+        </div>
+        <button type="button" class="btn-close-modal" id="btn-close-summary-drawer" title="Close Summary Drawer">&times;</button>
+      </div>
+
+      <div class="summary-grid-palace">
+        <div class="summary-ring-card" style="border-left-color:#f59e0b;">
+          <h4>Ring I · Agreement Balance Bridge</h4>
+          <p><code>Everyone / Nobody / Each / Advice</code> = 1 Sealed Singular Box (takes <em>is / was / has / verb+s</em>). Ignore prepositional distractors between subject and verb.</p>
+        </div>
+        <div class="summary-ring-card" style="border-left-color:#38bdf8;">
+          <h4>Ring II · Stone Pillar vs Turbine</h4>
+          <p><code>Present Simple</code> = permanent facts &amp; schedules. <code>am/is/are + -ing</code> = temporary action in progress now. State verbs (<em>agree, know, belong</em>) never spin into <em>-ing</em>.</p>
+        </div>
+        <div class="summary-ring-card" style="border-left-color:#10b981;">
+          <h4>Ring III · Present Perfect Drawbridge</h4>
+          <p><code>have/has + V3</code> = Bridge DOWN to NOW (<em>for, since, so far, present result</em>). <code>Past Simple (V2)</code> = Bridge UP for finished past timestamps (<em>yesterday, ago, in 2020</em>).</p>
+        </div>
+        <div class="summary-ring-card" style="border-left-color:#a855f7;">
+          <h4>Ring IV · Past Continuous Interrupted</h4>
+          <p><code>was/were + -ing</code> = longer background wave. <code>Past Simple (V2)</code> = sudden interrupting action or sequential chain (Step 1 &rarr; Step 2).</p>
+        </div>
+        <div class="summary-ring-card" style="border-left-color:#f43f5e;">
+          <h4>Ring V · Articles &amp; Mass Vats</h4>
+          <p><code>a/an</code> = 1 of many / jobs. <code>the</code> = shared spotlight. <code>Ø Zero Article</code> = plurals/concepts in general &amp; uncountable mass nouns (<em>advice, information, traffic</em>).</p>
+        </div>
+        <div class="summary-ring-card" style="border-left-color:#fb923c;">
+          <h4>Ring VI · AT (0D) · ON (2D) · IN (3D)</h4>
+          <p><code>AT</code> = clock points &amp; pins (<em>at 6:30, at the door</em>). <code>ON</code> = surfaces, walkable decks &amp; days (<em>on Friday, on the train</em>). <code>IN</code> = 3D rooms, cars, months &amp; years.</p>
+        </div>
+      </div>
+
+      <h3 style="font-family:var(--font-display); font-size:1.35rem; color:var(--gold); margin-bottom:10px;">Rapid Self-Test Workout (Speak or Mentally Solve Before Revealing)</h3>
+
+      <div class="selftest-row">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span><strong>1.</strong> Correct the error: <em>"Everyone in the department are agreeing with the new schedule."</em></span>
+          <button type="button" class="btn-astro-reveal" onclick="window.orreryAstrolabe.toggleSelfTest(1)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="astro-model-drawer" id="selftest-model-1">
+          <strong>Cambridge Model:</strong> <em>"Everyone in the department <strong>agrees</strong> with the new schedule."</em> (<em>Everyone</em> = 1 singular box; <em>agree</em> = state verb, never <em>-ing</em>).
+        </div>
+      </div>
+
+      <div class="selftest-row">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span><strong>2.</strong> Correct the error: <em>"I have seen the chief engineer at the station yesterday morning."</em></span>
+          <button type="button" class="btn-astro-reveal" onclick="window.orreryAstrolabe.toggleSelfTest(2)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="astro-model-drawer" id="selftest-model-2">
+          <strong>Cambridge Model:</strong> <em>"I <strong>saw</strong> the chief engineer at the station yesterday morning."</em> (Finished past timestamp <em>yesterday morning</em> raises the drawbridge &rarr; Past Simple).
+        </div>
+      </div>
+
+      <div class="selftest-row">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span><strong>3.</strong> Correct the error: <em>"She gave me an important advice while we were in the train on Monday."</em></span>
+          <button type="button" class="btn-astro-reveal" onclick="window.orreryAstrolabe.toggleSelfTest(3)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="astro-model-drawer" id="selftest-model-3">
+          <strong>Cambridge Model:</strong> <em>"She gave me <strong>some / a piece of</strong> important advice while we were <strong>on</strong> the train on Monday."</em> (Uncountable <em>advice</em> + walkable deck <em>on the train</em>).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       CURRICULUM & 3D KINETIC BLOCK DEFINITIONS FOR THE 6 PAVILIONS
+       ========================================================================== */
+    const PAVILIONS = [
+      {
+        id: 0,
+        title: '1. Subject–Verb Agreement: The Balance Bridge',
+        color: '#f59e0b',
+        hex: 0xf59e0b,
+        pos: { x: -15, z: -6 },
+        camPos: { x: -5.2, y: 3.1, z: -6 },
+        lookAt: { x: -15, y: 2.3, z: -6 },
+        modes: [
+          {
+            label: '👩 She works (1 -> +S)',
+            mode: 'singular',
+            header: '1 SINGULAR SUBJECT  =  VERB TAKES "-S"',
+            sub: 'She workS · He haS · It doeS (The golden -S block locks onto the verb!)',
+            leftBlock: { icon: '👩', top: 'SINGULAR (1)', main: 'She / He / It', border: '#38bdf8' },
+            rightBlock: { icon: '⚙️', top: 'VERB + S', main: 'workS / haS', border: '#10b981' },
+            sPos: 'right',
+            tilt: 0
+          },
+          {
+            label: '👥 Students work (Plural)',
+            mode: 'plural',
+            header: 'PLURAL SUBJECT (+S)  =  BASE VERB (NO -S)',
+            sub: 'The studentS work · People are · They have (The -S is already on the noun!)',
+            leftBlock: { icon: '👥', top: 'PLURAL (+S)', main: 'The studentS', border: '#10b981' },
+            rightBlock: { icon: '⚙️', top: 'BASE VERB', main: 'work / have', border: '#38bdf8' },
+            sPos: 'left',
+            tilt: 0
+          },
+          {
+            label: '📦 Everyone / Advice (1 Box)',
+            mode: 'box',
+            header: 'EVERYONE · NOBODY · ADVICE  =  1 SEALED BOX!',
+            sub: 'Everyone IS ready · Nobody KNOWS · The information IS useful',
+            leftBlock: { icon: '📦', top: '1 SEALED BOX', main: 'Everyone / Advice', border: '#fbbf24' },
+            rightBlock: { icon: '⚙️', top: 'SINGULAR (+S)', main: 'IS / HAS / KNOWS', border: '#10b981' },
+            sPos: 'right',
+            tilt: 0
+          },
+          {
+            label: '💥 Broken ("Everyone are")',
+            mode: 'broken',
+            header: '❌ MISMATCH!  "Everyone ARE"  /  "He DON\'T"',
+            sub: 'Putting a plural verb against a 1-Box subject tips the bridge!',
+            leftBlock: { icon: '📦', top: '1 SINGULAR BOX', main: 'Everyone / He', border: '#f43f5e' },
+            rightBlock: { icon: '⚠️', top: 'WRONG VERB', main: '❌ are / don\'t', border: '#f43f5e' },
+            sPos: 'none',
+            tilt: 0.35
+          }
+        ],
+        rules: [
+          '<strong>The One-"S" Trade-Off (Present Simple):</strong> Usually only one side carries the <code>-s</code>: <em>The student<strong>s</strong> work</em> vs. <em>The student work<strong>s</strong></em>.',
+          '<strong>Indefinite Pronouns = 1 Sealed Box:</strong> <em>Everyone, everybody, someone, nobody, each</em> always take a singular verb (<em>Everyone <strong>is</strong> here, Nobody <strong>knows</strong></em>).',
+          '<strong>Uncountable Nouns = Singular Mass:</strong> <em>Information, advice, news, furniture, traffic</em> always take <code>is / was / has</code>.'
+        ],
+        trap: '<strong>Distractor Trap:</strong> Ignore words in the middle! In <em>"The <strong>quality</strong> of these shoes <strong>is</strong> high"</em>, the subject is <strong>quality</strong> (singular &rarr; <em>is</em>).',
+        questions: [
+          {
+            q: 'Every one of the candidates ________ interviewed yesterday.',
+            options: ['was', 'were', 'are', 'have been'],
+            answer: 0,
+            explain: '"Every one" is 1 single box -> singular past verb "was".'
+          },
+          {
+            q: 'All the information you sent me ________ really helpful.',
+            options: ['were', 'have been', 'is', 'are'],
+            answer: 2,
+            explain: '"Information" is uncountable mass -> always singular ("is").'
+          },
+          {
+            q: 'Why ________ your brother always leave his coat on the sofa?',
+            options: ['do', 'does', 'is', 'has'],
+            answer: 1,
+            explain: '"Your brother" (he = 1) pulls the -S block onto "does".'
+          },
+          {
+            q: 'People in my town ________ very friendly to newcomers.',
+            options: ['is', 'has been', 'are', 'was'],
+            answer: 2,
+            explain: '"People" is plural -> plural verb "are".'
+          },
+          {
+            q: 'Nobody in our group ________ the answer to the last riddle.',
+            options: ['know', 'knows', 'are knowing', 'have known'],
+            answer: 1,
+            explain: '"Nobody" (= 1 sealed box) takes a singular verb with -s: "knows".'
+          }
+        ]
+      },
+
+      {
+        id: 1,
+        title: '2. Present Simple vs. Continuous: Stone vs. Spin',
+        color: '#38bdf8',
+        hex: 0x38bdf8,
+        pos: { x: 15, z: -6 },
+        camPos: { x: 5.2, y: 3.1, z: -6 },
+        lookAt: { x: 15, y: 2.3, z: -6 },
+        modes: [
+          {
+            label: '🪨 Routine / Permanent (Simple)',
+            mode: 'simple',
+            header: 'SOLID STONE PILLAR  =  HABITS & PERMANENT FACTS',
+            sub: '"I live in Belfast." · "I start work at 9:00 every day." (True yesterday, today & tomorrow)',
+            leftBlock: { icon: '🪨', top: 'PRESENT SIMPLE', main: 'I work / I live', border: '#10b981' },
+            rightBlock: { icon: '💤', top: 'STANDBY', main: 'Not Temporary', border: '#64748b' }
+          },
+          {
+            label: '🌀 Right Now (am/is/are -ING)',
+            mode: 'continuous',
+            header: 'SPINNING TURBINE  =  IN PROGRESS RIGHT NOW!',
+            sub: '"I am driving right now." · "This week I am working from home." (Temporary!)',
+            leftBlock: { icon: '🪨', top: 'USUAL HABIT', main: 'Normally I drive', border: '#64748b' },
+            rightBlock: { icon: '🌀', top: 'HAPPENING NOW', main: 'am / is / are -ING', border: '#38bdf8' }
+          },
+          {
+            label: '🔒 State Verbs (Locked!)',
+            mode: 'state',
+            header: '🔒 STATE VERBS NEVER SPIN INTO "-ING"!',
+            sub: '"I agree with you." · "I know her." · "It belongs to me." (NEVER "I am agreeing"!)',
+            leftBlock: { icon: '✅', top: 'STATE VERB', main: 'I agree / I know', border: '#10b981' },
+            rightBlock: { icon: '🔒', top: 'CLAMP LOCKED!', main: '❌ NO -ING!', border: '#f43f5e' }
+          },
+          {
+            label: '💥 Duration Trap ("For 5 Years")',
+            mode: 'duration',
+            header: '❌ NEVER USE "-ING" FOR PAST-TO-NOW DURATION!',
+            sub: '❌ "I am living here for 5 years"  ->  ✅ "I have lived here for 5 years"',
+            leftBlock: { icon: '🌉', top: 'USE PERFECT', main: '✅ have lived', border: '#10b981' },
+            rightBlock: { icon: '⚠️', top: 'DURATION BUG', main: '❌ am living (5 yrs)', border: '#f43f5e' }
+          }
+        ],
+        rules: [
+          '<strong>Present Simple (<code>work / works</code>):</strong> Permanent facts, habits (<em>every day, usually</em>), and schedules.',
+          '<strong>Present Continuous (<code>am/is/are + -ing</code>):</strong> Only for actions physically in progress right now or temporary changes around now.',
+          '<strong>State Verbs Lock the Spinner:</strong> <em>Agree, know, believe, understand, remember, want, need, prefer, belong</em> never take <code>-ing</code>.'
+        ],
+        trap: '<strong>Common Trap:</strong> Saying <em>"I am agreeing with you"</em> ❌ or <em>"Every morning I am drinking coffee"</em> ❌.',
+        questions: [
+          {
+            q: 'You make a very good point—I completely ________ with you.',
+            options: ['am agreeing', 'agree', 'agreed', 'have agreed'],
+            answer: 1,
+            explain: '"Agree" is a state verb—the spinner is locked ("I agree").'
+          },
+          {
+            q: 'Normally I work in the office, but this week I ________ from home.',
+            options: ['work', 'am working', 'have worked', 'worked'],
+            answer: 1,
+            explain: '"This week" is a temporary activity in progress around now ("am working").'
+          },
+          {
+            q: 'Excuse me, do you ________ how much this jacket costs?',
+            options: ['knowing', 'are knowing', 'know', 'knows'],
+            answer: 2,
+            explain: 'Both "know" and "cost" are state verbs—never use -ing.'
+          },
+          {
+            q: 'Most shops here ________ at 9:00 a.m. every weekday.',
+            options: ['are opening', 'open', 'opens', 'opening'],
+            answer: 1,
+            explain: 'A regular timetable ("every weekday") uses Present Simple ("open").'
+          },
+          {
+            q: 'Look out the window—it ________ heavily right now!',
+            options: ['snows', 'is snowing', 'has snowed', 'snowed'],
+            answer: 1,
+            explain: 'In progress right in front of your eyes ("right now") -> "is snowing".'
+          }
+        ]
+      },
+
+      {
+        id: 2,
+        title: '3. Present Perfect vs. Past Simple: The Chasm Bridge',
+        color: '#10b981',
+        hex: 0x10b981,
+        pos: { x: -15, z: -22 },
+        camPos: { x: -5.2, y: 3.1, z: -22 },
+        lookAt: { x: -15, y: 2.3, z: -22 },
+        modes: [
+          {
+            label: '🌉 Bridge Down: Unfinished Time',
+            mode: 'down-duration',
+            header: 'BRIDGE DOWN!  PAST  ───►  NOW  (Present Perfect)',
+            sub: '"I have lived here for 6 years." (Started 6 years ago -> Still true right NOW!)',
+            leftBlock: { icon: '⏳', top: 'STARTED IN PAST', main: 'for 6 years / since', border: '#fbbf24' },
+            rightBlock: { icon: '🟢', top: 'CONNECTED TO NOW', main: 'have / has + V3', border: '#10b981' },
+            bridgeDown: true
+          },
+          {
+            label: '🔑 Bridge Down: Result NOW',
+            mode: 'down-result',
+            header: 'BRIDGE DOWN!  PAST ACTION  ───►  PRESENT RESULT',
+            sub: '"I have lost my keys!" (= I cannot open my front door right NOW!)',
+            leftBlock: { icon: '🔑', top: 'PAST EVENT', main: 'Dropped keys', border: '#fbbf24' },
+            rightBlock: { icon: '🚪', top: 'RESULT NOW!', main: 'have lost (locked out)', border: '#10b981' },
+            bridgeDown: true
+          },
+          {
+            label: '🏝️ Bridge Up: Finished Past',
+            mode: 'up-past',
+            header: 'BRIDGE RAISED!  ISOLATED IN THE FINISHED PAST',
+            sub: '"I lived in Rome in 2019." · "I lost my keys yesterday." (Cut off from NOW!)',
+            leftBlock: { icon: '📦', top: 'CLOSED PAST TIME', main: 'yesterday / in 2019', border: '#38bdf8' },
+            rightBlock: { icon: '🏝️', top: 'PAST SIMPLE (V2)', main: 'lived · lost · went', border: '#38bdf8' },
+            bridgeDown: false
+          },
+          {
+            label: '💥 Clash ("have seen yesterday")',
+            mode: 'clash',
+            header: '❌ FORBIDDEN:  "have + V3"  +  FINISHED TIME STAMP!',
+            sub: 'Never say "I have seen him yesterday" or "We have met in 2020"!',
+            leftBlock: { icon: '⛔', top: 'FINISHED STAMP', main: 'yesterday / ago', border: '#f43f5e' },
+            rightBlock: { icon: '💥', top: 'BRIDGE CRASH!', main: 'Use "saw", NOT "have seen"', border: '#f43f5e' },
+            bridgeDown: false
+          }
+        ],
+        rules: [
+          '<strong>Present Perfect (<code>have/has + V3</code>) = Drawbridge DOWN to NOW:</strong> (1) Past-to-present duration (<em>for, since, how long</em>), (2) present result NOW (<em>I\'ve broken my glasses</em>), (3) unfinished time (<em>today, this week, so far</em>).',
+          '<strong>Past Simple (<code>worked / went / saw</code>) = Drawbridge UP:</strong> Use whenever you name a finished past time (<em>yesterday, last week, in 2019, 10 minutes ago</em>).'
+        ],
+        trap: '<strong>The #1 Rule:</strong> Never combine <code>have/has + V3</code> with a finished past time word (<em>yesterday, last night, in 2020</em>)!',
+        questions: [
+          {
+            q: 'We ________ each other since we started school ten years ago.',
+            options: ['know', 'are knowing', 'knew', 'have known'],
+            answer: 3,
+            explain: 'Started in the past and still true NOW ("since...") -> Bridge Down: "have known".'
+          },
+          {
+            q: 'I ________ to Lisbon three years ago for a holiday.',
+            options: ['have been', 'went', 'have gone', 'was going'],
+            answer: 1,
+            explain: '"Three years ago" is finished past time -> Bridge Up: Past Simple ("went").'
+          },
+          {
+            q: 'Can you help me look for my phone? I ________ it somewhere here.',
+            options: ['lost', 'have lost', 'am losing', 'lose'],
+            answer: 1,
+            explain: 'The phone is still missing right NOW -> Present Perfect ("have lost").'
+          },
+          {
+            q: 'How long ________ in your current job?',
+            options: ['do you work', 'are you working', 'did you work', 'have you worked'],
+            answer: 3,
+            explain: 'Duration from the past up to NOW ("your current job") -> "have you worked".'
+          },
+          {
+            q: 'Our team ________ three projects so far this month.',
+            options: ['finished', 'has finished', 'is finishing', 'finishes'],
+            answer: 1,
+            explain: '"So far this month" is unfinished time that includes today -> "has finished".'
+          }
+        ]
+      },
+
+      {
+        id: 3,
+        title: '4. Past Continuous Interrupted: Express Train & Gate',
+        color: '#a855f7',
+        hex: 0xa855f7,
+        pos: { x: 15, z: -22 },
+        camPos: { x: 5.2, y: 3.1, z: -22 },
+        lookAt: { x: 15, y: 2.3, z: -22 },
+        modes: [
+          {
+            label: '🚂 Background Motion (was -ing)',
+            mode: 'rolling',
+            header: 'EXPRESS TRAIN ROLLING  =  WAS / WERE + -ING',
+            sub: '"At 8:00 p.m. last night, I was driving home..." (In progress at a past moment)',
+            leftBlock: { icon: '🚂', top: 'LONG BACKGROUND', main: 'was / were + -ING', border: '#a855f7' },
+            rightBlock: { icon: '🟢', top: 'TRACK CLEAR', main: 'Already in progress', border: '#10b981' },
+            gateDown: false
+          },
+          {
+            label: '⚡ Interrupted! (WHEN + Past Simple)',
+            mode: 'cut',
+            header: '⚡ INTERRUPTED!  [ was walking ]  +  [ WHEN phone rang ]',
+            sub: 'The Golden Gate drops across the track! Long action = was -ing; sudden cut = Past Simple!',
+            leftBlock: { icon: '🚂', top: 'LONG ACTION', main: 'I was walking...', border: '#a855f7' },
+            rightBlock: { icon: '⚡', top: 'SUDDEN CUT (V2)', main: 'WHEN my phone rang', border: '#fbbf24' },
+            gateDown: true
+          },
+          {
+            label: '🚂🚂 Parallel Tracks (WHILE)',
+            mode: 'parallel',
+            header: 'TWO PARALLEL TRAINS  =  WHILE + WAS -ING / WAS -ING',
+            sub: '"While I was cooking dinner, my partner was setting the table."',
+            leftBlock: { icon: '🚂', top: 'TRACK 1 (LONG)', main: 'While I was cooking', border: '#a855f7' },
+            rightBlock: { icon: '🚝', top: 'TRACK 2 (LONG)', main: 'he was setting table', border: '#38bdf8' },
+            gateDown: false
+          },
+          {
+            label: '1️⃣-2️⃣ Sequence (Past Simple Chain)',
+            mode: 'chain',
+            header: 'STEP 1 ──► STEP 2 ──► STEP 3  (ALL PAST SIMPLE!)',
+            sub: '"When the alarm rang, I grabbed my coat and ran outside."',
+            leftBlock: { icon: '1️⃣', top: 'FIRST EVENT', main: 'The alarm rang', border: '#10b981' },
+            rightBlock: { icon: '2️⃣', top: 'NEXT STEP', main: 'I grabbed my coat', border: '#10b981' },
+            gateDown: false
+          }
+        ],
+        rules: [
+          '<strong>Past Continuous (<code>was/were + -ing</code>):</strong> Longer background action already in progress.',
+          '<strong>Past Simple (<code>rang / slipped / arrived</code>):</strong> Shorter interrupting action that cuts across the background wave.',
+          '<strong>Sequence (1 &rarr; 2):</strong> When one action happens right after another, use Past Simple for both!'
+        ],
+        trap: '<strong>Common Trap:</strong> Using <code>-ing</code> for the sudden interruption (<em>"when I was hearing a noise"</em> ❌ &rarr; <em>"when I <strong>heard</strong> a noise"</em> ✅).',
+        questions: [
+          {
+            q: 'I ________ down the steps when I suddenly slipped on the ice.',
+            options: ['walked', 'was walking', 'have walked', 'am walking'],
+            answer: 1,
+            explain: 'Walking down the steps was the longer background motion ("was walking") interrupted by the slip.'
+          },
+          {
+            q: 'While we were waiting outside, it suddenly ________ to rain.',
+            options: ['was starting', 'starts', 'started', 'has started'],
+            answer: 2,
+            explain: 'The sudden interruption cutting into "were waiting" uses Past Simple ("started").'
+          },
+          {
+            q: 'When the bell rang, all the students immediately ________ the room.',
+            options: ['were leaving', 'left', 'have left', 'leave'],
+            answer: 1,
+            explain: 'Step 1 (bell rang) -> Step 2 (students left): sequence uses Past Simple ("left").'
+          },
+          {
+            q: 'Sorry I missed your call at 3:00—I ________ a meeting.',
+            options: ['had', 'was having', 'have had', 'am having'],
+            answer: 1,
+            explain: 'Already in progress around 3:00 in the past -> "was having".'
+          },
+          {
+            q: 'What ________ when the lights went out last night?',
+            options: ['did you do', 'were you doing', 'have you done', 'are you doing'],
+            answer: 1,
+            explain: 'Asks what background activity was in progress when the lights went out ("were you doing").'
+          }
+        ]
+      },
+
+      {
+        id: 4,
+        title: '5. Articles (A / An / The / Ø) & Uncountables',
+        color: '#f43f5e',
+        hex: 0xf43f5e,
+        pos: { x: -15, z: -38 },
+        camPos: { x: -5.2, y: 3.1, z: -38 },
+        lookAt: { x: -15, y: 2.3, z: -38 },
+        modes: [
+          {
+            label: '🎲 A / AN (Any 1 of Many)',
+            mode: 'a',
+            header: 'A / AN  =  ONE RANDOM COUNTABLE ITEM (OR A JOB)',
+            sub: '"I need a pen (any pen)." · "She is an architect."',
+            leftBlock: { icon: '🎲', top: 'ONE OF MANY', main: 'a pen / an engineer', border: '#f43f5e' },
+            rightBlock: { icon: '🔢', top: 'COUNTABLE (1)', main: 'First mention / Job', border: '#fbbf24' }
+          },
+          {
+            label: '🔦 THE (Shared Spotlight)',
+            mode: 'the',
+            header: 'THE  =  UNDER THE SHARED GOLDEN SPOTLIGHT!',
+            sub: '"Pass me the pen on your desk." · "Close the door." · "The sun"',
+            leftBlock: { icon: '🔦', top: 'SPOTLIGHT ON!', main: 'THE specific one', border: '#fbbf24' },
+            rightBlock: { icon: '🎯', top: 'SHARED FOCUS', main: 'We both know which!', border: '#10b981' }
+          },
+          {
+            label: '🌍 Ø Zero: General Plurals',
+            mode: 'zero',
+            header: 'Ø ZERO ARTICLE  =  ALL THINGS IN GENERAL (NO "THE")',
+            sub: '"Dogs are loyal." · "Music helps people relax." · "Life is short."',
+            leftBlock: { icon: '🌍', top: '100% IN GENERAL', main: 'Ø Dogs / Ø Music', border: '#10b981' },
+            rightBlock: { icon: '🚫', top: 'NO "THE"!', main: '❌ Not "The music"', border: '#f43f5e' }
+          },
+          {
+            label: '🧪 Ø Uncountable Mass Vat',
+            mode: 'mass',
+            header: 'UNCOUNTABLE MASS:  ADVICE · INFORMATION · TRAFFIC',
+            sub: 'Cannot be counted 1-2-3! Never use "a/an" or plural "-s" -> use "some / a piece of"!',
+            leftBlock: { icon: '🧪', top: 'MASS NOUNS', main: 'advice / information', border: '#38bdf8' },
+            rightBlock: { icon: '🔒', top: 'BLOCKED!', main: '❌ No "an" · No "-s"', border: '#f43f5e' }
+          }
+        ],
+        rules: [
+          '<strong><code>A / An</code>:</strong> Any single countable item (first mention) or singular profession (<em>an engineer</em>).',
+          '<strong><code>The</code>:</strong> Specific item we both know (<em>the door</em>), unique things (<em>the internet</em>), superlatives (<em>the best</em>).',
+          '<strong><code>Ø Zero Article</code>:</strong> Plurals and uncountable concepts in general (<em>Music, Nature, Dogs</em>); uncountables (<em>advice, information, furniture, luggage</em>) never take <code>a/an</code>.'
+        ],
+        trap: '<strong>Common Trap:</strong> Saying <em>"an advice"</em> ❌ (use <strong>some advice / a piece of advice</strong>) or <em>"I love the nature"</em> ❌ (use <strong>nature</strong>).',
+        questions: [
+          {
+            q: 'My cousin works as ________ architect in Dublin.',
+            options: ['the', 'a', 'an', '— (no article)'],
+            answer: 2,
+            explain: 'Singular jobs always take "a / an" ("an architect").'
+          },
+          {
+            q: 'Before my trip, I asked my friend for ________.',
+            options: ['an advice', 'some advices', 'a piece of advice', 'the advices'],
+            answer: 2,
+            explain: '"Advice" is uncountable mass—never use "an" or "-s".'
+          },
+          {
+            q: 'In general, I think ________ music helps people concentrate.',
+            options: ['the', 'a', '— (no article)', 'an'],
+            answer: 2,
+            explain: 'Talking about music in general uses Zero Article (no "the").'
+          },
+          {
+            q: 'Could you please shut ________ window next to your desk?',
+            options: ['a', '— (no article)', 'the', 'an'],
+            answer: 2,
+            explain: 'Specific window under the shared spotlight ("next to your desk") -> "the".'
+          },
+          {
+            q: '________ traffic in town this morning was awful.',
+            options: ['A', 'The', '— (no article)', 'Many'],
+            answer: 1,
+            explain: 'Specific traffic ("in town this morning") -> "The traffic".'
+          }
+        ]
+      },
+
+      {
+        id: 5,
+        title: '6. Prepositions (AT · ON · IN): 0D Pin, 2D Deck & 3D Box',
+        color: '#fb923c',
+        hex: 0xfb923c,
+        pos: { x: 15, z: -38 },
+        camPos: { x: 5.2, y: 3.1, z: -38 },
+        lookAt: { x: 15, y: 2.3, z: -38 },
+        modes: [
+          {
+            label: '📍 AT = 0D Exact Point',
+            mode: 'at',
+            header: 'AT  =  0D EXACT CLOCK POINT OR MAP PINPOINT',
+            sub: 'at 6:15 · at midnight · at night · at the door · at the bus stop · at work',
+            leftBlock: { icon: '📍', top: '0D PINPOINT', main: 'AT 6:15 / AT the door', border: '#fbbf24' },
+            rightBlock: { icon: '🎯', top: 'EXACT TARGET', main: 'Clock time & Station', border: '#10b981' }
+          },
+          {
+            label: '📐 ON = 2D Surface & Day',
+            mode: 'on',
+            header: 'ON  =  2D FLAT SURFACE, LINE, SCREEN & SINGLE DAY',
+            sub: 'on Monday · on 14 May · on Friday morning · on the table · on the 2nd floor',
+            leftBlock: { icon: '📐', top: '2D SURFACE / DAY', main: 'ON Monday / ON table', border: '#38bdf8' },
+            rightBlock: { icon: '📅', top: 'ANY SINGLE DAY', main: 'on + Day / Date', border: '#10b981' }
+          },
+          {
+            label: '📦 IN = 3D Enclosed Box',
+            mode: 'in',
+            header: 'IN  =  3D ENCLOSED ROOM, CITY, MONTH OR YEAR',
+            sub: 'in July · in 2026 · in winter · in the morning · in the kitchen · in London',
+            leftBlock: { icon: '📦', top: '3D CONTAINER', main: 'IN July / IN London', border: '#10b981' },
+            rightBlock: { icon: '🏠', top: 'INSIDE WALLS', main: 'Months, Years, Rooms', border: '#38bdf8' }
+          },
+          {
+            label: '🚌 ON a Bus vs 🚗 IN a Car',
+            mode: 'transport',
+            header: 'WALKABLE DECK (ON THE BUS)  vs  SMALL BOX (IN A CAR)',
+            sub: 'Stand & walk on the deck (bus, train, plane, ship) -> ON! Sit inside a box (car, taxi) -> IN!',
+            leftBlock: { icon: '🚌', top: 'WALKABLE DECK', main: 'ON the bus / train', border: '#38bdf8' },
+            rightBlock: { icon: '🚗', top: 'SMALL 3D BOX', main: 'IN a car / taxi', border: '#10b981' }
+          }
+        ],
+        rules: [
+          '<strong><code>AT</code> (0D Pin):</strong> Clock times (<em>at 7:00, at night</em>) and exact map pins (<em>at the door, at the station</em>).',
+          '<strong><code>ON</code> (2D Deck / Day):</strong> Surfaces (<em>on the wall, on a website</em>), walkable transport (<em>on the bus/train/plane</em>), and single days/dates (<em>on Friday</em>).',
+          '<strong><code>IN</code> (3D Box):</strong> Enclosed spaces/cities (<em>in a box, in Dublin</em>), cars/taxis, and long periods (<em>in May, in 2026, in the morning</em>).'
+        ],
+        trap: '<strong>Classic Traps:</strong> Never say <em>"in Monday"</em> ❌ (always <strong>on Monday</strong>), and use <strong>zero preposition</strong> before <strong>next, last, this, every</strong> (<em>"next Tuesday"</em> ✅).',
+        questions: [
+          {
+            q: 'Our flight leaves ________ Friday morning, so pack your bag tonight.',
+            options: ['in', 'at', 'on', 'by'],
+            answer: 2,
+            explain: 'Whenever a specific day is named ("Friday morning"), the Day rule wins -> "on Friday morning".'
+          },
+          {
+            q: 'I left my sunglasses ________ the back of the car.',
+            options: ['on', 'in', 'at', 'by'],
+            answer: 1,
+            explain: 'A car or taxi is a small 3D box -> "in the car".'
+          },
+          {
+            q: 'Let\'s meet ________ the station entrance ________ 6:30 p.m.',
+            options: ['in / on', 'on / at', 'at / at', 'in / at'],
+            answer: 2,
+            explain: 'Both the entrance (map pin) and 6:30 p.m. (clock pin) take "at".'
+          },
+          {
+            q: 'Are you free for a lesson ________ next Tuesday?',
+            options: ['on', 'in', 'at', '— (no preposition)'],
+            answer: 3,
+            explain: 'Zero preposition before "next", "last", "this", or "every"!'
+          },
+          {
+            q: 'I met an old colleague while I was ________ the train to Dublin.',
+            options: ['in', 'on', 'at', 'into'],
+            answer: 1,
+            explain: 'A train has a walkable deck/aisle -> "on the train".'
+          }
+        ]
+      }
+    ];
+
+    /* ==========================================================================
+       PERSISTENCE, AUDIO CHIMES & HIGH-DPI 3D KINETIC BLOCK BUILDERS
+       ========================================================================== */
+    const STORAGE_KEY = 'gareth_grammar_courtyard_v5';
+    let solvedSet = new Set();
+    try {
+      const s = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (Array.isArray(s)) solvedSet = new Set(s);
+    } catch (e) {}
+
+    function updateScoreUI() {
+      document.getElementById('score-pill').textContent = `${solvedSet.size} / 36 Solved`;
+    }
+
+    let audioCtx = null;
+    function playChord(freqs, type = 'triangle', dur = 0.26) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const arr = Array.isArray(freqs) ? freqs : [freqs];
+        arr.forEach((f, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = type;
+          const t0 = audioCtx.currentTime + idx * 0.04;
+          osc.frequency.setValueAtTime(f, t0);
+          gain.gain.setValueAtTime(0.06, t0);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(t0);
+          osc.stop(t0 + dur);
+        });
+      } catch (e) {}
+    }
+
+    // Create a Sculpted 3D Illustrated Word-Block with Dynamic Canvas Face
+    function createKineticBlock(width = 2.5, height = 1.55, depth = 0.45) {
+      const group = new THREE.Group();
+
+      // Gold Bevel Outer Frame
+      const frame = new THREE.Mesh(
+        new THREE.BoxGeometry(width + 0.14, height + 0.14, depth - 0.04),
+        new THREE.MeshStandardMaterial({ color: 0xe5a93c, metalness: 0.78, roughness: 0.24 })
+      );
+      group.add(frame);
+
+      const cvs = document.createElement('canvas');
+      cvs.width = 512;
+      cvs.height = 320;
+      const tex = new THREE.CanvasTexture(cvs);
+
+      const sideMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.45, metalness: 0.3 });
+      const frontMat = new THREE.MeshBasicMaterial({ map: tex });
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(width, height, depth),
+        [sideMat, sideMat, sideMat, sideMat, frontMat, frontMat]
+      );
+      group.add(body);
+
+      function drawFace({ icon = '⚡', top = 'ROLE', main = 'Word', border = '#fbbf24' }) {
+        const ctx = cvs.getContext('2d');
+        const grad = ctx.createLinearGradient(0, 0, 0, 320);
+        grad.addColorStop(0, '#0f172a');
+        grad.addColorStop(1, '#1e293b');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 320);
+
+        ctx.strokeStyle = border;
+        ctx.lineWidth = 12;
+        ctx.strokeRect(12, 12, 488, 296);
+
+        ctx.font = '72px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(icon, 256, 102);
+
+        ctx.fillStyle = border;
+        ctx.font = '800 28px system-ui, sans-serif';
+        ctx.fillText(top, 256, 165);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 48px "Cormorant Garamond", Georgia, serif';
+        ctx.fillText(main, 256, 242);
+
+        tex.needsUpdate = true;
+      }
+
+      drawFace({});
+      return { group, drawFace, body };
+    }
+
+    // Create Overhead 3D Stage Billboard above each Pavilion
+    function createStageBillboard() {
+      const group = new THREE.Group();
+
+      const frame = new THREE.Mesh(
+        new THREE.BoxGeometry(7.9, 2.05, 0.16),
+        new THREE.MeshStandardMaterial({ color: 0xd99e47, metalness: 0.8, roughness: 0.25 })
+      );
+      group.add(frame);
+
+      const cvs = document.createElement('canvas');
+      cvs.width = 1024;
+      cvs.height = 260;
+      const tex = new THREE.CanvasTexture(cvs);
+
+      const screen = new THREE.Mesh(
+        new THREE.PlaneGeometry(7.65, 1.84),
+        new THREE.MeshBasicMaterial({ map: tex })
+      );
+      screen.position.z = 0.1;
+      group.add(screen);
+
+      function updateScreen(title, header, sub, accent = '#fbbf24') {
+        const ctx = cvs.getContext('2d');
+        ctx.fillStyle = '#0b1120';
+        ctx.fillRect(0, 0, 1024, 260);
+
+        ctx.strokeStyle = accent;
+        ctx.lineWidth = 8;
+        ctx.strokeRect(12, 12, 1000, 236);
+
+        ctx.fillStyle = accent;
+        ctx.font = '800 26px system-ui, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(title.toUpperCase(), 512, 58);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 42px "Cormorant Garamond", Georgia, serif';
+        ctx.fillText(header, 512, 132);
+
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '600 28px system-ui, sans-serif';
+        ctx.fillText(sub, 512, 198);
+
+        tex.needsUpdate = true;
+      }
+
+      return { group, updateScreen };
+    }
+
+    /* ==========================================================================
+       THREE.JS TWILIGHT SANCTUARY & 6 KINETIC PAVILIONS
+       ========================================================================== */
+    const canvas = document.getElementById('world-canvas');
+    let scene, camera, renderer;
+
+    const pavObjects = {};
+    const clickableMeshes = [];
+    const floatingLanterns = [];
+
+    let curPav = 0;
+    let curMode = 0;
+    let curQ = 0;
+    let shakeAmt = 0;
+
+    // Flying 3D Answer Block Projectile when user clicks an answer button
+    let projectileBlock = null;
+    let projProgress = 0;
+    let projActive = false;
+    const projStart = new THREE.Vector3();
+    const projEnd = new THREE.Vector3();
+
+    // Smooth First-Person / Guided Camera State
+    const camState = {
+      pos: new THREE.Vector3(0, 3.5, 4),
+      targetPos: new THREE.Vector3(-5.2, 3.1, -6),
+      look: new THREE.Vector3(0, 2.3, -15),
+      targetLook: new THREE.Vector3(-15, 2.3, -6),
+      yaw: 0,
+      pitch: 0,
+      freeWalk: false
+    };
+
+    const keys = {};
+    const dpadState = { up: false, down: false, left: false, right: false };
+
+    function createSkyDome() {
+      const c = document.createElement('canvas');
+      c.width = 64;
+      c.height = 512;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 0, 512);
+      grad.addColorStop(0, '#090e1a');
+      grad.addColorStop(0.52, '#1b2848');
+      grad.addColorStop(0.78, '#3b2d54');
+      grad.addColorStop(1.0, '#d97706');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 64, 512);
+
+      const tex = new THREE.CanvasTexture(c);
+      const sky = new THREE.Mesh(
+        new THREE.SphereGeometry(110, 32, 24),
+        new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide })
+      );
+      return sky;
+    }
+
+    function createCourtyardTileTexture() {
+      const c = document.createElement('canvas');
+      c.width = 512;
+      c.height = 512;
+      const ctx = c.getContext('2d');
+
+      ctx.fillStyle = '#1c2539';
+      ctx.fillRect(0, 0, 512, 512);
+
+      ctx.fillStyle = '#232f46';
+      ctx.fillRect(8, 8, 240, 240);
+      ctx.fillRect(264, 264, 240, 240);
+
+      ctx.strokeStyle = 'rgba(251, 191, 36, 0.25)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(4, 4, 504, 504);
+
+      const tex = new THREE.CanvasTexture(c);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.repeat.set(16, 24);
+      return tex;
+    }
+
+    function initWorld() {
+      scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x161f33, 0.011);
+
+      camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.2, 200);
+
+      renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+
+      scene.add(createSkyDome());
+
+      const hemi = new THREE.HemisphereLight(0xfef3c7, 0x1e293b, 1.15);
+      scene.add(hemi);
+
+      const sun = new THREE.DirectionalLight(0xfde68a, 1.1);
+      sun.position.set(16, 32, 18);
+      scene.add(sun);
+
+      buildCourtyardGroundAndLanterns();
+      buildAllSixPavilions();
+
+      // Projectile Block for Launching Answers into the 3D Stage
+      projectileBlock = createKineticBlock(1.8, 1.0, 0.35);
+      projectileBlock.group.visible = false;
+      scene.add(projectileBlock.group);
+
+      bindEvents();
+      updateScoreUI();
+    }
+
+    function buildCourtyardGroundAndLanterns() {
+      const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(46, 68),
+        new THREE.MeshStandardMaterial({
+          map: createCourtyardTileTexture(),
+          roughness: 0.45,
+          metalness: 0.15
+        })
+      );
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.set(0, 0, -22);
+      scene.add(ground);
+
+      // Central Reflecting Water Canal down the Courtyard
+      const canal = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.6, 52),
+        new THREE.MeshStandardMaterial({
+          color: 0x0284c7,
+          emissive: 0x0369a1,
+          emissiveIntensity: 0.28,
+          roughness: 0.12,
+          metalness: 0.75
+        })
+      );
+      canal.rotation.x = -Math.PI / 2;
+      canal.position.set(0, 0.02, -22);
+      scene.add(canal);
+
+      // Warm Brass Bridges across the Central Canal at z = -6, -22, -38
+      const brassMat = new THREE.MeshStandardMaterial({ color: 0xe5a93c, metalness: 0.8, roughness: 0.22 });
+      [-6, -22, -38].forEach((zPos) => {
+        const footbridge = new THREE.Mesh(new THREE.BoxGeometry(4.4, 0.16, 2.6), brassMat);
+        footbridge.position.set(0, 0.08, zPos);
+        scene.add(footbridge);
+      });
+
+      // Floating Warm Paper Lanterns in the Twilight Sky
+      const lanternMat = new THREE.MeshStandardMaterial({
+        color: 0xfef08a,
+        emissive: 0xf59e0b,
+        emissiveIntensity: 0.9
+      });
+      for (let i = 0; i < 24; i++) {
+        const l = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.24, 0.65, 12), lanternMat);
+        l.position.set(
+          (Math.random() - 0.5) * 34,
+          6.5 + Math.random() * 8,
+          -48 + Math.random() * 52
+        );
+        scene.add(l);
+        floatingLanterns.push({ mesh: l, baseY: l.position.y, phase: Math.random() * Math.PI * 2 });
+      }
+    }
+
+    function buildAllSixPavilions() {
+      const sandstoneMat = new THREE.MeshStandardMaterial({ color: 0x263249, roughness: 0.55 });
+      const brassMat = new THREE.MeshStandardMaterial({ color: 0xe5a93c, metalness: 0.82, roughness: 0.22 });
+      const goldGlowMat = new THREE.MeshStandardMaterial({
+        color: 0xfbbf24,
+        emissive: 0xf59e0b,
+        emissiveIntensity: 0.85
+      });
+
+      PAVILIONS.forEach((pav) => {
+        const root = new THREE.Group();
+        root.position.set(pav.pos.x, 0, pav.pos.z);
+
+        const isLeft = pav.pos.x < 0;
+        // Rotate stage so local +Z always faces the camera in the central courtyard,
+        // and local -X is Left, local +X is Right!
+        root.rotation.y = isLeft ? Math.PI / 2 : -Math.PI / 2;
+        scene.add(root);
+
+        // Pavilion Stage Platform & Twin Sandstone Arch Pillars
+        const stageDeck = new THREE.Mesh(new THREE.BoxGeometry(9.6, 0.7, 5.2), sandstoneMat);
+        stageDeck.position.y = 0.35;
+        stageDeck.userData = { pavId: pav.id };
+        root.add(stageDeck);
+        clickableMeshes.push(stageDeck);
+
+        const deckTrim = new THREE.Mesh(new THREE.BoxGeometry(9.8, 0.1, 5.4), brassMat);
+        deckTrim.position.y = 0.72;
+        root.add(deckTrim);
+
+        [-4.4, 4.4].forEach((xCol) => {
+          const col = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.45, 6.4, 16), sandstoneMat);
+          col.position.set(xCol, 3.5, -1.6);
+          root.add(col);
+        });
+
+        // Overhead Dynamic 3D Stage Billboard
+        const billboard = createStageBillboard();
+        billboard.group.position.set(0, 5.65, -1.4);
+        root.add(billboard.group);
+
+        // Warm Stage Light
+        const sLight = new THREE.PointLight(0xfffbeb, 1.9, 18);
+        sLight.position.set(0, 5.5, 2.5);
+        root.add(sLight);
+
+        // Two Primary Sculpted 3D Kinetic Word-Blocks on Stage
+        const leftBlock = createKineticBlock(2.75, 1.65, 0.45);
+        leftBlock.group.position.set(-2.15, 2.1, 0);
+        leftBlock.body.userData = { pavId: pav.id };
+        clickableMeshes.push(leftBlock.body);
+        root.add(leftBlock.group);
+
+        const rightBlock = createKineticBlock(2.75, 1.65, 0.45);
+        rightBlock.group.position.set(2.15, 2.1, 0);
+        rightBlock.body.userData = { pavId: pav.id };
+        clickableMeshes.push(rightBlock.body);
+        root.add(rightBlock.group);
+
+        // Central Mechanical Connector (Balance Beam / Drawbridge / Lightning Gate / Spotlight)
+        const mechGroup = new THREE.Group();
+        mechGroup.position.set(0, 0.75, 0);
+        root.add(mechGroup);
+
+        // Moving Golden "-S" / Energy Badge Block
+        const sBadge = createKineticBlock(1.15, 0.9, 0.48);
+        sBadge.drawFace({ icon: '✨', top: 'MARKER', main: '+ S', border: '#fbbf24' });
+        sBadge.group.position.set(0, 3.4, 0.35);
+        sBadge.group.visible = pav.id === 0;
+        root.add(sBadge.group);
+
+        // Central Bridge / Beam Bar connecting Left and Right Blocks
+        const beamBar = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.22, 0.65), brassMat);
+        beamBar.position.set(0, 0.65, 0);
+        mechGroup.add(beamBar);
+
+        // Center Fulcrum /Spotlight Cone
+        const centerCone = new THREE.Mesh(
+          new THREE.ConeGeometry(0.95, 2.8, 20, 1, true),
+          new THREE.MeshBasicMaterial({ color: pav.hex, transparent: true, opacity: 0.26, side: THREE.DoubleSide })
+        );
+        centerCone.position.set(0, 1.6, 0);
+        mechGroup.add(centerCone);
+
+        // Vertical Interruption Gate / Lock Bar
+        const gateBar = new THREE.Mesh(new THREE.BoxGeometry(0.32, 2.4, 1.2), goldGlowMat);
+        gateBar.position.set(0, 3.2, 0.2);
+        gateBar.visible = false;
+        mechGroup.add(gateBar);
+
+        pavObjects[pav.id] = {
+          root,
+          billboard,
+          leftBlock,
+          rightBlock,
+          sBadge,
+          beamBar,
+          centerCone,
+          gateBar,
+          tilt: 0,
+          targetTilt: 0,
+          sX: 2.15,
+          targetSX: 2.15,
+          gateY: 3.2,
+          targetGateY: 3.2
+        };
+      });
+
+      // Initialize all 6 Pavilion Billboards & Blocks so the entire courtyard looks alive immediately!
+      PAVILIONS.forEach((p, idx) => applyPavilionMode(idx, 0, true));
+    }
+
+    function selectPavilion(pavIdx, moveCam = true) {
+      curPav = pavIdx;
+      curMode = 0;
+      curQ = 0;
+
+      const pav = PAVILIONS[pavIdx];
+      playChord([440, 554.37], 'triangle', 0.22);
+
+      document.querySelectorAll('.pav-btn').forEach((b) => {
+        b.classList.toggle('active', Number(b.dataset.pav) === pavIdx);
+      });
+
+      if (moveCam) {
+        camState.targetPos.set(pav.camPos.x, pav.camPos.y, pav.camPos.z);
+        camState.targetLook.set(pav.lookAt.x, pav.lookAt.y, pav.lookAt.z);
+        camState.freeWalk = false;
+      }
+
+      // Render Mode Pills
+      const pillsWrap = document.getElementById('mode-pills');
+      pillsWrap.innerHTML = '';
+      pav.modes.forEach((m, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'mode-pill' + (i === 0 ? ' active' : '');
+        btn.textContent = m.label;
+        btn.addEventListener('click', () => applyPavilionMode(pavIdx, i, false));
+        pillsWrap.appendChild(btn);
+      });
+
+      // Populate Rule Card Modal
+      document.getElementById('modal-title').textContent = pav.title;
+      document.getElementById('modal-rules').innerHTML = pav.rules
+        .map((r) => `<div class="rule-bullet">${r}</div>`)
+        .join('');
+      document.getElementById('modal-trap').innerHTML = pav.trap;
+
+      applyPavilionMode(pavIdx, 0, true);
+      renderTrialQuestion();
+    }
+
+    function applyPavilionMode(pavIdx, modeIdx, silent = false) {
+      if (pavIdx === curPav) {
+        curMode = modeIdx;
+        document.querySelectorAll('#mode-pills .mode-pill').forEach((p, i) => {
+          p.classList.toggle('active', i === modeIdx);
+        });
+      }
+
+      const pav = PAVILIONS[pavIdx];
+      const mData = pav.modes[modeIdx];
+      const obj = pavObjects[pavIdx];
+      if (!obj || !mData) return;
+
+      obj.billboard.updateScreen(pav.title, mData.header, mData.sub, pav.color);
+      obj.leftBlock.drawFace(mData.leftBlock);
+      obj.rightBlock.drawFace(mData.rightBlock);
+
+      // Physical 3D Stage Reactions
+      obj.targetTilt = mData.tilt || 0;
+      if (pavIdx === 0) {
+        obj.sBadge.group.visible = mData.sPos !== 'none';
+        obj.targetSX = mData.sPos === 'left' ? -2.15 : 2.15;
+      }
+      if (pavIdx === 2) {
+        obj.targetTilt = mData.bridgeDown === false ? 0.55 : 0;
+      }
+      if (pavIdx === 3) {
+        obj.gateBar.visible = true;
+        obj.targetGateY = mData.gateDown ? 1.35 : 3.4;
+      }
+
+      if (!silent) {
+        const isError = mData.mode === 'broken' || mData.mode === 'duration' || mData.mode === 'clash';
+        if (isError) {
+          shakeAmt = 0.22;
+          playChord([196, 185], 'sawtooth', 0.28);
+        } else {
+          playChord(493.88 + modeIdx * 55, 'sine', 0.18);
+        }
+      }
+    }
+
+    function renderTrialQuestion() {
+      const pav = PAVILIONS[curPav];
+      const qObj = pav.questions[curQ];
+
+      document.getElementById('challenge-counter').textContent = `Trial ${curQ + 1} / ${pav.questions.length}`;
+      document.getElementById('challenge-sentence').textContent = qObj.q;
+      document.getElementById('challenge-feedback').textContent = 'Click a 3D block below to launch it into the stage:';
+      document.getElementById('challenge-feedback').style.color = '#fbbf24';
+
+      const wrap = document.getElementById('block-launchers');
+      wrap.innerHTML = '';
+      qObj.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'block-btn';
+        btn.textContent = opt;
+        btn.addEventListener('click', () => launchAnswerBlock(idx, btn, opt));
+        wrap.appendChild(btn);
+      });
+    }
+
+    function launchAnswerBlock(selectedIdx, btnEl, wordText) {
+      const pav = PAVILIONS[curPav];
+      const qObj = pav.questions[curQ];
+      const isCorrect = selectedIdx === qObj.answer;
+
+      document.querySelectorAll('#block-launchers .block-btn').forEach((b, i) => {
+        b.classList.remove('correct', 'wrong');
+        if (i === qObj.answer) b.classList.add('correct');
+      });
+
+      // Launch the 3D Answer Block from the player camera straight onto the 3D Stage!
+      projectileBlock.drawFace({
+        icon: isCorrect ? '⚡' : '⚠️',
+        top: isCorrect ? 'MATCH!' : 'MISMATCH',
+        main: wordText,
+        border: isCorrect ? '#10b981' : '#f43f5e'
+      });
+      projStart.copy(camera.position).add(new THREE.Vector3(0, -0.5, 0));
+      projEnd.set(pav.lookAt.x, 2.1, pav.lookAt.z);
+      projProgress = 0;
+      projActive = true;
+      projectileBlock.group.visible = true;
+      projectileBlock.group.rotation.y = pavObjects[curPav].root.rotation.y;
+
+      const fb = document.getElementById('challenge-feedback');
+      if (isCorrect) {
+        solvedSet.add(`${curPav}-${curQ}`);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify([...solvedSet]));
+        } catch (e) {}
+        updateScoreUI();
+        playChord([523.25, 659.25, 783.99], 'triangle', 0.32);
+        fb.textContent = `✓ ${qObj.explain}`;
+        fb.style.color = '#34d399';
+      } else {
+        btnEl.classList.add('wrong');
+        shakeAmt = 0.2;
+        playChord([220, 196], 'sawtooth', 0.24);
+        fb.textContent = `✕ ${qObj.explain}`;
+        fb.style.color = '#fda4af';
+      }
+    }
+
+    /* ==========================================================================
+       INPUT & 60FPS ANIMATION LOOP
+       ========================================================================== */
+    function syncYawFromLook() {
+      const dir = new THREE.Vector3().subVectors(camState.look, camState.pos).normalize();
+      camState.yaw = Math.atan2(-dir.x, -dir.z);
+      camState.pitch = Math.asin(Math.max(-0.7, Math.min(0.7, dir.y)));
+    }
+
+    function bindEvents() {
+      let dragging = false;
+      let px = 0;
+      let py = 0;
+      let downX = 0;
+      let downY = 0;
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      canvas.addEventListener('pointerdown', (e) => {
+        dragging = true;
+        px = e.clientX;
+        py = e.clientY;
+        downX = e.clientX;
+        downY = e.clientY;
+        if (!camState.freeWalk) syncYawFromLook();
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - px;
+        const dy = e.clientY - py;
+        px = e.clientX;
+        py = e.clientY;
+
+        camState.freeWalk = true;
+        camState.yaw += dx * 0.0045;
+        camState.pitch = Math.max(-0.45, Math.min(0.45, camState.pitch + dy * 0.004));
+      });
+
+      window.addEventListener('pointerup', (e) => {
+        if (!dragging) return;
+        dragging = false;
+        if (Math.hypot(e.clientX - downX, e.clientY - downY) < 6) {
+          mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+          mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+          raycaster.setFromCamera(mouse, camera);
+          const hits = raycaster.intersectObjects(clickableMeshes);
+          if (hits.length > 0 && typeof hits[0].object.userData.pavId === 'number') {
+            const pId = hits[0].object.userData.pavId;
+            if (pId === curPav) {
+              // Clicking the active 3D stage cycles its 3D demonstration mode!
+              const nextM = (curMode + 1) % PAVILIONS[curPav].modes.length;
+              applyPavilionMode(curPav, nextM, false);
+            } else {
+              selectPavilion(pId, true);
+            }
+          }
+        }
+      });
+
+      window.addEventListener('keydown', (e) => {
+        const k = e.key.toLowerCase();
+        keys[k] = true;
+        if (['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) {
+          if (!camState.freeWalk) syncYawFromLook();
+          camState.freeWalk = true;
+        }
+      });
+      window.addEventListener('keyup', (e) => {
+        keys[e.key.toLowerCase()] = false;
+      });
+
+      document.querySelectorAll('.dpad button').forEach((b) => {
+        const dir = b.dataset.dir;
+        const start = () => {
+          if (!camState.freeWalk) syncYawFromLook();
+          camState.freeWalk = true;
+          dpadState[dir] = true;
+        };
+        const stop = () => { dpadState[dir] = false; };
+        b.addEventListener('pointerdown', start);
+        b.addEventListener('pointerup', stop);
+        b.addEventListener('pointerleave', stop);
+      });
+
+      document.querySelectorAll('.pav-btn[data-pav]').forEach((b) => {
+        b.addEventListener('click', () => selectPavilion(Number(b.dataset.pav), true));
+      });
+
+      const astroDrawer = document.getElementById('astrolabe-ring-drawer');
+      const openAstro = () => {
+        astroDrawer.classList.add('open');
+        playChord([523.25, 659.25], 'triangle', 0.22);
+      };
+      const closeAstro = () => astroDrawer.classList.remove('open');
+      document.getElementById('btn-ring-vii-nav').addEventListener('click', openAstro);
+      document.getElementById('btn-open-ring-vii').addEventListener('click', openAstro);
+      document.getElementById('btn-close-astrolabe').addEventListener('click', closeAstro);
+      astroDrawer.addEventListener('click', (e) => {
+        if (e.target === astroDrawer) closeAstro();
+      });
+
+      const summaryDrawer = document.getElementById('memory-palace-summary-drawer');
+      const openSummary = () => {
+        summaryDrawer.classList.add('open');
+        playChord([440, 554.37, 659.25], 'triangle', 0.24);
+      };
+      const closeSummary = () => summaryDrawer.classList.remove('open');
+      document.getElementById('btn-open-summary-drawer').addEventListener('click', openSummary);
+      document.getElementById('btn-close-summary-drawer').addEventListener('click', closeSummary);
+      summaryDrawer.addEventListener('click', (e) => {
+        if (e.target === summaryDrawer) closeSummary();
+      });
+
+      document.getElementById('btn-courtyard-map').addEventListener('click', () => {
+        camState.targetPos.set(0, 9.5, 10);
+        camState.targetLook.set(0, 1.5, -24);
+        camState.freeWalk = false;
+      });
+
+      const modal = document.getElementById('rule-modal');
+      document.getElementById('btn-open-rules').addEventListener('click', () => modal.classList.add('open'));
+      document.getElementById('btn-close-modal').addEventListener('click', () => modal.classList.remove('open'));
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('open');
+      });
+
+      document.getElementById('btn-reveal').addEventListener('click', () => {
+        const qObj = PAVILIONS[curPav].questions[curQ];
+        const btn = document.querySelectorAll('#block-launchers .block-btn')[qObj.answer];
+        if (btn) launchAnswerBlock(qObj.answer, btn, qObj.options[qObj.answer]);
+      });
+
+      document.getElementById('btn-next-q').addEventListener('click', () => {
+        const pav = PAVILIONS[curPav];
+        curQ = (curQ + 1) % pav.questions.length;
+        renderTrialQuestion();
+      });
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    }
+
+    window.orreryAstrolabe = {
+      toggleEcho(id, btn) {
+        const card = document.getElementById(`astro-card-${id}`);
+        if (!card) return;
+        const struck = card.classList.toggle('echo-struck');
+        if (btn) btn.classList.toggle('active', struck);
+        playChord(struck ? [587.33, 783.99] : [440], 'sine', 0.14);
+      },
+      checkKeywordGuard(raw, kw, guardEl) {
+        if (!guardEl || !kw) return true;
+        const tokens = raw.trim().toUpperCase().split(/\s+/).filter(Boolean);
+        const ok = tokens.includes(kw.toUpperCase());
+        guardEl.textContent = ok ? `KEYWORD: ${kw} ✓` : `KEYWORD: ${kw} (UNCHANGED REQ)`;
+        guardEl.classList.toggle('ok', ok);
+        return ok;
+      },
+      trackWords(id) {
+        const card = document.getElementById(`astro-card-${id}`);
+        const inp = document.getElementById(`astro-in-${id}`);
+        const pill = document.getElementById(`astro-pill-${id}`);
+        const guard = document.getElementById(`astro-kw-${id}`);
+        if (!card || !inp || !pill) return;
+        const raw = inp.value.trim();
+        const count = raw ? raw.split(/\s+/).length : 0;
+        pill.textContent = `${count} WORDS (3–6 REQ)`;
+        pill.classList.toggle('valid', count >= 3 && count <= 6);
+        this.checkKeywordGuard(raw, card.dataset.keyword, guard);
+      },
+      checkLock(id) {
+        const card = document.getElementById(`astro-card-${id}`);
+        const inp = document.getElementById(`astro-in-${id}`);
+        const fb = document.getElementById(`astro-fb-${id}`);
+        const model = document.getElementById(`astro-model-${id}`);
+        if (!card || !inp || !fb) return;
+
+        const raw = inp.value.trim();
+        const val = raw.toLowerCase().replace(/\s+/g, ' ');
+        const count = raw ? raw.split(/\s+/).length : 0;
+        const kw = card.dataset.keyword;
+        const hasKw = this.checkKeywordGuard(raw, kw, document.getElementById(`astro-kw-${id}`));
+        const valid = card.dataset.valid.split('|').map((s) => s.trim().toLowerCase());
+
+        if (!hasKw) {
+          playChord([220, 185], 'sawtooth', 0.24);
+          fb.className = 'astro-feedback visible wrong';
+          fb.innerHTML = `<strong>⚠️ Unchanged Keyword Guard:</strong> Include the exact unchanged keyword <strong>${kw}</strong>.`;
+          return;
+        }
+        if (count < 3 || count > 6) {
+          playChord([220, 185], 'sawtooth', 0.24);
+          fb.className = 'astro-feedback visible wrong';
+          fb.innerHTML = `<strong>⚠️ Word Count Guard:</strong> Your answer has ${count} words (3 to 6 words required).`;
+          return;
+        }
+
+        if (valid.includes(val)) {
+          playChord([523.25, 659.25, 783.99, 1046.5], 'triangle', 0.32);
+          fb.className = 'astro-feedback visible correct';
+          fb.innerHTML = `<strong>✓ Ring VII Astrolabe Lock ${id} Calibrated!</strong> 1 mark // 1 mark confirmed.`;
+          if (model) model.classList.add('open');
+          solvedSet.add(`ring7-${id}`);
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify([...solvedSet]));
+          } catch (e) {}
+          updateScoreUI();
+        } else {
+          playChord([220, 185], 'sawtooth', 0.24);
+          fb.className = 'astro-feedback visible wrong';
+          fb.innerHTML = `<strong>⚠️ Alignment Check:</strong> Review Step 1 (isolated deficit) and Step 2 (tense harmony), or click <em>👁️ Reveal Cambridge Model</em>.`;
+        }
+      },
+      toggleModel(id) {
+        const m = document.getElementById(`astro-model-${id}`);
+        if (m) m.classList.toggle('open');
+        playChord([523.25, 659.25], 'sine', 0.14);
+      },
+      toggleSelfTest(id) {
+        const m = document.getElementById(`selftest-model-${id}`);
+        if (m) m.classList.toggle('open');
+        playChord([523.25, 659.25], 'sine', 0.14);
+      }
+    };
+
+    let lastNow = performance.now();
+    function animate(now) {
+      requestAnimationFrame(animate);
+      const dt = Math.min((now - lastNow) / 1000, 0.1);
+      lastNow = now;
+      const t = now * 0.001;
+
+      const damp = 1 - Math.exp(-6.5 * dt);
+
+      if (!camState.freeWalk) {
+        camState.pos.lerp(camState.targetPos, damp);
+        camState.look.lerp(camState.targetLook, damp);
+      } else {
+        const walkSpeed = 10.5;
+        const turnSpeed = 1.7;
+        if (keys['a'] || keys['arrowleft'] || dpadState.left) camState.yaw += turnSpeed * dt;
+        if (keys['d'] || keys['arrowright'] || dpadState.right) camState.yaw -= turnSpeed * dt;
+
+        const fx = -Math.sin(camState.yaw);
+        const fz = -Math.cos(camState.yaw);
+        if (keys['w'] || keys['arrowup'] || dpadState.up) {
+          camState.pos.x += fx * walkSpeed * dt;
+          camState.pos.z += fz * walkSpeed * dt;
+        }
+        if (keys['s'] || keys['arrowdown'] || dpadState.down) {
+          camState.pos.x -= fx * walkSpeed * dt;
+          camState.pos.z -= fz * walkSpeed * dt;
+        }
+        camState.pos.x = Math.max(-18, Math.min(18, camState.pos.x));
+        camState.pos.z = Math.max(-46, Math.min(12, camState.pos.z));
+
+        camState.look.set(
+          camState.pos.x - Math.sin(camState.yaw) * Math.cos(camState.pitch) * 10,
+          camState.pos.y + Math.sin(camState.pitch) * 10,
+          camState.pos.z - Math.cos(camState.yaw) * Math.cos(camState.pitch) * 10
+        );
+      }
+
+      const sx = shakeAmt > 0.005 ? (Math.random() - 0.5) * shakeAmt : 0;
+      const sy = shakeAmt > 0.005 ? (Math.random() - 0.5) * shakeAmt : 0;
+      shakeAmt *= Math.exp(-10 * dt);
+
+      camera.position.set(camState.pos.x + sx, camState.pos.y + sy, camState.pos.z);
+      camera.lookAt(camState.look);
+
+      // Animate Floating Sky Lanterns
+      floatingLanterns.forEach((l) => {
+        l.mesh.position.y = l.baseY + Math.sin(t * 1.4 + l.phase) * 0.45;
+      });
+
+      // Animate Flying 3D Answer Block Projectile
+      if (projActive && projectileBlock) {
+        projProgress = Math.min(1, projProgress + dt * 2.4);
+        projectileBlock.group.position.lerpVectors(projStart, projEnd, projProgress);
+        projectileBlock.group.position.y += Math.sin(projProgress * Math.PI) * 2.2;
+        if (projProgress >= 1) {
+          setTimeout(() => {
+            if (projectileBlock) projectileBlock.group.visible = false;
+          }, 950);
+          projActive = false;
+        }
+      }
+
+      // Animate all 6 Kinetic Pavilion Stages
+      Object.values(pavObjects).forEach((obj, idx) => {
+        obj.tilt += (obj.targetTilt - obj.tilt) * damp;
+        obj.beamBar.rotation.z = obj.tilt;
+
+        // Gentle floating hover on the 3D word blocks
+        obj.leftBlock.group.position.y = 2.15 + Math.sin(t * 2.2 + idx) * 0.08 - obj.tilt * 1.2;
+        obj.rightBlock.group.position.y = 2.15 + Math.cos(t * 2.2 + idx) * 0.08 + obj.tilt * 1.2;
+
+        if (idx === 0) {
+          obj.sX += (obj.targetSX - obj.sX) * damp;
+          const arcLift = Math.sin(((obj.sX + 2.15) / 4.3) * Math.PI) * 0.85;
+          obj.sBadge.group.position.set(obj.sX, 3.35 + arcLift, 0.35);
+        }
+        if (idx === 3) {
+          obj.gateY += (obj.targetGateY - obj.gateY) * damp;
+          obj.gateBar.position.y = obj.gateY;
+        }
+      });
+
+      renderer.render(scene, camera);
+    }
+
+    initWorld();
+    selectPavilion(0, true);
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>

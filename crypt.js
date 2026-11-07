@@ -43,6 +43,7 @@
 
     const XP_PER_RANK = 100;
     const lastLevel = levels.length - 1;
+    const BOSS_FLOORS = [4, 9, 14, 19, 24];
 
     let state = L.store.fresh();
     let item = null;             // the pool sentence currently on the board
@@ -53,6 +54,33 @@
     let hintsUsed = 0;
     let levelMistakes = 0;
     let hintLevel = -1;       // hints/mistakes persist across Reset on the same floor (no free-hint farming)
+    let bossRushActive = false;
+    let bossRushStep = 0;
+    let dailySeedActive = false;
+    let dailySeedStep = 0;
+    let dailyGauntletData = null;
+    let bossAudio = null;
+
+    function stopBossVoice() {
+        if (bossAudio) {
+            try { bossAudio.pause(); bossAudio.currentTime = 0; } catch (_) {}
+            bossAudio = null;
+        }
+    }
+
+    function playBossVoice(floorIdx, force) {
+        if (inSelfTest) return;
+        const boss = bosses[floorIdx];
+        if (!boss || !boss.audio) return;
+        if (!force && !isSoundEnabled()) return;
+        stopBossVoice();
+        try {
+            bossAudio = new Audio(boss.audio);
+            bossAudio.volume = 0.85;
+            const p = bossAudio.play();
+            if (p && typeof p.catch === 'function') p.catch(() => {});
+        } catch (_) {}
+    }
 
     const tips = L.TIPS;
 
@@ -68,6 +96,9 @@
     const tipEl = $('tip');
     const nextBtn = $('next-btn');
     const hintBtn = $('hint-btn');
+    const blueprintBtn = $('blueprint-btn');
+    const autopsyCard = $('syntax-autopsy-card');
+    const floorDrawer = $('floor-drawer');
     const modal = $('prize-modal');
     let modalReturnFocus = null;
 
@@ -89,7 +120,14 @@
     const blockIn = (zone) => zone.querySelector('.block');
 
     function refreshHud() {
-        if ($('level-display')) $('level-display').textContent = `Floor: ${state.level + 1}/${levels.length}`;
+        const isOpen = floorDrawer && !floorDrawer.classList.contains('hidden');
+        if ($('level-display')) {
+            $('level-display').textContent = `Floor: ${state.level + 1}/${levels.length} ${isOpen ? '▴' : '▾'}`;
+            $('level-display').setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
+        if ($('floor-drawer-toggle')) {
+            $('floor-drawer-toggle').setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        }
         if ($('rank-display')) {
             const prefix = state.playerName ? `${state.playerName} - ` : '';
             $('rank-display').textContent  = `⚔️ ${prefix}Rank ${Math.floor(state.xp / XP_PER_RANK) + 1}`;
@@ -97,6 +135,217 @@
         if ($('gold-counter')) $('gold-counter').textContent  = `🪙 ${state.gold}`;
         if ($('xp-counter')) $('xp-counter').textContent    = `🔮 ${state.xp % XP_PER_RANK}/${XP_PER_RANK}`;
         if ($('streak-display')) $('streak-display').textContent = `🔥 ${state.streak}`;
+        if ($('boss-rush-badge')) {
+            if (bossRushActive) {
+                $('boss-rush-badge').classList.remove('hidden');
+                $('boss-rush-badge').textContent = `⚔️ Boss Rush ${bossRushStep + 1}/${BOSS_FLOORS.length}`;
+            } else {
+                $('boss-rush-badge').classList.add('hidden');
+            }
+        }
+        if ($('boss-rush-btn')) {
+            $('boss-rush-btn').classList.toggle('active', bossRushActive);
+            $('boss-rush-btn').textContent = bossRushActive
+                ? `⏹️ Exit Boss Rush (${bossRushStep + 1}/${BOSS_FLOORS.length})`
+                : '⚔️ Start 5-Boss Rush (Floors 5·10·15·20·25)';
+        }
+        if ($('pool-count-badge')) {
+            $('pool-count-badge').textContent = `📜 ${L.totalItems || 223}-Item Pool`;
+        }
+        if ($('daily-seed-badge')) {
+            if (dailySeedActive && dailyGauntletData) {
+                $('daily-seed-badge').classList.remove('hidden');
+                $('daily-seed-badge').textContent = `🎲 Seed ${dailyGauntletData.seed} (${dailySeedStep + 1}/${dailyGauntletData.steps.length})`;
+            } else {
+                $('daily-seed-badge').classList.add('hidden');
+            }
+        }
+        if ($('daily-seed-hud-btn')) {
+            const seedLabel = typeof L.getTodaySeed === 'function' ? L.getTodaySeed() : '';
+            $('daily-seed-hud-btn').classList.toggle('active', dailySeedActive);
+            $('daily-seed-hud-btn').textContent = dailySeedActive
+                ? `⏹️ Exit Daily Seed (${dailySeedStep + 1}/5)`
+                : `🎲 Daily Crypt Seed (${seedLabel})`;
+        }
+        if ($('daily-seed-btn')) {
+            const seedLabel = typeof L.getTodaySeed === 'function' ? L.getTodaySeed() : '';
+            $('daily-seed-btn').classList.toggle('active', dailySeedActive);
+            $('daily-seed-btn').textContent = dailySeedActive
+                ? `⏹️ Exit Daily Crypt Seed (${dailySeedStep + 1}/5)`
+                : `🎲 Daily Crypt Seed · ${seedLabel} (5-Q C1/C2)`;
+        }
+    }
+
+    /* ---------------- FLOOR SELECTOR & BOSS RUSH DRAWER ---------------- */
+
+    function renderFloorDrawer() {
+        const grid = $('floor-grid');
+        if (!grid) return;
+        grid.textContent = '';
+        levels.forEach((fl, idx) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.setAttribute('role', 'listitem');
+            const isCurrent = state.level === idx;
+            const isCleared = state.completed.includes(idx);
+            const bossInfo = bosses[idx];
+            btn.className = 'floor-card'
+                + (isCurrent ? ' current' : '')
+                + (isCleared ? ' completed' : '')
+                + (bossInfo ? ' boss-floor' : '');
+            btn.dataset.floorIdx = String(idx);
+
+            const top = document.createElement('div');
+            top.className = 'floor-card-top';
+            const num = document.createElement('span');
+            num.className = 'floor-card-num';
+            num.textContent = `F${idx + 1}${bossInfo ? ' ' + bossInfo.emoji : ''}${isCleared ? ' ✓' : ''}`;
+            const cefr = document.createElement('span');
+            cefr.className = 'floor-card-cefr';
+            cefr.textContent = fl.cefr;
+            top.append(num, cefr);
+
+            const title = document.createElement('div');
+            title.className = 'floor-card-title';
+            title.textContent = fl.title;
+
+            btn.append(top, title);
+            btn.addEventListener('click', () => jumpToFloor(idx));
+            grid.appendChild(btn);
+        });
+    }
+
+    function toggleFloorDrawer(forceOpen) {
+        if (!floorDrawer) return;
+        const willOpen = typeof forceOpen === 'boolean' ? forceOpen : floorDrawer.classList.contains('hidden');
+        floorDrawer.classList.toggle('hidden', !willOpen);
+        if (willOpen) renderFloorDrawer();
+        refreshHud();
+    }
+
+    function jumpToFloor(floorIdx, keepBossRush) {
+        if (floorIdx < 0 || floorIdx > lastLevel) return;
+        if (!keepBossRush) {
+            bossRushActive = false;
+            dailySeedActive = false;
+            dailySeedStep = 0;
+            dailyGauntletData = null;
+        }
+        state.level = floorIdx;
+        item = null;
+        saveState();
+        toggleFloorDrawer(false);
+        initLevel();
+        sfx('grab');
+    }
+
+    function toggleBossRush() {
+        if (bossRushActive) {
+            bossRushActive = false;
+            bossRushStep = 0;
+            refreshHud();
+            setStatus('Exited Boss Rush mode.', '');
+            return;
+        }
+        dailySeedActive = false;
+        dailySeedStep = 0;
+        dailyGauntletData = null;
+        bossRushActive = true;
+        bossRushStep = 0;
+        jumpToFloor(BOSS_FLOORS[0], true);
+        setStatus('⚔️ 5-Boss Rush engaged! Defeat all 5 Crypt Guardians (Floors 5, 10, 15, 20, 25).', '');
+        sfx('boss');
+    }
+
+    function toggleDailySeed() {
+        if (dailySeedActive) {
+            dailySeedActive = false;
+            dailySeedStep = 0;
+            dailyGauntletData = null;
+            refreshHud();
+            setStatus('Exited Daily Crypt Seed mode.', '');
+            return;
+        }
+        if (typeof L.dailyGauntlet !== 'function') return;
+        bossRushActive = false;
+        bossRushStep = 0;
+        dailyGauntletData = L.dailyGauntlet();
+        dailySeedActive = true;
+        dailySeedStep = 0;
+        const firstStep = dailyGauntletData.steps[0];
+        state.level = firstStep.floorIdx;
+        item = firstStep.item;
+        saveState();
+        toggleFloorDrawer(false);
+        initLevel(true);
+        setStatus(`🎲 Daily Crypt Seed (${dailyGauntletData.seed}): 5-Question C1/C2 Gauntlet engaged!`, '');
+        sfx('epic');
+    }
+
+    /* ---------------- BELFAST DESK SYNTAX AUTOPSY CARD ---------------- */
+
+    function updateAutopsyCard(floorIdx, currentItem, solvedAnswer, revealFull) {
+        if (!autopsyCard || !currentItem) return;
+        const info = typeof L.autopsy === 'function'
+            ? L.autopsy(floorIdx, currentItem)
+            : {
+                floor: floorIdx + 1,
+                title: levels[floorIdx].title,
+                cefr: levels[floorIdx].cefr,
+                modelSentence: L.formatSentence(currentItem.answers[0]),
+                altSentences: currentItem.answers.slice(1).map(L.formatSentence),
+                formula: levels[floorIdx].formula || '',
+                posChain: '',
+                decoyDiagnosis: currentItem.explain,
+                examTip: levels[floorIdx].examTip || ''
+            };
+
+        if ($('autopsy-floor-heading')) {
+            $('autopsy-floor-heading').textContent = `Floor ${info.floor} · ${info.title}`;
+        }
+        if ($('autopsy-cefr-badge')) {
+            $('autopsy-cefr-badge').textContent = info.cefr;
+        }
+        if ($('autopsy-formula')) {
+            $('autopsy-formula').textContent = info.formula;
+        }
+        if ($('autopsy-pos-chain')) {
+            $('autopsy-pos-chain').textContent = revealFull ? `Token Map: ${info.posChain}` : 'Solve the floor or click "Reveal Cambridge Model" below to inspect the token-by-token map.';
+        }
+        if ($('autopsy-trap-text')) {
+            $('autopsy-trap-text').textContent = info.decoyDiagnosis;
+        }
+        if ($('autopsy-exam-text')) {
+            $('autopsy-exam-text').textContent = info.examTip;
+        }
+
+        const modelOut = $('autopsy-model-output');
+        const revealBtn = $('reveal-model-btn');
+        const primarySentence = solvedAnswer ? L.formatSentence(solvedAnswer) : info.modelSentence;
+        const altNote = info.altSentences && info.altSentences.length > 0
+            ? ` (Also accepted: "${info.altSentences[0]}")`
+            : '';
+
+        if (modelOut) {
+            modelOut.textContent = `✔ Cambridge Model: "${primarySentence}" — ${currentItem.explain}${altNote}`;
+            modelOut.classList.toggle('hidden', !revealFull);
+        }
+        if (revealBtn) {
+            revealBtn.classList.toggle('hidden', !!revealFull);
+        }
+    }
+
+    function toggleAutopsyCard(forceOpen, revealFull) {
+        if (!autopsyCard) return;
+        const willOpen = typeof forceOpen === 'boolean' ? forceOpen : autopsyCard.classList.contains('hidden');
+        autopsyCard.classList.toggle('hidden', !willOpen);
+        if (blueprintBtn) {
+            blueprintBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            blueprintBtn.textContent = willOpen ? '🙈 Hide Structural Blueprint' : '👁️ Reveal Structural Blueprint';
+        }
+        if (willOpen) {
+            updateAutopsyCard(state.level, item, locked ? item.answers[0] : null, locked || !!revealFull);
+        }
     }
 
     /* ---------------- LEVEL SETUP ---------------- */
@@ -114,24 +363,33 @@
             $('boss-name').textContent = boss.name;
             $('boss-taunt').textContent = `"${boss.taunt}"`;
             if (hintBtn) hintBtn.style.display = 'none'; // No hints in boss fights!
+            playBossVoice(state.level, false);
         } else {
             document.body.classList.remove('boss-mode');
             $('boss-arena').classList.add('hidden');
             if (hintBtn) hintBtn.style.display = 'inline-block';
+            stopBossVoice();
         }
         targetedZone = null;
         if (hintLevel !== state.level) { hintsUsed = 0; levelMistakes = 0; hintLevel = state.level; }
-        // A fresh sentence from the floor's pool (Reset keeps the same one).
-        if (!keepItem || !item || !level.pool.includes(item)) item = L.pickItem(state.level, item && item.id);
+        // A fresh sentence from the floor's pool (Reset or Daily Seed keeps the target one).
+        if (dailySeedActive && dailyGauntletData && dailyGauntletData.steps[dailySeedStep]) {
+            item = dailyGauntletData.steps[dailySeedStep].item;
+        } else if (!keepItem || !item || !level.pool.includes(item)) {
+            item = L.pickItem(state.level, item && item.id);
+        }
         if (tipEl) tipEl.textContent = '';
         refreshHud();
-        $('quest-title').textContent = `${level.title} (${level.cefr})`;
+        $('quest-title').textContent = (dailySeedActive && dailyGauntletData)
+            ? `🎲 Daily Seed ${dailySeedStep + 1}/${dailyGauntletData.steps.length} · ${level.title} (${level.cefr})`
+            : `${level.title} (${level.cefr})`;
 
         board.innerHTML = '';
         bank.innerHTML = '';
         nextBtn.disabled = true;
-        nextBtn.textContent = 'Next Floor ➔';
+        nextBtn.textContent = dailySeedActive ? 'Next Seed ➔' : (bossRushActive ? 'Next Boss ➔' : 'Next Floor ➔');
         setStatus('Summon the sentence!', '');
+        toggleAutopsyCard(false, false);
 
         item.slots.forEach((slot, i) => {
             const zone = document.createElement('div');
@@ -156,10 +414,13 @@
             block.setAttribute('role', 'button');
             block.dataset.pos = r.pos;
             block.dataset.text = r.text;
+            if (i < 9) block.dataset.key = String(i + 1);
+            else if (i === 9) block.dataset.key = '0';
             block.textContent = r.text;
             bank.appendChild(block);
         });
         refreshZones();
+        if (floorDrawer && !floorDrawer.classList.contains('hidden')) renderFloorDrawer();
     }
 
     function refreshZones() {
@@ -478,21 +739,22 @@
 
     function solveLevel(answer) {
         locked = true;
+        const solvedFloorIdx = state.level;
         board.querySelectorAll('.block').forEach(b => { b.classList.add('correct'); b.draggable = false; });
         bank.querySelectorAll('.block').forEach(b => { b.draggable = false; b.tabIndex = -1; });
 
-        const isLast = state.level === lastLevel;
-        const firstClear = !state.completed.includes(state.level);
+        const isLast = solvedFloorIdx === lastLevel;
+        const firstClear = !state.completed.includes(solvedFloorIdx);
 
         if (firstClear) {
-            state.completed.push(state.level);
+            state.completed.push(solvedFloorIdx);
             state.streak++;
             if (levelMistakes === 0) state.perfect++;
             const goldEarned = 15 + Math.min(state.streak - 1, 5) * 3;
             state.gold += goldEarned;
             state.xp += 20;
             
-            const boss = bosses[state.level];
+            const boss = bosses[solvedFloorIdx];
             if (boss) {
                 state.gold += 50; // Boss clear bonus
                 $('boss-taunt').textContent = '"Impossible! My syntax is broken!"';
@@ -514,12 +776,41 @@
                 });
             }
         }
-        setStatus(isLast ? 'The Crypt is Conquered!' : (firstClear ? 'The incantation is complete!' : 'The incantation is complete! (Rewards already claimed)'), 'success');
+
+        const isBossRushFinal = bossRushActive && bossRushStep >= BOSS_FLOORS.length - 1;
+        const isDailyFinal = dailySeedActive && dailyGauntletData && dailySeedStep >= dailyGauntletData.steps.length - 1;
+        if (isDailyFinal) {
+            state.gold += 100;
+            setStatus(`🎲 Daily Crypt Seed (${dailyGauntletData.seed}) Conquered! All 5 C1/C2 Runes Mastered! (+100 🪙)`, 'success');
+        } else if (isBossRushFinal) {
+            state.gold += 100;
+            setStatus('🏆 5-Boss Rush Conquered! All 5 Crypt Guardians Defeated! (+100 🪙)', 'success');
+        } else {
+            setStatus(isLast ? 'The Crypt is Conquered!' : (firstClear ? 'The incantation is complete!' : 'The incantation is complete! (Rewards already claimed)'), 'success');
+        }
         if (tipEl) tipEl.textContent = '✔ "' + L.formatSentence(answer || item.answers[0]) + '" ' + item.explain;
         sfx('success', state.streak);
 
+        // Reveal the Belfast Desk Syntax Autopsy Card automatically upon solving
+        if (autopsyCard && !inSelfTest) {
+            autopsyCard.classList.remove('hidden');
+            if (blueprintBtn) {
+                blueprintBtn.setAttribute('aria-expanded', 'true');
+                blueprintBtn.textContent = '🙈 Hide Structural Blueprint';
+            }
+            updateAutopsyCard(solvedFloorIdx, item, answer || item.answers[0], true);
+        }
+
         nextBtn.disabled = false;
-        nextBtn.textContent = isLast ? 'Restart Crypt ↺' : 'Next Floor ➔';
+        if (dailySeedActive && !isDailyFinal) {
+            nextBtn.textContent = `Next Seed (${dailySeedStep + 2}/${dailyGauntletData.steps.length}) ➔`;
+        } else if (isDailyFinal) {
+            nextBtn.textContent = 'Finish Daily Seed ✔';
+        } else if (bossRushActive && !isBossRushFinal) {
+            nextBtn.textContent = `Next Boss (${bossRushStep + 2}/${BOSS_FLOORS.length}) ➔`;
+        } else {
+            nextBtn.textContent = (isLast || isBossRushFinal) ? 'Restart Crypt ↺' : 'Next Floor ➔';
+        }
 
         if (firstClear) {
             const loot = rollLoot();
@@ -529,7 +820,9 @@
             checkMilestone();
         }
 
-        state.level = isLast ? state.level : state.level + 1;   // progress is saved as "next floor"
+        if (!bossRushActive && !dailySeedActive) {
+            state.level = isLast ? state.level : state.level + 1;   // progress is saved as "next floor"
+        }
         saveState();
         refreshHud();
     }
@@ -624,6 +917,11 @@
     }
 
     function restartCrypt() {
+        bossRushActive = false;
+        bossRushStep = 0;
+        dailySeedActive = false;
+        dailySeedStep = 0;
+        dailyGauntletData = null;
         state = L.store.fresh(state);
         saveState();
         updateInventoryUI();
@@ -633,8 +931,42 @@
     function nextLevel() {
         if (!locked) return;
         if (nextBtn.textContent.startsWith('Restart')) {
+            bossRushActive = false;
+            bossRushStep = 0;
+            dailySeedActive = false;
+            dailySeedStep = 0;
+            dailyGauntletData = null;
             if (state.leadSent) restartCrypt(); else showLeadModal();
             return;
+        }
+        if (dailySeedActive && dailyGauntletData) {
+            if (dailySeedStep < dailyGauntletData.steps.length - 1) {
+                dailySeedStep++;
+                const nextStep = dailyGauntletData.steps[dailySeedStep];
+                state.level = nextStep.floorIdx;
+                item = nextStep.item;
+                saveState();
+                initLevel(true);
+                return;
+            }
+            dailySeedActive = false;
+            dailySeedStep = 0;
+            dailyGauntletData = null;
+            item = null;
+            initLevel();
+            return;
+        }
+        if (bossRushActive) {
+            if (bossRushStep < BOSS_FLOORS.length - 1) {
+                bossRushStep++;
+                state.level = BOSS_FLOORS[bossRushStep];
+                item = null;
+                saveState();
+                initLevel();
+                return;
+            }
+            bossRushActive = false;
+            bossRushStep = 0;
         }
         initLevel();
     }
@@ -752,10 +1084,79 @@
         if (hintBtn) hintBtn.addEventListener('click', useHint);
         nextBtn.addEventListener('click', nextLevel);
         $('claim-btn').addEventListener('click', closePrizeModal);
+
+        // Floor Selector & Boss Rush Drawer bindings
+        if ($('level-display')) $('level-display').addEventListener('click', () => toggleFloorDrawer());
+        if ($('floor-drawer-toggle')) $('floor-drawer-toggle').addEventListener('click', () => toggleFloorDrawer());
+        if ($('floor-drawer-close')) $('floor-drawer-close').addEventListener('click', () => toggleFloorDrawer(false));
+        if ($('boss-rush-btn')) $('boss-rush-btn').addEventListener('click', toggleBossRush);
+        if ($('daily-seed-btn')) $('daily-seed-btn').addEventListener('click', toggleDailySeed);
+        if ($('daily-seed-hud-btn')) $('daily-seed-hud-btn').addEventListener('click', toggleDailySeed);
+        if ($('boss-voice-btn')) $('boss-voice-btn').addEventListener('click', () => playBossVoice(state.level, true));
+        document.querySelectorAll('.act-pill[data-jump-floor]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.getAttribute('data-jump-floor'), 10);
+                if (!Number.isNaN(idx)) jumpToFloor(idx);
+            });
+        });
+
+        // Belfast Desk Syntax Autopsy Card bindings
+        if (blueprintBtn) {
+            blueprintBtn.addEventListener('click', () => toggleAutopsyCard());
+        }
+        if ($('reveal-model-btn')) {
+            $('reveal-model-btn').addEventListener('click', () => {
+                updateAutopsyCard(state.level, item, null, true);
+                sfx('grab');
+            });
+        }
+
+        // Full Keyboard Accessibility: 1-9/0 place/return rune, Backspace undo last, H hint, Enter next floor
         document.addEventListener('keydown', (e) => {
-            if (!modal.classList.contains('open')) return;
-            if (e.key === 'Escape') closePrizeModal();
-            if (e.key === 'Tab') { e.preventDefault(); $('claim-btn').focus(); }   // single focusable control: keep focus in the dialog
+            if (modal && modal.classList.contains('open')) {
+                if (e.key === 'Escape') closePrizeModal();
+                if (e.key === 'Tab') { e.preventDefault(); $('claim-btn').focus(); }
+                return;
+            }
+            if (document.querySelector('.fullscreen-modal.open')) return;
+            if (e.ctrlKey || e.altKey || e.metaKey) return;
+            const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
+
+            if (/^[0-9]$/.test(e.key) && !locked) {
+                const targetRune = document.querySelector(`.block[data-key="${e.key}"]`);
+                if (targetRune) {
+                    e.preventDefault();
+                    activateBlock(targetRune);
+                }
+                return;
+            }
+            if (e.key === 'Backspace' && !locked) {
+                const occupiedZones = zones().filter(z => !!blockIn(z));
+                if (occupiedZones.length > 0) {
+                    e.preventDefault();
+                    const lastBlock = blockIn(occupiedZones[occupiedZones.length - 1]);
+                    if (lastBlock) {
+                        place(lastBlock, bank);
+                        setTarget(null);
+                        afterMove();
+                    }
+                }
+                return;
+            }
+            if ((e.key === 'h' || e.key === 'H') && !locked) {
+                if (!bosses[state.level]) {
+                    e.preventDefault();
+                    useHint();
+                }
+                return;
+            }
+            if (e.key === 'Enter' && locked && !nextBtn.disabled) {
+                if (e.target !== nextBtn) {
+                    e.preventDefault();
+                    nextLevel();
+                }
+            }
         });
 
         // Intro / Name Entry Flow

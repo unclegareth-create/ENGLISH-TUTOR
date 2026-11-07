@@ -288,6 +288,176 @@
       transition: background 0.15s;
     }
     .btn-action-ocean:hover { background: #0369a1; }
+
+    /* Submersible Sonar Depth Map & Jump Selector */
+    .sonar-depth-map {
+      background: linear-gradient(180deg, #040f24 0%, #020712 100%);
+      border: 1px solid var(--ocean-border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+    .sonar-map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+    }
+    .sonar-map-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 8px;
+    }
+    .depth-node-btn {
+      background: #071630;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text-main);
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      position: relative;
+    }
+    .depth-node-btn:hover {
+      background: #0c254d;
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+    }
+    .depth-node-btn.active {
+      background: rgba(2, 132, 199, 0.28);
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
+    }
+    .depth-node-btn.completed {
+      border-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.12);
+    }
+    .depth-node-m {
+      font-family: var(--font-code) !important;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--cyan-bright);
+    }
+    .depth-node-btn.completed .depth-node-m {
+      color: #6ee7b7;
+    }
+    .depth-node-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .depth-node-tag {
+      font-size: 0.7rem;
+      color: var(--text-subtle);
+    }
+
+    /* 4-Step Deconstruction & Echo Strike-Out */
+    .echo-struck .echo-word {
+      text-decoration: line-through;
+      color: #64748b;
+      opacity: 0.55;
+      transition: all 0.2s ease;
+    }
+    .echo-struck .deficit-word {
+      background: rgba(245, 158, 11, 0.22);
+      border-bottom: 2px solid var(--gold-bright);
+      color: #fef08a;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .step-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0 10px 0;
+      align-items: center;
+    }
+    .step-pill {
+      font-size: 0.73rem;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: #081833;
+      border: 1px solid rgba(56, 189, 248, 0.22);
+      color: var(--text-muted);
+    }
+    .step-pill strong { color: var(--cyan-bright); }
+    .kw-guard-pill {
+      font-family: var(--font-code) !important;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: rgba(244, 63, 94, 0.15);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+    .kw-guard-pill.ok {
+      background: rgba(16, 185, 129, 0.16);
+      color: #6ee7b7;
+      border-color: var(--emerald);
+    }
+    .btn-strike-echo {
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid var(--gold);
+      color: var(--gold-bright);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-strike-echo:hover, .btn-strike-echo.active {
+      background: var(--gold);
+      color: #020612;
+    }
+    .btn-reveal-model {
+      background: #1e293b;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #e2e8f0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-reveal-model:hover {
+      border-color: var(--cyan);
+      color: #fff;
+    }
+    .cambridge-model-box {
+      display: none;
+      margin-top: 10px;
+      padding: 12px 14px;
+      background: #030b1a;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-left: 4px solid var(--gold-bright);
+      border-radius: 6px;
+      font-size: 0.86rem;
+      color: var(--text-main);
+    }
+    .cambridge-model-box.open { display: block; }
+    .mark-split-pill {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--emerald);
+      color: #a7f3d0;
+      font-family: var(--font-code) !important;
+      font-size: 0.82rem;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin: 4px 0;
+    }
   </style>
 </head>
 <body>
@@ -318,7 +488,7 @@
     </div>
     <div class="score-box-ocean">
       <div class="score-title-ocean">Session Score</div>
-      <div class="score-val-ocean" id="session-score">0 / 20</div>
+      <div class="score-val-ocean" id="session-score">0 / 32</div>
     </div>
   </header>
 
@@ -365,9 +535,70 @@
     </svg>
   </section>
   <div class="scene-caption-ocean">
-    <span>Arctic Trench Telemetry • Depth Zone: 4,000m</span>
+    <span>Arctic Trench Telemetry • Depth Zone: 500m – 10,900m</span>
     <span style="color:var(--gold-bright);">Conditionals &amp; Inversion Architecture</span>
   </div>
+
+  <!-- Submersible Sonar Depth Map & Jump Selector -->
+  <nav class="sonar-depth-map" aria-label="Submersible Sonar Depth Map and Jump Selector">
+    <div class="sonar-map-header">
+      <div>
+        <span class="badge-ocean" style="margin-right:8px;">Submersible Sonar Depth Map</span>
+        <strong style="color:#fff; font-size:0.95rem;">Jump to Any Depth Zone or Hadal Pressure Lock (500m – 10,900m)</strong>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span style="font-family:var(--font-code); font-size:0.78rem; color:var(--cyan-bright);" id="locks-progress-readout">0 / 9 Locks Calibrated</span>
+        <button type="button" class="btn-action-ocean" style="background:#1e293b; border:1px solid var(--ocean-border); font-size:0.78rem; padding:6px 12px;" onclick="bathyApp.replayAllLocks()">🔄 Replay Completed Pressure Locks</button>
+      </div>
+    </div>
+    <div class="sonar-map-grid">
+      <button type="button" class="depth-node-btn active" id="depth-nav-sim-0" onclick="bathyApp.jumpToZone('sim', 0)">
+        <span class="depth-node-m">500m • SIMULATOR</span>
+        <span class="depth-node-name">Midnight Shelf</span>
+        <span class="depth-node-tag">Mixed Type A</span>
+      </button>
+      <button type="button" class="depth-node-btn" id="depth-nav-sim-1" onclick="bathyApp.jumpToZone('sim', 1)">
+        <span class="depth-node-m">1,500m • SIMULATOR</span>
+        <span class="depth-node-name">Abyssal Slope</span>
+        <span class="depth-node-tag">Were + To-Inf</span>
+      </button>
+      <button type="button" class="depth-node-btn" id="depth-nav-sim-2" onclick="bathyApp.jumpToZone('sim', 2)">
+        <span class="depth-node-m">3,000m • SIMULATOR</span>
+        <span class="depth-node-name">Upper Trench</span>
+        <span class="depth-node-tag">But for + Noun</span>
+      </button>
+      <button type="button" class="depth-node-btn" id="depth-nav-hadal-1" onclick="bathyApp.jumpToZone('hadal', 1)">
+        <span class="depth-node-m">4,000m • LOCK 1</span>
+        <span class="depth-node-name">Abyssal Margin</span>
+        <span class="depth-node-tag">KEY: HAPPEN</span>
+      </button>
+      <button type="button" class="depth-node-btn" id="depth-nav-hadal-2" onclick="bathyApp.jumpToZone('hadal', 2)">
+        <span class="depth-node-m">5,500m • LOCK 2</span>
+        <span class="depth-node-name">Abyssal Plain</span>
+        <span class="depth-node-tag">KEY: BEEN</span>
+      </button>
+      <button type="button" class="depth-node-btn" id="depth-nav-hadal-3" onclick="bathyApp.jumpToZone('hadal', 3)">
+        <span class="depth-node-m">7,000m • LOCK 3</span>
+        <span class="depth-node-name">Hadal Gate</span>
+        <span class="depth-node-tag">KEY: CONDITION</span>
+      </button>
+      <button type="button" class="depth-node-btn" id="depth-nav-hadal-4" onclick="bathyApp.jumpToZone('hadal', 4)">
+        <span class="depth-node-m">8,500m • LOCK 4</span>
+        <span class="depth-node-name">Mariana Ridge</span>
+        <span class="depth-node-tag">KEY: WERE</span>
+      </button>
+      <button type="button" class="depth-node-btn" id="depth-nav-hadal-5" onclick="bathyApp.jumpToZone('hadal', 5)">
+        <span class="depth-node-m">9,800m • LOCK 5</span>
+        <span class="depth-node-name">Sirena Deep</span>
+        <span class="depth-node-tag">KEY: WISH</span>
+      </button>
+      <button type="button" class="depth-node-btn" id="depth-nav-hadal-6" onclick="bathyApp.jumpToZone('hadal', 6)">
+        <span class="depth-node-m">10,900m • LOCK 6</span>
+        <span class="depth-node-name">Challenger Deep</span>
+        <span class="depth-node-tag">KEY: OTHERWISE</span>
+      </button>
+    </div>
+  </nav>
 
   <!-- Section 1: The 4 Core Conditional Formulas -->
   <section class="card-ocean">
@@ -472,65 +703,98 @@
       <span class="badge-ocean">Cambridge Part 4 Format</span>
     </div>
     <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:14px;">
-      Complete the second sentence using between <strong>3 and 6 words</strong> including the keyword:
+      Complete the second sentence using between <strong>3 and 6 words</strong> including the unchanged keyword:
     </p>
 
     <!-- KWT 1 -->
-    <div class="kwt-row-clean" data-valid="had municipal planners invested|had the planners invested">
+    <div class="kwt-row-clean" id="kwt-row-1" data-keyword="HAD" data-valid="had municipal planners invested|had the planners invested">
       <div class="kwt-head">
-        <span style="font-size:0.92rem; color:#e2e8f0;">1. If municipal planners had invested in drainage ten years ago, inner-city streets wouldn't flood today.</span>
-        <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:0.92rem; color:#e2e8f0;" id="kwt-s1-1">1. <span class="deficit-word">If municipal planners had invested</span> <span class="echo-word">in drainage ten years ago, inner-city streets wouldn't flood today.</span></span>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="bathyApp.toggleEcho('kwt-row-1', this)">✂️ Step 1: Strike Out the Echoes</button>
           <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">HAD</span>
+          <span class="kw-guard-pill" id="kwt-kw-1">KEYWORD: HAD (MISSING)</span>
           <span class="kwt-badge-pill" id="kwt-pill-1">0 WORDS (3–6 REQ)</span>
         </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Past Perfect (had invested) &rarr; Inverted Past Perfect</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Active &rarr; Active Inverted</span>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
         <input type="text" class="kwt-input-clean" id="kwt-in-1" placeholder="3–6 words..." oninput="bathyApp.trackWords(1)">
         <span style="font-size:0.92rem;">in drainage ten years ago, streets wouldn't flood today.</span>
-        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkKWT(1, 'had municipal planners invested', 'Inversion replaces \'If municipal planners had invested\'.')">Check</button>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkKWT(1, 'Had municipal planners invested', 'Inversion replaces \'If municipal planners had invested\'.')">Check</button>
+        <button type="button" class="btn-reveal-model" onclick="bathyApp.toggleModelBox('kwt-model-1')">👁️ Reveal Cambridge Model</button>
       </div>
       <div class="feedback-ocean" id="kwt-fb-1"></div>
+      <div class="cambridge-model-box" id="kwt-model-1">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">Had (the) municipal planners (1 mark) // invested (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">Eliminating <em>If</em> triggers auxiliary fronting (<em>Had + Subject + V3</em>).</div>
+      </div>
     </div>
 
     <!-- KWT 2 -->
-    <div class="kwt-row-clean" data-valid="were the ministry to impose|were the government to impose">
+    <div class="kwt-row-clean" id="kwt-row-2" data-keyword="WERE" data-valid="were the ministry to impose|were the government to impose">
       <div class="kwt-head">
-        <span style="font-size:0.92rem; color:#e2e8f0;">2. If the ministry imposed carbon tariffs tomorrow, heavy industry would accelerate its green transition.</span>
-        <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:0.92rem; color:#e2e8f0;" id="kwt-s1-2">2. <span class="deficit-word">If the ministry imposed</span> <span class="echo-word">carbon tariffs tomorrow, heavy industry would accelerate its green transition.</span></span>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="bathyApp.toggleEcho('kwt-row-2', this)">✂️ Step 1: Strike Out the Echoes</button>
           <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">WERE</span>
+          <span class="kw-guard-pill" id="kwt-kw-2">KEYWORD: WERE (MISSING)</span>
           <span class="kwt-badge-pill" id="kwt-pill-2">0 WORDS (3–6 REQ)</span>
         </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Past Simple (imposed) &rarr; Were + Subject + to-infinitive</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Active &rarr; Active Inverted</span>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
         <input type="text" class="kwt-input-clean" id="kwt-in-2" placeholder="3–6 words..." oninput="bathyApp.trackWords(2)">
         <span style="font-size:0.92rem;">carbon tariffs tomorrow, heavy industry would accelerate.</span>
-        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkKWT(2, 'were the ministry to impose', 'Inverted 2nd conditional: Were + subject + to-infinitive.')">Check</button>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkKWT(2, 'Were the ministry to impose', 'Inverted 2nd conditional: Were + subject + to-infinitive.')">Check</button>
+        <button type="button" class="btn-reveal-model" onclick="bathyApp.toggleModelBox('kwt-model-2')">👁️ Reveal Cambridge Model</button>
       </div>
       <div class="feedback-ocean" id="kwt-fb-2"></div>
+      <div class="cambridge-model-box" id="kwt-model-2">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">Were the ministry (1 mark) // to impose (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">Formal Second Conditional inversion uses <em>Were + subject + to-infinitive</em>.</div>
+      </div>
     </div>
 
     <!-- KWT 3 -->
-    <div class="kwt-row-clean" data-valid="but for the decisive overnight intervention|but for the decisive intervention">
+    <div class="kwt-row-clean" id="kwt-row-3" data-keyword="FOR" data-valid="but for the decisive overnight intervention|but for the decisive intervention">
       <div class="kwt-head">
-        <span style="font-size:0.92rem; color:#e2e8f0;">3. If the central bank had not intervened decisively overnight, the regional lender would have failed.</span>
-        <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:0.92rem; color:#e2e8f0;" id="kwt-s1-3">3. <span class="deficit-word">If the central bank had not intervened decisively overnight,</span> <span class="echo-word">the regional lender would have failed.</span></span>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="bathyApp.toggleEcho('kwt-row-3', this)">✂️ Step 1: Strike Out the Echoes</button>
           <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">FOR</span>
+          <span class="kw-guard-pill" id="kwt-kw-3">KEYWORD: FOR (MISSING)</span>
           <span class="kwt-badge-pill" id="kwt-pill-3">0 WORDS (3–6 REQ)</span>
         </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Past Counterfactual (had not intervened) &rarr; Prepositional Noun Phrase</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Verb (intervened) &rarr; Nominalisation (intervention)</span>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
         <input type="text" class="kwt-input-clean" id="kwt-in-3" placeholder="3–6 words..." oninput="bathyApp.trackWords(3)">
         <span style="font-size:0.92rem;">of the central bank, the regional lender would have failed.</span>
-        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkKWT(3, 'but for the decisive overnight intervention', '\'But for + noun phrase\' means \'If it had not been for\'.')">Check</button>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkKWT(3, 'But for the decisive overnight intervention', '\'But for + noun phrase\' means \'If it had not been for\'.')">Check</button>
+        <button type="button" class="btn-reveal-model" onclick="bathyApp.toggleModelBox('kwt-model-3')">👁️ Reveal Cambridge Model</button>
       </div>
       <div class="feedback-ocean" id="kwt-fb-3"></div>
+      <div class="cambridge-model-box" id="kwt-model-3">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">But for (1 mark) // the decisive (overnight) intervention (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);"><em>But for + Noun Phrase</em> replaces <em>If it had not been for</em>.</div>
+      </div>
     </div>
   </section>
 
   <!-- Section 4: Sonar Telemetry Depth Simulator -->
-  <section class="card-ocean">
+  <section class="card-ocean" id="simulator-section">
     <div class="card-header-ocean">
-      <h2>4. The Abyssal Sonar Simulator: Pressure Calibration</h2>
+      <h2>4. The Abyssal Sonar Simulator: Pressure Calibration (500m – 3,000m)</h2>
       <span class="badge-ocean" style="border-color:var(--gold); color:var(--gold-bright);">Interactive Simulator</span>
     </div>
     <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:12px;">
@@ -539,7 +803,7 @@
 
     <div style="background:#020712; border:1px solid var(--ocean-border); border-radius:10px; padding:16px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
-        <span style="font-family:var(--font-code); color:var(--cyan-bright); font-size:0.82rem;" id="bathy-depth-label">DEPTH: 250m (TWILIGHT ZONE)</span>
+        <span style="font-family:var(--font-code); color:var(--cyan-bright); font-size:0.82rem;" id="bathy-depth-label">DEPTH: 500m (MIDNIGHT SHELF)</span>
         <span style="font-family:var(--font-code); color:var(--gold-bright); font-size:0.82rem;" id="bathy-hull-label">HULL INTEGRITY: 100% ✓</span>
       </div>
 
@@ -557,16 +821,226 @@
       <div class="feedback-ocean" id="bathy-sim-feedback"></div>
 
       <div style="display:flex; justify-content:space-between; margin-top:12px; padding-top:10px; border-top:1px solid rgba(148,163,184,0.12);">
-        <button type="button" class="btn-action-ocean" style="background:#1e293b;" onclick="bathyApp.revealSimModel()">👁️ Reveal Model</button>
+        <button type="button" class="btn-action-ocean" style="background:#1e293b;" onclick="bathyApp.revealSimModel()">👁️ Reveal Cambridge Model</button>
         <button type="button" class="btn-action-ocean" onclick="bathyApp.nextDepthZone()">Descend to Next Zone &rarr;</button>
       </div>
     </div>
   </section>
 
-  <!-- Section 5: Speaking Part 2 Warm-Up -->
+  <!-- Section 4B: Hadal Trench C1/C2 Key Word Transformation Pressure Locks (4,000m - 10,900m) -->
+  <section class="card-ocean" id="hadal-locks-section">
+    <div class="card-header-ocean">
+      <div>
+        <h2>5. Hadal Trench Descent: 6 C1/C2 Pressure Locks (4,000m – 10,900m)</h2>
+        <p style="font-size:0.86rem; color:var(--text-muted); margin-top:4px;">
+          Apply Gareth's <strong>4-Step Elimination &amp; Deconstruction Strategy</strong>: (1) Strike out echoes to isolate the semantic deficit, (2) Inspect tense harmony, (3) Check voice shift, and (4) Fit the 3–6 word gap with the unchanged keyword.
+        </p>
+      </div>
+      <span class="badge-ocean" style="border-color:var(--gold); color:var(--gold-bright);">4-Step Deconstruction</span>
+    </div>
+
+    <!-- Hadal Lock 1: 4,000m -->
+    <div class="kwt-row-clean" id="hadal-lock-1" data-keyword="HAPPEN" data-valid="you happen to notice any|you happen to spot any|you happen to notice">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-ocean" style="font-size:0.7rem; margin-right:6px;">LOCK 1 • 4,000m (ABYSSAL MARGIN)</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="echo-word">If</span> <span class="deficit-word">you should notice any</span> <span class="echo-word">hull micro-fractures, abort the dive immediately.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="bathyApp.toggleEcho('hadal-lock-1', this)">✂️ Step 1: Strike Out the Echoes</button>
+          <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">HAPPEN</span>
+          <span class="kw-guard-pill" id="hadal-kw-1">KEYWORD: HAPPEN (MISSING)</span>
+          <span class="kwt-badge-pill" id="hadal-pill-1">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Modal Present (should notice) &rarr; Bare Infinitive after Inverted Should</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Active &rarr; Active (Should + Subject + happen to V1)</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.92rem;">Should</span>
+        <input type="text" class="kwt-input-clean" id="hadal-in-1" placeholder="3–6 words including HAPPEN..." oninput="bathyApp.trackHadalWords(1)">
+        <span style="font-size:0.92rem;">hull micro-fractures, abort the dive immediately.</span>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkHadalLock(1)">Calibrate Lock</button>
+        <button type="button" class="btn-reveal-model" onclick="bathyApp.toggleModelBox('hadal-model-1')">👁️ Reveal Cambridge Model</button>
+        <button type="button" class="btn-reveal-model" style="padding:7px 10px;" onclick="bathyApp.replaySingleLock(1)" title="Reset this lock">↺</button>
+      </div>
+      <div class="feedback-ocean" id="hadal-fb-1"></div>
+      <div class="cambridge-model-box" id="hadal-model-1">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">you happen (1 mark) // to notice (any) (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: Inverted Type 1 conditional <em>Should + subject + happen + to-infinitive</em> expresses remote possibility in formal briefings.</div>
+      </div>
+    </div>
+
+    <!-- Hadal Lock 2: 5,500m -->
+    <div class="kwt-row-clean" id="hadal-lock-2" data-keyword="BEEN" data-valid="it not been for the swift|it not been for the rapid">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-ocean" style="font-size:0.7rem; margin-right:6px;">LOCK 2 • 5,500m (ABYSSAL PLAIN)</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="deficit-word">If the crew had not reacted so swiftly,</span> <span class="echo-word">the submersible would have lost buoyancy.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="bathyApp.toggleEcho('hadal-lock-2', this)">✂️ Step 1: Strike Out the Echoes</button>
+          <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">BEEN</span>
+          <span class="kw-guard-pill" id="hadal-kw-2">KEYWORD: BEEN (MISSING)</span>
+          <span class="kwt-badge-pill" id="hadal-pill-2">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Past Perfect (had not reacted) &rarr; Inverted Past Perfect (Had it not been)</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Verb + Adverb (reacted swiftly) &rarr; Adjective + Noun (swift reaction)</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.92rem;">Had</span>
+        <input type="text" class="kwt-input-clean" id="hadal-in-2" placeholder="3–6 words including BEEN..." oninput="bathyApp.trackHadalWords(2)">
+        <span style="font-size:0.92rem;">reaction of the crew, the submersible would have lost buoyancy.</span>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkHadalLock(2)">Calibrate Lock</button>
+        <button type="button" class="btn-reveal-model" onclick="bathyApp.toggleModelBox('hadal-model-2')">👁️ Reveal Cambridge Model</button>
+        <button type="button" class="btn-reveal-model" style="padding:7px 10px;" onclick="bathyApp.replaySingleLock(2)" title="Reset this lock">↺</button>
+      </div>
+      <div class="feedback-ocean" id="hadal-fb-2"></div>
+      <div class="cambridge-model-box" id="hadal-model-2">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">it not been (1 mark) // for the swift (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: <em>Had it not been for + noun phrase</em> is the fixed C1/C2 inverted counterfactual frame.</div>
+      </div>
+    </div>
+
+    <!-- Hadal Lock 3: 7,000m -->
+    <div class="kwt-row-clean" id="hadal-lock-3" data-keyword="CONDITION" data-valid="on condition that|only on condition that">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-ocean" style="font-size:0.7rem; margin-right:6px;">LOCK 3 • 7,000m (HADAL GATE)</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="echo-word">The expedition will proceed</span> <span class="deficit-word">only if</span> <span class="echo-word">the acoustic beacons function flawlessly.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="bathyApp.toggleEcho('hadal-lock-3', this)">✂️ Step 1: Strike Out the Echoes</button>
+          <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">CONDITION</span>
+          <span class="kw-guard-pill" id="hadal-kw-3">KEYWORD: CONDITION (MISSING)</span>
+          <span class="kwt-badge-pill" id="hadal-pill-3">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Future + Present Simple (will proceed / function)</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Active &rarr; Active Prerequisite Conjunction</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.92rem;">The expedition will proceed</span>
+        <input type="text" class="kwt-input-clean" id="hadal-in-3" placeholder="3–6 words including CONDITION..." oninput="bathyApp.trackHadalWords(3)">
+        <span style="font-size:0.92rem;">the acoustic beacons function flawlessly.</span>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkHadalLock(3)">Calibrate Lock</button>
+        <button type="button" class="btn-reveal-model" onclick="bathyApp.toggleModelBox('hadal-model-3')">👁️ Reveal Cambridge Model</button>
+        <button type="button" class="btn-reveal-model" style="padding:7px 10px;" onclick="bathyApp.replaySingleLock(3)" title="Reset this lock">↺</button>
+      </div>
+      <div class="feedback-ocean" id="hadal-fb-3"></div>
+      <div class="cambridge-model-box" id="hadal-model-3">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">(only) on condition (1 mark) // that (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: <em>only if</em> maps directly to the zero-article C1 prepositional conjunction <em>on condition that</em>.</div>
+      </div>
+    </div>
+
+    <!-- Hadal Lock 4: 8,500m -->
+    <div class="kwt-row-clean" id="hadal-lock-4" data-keyword="WERE" data-valid="were it not for">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-ocean" style="font-size:0.7rem; margin-right:6px;">LOCK 4 • 8,500m (MARIANA RIDGE)</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="deficit-word">Without</span> <span class="echo-word">the pilot's calm judgement, the deep-sea mission would have failed last night.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="bathyApp.toggleEcho('hadal-lock-4', this)">✂️ Step 1: Strike Out the Echoes</button>
+          <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">WERE</span>
+          <span class="kw-guard-pill" id="hadal-kw-4">KEYWORD: WERE (MISSING)</span>
+          <span class="kwt-badge-pill" id="hadal-pill-4">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Mixed Type B (Present Ongoing Trait &rarr; Past Result would have failed)</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Preposition (Without) &rarr; Subjunctive Inversion (Were it not for)</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <input type="text" class="kwt-input-clean" id="hadal-in-4" placeholder="3–6 words including WERE..." oninput="bathyApp.trackHadalWords(4)">
+        <span style="font-size:0.92rem;">the pilot's calm judgement, the deep-sea mission would have failed last night.</span>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkHadalLock(4)">Calibrate Lock</button>
+        <button type="button" class="btn-reveal-model" onclick="bathyApp.toggleModelBox('hadal-model-4')">👁️ Reveal Cambridge Model</button>
+        <button type="button" class="btn-reveal-model" style="padding:7px 10px;" onclick="bathyApp.replaySingleLock(4)" title="Reset this lock">↺</button>
+      </div>
+      <div class="feedback-ocean" id="hadal-fb-4"></div>
+      <div class="cambridge-model-box" id="hadal-model-4">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">Were it (1 mark) // not for (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: Because the pilot's calm judgement is a permanent trait, <em>Were it not for</em> pairs with the past result <em>would have failed</em>.</div>
+      </div>
+    </div>
+
+    <!-- Hadal Lock 5: 9,800m -->
+    <div class="kwt-row-clean" id="hadal-lock-5" data-keyword="WISH" data-valid="wish they had deployed|wish that they had deployed">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-ocean" style="font-size:0.7rem; margin-right:6px;">LOCK 5 • 9,800m (SIRENA DEEP)</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="echo-word">The marine biologists</span> <span class="deficit-word">regret not deploying</span> <span class="echo-word">the thermal sensors before the current shifted.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="bathyApp.toggleEcho('hadal-lock-5', this)">✂️ Step 1: Strike Out the Echoes</button>
+          <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">WISH</span>
+          <span class="kw-guard-pill" id="hadal-kw-5">KEYWORD: WISH (MISSING)</span>
+          <span class="kwt-badge-pill" id="hadal-pill-5">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Present Regret of Past Action &rarr; wish + Past Perfect (had deployed)</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Negative Gerund (not deploying) &rarr; Affirmative Past Perfect Clause</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.92rem;">The marine biologists</span>
+        <input type="text" class="kwt-input-clean" id="hadal-in-5" placeholder="3–6 words including WISH..." oninput="bathyApp.trackHadalWords(5)">
+        <span style="font-size:0.92rem;">the thermal sensors before the current shifted.</span>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkHadalLock(5)">Calibrate Lock</button>
+        <button type="button" class="btn-reveal-model" onclick="bathyApp.toggleModelBox('hadal-model-5')">👁️ Reveal Cambridge Model</button>
+        <button type="button" class="btn-reveal-model" style="padding:7px 10px;" onclick="bathyApp.replaySingleLock(5)" title="Reset this lock">↺</button>
+      </div>
+      <div class="feedback-ocean" id="hadal-fb-5"></div>
+      <div class="cambridge-model-box" id="hadal-model-5">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">wish (that) they (1 mark) // had deployed (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: Polarity flips from negative (<em>regret not deploying</em>) to affirmative counterfactual (<em>wish they had deployed</em>).</div>
+      </div>
+    </div>
+
+    <!-- Hadal Lock 6: 10,900m -->
+    <div class="kwt-row-clean" id="hadal-lock-6" data-keyword="OTHERWISE" data-valid="otherwise the dive would|otherwise the descent would">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-ocean" style="font-size:0.7rem; margin-right:6px;">LOCK 6 • 10,900m (CHALLENGER DEEP)</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="echo-word">The technician recalibrated the oxygen valves in time;</span> <span class="deficit-word">if he hadn't, the dive would</span> <span class="echo-word">have been scrubbed.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="bathyApp.toggleEcho('hadal-lock-6', this)">✂️ Step 1: Strike Out the Echoes</button>
+          <span class="badge-ocean" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">OTHERWISE</span>
+          <span class="kw-guard-pill" id="hadal-kw-6">KEYWORD: OTHERWISE (MISSING)</span>
+          <span class="kwt-badge-pill" id="hadal-pill-6">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Past Fact (recalibrated) + Past Modal Result (would have been scrubbed)</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Active Condition (if he hadn't) &rarr; Adverbial Connector (otherwise) + Passive Subject</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.92rem;">The technician recalibrated the oxygen valves in time;</span>
+        <input type="text" class="kwt-input-clean" id="hadal-in-6" placeholder="3–6 words including OTHERWISE..." oninput="bathyApp.trackHadalWords(6)">
+        <span style="font-size:0.92rem;">have been scrubbed.</span>
+        <button type="button" class="btn-action-ocean" onclick="bathyApp.checkHadalLock(6)">Calibrate Lock</button>
+        <button type="button" class="btn-reveal-model" onclick="bathyApp.toggleModelBox('hadal-model-6')">👁️ Reveal Cambridge Model</button>
+        <button type="button" class="btn-reveal-model" style="padding:7px 10px;" onclick="bathyApp.replaySingleLock(6)" title="Reset this lock">↺</button>
+      </div>
+      <div class="feedback-ocean" id="hadal-fb-6"></div>
+      <div class="cambridge-model-box" id="hadal-model-6">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">otherwise (1 mark) // the dive would (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: <em>Otherwise</em> absorbs the entire negative condition <em>if he hadn't</em>.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Speaking Part 2 Warm-Up -->
   <section class="card-ocean">
     <div class="card-header-ocean">
-      <h2>5. Speaking Warm-Up: 2-Minute Long Turn</h2>
+      <h2>6. Speaking Warm-Up: 2-Minute Long Turn</h2>
       <span class="badge-ocean" style="border-color:var(--emerald); color:#6ee7b7;">Active Voice First</span>
     </div>
     <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:12px;">
@@ -615,6 +1089,7 @@
 const bathyApp = (() => {
   let score = 0;
   const answered = new Set();
+  const completedDepthNodes = new Set();
   let audioCtx = null;
 
   function ensureAudio() {
@@ -646,13 +1121,34 @@ const bathyApp = (() => {
     });
   }
 
+  function updateProgressReadout() {
+    const el = document.getElementById('session-score');
+    if (el) el.textContent = `${score} / 32`;
+    const locksEl = document.getElementById('locks-progress-readout');
+    if (locksEl) locksEl.textContent = `${completedDepthNodes.size} / 9 Locks Calibrated`;
+  }
+
   function addScore(pts, key) {
     if (!answered.has(key)) {
       answered.add(key);
       score += pts;
-      const el = document.getElementById('session-score');
-      if (el) el.textContent = `${score} / 20`;
+      updateProgressReadout();
     }
+  }
+
+  function toggleEcho(rowId, btn) {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    const isStruck = row.classList.toggle('echo-struck');
+    if (btn) btn.classList.toggle('active', isStruck);
+    playTone(isStruck ? [660, 880] : [440], 0.08);
+  }
+
+  function toggleModelBox(boxId) {
+    const box = document.getElementById(boxId);
+    if (!box) return;
+    box.classList.toggle('open');
+    playTone([523, 659], 0.08);
   }
 
   function handleMC(btn, chosen, explanation) {
@@ -674,32 +1170,184 @@ const bathyApp = (() => {
     }
   }
 
+  function checkKeywordGuard(text, keyword, guardEl) {
+    if (!guardEl || !keyword) return true;
+    const tokens = text.trim().toUpperCase().split(/\s+/).filter(Boolean);
+    const hasExact = tokens.includes(keyword.toUpperCase());
+    if (hasExact) {
+      guardEl.textContent = `KEYWORD: ${keyword} ✓`;
+      guardEl.classList.add('ok');
+    } else {
+      guardEl.textContent = `KEYWORD: ${keyword} (UNCHANGED REQ)`;
+      guardEl.classList.remove('ok');
+    }
+    return hasExact;
+  }
+
   function trackWords(id) {
+    const row = document.getElementById(`kwt-row-${id}`);
     const input = document.getElementById(`kwt-in-${id}`);
     const pill = document.getElementById(`kwt-pill-${id}`);
+    const kwGuard = document.getElementById(`kwt-kw-${id}`);
     if (!input || !pill) return;
-    const count = input.value.trim() ? input.value.trim().split(/\s+/).length : 0;
+    const raw = input.value.trim();
+    const count = raw ? raw.split(/\s+/).length : 0;
     pill.textContent = `${count} WORDS (3–6 REQ)`;
     pill.classList.toggle('valid', count >= 3 && count <= 6);
+    if (row && kwGuard) {
+      checkKeywordGuard(raw, row.dataset.keyword, kwGuard);
+    }
   }
 
   function checkKWT(id, model, explanation) {
-    const row = document.querySelectorAll('.kwt-row-clean')[id - 1];
+    const row = document.getElementById(`kwt-row-${id}`);
     const input = document.getElementById(`kwt-in-${id}`);
     const fb = document.getElementById(`kwt-fb-${id}`);
-    const val = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+    const raw = input.value.trim();
+    const val = raw.toLowerCase().replace(/\s+/g, ' ');
+    const count = raw ? raw.split(/\s+/).length : 0;
+    const kw = row.dataset.keyword;
+    const hasKw = checkKeywordGuard(raw, kw, document.getElementById(`kwt-kw-${id}`));
     const valid = row.dataset.valid.split('|').map(s => s.trim().toLowerCase());
+
+    if (!hasKw) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-ocean visible wrong';
+      fb.innerHTML = `<strong>⚠️ Keyword Guard:</strong> You must include the exact unchanged keyword <strong>${kw}</strong>.`;
+      return;
+    }
+    if (count < 3 || count > 6) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-ocean visible wrong';
+      fb.innerHTML = `<strong>⚠️ Word Count Guard:</strong> Your answer has ${count} words (strictly 3 to 6 words required).`;
+      return;
+    }
 
     if (valid.includes(val)) {
       playTone([523, 659, 783]);
       fb.className = 'feedback-ocean visible correct';
-      fb.innerHTML = `<strong>✓ Spot on (+2 pts):</strong> <em>"${val}"</em>. ${explanation}`;
+      fb.innerHTML = `<strong>✓ Spot on (+2 pts):</strong> <em>"${raw}"</em>. ${explanation}`;
       addScore(2, `kwt_${id}`);
     } else {
       playTone([220, 160], 0.25, 'sawtooth');
       fb.className = 'feedback-ocean visible wrong';
-      fb.innerHTML = `<strong>Model:</strong> <em>"${model}"</em> (${explanation})`;
+      fb.innerHTML = `<strong>Not quite:</strong> Compare with the Cambridge Model: <em>"${model}"</em> (${explanation})`;
     }
+  }
+
+  function trackHadalWords(id) {
+    const row = document.getElementById(`hadal-lock-${id}`);
+    const input = document.getElementById(`hadal-in-${id}`);
+    const pill = document.getElementById(`hadal-pill-${id}`);
+    const kwGuard = document.getElementById(`hadal-kw-${id}`);
+    if (!input || !pill || !row) return;
+    const raw = input.value.trim();
+    const count = raw ? raw.split(/\s+/).length : 0;
+    pill.textContent = `${count} WORDS (3–6 REQ)`;
+    pill.classList.toggle('valid', count >= 3 && count <= 6);
+    checkKeywordGuard(raw, row.dataset.keyword, kwGuard);
+  }
+
+  function checkHadalLock(id) {
+    const row = document.getElementById(`hadal-lock-${id}`);
+    const input = document.getElementById(`hadal-in-${id}`);
+    const fb = document.getElementById(`hadal-fb-${id}`);
+    const modelBox = document.getElementById(`hadal-model-${id}`);
+    if (!row || !input || !fb) return;
+
+    const raw = input.value.trim();
+    const val = raw.toLowerCase().replace(/\s+/g, ' ');
+    const count = raw ? raw.split(/\s+/).length : 0;
+    const kw = row.dataset.keyword;
+    const hasKw = checkKeywordGuard(raw, kw, document.getElementById(`hadal-kw-${id}`));
+    const valid = row.dataset.valid.split('|').map(s => s.trim().toLowerCase());
+
+    if (!hasKw) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-ocean visible wrong';
+      fb.innerHTML = `<strong>⚠️ Unchanged Keyword Guard:</strong> You must use the exact word <strong>${kw}</strong> without altering its form.`;
+      return;
+    }
+    if (count < 3 || count > 6) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-ocean visible wrong';
+      fb.innerHTML = `<strong>⚠️ Word Count Guard:</strong> You wrote ${count} words. Cambridge Part 4 requires between 3 and 6 words.`;
+      return;
+    }
+
+    if (valid.includes(val)) {
+      playTone([523, 659, 783, 1046]);
+      fb.className = 'feedback-ocean visible correct';
+      fb.innerHTML = `<strong>✓ Pressure Lock ${id} Calibrated (+2 pts)!</strong> 1 mark // 1 mark confirmed.`;
+      if (modelBox) modelBox.classList.add('open');
+      addScore(2, `hadal_lock_${id}`);
+      completedDepthNodes.add(`hadal-${id}`);
+      const navBtn = document.getElementById(`depth-nav-hadal-${id}`);
+      if (navBtn) navBtn.classList.add('completed');
+      updateProgressReadout();
+      sonarRadius = 1;
+    } else {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-ocean visible wrong';
+      fb.innerHTML = `<strong>⚠️ Hull Pressure Warning:</strong> Check Step 1 (isolated deficit) and Step 2 (tense harmony), or click <em>👁️ Reveal Cambridge Model</em>.`;
+    }
+  }
+
+  function jumpToZone(type, idx) {
+    document.querySelectorAll('.depth-node-btn').forEach(b => b.classList.remove('active'));
+    if (type === 'sim') {
+      const btn = document.getElementById(`depth-nav-sim-${idx}`);
+      if (btn) btn.classList.add('active');
+      currentStage = idx;
+      updateSimUI();
+      const simSec = document.getElementById('simulator-section');
+      if (simSec) simSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      pingSonar();
+    } else if (type === 'hadal') {
+      const btn = document.getElementById(`depth-nav-hadal-${idx}`);
+      if (btn) btn.classList.add('active');
+      const lockEl = document.getElementById(`hadal-lock-${idx}`);
+      if (lockEl) {
+        lockEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const inp = document.getElementById(`hadal-in-${idx}`);
+        if (inp) setTimeout(() => inp.focus(), 350);
+      }
+      playTone([660, 880], 0.12);
+    }
+  }
+
+  function replaySingleLock(id) {
+    const row = document.getElementById(`hadal-lock-${id}`);
+    const input = document.getElementById(`hadal-in-${id}`);
+    const fb = document.getElementById(`hadal-fb-${id}`);
+    const modelBox = document.getElementById(`hadal-model-${id}`);
+    const navBtn = document.getElementById(`depth-nav-hadal-${id}`);
+    if (row) row.classList.remove('echo-struck');
+    if (input) {
+      input.value = '';
+      trackHadalWords(id);
+    }
+    if (fb) fb.className = 'feedback-ocean';
+    if (modelBox) modelBox.classList.remove('open');
+    if (navBtn) navBtn.classList.remove('completed');
+    completedDepthNodes.delete(`hadal-${id}`);
+    updateProgressReadout();
+    playTone([440, 554], 0.1);
+  }
+
+  function replayAllLocks() {
+    for (let i = 1; i <= 6; i++) {
+      replaySingleLock(i);
+    }
+    for (let s = 0; s < 3; s++) {
+      completedDepthNodes.delete(`sim-${s}`);
+      const sBtn = document.getElementById(`depth-nav-sim-${s}`);
+      if (sBtn) sBtn.classList.remove('completed');
+    }
+    currentStage = 0;
+    updateSimUI();
+    updateProgressReadout();
+    pingSonar();
   }
 
   // Sonar Simulator
@@ -763,6 +1411,10 @@ const bathyApp = (() => {
           fb.className = 'feedback-ocean visible correct';
           fb.innerHTML = `<strong>✓ Telemetry Confirmed (+2 pts)!</strong> ${s.rule}<br><strong>Model:</strong> <em>"${s.model}"</em>`;
           addScore(2, `sim_bathy_${currentStage}`);
+          completedDepthNodes.add(`sim-${currentStage}`);
+          const navBtn = document.getElementById(`depth-nav-sim-${currentStage}`);
+          if (navBtn) navBtn.classList.add('completed');
+          updateProgressReadout();
           sonarRadius = 1;
         } else {
           playTone([220, 160], 0.25, 'sawtooth');
@@ -789,6 +1441,9 @@ const bathyApp = (() => {
 
   function nextDepthZone() {
     currentStage = (currentStage + 1) % depthStages.length;
+    document.querySelectorAll('.depth-node-btn').forEach(b => b.classList.remove('active'));
+    const navBtn = document.getElementById(`depth-nav-sim-${currentStage}`);
+    if (navBtn) navBtn.classList.add('active');
     updateSimUI();
   }
 
@@ -890,6 +1545,7 @@ const bathyApp = (() => {
 
   function init() {
     updateSimUI();
+    updateProgressReadout();
     requestAnimationFrame(drawCanvas);
   }
 
@@ -897,8 +1553,15 @@ const bathyApp = (() => {
 
   return {
     handleMC,
+    toggleEcho,
+    toggleModelBox,
     trackWords,
     checkKWT,
+    trackHadalWords,
+    checkHadalLock,
+    jumpToZone,
+    replaySingleLock,
+    replayAllLocks,
     pingSonar,
     revealSimModel,
     nextDepthZone,

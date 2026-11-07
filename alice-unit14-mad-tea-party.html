@@ -12,6 +12,32 @@
   <meta property="og:url" content="https://garethenglish.com/alice-unit14-mad-tea-party.html">
   <meta property="og:image" content="https://garethenglish.com/assets/img/og-gothic-alice.png">
   <link rel="stylesheet" href="dark-academia.css">
+  <style>
+    .da-workbench-panel { margin-top: 1.5rem; padding: 1.25rem; background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(192, 132, 252, 0.35); border-radius: 12px; }
+    .da-wb-item { background: rgba(2, 6, 23, 0.78); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 10px; padding: 1.1rem; margin-top: 1rem; }
+    .da-wb-item.is-correct { border-color: #4ade80; box-shadow: 0 0 18px -6px rgba(74, 222, 128, 0.35); }
+    .da-wb-step-bar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.65rem 0; }
+    .da-wb-badge { font-size: 0.76rem; padding: 0.25rem 0.6rem; border-radius: 6px; background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(148, 163, 184, 0.28); color: #cbd5e1; }
+    .da-wb-badge.tense { border-color: rgba(56, 189, 248, 0.45); color: #bae6fd; }
+    .da-wb-badge.voice { border-color: rgba(192, 132, 252, 0.45); color: #e9d5ff; }
+    .da-wb-meta-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-top: 0.6rem; font-size: 0.78rem; }
+    .da-wb-pill { padding: 0.2rem 0.55rem; border-radius: 99px; background: #0f172a; border: 1px solid #334155; color: #94a3b8; font-family: var(--mono, monospace); }
+    .da-wb-pill.ok { border-color: #4ade80; color: #86efac; background: rgba(20, 83, 45, 0.35); }
+    .da-wb-pill.warn { border-color: #f87171; color: #fca5a5; background: rgba(127, 29, 29, 0.35); }
+    .da-wb-reveal-box { display: none; margin-top: 0.75rem; padding: 0.85rem 1rem; border-radius: 8px; background: rgba(15, 23, 42, 0.9); border-left: 3px solid #c084fc; font-size: 0.86rem; color: #e2e8f0; line-height: 1.6; }
+    .da-wb-reveal-box.is-open { display: block; }
+    .da-c1-detector-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 0.55rem; margin: 0.85rem 0; }
+    .da-c1-badge { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; border-radius: 8px; background: rgba(15, 23, 42, 0.75); border: 1px solid #334155; font-size: 0.8rem; color: #94a3b8; transition: all 0.2s; }
+    .da-c1-badge.active { background: rgba(20, 83, 45, 0.38); border-color: #4ade80; color: #ecfdf5; box-shadow: 0 0 14px -4px rgba(74, 222, 128, 0.4); }
+    .da-c1-dot { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; background: #1e293b; color: #64748b; font-size: 0.72rem; font-weight: 800; flex-shrink: 0; }
+    .da-c1-badge.active .da-c1-dot { background: #22c55e; color: #052e16; }
+    .da-trilogy-nav { margin: 1.5rem 0; padding: 1.15rem 1.35rem; background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(59, 7, 100, 0.45)); border: 1px solid rgba(192, 132, 252, 0.35); border-radius: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; }
+    .da-trilogy-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .da-trilogy-link { padding: 0.45rem 0.85rem; border-radius: 8px; background: rgba(2, 6, 23, 0.7); border: 1px solid #334155; color: #cbd5e1; text-decoration: none; font-size: 0.83rem; font-weight: 600; transition: all 0.2s; }
+    .da-trilogy-link:hover { border-color: #c084fc; color: #f3e8ff; }
+    .da-trilogy-link.current { background: rgba(168, 85, 247, 0.22); border-color: #c084fc; color: #f3e8ff; }
+    del.echo-strike { color: #64748b; text-decoration: line-through; text-decoration-color: #f87171; background: rgba(239, 68, 68, 0.1); padding: 0 2px; border-radius: 3px; }
+  </style>
 </head>
 <body class="alice-theme">
 
@@ -364,10 +390,380 @@
     }
   };
 
+  // Enhancement 1, 2 & 3: Speaking Warm-Up, 4-Step Part 4 Deconstruction Workbench & Live C1 Syntactic Detector
+  let unitTimerInterval = null;
+  function startUnitTimer(seconds, mode) {
+    stopUnitTimer();
+    let rem = seconds;
+    const disp = document.getElementById('unit-timer-display');
+    const tick = () => {
+      const m = String(Math.floor(rem / 60)).padStart(2, '0');
+      const s = String(rem % 60).padStart(2, '0');
+      if (disp) {
+        disp.textContent = `${m}:${s}`;
+        disp.style.borderColor = mode === 'Speak' ? '#4ade80' : '#f59e0b';
+        disp.style.color = rem <= 10 ? '#f87171' : (mode === 'Speak' ? '#86efac' : '#fde68a');
+      }
+    };
+    tick();
+    unitTimerInterval = setInterval(() => {
+      rem -= 1;
+      if (rem <= 0) {
+        rem = 0;
+        tick();
+        clearInterval(unitTimerInterval);
+        unitTimerInterval = null;
+      } else {
+        tick();
+      }
+    }, 1000);
+  }
+  function stopUnitTimer() {
+    if (unitTimerInterval) { clearInterval(unitTimerInterval); unitTimerInterval = null; }
+    const disp = document.getElementById('unit-timer-display');
+    if (disp) { disp.textContent = '01:00'; disp.style.borderColor = 'rgba(245,158,11,0.4)'; disp.style.color = '#fde68a'; }
+  }
+  function toggleRevealBox(id, btn, showText, hideText) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const open = el.classList.toggle('is-open');
+    if (btn) {
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      btn.textContent = open ? hideText : showText;
+    }
+  }
+
+  const workbenchItems = [
+    {
+      id: 'B1',
+      cleanStem: "If the Hatter apologized to Time, the pocket watch would start ticking again.",
+      struckStem: "If <del class='echo-strike'>the Hatter</del> apologized <del class='echo-strike'>to Time, the pocket watch would start ticking again</del>.",
+      deficitNote: "Isolated deficit: 'If the Hatter apologized' → Inverted second conditional 'Were the Hatter to apologize'.",
+      keyWord: "WERE",
+      tenseBadge: "Step 2 Tense: Subjunctive Past + to-Infinitive",
+      voiceBadge: "Step 3 Voice: Inverted Second Conditional",
+      leadIn: "",
+      leadOut: "to Time, the pocket watch would start ticking again.",
+      model: "Were the Hatter to apologize",
+      valid: ["were the hatter to apologize", "were the hatter to apologise"],
+      splitNote: "1 mark: Were the Hatter // 1 mark: to apologize / apologise (5 words)"
+    },
+    {
+      id: 'B2',
+      cleanStem: "Alice wished that she had not sat down at the Mad Hatter's table.",
+      struckStem: "<del class='echo-strike'>Alice</del> wished that she had not sat <del class='echo-strike'>down at the Mad Hatter's table</del>.",
+      deficitNote: "Isolated deficit: 'wished that she had not sat' → Regret + perfect/simple gerund 'regretted having sat'.",
+      keyWord: "REGRETTED",
+      tenseBadge: "Step 2 Tense: Past Simple + Perfect Gerund (having + V3)",
+      voiceBadge: "Step 3 Voice: Active Gerund Complement",
+      leadIn: "Alice",
+      leadOut: "down at the Mad Hatter's table.",
+      model: "regretted having sat",
+      valid: ["regretted having sat", "regretted sitting", "soon regretted having sat", "deeply regretted having sat", "bitterly regretted having sat"],
+      splitNote: "1 mark: regretted // 1 mark: (having) sat / sitting (3 words)"
+    },
+    {
+      id: 'B3',
+      cleanStem: "If the March Hare should offer you wine, tell him there is none on the table.",
+      struckStem: "If <del class='echo-strike'>the March Hare</del> should offer <del class='echo-strike'>you wine, tell him there is none on the table</del>.",
+      deficitNote: "Isolated deficit: 'If the March Hare should offer' → Inverted first conditional 'Should the March Hare offer'.",
+      keyWord: "SHOULD",
+      tenseBadge: "Step 2 Tense: Modal Inversion + Bare Infinitive",
+      voiceBadge: "Step 3 Voice: Inverted First Conditional",
+      leadIn: "",
+      leadOut: "you wine, tell him there is none on the table.",
+      model: "Should the March Hare offer",
+      valid: ["should the march hare offer"],
+      splitNote: "1 mark: Should the March Hare // 1 mark: offer (5 words)"
+    }
+  ];
+
+  function toggleEchoStrike(idx, btn) {
+    const item = workbenchItems[idx];
+    const stemEl = document.querySelector(`#wb-stem-${idx} .wb-stem-text`);
+    const defEl = document.getElementById(`wb-deficit-${idx}`);
+    if (!stemEl || !item) return;
+    const struck = btn.getAttribute('data-struck') === 'true';
+    if (struck) {
+      stemEl.innerHTML = item.cleanStem;
+      if (defEl) defEl.style.display = 'none';
+      btn.setAttribute('data-struck', 'false');
+      btn.textContent = '✂️ Step 1: Strike Out Echoes';
+    } else {
+      stemEl.innerHTML = item.struckStem;
+      if (defEl) defEl.style.display = 'block';
+      btn.setAttribute('data-struck', 'true');
+      btn.textContent = '↺ Restore Full Sentence';
+    }
+  }
+
+  function updateWbStatus(idx) {
+    const item = workbenchItems[idx];
+    const inp = document.getElementById(`wb-input-${idx}`);
+    const wcPill = document.getElementById(`wb-wc-${idx}`);
+    const kwPill = document.getElementById(`wb-kw-${idx}`);
+    if (!inp || !item) return;
+    const raw = inp.value.trim();
+    const words = raw ? raw.split(/\s+/) : [];
+    const n = words.length;
+    if (wcPill) {
+      wcPill.textContent = `${n} / 3–6 words`;
+      wcPill.className = 'da-wb-pill ' + (n >= 3 && n <= 6 ? 'ok' : (n > 0 ? 'warn' : ''));
+    }
+    const hasKw = new RegExp(`\\b${item.keyWord}\\b`, 'i').test(raw);
+    if (kwPill) {
+      kwPill.textContent = hasKw ? `🔑 Keyword "${item.keyWord}" unchanged ✓` : `🔑 Include "${item.keyWord}" unchanged`;
+      kwPill.className = 'da-wb-pill ' + (hasKw ? 'ok' : (n > 0 ? 'warn' : ''));
+    }
+  }
+
+  function checkWbItem(idx) {
+    const item = workbenchItems[idx];
+    const inp = document.getElementById(`wb-input-${idx}`);
+    const fb = document.getElementById(`wb-fb-${idx}`);
+    const card = document.getElementById(`wb-card-${idx}`);
+    if (!inp || !fb || !item) return;
+    const norm = inp.value.trim().replace(/\s+/g, ' ').toLowerCase();
+    const words = norm ? norm.split(' ') : [];
+    const hasKw = new RegExp(`\\b${item.keyWord.toLowerCase()}\\b`).test(norm);
+    fb.style.display = 'block';
+    if (!hasKw) {
+      fb.className = 'feedback-box wrong';
+      fb.textContent = `⚠️ Unchanged Keyword Guard: You must include the exact word "${item.keyWord}" without altering its form.`;
+      return;
+    }
+    if (words.length < 3 || words.length > 6) {
+      fb.className = 'feedback-box wrong';
+      fb.textContent = `⚠️ Word Count Alert: Your phrase has ${words.length} words. Cambridge C1 Part 4 requires between 3 and 6 words.`;
+      return;
+    }
+    if (item.valid.includes(norm)) {
+      fb.className = 'feedback-box correct';
+      fb.textContent = `✓ Spot on! (2/2 Marks) — ${item.splitNote}`;
+      if (card) card.classList.add('is-correct');
+    } else {
+      fb.className = 'feedback-box wrong';
+      fb.textContent = `Not quite. Check the tense & voice badges above, or click "👁️ Reveal Cambridge Model" to see the 1+1 mark split.`;
+    }
+  }
+
+  function auditC1Writing(text) {
+    const raw = (text || '').trim();
+    const words = raw ? raw.split(/\s+/).length : 0;
+    const wcEl = document.getElementById('transfer-word-count');
+    if (wcEl) wcEl.textContent = `${words} Words`;
+
+    const rules = [
+      { id: 'c1-badge-inversion', re: /\b(?:much\s+as|[a-z]+\s+(?:though|as)\s+(?:the|a|an|it|he|she|they|we|this|that|[a-z]+)\s+(?:is|are|was|were|seem|seemed|look|looked|sound|sounded|appear|appeared|may|might)|never\s+before|seldom|rarely|little\s+(?:did|do|does)|not\s+until|only\s+(?:when|after|by)|scarcely|hardly|no\s+sooner|under\s+no\s+circumstances|so\s+[a-z]+\s+(?:was|were|is|are|has|have)|such\s+(?:was|were|is)|nowhere\s+(?:is|was|could))\b/i },
+      { id: 'c1-badge-cleft', re: /\b(?:what\s+[^.!?]{2,45}\s+(?:is|was|are|were)\b|it\s+(?:is|was)\s+(?:only\s+when|not\s+until|[^.!?]{2,35})\s+that\b)/i },
+      { id: 'c1-badge-participle', re: /(?:^|[.!?]\s+)(?:having\s+[a-z]+ed|having\s+been|not\s+[a-z]+ing|far\s+from\s+[a-z]+ing|hemmed\s+in|shrouded\s+in|faced\s+with|confronted\s+with|[a-z]+ing\s+[^.!?]{3,50},)/im },
+      { id: 'c1-badge-passive', re: /\b(?:(?:is|are|was|were)\s+(?:widely\s+|commonly\s+|frequently\s+)?(?:believed|alleged|thought|presumed|said|reported|rumoured|claimed|known)\s+to\b|it\s+(?:is|was)\s+(?:widely\s+)?(?:believed|argued|thought|claimed|alleged)\s+that\b|corroborated\s+by\b)/i },
+      { id: 'c1-badge-modal', re: /\b(?:(?:must|can't|cannot|couldn't|may|might|could)\s+(?:well\s+)?have\s+[a-z]+|ought\s+(?:not\s+)?to\s+have|were\s+[^.!?]{2,25}\s+to\s+[a-z]+|should\s+[^.!?]{2,25}\s+[a-z]+|had\s+it\s+not\s+been\s+for|but\s+for\s+the|high\s+time\s+[^.!?]{2,25}\s+[a-z]+ed|would\s+rather\s+[^.!?]{2,25}\s+(?:did|had|[a-z]+ed))\b/i }
+    ];
+
+    rules.forEach(r => {
+      const el = document.getElementById(r.id);
+      if (!el) return;
+      const dot = el.querySelector('.da-c1-dot');
+      const matched = r.re.test(raw);
+      el.classList.toggle('active', matched);
+      if (dot) dot.textContent = matched ? '✓' : '○';
+    });
+  }
+
+  function mountAliceUnit14Enhancements() {
+    const banner = document.querySelector('.visual-scene-banner');
+    if (banner && !document.getElementById('speaking-warmup-heading')) {
+      const warmUpSec = document.createElement('section');
+      warmUpSec.className = 'card';
+      warmUpSec.setAttribute('aria-labelledby', 'speaking-warmup-heading');
+      warmUpSec.innerHTML = `
+        <div class="card-header">
+          <h2 id="speaking-warmup-heading">0. Active Speaking Warm-Up: Breaking Out of Perpetual Six O'Clock</h2>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <span class="badge badge-stretch">Active Voice First • 3–4 Mins</span>
+            <span class="pill">IELTS Speaking Part 2 Long Turn</span>
+          </div>
+        </div>
+        <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1rem;">
+          Before joining the Mad Hatter's table, warm up your spoken English. Use the <strong>60-second preparation timer</strong> to jot down 4 single trigger keywords, then speak aloud for up to <strong>2 minutes</strong> using at least one unreal past subjunctive (<em>It is high time...</em>) or inverted conditional (<em>Were they to...</em>).
+        </p>
+        <div class="da-speaking-grid">
+          <div class="da-cue-card">
+            <div class="da-cue-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
+              <span class="badge badge-canon-alice">IELTS Speaking Part 2 Cue Card</span>
+              <div class="da-timer-controls">
+                <span id="unit-timer-display" class="da-timer-pill" aria-live="off">01:00</span>
+                <button type="button" class="kwt-mini-btn" onclick="startUnitTimer(60, 'Prep')">⏱ 60s Prep</button>
+                <button type="button" class="kwt-mini-btn" onclick="startUnitTimer(120, 'Speak')">🎙️ 120s Speak</button>
+                <button type="button" class="kwt-mini-btn" onclick="stopUnitTimer()" aria-label="Reset timer">↺</button>
+              </div>
+            </div>
+            <h3 class="da-cue-title">Describe an outdated rule, habit, or bureaucratic process that you think is overdue for reform.</h3>
+            <p style="font-size:0.84rem; color:#cbd5e1; margin-bottom:0.45rem;">You should say:</p>
+            <ul class="da-cue-list">
+              <li>what this rule, routine, or bureaucratic requirement is</li>
+              <li>why you think it has become arbitrary or futile</li>
+              <li>what would happen if organisations changed it</li>
+              <li>and explain why you feel it is high time this practice was updated.</li>
+            </ul>
+            <div class="da-keyword-grid">
+              <input type="text" class="da-keyword-input" placeholder="1. Keyword" aria-label="Margin trigger keyword 1">
+              <input type="text" class="da-keyword-input" placeholder="2. Keyword" aria-label="Margin trigger keyword 2">
+              <input type="text" class="da-keyword-input" placeholder="3. Keyword" aria-label="Margin trigger keyword 3">
+              <input type="text" class="da-keyword-input" placeholder="4. Keyword" aria-label="Margin trigger keyword 4">
+            </div>
+          </div>
+          <div class="da-structuring-box">
+            <div>
+              <strong style="font-size:0.92rem; color:#fde68a; display:block; margin-bottom:0.55rem;">🧭 Gareth's 3 Talk-Structuring Rules:</strong>
+              <div style="font-size:0.84rem; color:#e2e8f0; line-height:1.58; display:grid; gap:0.45rem;">
+                <div><strong>1. The 1-Minute Note Secret:</strong> Write only 4 single trigger keywords down the margin (one per prompt bullet); never write full sentences.</div>
+                <div><strong>2. The 3-Act Story Arc:</strong> <em>Past Context (30s)</em> &rarr; <em>Sensory Snapshot / Core Scene (45s)</em> &rarr; <em>Reflection / 'So What?' (45s)</em>.</div>
+                <div><strong>3. The Cambridge Anchor:</strong> Bullet points are springboards, not an interrogation checklist. If finished early, deepen the reflection and comparison until halted.</div>
+              </div>
+              <div style="margin-top:0.75rem; padding-top:0.65rem; border-top:1px solid rgba(148,163,184,0.18); font-size:0.82rem; color:#cbd5e1;">
+                <strong>Spoken C1 Frames:</strong> <em>"<strong>It is high time</strong> organisations replaced..."</em> • <em>"<strong>Were employers to</strong> simplify..."</em>
+              </div>
+            </div>
+            <div style="margin-top:0.75rem;">
+              <button type="button" class="kwt-mini-btn" aria-expanded="false" onclick="toggleRevealBox('unit-spoken-model', this, '👁️ Reveal Cambridge Model', '▲ Hide Spoken Model')">👁️ Reveal Cambridge Model</button>
+            </div>
+          </div>
+        </div>
+        <div id="unit-spoken-model" class="da-spoken-model-box">
+          <strong style="color:#86efac; display:block; margin-bottom:0.45rem;">🎙️ Band 8.5 / C1 Spoken Model (Notice the 3-Act Arc &amp; Unreal Past Subjunctive):</strong>
+          "I'd like to talk about a workplace habit that reminds me of the Mad Hatter's tea-table: the routine of holding mandatory Monday morning status meetings that last an hour even when nobody has anything urgent to report. I first encountered this while working in an administrative department a few years ago.<br><br>
+          Every Monday at nine o'clock sharp, twelve people would sit around a boardroom table reciting the exact same updates they had already emailed on Friday afternoon. It felt like a state of <strong>perpetual</strong> six o'clock—everyone simply shuffling from one cup to the next without washing the crockery. <strong>Had it not been for</strong> the department head's attachment to tradition, the team could have used that hour for focused project work.<br><br>
+          In my view, <strong>it is high time companies replaced</strong> such <strong>arbitrary</strong> status rituals with brief written summaries. <strong>Were managers to reserve</strong> live meetings for genuine problem-solving, staff morale and productivity would improve almost overnight."
+        </div>
+      `;
+      banner.insertAdjacentElement('afterend', warmUpSec);
+    }
+
+    const sec3Heading = document.getElementById('section3-heading');
+    const sec3Card = sec3Heading ? sec3Heading.closest('.card') : null;
+    if (sec3Card && !document.getElementById('wb-container')) {
+      const wbDiv = document.createElement('div');
+      wbDiv.className = 'da-workbench-panel';
+      wbDiv.setAttribute('aria-labelledby', 'wb-heading');
+      wbDiv.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <h3 id="wb-heading" style="margin:0; font-size:1.12rem; color:#f3e8ff;">🛠️ Gareth's 4-Step Part 4 "Strike Out the Echoes" Workbench (Bonus Practice)</h3>
+          <span class="badge badge-cefr">3–6 Words Strict C1 Guard • 1+1 Split Marks</span>
+        </div>
+        <p style="font-size:0.86rem; color:#cbd5e1; margin:0.4rem 0 0.75rem;">
+          Follow the 4-step method: <strong>Step 1:</strong> Strike out the repeated echoes in Sentence 1 to isolate the exact semantic deficit. <strong>Step 2 &amp; 3:</strong> Inspect the Tense &amp; Voice badges. <strong>Step 4:</strong> Type 3–6 words keeping the keyword 100% unchanged.
+        </p>
+        <div id="wb-container"></div>
+      `;
+      sec3Card.appendChild(wbDiv);
+      const container = document.getElementById('wb-container');
+      container.innerHTML = workbenchItems.map((item, idx) => `
+        <div class="da-wb-item" id="wb-card-${idx}">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.75rem; flex-wrap:wrap;">
+            <div style="font-size:0.95rem; color:#f8fafc; line-height:1.55;" id="wb-stem-${idx}">
+              <strong>${item.id}.</strong> <span class="wb-stem-text">${item.cleanStem}</span>
+            </div>
+            <button type="button" class="kwt-mini-btn" onclick="toggleEchoStrike(${idx}, this)">✂️ Step 1: Strike Out Echoes</button>
+          </div>
+          <div id="wb-deficit-${idx}" style="display:none; font-size:0.8rem; color:#fde68a; margin-top:0.4rem;">${item.deficitNote}</div>
+          <div class="da-wb-step-bar">
+            <span class="kwt-key" style="margin:0;">${item.keyWord}</span>
+            <span class="da-wb-badge tense">${item.tenseBadge}</span>
+            <span class="da-wb-badge voice">${item.voiceBadge}</span>
+          </div>
+          <div class="kwt-input-row" style="margin-top:0.6rem;">
+            ${item.leadIn ? `<span>${item.leadIn}</span>` : ''}
+            <input type="text" class="kwt-input" id="wb-input-${idx}" placeholder="Type 3–6 words including ${item.keyWord}..." oninput="updateWbStatus(${idx})" aria-label="Bonus transformation ${item.id}">
+            <span>${item.leadOut}</span>
+            <button type="button" class="btn-main alice" onclick="checkWbItem(${idx})">Check</button>
+            <button type="button" class="kwt-mini-btn" aria-expanded="false" onclick="toggleRevealBox('wb-reveal-${idx}', this, '👁️ Reveal Cambridge Model', '▲ Hide Model')">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="da-wb-meta-row">
+            <span class="da-wb-pill" id="wb-wc-${idx}">0 / 3–6 words</span>
+            <span class="da-wb-pill" id="wb-kw-${idx}">🔑 Keyword "${item.keyWord}": waiting</span>
+          </div>
+          <div id="wb-fb-${idx}" class="feedback-box"></div>
+          <div id="wb-reveal-${idx}" class="da-wb-reveal-box">
+            <strong>✓ Cambridge Model Answer:</strong> <code>${item.model}</code><br>
+            <span><strong>Mark-Scheme Split:</strong> ${item.splitNote}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    const compCard = document.getElementById('dynamic-completion-card');
+    if (compCard && !document.getElementById('writing-transfer-heading')) {
+      const transferSec = document.createElement('section');
+      transferSec.className = 'card';
+      transferSec.setAttribute('aria-labelledby', 'writing-transfer-heading');
+      transferSec.innerHTML = `
+        <div class="card-header">
+          <h2 id="writing-transfer-heading">5. Modern Writing Transfer Sandbox (Live C1 Syntactic Detector)</h2>
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <span class="badge badge-stretch">Stretch • 80–150 Words</span>
+            <span class="pill">Live C1 Structure Audit</span>
+          </div>
+        </div>
+        <div class="capstone-box">
+          <h3>✍️ Transfer Inverted Conditionals &amp; Subjunctives to a Policy Essay</h3>
+          <p class="capstone-prompt">
+            Write an 80–150 word paragraph on <strong>why a public service, transport system, or workplace policy is overdue for reform</strong>. Try to trigger at least <strong>three</strong> of the live C1 structure badges below:
+          </p>
+          <div class="capstone-workspace">
+            <label for="transfer-textarea" style="display:block; font-size:0.88rem; font-weight:700; color:#e2e8f0; margin-bottom:0.45rem;">
+              Your Modern Transfer Draft:
+            </label>
+            <textarea id="transfer-textarea" class="capstone-textarea" placeholder="Try starting with: 'Had it not been for decades of delay...' or 'Were policymakers to reform...'" oninput="auditC1Writing(this.value)"></textarea>
+            <div class="capstone-stats-bar" style="margin-top:0.6rem;">
+              <span id="transfer-word-count" class="word-counter-pill">0 Words</span>
+              <button type="button" class="kwt-mini-btn" aria-expanded="false" onclick="toggleRevealBox('transfer-model-box', this, '👁️ Reveal Cambridge Model', '▲ Hide Model')">👁️ Reveal Cambridge Model</button>
+            </div>
+            <div class="da-c1-detector-grid" aria-live="polite">
+              <div class="da-c1-badge" id="c1-badge-inversion"><span class="da-c1-dot">○</span><span><strong>Inversion</strong> (Seldom / Not until / Only by)</span></div>
+              <div class="da-c1-badge" id="c1-badge-cleft"><span class="da-c1-dot">○</span><span><strong>Cleft Sentence</strong> (What... is / It is... that)</span></div>
+              <div class="da-c1-badge" id="c1-badge-participle"><span class="da-c1-dot">○</span><span><strong>Participle Clause</strong> (Having + V3 / Faced with)</span></div>
+              <div class="da-c1-badge" id="c1-badge-passive"><span class="da-c1-dot">○</span><span><strong>Passive Reporting</strong> (is believed / thought to)</span></div>
+              <div class="da-c1-badge" id="c1-badge-modal"><span class="da-c1-dot">○</span><span><strong>Modal / Conditional</strong> (Were... to / Had it not been / high time)</span></div>
+            </div>
+            <div id="transfer-model-box" class="da-wb-reveal-box">
+              <strong style="color:#f3e8ff; display:block; margin-bottom:0.35rem;">✓ Sample C1/C2 Essay Paragraph (116 words):</strong>
+              "<strong>Had it not been for</strong> decades of fragmented municipal planning, regional rail networks would not suffer from such <strong>perpetual</strong> congestion today. <strong>Faced with</strong> rising commuter demand, transport authorities are <strong>widely believed to</strong> have relied on short-term fare increases rather than structural upgrades. <strong>Were policymakers to</strong> continue postponing electrification, national targets for reducing urban emissions would prove utterly <strong>futile</strong>. <strong>What commuters require is</strong> a reliable, integrated timetable, and <strong>it is high time</strong> ministers replaced <strong>arbitrary</strong> annual budget freezes with binding long-term infrastructure investment."
+            </div>
+          </div>
+        </div>
+      `;
+      compCard.insertAdjacentElement('beforebegin', transferSec);
+
+      const navEl = document.createElement('nav');
+      navEl.className = 'da-trilogy-nav';
+      navEl.setAttribute('aria-label', 'Wonderland Trilogy Navigation');
+      navEl.innerHTML = `
+        <div>
+          <strong style="color:#f3e8ff; font-size:0.92rem; display:block;">🐇 Book V: Lewis Carroll's Alice in Wonderland Trilogy</strong>
+          <span style="font-size:0.8rem; color:#94a3b8;">Jump directly to any lesson in this module or review the canon:</span>
+        </div>
+        <div class="da-trilogy-pills">
+          <a href="baskerville-unit3-moorland-vigil.html" class="da-trilogy-link">← Lesson 12: Baskervilles</a>
+          <a href="alice-unit13-down-the-rabbit-hole.html" class="da-trilogy-link">13. Rabbit-Hole (Inversion)</a>
+          <a href="alice-unit14-mad-tea-party.html" class="da-trilogy-link current" aria-current="page">14. Mad Tea-Party (Subjunctive)</a>
+          <a href="alice-unit15-queens-trial.html" class="da-trilogy-link">15. Queen's Trial (Passives &amp; Clefts)</a>
+          <a href="the-gothic-canon-c1-c2-compendium.html" class="da-trilogy-link">📖 Master Study Guide →</a>
+        </div>
+      `;
+      compCard.insertAdjacentElement('beforebegin', navEl);
+    }
+  }
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => DareCompiler.mount(aliceUnit14Manifest, '#main'));
+    document.addEventListener('DOMContentLoaded', () => {
+      DareCompiler.mount(aliceUnit14Manifest, '#main');
+      mountAliceUnit14Enhancements();
+    });
   } else {
     DareCompiler.mount(aliceUnit14Manifest, '#main');
+    mountAliceUnit14Enhancements();
   }
 </script>
   <script src="analytics.js" defer></script>

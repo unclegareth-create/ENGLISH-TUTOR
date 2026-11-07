@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="paper">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Sandro S. &middot; Self-Running C1 Fluency &amp; Syntactic Workout (GarethEnglish)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="paper"] {
+      --bg-base: #f5f3ef;
+      --bg-mesh: radial-gradient(circle at 12% 0%, rgba(37, 99, 235, 0.07) 0%, transparent 48%),
+                 radial-gradient(circle at 88% 12%, rgba(5, 150, 105, 0.06) 0%, transparent 45%);
+      --surface-card: #ffffff;
+      --surface-subtle: #faf8f5;
+      --surface-elevated: rgba(255, 255, 255, 0.94);
+      --navy-900: #0f2557;
+      --navy-800: #16377d;
+      --navy-700: #1d4ed8;
+      --navy-100: #dbeafe;
+      --navy-50: #f0f6ff;
+      --ink-950: #0c1222;
+      --ink-800: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --ink-400: #94a3b8;
+      --border-hairline: rgba(15, 23, 42, 0.09);
+      --border-strong: rgba(15, 23, 42, 0.16);
+      --emerald: #059669;
+      --emerald-soft: rgba(5, 150, 105, 0.1);
+      --emerald-border: #10b981;
+      --amber: #d97706;
+      --amber-soft: rgba(217, 119, 6, 0.1);
+      --amber-border: #f59e0b;
+      --purple: #7c3aed;
+      --purple-soft: rgba(124, 58, 237, 0.09);
+      --rose: #e11d48;
+      --rose-soft: rgba(225, 29, 72, 0.09);
+      --shadow-card: 0 10px 28px -6px rgba(12, 18, 34, 0.06), 0 2px 6px -1px rgba(12, 18, 34, 0.03);
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #090d16;
+      --bg-mesh: radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.11) 0%, transparent 48%),
+                 radial-gradient(circle at 88% 12%, rgba(52, 211, 153, 0.08) 0%, transparent 45%);
+      --surface-card: #111827;
+      --surface-subtle: #182235;
+      --surface-elevated: rgba(17, 24, 39, 0.94);
+      --navy-900: #f8fafc;
+      --navy-800: #93c5fd;
+      --navy-700: #60a5fa;
+      --navy-100: #1e3a8a;
+      --navy-50: #172554;
+      --ink-950: #f8fafc;
+      --ink-800: #e2e8f0;
+      --ink-700: #cbd5e1;
+      --ink-500: #94a3b8;
+      --ink-400: #64748b;
+      --border-hairline: rgba(255, 255, 255, 0.09);
+      --border-strong: rgba(255, 255, 255, 0.18);
+      --emerald: #34d399;
+      --emerald-soft: rgba(52, 211, 153, 0.14);
+      --emerald-border: #34d399;
+      --amber: #fbbf24;
+      --amber-soft: rgba(251, 191, 36, 0.14);
+      --amber-border: #fbbf24;
+      --purple: #c084fc;
+      --purple-soft: rgba(192, 132, 252, 0.14);
+      --rose: #fb7185;
+      --rose-soft: rgba(251, 113, 133, 0.14);
+      --shadow-card: 0 16px 36px -8px rgba(0, 0, 0, 0.55);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-base);
+      background-image: var(--bg-mesh);
+      background-attachment: fixed;
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding-bottom: 72px;
+      min-height: 100vh;
+    }
+
+    .top-nav {
+      background: var(--surface-elevated);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .top-nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .back-link {
+      color: var(--navy-800);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.86rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 7px;
+      background: var(--navy-50);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .step-tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .step-tab {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-700);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .step-tab.active {
+      background: var(--navy-700);
+      color: #ffffff;
+      border-color: var(--navy-700);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 24px auto 0;
+      padding: 0 20px;
+    }
+
+    .hero-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-top: 4px solid var(--navy-700);
+      border-radius: 14px;
+      padding: 28px 32px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    .badge-pill {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .badge-blue { background: var(--navy-50); color: var(--navy-800); border: 1px solid var(--navy-100); }
+    .badge-emerald { background: var(--emerald-soft); color: var(--emerald); border: 1px solid var(--emerald-border); }
+    .badge-amber { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-border); }
+    .badge-purple { background: var(--purple-soft); color: var(--purple); border: 1px solid rgba(124, 58, 237, 0.3); }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      line-height: 1.25;
+      margin-top: 6px;
+    }
+
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 26px 28px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      color: var(--ink-950);
+      margin-bottom: 6px;
+    }
+
+    .warmup-grid {
+      display: grid;
+      grid-template-columns: 1fr 290px;
+      gap: 22px;
+      align-items: start;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 820px) {
+      .warmup-grid { grid-template-columns: 1fr; }
+    }
+
+    .cue-box {
+      background: var(--surface-subtle);
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 12px;
+      padding: 20px 22px;
+    }
+
+    .cue-bullets {
+      list-style: none;
+      margin: 10px 0 14px;
+      font-size: 0.9rem;
+      color: var(--ink-700);
+    }
+
+    .cue-bullets li {
+      padding: 4px 0 4px 18px;
+      position: relative;
+    }
+
+    .cue-bullets li::before {
+      content: '\25B8';
+      position: absolute;
+      left: 0;
+      color: var(--navy-700);
+      font-weight: 800;
+    }
+
+    .rules-trio {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .rule-box {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      color: var(--ink-700);
+    }
+
+    .rule-box strong {
+      display: block;
+      color: var(--navy-800);
+      margin-bottom: 3px;
+      font-size: 0.82rem;
+    }
+
+    .timer-widget {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--navy-900);
+      margin: 8px 0;
+    }
+
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-800);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      border-color: var(--navy-700);
+      color: var(--navy-700);
+    }
+
+    .btn.primary {
+      background: var(--navy-700);
+      color: #ffffff;
+      border-color: var(--navy-700);
+    }
+
+    .btn.emerald {
+      background: var(--emerald);
+      color: #ffffff;
+      border-color: var(--emerald);
+    }
+
+    .blueprint-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-left: 4px solid var(--navy-700);
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+
+    .formula-code {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 600;
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      padding: 10px 14px;
+      border-radius: 7px;
+      color: var(--navy-900);
+      margin: 8px 0 12px;
+      display: block;
+    }
+
+    .drill-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      background: var(--surface-card);
+      color: var(--ink-950);
+      margin: 8px 0;
+    }
+
+    .reveal-box {
+      display: none;
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: var(--emerald-soft);
+      border-left: 4px solid var(--emerald);
+      color: var(--ink-950);
+      font-size: 0.88rem;
+    }
+
+    .echo-word.struck {
+      text-decoration: line-through;
+      opacity: 0.42;
+      color: var(--ink-500);
+    }
+
+    .deficit-word {
+      font-weight: 700;
+      color: var(--navy-800);
+    }
+
+    .deficit-word.highlighted {
+      background: var(--amber-soft);
+      padding: 1px 5px;
+      border-radius: 4px;
+      border-bottom: 2px solid var(--amber);
+    }
+
+    .kw-badge {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.86rem;
+      letter-spacing: 0.06em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--navy-900);
+      color: #ffffff;
+      display: inline-block;
+    }
+
+    .wc-pill {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+    }
+
+    .wc-pill.valid {
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      border-color: var(--emerald-border);
+    }
+
+    .wc-pill.invalid {
+      background: var(--rose-soft);
+      color: var(--rose);
+      border-color: var(--rose);
+    }
+
+    .step-footer-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-hairline);
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-nav">
+    <div class="top-nav-inner">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <a href="index.html" class="back-link">&larr; Sandro's Portal</a>
+        <a href="00-Lesson-History-and-Links.html" class="back-link">&#128218; Lesson Archive</a>
+      </div>
+      <div class="step-tabs" role="tablist">
+        <button class="step-tab active" onclick="showStep(1)" id="tab-1">1. Speaking Warm-Up</button>
+        <button class="step-tab" onclick="showStep(2)" id="tab-2">2. C1 Blueprints</button>
+        <button class="step-tab" onclick="showStep(3)" id="tab-3">3. Part 4 Clinic (8)</button>
+        <button class="step-tab" onclick="showStep(4)" id="tab-4">4. Error-Repair Sprint</button>
+      </div>
+      <button class="btn" onclick="toggleTheme()">&#127769; Theme</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="hero-card">
+      <div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:6px;">
+          <span class="badge-pill badge-emerald">Self-Running Interactive Workout</span>
+          <span class="badge-pill badge-blue">Conditionals &bull; Present Perfect vs Past Simple &bull; Speculation</span>
+        </div>
+        <h1 class="hero-title">Sandro S. &middot; C1 Fluency &amp; Syntactic Precision Deck</h1>
+        <p style="font-size:0.94rem; color:var(--ink-500); margin-top:4px;">
+          Work through all four stages at your own pace: active 2-minute speaking warm-up, C1 structural blueprints, 8-item Key Word Transformation clinic, and live sentence repair.
+        </p>
+      </div>
+      <div style="text-align:right; background:var(--surface-subtle); padding:12px 18px; border-radius:10px; border:1px solid var(--border-hairline);">
+        <div style="font-size:0.7rem; font-weight:800; text-transform:uppercase; color:var(--ink-500);">Progress Saved</div>
+        <div style="font-family:var(--font-mono); font-size:1.1rem; font-weight:700; color:var(--navy-800);" id="overall-progress">4 Interactive Stages</div>
+      </div>
+    </section>
+
+    <!-- STEP 1: ACTIVE SPEAKING WARM-UP -->
+    <section class="step-panel active" id="step-1">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <span class="badge-pill badge-blue">Step 1 &bull; Active Voice First</span>
+            <h2 class="section-title" style="margin-top:4px;">2-Minute Speaking Long Turn &amp; Structuring Rules</h2>
+            <p style="font-size:0.88rem; color:var(--ink-500);">Select a prompt card below, take 60 seconds to jot down 4 single trigger keywords, and speak aloud for a full 2 minutes.</p>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="btn primary" id="prompt-btn-0" onclick="selectPrompt(0)">Prompt A: Science &amp; Discovery</button>
+            <button class="btn" id="prompt-btn-1" onclick="selectPrompt(1)">Prompt B: Resilience &amp; Problem-Solving</button>
+            <button class="btn" id="prompt-btn-2" onclick="selectPrompt(2)">Prompt C: Future Technology</button>
+          </div>
+        </div>
+
+        <div class="warmup-grid">
+          <div class="cue-box">
+            <span class="badge-pill badge-emerald" id="cue-tag">Prompt A &bull; Science, Space &amp; Speculation</span>
+            <h3 style="font-size:1.18rem; font-weight:700; color:var(--ink-950); margin:8px 0;" id="cue-heading">
+              Describe an interesting scientific discovery or space mission you have read about recently.
+            </h3>
+            <p style="font-size:0.82rem; font-weight:700; color:var(--ink-500);">You should say:</p>
+            <ul class="cue-bullets" id="cue-list">
+              <li>what the discovery or mission involved</li>
+              <li>when and where you first heard or read about it</li>
+              <li>what scientists have already learned from it (and haven't proved yet)</li>
+              <li>and explain how it could change our view of the universe if further evidence were found.</li>
+            </ul>
+
+            <div style="margin-top:12px;">
+              <label style="font-size:0.76rem; font-weight:800; text-transform:uppercase; color:var(--navy-800); display:block; margin-bottom:6px;">
+                1-Minute Margin Notes (Write 4 Single Trigger Keywords Only):
+              </label>
+              <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
+                <input type="text" class="drill-input" style="margin:0; padding:7px 10px; font-size:0.84rem;" placeholder="1. Keyword..." id="kw-note-1" oninput="saveNotes()" />
+                <input type="text" class="drill-input" style="margin:0; padding:7px 10px; font-size:0.84rem;" placeholder="2. Keyword..." id="kw-note-2" oninput="saveNotes()" />
+                <input type="text" class="drill-input" style="margin:0; padding:7px 10px; font-size:0.84rem;" placeholder="3. Keyword..." id="kw-note-3" oninput="saveNotes()" />
+                <input type="text" class="drill-input" style="margin:0; padding:7px 10px; font-size:0.84rem;" placeholder="4. Keyword..." id="kw-note-4" oninput="saveNotes()" />
+              </div>
+            </div>
+
+            <div class="rules-trio">
+              <div class="rule-box">
+                <strong>1. The 1-Minute Note Secret</strong>
+                Write only 4 single trigger keywords down the margin (one per prompt bullet); never write full sentences.
+              </div>
+              <div class="rule-box">
+                <strong>2. The 3-Act Story Arc</strong>
+                Past Context (30s) &rarr; Sensory Snapshot / Core Scene (45s) &rarr; Reflection / 'So What?' (45s).
+              </div>
+              <div class="rule-box">
+                <strong>3. The Cambridge Anchor</strong>
+                Bullet points are springboards, not an interrogation checklist. If finished early, deepen the reflection and comparison until halted.
+              </div>
+            </div>
+          </div>
+
+          <div class="timer-widget">
+            <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--ink-500);" id="timer-label">Preparation Time (60s)</div>
+            <div class="timer-display" id="timer-display">01:00</div>
+            <div style="display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:10px;">
+              <button class="btn primary" id="mode-prep-btn" onclick="setWarmupTimer(60, 'Preparation Time (60s)')">60s Prep</button>
+              <button class="btn" id="mode-speak-btn" onclick="setWarmupTimer(120, 'Speaking Long Turn (120s)')">120s Speak</button>
+            </div>
+            <div style="display:flex; gap:6px; justify-content:center;">
+              <button class="btn emerald" id="start-timer-btn" onclick="toggleWarmupTimer()">&#9654; Start</button>
+              <button class="btn" onclick="resetWarmupTimer()">&#8634; Reset</button>
+            </div>
+            <div style="margin-top:14px; text-align:left; font-size:0.78rem; color:var(--ink-700); background:var(--surface-card); padding:10px 12px; border-radius:8px; border:1px solid var(--border-hairline);">
+              <strong style="color:var(--navy-800); display:block; margin-bottom:4px;">Target C1 Upgrades in Your Turn:</strong>
+              &bull; <em>"Scientists have already confirmed..., yet they haven't..."</em><br/>
+              &bull; <em>"Liquid water may well have existed..."</em><br/>
+              &bull; <em>"Were we to discover..., it would..."</em>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-footer-nav">
+          <span style="font-size:0.82rem; color:var(--ink-500);">Stage 1 of 4 &bull; Active Speaking Warm-Up</span>
+          <button class="btn primary" onclick="showStep(2)">Next: Step 2 C1 Syntactic Blueprints &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: C1 SYNTACTIC BLUEPRINTS -->
+    <section class="step-panel" id="step-2">
+      <div class="card">
+        <span class="badge-pill badge-purple">Step 2 &bull; C1 Structural Mastery</span>
+        <h2 class="section-title" style="margin-top:4px;">5 High-Leverage C1 Syntactic Blueprints &amp; Live Drills</h2>
+        <p style="font-size:0.88rem; color:var(--ink-500); margin-bottom:18px;">
+          Study each explicit structural blueprint below, type your own C1 transformation in the workout box, and click <strong>&#128065;&#65039; Reveal Cambridge Model</strong> to verify.
+        </p>
+
+        <!-- Blueprint 1 -->
+        <div class="blueprint-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <span class="badge-pill badge-blue">Blueprint 1 &bull; Hypothetical &amp; Inverted 2nd Conditionals</span>
+            <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-500);">Never use 'would' in the if-clause</span>
+          </div>
+          <code class="formula-code">If + Past Simple, Subject + would / could + Base Verb  |  Were + Subject + to + Base Verb, Subject + would + Base Verb</code>
+          <p style="font-size:0.88rem; color:var(--ink-700);">
+            <strong>Prompt to Upgrade:</strong> <em>"If we would find microbial life on Europa, it would transform biology overnight."</em> (Fix the conditional &amp; upgrade to an inverted <em>Were we to...</em> opening)
+          </p>
+          <input type="text" class="drill-input" id="bp-input-1" placeholder="Type your C1 sentence here..." oninput="saveBlueprintInputs()" />
+          <button class="btn" onclick="toggleReveal('bp-rev-1')">&#128065;&#65039; Reveal Cambridge Model</button>
+          <div class="reveal-box" id="bp-rev-1">
+            <strong>Standard 2nd Conditional:</strong> If we <u>found</u> microbial life on Europa, it would transform biology overnight.<br/>
+            <strong>C1 Inverted Upgrade:</strong> <u>Were we to find</u> microbial life on Europa, it would transform biology overnight.
+          </div>
+        </div>
+
+        <!-- Blueprint 2 -->
+        <div class="blueprint-card" style="border-left-color:var(--emerald);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <span class="badge-pill badge-emerald">Blueprint 2 &bull; Past Modals of Speculation &amp; Deduction</span>
+            <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-500);">Replacing 'Maybe + Past Simple'</span>
+          </div>
+          <code class="formula-code">Subject + may / might / could (well) + have + Past Participle (V3)</code>
+          <p style="font-size:0.88rem; color:var(--ink-700);">
+            <strong>Prompt to Upgrade:</strong> <em>"Maybe ancientmars rivers dried up because the planet lost its magnetic field."</em>
+          </p>
+          <input type="text" class="drill-input" id="bp-input-2" placeholder="Type your C1 sentence using 'may well have'..." oninput="saveBlueprintInputs()" />
+          <button class="btn" onclick="toggleReveal('bp-rev-2')">&#128065;&#65039; Reveal Cambridge Model</button>
+          <div class="reveal-box" id="bp-rev-2">
+            <strong>Cambridge C1 Model:</strong> Ancient Martian rivers <u>may well have dried up</u> because the planet lost its magnetic field.
+          </div>
+        </div>
+
+        <!-- Blueprint 3 -->
+        <div class="blueprint-card" style="border-left-color:var(--amber);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <span class="badge-pill badge-amber">Blueprint 3 &bull; Present Perfect (Already / Just / Yet) vs. Past Simple</span>
+            <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-500);">Unfinished vs. Finished Time</span>
+          </div>
+          <code class="formula-code">Subject + have/has + already/just + V3 (+)  |  Subject + haven't/hasn't + V3 + yet (-)  |  Subject + have/has yet to + Base Verb</code>
+          <p style="font-size:0.88rem; color:var(--ink-700);">
+            <strong>Prompt to Upgrade:</strong> <em>"Astronomers launched the telescope in 2021, and they already discovered hundreds of exoplanets, but they didn't find an Earth twin yet."</em>
+          </p>
+          <input type="text" class="drill-input" id="bp-input-3" placeholder="Fix the two tense errors in the sentence..." oninput="saveBlueprintInputs()" />
+          <button class="btn" onclick="toggleReveal('bp-rev-3')">&#128065;&#65039; Reveal Cambridge Model</button>
+          <div class="reveal-box" id="bp-rev-3">
+            <strong>Cambridge C1 Model:</strong> Astronomers <u>launched</u> the telescope in 2021, and they <u>have already discovered</u> hundreds of exoplanets, but they <u>haven't found</u> an Earth twin <u>yet</u> (<em>or:</em> <u>have yet to find</u> an Earth twin).
+          </div>
+        </div>
+
+        <!-- Blueprint 4 -->
+        <div class="blueprint-card" style="border-left-color:var(--purple);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <span class="badge-pill badge-purple">Blueprint 4 &bull; Wh- Cleft Sentences for Focus</span>
+            <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-500);">Highlighting the Core Factor</span>
+          </div>
+          <code class="formula-code">What + Subject/Verb Clause + is / was + Noun Phrase / that-clause</code>
+          <p style="font-size:0.88rem; color:var(--ink-700);">
+            <strong>Prompt to Upgrade:</strong> <em>"Earth's stable atmosphere and liquid oceans make it unique among rocky planets."</em> (Begin with <em>What makes Earth...</em>)
+          </p>
+          <input type="text" class="drill-input" id="bp-input-4" placeholder="Start with 'What makes Earth...'..." oninput="saveBlueprintInputs()" />
+          <button class="btn" onclick="toggleReveal('bp-rev-4')">&#128065;&#65039; Reveal Cambridge Model</button>
+          <div class="reveal-box" id="bp-rev-4">
+            <strong>Cambridge C1 Model:</strong> <u>What makes Earth unique</u> among rocky planets <u>is</u> the combination of a stable atmosphere and liquid oceans.
+          </div>
+        </div>
+
+        <!-- Blueprint 5 -->
+        <div class="blueprint-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+            <span class="badge-pill badge-blue">Blueprint 5 &bull; Resultative Participle Clauses</span>
+            <span style="font-family:var(--font-mono); font-size:0.76rem; color:var(--ink-500);">Replacing ', and this causes...'</span>
+          </div>
+          <code class="formula-code">[Main Clause], thereby + Present Participle (-ing) + [Object]</code>
+          <p style="font-size:0.88rem; color:var(--ink-700);">
+            <strong>Prompt to Upgrade:</strong> <em>"Reusable rockets lower the cost of orbital launches, and this opens space research to smaller universities."</em>
+          </p>
+          <input type="text" class="drill-input" id="bp-input-5" placeholder="Combine using ', thereby opening...'..." oninput="saveBlueprintInputs()" />
+          <button class="btn" onclick="toggleReveal('bp-rev-5')">&#128065;&#65039; Reveal Cambridge Model</button>
+          <div class="reveal-box" id="bp-rev-5">
+            <strong>Cambridge C1 Model:</strong> Reusable rockets lower the cost of orbital launches, <u>thereby opening</u> space research to smaller universities.
+          </div>
+        </div>
+
+        <div class="step-footer-nav">
+          <button class="btn" onclick="showStep(1)">&larr; Back to Step 1</button>
+          <button class="btn primary" onclick="showStep(3)">Next: Step 3 Part 4 Clinic (8 Items) &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: 8-ITEM PART 4 KEY WORD TRANSFORMATION CLINIC -->
+    <section class="step-panel" id="step-3">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+          <div>
+            <span class="badge-pill badge-emerald">Step 3 &bull; Strict Cambridge C1 Part 4 Integrity</span>
+            <h2 class="section-title" style="margin-top:4px;">8-Item Key Word Transformation Clinic</h2>
+            <p style="font-size:0.88rem; color:var(--ink-500);">
+              Complete the second sentence using between <strong>3 and 6 words</strong>, including the given key word <strong>unchanged</strong>. Use <strong>&#9986;&#65039; Strike Out the Echoes</strong> to isolate the exact semantic deficit first.
+            </p>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="wc-pill" id="p4-score-pill">Solved: 0 / 8</span>
+            <button class="btn" onclick="strikeAllEchoes()">&#9986;&#65039; Strike All Echoes</button>
+          </div>
+        </div>
+
+        <div id="p4-clinic-container"></div>
+
+        <div class="step-footer-nav">
+          <button class="btn" onclick="showStep(2)">&larr; Back to Step 2</button>
+          <button class="btn primary" onclick="showStep(4)">Next: Step 4 Precision Collocation &amp; Error-Repair Sprint &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: PRECISION COLLOCATION & ERROR-REPAIR SPRINT -->
+    <section class="step-panel" id="step-4">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+          <div>
+            <span class="badge-pill badge-amber">Step 4 &bull; Precision Collocation &amp; Error-Repair Sprint</span>
+            <h2 class="section-title" style="margin-top:4px;">8 Live Collocation &amp; Tense-Precision Upgrades</h2>
+            <p style="font-size:0.88rem; color:var(--ink-500);">
+              Spot the tense, collocation, or word-order slip in each sentence below, type your repaired C1 sentence, and click <strong>&#128065;&#65039; Reveal Cambridge Model</strong>.
+            </p>
+          </div>
+          <button class="btn" onclick="resetSprintInputs()">&#8634; Clear Sprint Answers</button>
+        </div>
+
+        <div id="sprint-container"></div>
+
+        <div class="step-footer-nav">
+          <button class="btn" onclick="showStep(3)">&larr; Back to Step 3</button>
+          <a href="index.html" class="btn emerald">&#10003; Finish Workout &amp; Return to Portal</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const PROMPTS = [
+      {
+        tag: "Prompt A \u2022 Science, Space & Speculation",
+        heading: "Describe an interesting scientific discovery or space mission you have read about recently.",
+        bullets: [
+          "what the discovery or mission involved",
+          "when and where you first heard or read about it",
+          "what scientists have already learned from it (and haven't proved yet)",
+          "and explain how it could change our view of the universe if further evidence were found."
+        ]
+      },
+      {
+        tag: "Prompt B \u2022 Resilience & Practical Problem-Solving",
+        heading: "Describe a time when a piece of equipment broke down and you had to solve the problem.",
+        bullets: [
+          "what the equipment was and what you were doing at the time",
+          "what had caused the fault or breakdown",
+          "how you repaired it or found a practical workaround",
+          "and explain what you would do differently if the same situation happened again."
+        ]
+      },
+      {
+        tag: "Prompt C \u2022 Future Technology & Everyday Life",
+        heading: "Describe a recent technological innovation that has changed how people work or travel.",
+        bullets: [
+          "what the innovation is and when it first became popular",
+          "what benefits it has already brought to daily life",
+          "what problems or limitations engineers haven't solved yet",
+          "and explain how society might look in twenty years if this trend continues."
+        ]
+      }
+    ];
+
+    const PART4_ITEMS = [
+      {
+        id: 1,
+        s1Html: '<span class="echo-word">Given the sheer size of the cosmos,</span> <span class="deficit-word">scientists are certain that</span> <span class="echo-word">microbial life</span> <span class="deficit-word">exists</span> <span class="echo-word">elsewhere.</span>',
+        keyword: 'BOUND',
+        pre: 'Given the sheer size of the cosmos, microbial life',
+        post: 'elsewhere.',
+        answers: ['is bound to exist'],
+        model: 'is bound to exist',
+        steps: '1. Echoes struck: "Given the sheer size of the cosmos, microbial life ... elsewhere." | 2. Tense: Present Simple ("are certain"). | 3. C1 Pattern: be bound to + infinitive ("is bound to exist" = 4 words).'
+      },
+      {
+        id: 2,
+        s1Html: '<span class="deficit-word">It is quite possible that</span> <span class="echo-word">liquid water</span> <span class="deficit-word">existed</span> <span class="echo-word">on Mars billions of years ago.</span>',
+        keyword: 'WELL',
+        pre: 'Liquid water',
+        post: 'on Mars billions of years ago.',
+        answers: ['may well have existed', 'might well have existed', 'could well have existed'],
+        model: 'may well have existed',
+        steps: '1. Echoes struck: "Liquid water ... on Mars billions of years ago." | 2. Tense: Past ("existed") -> Past Modal Perfect. | 3. C1 Pattern: may/might/could well have + past participle (4 words).'
+      },
+      {
+        id: 3,
+        s1Html: '<span class="echo-word">The research team</span> <span class="deficit-word">still hasn\'t published</span> <span class="echo-word">the results of the telescope survey.</span>',
+        keyword: 'YET',
+        pre: 'The research team',
+        post: 'the results of the telescope survey.',
+        answers: ['has yet to publish', 'have yet to publish', 'has not yet published', 'have not yet published', 'hasn\'t yet published'],
+        model: 'has yet to publish',
+        steps: '1. Echoes struck: "The research team ... the results of the telescope survey." | 2. Deficit: "still hasn\'t published". | 3. C1 Pattern: has yet to + base verb ("has yet to publish" = 4 words) or "has not yet published" (4 words).'
+      },
+      {
+        id: 4,
+        s1Html: '<span class="deficit-word">If we ever discovered</span> <span class="echo-word">an earth-like planet nearby, it would still take centuries to reach it.</span>',
+        keyword: 'WERE',
+        pre: '',
+        post: 'an earth-like planet nearby, it would still take centuries to reach it.',
+        answers: ['Were we ever to discover', 'Were we to discover'],
+        model: 'Were we ever to discover',
+        steps: '1. Echoes struck: "... an earth-like planet nearby, it would still take centuries to reach it." | 2. Tense: 2nd Conditional ("discovered"). | 3. C1 Pattern: Inverted conditional Were + subject + (ever) + to + infinitive (4-5 words).'
+      },
+      {
+        id: 5,
+        s1Html: '<span class="deficit-word">If the engineers hadn\'t</span> <span class="echo-word">recalibrated the mirror in time, the mission would have failed.</span>',
+        keyword: 'HAD',
+        pre: '',
+        post: 'recalibrated the mirror in time, the mission would have failed.',
+        answers: ['Had the engineers not'],
+        model: 'Had the engineers not',
+        steps: '1. Echoes struck: "... recalibrated the mirror in time, the mission would have failed." | 2. Tense: 3rd Conditional Past Perfect ("hadn\'t recalibrated"). | 3. C1 Pattern: Inverted 3rd conditional Had + subject + not (4 words).'
+      },
+      {
+        id: 6,
+        s1Html: '<span class="deficit-word">Astrophysicists believe that</span> <span class="echo-word">the signal</span> <span class="deficit-word">originated</span> <span class="echo-word">from a distant neutron star.</span>',
+        keyword: 'SAID',
+        pre: 'The signal',
+        post: 'from a distant neutron star.',
+        answers: ['is said to have originated'],
+        model: 'is said to have originated',
+        steps: '1. Echoes struck: "The signal ... from a distant neutron star." | 2. Voice & Tense Shift: Active reporting -> Passive reporting with prior past action (to have + V3). | 3. C1 Pattern: "is said to have originated" (5 words).'
+      },
+      {
+        id: 7,
+        s1Html: '<span class="deficit-word">I wish I had studied</span> <span class="echo-word">astrophysics when I was at university.</span>',
+        keyword: 'REGRET',
+        pre: 'I',
+        post: 'astrophysics when I was at university.',
+        answers: ['regret not having studied', 'regret not studying'],
+        model: 'regret not having studied',
+        steps: '1. Echoes struck: "I ... astrophysics when I was at university." | 2. Deficit: "wish I had studied" (past regret). | 3. C1 Pattern: regret + not + having + V3 ("regret not having studied" = 4 words).'
+      },
+      {
+        id: 8,
+        s1Html: '<span class="deficit-word">Satellite technology improves</span> <span class="echo-word">weather forecasting</span> <span class="deficit-word">and it also</span> <span class="echo-word">tracks global climate patterns.</span>',
+        keyword: 'ONLY',
+        pre: 'Not',
+        post: 'weather forecasting, but it also tracks global climate patterns.',
+        answers: ['only does satellite technology improve'],
+        model: 'only does satellite technology improve',
+        steps: '1. Echoes struck: "... weather forecasting ... tracks global climate patterns." | 2. Tense: Present Simple ("improves"). | 3. C1 Pattern: Negative inversion Not only + does + subject + base verb (5 words).'
+      }
+    ];
+
+    const SPRINT_ITEMS = [
+      {
+        err: "Have you watched the documentary about the James Webb telescope last Friday?",
+        clue: "Finished past time marker ('last Friday') requires Past Simple, not Present Perfect.",
+        model: "Did you watch the documentary about the James Webb telescope last Friday?"
+      },
+      {
+        err: "I am working in this industry since more than ten years.",
+        clue: "Unfinished state from past up to now -> Present Perfect Continuous + 'for' (duration).",
+        model: "I have been working in this industry for more than ten years."
+      },
+      {
+        err: "If we would invest more in solar power, electricity bills would drop significantly.",
+        clue: "Second Conditional rule: never place 'would' inside the if-clause.",
+        model: "If we invested more in solar power, electricity bills would drop significantly."
+      },
+      {
+        err: "The probe has landed on the comet in 2014 and sent back valuable surface data.",
+        clue: "Exact historical year ('in 2014') is finished time -> use Past Simple.",
+        model: "The probe landed on the comet in 2014 and sent back valuable surface data."
+      },
+      {
+        err: "We didn't receive the final laboratory test results yet.",
+        clue: "In British English, 'yet' (up to the present moment) pairs with Present Perfect Negative.",
+        model: "We haven't received the final laboratory test results yet."
+      },
+      {
+        err: "That radio signal can't came from a natural source because it repeats every sixteen days.",
+        clue: "Negative past deduction modal: can't + have + Past Participle (V3).",
+        model: "That radio signal can't have come from a natural source because it repeats every sixteen days."
+      },
+      {
+        err: "It was such an exhausted journey that we went straight to sleep when we arrived.",
+        clue: "Participle adjective precision: a journey is 'exhausting' (causes the feeling); people feel 'exhausted'.",
+        model: "It was such an exhausting journey that we went straight to sleep when we arrived."
+      },
+      {
+        err: "Despite of the freezing temperatures, the expedition team reached the summit on schedule.",
+        clue: "Preposition trap: use 'In spite of + noun' OR 'Despite + noun' (never 'Despite of').",
+        model: "Despite the freezing temperatures (or: In spite of the freezing temperatures), the expedition team reached the summit on schedule."
+      }
+    ];
+
+    function showStep(num) {
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById('step-' + i).classList.toggle('active', i === num);
+        document.getElementById('tab-' + i).classList.toggle('active', i === num);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function selectPrompt(idx) {
+      const p = PROMPTS[idx];
+      document.getElementById('cue-tag').textContent = p.tag;
+      document.getElementById('cue-heading').textContent = p.heading;
+      const list = document.getElementById('cue-list');
+      list.innerHTML = p.bullets.map(function(b) { return '<li>' + b + '</li>'; }).join('');
+      for (let i = 0; i < 3; i++) {
+        document.getElementById('prompt-btn-' + i).classList.toggle('primary', i === idx);
+      }
+    }
+
+    let warmupSeconds = 60;
+    let warmupDefault = 60;
+    let warmupTimer = null;
+
+    function setWarmupTimer(sec, label) {
+      clearInterval(warmupTimer);
+      warmupTimer = null;
+      warmupDefault = sec;
+      warmupSeconds = sec;
+      document.getElementById('timer-label').textContent = label;
+      document.getElementById('start-timer-btn').innerHTML = '&#9654; Start';
+      document.getElementById('mode-prep-btn').classList.toggle('primary', sec === 60);
+      document.getElementById('mode-speak-btn').classList.toggle('primary', sec === 120);
+      renderWarmupTime();
+    }
+
+    function toggleWarmupTimer() {
+      const btn = document.getElementById('start-timer-btn');
+      if (warmupTimer) {
+        clearInterval(warmupTimer);
+        warmupTimer = null;
+        btn.innerHTML = '&#9654; Resume';
+      } else {
+        btn.innerHTML = '&#9208; Pause';
+        warmupTimer = setInterval(function() {
+          warmupSeconds--;
+          if (warmupSeconds <= 0) {
+            clearInterval(warmupTimer);
+            warmupTimer = null;
+            btn.innerHTML = '&#8634; Done';
+            if (warmupDefault === 60) {
+              setWarmupTimer(120, 'Speaking Long Turn (120s)');
+              toggleWarmupTimer();
+            }
+          }
+          renderWarmupTime();
+        }, 1000);
+      }
+    }
+
+    function resetWarmupTimer() {
+      clearInterval(warmupTimer);
+      warmupTimer = null;
+      warmupSeconds = warmupDefault;
+      document.getElementById('start-timer-btn').innerHTML = '&#9654; Start';
+      renderWarmupTime();
+    }
+
+    function renderWarmupTime() {
+      const m = String(Math.floor(warmupSeconds / 60)).padStart(2, '0');
+      const s = String(warmupSeconds % 60).padStart(2, '0');
+      document.getElementById('timer-display').textContent = m + ':' + s;
+    }
+
+    function toggleReveal(id) {
+      const el = document.getElementById(id);
+      if (el) el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function renderPart4Clinic() {
+      const container = document.getElementById('p4-clinic-container');
+      const saved = JSON.parse(localStorage.getItem('sandro_p4_workout') || '{}');
+      container.innerHTML = PART4_ITEMS.map(function(item) {
+        const val = saved[item.id] || '';
+        return (
+          '<div class="blueprint-card" id="p4-card-' + item.id + '">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">' +
+              '<span style="font-family:var(--font-mono); font-size:0.8rem; font-weight:700; color:var(--navy-800);">Item #' + item.id + ' of 8</span>' +
+              '<div style="display:flex; gap:8px; align-items:center;">' +
+                '<button class="btn" style="padding:4px 10px; font-size:0.76rem;" onclick="toggleEcho(' + item.id + ')">&#9986;&#65039; Strike Out the Echoes</button>' +
+                '<span class="kw-badge">' + item.keyword + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<p style="font-size:0.95rem; color:var(--ink-950); margin-bottom:10px;" id="p4-s1-' + item.id + '">' + item.s1Html + '</p>' +
+            '<div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px; font-size:0.94rem; color:var(--ink-950);">' +
+              (item.pre ? '<span>' + item.pre + '</span>' : '') +
+              '<input type="text" class="drill-input" style="flex:1; min-width:220px; margin:0;" id="p4-in-' + item.id + '" value="' + val.replace(/"/g, '&quot;') + '" placeholder="3 to 6 words (include ' + item.keyword + ' unchanged)..." oninput="onP4Input(' + item.id + ')" />' +
+              '<span>' + item.post + '</span>' +
+            '</div>' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">' +
+              '<div style="display:flex; gap:8px; align-items:center;">' +
+                '<button class="btn primary" style="padding:6px 12px; font-size:0.78rem;" onclick="checkP4Item(' + item.id + ')">&#10003; Check Answer</button>' +
+                '<button class="btn" style="padding:6px 12px; font-size:0.78rem;" onclick="toggleReveal(\'p4-rev-' + item.id + '\')">&#128065;&#65039; Reveal Cambridge Model</button>' +
+                '<span id="p4-fb-' + item.id + '" style="font-size:0.82rem; font-weight:700;"></span>' +
+              '</div>' +
+              '<span class="wc-pill" id="p4-wc-' + item.id + '">0 words</span>' +
+            '</div>' +
+            '<div class="reveal-box" id="p4-rev-' + item.id + '">' +
+              '<strong>Cambridge C1 Model:</strong> <code>' + item.model + '</code><br/>' +
+              '<span style="font-size:0.82rem; color:var(--ink-700);">' + item.steps + '</span>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+      PART4_ITEMS.forEach(function(it) { onP4Input(it.id); });
+    }
+
+    function toggleEcho(id) {
+      const s1 = document.getElementById('p4-s1-' + id);
+      if (!s1) return;
+      s1.querySelectorAll('.echo-word').forEach(function(el) { el.classList.toggle('struck'); });
+      s1.querySelectorAll('.deficit-word').forEach(function(el) { el.classList.toggle('highlighted'); });
+    }
+
+    function strikeAllEchoes() {
+      PART4_ITEMS.forEach(function(it) {
+        const s1 = document.getElementById('p4-s1-' + it.id);
+        if (!s1) return;
+        s1.querySelectorAll('.echo-word').forEach(function(el) { el.classList.add('struck'); });
+        s1.querySelectorAll('.deficit-word').forEach(function(el) { el.classList.add('highlighted'); });
+      });
+    }
+
+    function onP4Input(id) {
+      const item = PART4_ITEMS.find(function(x) { return x.id === id; });
+      const el = document.getElementById('p4-in-' + id);
+      const wcEl = document.getElementById('p4-wc-' + id);
+      if (!el || !wcEl || !item) return;
+      const val = el.value.trim();
+      const words = val ? val.split(/\s+/).filter(Boolean) : [];
+      const count = words.length;
+      const hasKw = new RegExp('\\b' + item.keyword.toLowerCase() + '\\b').test(val.toLowerCase());
+      wcEl.textContent = count + (count === 1 ? ' word' : ' words') + (hasKw ? ' \u2022 Keyword OK' : ' \u2022 Missing ' + item.keyword);
+      wcEl.className = 'wc-pill ' + (count >= 3 && count <= 6 && hasKw ? 'valid' : (count > 0 ? 'invalid' : ''));
+
+      const saved = JSON.parse(localStorage.getItem('sandro_p4_workout') || '{}');
+      saved[id] = el.value;
+      localStorage.setItem('sandro_p4_workout', JSON.stringify(saved));
+      updateP4Score();
+    }
+
+    function norm(s) {
+      return s.trim().toLowerCase().replace(/[.,!?;:]+$/g, '').replace(/\s+/g, ' ');
+    }
+
+    function checkP4Item(id) {
+      const item = PART4_ITEMS.find(function(x) { return x.id === id; });
+      const el = document.getElementById('p4-in-' + id);
+      const fb = document.getElementById('p4-fb-' + id);
+      if (!item || !el || !fb) return;
+      const user = norm(el.value);
+      const words = user ? user.split(' ') : [];
+      if (words.length < 3 || words.length > 6) {
+        fb.style.color = 'var(--rose)';
+        fb.textContent = 'Must be 3 to 6 words (' + words.length + ' used).';
+        return;
+      }
+      const match = item.answers.some(function(a) { return norm(a) === user; });
+      if (match) {
+        fb.style.color = 'var(--emerald)';
+        fb.textContent = '\u2713 Spot on! 2/2 Cambridge marks.';
+      } else {
+        fb.style.color = 'var(--amber)';
+        fb.textContent = 'Check tense or pattern \u2014 click Reveal Cambridge Model.';
+      }
+      updateP4Score();
+    }
+
+    function updateP4Score() {
+      let solved = 0;
+      PART4_ITEMS.forEach(function(item) {
+        const el = document.getElementById('p4-in-' + item.id);
+        if (el) {
+          const u = norm(el.value);
+          if (item.answers.some(function(a) { return norm(a) === u; })) solved++;
+        }
+      });
+      const pill = document.getElementById('p4-score-pill');
+      if (pill) pill.textContent = 'Solved: ' + solved + ' / 8';
+    }
+
+    function renderSprint() {
+      const container = document.getElementById('sprint-container');
+      const saved = JSON.parse(localStorage.getItem('sandro_sprint_workout') || '{}');
+      container.innerHTML = SPRINT_ITEMS.map(function(item, idx) {
+        const val = saved[idx] || '';
+        return (
+          '<div class="blueprint-card" style="border-left-color:var(--amber);">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
+              '<span style="font-family:var(--font-mono); font-size:0.78rem; font-weight:700; color:var(--navy-800);">Sprint #' + (idx + 1) + '</span>' +
+              '<span style="font-size:0.78rem; color:var(--ink-500);">' + item.clue + '</span>' +
+            '</div>' +
+            '<p style="color:var(--rose); font-weight:600; font-size:0.93rem; margin-bottom:6px;">&ldquo;' + item.err + '&rdquo;</p>' +
+            '<input type="text" class="drill-input" id="sprint-in-' + idx + '" value="' + val.replace(/"/g, '&quot;') + '" placeholder="Type your repaired sentence..." oninput="saveSprintInput(' + idx + ', this.value)" />' +
+            '<button class="btn" style="padding:5px 11px; font-size:0.78rem;" onclick="toggleReveal(\'sprint-rev-' + idx + '\')">&#128065;&#65039; Reveal Cambridge Model</button>' +
+            '<div class="reveal-box" id="sprint-rev-' + idx + '">' +
+              '<strong>Cambridge C1 Model:</strong> ' + item.model +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function saveSprintInput(idx, val) {
+      const saved = JSON.parse(localStorage.getItem('sandro_sprint_workout') || '{}');
+      saved[idx] = val;
+      localStorage.setItem('sandro_sprint_workout', JSON.stringify(saved));
+    }
+
+    function resetSprintInputs() {
+      localStorage.removeItem('sandro_sprint_workout');
+      renderSprint();
+    }
+
+    function saveNotes() {
+      const notes = [1, 2, 3, 4].map(function(n) { return document.getElementById('kw-note-' + n).value; });
+      localStorage.setItem('sandro_warmup_notes', JSON.stringify(notes));
+    }
+
+    function saveBlueprintInputs() {
+      const vals = [1, 2, 3, 4, 5].map(function(n) { return document.getElementById('bp-input-' + n).value; });
+      localStorage.setItem('sandro_bp_inputs', JSON.stringify(vals));
+    }
+
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'paper' : 'dark';
+      document.documentElement.setAttribute('data-theme', cur);
+      localStorage.setItem('gareth_student_theme', cur);
+    }
+
+    (function init() {
+      const savedTheme = localStorage.getItem('gareth_student_theme');
+      if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+      const notes = JSON.parse(localStorage.getItem('sandro_warmup_notes') || '[]');
+      notes.forEach(function(v, i) {
+        const el = document.getElementById('kw-note-' + (i + 1));
+        if (el) el.value = v;
+      });
+      const bps = JSON.parse(localStorage.getItem('sandro_bp_inputs') || '[]');
+      bps.forEach(function(v, i) {
+        const el = document.getElementById('bp-input-' + (i + 1));
+        if (el) el.value = v;
+      });
+      renderPart4Clinic();
+      renderSprint();
+    })();
+  </script>
+</body>
+</html>

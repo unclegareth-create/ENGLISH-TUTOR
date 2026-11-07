@@ -582,6 +582,389 @@
       transform: translateY(-1px);
     }
 
+    /* ================= INTERACTIVE AEGEAN ISLAND RADAR / MINI-MAP ================= */
+    .island-radar-panel {
+      position: fixed;
+      top: 4.55rem;
+      right: 0.95rem;
+      z-index: 32;
+      width: 288px;
+      background: rgba(8, 19, 34, 0.94);
+      border: 1.5px solid var(--panel-border);
+      border-radius: 15px;
+      padding: 0.72rem 0.82rem;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.72), inset 0 0 22px rgba(56, 189, 248, 0.08);
+      color: #f8fafc;
+      pointer-events: auto;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .island-radar-panel.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px) scale(0.97);
+    }
+    .radar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-serif);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--brass-light);
+      padding-bottom: 0.42rem;
+      border-bottom: 1px solid rgba(217, 155, 67, 0.28);
+      margin-bottom: 0.5rem;
+    }
+    .radar-map-stage {
+      position: relative;
+      width: 100%;
+      height: 168px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 50% 50%, #0c3559 0%, #06182c 75%, #04101f 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      overflow: hidden;
+      margin-bottom: 0.52rem;
+    }
+    .radar-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .radar-node-group {
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .radar-node-group:hover circle.radar-node-ring {
+      stroke: #fff;
+      stroke-width: 2.5px;
+    }
+    .radar-headland-list {
+      display: grid;
+      gap: 0.28rem;
+    }
+    .radar-loc-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.32rem 0.52rem;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      color: #e2e8f0;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+    .radar-loc-btn:hover {
+      border-color: var(--brass-light);
+      background: rgba(217, 155, 67, 0.2);
+      color: #fff;
+    }
+    .radar-loc-btn.active-loc {
+      border-color: var(--aegean-cyan);
+      background: rgba(14, 116, 144, 0.35);
+      color: #e0f2fe;
+    }
+    .radar-loc-btn.solved-loc {
+      border-color: rgba(52, 211, 153, 0.65);
+      background: rgba(6, 78, 59, 0.38);
+      color: #d1fae5;
+    }
+    .radar-status-pill {
+      font-size: 0.62rem;
+      padding: 0.1rem 0.38rem;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(253, 230, 138, 0.35);
+      color: var(--brass-light);
+      white-space: nowrap;
+    }
+    .radar-loc-btn.solved-loc .radar-status-pill {
+      border-color: rgba(52, 211, 153, 0.7);
+      color: #6ee7b7;
+    }
+
+    /* ================= PARNASSUS SANCTUARY CAMBRIDGE MODEL WORKOUTS ================= */
+    .sanctuary-workouts-section {
+      margin-top: 1.1rem;
+      background: rgba(12, 25, 44, 0.68);
+      border: 1.5px solid rgba(56, 189, 248, 0.42);
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+    }
+    .sanctuary-workout-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.65rem;
+    }
+    .sanctuary-altar-card {
+      background: rgba(7, 15, 28, 0.86);
+      border: 1px solid rgba(217, 155, 67, 0.42);
+      border-radius: 11px;
+      padding: 0.75rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.48rem;
+    }
+    .sanctuary-blueprint-tag {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: #7dd3fc;
+      background: rgba(14, 116, 144, 0.28);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 6px;
+      padding: 0.22rem 0.45rem;
+      margin: 0.2rem 0;
+    }
+    .reveal-cambridge-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      width: 100%;
+      padding: 0.42rem 0.65rem;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(180, 83, 9, 0.85), rgba(120, 53, 15, 0.95));
+      border: 1px solid var(--brass-light);
+      color: #fef3c7;
+      font-size: 0.72rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .reveal-cambridge-btn:hover {
+      filter: brightness(1.12);
+      transform: translateY(-1px);
+    }
+    .cambridge-model-reveal {
+      display: none;
+      margin-top: 0.35rem;
+      padding: 0.48rem 0.58rem;
+      border-radius: 8px;
+      background: rgba(6, 78, 59, 0.36);
+      border: 1px solid rgba(52, 211, 153, 0.65);
+      color: #ecfdf5;
+      font-size: 0.72rem;
+      line-height: 1.45;
+    }
+    .cambridge-model-reveal.open,
+    .cambridge-model-reveal.visible {
+      display: block;
+    }
+
+    /* ================= CONCHIS'S MARBLE TABLET PART 4 DUEL (10 C1/C2 KWT) ================= */
+    .journal-tabs-bar {
+      display: flex;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      margin-top: 0.85rem;
+      padding-bottom: 0.65rem;
+      border-bottom: 1px solid rgba(217, 155, 67, 0.3);
+    }
+    .journal-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.38rem;
+      padding: 0.46rem 0.88rem;
+      border-radius: 10px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(217, 155, 67, 0.42);
+      color: #e2e8f0;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .journal-tab-btn:hover {
+      border-color: var(--brass-light);
+      color: #fff;
+    }
+    .journal-tab-btn.active {
+      background: linear-gradient(135deg, #b45309, #78350f);
+      border-color: var(--brass-light);
+      color: #fef3c7;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.35);
+    }
+    .kwt-duel-section {
+      margin-top: 1.05rem;
+      background: rgba(9, 20, 36, 0.82);
+      border: 1.5px solid rgba(217, 155, 67, 0.52);
+      border-radius: 15px;
+      padding: 1.05rem 1.15rem;
+    }
+    .kwt-duel-section.hidden-tab {
+      display: none;
+    }
+    .kwt-strategy-banner {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin: 0.65rem 0 0.9rem;
+    }
+    .kwt-strategy-step {
+      background: rgba(15, 23, 42, 0.86);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 9px;
+      padding: 0.48rem 0.6rem;
+      font-size: 0.71rem;
+      line-height: 1.38;
+      color: #e2e8f0;
+    }
+    .kwt-strategy-step strong {
+      display: block;
+      color: #fde68a;
+      font-size: 0.72rem;
+      margin-bottom: 0.14rem;
+    }
+    .kwt-duel-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.78rem;
+    }
+    .kwt-tablet-card {
+      background: linear-gradient(180deg, rgba(16, 28, 46, 0.94), rgba(9, 17, 30, 0.96));
+      border: 1px solid rgba(217, 155, 67, 0.42);
+      border-radius: 12px;
+      padding: 0.82rem 0.88rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .kwt-tablet-card.solved-full {
+      border-color: rgba(52, 211, 153, 0.78);
+      box-shadow: 0 0 14px rgba(52, 211, 153, 0.2);
+    }
+    .kwt-tablet-card.solved-half {
+      border-color: rgba(251, 191, 36, 0.78);
+    }
+    .kwt-s1-box {
+      background: rgba(0, 0, 0, 0.34);
+      border-left: 3px solid #d99b43;
+      border-radius: 6px;
+      padding: 0.42rem 0.58rem;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: #f8fafc;
+    }
+    .kwt-tablet-card.echo-struck .kwt-echo {
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+      text-decoration-color: #f87171;
+      opacity: 0.42;
+    }
+    .kwt-tablet-card.echo-struck .kwt-deficit {
+      background: rgba(245, 158, 11, 0.24);
+      border-bottom: 1.5px solid #fbbf24;
+      color: #fef3c7;
+      font-weight: 700;
+      padding: 0 0.18rem;
+      border-radius: 3px;
+    }
+    .kwt-meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.32rem;
+      font-size: 0.66rem;
+    }
+    .kwt-meta-pill {
+      padding: 0.14rem 0.44rem;
+      border-radius: 6px;
+      background: rgba(14, 116, 144, 0.26);
+      border: 1px solid rgba(56, 189, 248, 0.36);
+      color: #bae6fd;
+    }
+    .kwt-s2-frame {
+      font-size: 0.78rem;
+      line-height: 1.5;
+      color: #fef3c7;
+      background: rgba(15, 23, 42, 0.72);
+      border: 1px dashed rgba(217, 155, 67, 0.45);
+      border-radius: 8px;
+      padding: 0.45rem 0.58rem;
+    }
+    .kwt-input-row {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      margin-top: 0.25rem;
+    }
+    .kwt-input {
+      flex: 1 1 auto;
+      padding: 0.38rem 0.58rem;
+      border-radius: 7px;
+      background: rgba(6, 12, 22, 0.95);
+      border: 1px solid rgba(217, 155, 67, 0.55);
+      color: #ffffff;
+      font-size: 0.76rem;
+      font-weight: 700;
+      font-family: var(--font-sans);
+    }
+    .kwt-input:focus {
+      outline: 2px solid #38bdf8;
+      border-color: #38bdf8;
+    }
+    .kwt-guards-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      font-size: 0.67rem;
+    }
+    .kwt-guard-badge {
+      padding: 0.12rem 0.45rem;
+      border-radius: 999px;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: #cbd5e1;
+      font-weight: 700;
+    }
+    .kwt-guard-badge.ok {
+      background: rgba(6, 78, 59, 0.55);
+      border-color: rgba(52, 211, 153, 0.7);
+      color: #a7f3d0;
+    }
+    .kwt-guard-badge.warn {
+      background: rgba(120, 53, 15, 0.55);
+      border-color: rgba(251, 191, 36, 0.7);
+      color: #fde68a;
+    }
+    .kwt-guard-badge.bad {
+      background: rgba(127, 29, 29, 0.55);
+      border-color: rgba(248, 113, 113, 0.7);
+      color: #fecaca;
+    }
+    .kwt-feedback-line {
+      font-size: 0.72rem;
+      min-height: 1.15em;
+      font-weight: 700;
+    }
+    @media (max-width: 768px) {
+      .kwt-strategy-banner,
+      .kwt-duel-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 768px) {
+      .sanctuary-workout-grid {
+        grid-template-columns: 1fr;
+      }
+      .island-radar-panel {
+        top: 4.1rem;
+        right: 0.5rem;
+        width: 256px;
+      }
+    }
+
     /* ================= CINEMATIC INTRO TITLE SCREEN ================= */
     .intro-screen {
       position: fixed;
@@ -877,16 +1260,16 @@
         </div>
         <div class="premise-card">
           <span class="premise-step-badge">🪨 2. How You Play</span>
-          <h3>4 Altars &bull; 3 Stone Columns</h3>
+          <h3>5 Headland Altars &bull; 3 Stone Columns</h3>
           <p>
-            Before each of the <strong>4 Marble Altars</strong> sits a rack of <strong>15 scrambled stone tablets</strong> in 3 columns (<strong>Beginning</strong> &bull; <strong>Middle</strong> &bull; <strong>Ending</strong>). Click <strong>1 stone from each column</strong> to build a complete 3-part sentence.
+            Before each of the <strong>5 Marble Altars</strong> (including the subterranean <strong>Parnassus Astrolabe Sanctuary</strong>) sits a rack of <strong>15 scrambled stone tablets</strong> in 3 columns. Click <strong>1 stone from each column</strong> to build a complete 3-part sentence.
           </p>
         </div>
         <div class="premise-card">
           <span class="premise-step-badge">⚡ 3. What Happens</span>
-          <h3>Shatter 20 Island Illusions</h3>
+          <h3>Shatter 25 Island Illusions</h3>
           <p>
-            Every valid sentence (<strong>5 per Altar, 20 total</strong>) fires a skyward beam of light and <strong>physically transforms the 3D island</strong>&mdash;raising sunken staircases, summoning Greek ships, and awakening celestial machines!
+            Every valid sentence (<strong>5 per Altar, 25 total</strong>) fires a skyward beam of light and <strong>physically transforms the 3D island</strong>&mdash;raising sunken staircases, summoning Greek ships, and awakening the Parnassus Astrolabe Sanctuary!
           </p>
         </div>
       </div>
@@ -896,7 +1279,7 @@
           <span>🎓 C1/C2 &amp; IELTS Mystery (Inversions, Clefts &amp; Passives)</span>
         </button>
         <button type="button" class="hud-btn" id="intro-mode-a1" onclick="IsleGame.setLevelMode('a1')">
-          <span>🌱 A2–B1 Foundations (Tenses, Modals &amp; Conditionals)</span>
+          <span>🌱 A1–B1 Foundations (Tenses, Modals &amp; Conditionals)</span>
         </button>
         <button type="button" class="hud-btn light-btn" onclick="IsleGame.cycleLighting()">
           <span id="intro-lighting-label">🔥 Time: Firelit Dusk</span>
@@ -916,7 +1299,7 @@
       </div>
 
       <div style="margin-top:0.75rem; font-size:0.72rem; color:#94a3b8;">
-        <strong>Controls:</strong> Click the <strong>3D Stone Tablets</strong> directly on the rack (or open <code>▲ Word Tray</code>) &bull; <code>WASD</code> / Arrows or <code>1–4</code> buttons to move between Altars &bull; Drag to look around &bull; Need help? Click <code>💡 Hint</code> or <code>🔭 Clue</code>.
+        <strong>Controls:</strong> Click the <strong>3D Stone Tablets</strong> directly on the rack (or open <code>▲ Word Tray</code>) &bull; <code>WASD</code> / Arrows or <code>1–5</code> buttons to move between Altars &bull; Click <code>🧭 Island Radar</code> for the Mini-Map &bull; Need help? Click <code>💡 Hint</code> or <code>🔭 Clue</code>.
       </div>
     </div>
   </div>
@@ -926,6 +1309,58 @@
 
   <!-- Floating Wonder Unlock & Rank Toast -->
   <div class="unlock-toast" id="unlock-toast" role="status" aria-live="polite"></div>
+
+  <!-- Interactive Aegean Island Mini-Map & Fast-Travel Radar -->
+  <aside class="island-radar-panel hidden" id="island-radar-panel" aria-label="Aegean Island Mini-Map and Fast-Travel Radar">
+    <div class="radar-header">
+      <span>🧭 Phraxos Island Radar</span>
+      <button type="button" class="hud-btn" onclick="IsleGame.toggleRadar(false)" style="padding:0.18rem 0.45rem; font-size:0.68rem;" title="Close Island Radar [Key: M]">✕</button>
+    </div>
+    <div class="radar-map-stage">
+      <svg class="radar-svg" viewBox="0 0 260 160" aria-label="Topographical Map of Phraxos Headlands">
+        <!-- Aegean Sea & Compass Rose Grid -->
+        <circle cx="130" cy="80" r="72" fill="none" stroke="rgba(56,189,248,0.16)" stroke-dasharray="3 3" />
+        <line x1="130" y1="6" x2="130" y2="154" stroke="rgba(56,189,248,0.18)" stroke-width="1" />
+        <line x1="14" y1="80" x2="246" y2="80" stroke="rgba(56,189,248,0.18)" stroke-width="1" />
+        <!-- Causeways connecting the Headlands -->
+        <line x1="94" y1="132" x2="166" y2="132" stroke="#d99b43" stroke-width="2.5" stroke-dasharray="3 2" />
+        <line x1="130" y1="132" x2="130" y2="22" stroke="#d99b43" stroke-width="3" />
+        <!-- Headland 1: Villa Bourani Courtyard (West Terrace) -->
+        <g class="radar-node-group" onclick="IsleGame.teleportToAltar(0)" id="radar-svg-node-0">
+          <circle class="radar-node-ring" cx="90" cy="132" r="13" fill="rgba(180,83,9,0.55)" stroke="#fde68a" stroke-width="1.8" />
+          <text x="90" y="136" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">I</text>
+          <text x="52" y="148" text-anchor="middle" fill="#fde68a" font-size="7.5" font-weight="700">Bourani West</text>
+        </g>
+        <!-- Headland 2: East Colonnade -->
+        <g class="radar-node-group" onclick="IsleGame.teleportToAltar(1)" id="radar-svg-node-1">
+          <circle class="radar-node-ring" cx="170" cy="132" r="13" fill="rgba(15,23,42,0.85)" stroke="#d99b43" stroke-width="1.6" />
+          <text x="170" y="136" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">II</text>
+          <text x="208" y="148" text-anchor="middle" fill="#cbd5e1" font-size="7.5" font-weight="700">East Colonnade</text>
+        </g>
+        <!-- Headland 3: 1943 Cove Amphitheatre -->
+        <g class="radar-node-group" onclick="IsleGame.teleportToAltar(2)" id="radar-svg-node-2">
+          <circle class="radar-node-ring" cx="130" cy="96" r="13" fill="rgba(15,23,42,0.85)" stroke="#d99b43" stroke-width="1.6" />
+          <text x="130" y="100" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">III</text>
+          <text x="186" y="99" text-anchor="start" fill="#cbd5e1" font-size="7.5" font-weight="700">1943 Cove</text>
+        </g>
+        <!-- Headland 4: Trial Court -->
+        <g class="radar-node-group" onclick="IsleGame.teleportToAltar(3)" id="radar-svg-node-3">
+          <circle class="radar-node-ring" cx="130" cy="60" r="13" fill="rgba(15,23,42,0.85)" stroke="#d99b43" stroke-width="1.6" />
+          <text x="130" y="64" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">IV</text>
+          <text x="74" y="63" text-anchor="end" fill="#cbd5e1" font-size="7.5" font-weight="700">Trial Court</text>
+        </g>
+        <!-- Headland 5: Parnassus Sanctuary -->
+        <g class="radar-node-group" onclick="IsleGame.teleportToAltar(4)" id="radar-svg-node-4">
+          <circle class="radar-node-ring" cx="130" cy="24" r="14" fill="rgba(14,116,144,0.65)" stroke="#38bdf8" stroke-width="1.8" />
+          <text x="130" y="28" text-anchor="middle" fill="#fff" font-size="9" font-weight="800">V</text>
+          <text x="188" y="27" text-anchor="start" fill="#7dd3fc" font-size="7.5" font-weight="800">Parnassus Sanctuary</text>
+        </g>
+        <!-- Live Player Position Blip -->
+        <circle id="radar-player-blip" cx="90" cy="138" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="1.5" />
+      </svg>
+    </div>
+    <div class="radar-headland-list" id="radar-headland-list"></div>
+  </aside>
 
   <!-- HUD Layer -->
   <div class="hud-layer">
@@ -942,7 +1377,7 @@
           <span class="era-badge" id="era-banner">☀️ Bourani Terrace (West): The Masque of Apollo</span>
         </div>
 
-        <!-- Fast Travel across the 4 Stages of the Godgame -->
+        <!-- Fast Travel across the 5 Stages of the Godgame -->
         <nav class="nav-pills" aria-label="Bourani Headland Fast Travel">
           <button type="button" class="hud-btn active" id="nav-altar-0" onclick="IsleGame.teleportToAltar(0)">
             <span id="nav-altar-label-0">1. West Terrace (0/5)</span>
@@ -956,20 +1391,26 @@
           <button type="button" class="hud-btn" id="nav-altar-3" onclick="IsleGame.teleportToAltar(3)">
             <span id="nav-altar-label-3">4. The Trial Court (0/5)</span>
           </button>
+          <button type="button" class="hud-btn" id="nav-altar-4" onclick="IsleGame.teleportToAltar(4)">
+            <span id="nav-altar-label-4">5. Parnassus Sanctuary (0/5)</span>
+          </button>
         </nav>
 
-        <!-- Aegean Light Dial, Level Switcher, Bourani Dossier, Conchis Voice & Greek Harp Audio -->
+        <!-- Aegean Light Dial, Level Switcher, Island Radar, Bourani Dossier, Conchis Voice & Greek Harp Audio -->
         <div class="nav-pills">
+          <button type="button" class="hud-btn" id="radar-toggle-btn" onclick="IsleGame.toggleRadar()" title="Toggle Interactive Aegean Island Mini-Map &amp; Fast-Travel Radar [Key: M]">
+            <span id="radar-toggle-label">🧭 Island Radar</span>
+          </button>
           <button type="button" class="hud-btn light-btn" id="lighting-btn" onclick="IsleGame.cycleLighting()" title="Cycle Aegean Time of Day (Noon / Firelit Dusk / Moonlit Masque) [Key: L]">
             <span id="lighting-label">🔥 Light: Firelit Dusk</span>
           </button>
-          <button type="button" class="hud-btn mode-btn" id="mode-toggle-btn" onclick="IsleGame.toggleLevelMode()" title="Switch between C1/C2 Godgame Mystery and A2-B1 Foundations">
+          <button type="button" class="hud-btn mode-btn" id="mode-toggle-btn" onclick="IsleGame.toggleLevelMode()" title="Switch between C1/C2 Godgame Mystery and A1-B1 Foundations">
             <span id="mode-toggle-label">🎓 Mode: C1/C2 &amp; IELTS</span>
           </button>
           <button type="button" class="hud-btn" onclick="IsleGame.toggleJournal(true)" title="Open the Bourani Dossier &amp; Rank Tracker">
-            <span>📜 Dossier (<span id="discovery-count">0/20</span> &bull; <span id="rank-badge">Initiate</span>)</span>
+            <span>📜 Dossier (<span id="discovery-count">0/25</span> &bull; <span id="rank-badge">Initiate</span>)</span>
           </button>
-          <button type="button" class="hud-btn" id="voice-welcome-btn" onclick="IsleGame.playConchisWelcome()" title="Replay Maurice Conchis's spoken welcome (Piper Theatrical British Voice)">
+          <button type="button" class="hud-btn" id="voice-welcome-btn" onclick="IsleGame.playConchisWelcome()" title="Replay Maurice Conchis's spoken welcome (Piper Studio British Voice)">
             <span id="voice-welcome-label">🎙️ Conchis Voice</span>
           </button>
           <button type="button" class="hud-btn" id="audio-toggle-btn" onclick="IsleGame.toggleAudio()" title="Toggle Ancient Greek Harp, Aegean Surf &amp; Pine Cicadas">
@@ -1070,9 +1511,23 @@
       </div>
 
       <p style="margin-top:0.55rem; font-size:0.86rem; line-height:1.55; color:#e2e8f0;">
-        Inspired by <em>Myst</em> and John Fowles’s <em>The Magus</em>. You have walked through the Aleppo pines of Phraxos to <strong>Bourani</strong>, the cliffside villa of the enigmatic <strong>Maurice Conchis</strong>. Around the whitewashed colonnades, the 1943 cove amphitheatre, and the subterranean Trial court, Conchis has staged a psychological <em>Godgame</em>. Every carved marble sentence you assemble strips away an illusion and physically transforms the island.
+        Inspired by <em>Myst</em> and John Fowles’s <em>The Magus</em>. You have walked through the Aleppo pines of Phraxos to <strong>Bourani</strong>, the cliffside villa of the enigmatic <strong>Maurice Conchis</strong>. Across the whitewashed colonnades, the 1943 cove amphitheatre, the subterranean Trial court, and the newly unearthed <strong>Parnassus Subterranean Astrolabe Sanctuary</strong>, Conchis has staged a psychological <em>Godgame</em>. Every carved marble sentence you assemble strips away an illusion and physically transforms the island.
       </p>
 
+      <!-- Field Journal Tab Bar -->
+      <div class="journal-tabs-bar" role="tablist" aria-label="Bourani Field Journal Sections">
+        <button type="button" class="journal-tab-btn active" id="journal-tab-btn-all" role="tab" aria-selected="true" onclick="IsleGame.switchJournalTab('all')">
+          <span>📖 Full Bourani Dossier &amp; Marble Tablet Trial</span>
+        </button>
+        <button type="button" class="journal-tab-btn" id="journal-tab-btn-estate" role="tab" aria-selected="false" onclick="IsleGame.switchJournalTab('estate')">
+          <span>🏛️ Estate Blueprints &amp; 25 Acts</span>
+        </button>
+        <button type="button" class="journal-tab-btn" id="journal-tab-btn-kwt" role="tab" aria-selected="false" onclick="IsleGame.switchJournalTab('kwt')">
+          <span>🪨 Conchis’s Marble Tablet Part 4 Duel (10 C1/C2 KWT)</span>
+        </button>
+      </div>
+
+      <div id="journal-estate-pane">
       <div class="book-grid">
         <!-- Left Page: Conchis's Curiosities, Level Switcher & Structural Blueprints -->
         <div class="book-page">
@@ -1082,7 +1537,7 @@
               <span>🎓 C1/C2 &amp; IELTS Godgame (Default)</span>
             </button>
             <button type="button" class="hud-btn" id="book-mode-a1" onclick="IsleGame.setLevelMode('a1')">
-              <span>🌱 A2–B1 Foundations (Tenses, Modals &amp; Conditionals)</span>
+              <span>🌱 A1–B1 Foundations (Tenses, Modals &amp; Conditionals)</span>
             </button>
           </div>
 
@@ -1108,21 +1563,86 @@
               <strong>🃏 Tarot Card: I. The Magus (Trial)</strong><br/>
               <span style="color:#cbd5e1;">“Freedom begins when the mask falls.”</span>
             </button>
+            <button type="button" class="clue-card" style="grid-column: 1 / -1;" onclick="IsleGame.triggerCuriosity(4); IsleGame.toggleJournal(false);">
+              <strong>🧭 Parnassus Astrolabe Codex (Act V Sanctuary)</strong><br/>
+              <span style="color:#cbd5e1;">Subterranean C2 contrastive clefts, inverted counterfactuals &amp; resultative participle chains.</span>
+            </button>
           </div>
         </div>
 
-        <!-- Right Page: The 20 Acts of the Masque -->
+        <!-- Right Page: The 25 Acts of the Masque -->
         <div class="book-page">
-          <h3>✨ The 20 Acts of the Masque (<span id="journal-progress-label">0 / 20 Unmasked</span>)</h3>
+          <h3>✨ The 25 Acts of the Masque (<span id="journal-progress-label">0 / 25 Unmasked</span>)</h3>
           <p style="font-size:0.75rem; color:#cbd5e1; margin-bottom:0.5rem;">
-            Assemble all 20 syntactic keys across the 4 Altars of Phraxos:
+            Assemble all 25 syntactic keys across the 5 Altars of Phraxos:
           </p>
           <div class="discovery-list" id="journal-discovery-list"></div>
         </div>
       </div>
 
+      <!-- Act V: The Parnassus Subterranean Astrolabe Sanctuary — 3 Marble Altar Workouts -->
+      <div class="sanctuary-workouts-section">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <h3 style="font-family:var(--font-serif); font-size:1.05rem; color:var(--brass-light);">
+            🌌 Act V Field Journal: The Parnassus Subterranean Astrolabe Sanctuary (3 Marble Altars)
+          </h3>
+          <button type="button" class="hud-btn" onclick="IsleGame.teleportToAltar(4); IsleGame.toggleJournal(false);">
+            <span>🏛️ Fast-Travel to Parnassus Sanctuary &rarr;</span>
+          </button>
+        </div>
+        <p style="font-size:0.76rem; color:#cbd5e1; margin-top:0.28rem;">
+          Study Gareth’s structural formation blueprints for the three consecrated marble altars of the Parnassus Sanctuary, work through each prompt live, and click <strong>👁️ Reveal Cambridge Model</strong> to inspect the target tablet inscription:
+        </p>
+        <div class="sanctuary-workout-grid" id="sanctuary-workouts-grid"></div>
+      </div>
+      </div><!-- /#journal-estate-pane -->
+
+      <!-- Conchis's Marble Tablet Part 4 Duel (10 C1/C2 Key Word Transformations) -->
+      <section class="kwt-duel-section" id="journal-kwt-duel" aria-labelledby="kwt-duel-heading">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.55rem;">
+          <div>
+            <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.12em; color:#38bdf8; font-weight:800;">
+              Villa Bourani Examination Table &bull; Cambridge C1/C2 Use of English Part 4
+            </div>
+            <h3 id="kwt-duel-heading" style="font-family:var(--font-serif); font-size:1.12rem; color:var(--brass-light); margin-top:0.12rem;">
+              🪨 Conchis’s Marble Tablet Part 4 Duel (10 C1/C2 Key Word Transformations)
+            </h3>
+          </div>
+          <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
+            <span class="hud-btn" style="cursor:default; border-color:#34d399; color:#d1fae5;" id="kwt-duel-score-badge">
+              🏆 Score: 0 / 20 Marks (0 / 10 Tablets)
+            </span>
+            <button type="button" class="hud-btn" id="kwt-master-echo-btn" onclick="IsleGame.toggleAllKwtEchoes()">
+              <span>✂️ Step 1: Strike Out All Echoes</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Gareth's 4-Step Elimination & Deconstruction Strategy -->
+        <div class="kwt-strategy-banner" aria-label="Gareth's 4-Step Part 4 Strategy">
+          <div class="kwt-strategy-step">
+            <strong>✂️ Step 1: Strike Out the Echoes</strong>
+            Cross out the repeated language from Sentence 1 that already appears in Sentence 2 to isolate the exact semantic deficit.
+          </div>
+          <div class="kwt-strategy-step">
+            <strong>⏳ Step 2: Inspect Tense Harmony</strong>
+            Check the tense of Sentence 1 (past simple, past perfect, present belief) so your gap preserves the exact timeline.
+          </div>
+          <div class="kwt-strategy-step">
+            <strong>🔄 Step 3: Check Voice Shift</strong>
+            Spot whether the new subject forces an Active &rarr; Passive shift, a Passive Reporting infinitive, or an Inversion.
+          </div>
+          <div class="kwt-strategy-step">
+            <strong>🔒 Step 4: Solve in 3–6 Words</strong>
+            Fit the isolated deficit into the C1/C2 structural frame (3 to 6 words) while keeping the KEY WORD 100% unchanged.
+          </div>
+        </div>
+
+        <div class="kwt-duel-grid" id="kwt-duel-grid"></div>
+      </section>
+
       <div style="margin-top:1.0rem; padding-top:0.8rem; border-top:1px solid rgba(217,155,67,0.25); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; font-size:0.77rem; color:#cbd5e1;">
-        <span><strong>Controls:</strong> Walk with <code>WASD</code> / Arrows &bull; Drag view to look &bull; Press <code>L</code> to shift Aegean Noon / Dusk / Night &bull; Click any 3D curiosity or Altar.</span>
+        <span><strong>Controls:</strong> Walk with <code>WASD</code> / Arrows &bull; Drag view to look &bull; Press <code>L</code> to shift Aegean Noon / Dusk / Night &bull; Press <code>M</code> for Island Radar &bull; Click any 3D curiosity or Altar.</span>
         <button type="button" class="cta-primary" onclick="IsleGame.toggleJournal(false)">
           <span>Enter the Godgame &rarr;</span>
         </button>
@@ -1136,25 +1656,28 @@
   // Inspired by Myst & John Fowles's The Magus | Built for GarethEnglish.com
   // ============================================================================
   const IsleGame = (() => {
-    let levelMode = 'c1'; // 'c1' (The Magus C1/C2 Mystery) or 'a1' (A2-B1 Foundations)
+    let levelMode = 'c1'; // 'c1' (The Magus C1/C2 Mystery) or 'a1' (A1-B1 Foundations)
     let lightingMode = 1; // 0 = Blinding Aegean Noon, 1 = Firelit Bourani Dusk (Default), 2 = Moonlit Masque
     let currentAltarId = 0;
     let selectedSlotIdx = 0;
     let solveStreak = 0;
     let toastTimer = null;
+    let radarOpen = false;
     const discovered = new Set();
 
     const altarState = [
       [null, null, null],
       [null, null, null],
       [null, null, null],
+      [null, null, null],
       [null, null, null]
     ];
-    const activeWonder = [-1, -1, -1, -1];
+    const activeWonder = [-1, -1, -1, -1, -1];
 
     // Per-Altar Deranged Column Permutations: rackOrder[altarId][colIdx][rowIdx] -> canonical itemIdx (0..4)
     // Guarantees that NO horizontal row across the 3D rack or 2D tray ever aligns!
     const rackOrder = [
+      [[0, 1, 2, 3, 4], [1, 2, 3, 4, 0], [2, 3, 4, 0, 1]],
       [[0, 1, 2, 3, 4], [1, 2, 3, 4, 0], [2, 3, 4, 0, 1]],
       [[0, 1, 2, 3, 4], [1, 2, 3, 4, 0], [2, 3, 4, 0, 1]],
       [[0, 1, 2, 3, 4], [1, 2, 3, 4, 0], [2, 3, 4, 0, 1]],
@@ -1195,7 +1718,7 @@
     }
 
     function shuffleAllRacks() {
-      for (let a = 0; a < 4; a++) {
+      for (let a = 0; a < 5; a++) {
         rackOrder[a] = generateAltarDerangement();
       }
     }
@@ -1224,6 +1747,11 @@
         altarId: 3,
         name: "🃏 Tarot Bronze Relief — I. The Magus & 0. The Fool",
         note: "🃏 [Tarot Relief — The Magus]: Carved into the lectern: \"'Were you to...' pairs with 'would + V1'; 'Should...' pairs with 'will + V1'; 'Had I...' pairs with 'would have + V3'; 'But for...' takes a noun phrase; and 'It is high time' demands the past subjunctive.\""
+      },
+      {
+        altarId: 4,
+        name: "🧭 The Parnassus Astrolabe Codex",
+        note: "🧭 [Parnassus Astrolabe Codex]: Inscribed on the subterranean astrolabe ring: \"Contrastive C2 cleft 'It is not so much X as Y' resolves with 'that + verb'; inverted counterfactual 'Had it not been for + noun' demands 'would have + V3'; and a resultative participle ('..., thereby + -ing') expresses direct consequence.\""
       }
     ];
 
@@ -1372,10 +1900,63 @@
             if (i0 === 4 && i1 !== 4) return "⚡ Cambridge Subjunctive Rule: 'IT IS HIGH TIME' must be followed by subject + past tense verb ('YOU STEPPED INTO...').";
             return "⚡ Match the conditional or subjunctive frame in Socket I with its grammatical partner in Sockets II and III.";
           }
+        },
+        {
+          id: 4,
+          eraBanner: "🧭 The Parnassus Subterranean Astrolabe Sanctuary: The Final Godgame",
+          title: "Act V — The Parnassus Sanctuary (Contrastive Clefts, Counterfactuals & Resultative Participles C1/C2)",
+          formula: "[It is not so much X as Y / Had it not been for / Clause + thereby -ing]",
+          blueprint: "<strong>Act V — The Parnassus Sanctuary (C2 Mastery):</strong> Unlock the 3 subterranean marble altars with C2 contrastive <code>It is not so much X as Y that...</code>, inverted counterfactual <code>Had it not been for + NP, ... would have + V3</code>, and resultative participle chains (<code>..., thereby + -ing</code>).",
+          roles: ["1. C2 Opening Frame", "2. Structural Pivot", "3. Sanctuary Resolution"],
+          pos: { x: 0.0, y: 2.75, z: -85.4, yaw: 0 },
+          altarPos: { x: 0.0, y: 0.7, z: -92.2 },
+          col0: [
+            "IT IS NOT SO MUCH",
+            "HAD IT NOT BEEN FOR",
+            "THE BRONZE RINGS ALIGNED,",
+            "SO INTRICATE WAS",
+            "WHAT REMAINS UNBROKEN"
+          ],
+          col1: [
+            "THE MASK ITSELF AS",
+            "CONCHIS’S SUBTERRANEAN KEY,",
+            "THEREBY SHATTERING THE ILLUSION",
+            "THE ASTROLABE MECHANISM",
+            "BENEATH THE MARBLE VAULT"
+          ],
+          col2: [
+            "YOUR BELIEF THAT BINDS YOU",
+            "THE SANCTUARY WOULD HAVE STAYED SEALED",
+            "AND UNLOCKING PARNASSUS",
+            "THAT EVERY SCHOLAR MARVELLED",
+            "IS YOUR SOVEREIGN WILL"
+          ],
+          hints: [
+            "💡 Hint: Contrastive C2 Cleft 'IT IS NOT SO MUCH' requires 'THE MASK ITSELF AS' in Socket II and 'YOUR BELIEF THAT BINDS YOU' in Socket III.",
+            "💡 Hint: Inverted 3rd-conditional 'HAD IT NOT BEEN FOR' requires a noun phrase ('CONCHIS’S SUBTERRANEAN KEY,') and a past counterfactual ('THE SANCTUARY WOULD HAVE STAYED SEALED').",
+            "💡 Hint: Finite clause 'THE BRONZE RINGS ALIGNED,' pairs with the resultative participle chain 'THEREBY SHATTERING THE ILLUSION' + 'AND UNLOCKING PARNASSUS'.",
+            "💡 Hint: Fronted degree inversion 'SO INTRICATE WAS' needs its singular subject ('THE ASTROLABE MECHANISM') and a 'THAT' result clause ('THAT EVERY SCHOLAR MARVELLED').",
+            "💡 Hint: Nominal Wh-cleft 'WHAT REMAINS UNBROKEN' + prepositional modifier ('BENEATH THE MARBLE VAULT') resolves with singular copula 'IS YOUR SOVEREIGN WILL'."
+          ],
+          wonders: [
+            { name: "The Contrastive Mirror of Parnassus", msg: "🪞 [ IT IS NOT SO MUCH THE MASK ITSELF AS YOUR BELIEF THAT BINDS YOU ] — Contrastive C2 Cleft! The first marble altar blazes and the outer celestial astrolabe ring ignites!" },
+            { name: "The Subterranean Vault Key", msg: "🗝️ [ HAD IT NOT BEEN FOR CONCHIS’S SUBTERRANEAN KEY, THE SANCTUARY WOULD HAVE STAYED SEALED ] — Inverted counterfactual! The second marble altar opens the subterranean star-vault!" },
+            { name: "The Resultative Astrolabe Chain", msg: "⚙️ [ THE BRONZE RINGS ALIGNED, THEREBY SHATTERING THE ILLUSION AND UNLOCKING PARNASSUS ] — Resultative participle chain! All three marble altars synchronize in golden light!" },
+            { name: "The Orrery of Delphic Resonance", msg: "🌌 [ SO INTRICATE WAS THE ASTROLABE MECHANISM THAT EVERY SCHOLAR MARVELLED ] — Fronted 'So + Adj + BE' inversion! Six vaulted starlight ribs arch above the sanctuary!" },
+            { name: "The Crown of Eleutheria", msg: "👑 [ WHAT REMAINS UNBROKEN BENEATH THE MARBLE VAULT IS YOUR SOVEREIGN WILL ] — Wh-cleft synthesis! The Parnassus Astrolabe Sanctuary ascends in full splendour!" }
+          ],
+          explainClash(i0, i1, i2) {
+            if (i0 === 0 && (i1 !== 0 || i2 !== 0)) return "⚡ C2 Contrastive Cleft Rule: 'IT IS NOT SO MUCH [X] AS [Y] THAT + Verb' requires 'THE MASK ITSELF AS' + 'YOUR BELIEF THAT BINDS YOU'.";
+            if (i0 === 1 && (i1 !== 1 || i2 !== 1)) return "⚡ Inverted Counterfactual Rule: 'HAD IT NOT BEEN FOR + Noun Phrase' requires 'CONCHIS’S SUBTERRANEAN KEY,' + 'THE SANCTUARY WOULD HAVE STAYED SEALED'.";
+            if (i0 === 2 && (i1 !== 2 || i2 !== 2)) return "⚡ Resultative Participle Chain: 'THE BRONZE RINGS ALIGNED,' must flow into ', THEREBY SHATTERING THE ILLUSION' + 'AND UNLOCKING PARNASSUS'.";
+            if (i0 === 3 && (i1 !== 3 || i2 !== 3)) return "⚡ 'So + Adjective' Inversion: 'SO INTRICATE WAS' requires subject 'THE ASTROLABE MECHANISM' and result clause 'THAT EVERY SCHOLAR MARVELLED'.";
+            if (i0 === 4 && (i1 !== 4 || i2 !== 4)) return "⚡ Wh-Cleft Copula: 'WHAT REMAINS UNBROKEN BENEATH THE MARBLE VAULT' requires singular 'IS YOUR SOVEREIGN WILL'.";
+            return "⚡ Align the C2 opening frame in Socket I with its exact syntactic partner in Sockets II and III.";
+          }
         }
       ],
 
-      // A2-B1 Foundations Mode: 20 Distinct, Non-Trivial Grammar Locks (Zero '(Clash Test)' labels or duplicate tiles!)
+      // A2-B1 Foundations Mode: 25 Distinct, Non-Trivial Grammar Locks across all 5 Headlands
       a1: [
         {
           id: 0,
@@ -1513,6 +2094,123 @@
             if (i0 === 4 && i1 !== 4) return "⚡ Main Clause Subject Needed: After 'WHEN CONCHIS SPEAKS,', Socket II must provide the main-clause subject ('THE OLIVE GROVE').";
             return "⚡ Match the future or conditional opening in Socket I with its grammatical partner in Sockets II and III.";
           }
+        },
+        {
+          id: 4,
+          eraBanner: "🧭 The Parnassus Sanctuary: Comparisons, Conditionals & Purpose (A1–B1)",
+          title: "Act V — The Parnassus Sanctuary (Not Only, Because Of & So That A1–B1)",
+          formula: "[Comparison / Condition / Clause] + [Pivot] + [Result / Purpose]",
+          blueprint: "<strong>Act V — The Parnassus Sanctuary (A1–B1 Foundations):</strong> Master the 3 core sanctuary patterns: <code>It is not the mask but your belief...</code>, <code>Without Conchis’s key, the door would stay locked</code>, and <code>The rings turned, so the hidden vault opened</code>.",
+          roles: ["1. Opening Phrase", "2. Middle Pivot", "3. Clear Result"],
+          pos: { x: 0.0, y: 2.75, z: -85.4, yaw: 0 },
+          altarPos: { x: 0.0, y: 0.7, z: -92.2 },
+          col0: [
+            "IT IS NOT THE MASK",
+            "WITHOUT CONCHIS’S KEY,",
+            "THE BRONZE RINGS TURNED,",
+            "THE ASTROLABE WAS",
+            "WHAT MATTERS MOST"
+          ],
+          col1: [
+            "BUT YOUR OWN BELIEF",
+            "THE SANCTUARY DOOR",
+            "SO THE HIDDEN VAULT",
+            "SO BRIGHT THAT",
+            "BENEATH THIS DOME"
+          ],
+          col2: [
+            "THAT SETS YOU FREE",
+            "WOULD STAY LOCKED",
+            "OPENED BEFORE US",
+            "EVERY TRAVELLER STOPPED",
+            "IS YOUR CLEAR MIND"
+          ],
+          hints: [
+            "💡 Hint: Contrastive 'IT IS NOT THE MASK' pairs with 'BUT YOUR OWN BELIEF' + 'THAT SETS YOU FREE'.",
+            "💡 Hint: Conditional 'WITHOUT CONCHIS’S KEY,' needs a subject ('THE SANCTUARY DOOR') + 'WOULD STAY LOCKED'.",
+            "💡 Hint: Past action 'THE BRONZE RINGS TURNED,' connects with result linker 'SO THE HIDDEN VAULT' + 'OPENED BEFORE US'.",
+            "💡 Hint: 'THE ASTROLABE WAS' pairs with degree phrase 'SO BRIGHT THAT' + 'EVERY TRAVELLER STOPPED'.",
+            "💡 Hint: 'WHAT MATTERS MOST' + place phrase 'BENEATH THIS DOME' takes singular verb 'IS YOUR CLEAR MIND'."
+          ],
+          wonders: [
+            { name: "The Contrastive Mirror of Parnassus", msg: "🪞 [ IT IS NOT THE MASK BUT YOUR OWN BELIEF THAT SETS YOU FREE ] — The first marble altar blazes and the outer astrolabe ring ignites!" },
+            { name: "The Subterranean Vault Key", msg: "🗝️ [ WITHOUT CONCHIS’S KEY, THE SANCTUARY DOOR WOULD STAY LOCKED ] — The second marble altar opens the subterranean star-vault!" },
+            { name: "The Resultative Astrolabe Chain", msg: "⚙️ [ THE BRONZE RINGS TURNED, SO THE HIDDEN VAULT OPENED BEFORE US ] — All three marble altars synchronize in golden light!" },
+            { name: "The Orrery of Delphic Resonance", msg: "🌌 [ THE ASTROLABE WAS SO BRIGHT THAT EVERY TRAVELLER STOPPED ] — Six vaulted starlight ribs arch above the sanctuary!" },
+            { name: "The Crown of Eleutheria", msg: "👑 [ WHAT MATTERS MOST BENEATH THIS DOME IS YOUR CLEAR MIND ] — The Parnassus Astrolabe Sanctuary ascends in full splendour!" }
+          ],
+          explainClash(i0, i1, i2) {
+            if (i0 === 0 && (i1 !== 0 || i2 !== 0)) return "⚡ 'Not X but Y' Rule: 'IT IS NOT THE MASK' must pair with 'BUT YOUR OWN BELIEF' + 'THAT SETS YOU FREE'.";
+            if (i0 === 1 && (i1 !== 1 || i2 !== 1)) return "⚡ 'Without' Condition: 'WITHOUT CONCHIS’S KEY,' requires 'THE SANCTUARY DOOR' + 'WOULD STAY LOCKED'.";
+            if (i0 === 2 && (i1 !== 2 || i2 !== 2)) return "⚡ Result Linker: 'THE BRONZE RINGS TURNED,' connects with 'SO THE HIDDEN VAULT' + 'OPENED BEFORE US'.";
+            if (i0 === 3 && (i1 !== 3 || i2 !== 3)) return "⚡ 'So... that' Rule: 'THE ASTROLABE WAS' pairs with 'SO BRIGHT THAT' + 'EVERY TRAVELLER STOPPED'.";
+            if (i0 === 4 && (i1 !== 4 || i2 !== 4)) return "⚡ 'What' Subject Rule: 'WHAT MATTERS MOST BENEATH THIS DOME' takes singular 'IS YOUR CLEAR MIND'.";
+            return "⚡ Match the opening phrase in Socket I with its grammatical partner in Sockets II and III.";
+          }
+        }
+      ]
+    };
+
+    // ==========================================================================
+    // GARETH'S 3 PARNASSUS SANCTUARY MARBLE ALTAR WORKOUTS (FIELD JOURNAL TABLETS)
+    // ==========================================================================
+    const PARNASSUS_ALTAR_WORKOUTS = {
+      c1: [
+        {
+          altarNum: "Sanctuary Marble Altar I",
+          title: "C2 Contrastive Cleft Focus",
+          blueprint: "It + BE + not so much + [Noun/Clause X] + as + [Noun/Clause Y] + that + [Verb]",
+          prompt: "Rewrite using a C2 contrastive cleft: \"Your belief binds you far more than the mask itself.\"",
+          keyWord: "MUCH",
+          model: "It is not so much the mask itself as your belief that binds you.",
+          note: "Places sharp rhetorical contrast between the superficial prop (X) and the true psychological mechanism (Y)."
+        },
+        {
+          altarNum: "Sanctuary Marble Altar II",
+          title: "Inverted Past Counterfactual",
+          blueprint: "Had it not been for + [Noun Phrase], + [Subject] + would have + [Past Participle]",
+          prompt: "Rewrite using C1/C2 inverted conditional syntax: \"If Conchis’s subterranean key had not existed, the sanctuary would have stayed sealed.\"",
+          keyWord: "BEEN",
+          model: "Had it not been for Conchis’s subterranean key, the sanctuary would have stayed sealed.",
+          note: "Eliminates 'if' and fronts 'Had it not been for + NP' for elevated academic and literary register."
+        },
+        {
+          altarNum: "Sanctuary Marble Altar III",
+          title: "Resultative Participle Chain",
+          blueprint: "[Main Finite Clause], + thereby + [Present Participle -ing] + and + [Parallel -ing]",
+          prompt: "Combine into one C1/C2 sentence using a resultative participle chain: \"The bronze rings aligned. As a direct result, they shattered the illusion and unlocked Parnassus.\"",
+          keyWord: "THEREBY",
+          model: "The bronze rings aligned, thereby shattering the illusion and unlocking Parnassus.",
+          note: "Replaces clunky 'As a result, they...' with a streamlined ', thereby + -ing' consequence clause."
+        }
+      ],
+      a1: [
+        {
+          altarNum: "Sanctuary Marble Altar I",
+          title: "Contrastive 'Not X ... But Y' Focus (A1–B1)",
+          blueprint: "It is not + [Noun X] + but + [Noun Y] + that + [Present Verb]",
+          prompt: "Complete the contrast: \"The mask does not set you free. Your own belief sets you free.\"",
+          keyWord: "BUT",
+          model: "It is not the mask but your own belief that sets you free.",
+          note: "Uses 'not X but Y' to contrast two ideas clearly in a single sentence."
+        },
+        {
+          altarNum: "Sanctuary Marble Altar II",
+          title: "Second Conditional with 'Without' (A1–B1)",
+          blueprint: "Without + [Noun Phrase], + [Subject] + would + [Base Verb]",
+          prompt: "Rewrite using 'Without': \"If we did not have Conchis’s key, the sanctuary door would stay locked.\"",
+          keyWord: "WITHOUT",
+          model: "Without Conchis’s key, the sanctuary door would stay locked.",
+          note: "'Without + noun' is a clean, natural way to express 'If we did not have...'."
+        },
+        {
+          altarNum: "Sanctuary Marble Altar III",
+          title: "Cause & Result with 'So' (A1–B1)",
+          blueprint: "[Past Simple Clause], + so + [Subject] + [Past Simple Verb]",
+          prompt: "Join the cause and result: \"The bronze rings turned. Because of this, the hidden vault opened before us.\"",
+          keyWord: "SO",
+          model: "The bronze rings turned, so the hidden vault opened before us.",
+          note: "Links a past action directly to its result using ', so + Past Simple'."
         }
       ]
     };
@@ -1722,13 +2420,29 @@
     ].join('');
 
     // Plays Maurice Conchis's Dramatic Piper Neural Welcome (en_GB-semaine-medium Speaker 1 'Spike' — Theatrical British Baritone)
+    const MYST_AUDIO_PATHS = {
+      welcome: 'assets/audio/myst/conchis-welcome.mp3',
+      acts: [
+        'assets/audio/myst/act1-complete.mp3',
+        'assets/audio/myst/act2-complete.mp3',
+        'assets/audio/myst/act3-complete.mp3',
+        'assets/audio/myst/act4-complete.mp3',
+        'assets/audio/myst/act5-complete.mp3'
+      ]
+    };
+
     let conchisDecodedBuffer = null;
     let conchisVoiceSource = null;
+    let activeNeuralTrackEl = null;
 
-    function setConchisSpeakingState(speaking) {
+    function setConchisSpeakingState(speaking, customLabel = null) {
       isConchisSpeaking = speaking;
       const lbl = document.getElementById('voice-welcome-label');
-      if (lbl) lbl.textContent = speaking ? '🎙️ Conchis Speaking...' : '🎙️ Conchis Voice';
+      if (lbl) {
+        lbl.textContent = speaking
+          ? (customLabel || '🎙️ Conchis Speaking...')
+          : '🎙️ Conchis Voice';
+      }
       if (audioCtx && audioEnabled) {
         if (surfGain) surfGain.gain.setTargetAtTime(speaking ? 0.025 : 0.075, audioCtx.currentTime, 0.25);
         if (cicadaGain) cicadaGain.gain.setTargetAtTime(speaking ? 0.006 : 0.016, audioCtx.currentTime, 0.25);
@@ -1736,12 +2450,23 @@
       }
     }
 
-    function playConchisBuffer(buf) {
-      if (!audioCtx) return;
+    function stopActiveNeuralVoice() {
       if (conchisVoiceSource) {
         try { conchisVoiceSource.stop(); } catch (e) {}
         conchisVoiceSource = null;
       }
+      if (conchisAudioEl && !conchisAudioEl.paused) {
+        try { conchisAudioEl.pause(); } catch (e) {}
+      }
+      if (activeNeuralTrackEl && !activeNeuralTrackEl.paused) {
+        try { activeNeuralTrackEl.pause(); } catch (e) {}
+      }
+      setConchisSpeakingState(false);
+    }
+
+    function playConchisBuffer(buf) {
+      if (!audioCtx) return;
+      stopActiveNeuralVoice();
       const src = audioCtx.createBufferSource();
       src.buffer = buf;
       const voiceGain = audioCtx.createGain();
@@ -1776,15 +2501,7 @@
       } catch (e) {}
     }
 
-    function playConchisWelcome() {
-      audioEnabled = true;
-      const toggleLbl = document.getElementById('audio-toggle-label');
-      if (toggleLbl) toggleLbl.textContent = '🪕 Greek Harp & Surf: ON';
-      initAudio();
-      try {
-        playChord([110.00, 164.81, 220.00], 2.2);
-      } catch (e) {}
-
+    function playEmbeddedConchisFallback() {
       if (audioCtx) {
         if (audioCtx.state === 'suspended') {
           audioCtx.resume().catch(() => {});
@@ -1817,6 +2534,97 @@
         }
       }
       playConchisHtmlAudioFallback();
+    }
+
+    function playConchisWelcome() {
+      initAudio();
+      // Graceful fallback to procedural Web Audio lyre chords if muted
+      if (!audioEnabled) {
+        try {
+          playChord([110.00, 164.81, 220.00, 329.63], 2.2);
+        } catch (e) {}
+        return;
+      }
+
+      try {
+        playChord([110.00, 164.81, 220.00], 2.2);
+      } catch (e) {}
+
+      stopActiveNeuralVoice();
+      try {
+        const track = new Audio(MYST_AUDIO_PATHS.welcome);
+        track.preload = 'auto';
+        track.volume = 1.0;
+        activeNeuralTrackEl = track;
+        track.addEventListener('play', () => setConchisSpeakingState(true, '🎙️ Conchis Dispatch...'));
+        const onEnd = () => {
+          if (activeNeuralTrackEl === track) setConchisSpeakingState(false);
+        };
+        track.addEventListener('ended', onEnd);
+        track.addEventListener('pause', onEnd);
+        track.addEventListener('error', () => {
+          playEmbeddedConchisFallback();
+        });
+        const playPromise = track.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {
+            playEmbeddedConchisFallback();
+          });
+        }
+      } catch (e) {
+        playEmbeddedConchisFallback();
+      }
+    }
+
+    function playActCompletionAudio(altarId) {
+      initAudio();
+      const actChords = [
+        [293.66, 369.99, 440.00, 587.33],
+        [329.63, 415.30, 493.88, 659.25],
+        [261.63, 329.63, 392.00, 523.25],
+        [349.23, 440.00, 523.25, 698.46],
+        [293.66, 440.00, 554.37, 880.00]
+      ];
+      const fallbackChord = actChords[altarId] || actChords[0];
+
+      // Graceful fallback to procedural Web Audio lyre chords if muted
+      if (!audioEnabled) {
+        playChord(fallbackChord, 2.4);
+        return;
+      }
+
+      const srcPath = MYST_AUDIO_PATHS.acts[altarId];
+      if (!srcPath) {
+        playChord(fallbackChord, 2.4);
+        return;
+      }
+
+      stopActiveNeuralVoice();
+      try {
+        const track = new Audio(srcPath);
+        track.preload = 'auto';
+        track.volume = 1.0;
+        activeNeuralTrackEl = track;
+        track.addEventListener('play', () => setConchisSpeakingState(true, `🎙️ Act ${altarId + 1} Reflection...`));
+        const onEnd = () => {
+          if (activeNeuralTrackEl === track) setConchisSpeakingState(false);
+        };
+        track.addEventListener('ended', onEnd);
+        track.addEventListener('pause', onEnd);
+        track.addEventListener('error', () => {
+          setConchisSpeakingState(false);
+          playChord(fallbackChord, 2.4);
+        });
+        const playPromise = track.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => {
+            setConchisSpeakingState(false);
+            playChord(fallbackChord, 2.4);
+          });
+        }
+      } catch (e) {
+        playChord(fallbackChord, 2.4);
+      }
     }
 
     // Ancient Greek Harp / Kithara & Lyre Modal Phrases
@@ -2104,14 +2912,7 @@
         if (harpMasterGain) harpMasterGain.gain.setTargetAtTime(audioEnabled ? (isConchisSpeaking ? 0.42 : 0.88) : 0.0, audioCtx.currentTime, 0.1);
       }
       if (!audioEnabled) {
-        if (conchisVoiceSource) {
-          try { conchisVoiceSource.stop(); } catch (e) {}
-          conchisVoiceSource = null;
-          setConchisSpeakingState(false);
-        }
-        if (conchisAudioEl && !conchisAudioEl.paused) {
-          conchisAudioEl.pause();
-        }
+        stopActiveNeuralVoice();
       }
       document.getElementById('audio-toggle-label').textContent = audioEnabled
         ? '🪕 Greek Harp & Surf: ON'
@@ -2129,8 +2930,8 @@
     const flameUniformList = [];
     let inIntroScreen = true;
     const interactables = [];
-    const tabletMeshes3D = [[], [], [], []];
-    const rackMeshes3D = [[], [], [], []]; // [altarId][colIdx][rowIdx]
+    const tabletMeshes3D = [[], [], [], [], []];
+    const rackMeshes3D = [[], [], [], [], []]; // [altarId][colIdx][rowIdx]
     const curiosityMarkers = [];
 
     // Live 2D Hero Canvas Painting for the Intro Banner (100% file:// bulletproof + animated firelight!)
@@ -2499,7 +3300,13 @@
       triadBeams: null,
       searchlightCones: [],
       goldenGrove: null,
-      groveCanopies: []
+      groveCanopies: [],
+
+      // Act V (The Parnassus Subterranean Astrolabe Sanctuary — 5 Wonders)
+      parnassusSanctuaryGroup: null,
+      parnassusRings: [],
+      parnassusVaultRibs: [],
+      parnassusCrown: null
     };
 
     // Convert a grayscale/color canvas into a real tangent-space Sobel Normal Map (100% file:// safe)
@@ -3404,10 +4211,11 @@
         enableShadowsRecursive(g);
       }
 
-      // Build the 3 Headlands of Phraxos
+      // Build the Headlands of Phraxos (including Act V: The Parnassus Subterranean Astrolabe Sanctuary at Z = -92.0)
       buildAegeanHeadland(0, 8.5, 16.5, [-145, -120, -95, -65, 65, 95, 120, 145]);
       buildAegeanHeadland(0, -24.0, 15.0, [-135, -100, 100, 135]);
       buildAegeanHeadland(0, -58.0, 15.0, [-150, -125, -100, 100, 125, 150]);
+      buildAegeanHeadland(0, -92.0, 15.5, [-155, -130, -105, 105, 130, 155]);
 
       // Detailed Two-Storey Neoclassical Villa Bourani at the South Edge of Promontory I (Z = +19.2)
       const villa = new THREE.Group();
@@ -3585,8 +4393,9 @@
       }
       buildCauseway(-7.5, matLimestone);
       buildCauseway(-41.0, matTerracotta);
+      buildCauseway(-75.0, matLimestone);
 
-      // Helper to build bespoke 3D Curiosity Props (Spyglass on Tripod, Horn Gramophone, Dossier, Tarot Relief)
+      // Helper to build bespoke 3D Curiosity Props (Spyglass on Tripod, Horn Gramophone, Dossier, Tarot Relief, Astrolabe Codex)
       function buildCuriosityProp(id, curGroup) {
         const hitTarget = new THREE.Mesh(
           new THREE.CylinderGeometry(0.65, 0.65, 1.9, 12),
@@ -3647,7 +4456,7 @@
           curGroup.add(beacon);
           interactables.push(beacon);
           curiosityMarkers.push(beacon);
-        } else {
+        } else if (id === 3) {
           // 🃏 Tarot Bronze Relief — I. The Magus & 0. The Fool
           const plinth = new THREE.Mesh(new THREE.BoxGeometry(0.75, 1.05, 0.55), matLimestone);
           plinth.position.y = 0.52;
@@ -3658,17 +4467,54 @@
           curGroup.add(tablet);
           interactables.push(tablet);
           curiosityMarkers.push(tablet);
+        } else {
+          // 🧭 The Parnassus Astrolabe Codex (Act V Sanctuary)
+          const plinth = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.58, 1.05, 18), matColumnMarble);
+          plinth.position.y = 0.52;
+          curGroup.add(plinth);
+          const ringOuter = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.045, 12, 32), matBrass);
+          ringOuter.position.y = 1.52;
+          ringOuter.userData = { interactType: 'curiosity', curiosityId: id };
+          curGroup.add(ringOuter);
+          interactables.push(ringOuter);
+          curiosityMarkers.push(ringOuter);
+          const starCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.22, 0), matCyanGlow);
+          starCore.position.y = 1.52;
+          starCore.userData = { interactType: 'curiosity', curiosityId: id };
+          curGroup.add(starCore);
+          interactables.push(starCore);
         }
         enableShadowsRecursive(curGroup);
       }
 
-      // Build the 4 Altars of the Godgame + Conchis's Curiosities beside each Altar
+      // Build the 5 Altars of the Godgame + Conchis's Curiosities beside each Altar
       const altarCoords = [
         { id: 0, x: -5.5, z: 6.8, cx: -8.8, cz: 7.4 },
         { id: 1, x: 5.5, z: 6.8, cx: 8.8, cz: 7.4 },
         { id: 2, x: 0.0, z: -25.2, cx: -4.2, cz: -24.2 },
-        { id: 3, x: 0.0, z: -59.2, cx: -4.2, cz: -58.2 }
+        { id: 3, x: 0.0, z: -59.2, cx: -4.2, cz: -58.2 },
+        { id: 4, x: 0.0, z: -92.2, cx: -4.2, cz: -91.2 }
       ];
+
+      // Build the 2 Flanking Consecrated Marble Altars of the Parnassus Sanctuary Triad (completing the 3 Marble Altars of Act V)
+      [[-6.2, -90.5, 0.35], [6.2, -90.5, -0.35]].forEach(([mx, mz, myaw], mIdx) => {
+        const triadAltar = new THREE.Group();
+        triadAltar.position.set(mx, 0.45, mz);
+        triadAltar.rotation.y = myaw;
+        const tBase = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.24, 1.5), matLimestone);
+        tBase.position.y = 0.12;
+        triadAltar.add(tBase);
+        const tBody = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.92, 1.25), matColumnMarble);
+        tBody.position.y = 0.58;
+        tBody.userData = { interactType: 'altar', altarId: 4 };
+        triadAltar.add(tBody);
+        interactables.push(tBody);
+        const tCrest = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.05, 10, 28), mIdx === 0 ? matGoldGlow : matCyanGlow);
+        tCrest.position.set(0, 1.55, 0);
+        triadAltar.add(tCrest);
+        enableShadowsRecursive(triadAltar);
+        scene.add(triadAltar);
+      });
 
       altarCoords.forEach(({ id, x, z, cx, cz }) => {
         const ag = new THREE.Group();
@@ -3905,7 +4751,10 @@
         { x:  3.5, z: -22.5, hasLight: false, intensity: 2.0 },
         // Flanking Altar 4 (The Trial Court)
         { x: -3.5, z: -56.5, hasLight: true, intensity: 2.55 },
-        { x:  3.5, z: -56.5, hasLight: false, intensity: 2.0 }
+        { x:  3.5, z: -56.5, hasLight: false, intensity: 2.0 },
+        // Flanking Altar 5 (The Parnassus Subterranean Astrolabe Sanctuary)
+        { x: -3.5, z: -89.5, hasLight: true, intensity: 2.65 },
+        { x:  3.5, z: -89.5, hasLight: false, intensity: 2.1 }
       ];
 
       brazierCoords.forEach((b, idx) => {
@@ -4700,6 +5549,48 @@
         wonderGroups.groveCanopies.push({ mesh: canopyGroup, phase: idx * 0.8 });
       });
 
+      // ------------------------------------------------------------------------
+      // ACT V WONDERS (The Parnassus Subterranean Astrolabe Sanctuary — z = -97.5)
+      // ------------------------------------------------------------------------
+      wonderGroups.parnassusSanctuaryGroup = new THREE.Group();
+      wonderGroups.parnassusSanctuaryGroup.position.set(0, 5.2, -97.5);
+      wonderGroups.parnassusSanctuaryGroup.visible = false;
+      scene.add(wonderGroups.parnassusSanctuaryGroup);
+
+      wonderGroups.parnassusRings = [];
+      [4.6, 3.7, 2.8, 1.9].forEach((r, idx) => {
+        const pRing = new THREE.Mesh(
+          new THREE.TorusGeometry(r, 0.12, 14, 52),
+          idx % 2 === 0 ? matGoldGlow : matCyanGlow
+        );
+        wonderGroups.parnassusSanctuaryGroup.add(pRing);
+        wonderGroups.parnassusRings.push(pRing);
+      });
+
+      wonderGroups.parnassusCrown = new THREE.Mesh(
+        new THREE.TorusKnotGeometry(1.25, 0.18, 72, 16, 2, 3),
+        matGoldGlow
+      );
+      wonderGroups.parnassusSanctuaryGroup.add(wonderGroups.parnassusCrown);
+
+      wonderGroups.parnassusVaultRibs = [];
+      for (let vr = 0; vr < 6; vr++) {
+        const rib = new THREE.Mesh(
+          new THREE.TorusGeometry(6.8, 0.1, 10, 42, Math.PI),
+          vr % 2 === 0 ? matAdditiveCyan : matAdditiveGold
+        );
+        rib.position.set(0, -4.6, 5.5 - vr * 2.2);
+        wonderGroups.parnassusSanctuaryGroup.add(rib);
+        wonderGroups.parnassusVaultRibs.push(rib);
+      }
+
+      const sanctuarySkyBeam = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.55, 2.2, 42.0, 20, 1, true),
+        matAdditiveCyan
+      );
+      sanctuarySkyBeam.position.y = 14.0;
+      wonderGroups.parnassusSanctuaryGroup.add(sanctuarySkyBeam);
+
       // Input Listeners
       window.addEventListener('resize', onResize);
       window.addEventListener('keydown', (e) => {
@@ -4708,6 +5599,8 @@
         if (e.code === 'Digit2') teleportToAltar(1);
         if (e.code === 'Digit3') teleportToAltar(2);
         if (e.code === 'Digit4') teleportToAltar(3);
+        if (e.code === 'Digit5') teleportToAltar(4);
+        if (e.code === 'KeyM') toggleRadar();
         if (e.code === 'KeyL') cycleLighting();
         if (e.code === 'KeyJ') {
           const modal = document.getElementById('journal-modal');
@@ -4963,8 +5856,9 @@
     }
 
     function refreshAll3DRackTextures() {
-      for (let a = 0; a < 4; a++) {
+      for (let a = 0; a < 5; a++) {
         const def = CURRICULUM[levelMode][a];
+        if (!def) continue;
         const cols = [def.col0, def.col1, def.col2];
         if (!rackMeshes3D[a]) continue;
         for (let c = 0; c < 3; c++) {
@@ -4998,19 +5892,19 @@
       levelMode = mode;
       shuffleAllRacks();
       document.getElementById('mode-toggle-label').textContent =
-        levelMode === 'c1' ? '🎓 Mode: C1/C2 & IELTS' : '🌱 Mode: A2–B1 Foundations';
+        levelMode === 'c1' ? '🎓 Mode: C1/C2 & IELTS' : '🌱 Mode: A1–B1 Foundations';
       document.getElementById('book-mode-c1').classList.toggle('active', levelMode === 'c1');
       document.getElementById('book-mode-a1').classList.toggle('active', levelMode === 'a1');
       const introC1 = document.getElementById('intro-mode-c1');
       const introA1 = document.getElementById('intro-mode-a1');
       if (introC1) introC1.classList.toggle('active', levelMode === 'c1');
       if (introA1) introA1.classList.toggle('active', levelMode === 'a1');
-      altarState[0] = [null, null, null];
-      altarState[1] = [null, null, null];
-      altarState[2] = [null, null, null];
-      altarState[3] = [null, null, null];
+      for (let a = 0; a < 5; a++) {
+        altarState[a] = [null, null, null];
+      }
       refreshAll3DRackTextures();
       setActiveAltarUI(currentAltarId);
+      updateProgressHUD();
       renderJournalContent();
       playChord([392.0, 523.25], 0.35);
     }
@@ -5021,6 +5915,7 @@
 
     function teleportToAltar(altarId) {
       const def = getAltarDef(altarId);
+      if (!def) return;
       player.x = def.pos.x;
       player.z = def.pos.z;
       player.yaw = def.pos.yaw;
@@ -5031,12 +5926,13 @@
 
     function setActiveAltarUI(altarId) {
       currentAltarId = altarId;
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 5; i++) {
         const btn = document.getElementById(`nav-altar-${i}`);
         if (btn) btn.classList.toggle('active', i === altarId);
       }
 
       const def = getAltarDef(altarId);
+      if (!def) return;
       document.getElementById('era-banner').textContent = def.eraBanner;
       document.getElementById('dock-altar-title').textContent = def.title;
       document.getElementById('dock-altar-formula').textContent = def.formula;
@@ -5045,6 +5941,7 @@
         document.getElementById(`socket-role-${s}`).textContent = def.roles[s];
       }
 
+      updateProgressHUD();
       renderSocketsAndRack();
     }
 
@@ -5129,6 +6026,7 @@
     }
 
     function getBouraniRank(count) {
+      if (count >= 25) return '👑 Hierophant of Parnassus';
       if (count >= 20) return '👑 Magus of Bourani';
       if (count >= 15) return '🏛️ Master of the Masque';
       if (count >= 10) return '🔮 Adept of Phraxos';
@@ -5149,8 +6047,23 @@
     }
 
     function updateProgressHUD() {
-      const altarShortNames = ['1. West Terrace', '2. East Terrace', '3. 1943 Cove', '4. Trial Court'];
-      for (let a = 0; a < 4; a++) {
+      const altarShortNames = [
+        '1. West Terrace',
+        '2. East Terrace',
+        '3. 1943 Cove',
+        '4. Trial Court',
+        '5. Parnassus Sanctuary'
+      ];
+      const radarMeta = [
+        { title: 'I. Villa Bourani Courtyard (West)', sub: 'Negative Inversion & Correlatives' },
+        { title: 'II. East Colonnade (Twin Sisters)', sub: 'Clefts, Participles & Locative Inversion' },
+        { title: 'III. 1943 Cove Amphitheatre', sub: 'Impersonal Passives & Past Modals' },
+        { title: 'IV. Subterranean Trial Court', sub: 'Inverted Conditionals & Subjunctive' },
+        { title: 'V. Parnassus Astrolabe Sanctuary', sub: 'Contrastive Clefts & Counterfactuals' }
+      ];
+      const radarRowsHtml = [];
+
+      for (let a = 0; a < 5; a++) {
         let solvedOnAltar = 0;
         for (let w = 0; w < 5; w++) {
           if (discovered.has(`${a}_${w}`)) solvedOnAltar++;
@@ -5163,11 +6076,56 @@
         }
         const btn = document.getElementById(`nav-altar-${a}`);
         if (btn) btn.classList.toggle('completed-altar', solvedOnAltar === 5);
+
+        const svgNode = document.getElementById(`radar-svg-node-${a}`);
+        if (svgNode) {
+          svgNode.setAttribute('fill', solvedOnAltar === 5 ? '#10b981' : (a === currentAltarId ? '#38bdf8' : '#1e293b'));
+          svgNode.setAttribute('stroke', solvedOnAltar === 5 ? '#6ee7b7' : (a === currentAltarId ? '#fde68a' : '#f59e0b'));
+        }
+
+        const isSolved = solvedOnAltar === 5;
+        const isActive = a === currentAltarId;
+        radarRowsHtml.push(`
+          <button type="button" class="radar-loc-btn ${isActive ? 'active-loc' : ''} ${isSolved ? 'solved-loc' : ''}" onclick="IsleGame.teleportToAltar(${a})">
+            <div>
+              <div class="radar-loc-name">${radarMeta[a].title}</div>
+              <div class="radar-loc-sub">${radarMeta[a].sub}</div>
+            </div>
+            <span class="radar-status-pill ${isSolved ? 'solved' : 'unsolved'}">
+              ${isSolved ? '✓ 5/5 Solved' : `${solvedOnAltar}/5 Unmasked`}
+            </span>
+          </button>
+        `);
       }
+
+      const radarListEl = document.getElementById('radar-headland-list');
+      if (radarListEl) radarListEl.innerHTML = radarRowsHtml.join('');
+
       const countEl = document.getElementById('discovery-count');
-      if (countEl) countEl.textContent = `${discovered.size}/20`;
+      if (countEl) countEl.textContent = `${discovered.size}/25`;
       const rankEl = document.getElementById('rank-badge');
       if (rankEl) rankEl.textContent = getBouraniRank(discovered.size);
+    }
+
+    function toggleRadar(force) {
+      const panel = document.getElementById('island-radar-panel');
+      const btn = document.getElementById('radar-toggle-btn');
+      if (!panel) return;
+      const shouldShow = typeof force === 'boolean' ? force : panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !shouldShow);
+      if (btn) btn.classList.toggle('active', shouldShow);
+      if (shouldShow) updateProgressHUD();
+    }
+
+    function toggleCambridgeModel(idx) {
+      const el = document.getElementById(`cambridge-model-box-${idx}`);
+      const btn = document.getElementById(`cambridge-reveal-btn-${idx}`);
+      if (!el) return;
+      const isVisible = el.classList.toggle('visible');
+      if (btn) {
+        btn.textContent = isVisible ? '🙈 Hide Cambridge Model' : '👁️ Reveal Cambridge Model';
+      }
+      playChord(isVisible ? [440.0, 554.37, 659.25] : [330.0, 440.0], 0.45);
     }
 
     function renderSocketsAndRack() {
@@ -5235,7 +6193,8 @@
         { x: -5.5, z: 9.2 },
         { x: 5.5, z: 9.2 },
         { x: 0.0, z: -20.5 },
-        { x: 0.0, z: -53.5 }
+        { x: 0.0, z: -53.5 },
+        { x: 0.0, z: -86.5 }
       ];
       const pos = altarCoords[altarId] || altarCoords[0];
       if (wonderGroups.solveFXGroup) {
@@ -5296,13 +6255,14 @@
           if (discovered.has(`${altarId}_${w}`)) altarCount++;
         }
 
-        if (wasNew && discovered.size === 20) {
+        if (wasNew && discovered.size === 25) {
           showUnlockToast(
-            `<div style="font-size:0.7rem;color:#fbbf24;text-transform:uppercase;letter-spacing:0.12em;font-weight:800;">👑 All 20 Mysteries Unmasked &bull; Rank: Magus of Bourani</div>` +
+            `<div style="font-size:0.7rem;color:#fbbf24;text-transform:uppercase;letter-spacing:0.12em;font-weight:800;">👑 All 25 Mysteries Unmasked &bull; Rank: Hierophant of Parnassus</div>` +
             `<div style="font-size:1.05rem;font-weight:800;color:#fff;margin:0.15rem 0;">${wonder.name}</div>` +
             `<div style="color:#fef3c7;font-style:italic;">“${w0} ${w1} ${w2}.”</div>` +
             `<div style="font-size:0.76rem;color:#7dd3fc;margin-top:0.2rem;">${wonder.msg}</div>`
           );
+          playActCompletionAudio(altarId);
         } else if (wasNew && altarCount === 5) {
           showUnlockToast(
             `<div style="font-size:0.7rem;color:#34d399;text-transform:uppercase;letter-spacing:0.12em;font-weight:800;">🏛️ Act ${altarId + 1} Complete (5/5) &bull; Rank: ${getBouraniRank(discovered.size)}</div>` +
@@ -5310,9 +6270,10 @@
             `<div style="color:#fef3c7;font-style:italic;">“${w0} ${w1} ${w2}.”</div>` +
             `<div style="font-size:0.75rem;color:#7dd3fc;margin-top:0.18rem;">${wonder.msg}</div>`
           );
+          playActCompletionAudio(altarId);
         } else {
           showUnlockToast(
-            `<div style="font-size:0.68rem;color:#fbbf24;text-transform:uppercase;letter-spacing:0.12em;font-weight:800;">✨ 3D Island Wonder Triggered (${discovered.size}/20 Unmasked)</div>` +
+            `<div style="font-size:0.68rem;color:#fbbf24;text-transform:uppercase;letter-spacing:0.12em;font-weight:800;">✨ 3D Island Wonder Triggered (${discovered.size}/25 Unmasked)</div>` +
             `<div style="font-size:1.0rem;font-weight:800;color:#fff;margin:0.12rem 0;">${wonder.name}</div>` +
             `<div style="color:#fef3c7;font-style:italic;">“${w0} ${w1} ${w2}.”</div>` +
             `<div style="font-size:0.75rem;color:#7dd3fc;margin-top:0.18rem;">${wonder.msg}</div>`
@@ -5399,6 +6360,15 @@
       if (wonderGroups.skyArk) wonderGroups.skyArk.visible = (w3 === 2);
       if (wonderGroups.triadBeams) wonderGroups.triadBeams.visible = (w3 === 3);
       if (wonderGroups.goldenGrove) wonderGroups.goldenGrove.visible = (w3 === 4);
+
+      // Act V (The Parnassus Subterranean Astrolabe Sanctuary — 5 Wonders)
+      const w4 = activeWonder[4];
+      if (wonderGroups.parnassusSanctuaryGroup) {
+        wonderGroups.parnassusSanctuaryGroup.visible = (w4 !== -1);
+      }
+      if (w4 !== -1) {
+        playerLight.intensity = 2.6;
+      }
     }
 
     // ==========================================================================
@@ -5408,11 +6378,33 @@
       const bpContainer = document.getElementById('book-blueprint-details');
       const listContainer = document.getElementById('journal-discovery-list');
       const progLabel = document.getElementById('journal-progress-label');
+      const workoutsContainer = document.getElementById('sanctuary-workouts-grid');
 
-      progLabel.textContent = `${discovered.size} / 20 Unmasked`;
+      progLabel.textContent = `${discovered.size} / 25 Unmasked`;
       bpContainer.innerHTML = CURRICULUM[levelMode]
         .map((a) => `<div style="padding:0.42rem 0.6rem; background:rgba(0,0,0,0.32); border-radius:8px; border-left:3px solid #d99b43;">${a.blueprint}</div>`)
         .join('');
+
+      if (workoutsContainer) {
+        const workouts = PARNASSUS_ALTAR_WORKOUTS[levelMode] || PARNASSUS_ALTAR_WORKOUTS.c1;
+        workoutsContainer.innerHTML = workouts.map((w, idx) => `
+          <div class="sanctuary-altar-card">
+            <div class="sanctuary-altar-head">
+              <span class="sanctuary-altar-title">🏛️ ${w.altarNum}: ${w.title}</span>
+              <span style="font-size:0.68rem; font-weight:800; color:#fcd34d; background:rgba(217,119,6,0.22); border:1px solid rgba(251,191,36,0.45); border-radius:999px; padding:0.12rem 0.5rem;">KEY: ${w.keyWord}</span>
+            </div>
+            <div class="sanctuary-blueprint-tag">📐 Blueprint: ${w.blueprint}</div>
+            <div class="sanctuary-prompt-text">${w.prompt}</div>
+            <button type="button" class="reveal-cambridge-btn" id="cambridge-reveal-btn-${idx}" onclick="IsleGame.toggleCambridgeModel(${idx})">
+              👁️ Reveal Cambridge Model
+            </button>
+            <div class="cambridge-model-reveal" id="cambridge-model-box-${idx}">
+              <strong>✓ Cambridge Model:</strong> “${w.model}”
+              <div style="font-size:0.74rem; color:#cbd5e1; margin-top:0.22rem;">${w.note}</div>
+            </div>
+          </div>
+        `).join('');
+      }
 
       const itemsHtml = [];
       CURRICULUM[levelMode].forEach((altar, aIdx) => {
@@ -5540,7 +6532,7 @@
       player.z += (-cosY * moveForward - sinY * moveRight) * speed * dt;
 
       player.x = Math.max(-15.5, Math.min(15.5, player.x));
-      player.z = Math.max(-71.0, Math.min(22.0, player.z));
+      player.z = Math.max(-104.0, Math.min(22.0, player.z));
 
       if (keys['Space'] && player.onGround) {
         player.vy = 6.8;
@@ -5559,12 +6551,23 @@
         player.y += (player.targetEyeHeight - player.y) * 5.0 * dt;
       }
 
-      if (player.z < -42.0 && currentAltarId !== 3) {
+      if (player.z < -75.0 && currentAltarId !== 4) {
+        setActiveAltarUI(4);
+      } else if (player.z >= -75.0 && player.z < -42.0 && currentAltarId !== 3) {
         setActiveAltarUI(3);
       } else if (player.z >= -42.0 && player.z < -8.0 && currentAltarId !== 2) {
         setActiveAltarUI(2);
-      } else if (player.z >= -8.0 && (currentAltarId === 2 || currentAltarId === 3)) {
+      } else if (player.z >= -8.0 && (currentAltarId === 2 || currentAltarId === 3 || currentAltarId === 4)) {
         setActiveAltarUI(player.x >= 0 ? 1 : 0);
+      }
+
+      // Update live player blip on the Aegean Island Mini-Map Radar
+      const blipEl = document.getElementById('radar-player-blip');
+      if (blipEl) {
+        const bx = Math.max(24, Math.min(216, 120 + (player.x / 15.5) * 65));
+        const by = Math.max(14, Math.min(166, 152 - ((22.0 - player.z) / 126.0) * 134));
+        blipEl.setAttribute('cx', bx.toFixed(1));
+        blipEl.setAttribute('cy', by.toFixed(1));
       }
 
       // Smoothly lift camera gaze toward the newly awakened 3D Wonder when a clue is solved
@@ -5762,6 +6765,18 @@
         });
       }
 
+      // Animate Act V Wonders (The Parnassus Subterranean Astrolabe Sanctuary)
+      if (wonderGroups.parnassusSanctuaryGroup && wonderGroups.parnassusSanctuaryGroup.visible) {
+        wonderGroups.parnassusRings.forEach((pRing, idx) => {
+          pRing.rotation.x += dt * (0.55 + idx * 0.22) * (idx % 2 === 0 ? 1 : -1);
+          pRing.rotation.y += dt * (0.48 + idx * 0.18);
+        });
+        if (wonderGroups.parnassusCrown) {
+          wonderGroups.parnassusCrown.rotation.y += dt * 1.15;
+          wonderGroups.parnassusCrown.rotation.z += dt * 0.45;
+        }
+      }
+
       renderer.render(scene, camera);
     }
 
@@ -5778,6 +6793,7 @@
       enterIsland,
       showIntroScreen,
       playConchisWelcome,
+      playActCompletionAudio,
       teleportToAltar,
       selectSlot,
       clearCurrentAltar,
@@ -5787,6 +6803,8 @@
       toggleLevelMode,
       setLevelMode,
       toggleJournal,
+      toggleRadar,
+      toggleCambridgeModel,
       toggleAudio,
       cycleLighting,
       inspectCuriosity,

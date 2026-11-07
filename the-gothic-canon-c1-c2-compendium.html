@@ -409,7 +409,180 @@
             color: var(--gold);
         }
 
+        /* Interactive Compendium Toolbar & Self-Test Controls */
+        .compendium-toolbar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-top: 3px solid var(--gold);
+            border-radius: 6px;
+            padding: 1.35rem 1.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+        }
+        .compendium-toolbar-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+        .compendium-search-wrap {
+            flex: 1 1 280px;
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+        }
+        .compendium-search-input {
+            width: 100%;
+            background: #120f0d;
+            color: var(--parchment);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.55rem 0.85rem;
+            font-family: var(--font-body);
+            font-size: 1rem;
+        }
+        .compendium-search-input:focus {
+            outline: 1px solid var(--gold);
+            border-color: var(--gold);
+        }
+        .compendium-mode-btn {
+            background: rgba(212, 175, 55, 0.14);
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 0.55rem 1rem;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+        .compendium-mode-btn:hover,
+        .compendium-mode-btn.active {
+            background: var(--gold);
+            color: #0b0a09;
+        }
+        .compendium-filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            align-items: center;
+            margin-top: 0.65rem;
+        }
+        .compendium-filter-label {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-right: 0.35rem;
+        }
+        .compendium-pill-btn {
+            background: #120f0d;
+            color: var(--parchment-dim);
+            border: 1px solid var(--border);
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .compendium-pill-btn:hover {
+            border-color: var(--gold);
+            color: var(--parchment);
+        }
+        .compendium-pill-btn.active {
+            background: var(--gold);
+            color: #0b0a09;
+            border-color: var(--gold);
+            font-weight: 700;
+        }
+        .compendium-practice-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.45rem;
+            margin-top: 0.35rem;
+            margin-bottom: 0.45rem;
+            padding: 0.45rem 0.6rem;
+            background: rgba(15, 13, 11, 0.65);
+            border: 1px solid rgba(212, 175, 55, 0.18);
+            border-radius: 4px;
+        }
+        .compendium-practice-input {
+            flex: 1 1 190px;
+            background: #0f0d0b;
+            color: var(--parchment);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 0.32rem 0.55rem;
+            font-family: var(--font-body);
+            font-size: 0.94rem;
+        }
+        .compendium-practice-input:focus {
+            outline: 1px solid var(--gold);
+            border-color: var(--gold);
+        }
+        .compendium-Practice-wc {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--parchment-dim);
+            padding: 0.18rem 0.45rem;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.04);
+            white-space: nowrap;
+        }
+        .compendium-Practice-wc.exact {
+            color: #4ade80;
+            background: rgba(31, 92, 58, 0.35);
+            border: 1px solid rgba(74, 222, 128, 0.4);
+        }
+        .compendium-reveal-btn {
+            background: #211c17;
+            color: var(--gold);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            border-radius: 3px;
+            padding: 0.24rem 0.55rem;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .compendium-reveal-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+        }
+        .compendium-model-span {
+            transition: all 0.18s ease;
+        }
+        .compendium-model-span.masked {
+            filter: blur(6px);
+            user-select: none;
+            background: rgba(212, 175, 55, 0.12);
+            color: transparent;
+            border-radius: 3px;
+            padding: 0 0.25rem;
+        }
+        .compendium-filtered-hidden {
+            display: none !important;
+        }
+
         @media print {
+            .compendium-toolbar,
+            .compendium-practice-row,
+            .compendium-reveal-btn {
+                display: none !important;
+            }
+            .compendium-model-span.masked {
+                filter: none !important;
+                color: #111 !important;
+                background: transparent !important;
+            }
             body.da-is-locked .topbar,
             body.da-is-locked .hero,
             body.da-is-locked .container,
@@ -474,6 +647,49 @@
     </header>
 
     <main class="container">
+
+        <!-- INTERACTIVE FILTER, SEARCH & SELF-TEST TOOLBAR -->
+        <section class="compendium-toolbar" aria-label="Interactive Compendium Filter, Search, and Self-Test Controls">
+            <div class="compendium-toolbar-top">
+                <div class="compendium-search-wrap">
+                    <label for="compendium-search-input" style="position:absolute;left:-9999px;">Search study guide, grammar patterns, vocabulary, or answers</label>
+                    <input type="search" id="compendium-search-input" class="compendium-search-input" placeholder="🔍 Search grammar formula, vocabulary word, novel, or answer key..." oninput="applyCompendiumFilters()">
+                </div>
+                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center;">
+                    <button type="button" id="compendium-selftest-btn" class="compendium-mode-btn" onclick="toggleCompendiumSelfTestMode()">
+                        🎯 Hide Models / Self-Test Mode
+                    </button>
+                    <button type="button" class="compendium-pill-btn" onclick="revealAllCompendiumModels()">
+                        👁️ Reveal Cambridge Model
+                    </button>
+                    <button type="button" class="compendium-pill-btn" onclick="resetCompendiumPractice()">
+                        ↺ Clear Practice Inputs
+                    </button>
+                    <span id="compendium-selftest-score" style="font-family: var(--font-mono); font-size: 0.74rem; color: var(--gold);">0 / 75 Verified</span>
+                </div>
+            </div>
+
+            <div class="compendium-filter-row" role="group" aria-label="Filter by Gothic Novel">
+                <span class="compendium-filter-label">Novel:</span>
+                <button type="button" class="compendium-pill-btn active" data-novel-btn="All" onclick="setCompendiumNovelFilter('All')">All Novels (15)</button>
+                <button type="button" class="compendium-pill-btn" data-novel-btn="Dracula" onclick="setCompendiumNovelFilter('Dracula')">I. Dracula (L1–3)</button>
+                <button type="button" class="compendium-pill-btn" data-novel-btn="Frankenstein" onclick="setCompendiumNovelFilter('Frankenstein')">II. Frankenstein (L4–6)</button>
+                <button type="button" class="compendium-pill-btn" data-novel-btn="Jekyll & Hyde" onclick="setCompendiumNovelFilter('Jekyll & Hyde')">III. Jekyll &amp; Hyde (L7–9)</button>
+                <button type="button" class="compendium-pill-btn" data-novel-btn="Baskervilles" onclick="setCompendiumNovelFilter('Baskervilles')">IV. Baskervilles (L10–12)</button>
+                <button type="button" class="compendium-pill-btn" data-novel-btn="Wonderland" onclick="setCompendiumNovelFilter('Wonderland')">V. Wonderland (L13–15)</button>
+            </div>
+
+            <div class="compendium-filter-row" role="group" aria-label="Filter by C1/C2 Grammatical Device">
+                <span class="compendium-filter-label">C1/C2 Device:</span>
+                <button type="button" class="compendium-pill-btn active" data-device-btn="All" onclick="setCompendiumDeviceFilter('All')">All Devices</button>
+                <button type="button" class="compendium-pill-btn" data-device-btn="Inversions" onclick="setCompendiumDeviceFilter('Inversions')">Inversions</button>
+                <button type="button" class="compendium-pill-btn" data-device-btn="Participle Clauses" onclick="setCompendiumDeviceFilter('Participle Clauses')">Participle Clauses</button>
+                <button type="button" class="compendium-pill-btn" data-device-btn="Clefts" onclick="setCompendiumDeviceFilter('Clefts')">Cleft Sentences</button>
+                <button type="button" class="compendium-pill-btn" data-device-btn="Conditionals & Modals" onclick="setCompendiumDeviceFilter('Conditionals & Modals')">Conditionals &amp; Modals</button>
+                <button type="button" class="compendium-pill-btn" data-device-btn="Passive Reporting" onclick="setCompendiumDeviceFilter('Passive Reporting')">Passive Reporting</button>
+                <span id="compendium-filter-summary" style="margin-left: auto; font-family: var(--font-mono); font-size: 0.72rem; color: var(--parchment-dim);">Showing 15 of 15 lessons</span>
+            </div>
+        </section>
 
         <!-- SECTION 1: GRAMMAR CHEAT SHEET -->
         <section class="section-block">
@@ -915,6 +1131,317 @@
 
     </main>
 
+  <script>
+    const compendiumLessonMeta = [
+      { lesson: 1, novel: 'Dracula', devices: ['Participle Clauses'] },
+      { lesson: 2, novel: 'Dracula', devices: ['Inversions'] },
+      { lesson: 3, novel: 'Dracula', devices: ['Passive Reporting', 'Clefts', 'Participle Clauses'] },
+      { lesson: 4, novel: 'Frankenstein', devices: ['Conditionals & Modals', 'Inversions'] },
+      { lesson: 5, novel: 'Frankenstein', devices: ['Inversions', 'Conditionals & Modals'] },
+      { lesson: 6, novel: 'Frankenstein', devices: ['Clefts', 'Passive Reporting'] },
+      { lesson: 7, novel: 'Jekyll & Hyde', devices: ['Inversions'] },
+      { lesson: 8, novel: 'Jekyll & Hyde', devices: ['Inversions'] },
+      { lesson: 9, novel: 'Jekyll & Hyde', devices: ['Clefts'] },
+      { lesson: 10, novel: 'Baskervilles', devices: ['Conditionals & Modals'] },
+      { lesson: 11, novel: 'Baskervilles', devices: ['Inversions', 'Participle Clauses'] },
+      { lesson: 12, novel: 'Baskervilles', devices: ['Conditionals & Modals', 'Passive Reporting', 'Clefts'] },
+      { lesson: 13, novel: 'Wonderland', devices: ['Inversions'] },
+      { lesson: 14, novel: 'Wonderland', devices: ['Conditionals & Modals', 'Inversions'] },
+      { lesson: 15, novel: 'Wonderland', devices: ['Passive Reporting', 'Clefts', 'Conditionals & Modals'] }
+    ];
+
+    let activeNovelFilter = 'All';
+    let activeDeviceFilter = 'All';
+    let selfTestModeActive = false;
+
+    function normCompText(s) {
+      return (s || '')
+        .replace(/\(1\+1 split mark\)/gi, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9'/\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function expandSlashVariants(modelStr) {
+      const cleaned = (modelStr || '').replace(/\(1\+1 split mark\)/gi, '').trim();
+      const baseNorm = normCompText(cleaned.replace(/\s*\/\s*\w+/g, ''));
+      const altNorm = normCompText(cleaned.replace(/\w+\s*\/\s*/g, ''));
+      const rawNorm = normCompText(cleaned.replace(/\//g, ' '));
+      return [baseNorm, altNorm, rawNorm].filter(Boolean);
+    }
+
+    function initCompendiumInteractivity() {
+      const tables = document.querySelectorAll('.grammar-table');
+      const grammarTable = tables[0];
+      const vocabTable = tables[1];
+
+      if (grammarTable) {
+        const rows = grammarTable.querySelectorAll('tbody tr');
+        rows.forEach((row, idx) => {
+          const meta = compendiumLessonMeta[idx];
+          if (!meta) return;
+          row.setAttribute('data-novel', meta.novel);
+          row.setAttribute('data-devices', meta.devices.join('|'));
+          const cells = row.querySelectorAll('td');
+          if (cells[3]) {
+            const origHtml = cells[3].innerHTML;
+            const spanId = `comp-table-model-${meta.lesson}`;
+            const btnId = `comp-table-btn-${meta.lesson}`;
+            cells[3].innerHTML = `<span class="compendium-model-span" id="${spanId}">${origHtml}</span>
+              <div style="margin-top:0.35rem;">
+                <button type="button" class="compendium-reveal-btn" id="${btnId}" onclick="toggleSingleCompendiumModel('${spanId}', '${btnId}')">👁️ Reveal Cambridge Model</button>
+              </div>`;
+          }
+        });
+      }
+
+      if (vocabTable) {
+        const moduleNovels = ['Dracula', 'Frankenstein', 'Jekyll & Hyde', 'Baskervilles', 'Wonderland'];
+        const vRows = vocabTable.querySelectorAll('tbody tr');
+        vRows.forEach((row, idx) => {
+          if (moduleNovels[idx]) {
+            row.setAttribute('data-novel', moduleNovels[idx]);
+          }
+        });
+      }
+
+      const keyCards = document.querySelectorAll('.key-card');
+      let savedPractice = {};
+      try {
+        const raw = localStorage.getItem('da_compendium_practice_v1');
+        if (raw) savedPractice = JSON.parse(raw) || {};
+      } catch (e) {}
+
+      keyCards.forEach((card, cIdx) => {
+        const meta = compendiumLessonMeta[cIdx];
+        if (!meta) return;
+        card.setAttribute('data-novel', meta.novel);
+        card.setAttribute('data-devices', meta.devices.join('|'));
+
+        const items = card.querySelectorAll('.key-list li');
+        items.forEach((li, liIdx) => {
+          const strongEl = li.querySelector('strong');
+          if (!strongEl) return;
+          const labelText = strongEl.textContent.trim();
+          const isPart4 = /^(8|9|10|11|12):$/.test(labelText);
+
+          if (isPart4) {
+            const qNum = labelText.replace(':', '');
+            const itemKey = `L${meta.lesson}_Q${qNum}`;
+            const clone = li.cloneNode(true);
+            const firstStrong = clone.querySelector('strong');
+            if (firstStrong) firstStrong.remove();
+            const rawAnswerHtml = clone.innerHTML.trim();
+            const rawAnswerText = clone.textContent.trim();
+
+            const spanId = `comp-model-${itemKey}`;
+            const btnId = `comp-btn-${itemKey}`;
+            const inputId = `comp-input-${itemKey}`;
+            const wcId = `comp-wc-${itemKey}`;
+
+            li.innerHTML = `<strong>${labelText}</strong> <span class="compendium-model-span" id="${spanId}" data-answer="${rawAnswerText.replace(/"/g, '&quot;')}">${rawAnswerHtml}</span>
+              <div class="compendium-practice-row">
+                <input type="text" id="${inputId}" class="compendium-practice-input" data-item-key="${itemKey}" data-target-span="${spanId}" data-wc-id="${wcId}" placeholder="Practice Q${qNum} (3–6 words)..." autocomplete="off" oninput="onCompendiumPracticeInput('${itemKey}')">
+                <span class="compendium-Practice-wc" id="${wcId}">0 / 3–6w</span>
+                <button type="button" class="compendium-reveal-btn" id="${btnId}" onclick="toggleSingleCompendiumModel('${spanId}', '${btnId}')">👁️ Reveal Cambridge Model</button>
+              </div>`;
+
+            if (savedPractice[itemKey]) {
+              const inp = li.querySelector(`#${inputId}`);
+              if (inp) {
+                inp.value = savedPractice[itemKey];
+                setTimeout(() => onCompendiumPracticeInput(itemKey, true), 0);
+              }
+            }
+          } else {
+            const spanId = `comp-other-L${meta.lesson}_${liIdx}`;
+            const btnId = `comp-other-btn-L${meta.lesson}_${liIdx}`;
+            const clone = li.cloneNode(true);
+            const firstStrong = clone.querySelector('strong');
+            if (firstStrong) firstStrong.remove();
+            const restHtml = clone.innerHTML.trim();
+            li.innerHTML = `<strong>${labelText}</strong> <span class="compendium-model-span" id="${spanId}">${restHtml}</span> <button type="button" class="compendium-reveal-btn" id="${btnId}" style="margin-left:0.35rem;" onclick="toggleSingleCompendiumModel('${spanId}', '${btnId}')">👁️ Reveal Cambridge Model</button>`;
+          }
+        });
+      });
+
+      syncRevealButtonsText();
+      updateCompendiumScoreCount();
+    }
+
+    function onCompendiumPracticeInput(itemKey, skipSave) {
+      const input = document.getElementById(`comp-input-${itemKey}`);
+      const span = document.getElementById(`comp-model-${itemKey}`);
+      const wc = document.getElementById(`comp-wc-${itemKey}`);
+      if (!input || !span || !wc) return;
+
+      const val = input.value || '';
+      const words = val.trim() ? val.trim().split(/\s+/).length : 0;
+      const userNorm = normCompText(val);
+      const variants = expandSlashVariants(span.getAttribute('data-answer') || '');
+      const isMatch = userNorm.length > 0 && variants.some(v => v === userNorm || (userNorm.length >= 8 && v.indexOf(userNorm) !== -1));
+
+      wc.classList.toggle('exact', isMatch);
+      if (isMatch) {
+        wc.textContent = `✓ Match (${words}w)`;
+      } else if (words === 0) {
+        wc.textContent = '0 / 3–6w';
+      } else {
+        wc.textContent = `${words} / 3–6w`;
+      }
+
+      if (!skipSave) {
+        try {
+          const raw = localStorage.getItem('da_compendium_practice_v1');
+          const data = raw ? JSON.parse(raw) : {};
+          if (val.trim()) {
+            data[itemKey] = val;
+          } else {
+            delete data[itemKey];
+          }
+          localStorage.setItem('da_compendium_practice_v1', JSON.stringify(data));
+        } catch (e) {}
+      }
+      updateCompendiumScoreCount();
+    }
+
+    function updateCompendiumScoreCount() {
+      const exactBadges = document.querySelectorAll('.compendium-Practice-wc.exact');
+      const scoreEl = document.getElementById('compendium-selftest-score');
+      if (scoreEl) {
+        scoreEl.textContent = `${exactBadges.length} / 75 Verified`;
+      }
+    }
+
+    function resetCompendiumPractice() {
+      document.querySelectorAll('.compendium-practice-input').forEach(inp => {
+        inp.value = '';
+        const key = inp.getAttribute('data-item-key');
+        if (key) onCompendiumPracticeInput(key, true);
+      });
+      try {
+        localStorage.removeItem('da_compendium_practice_v1');
+      } catch (e) {}
+      updateCompendiumScoreCount();
+    }
+
+    function toggleSingleCompendiumModel(spanId, btnId) {
+      const span = document.getElementById(spanId);
+      const btn = document.getElementById(btnId);
+      if (!span) return;
+      const isNowMasked = span.classList.toggle('masked');
+      if (btn) {
+        btn.textContent = isNowMasked ? '👁️ Reveal Cambridge Model' : '🙈 Hide Model';
+      }
+    }
+
+    function syncRevealButtonsText() {
+      document.querySelectorAll('.compendium-model-span').forEach(span => {
+        const isMasked = span.classList.contains('masked');
+        const container = span.parentElement;
+        if (!container) return;
+        const btn = container.querySelector('.compendium-reveal-btn');
+        if (btn) {
+          btn.textContent = isMasked ? '👁️ Reveal Cambridge Model' : '🙈 Hide Model';
+        }
+      });
+    }
+
+    function toggleCompendiumSelfTestMode() {
+      selfTestModeActive = !selfTestModeActive;
+      const btn = document.getElementById('compendium-selftest-btn');
+      if (btn) {
+        btn.classList.toggle('active', selfTestModeActive);
+        btn.textContent = selfTestModeActive
+          ? '👁️ Exit Self-Test / Show All Models'
+          : '🎯 Hide Models / Self-Test Mode';
+      }
+      document.querySelectorAll('.compendium-model-span').forEach(span => {
+        span.classList.toggle('masked', selfTestModeActive);
+      });
+      syncRevealButtonsText();
+    }
+
+    function revealAllCompendiumModels() {
+      selfTestModeActive = false;
+      const btn = document.getElementById('compendium-selftest-btn');
+      if (btn) {
+        btn.classList.remove('active');
+        btn.textContent = '🎯 Hide Models / Self-Test Mode';
+      }
+      document.querySelectorAll('.compendium-model-span').forEach(span => {
+        span.classList.remove('masked');
+      });
+      syncRevealButtonsText();
+    }
+
+    function setCompendiumNovelFilter(novel) {
+      activeNovelFilter = novel || 'All';
+      document.querySelectorAll('[data-novel-btn]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-novel-btn') === activeNovelFilter);
+      });
+      applyCompendiumFilters();
+    }
+
+    function setCompendiumDeviceFilter(device) {
+      activeDeviceFilter = device || 'All';
+      document.querySelectorAll('[data-device-btn]').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-device-btn') === activeDeviceFilter);
+      });
+      applyCompendiumFilters();
+    }
+
+    function applyCompendiumFilters() {
+      const searchEl = document.getElementById('compendium-search-input');
+      const query = (searchEl ? searchEl.value : '').toLowerCase().trim();
+
+      const matchesFilter = (el) => {
+        const novel = el.getAttribute('data-novel') || '';
+        const devices = (el.getAttribute('data-devices') || '').split('|').filter(Boolean);
+        const text = (el.textContent || '').toLowerCase();
+
+        const novelOk = activeNovelFilter === 'All' || novel === activeNovelFilter;
+        const deviceOk = activeDeviceFilter === 'All' || devices.length === 0 || devices.indexOf(activeDeviceFilter) !== -1;
+        const queryOk = !query || text.indexOf(query) !== -1;
+        return novelOk && deviceOk && queryOk;
+      };
+
+      const tables = document.querySelectorAll('.grammar-table');
+      if (tables[0]) {
+        tables[0].querySelectorAll('tbody tr').forEach(row => {
+          row.classList.toggle('compendium-filtered-hidden', !matchesFilter(row));
+        });
+      }
+      if (tables[1]) {
+        tables[1].querySelectorAll('tbody tr').forEach(row => {
+          const novel = row.getAttribute('data-novel') || '';
+          const text = (row.textContent || '').toLowerCase();
+          const novelOk = activeNovelFilter === 'All' || novel === activeNovelFilter;
+          const queryOk = !query || text.indexOf(query) !== -1;
+          row.classList.toggle('compendium-filtered-hidden', !(novelOk && queryOk));
+        });
+      }
+
+      let visibleCards = 0;
+      document.querySelectorAll('.key-card').forEach(card => {
+        const show = matchesFilter(card);
+        if (show) visibleCards++;
+        card.classList.toggle('compendium-filtered-hidden', !show);
+      });
+
+      const summary = document.getElementById('compendium-filter-summary');
+      if (summary) {
+        summary.textContent = `Showing ${visibleCards} of 15 lessons`;
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCompendiumInteractivity);
+    } else {
+      initCompendiumInteractivity();
+    }
+  </script>
   <script src="analytics.js" defer></script>
 </body>
 </html>

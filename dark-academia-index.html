@@ -44,6 +44,339 @@
   <link rel="preload" href="assets/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="preload" href="assets/fonts/eb-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="dark-academia.css">
+  <style>
+    /* Gothic Syntax Quick Diagnostic & 16-Lesson Mastery Tracker */
+    .da-hub-panel {
+      background: linear-gradient(180deg, rgba(28, 23, 19, 0.96) 0%, rgba(19, 16, 13, 0.98) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-top: 3px solid #d4af37;
+      border-radius: 10px;
+      padding: 1.85rem;
+      margin: 2.25rem 0;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+    }
+    .da-hub-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.18);
+      padding-bottom: 1.1rem;
+      margin-bottom: 1.35rem;
+    }
+    .da-hub-eyebrow {
+      display: inline-block;
+      font-family: monospace;
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #f3d478;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+    }
+    .da-diag-score-pill {
+      font-family: monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fde68a;
+      background: rgba(120, 53, 15, 0.45);
+      border: 1px solid rgba(251, 191, 36, 0.5);
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .da-diag-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .da-diag-card {
+      background: rgba(15, 13, 11, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      border-left: 4px solid #d4af37;
+      border-radius: 8px;
+      padding: 1.35rem 1.4rem;
+      transition: border-color 0.2s ease;
+    }
+    .da-diag-card.solved-full {
+      border-left-color: #10b981;
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+    .da-diag-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-bottom: 0.75rem;
+    }
+    .da-diag-target-tag {
+      font-family: monospace;
+      font-size: 0.76rem;
+      color: #f3d478;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .da-diag-formula {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      background: rgba(30, 41, 59, 0.65);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+    }
+    .da-diag-s1 {
+      font-size: 1.08rem;
+      color: #f2ece1;
+      line-height: 1.65;
+      margin-bottom: 0.65rem;
+      padding: 0.65rem 0.9rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+    }
+    .da-echo-chunk {
+      transition: all 0.22s ease;
+    }
+    .da-diag-card.echoes-struck .da-echo-chunk {
+      text-decoration: line-through;
+      text-decoration-color: #ef4444;
+      text-decoration-thickness: 2px;
+      color: #78716c;
+      opacity: 0.55;
+    }
+    .da-diag-card.echoes-struck .da-deficit-chunk {
+      background: rgba(251, 191, 36, 0.18);
+      color: #fde68a;
+      padding: 0.08rem 0.3rem;
+      border-radius: 3px;
+      border-bottom: 1px dashed #fbbf24;
+      font-weight: 600;
+    }
+    .da-diag-keyword-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin: 0.65rem 0;
+    }
+    .da-keyword-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #0b0a09;
+      background: #f3d478;
+      padding: 0.28rem 0.75rem;
+      border-radius: 4px;
+      letter-spacing: 0.08em;
+    }
+    .da-diag-s2 {
+      font-size: 1.06rem;
+      color: #e7dfd3;
+      line-height: 1.8;
+      margin: 0.65rem 0 0.85rem;
+    }
+    .da-diag-input-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+      margin-top: 0.5rem;
+    }
+    .da-diag-input {
+      flex: 1 1 260px;
+      background: #14110e;
+      color: #fef3c7;
+      border: 1px solid rgba(212, 175, 55, 0.42);
+      border-radius: 6px;
+      padding: 0.58rem 0.85rem;
+      font-family: inherit;
+      font-size: 1.02rem;
+    }
+    .da-diag-input:focus {
+      outline: 2px solid #fbbf24;
+      border-color: #fbbf24;
+    }
+    .da-word-counter {
+      font-family: monospace;
+      font-size: 0.75rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      white-space: nowrap;
+    }
+    .da-word-counter.valid {
+      background: rgba(16, 185, 129, 0.14);
+      border-color: rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+    }
+    .da-word-counter.invalid {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+    .da-mini-btn {
+      background: #231d17;
+      color: #f3d478;
+      border: 1px solid rgba(212, 175, 55, 0.38);
+      padding: 0.45rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .da-mini-btn:hover {
+      background: rgba(212, 175, 55, 0.18);
+      border-color: #f3d478;
+    }
+    .da-mini-btn.active {
+      background: #f3d478;
+      color: #120f0c;
+      border-color: #f3d478;
+    }
+    .da-diag-feedback {
+      display: none;
+      margin-top: 0.7rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.94rem;
+      line-height: 1.5;
+    }
+    .da-diag-model-box {
+      display: none;
+      margin-top: 0.85rem;
+      padding: 1rem 1.15rem;
+      background: rgba(24, 20, 16, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.32);
+      border-left: 3px solid #fbbf24;
+      border-radius: 6px;
+      font-size: 0.94rem;
+      line-height: 1.6;
+      color: #e7dfd3;
+    }
+    .da-diag-model-box.open {
+      display: block;
+    }
+    .da-steps-mini {
+      margin: 0.55rem 0 0;
+      padding-left: 1.1rem;
+      font-size: 0.88rem;
+      color: #d6cbb9;
+    }
+    .da-steps-mini li {
+      margin-bottom: 0.25rem;
+    }
+    /* 16-Lesson Progress & Filter Tracker */
+    .da-progress-bar-outer {
+      width: 100%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 0.75rem 0 1.25rem;
+    }
+    .da-progress-bar-inner {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #b45309 0%, #f59e0b 55%, #10b981 100%);
+      transition: width 0.35s ease;
+    }
+    .da-tracker-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+      gap: 0.65rem;
+      margin-bottom: 1.4rem;
+    }
+    .da-tracker-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.55rem 0.75rem;
+      background: rgba(15, 13, 11, 0.82);
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      border-radius: 6px;
+      font-size: 0.84rem;
+      transition: all 0.18s ease;
+    }
+    .da-tracker-pill.done {
+      border-color: rgba(16, 185, 129, 0.55);
+      background: rgba(6, 78, 59, 0.22);
+    }
+    .da-tracker-pill.filter-dimmed {
+      opacity: 0.28;
+    }
+    .da-tracker-pill a {
+      color: #f2ece1;
+      text-decoration: none;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .da-tracker-pill a:hover {
+      color: #fbbf24;
+      text-decoration: underline;
+    }
+    .da-tracker-toggle-btn {
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 4px;
+      padding: 0.22rem 0.5rem;
+      font-family: monospace;
+      font-size: 0.72rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .da-tracker-pill.done .da-tracker-toggle-btn {
+      background: rgba(16, 185, 129, 0.22);
+      border-color: rgba(16, 185, 129, 0.55);
+      color: #6ee7b7;
+    }
+    .da-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.18);
+    }
+    .da-filter-btn {
+      background: #1a1512;
+      color: #d6cbb9;
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.83rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .da-filter-btn:hover {
+      border-color: #f3d478;
+      color: #fff;
+    }
+    .da-filter-btn.active {
+      background: #d4af37;
+      color: #0f0d0b;
+      border-color: #d4af37;
+    }
+    .unit-card.da-filtered-out,
+    .canon-section.da-section-filtered-out {
+      display: none !important;
+    }
+  </style>
 </head>
 <body>
 <a href="#main" class="skip-link" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;" onfocus="this.style.position='fixed';this.style.left='12px';this.style.top='12px';this.style.width='auto';this.style.height='auto';this.style.padding='8px 14px';this.style.background='#0f172a';this.style.color='#fbbf24';this.style.zIndex='9999';this.style.borderRadius='8px';" onblur="this.style.position='absolute';this.style.left='-9999px';this.style.width='1px';this.style.height='1px';">Skip to main content</a>
@@ -116,6 +449,256 @@
     <p class="learning-path-desc" style="margin-top: 1rem; margin-bottom: 0; font-size: 0.88rem; color: #e4c88c;">
       <strong>Optional 20-Minute Stretch:</strong> Every lesson also includes an optional IELTS/Cambridge speaking warm-up prompt and an 80–150 word writing practice box when you have time for a full 45-minute session.
     </p>
+  </section>
+
+  <!-- GOTHIC SYNTAX QUICK DIAGNOSTIC (5 LIVE C1/C2 PART 4 CHALLENGES) -->
+  <section id="gothic-syntax-diagnostic" class="da-hub-panel" aria-labelledby="da-diagnostic-heading">
+    <div class="da-hub-panel-header">
+      <div>
+        <span class="da-hub-eyebrow">Interactive Warm-Up • 5-Minute Baseline Check</span>
+        <h2 id="da-diagnostic-heading" style="margin: 0.15rem 0 0.4rem; font-size: 1.75rem; color: #fef3c7;">Gothic Syntax Quick Diagnostic (5 Live C1/C2 Part 4 Challenges)</h2>
+        <p style="margin: 0; font-size: 0.96rem; color: #d6cbb9; max-width: 720px; line-height: 1.55;">
+          Test your command of the five core C1/C2 grammar structures across the course. Complete the second sentence in <strong>3 to 6 words</strong> using the key word in bold <strong>without changing its form</strong>. Use <strong>✂️ Strike Out the Echoes</strong> to isolate the exact words you need to transform.
+        </p>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.45rem;">
+        <div class="da-diag-score-pill" id="da-diag-total-score">Diagnostic Score: 0 / 10 Marks</div>
+        <button type="button" class="da-mini-btn" onclick="resetDiagnosticAll()">↺ Reset Diagnostic</button>
+      </div>
+    </div>
+
+    <div class="da-diag-grid">
+      <!-- Challenge 1: Negative Inversion -->
+      <article class="da-diag-card" id="da-diag-card-1" data-keyword="LITTLE" data-full="little did harker suspect" data-half1="little did" data-half2="harker suspect">
+        <div class="da-diag-card-top">
+          <span class="da-diag-target-tag">Challenge 1 • Negative Inversion (Bram Stoker's Dracula)</span>
+          <span class="da-diag-formula">Formula: Negative Adverbial + Aux + Subject + Bare Infinitive</span>
+        </div>
+        <div class="da-diag-s1">
+          <span class="da-deficit-chunk">Harker did not suspect at all</span> <span class="da-echo-chunk">that every door inside Castle Dracula was locked against him.</span>
+        </div>
+        <div class="da-diag-keyword-row">
+          <span class="da-keyword-pill">KEY WORD: LITTLE</span>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="da-mini-btn" id="echo-btn-1" onclick="toggleDiagEchoes(1)">✂️ Strike Out the Echoes</button>
+            <button type="button" class="da-mini-btn" id="reveal-btn-1" onclick="toggleDiagModel(1)">👁️ Reveal Cambridge Model</button>
+          </div>
+        </div>
+        <div class="da-diag-s2">
+          <label for="da-diag-input-1" style="display:block; font-size:0.84rem; color:#b5a792; margin-bottom:0.25rem;">Complete the gap (3–6 words, including LITTLE unchanged):</label>
+          <div class="da-diag-input-wrap">
+            <input type="text" id="da-diag-input-1" class="da-diag-input" placeholder="Type 3 to 6 words using LITTLE..." autocomplete="off" oninput="updateDiagCounter(1)" onkeydown="if(event.key==='Enter')checkDiagItem(1)">
+            <span class="da-word-counter" id="da-diag-counter-1">0 / 3–6 words</span>
+            <button type="button" class="da-mini-btn" onclick="checkDiagItem(1)">✓ Check (2 Marks)</button>
+          </div>
+          <div style="margin-top: 0.4rem; color: #cbd5e1; font-size: 0.98rem;">
+            <strong style="color:#f3d478;">Sentence 2:</strong> <span>________________________ that every door inside Castle Dracula was locked against him.</span>
+          </div>
+        </div>
+        <div class="da-diag-feedback" id="da-diag-feedback-1" role="status" aria-live="polite"></div>
+        <div class="da-diag-model-box" id="da-diag-model-1">
+          <div><strong style="color:#fbbf24;">Cambridge Model Answer (4 words):</strong> <code style="color:#6ee7b7; font-weight:700; font-size:1rem;">Little did | Harker suspect</code> <em>(1 mark for <code>Little did</code> + 1 mark for <code>Harker suspect</code>)</em></div>
+          <ol class="da-steps-mini">
+            <li><strong>Step 1 (Strike Out the Echoes):</strong> Cross out <em>that every door inside Castle Dracula was locked against him</em>. Deficit left: <em>Harker did not suspect at all</em>.</li>
+            <li><strong>Step 2 (Inspect Tense Harmony):</strong> Sentence 1 is Past Simple (<em>did not suspect</em>) &rarr; use auxiliary <code>did</code> + bare infinitive <code>suspect</code>.</li>
+            <li><strong>Step 3 (Check Inversion Shift):</strong> Fronting negative adverbial <code>Little</code> forces subject-auxiliary inversion (<code>Little did Harker...</code>).</li>
+            <li><strong>Step 4 (Solve the Pattern):</strong> <code>Little did Harker suspect</code> (4 words, unchanged keyword <code>LITTLE</code>).</li>
+          </ol>
+        </div>
+      </article>
+
+      <!-- Challenge 2: Participle Clauses -->
+      <article class="da-diag-card" id="da-diag-card-2" data-keyword="WARNED" data-full="having been warned about|having been warned of" data-half1="having been" data-half2="warned about|warned of">
+        <div class="da-diag-card-top">
+          <span class="da-diag-target-tag">Challenge 2 • Perfect Passive Participle Clause (Dracula: Log of the Demeter)</span>
+          <span class="da-diag-formula">Formula: Having been + Past Participle + Preposition, [Main Clause]</span>
+        </div>
+        <div class="da-diag-s1">
+          <span class="da-deficit-chunk">Because he had been warned about</span> <span class="da-echo-chunk">the coastal reef, the captain ordered the crew to lash the helm.</span>
+        </div>
+        <div class="da-diag-keyword-row">
+          <span class="da-keyword-pill">KEY WORD: WARNED</span>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="da-mini-btn" id="echo-btn-2" onclick="toggleDiagEchoes(2)">✂️ Strike Out the Echoes</button>
+            <button type="button" class="da-mini-btn" id="reveal-btn-2" onclick="toggleDiagModel(2)">👁️ Reveal Cambridge Model</button>
+          </div>
+        </div>
+        <div class="da-diag-s2">
+          <label for="da-diag-input-2" style="display:block; font-size:0.84rem; color:#b5a792; margin-bottom:0.25rem;">Complete the gap (3–6 words, including WARNED unchanged):</label>
+          <div class="da-diag-input-wrap">
+            <input type="text" id="da-diag-input-2" class="da-diag-input" placeholder="Type 3 to 6 words using WARNED..." autocomplete="off" oninput="updateDiagCounter(2)" onkeydown="if(event.key==='Enter')checkDiagItem(2)">
+            <span class="da-word-counter" id="da-diag-counter-2">0 / 3–6 words</span>
+            <button type="button" class="da-mini-btn" onclick="checkDiagItem(2)">✓ Check (2 Marks)</button>
+          </div>
+          <div style="margin-top: 0.4rem; color: #cbd5e1; font-size: 0.98rem;">
+            <strong style="color:#f3d478;">Sentence 2:</strong> <span>________________________ the coastal reef, the captain ordered the crew to lash the helm.</span>
+          </div>
+        </div>
+        <div class="da-diag-feedback" id="da-diag-feedback-2" role="status" aria-live="polite"></div>
+        <div class="da-diag-model-box" id="da-diag-model-2">
+          <div><strong style="color:#fbbf24;">Cambridge Model Answer (4 words):</strong> <code style="color:#6ee7b7; font-weight:700; font-size:1rem;">Having been | warned about / of</code> <em>(1 mark for <code>Having been</code> + 1 mark for <code>warned about / of</code>)</em></div>
+          <ol class="da-steps-mini">
+            <li><strong>Step 1 (Strike Out the Echoes):</strong> Cross out <em>the coastal reef, the captain ordered the crew to lash the helm</em>. Deficit left: <em>Because he had been warned about</em>.</li>
+            <li><strong>Step 2 (Inspect Tense Harmony):</strong> Prior past action (Past Perfect <em>had been warned</em>) before the main clause &rarr; Perfect Participle (<code>Having...</code>).</li>
+            <li><strong>Step 3 (Check Voice Shift):</strong> The captain received the warning (passive) &rarr; <code>Having been warned</code>.</li>
+            <li><strong>Step 4 (Solve the Pattern):</strong> <code>Having been warned about</code> (4 words, unchanged keyword <code>WARNED</code>).</li>
+          </ol>
+        </div>
+      </article>
+
+      <!-- Challenge 3: Wh- Clefts -->
+      <article class="da-diag-card" id="da-diag-card-3" data-keyword="WHAT" data-full="what shocked the witness" data-half1="what shocked" data-half2="the witness">
+        <div class="da-diag-card-top">
+          <span class="da-diag-target-tag">Challenge 3 • Emphatic Wh- Cleft Sentence (Dr Jekyll &amp; Mr Hyde)</span>
+          <span class="da-diag-formula">Formula: What + Verb + Object + BE + Focused Noun Phrase</span>
+        </div>
+        <div class="da-diag-s1">
+          <span class="da-deficit-chunk">The witness was shocked</span> <span class="da-echo-chunk">most by Hyde's callous disregard for the child.</span>
+        </div>
+        <div class="da-diag-keyword-row">
+          <span class="da-keyword-pill">KEY WORD: WHAT</span>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="da-mini-btn" id="echo-btn-3" onclick="toggleDiagEchoes(3)">✂️ Strike Out the Echoes</button>
+            <button type="button" class="da-mini-btn" id="reveal-btn-3" onclick="toggleDiagModel(3)">👁️ Reveal Cambridge Model</button>
+          </div>
+        </div>
+        <div class="da-diag-s2">
+          <label for="da-diag-input-3" style="display:block; font-size:0.84rem; color:#b5a792; margin-bottom:0.25rem;">Complete the gap (3–6 words, including WHAT unchanged):</label>
+          <div class="da-diag-input-wrap">
+            <input type="text" id="da-diag-input-3" class="da-diag-input" placeholder="Type 3 to 6 words using WHAT..." autocomplete="off" oninput="updateDiagCounter(3)" onkeydown="if(event.key==='Enter')checkDiagItem(3)">
+            <span class="da-word-counter" id="da-diag-counter-3">0 / 3–6 words</span>
+            <button type="button" class="da-mini-btn" onclick="checkDiagItem(3)">✓ Check (2 Marks)</button>
+          </div>
+          <div style="margin-top: 0.4rem; color: #cbd5e1; font-size: 0.98rem;">
+            <strong style="color:#f3d478;">Sentence 2:</strong> <span>________________________ most was Hyde's callous disregard for the child.</span>
+          </div>
+        </div>
+        <div class="da-diag-feedback" id="da-diag-feedback-3" role="status" aria-live="polite"></div>
+        <div class="da-diag-model-box" id="da-diag-model-3">
+          <div><strong style="color:#fbbf24;">Cambridge Model Answer (4 words):</strong> <code style="color:#6ee7b7; font-weight:700; font-size:1rem;">What shocked | the witness</code> <em>(1 mark for <code>What shocked</code> + 1 mark for <code>the witness</code>)</em></div>
+          <ol class="da-steps-mini">
+            <li><strong>Step 1 (Strike Out the Echoes):</strong> Cross out <em>most ... Hyde's callous disregard for the child</em>. Deficit left: <em>The witness was shocked</em>.</li>
+            <li><strong>Step 2 (Inspect Tense Harmony):</strong> Past Simple passive <em>was shocked</em> converts into Past Simple active inside the <em>What</em>-clause (<code>shocked</code>).</li>
+            <li><strong>Step 3 (Check Voice Shift):</strong> Passive-to-active cleft shift puts <em>the witness</em> as the object of <code>shocked</code>.</li>
+            <li><strong>Step 4 (Solve the Pattern):</strong> <code>What shocked the witness</code> (4 words, unchanged keyword <code>WHAT</code>).</li>
+          </ol>
+        </div>
+      </article>
+
+      <!-- Challenge 4: Past Modal Deductions -->
+      <article class="da-diag-card" id="da-diag-card-4" data-keyword="MUST" data-full="must have been waiting" data-half1="must have" data-half2="been waiting">
+        <div class="da-diag-card-top">
+          <span class="da-diag-target-tag">Challenge 4 • Past Modal Deduction (The Hound of the Baskervilles)</span>
+          <span class="da-diag-formula">Formula: must + have + been + -ing (Continuous Past Deduction)</span>
+        </div>
+        <div class="da-diag-s1">
+          <span class="da-deficit-chunk">Holmes was certain that</span> <span class="da-echo-chunk">someone</span> <span class="da-deficit-chunk">had been waiting</span> <span class="da-echo-chunk">outside the moorland wicket-gate before midnight.</span>
+        </div>
+        <div class="da-diag-keyword-row">
+          <span class="da-keyword-pill">KEY WORD: MUST</span>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="da-mini-btn" id="echo-btn-4" onclick="toggleDiagEchoes(4)">✂️ Strike Out the Echoes</button>
+            <button type="button" class="da-mini-btn" id="reveal-btn-4" onclick="toggleDiagModel(4)">👁️ Reveal Cambridge Model</button>
+          </div>
+        </div>
+        <div class="da-diag-s2">
+          <label for="da-diag-input-4" style="display:block; font-size:0.84rem; color:#b5a792; margin-bottom:0.25rem;">Complete the gap (3–6 words, including MUST unchanged):</label>
+          <div class="da-diag-input-wrap">
+            <input type="text" id="da-diag-input-4" class="da-diag-input" placeholder="Type 3 to 6 words using MUST..." autocomplete="off" oninput="updateDiagCounter(4)" onkeydown="if(event.key==='Enter')checkDiagItem(4)">
+            <span class="da-word-counter" id="da-diag-counter-4">0 / 3–6 words</span>
+            <button type="button" class="da-mini-btn" onclick="checkDiagItem(4)">✓ Check (2 Marks)</button>
+          </div>
+          <div style="margin-top: 0.4rem; color: #cbd5e1; font-size: 0.98rem;">
+            <strong style="color:#f3d478;">Sentence 2:</strong> <span>Someone ________________________ outside the moorland wicket-gate before midnight.</span>
+          </div>
+        </div>
+        <div class="da-diag-feedback" id="da-diag-feedback-4" role="status" aria-live="polite"></div>
+        <div class="da-diag-model-box" id="da-diag-model-4">
+          <div><strong style="color:#fbbf24;">Cambridge Model Answer (4 words):</strong> <code style="color:#6ee7b7; font-weight:700; font-size:1rem;">must have | been waiting</code> <em>(1 mark for <code>must have</code> + 1 mark for <code>been waiting</code>)</em></div>
+          <ol class="da-steps-mini">
+            <li><strong>Step 1 (Strike Out the Echoes):</strong> Cross out <em>someone ... outside the moorland wicket-gate before midnight</em>. Deficit left: <em>Holmes was certain that ... had been waiting</em>.</li>
+            <li><strong>Step 2 (Inspect Tense Harmony):</strong> Past Perfect Continuous (<em>had been waiting</em>) maps to Perfect Continuous Infinitive (<code>have been waiting</code>).</li>
+            <li><strong>Step 3 (Check Evidential Shift):</strong> Logical certainty in the past (<em>was certain that</em>) maps to <code>must have</code>.</li>
+            <li><strong>Step 4 (Solve the Pattern):</strong> <code>must have been waiting</code> (4 words, unchanged keyword <code>MUST</code>).</li>
+          </ol>
+        </div>
+      </article>
+
+      <!-- Challenge 5: Inverted Conditionals -->
+      <article class="da-diag-card" id="da-diag-card-5" data-keyword="HAD" data-full="had victor not abandoned" data-half1="had victor" data-half2="not abandoned">
+        <div class="da-diag-card-top">
+          <span class="da-diag-target-tag">Challenge 5 • Inverted Third Conditional (Mary Shelley's Frankenstein)</span>
+          <span class="da-diag-formula">Formula: Had + Subject + (not) + Past Participle, [Main Clause]</span>
+        </div>
+        <div class="da-diag-s1">
+          <span class="da-deficit-chunk">If Victor had not abandoned</span> <span class="da-echo-chunk">his creature on that dreary November night, the tragedy might never have occurred.</span>
+        </div>
+        <div class="da-diag-keyword-row">
+          <span class="da-keyword-pill">KEY WORD: HAD</span>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" class="da-mini-btn" id="echo-btn-5" onclick="toggleDiagEchoes(5)">✂️ Strike Out the Echoes</button>
+            <button type="button" class="da-mini-btn" id="reveal-btn-5" onclick="toggleDiagModel(5)">👁️ Reveal Cambridge Model</button>
+          </div>
+        </div>
+        <div class="da-diag-s2">
+          <label for="da-diag-input-5" style="display:block; font-size:0.84rem; color:#b5a792; margin-bottom:0.25rem;">Complete the gap (3–6 words, including HAD unchanged):</label>
+          <div class="da-diag-input-wrap">
+            <input type="text" id="da-diag-input-5" class="da-diag-input" placeholder="Type 3 to 6 words using HAD..." autocomplete="off" oninput="updateDiagCounter(5)" onkeydown="if(event.key==='Enter')checkDiagItem(5)">
+            <span class="da-word-counter" id="da-diag-counter-5">0 / 3–6 words</span>
+            <button type="button" class="da-mini-btn" onclick="checkDiagItem(5)">✓ Check (2 Marks)</button>
+          </div>
+          <div style="margin-top: 0.4rem; color: #cbd5e1; font-size: 0.98rem;">
+            <strong style="color:#f3d478;">Sentence 2:</strong> <span>________________________ his creature on that dreary November night, the tragedy might never have occurred.</span>
+          </div>
+        </div>
+        <div class="da-diag-feedback" id="da-diag-feedback-5" role="status" aria-live="polite"></div>
+        <div class="da-diag-model-box" id="da-diag-model-5">
+          <div><strong style="color:#fbbf24;">Cambridge Model Answer (4 words):</strong> <code style="color:#6ee7b7; font-weight:700; font-size:1rem;">Had Victor | not abandoned</code> <em>(1 mark for <code>Had Victor</code> + 1 mark for <code>not abandoned</code>)</em></div>
+          <ol class="da-steps-mini">
+            <li><strong>Step 1 (Strike Out the Echoes):</strong> Cross out <em>his creature on that dreary November night, the tragedy might never have occurred</em>. Deficit left: <em>If Victor had not abandoned</em>.</li>
+            <li><strong>Step 2 (Inspect Tense Harmony):</strong> Past Counterfactual (<em>If + Past Perfect</em>) inverts by omitting <em>if</em> and fronting <code>Had</code>.</li>
+            <li><strong>Step 3 (Check Negation Placement):</strong> In formal inverted conditionals, <code>not</code> follows the subject (<code>Had Victor not abandoned</code>, never <em>Hadn't Victor</em>).</li>
+            <li><strong>Step 4 (Solve the Pattern):</strong> <code>Had Victor not abandoned</code> (4 words, unchanged keyword <code>HAD</code>).</li>
+          </ol>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 16-LESSON COURSE PROGRESS & MASTERY TRACKER -->
+  <section id="course-mastery-tracker" class="da-hub-panel" aria-labelledby="da-tracker-heading">
+    <div class="da-hub-panel-header">
+      <div>
+        <span class="da-hub-eyebrow">Persistent Browser Progress • 16 Interactive Units</span>
+        <h2 id="da-tracker-heading" style="margin: 0.15rem 0 0.35rem; font-size: 1.7rem; color: #fef3c7;">16-Lesson Course Progress &amp; Mastery Tracker</h2>
+        <p style="margin: 0; font-size: 0.94rem; color: #d6cbb9; max-width: 720px; line-height: 1.55;">
+          Track your completion across all <strong>15 core Gothic Canon lessons</strong> plus our <strong>Bonus Unit: Edgar Allan Poe's <em>The Tell-Tale Heart</em></strong>. Click any lesson title to open it, toggle completion with the checkmark button, or filter the syllabus below by C1/C2 grammatical target.
+        </p>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;">
+        <div class="da-diag-score-pill" id="da-tracker-summary-pill">0 / 16 Lessons Completed (0%)</div>
+        <span id="da-tracker-marks-sub" style="font-family: monospace; font-size: 0.76rem; color: #b5a792;">0 / 320 Total Course Marks</span>
+      </div>
+    </div>
+
+    <div class="da-progress-bar-outer" aria-hidden="true">
+      <div class="da-progress-bar-inner" id="da-tracker-bar"></div>
+    </div>
+
+    <div class="da-tracker-matrix" id="da-tracker-matrix">
+      <!-- Populated and synced dynamically across all 16 lessons -->
+    </div>
+
+    <div class="da-filter-bar" role="toolbar" aria-label="Filter syllabus cards by C1/C2 grammar target">
+      <span style="font-family: monospace; font-size: 0.78rem; color: #f3d478; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 0.25rem;">Filter Syllabus by Grammar Target:</span>
+      <button type="button" class="da-filter-btn active" data-filter="All" onclick="filterSyllabusByGrammar('All')">All (16)</button>
+      <button type="button" class="da-filter-btn" data-filter="Inversions" onclick="filterSyllabusByGrammar('Inversions')">Inversions</button>
+      <button type="button" class="da-filter-btn" data-filter="Participle Clauses" onclick="filterSyllabusByGrammar('Participle Clauses')">Participle Clauses</button>
+      <button type="button" class="da-filter-btn" data-filter="Clefts" onclick="filterSyllabusByGrammar('Clefts')">Clefts</button>
+      <button type="button" class="da-filter-btn" data-filter="Conditionals & Modals" onclick="filterSyllabusByGrammar('Conditionals & Modals')">Conditionals &amp; Modals</button>
+      <button type="button" class="da-filter-btn" data-filter="Passive Reporting" onclick="filterSyllabusByGrammar('Passive Reporting')">Passive Reporting</button>
+      <span id="da-filter-count-status" style="margin-left: auto; font-family: monospace; font-size: 0.76rem; color: #b5a792;">Showing all 16 lessons</span>
+    </div>
   </section>
 
   <!-- BOOK 1: DRACULA -->
@@ -509,6 +1092,43 @@
     </div>
   </section>
 
+  <!-- BONUS BOOK VI: EDGAR ALLAN POE -->
+  <section class="canon-section" aria-labelledby="poe-canon-heading">
+    <div class="canon-art-banner dracula">
+      <div class="canon-art-bg" style="background-image: url('assets/gothic/dracula_carpathian.webp'); filter: hue-rotate(-15deg) brightness(0.7);"></div>
+      <div class="canon-art-content">
+        <div class="canon-title-group">
+          <h2 id="poe-canon-heading">Bonus Unit: Edgar Allan Poe's <em>The Tell-Tale Heart</em> (1843)</h2>
+          <p>Negative Time Sequences, Cognitive Negation &amp; Restrictive Inversion • <em>Bonus C1/C2 Masterclass</em></p>
+        </div>
+        <div style="display:flex; gap:0.65rem; flex-wrap:wrap; align-items:center;">
+          <span class="badge badge-canon-dracula">Bonus Unit 13 • Free Open-Access Masterclass</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="units-grid">
+      <a href="poe-unit13-tell-tale-heart.html" class="unit-card dracula" id="card-poe_unit13" data-unit-id="poe_unit13">
+        <div>
+          <div class="unit-top-bar">
+            <span class="unit-num">Bonus Unit 13 • Poe</span>
+            <span class="unit-progress-badge" id="prog-poe_unit13">✓ Bonus Masterclass</span>
+          </div>
+          <h3>The Beating of the Heart</h3>
+          <p class="unit-excerpt">
+            Step beneath the floorboards in Edgar Allan Poe's psychological masterpiece and master negative time sequences, restrictive inversions, and additive emphasis.
+          </p>
+          <ul class="unit-meta-list">
+            <li><strong>Grammar:</strong> Negative &amp; Restrictive Inversions (<em>No sooner had I..., Little did they suspect..., On no account could I...</em>)</li>
+            <li><strong>Modern Words:</strong> <em>acute, dissimulation, audacity, vehement, derision</em></li>
+            <li><strong>Exam Link:</strong> High-impact structural emphasis in C1/C2 essays &amp; reviews</li>
+          </ul>
+        </div>
+        <span class="unit-cta">Start Bonus Poe Unit →</span>
+      </a>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="footer-bar">
     <div>
@@ -530,36 +1150,313 @@
 
 <script src="dark-academia-engine.js?v=3"></script>
 <script>
-  const unitIds = [
-    'dracula_unit1', 'dracula_unit2', 'dracula_unit3',
-    'frankenstein_unit1', 'frankenstein_unit2', 'frankenstein_unit3',
-    'jekyll_unit1', 'jekyll_unit2', 'jekyll_unit3',
-    'baskerville_unit1', 'baskerville_unit2', 'baskerville_unit3',
-    'alice_unit1', 'alice_unit2', 'alice_unit3'
+  const unitCatalog = [
+    { id: 'dracula_unit1', label: 'L1: Dracula I', title: 'The Carpathian Journey', href: 'dracula-unit1-carpathian-threshold.html', targets: ['Participle Clauses'] },
+    { id: 'dracula_unit2', label: 'L2: Dracula II', title: "The Count's Hospitality", href: 'dracula-unit2-counts-hospitality.html', targets: ['Inversions'] },
+    { id: 'dracula_unit3', label: 'L3: Dracula III', title: 'The Shipwreck at Whitby', href: 'dracula-unit3-log-of-the-demeter.html', targets: ['Passive Reporting', 'Clefts', 'Participle Clauses'] },
+    { id: 'frankenstein_unit1', label: 'L4: Frankenstein I', title: 'The Spark of Being', href: 'frankenstein-unit1-spark-of-being.html', targets: ['Conditionals & Modals', 'Inversions'] },
+    { id: 'frankenstein_unit2', label: 'L5: Frankenstein II', title: 'Confrontation on the Glacier', href: 'frankenstein-unit2-sea-of-ice.html', targets: ['Inversions', 'Conditionals & Modals'] },
+    { id: 'frankenstein_unit3', label: 'L6: Frankenstein III', title: "The Creature's Case", href: 'frankenstein-unit3-creatures-apologia.html', targets: ['Clefts', 'Passive Reporting'] },
+    { id: 'jekyll_unit1', label: 'L7: Jekyll & Hyde I', title: 'Mysterious Door in Soho', href: 'jekyll-unit1-soho-threshold.html', targets: ['Inversions'] },
+    { id: 'jekyll_unit2', label: 'L8: Jekyll & Hyde II', title: "Dr Lanyon's Midnight Visitor", href: 'jekyll-unit2-lanyons-narrative.html', targets: ['Inversions'] },
+    { id: 'jekyll_unit3', label: 'L9: Jekyll & Hyde III', title: "Henry Jekyll's Full Confession", href: 'jekyll-unit3-full-statement.html', targets: ['Clefts'] },
+    { id: 'baskerville_unit1', label: 'L10: Baskervilles I', title: 'Mystery at Baskerville Hall', href: 'baskerville-unit1-curse-of-the-moors.html', targets: ['Conditionals & Modals'] },
+    { id: 'baskerville_unit2', label: 'L11: Baskervilles II', title: 'Across Dartmoor & Grimpen Mire', href: 'baskerville-unit2-grimpen-mire.html', targets: ['Inversions', 'Participle Clauses'] },
+    { id: 'baskerville_unit3', label: 'L12: Baskervilles III', title: 'The Hound Revealed', href: 'baskerville-unit3-moorland-vigil.html', targets: ['Conditionals & Modals', 'Passive Reporting', 'Clefts'] },
+    { id: 'alice_unit1', label: 'L13: Wonderland I', title: 'Down the Rabbit-Hole', href: 'alice-unit13-down-the-rabbit-hole.html', targets: ['Inversions'] },
+    { id: 'alice_unit2', label: 'L14: Wonderland II', title: 'A Mad Tea-Party', href: 'alice-unit14-mad-tea-party.html', targets: ['Conditionals & Modals', 'Inversions'] },
+    { id: 'alice_unit3', label: 'L15: Wonderland III', title: "The Queen's Trial", href: 'alice-unit15-queens-trial.html', targets: ['Passive Reporting', 'Clefts', 'Conditionals & Modals'] },
+    { id: 'poe_unit13', label: 'Bonus L13: Poe', title: 'The Tell-Tale Heart', href: 'poe-unit13-tell-tale-heart.html', targets: ['Inversions'] }
   ];
+
+  const unitIds = unitCatalog.map(u => u.id);
+  let activeGrammarFilter = 'All';
+  const diagScores = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+  function normalizeText(str) {
+    return (str || '').toLowerCase().replace(/[^a-z0-9'\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  function countWords(str) {
+    const cleaned = (str || '').trim();
+    if (!cleaned) return 0;
+    return cleaned.split(/\s+/).length;
+  }
+
+  function toggleDiagEchoes(idx) {
+    const card = document.getElementById(`da-diag-card-${idx}`);
+    const btn = document.getElementById(`echo-btn-${idx}`);
+    if (!card || !btn) return;
+    const isStruck = card.classList.toggle('echoes-struck');
+    btn.classList.toggle('active', isStruck);
+    btn.textContent = isStruck ? '✂️ Echoes Struck (Show Original)' : '✂️ Strike Out the Echoes';
+  }
+
+  function toggleDiagModel(idx) {
+    const box = document.getElementById(`da-diag-model-${idx}`);
+    const btn = document.getElementById(`reveal-btn-${idx}`);
+    if (!box || !btn) return;
+    const isOpen = box.classList.toggle('open');
+    btn.classList.toggle('active', isOpen);
+    btn.textContent = isOpen ? '🙈 Hide Cambridge Model' : '👁️ Reveal Cambridge Model';
+  }
+
+  function updateDiagCounter(idx) {
+    const input = document.getElementById(`da-diag-input-${idx}`);
+    const counter = document.getElementById(`da-diag-counter-${idx}`);
+    const card = document.getElementById(`da-diag-card-${idx}`);
+    if (!input || !counter || !card) return;
+    const words = countWords(input.value);
+    const kw = (card.getAttribute('data-keyword') || '').toLowerCase();
+    const tokens = normalizeText(input.value).split(' ').filter(Boolean);
+    const hasKw = tokens.indexOf(kw) !== -1;
+
+    counter.classList.remove('valid', 'invalid');
+    if (words === 0) {
+      counter.textContent = '0 / 3–6 words';
+    } else if (words >= 3 && words <= 6 && hasKw) {
+      counter.textContent = `${words} / 3–6 words • ✓ ${kw.toUpperCase()}`;
+      counter.classList.add('valid');
+    } else if (words < 3 || words > 6) {
+      counter.textContent = `${words} words (need 3–6)`;
+      counter.classList.add('invalid');
+    } else {
+      counter.textContent = `${words} words (missing ${kw.toUpperCase()})`;
+      counter.classList.add('invalid');
+    }
+  }
+
+  function checkDiagItem(idx) {
+    const card = document.getElementById(`da-diag-card-${idx}`);
+    const input = document.getElementById(`da-diag-input-${idx}`);
+    const feedback = document.getElementById(`da-diag-feedback-${idx}`);
+    if (!card || !input || !feedback) return;
+
+    const userNorm = normalizeText(input.value);
+    const words = countWords(input.value);
+    const kw = (card.getAttribute('data-keyword') || '').toLowerCase();
+    const tokens = userNorm.split(' ').filter(Boolean);
+    const hasKw = tokens.indexOf(kw) !== -1;
+
+    const fullOptions = (card.getAttribute('data-full') || '').split('|');
+    const half1Options = (card.getAttribute('data-half1') || '').split('|');
+    const half2Options = (card.getAttribute('data-half2') || '').split('|');
+
+    let score = 0;
+    let msg = '';
+    let borderCol = '#ef4444';
+    let bgCol = 'rgba(239, 68, 68, 0.14)';
+
+    if (!hasKw) {
+      score = 0;
+      msg = `0 / 2 Marks — Remember: you must include the unchanged keyword "${kw.toUpperCase()}".`;
+    } else if (words < 3 || words > 6) {
+      score = 0;
+      msg = `0 / 2 Marks — Your answer has ${words} words. Cambridge Part 4 strictly requires 3 to 6 words.`;
+    } else if (fullOptions.indexOf(userNorm) !== -1) {
+      score = 2;
+      msg = '✓ 2 / 2 Marks (1+1 Split Marks) — Spot on! Exact Cambridge C1/C2 transformation.';
+      borderCol = '#10b981';
+      bgCol = 'rgba(16, 185, 129, 0.15)';
+    } else {
+      const m1 = half1Options.some(h => h && userNorm.indexOf(h) !== -1);
+      const m2 = half2Options.some(h => h && userNorm.indexOf(h) !== -1);
+      if (m1 || m2) {
+        score = 1;
+        msg = '1 / 2 Marks — You secured 1 split mark! Click "👁️ Reveal Cambridge Model" to check the other half of the pattern.';
+        borderCol = '#f59e0b';
+        bgCol = 'rgba(245, 158, 11, 0.16)';
+      } else {
+        score = 0;
+        msg = '0 / 2 Marks — Click "✂️ Strike Out the Echoes" or "👁️ Reveal Cambridge Model" to inspect the 4-Step breakdown.';
+      }
+    }
+
+    diagScores[idx] = score;
+    card.classList.toggle('solved-full', score === 2);
+    feedback.style.display = 'block';
+    feedback.style.border = `1px solid ${borderCol}`;
+    feedback.style.background = bgCol;
+    feedback.style.color = '#f8fafc';
+    feedback.textContent = msg;
+    updateDiagTotalScore();
+    saveDiagState();
+  }
+
+  function updateDiagTotalScore() {
+    const total = (diagScores[1] || 0) + (diagScores[2] || 0) + (diagScores[3] || 0) + (diagScores[4] || 0) + (diagScores[5] || 0);
+    const pill = document.getElementById('da-diag-total-score');
+    if (pill) {
+      pill.textContent = `Diagnostic Score: ${total} / 10 Marks`;
+    }
+  }
+
+  function saveDiagState() {
+    try {
+      const payload = { scores: diagScores, inputs: {} };
+      for (let i = 1; i <= 5; i++) {
+        const inp = document.getElementById(`da-diag-input-${i}`);
+        if (inp) payload.inputs[i] = inp.value;
+      }
+      localStorage.setItem('da_hub_quick_diagnostic_v1', JSON.stringify(payload));
+    } catch (e) {}
+  }
+
+  function restoreDiagState() {
+    try {
+      const raw = localStorage.getItem('da_hub_quick_diagnostic_v1');
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.inputs) {
+        for (let i = 1; i <= 5; i++) {
+          const inp = document.getElementById(`da-diag-input-${i}`);
+          if (inp && typeof parsed.inputs[i] === 'string' && parsed.inputs[i].trim()) {
+            inp.value = parsed.inputs[i];
+            updateDiagCounter(i);
+            checkDiagItem(i);
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  function resetDiagnosticAll() {
+    for (let i = 1; i <= 5; i++) {
+      diagScores[i] = 0;
+      const inp = document.getElementById(`da-diag-input-${i}`);
+      const fb = document.getElementById(`da-diag-feedback-${i}`);
+      const card = document.getElementById(`da-diag-card-${i}`);
+      if (inp) inp.value = '';
+      if (fb) fb.style.display = 'none';
+      if (card) card.classList.remove('solved-full', 'echoes-struck');
+      updateDiagCounter(i);
+    }
+    updateDiagTotalScore();
+    try {
+      localStorage.removeItem('da_hub_quick_diagnostic_v1');
+    } catch (e) {}
+  }
+
+  function getUnitRecord(unitId) {
+    try {
+      const raw = localStorage.getItem(`da_progress_${unitId}`);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          score: typeof parsed.score === 'number' ? parsed.score : 0,
+          total: typeof parsed.total === 'number' ? parsed.total : 20,
+          completed: Boolean(parsed.completed || (typeof parsed.score === 'number' && parsed.score > 0))
+        };
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function toggleUnitComplete(unitId) {
+    const existing = getUnitRecord(unitId);
+    try {
+      if (existing && existing.completed) {
+        localStorage.removeItem(`da_progress_${unitId}`);
+      } else {
+        localStorage.setItem(`da_progress_${unitId}`, JSON.stringify({
+          score: 20,
+          total: 20,
+          completed: true,
+          updatedAt: new Date().toISOString()
+        }));
+      }
+    } catch (e) {}
+    loadPortalProgress();
+  }
+
+  function renderTrackerMatrix() {
+    const matrix = document.getElementById('da-tracker-matrix');
+    if (!matrix) return;
+    let completedCount = 0;
+    let totalMarksEarned = 0;
+
+    matrix.innerHTML = unitCatalog.map(unit => {
+      const rec = getUnitRecord(unit.id);
+      const isDone = Boolean(rec && rec.completed);
+      const score = rec ? rec.score : 0;
+      const total = rec ? rec.total : 20;
+      if (isDone) completedCount++;
+      totalMarksEarned += score;
+
+      const matchesFilter = activeGrammarFilter === 'All' || unit.targets.indexOf(activeGrammarFilter) !== -1;
+      const dimClass = matchesFilter ? '' : ' filter-dimmed';
+      const doneClass = isDone ? ' done' : '';
+
+      return `<div class="da-tracker-pill${doneClass}${dimClass}" data-unit-id="${unit.id}">
+        <div style="min-width:0;">
+          <div style="font-family:monospace; font-size:0.7rem; color:#f3d478;">${unit.label} • ${score}/${total}</div>
+          <a href="${unit.href}" title="${unit.title}">${unit.title}</a>
+        </div>
+        <button type="button" class="da-tracker-toggle-btn" onclick="toggleUnitComplete('${unit.id}')" title="Toggle completion for ${unit.title}">
+          ${isDone ? '✓ Done' : '○ Mark'}
+        </button>
+      </div>`;
+    }).join('');
+
+    const pct = Math.round((completedCount / unitCatalog.length) * 100);
+    const summaryPill = document.getElementById('da-tracker-summary-pill');
+    const marksSub = document.getElementById('da-tracker-marks-sub');
+    const bar = document.getElementById('da-tracker-bar');
+    if (summaryPill) summaryPill.textContent = `${completedCount} / 16 Lessons Completed (${pct}%)`;
+    if (marksSub) marksSub.textContent = `${totalMarksEarned} / 320 Total Course Marks`;
+    if (bar) bar.style.width = `${pct}%`;
+  }
+
+  function filterSyllabusByGrammar(target) {
+    activeGrammarFilter = target || 'All';
+    const buttons = document.querySelectorAll('.da-filter-btn');
+    buttons.forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-filter') === activeGrammarFilter);
+    });
+
+    let visibleCount = 0;
+    unitCatalog.forEach(unit => {
+      const card = document.getElementById(`card-${unit.id}`);
+      const matches = activeGrammarFilter === 'All' || unit.targets.indexOf(activeGrammarFilter) !== -1;
+      if (matches) visibleCount++;
+      if (card) {
+        card.classList.toggle('da-filtered-out', !matches);
+      }
+    });
+
+    document.querySelectorAll('.canon-section').forEach(sec => {
+      const visibleCards = sec.querySelectorAll('.unit-card:not(.da-filtered-out)');
+      sec.classList.toggle('da-section-filtered-out', visibleCards.length === 0);
+    });
+
+    const statusEl = document.getElementById('da-filter-count-status');
+    if (statusEl) {
+      statusEl.textContent = activeGrammarFilter === 'All'
+        ? 'Showing all 16 lessons'
+        : `Showing ${visibleCount} of 16 lessons (${activeGrammarFilter})`;
+    }
+    renderTrackerMatrix();
+  }
 
   function loadPortalProgress() {
     const isUnlocked = window.DarkAcademiaGate && window.DarkAcademiaGate.isUnlocked();
-    unitIds.forEach(id => {
-      const badge = document.getElementById(`prog-${id}`);
+    unitCatalog.forEach(unit => {
+      const badge = document.getElementById(`prog-${unit.id}`);
       if (!badge) return;
-      try {
-        const raw = localStorage.getItem(`da_progress_${id}`);
-        if (raw) {
-          const data = JSON.parse(raw);
-          if (isUnlocked || !badge.classList.contains('unit-lock-badge')) {
-            badge.textContent = `${data.score} / ${data.total} Marks`;
-            if (data.score > 0) {
-              badge.classList.add('completed');
-            }
-          }
+      const rec = getUnitRecord(unit.id);
+      if (rec && rec.completed) {
+        if (isUnlocked || !badge.classList.contains('unit-lock-badge')) {
+          badge.textContent = `${rec.score} / ${rec.total} Marks`;
+          badge.classList.add('completed');
         }
-      } catch (e) {}
+      }
     });
+    renderTrackerMatrix();
   }
 
   function clearPortalProgress() {
-    if (confirm('Reset your saved scores across all 15 lessons?')) {
+    if (confirm('Reset your saved scores across all 16 lessons?')) {
       unitIds.forEach(id => {
         localStorage.removeItem(`da_progress_${id}`);
         const badge = document.getElementById(`prog-${id}`);
@@ -571,13 +1468,19 @@
       if (window.DarkAcademiaGate) {
         window.DarkAcademiaGate.syncUI();
       }
+      renderTrackerMatrix();
     }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadPortalProgress);
-  } else {
+  function initHubEnhancements() {
     loadPortalProgress();
+    restoreDiagState();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHubEnhancements);
+  } else {
+    initHubEnhancements();
   }
 </script>
   <script src="analytics.js" defer></script>

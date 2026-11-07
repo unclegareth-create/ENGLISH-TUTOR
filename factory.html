@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Formation Factory | Gareth Montgomery</title>
   <link rel="canonical" href="https://garethenglish.com/factory.html" />
-    <meta name="description" content="A steampunk word formation challenge for Cambridge English exams.">
+    <meta name="description" content="A steampunk Cambridge C1/C2 Part 3 word formation challenge with 40 derivations, live context sentences, and morphological blueprints.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
@@ -19,12 +19,37 @@
     <!-- Intro Screen -->
     <div id="intro-screen" class="modal open" role="dialog" aria-modal="true" aria-labelledby="intro-heading">
         <div class="modal-content">
-            <img src="assets/arcade/word_factory.svg" alt="The Formation Factory steampunk press" width="640" height="360" style="width:100%; max-width:360px; height:auto; border-radius:10px; border:1px solid rgba(245,158,11,0.45); margin:0 auto 12px; display:block;" />
+            <img src="assets/arcade/word_factory.svg" alt="The Formation Factory steampunk press" width="640" height="360" style="width:100%; max-width:340px; height:auto; border-radius:10px; border:1px solid rgba(245,158,11,0.45); margin:0 auto 10px; display:block;" />
             <h1 id="intro-heading">THE FORMATION FACTORY</h1>
-            <p>The gears are turning. A root word will drop onto the conveyor belt. Type the required form (Noun, Adverb, Adjective, etc.) before it falls into the furnace!</p>
-            <p style="margin-top: 8px;"><a href="word-factory.html" style="color: #f59e0b; text-decoration: underline; font-size: 0.85rem;">How to play &amp; what you'll learn &rarr;</a></p>
-            <input type="text" id="player-name" placeholder="Foreman Name (optional)..." aria-label="Foreman Name (optional)" maxlength="30" autocomplete="off">
-            <input type="email" id="player-email" placeholder="Email Address (optional)..." aria-label="Email Address (optional)" autocomplete="email">
+            <p>The gears are turning across <strong>40 authentic Cambridge C1/C2 Part 3 items</strong>. Read the C1 context sentence and forge the required derivative before the root word tumbles into the furnace!</p>
+            <p style="margin-top: -8px; margin-bottom: 12px;"><a href="word-factory.html" style="color: #f59e0b; text-decoration: underline; font-size: 0.85rem;">How to play &amp; Morphological Blueprint Workbench &rarr;</a></p>
+
+            <div class="factory-setup-grid">
+                <div class="factory-setup-field">
+                    <label for="speed-select">CONVEYOR SPEED</label>
+                    <select id="speed-select" aria-label="Conveyor Speed Selector">
+                        <option value="relaxed">Relaxed Workshop (Study Pace)</option>
+                        <option value="standard" selected>Standard Shift (Exam Pace)</option>
+                        <option value="master">Master Foreman (C2 High Speed)</option>
+                    </select>
+                </div>
+                <div class="factory-setup-field">
+                    <label for="category-select">MORPHOLOGY FOCUS</label>
+                    <select id="category-select" aria-label="Morphology Focus Selector">
+                        <option value="all" selected>All 40 C1/C2 Items (10-Part Shift)</option>
+                        <option value="vowel">Internal Vowel Changes (LONG &rarr; LENGTHEN)</option>
+                        <option value="negative">Negative Prefixes + Suffixes (IRREPLACEABLE)</option>
+                        <option value="compound">Compounds (OUTBREAK / SHORTCOMING)</option>
+                        <option value="stem">C1/C2 Stem &amp; Suffix Shifts</option>
+                        <option value="marathon40">Full 40-Part Foreman Marathon</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="factory-setup-inputs">
+                <input type="text" id="player-name" placeholder="Foreman Name (optional)..." aria-label="Foreman Name (optional)" maxlength="30" autocomplete="off">
+                <input type="email" id="player-email" placeholder="Email Address (optional)..." aria-label="Email Address (optional)" autocomplete="email">
+            </div>
             <button type="button" id="btn-start">PULL THE LEVER &rarr;</button>
         </div>
     </div>
@@ -49,7 +74,7 @@
                 <input type="hidden" name="score" id="lead-score" value="">
                 <input type="email" name="email" id="lead-email" placeholder="Your Email Address..." aria-label="Your Email Address" required style="margin-bottom: 6px;">
                 <label style="display:block; font-size:0.75rem; color:#94a3b8; margin:8px 0; text-align:left;">
-                    <input type="checkbox" id="lead-consent" required> I agree to receive my score report and exam tips.
+                    <input type="checkbox" id="lead-consent" required style="width:auto; margin-right:6px;"> I agree to receive my score report and exam tips.
                 </label>
                 <button type="submit" id="btn-claim" style="font-size: 0.8rem; opacity: 0.9;">SUBMIT TIMESHEET FOR FEEDBACK</button>
             </form>
@@ -59,18 +84,40 @@
 
     <div class="game-container">
         <header>
-            <div class="stat">MANUFACTURED: <span id="score-display">0</span>/10</div>
-            <div class="stat">LIVES: <span id="lives-display">⚙️⚙️⚙️</span></div>
-            <div>
-                <a href="word-factory.html" class="exit-link" style="margin-right: 12px;">RULES</a>
+            <div class="header-stats">
+                <div class="stat">MANUFACTURED: <span id="score-display">0</span>/<span id="quota-display">10</span></div>
+                <div class="stat">LIVES: <span id="lives-display">⚙️⚙️⚙️</span></div>
+            </div>
+            <div class="header-controls">
+                <label for="live-speed-select" class="speed-label">SPEED:</label>
+                <select id="live-speed-select" class="live-speed-select" aria-label="Live Conveyor Speed Selector">
+                    <option value="relaxed">Relaxed Workshop</option>
+                    <option value="standard" selected>Standard Shift</option>
+                    <option value="master">Master Foreman</option>
+                </select>
+                <a href="word-factory.html" class="exit-link" style="margin-right: 10px;">WORKBENCH &amp; RULES</a>
                 <a href="index.html" class="exit-link">CLOCK OUT</a>
             </div>
         </header>
 
         <main>
             <div class="prompt-area">
+                <div class="prompt-meta-row">
+                    <span id="category-badge" class="category-badge">INTERNAL VOWEL SHIFT</span>
+                    <button type="button" id="btn-reveal-model" class="reveal-model-btn">
+                        👁️ Reveal Cambridge Model
+                    </button>
+                </div>
                 <h2>REQUIRED FORM:</h2>
-                <div id="target-form">NOUN</div>
+                <div id="target-form">VERB</div>
+            </div>
+
+            <!-- Live Sentence-Context Banner -->
+            <div id="sentence-context-banner" class="sentence-context-banner" aria-live="polite">
+                <span class="context-label">CAMBRIDGE PART 3 CONTEXT SENTENCE:</span>
+                <p id="context-sentence-text" class="context-sentence-text">
+                    The council voted to <span class="context-gap">________</span> the consultation period by three weeks. <strong class="context-root-tag">(LONG)</strong>
+                </p>
             </div>
             
             <div class="factory-floor">
@@ -79,7 +126,7 @@
                     <div class="belt"></div>
                     <!-- The object moving on the belt -->
                     <div id="word-block" class="block">
-                        <span id="root-word">DESTROY</span>
+                        <span id="root-word">LONG</span>
                     </div>
                     <!-- The furnace at the end -->
                     <div class="furnace"></div>
@@ -87,8 +134,35 @@
             </div>
 
             <div class="input-area">
-                <input type="text" id="typing-input" placeholder="Type new word here..." aria-label="Type new word here" autocomplete="off">
+                <div class="input-row">
+                    <input type="text" id="typing-input" placeholder="Type derived word &amp; press Enter..." aria-label="Type new word here" autocomplete="off">
+                    <button type="button" id="btn-forge-submit" class="forge-submit-btn">FORGE &crarr;</button>
+                </div>
             </div>
+
+            <!-- Post-Forge Morphological Blueprint & Reveal Cambridge Model Panel -->
+            <section id="morph-blueprint-panel" class="morph-blueprint-panel" hidden aria-live="polite">
+                <div class="morph-blueprint-header">
+                    <div>
+                        <span class="morph-kicker">POST-FORGE MORPHOLOGICAL BLUEPRINT</span>
+                        <h3 id="morph-headline" class="morph-headline">LONG &rarr; LENGTHEN (VERB)</h3>
+                    </div>
+                    <span id="morph-status-pill" class="morph-status-pill">CAMBRIDGE C1/C2 MODEL</span>
+                </div>
+                <div class="morph-formula-row">
+                    <span class="morph-formula-label">DERIVATION FORMULA:</span>
+                    <code id="morph-formula-code">LONG (Adj) &rarr; Vowel Mutation (O &rarr; E) + -TH (Noun stem) + -EN (Verb suffix) = LENGTHEN</code>
+                </div>
+                <p id="morph-completed-sentence" class="morph-completed-sentence">
+                    The council voted to <strong>LENGTHEN</strong> the consultation period by three weeks.
+                </p>
+                <p id="morph-rule-note" class="morph-rule-note">
+                    Cambridge Part 3 Rule: Monosyllabic dimension adjectives (long, wide, deep, strong, broad) often undergo internal vowel shift + -th/-en.
+                </p>
+                <div class="morph-actions" id="morph-actions-row" hidden>
+                    <button type="button" id="btn-next-crate" class="next-crate-btn">NEXT CRATE ON BELT &rarr;</button>
+                </div>
+            </section>
         </main>
     </div>
 

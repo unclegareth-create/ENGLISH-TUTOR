@@ -178,6 +178,129 @@
       border-radius: 4px;
       margin-right: 0.45rem;
     }
+    .wb-type-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .wb-tab-btn {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      padding: 0.55rem 1rem;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .wb-tab-btn:hover {
+      border-color: var(--ielts-blue-bright);
+      color: #fff;
+    }
+    .wb-tab-btn.active {
+      background: var(--ielts-blue);
+      border-color: var(--ielts-blue-bright);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(2, 132, 199, 0.35);
+    }
+    .wb-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.15rem;
+    }
+    @media (min-width: 860px) {
+      .wb-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .wb-panel {
+      background: #070b14;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .wb-panel-bad {
+      border-top: 3px solid #f43f5e;
+    }
+    .wb-panel-good {
+      border-top: 3px solid #10b981;
+    }
+    .wb-textarea {
+      width: 100%;
+      min-height: 125px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #f8fafc;
+      padding: 0.85rem 1rem;
+      font-family: inherit;
+      font-size: 0.94rem;
+      line-height: 1.65;
+      resize: vertical;
+      margin-top: 0.5rem;
+    }
+    .wb-textarea:focus {
+      outline: 2px solid var(--ielts-blue-bright);
+      border-color: transparent;
+    }
+    .c1-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.75rem;
+    }
+    .c1-detector-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #94a3b8;
+      transition: all 0.2s;
+    }
+    .c1-detector-pill.detected {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: #10b981;
+      color: #6ee7b7;
+    }
+    .c1-detector-pill.warn {
+      background: rgba(244, 63, 94, 0.18);
+      border-color: #f43f5e;
+      color: #fda4af;
+    }
+    .wb-model-reveal {
+      display: none;
+      margin-top: 1rem;
+      padding: 1.2rem;
+      border-radius: 10px;
+      background: rgba(6, 78, 59, 0.25);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #ecfdf5;
+      font-size: 0.94rem;
+      line-height: 1.75;
+    }
+    .wb-model-reveal.open {
+      display: block;
+    }
+    .wb-starter-chip {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #bae6fd;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .wb-starter-chip:hover {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+    }
   </style>
 </head>
 <body>
@@ -452,6 +575,26 @@
     <div id="essay-model-display" class="model-essay-box"></div>
   </section>
 
+  <!-- Section 6: Band 6.5 to Band 7.5+ Paragraph Upgrade Workbench -->
+  <section class="card" id="paragraph-upgrade-workbench" aria-labelledby="workbench-heading">
+    <div class="card-header">
+      <h2 id="workbench-heading">6. Band 6.5 to Band 7.5+ Paragraph Upgrade Workbench</h2>
+      <span class="pill">Live C1 Syntax Detector + Side-by-Side Models</span>
+    </div>
+    <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1.1rem;">
+      In nineteen years of teaching—including fifteen years lecturing at Belfast Metropolitan College—the single biggest leap I see at my desk happens when a candidate stops stuffing memorised thesaurus words (<em>plethora, conundrum, ubiquitous, paramount</em>) into flat B2 sentences and starts rebuilding the paragraph's spine. Select any of the <strong>4 core essay types</strong> below, rewrite the flat Band 6.5 draft using the C1 structural blueprint, watch the live detector light up as your syntax matures, and click <strong>👁️ Reveal Cambridge Model</strong> to inspect my Band 8.0+ rewrite side by side.
+    </p>
+
+    <div class="wb-type-tabs" role="tablist" aria-label="Paragraph Upgrade Essay Types">
+      <button type="button" class="wb-tab-btn active" onclick="selectWorkbenchType(0, this)">1. Opinion / Agree-Disagree</button>
+      <button type="button" class="wb-tab-btn" onclick="selectWorkbenchType(1, this)">2. Discussion + Opinion</button>
+      <button type="button" class="wb-tab-btn" onclick="selectWorkbenchType(2, this)">3. Problem &amp; Solution</button>
+      <button type="button" class="wb-tab-btn" onclick="selectWorkbenchType(3, this)">4. Two-Part Question</button>
+    </div>
+
+    <div id="workbench-container"></div>
+  </section>
+
   <!-- Conversion Banner for IELTS Students -->
   <div class="da-completion-card" style="background:linear-gradient(135deg,#082f49 0%,#0f172a 55%,#064e3b 100%);">
     <div class="da-completion-top">
@@ -460,7 +603,7 @@
     </div>
     <h3 class="da-completion-title">Get Your Task 2 Essay Marked Line-by-Line by Gareth</h3>
     <p class="da-completion-body">
-      Preparing for IELTS? Submit a practice Task 2 essay for <strong>Written Essay Feedback (£29)</strong> (line-by-line markup, estimated band scores across all four criteria, and Band 8.0+ rewrites returned within 24–48 hours), book a <strong>30-minute 1-to-1 Starter Session (£35)</strong>, or master C1/C2 sentence structures inside our <strong>15-Lesson Dark Academia Course (5 lessons free, full course £24)</strong>.
+      Preparing for IELTS? Submit a practice Task 2 essay for <strong>Written Essay Feedback (£29)</strong> (line-by-line markup, estimated band scores across all four criteria, and Band 8.0+ rewrites returned within 24–48 hours), book a <strong>30-minute 1-to-1 Starter Session (£35)</strong>, or master C1/C2 sentence structures inside my <strong>15-Lesson Dark Academia Course (5 lessons free, full course £24)</strong>.
     </p>
     <div class="da-completion-actions">
       <a href="index.html?package=Written+essay+feedback+(%C2%A329)&tier=audit_async_29#enquiry-card" class="btn-main" style="background:#0284c7;text-decoration:none;">
@@ -608,6 +751,213 @@
     }
   ];
 
+  const workbenchCases = [
+    {
+      typeLabel: "1. Opinion / Agree-Disagree (Body Paragraph 1)",
+      prompt: "Prompt: Governments should invest more money in public transport than in building new roads. To what extent do you agree or disagree?",
+      blueprint: "What + [Subject + Verb] + is + [Noun Phrase] ... + , thereby + [-ing participle] ...",
+      band65Draft: "In today's fast-paced society, there are a plethora of cars on the streets. I think building new roads is a bad idea because it just brings more cars and pollution. If the government puts money into trains and buses, a lot of people will leave their cars at home, and this means that traffic jams will go down.",
+      diagnosis: "Why this stalls at Band 6.5: Opens with a memorised cliché ('In today's fast-paced society') and forced thesaurus padding ('a plethora of cars'), then slips into chatty B2 clauses ('I think... is a bad idea', 'and this means that...').",
+      starters: [
+        "What makes public transit far more effective is ",
+        ", thereby curbing ",
+        "Not only does electrified rail reduce ",
+        "Were authorities to redirect highway budgets into "
+      ],
+      modelParagraph: "<strong>What makes public transit far more effective than highway expansion is</strong> its superior passenger capacity. Expanding urban motorways rarely resolves congestion; instead, extra lanes simply induce further private car journeys within a few years. <strong>Were municipal authorities to redirect road budgets into</strong> frequent, affordable metro and bus networks, thousands of daily commuters could leave their vehicles at home<strong>, thereby curbing both tailpipe emissions and peak-hour gridlock.</strong>",
+      garethNote: "Notice how we tossed out 'a plethora of cars' and 'and this means that'. A Wh-cleft opens the paragraph with clear authority ('What makes... is...'), an inverted conditional handles the policy solution ('Were municipal authorities to redirect...'), and a trailing participle clause (', thereby curbing...') delivers the result without a single wasted word."
+    },
+    {
+      typeLabel: "2. Discussion + Opinion (Body Paragraph 2 — Your Side Pivot)",
+      prompt: "Prompt: Some people think universities should only teach practical job skills, while others believe universities should provide broad academic knowledge. Discuss both views and give your opinion.",
+      blueprint: "While it is widely argued that + [Clause], + what + [Verb] + is + [Noun Phrase] ...",
+      band65Draft: "On the other hand, every coin has two sides. I strongly believe that universities must teach broad knowledge too. Jobs change very fast nowadays. If students only learn one job skill, they will have a big conundrum when technology changes, so they need critical thinking.",
+      diagnosis: "Why this stalls at Band 6.5: Relies on the tired idiom 'every coin has two sides' and the awkward thesaurus noun 'a big conundrum', while chaining short, choppy SVO sentences together.",
+      starters: [
+        "While it is widely argued that vocational training ",
+        "What equips graduates for long-term career resilience is ",
+        "Not only does broad academic enquiry foster ",
+        ", thereby enabling graduates to adapt "
+      ],
+      modelParagraph: "<strong>While it is widely argued that</strong> narrow vocational training helps graduates secure their first job, <strong>what equips young people for a forty-year career is</strong> rigorous analytical and critical thinking. Because automation and industry shifts routinely render specific technical tools obsolete within five years, <strong>not only does broad academic enquiry cultivate intellectual flexibility, but it also</strong> trains graduates to evaluate complex problems<strong>, thereby enabling them to adapt as the labour market evolves.</strong>",
+      garethNote: "Instead of 'every coin has two sides', we open with an impersonal passive reporting concession ('While it is widely argued that...') that pivots straight into a Wh-cleft spotlight ('what equips young people... is...'). That single sentence bridges Body 1 and Body 2 seamlessly."
+    },
+    {
+      typeLabel: "3. Problem & Solution (Body Paragraph 2 — Targeted Remedies)",
+      prompt: "Prompt: In many cities, fewer people know their neighbours than in the past. What are the causes of this trend, and how can community spirit be improved?",
+      blueprint: "Were + [Subject] + to + [Infinitive Verb], [Subject] would ... + , thereby + [-ing participle]",
+      band65Draft: "To solve this paramount problem, the government should raise awareness about neighbours. Also, if city planners build more parks and community centres in apartment blocks, people will meet each other more often, and this will make the neighbourhood friendlier.",
+      diagnosis: "Why this stalls at Band 6.5: 'Paramount problem' is a classic memorised cliché, 'the government should raise awareness' is vague Task Response filler, and 'if city planners build... and this will make' is basic B1/B2 grammar.",
+      starters: [
+        "What is required to reverse urban isolation is ",
+        "Were municipal planners to mandate shared ",
+        ", thereby fostering regular face-to-face ",
+        "Not only would pedestrianised squares encourage "
+      ],
+      modelParagraph: "<strong>What is required to reverse this social fragmentation is</strong> deliberate civic design rather than vague public awareness campaigns. <strong>Were municipal planners to mandate</strong> shared green courtyards, libraries, and ground-floor cafés within new residential developments, residents would have natural spaces to interact daily<strong>, thereby fostering genuine neighbourhood trust and mutual support.</strong>",
+      garethNote: "Examiners are tired of reading 'the government should raise awareness'. Name the specific agent ('municipal planners') and the concrete measure ('shared green courtyards and libraries'), framed inside an inverted second conditional ('Were municipal planners to mandate...')."
+    },
+    {
+      typeLabel: "4. Two-Part Direct Question (Body Paragraph 2 — Evaluating Impact)",
+      prompt: "Prompt: Nowadays, many people buy clothes far more frequently than in the past and throw them away after only a few wears. Why is this happening? What impact does this have on individuals and society?",
+      blueprint: "Not only does + [Subject + Base Verb], but it also + [Verb] ... + , thereby + [-ing participle]",
+      band65Draft: "This fast fashion trend is ubiquitous and has many bad effects on people and society. Firstly, people waste a lot of their money on cheap clothes they don't need. Secondly, throwing away millions of shirts causes a lot of rubbish in landfills and pollutes the rivers.",
+      diagnosis: "Why this stalls at Band 6.5: Drops 'ubiquitous' in next to basic phrases like 'many bad effects' and 'a lot of rubbish', and lists points mechanically ('Firstly... Secondly...') without syntactic cohesion.",
+      starters: [
+        "Not only does this throwaway culture drain ",
+        "What makes disposable fashion particularly damaging is ",
+        ", thereby choking municipal landfills and ",
+        "It is widely recognised that synthetic textile waste "
+      ],
+      modelParagraph: "<strong>What makes this throwaway culture particularly damaging is</strong> that its costs fall on both household budgets and the natural environment. <strong>Not only does compulsive garment buying drain</strong> young consumers' personal savings for fleeting satisfaction, <strong>but it also</strong> generates millions of tonnes of non-biodegradable polyester waste each year<strong>, thereby choking municipal landfills and polluting river systems in manufacturing regions.</strong>",
+      garethNote: "In a Two-Part question that asks about 'individuals and society', 'Not only does... [personal impact], but it also... [societal impact]' is the cleanest structural bridge you can build. It answers both halves of the prompt inside one balanced C1 period."
+    }
+  ];
+
+  let currentWbIndex = 0;
+
+  function selectWorkbenchType(idx, btn) {
+    currentWbIndex = idx;
+    document.querySelectorAll('.wb-tab-btn').forEach((b) => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    renderWorkbenchCase(idx);
+  }
+
+  function renderWorkbenchCase(idx) {
+    const item = workbenchCases[idx];
+    const container = document.getElementById('workbench-container');
+    if (!container || !item) return;
+
+    container.innerHTML = `
+      <div style="margin-bottom:1rem; padding:0.95rem 1.15rem; background:#090e1a; border:1px solid #1e293b; border-left:4px solid #38bdf8; border-radius:10px;">
+        <div style="font-size:0.76rem; font-weight:800; text-transform:uppercase; color:#38bdf8; letter-spacing:0.06em;">${item.typeLabel}</div>
+        <div style="font-size:0.92rem; color:#f1f5f9; font-style:italic; margin-top:0.25rem;">${item.prompt}</div>
+        <div style="margin-top:0.6rem; font-family:monospace; font-size:0.8rem; color:#fde68a; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); padding:0.35rem 0.65rem; border-radius:6px;">
+          <strong>Target C1 Formula:</strong> ${item.blueprint}
+        </div>
+      </div>
+
+      <div class="wb-grid">
+        <div class="wb-panel wb-panel-bad">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:#fda4af; letter-spacing:0.05em;">⚠️ Band 6.5 Baseline Draft</span>
+            <span style="font-size:0.72rem; color:#94a3b8;">Flat B2 Syntax + Clichés</span>
+          </div>
+          <p style="font-size:0.93rem; color:#e2e8f0; line-height:1.7; background:#0f172a; padding:0.9rem; border-radius:8px; border:1px solid #1e293b;">
+            "${item.band65Draft}"
+          </p>
+          <p style="font-size:0.82rem; color:#fda4af; margin-top:0.7rem; line-height:1.55;">
+            <strong>Gareth's Red-Pen Diagnosis:</strong> ${item.diagnosis}
+          </p>
+        </div>
+
+        <div class="wb-panel wb-panel-good">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:#6ee7b7; letter-spacing:0.05em;">✍️ Your Band 7.5+ C1 Paragraph Upgrade</span>
+            <span id="wb-word-count" style="font-size:0.74rem; font-family:monospace; color:#94a3b8;">0 words</span>
+          </div>
+          <div style="font-size:0.78rem; color:#cbd5e1; margin-bottom:0.45rem;">Click a C1 structural frame to insert, or type your own upgrade below:</div>
+          <div style="display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:0.4rem;">
+            ${item.starters.map((s) => `<button type="button" class="wb-starter-chip" onclick="insertWbStarter(${ JSON.stringify(s).replace(/"/g, '&quot;') })">+ ${s}</button>`).join('')}
+          </div>
+          <textarea id="wb-user-input" class="wb-textarea" placeholder="Rewrite the Band 6.5 paragraph here using at least 2 C1 structural devices (e.g. a Wh-cleft, negative inversion, passive reporting, inverted conditional, or ', thereby -ing' clause)..." oninput="evaluateWbInput()"></textarea>
+
+          <div class="c1-badge-row" id="wb-detector-badges">
+            <span class="c1-detector-pill" id="det-cleft">◯ Wh- / It-Cleft</span>
+            <span class="c1-detector-pill" id="det-inversion">◯ Negative / Conditional Inversion</span>
+            <span class="c1-detector-pill" id="det-participle">◯ Participle Clause (, thereby -ing)</span>
+            <span class="c1-detector-pill" id="det-passive">◯ Passive Reporting</span>
+            <span class="c1-detector-pill" id="det-cliche">✓ Zero Thesaurus Clichés</span>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.95rem;">
+            <button type="button" class="btn-main" style="background:#059669;" onclick="toggleWbModel(this)">👁️ Reveal Cambridge Model</button>
+            <button type="button" class="btn-main" style="background:#334155;" onclick="loadWbSampleIntoEditor()">Load Model Into Editor to Inspect</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="wb-model-box" class="wb-model-reveal">
+        <div style="font-size:0.76rem; font-weight:800; text-transform:uppercase; color:#6ee7b7; letter-spacing:0.06em; margin-bottom:0.4rem;">
+          ✓ Band 8.0+ Cambridge Model Paragraph (Side-by-Side Reference)
+        </div>
+        <p style="margin-bottom:0.75rem; color:#ffffff;">${item.modelParagraph}</p>
+        <div style="font-size:0.84rem; color:#d1fae5; background:rgba(6, 78, 59, 0.45); padding:0.75rem 0.95rem; border-radius:8px; border-left:3px solid #34d399;">
+          <strong>From Gareth's Desk:</strong> ${item.garethNote}
+        </div>
+      </div>
+    `;
+  }
+
+  function insertWbStarter(phrase) {
+    const ta = document.getElementById('wb-user-input');
+    if (!ta) return;
+    const start = ta.selectionStart || ta.value.length;
+    const prefix = ta.value.length > 0 && !ta.value.endsWith(' ') ? ' ' : '';
+    ta.value = ta.value.slice(0, start) + prefix + phrase + ta.value.slice(start);
+    ta.focus();
+    evaluateWbInput();
+  }
+
+  function loadWbSampleIntoEditor() {
+    const ta = document.getElementById('wb-user-input');
+    const item = workbenchCases[currentWbIndex];
+    if (!ta || !item) return;
+    ta.value = item.modelParagraph.replace(/<\/?strong>/g, '');
+    evaluateWbInput();
+  }
+
+  function evaluateWbInput() {
+    const ta = document.getElementById('wb-user-input');
+    if (!ta) return;
+    const text = ta.value.trim();
+    const words = text ? text.split(/\s+/).length : 0;
+    const wcEl = document.getElementById('wb-word-count');
+    if (wcEl) wcEl.textContent = words + (words === 1 ? ' word' : ' words');
+
+    const hasCleft = /\b(what\s+[a-z]+\s+.*?\b(is|was|are|were)\b|it\s+(is|was)\s+[^.?!]+\b(that|who)\b)/i.test(text);
+    const hasInversion = /\b(not\s+only\s+(does|do|did|is|are|was|were|can|could|would|should|will|has|have)|were\s+[a-z\s]+to\s+[a-z]+|had\s+[a-z\s]+(been|invested|acted|known|prioritised|prioritized)|seldom\s+(do|does|did|have|has)|little\s+did)/i.test(text);
+    const hasParticiple = /(,\s*(thereby|thus|hence)\s+[a-z]+ing\b|,\s*(curbing|fostering|enabling|reducing|creating|alleviating|driving|undermining|generating)\b)/i.test(text);
+    const hasPassive = /\b(it\s+is\s+(widely|often|frequently|commonly|generally)?\s*(argued|contended|maintained|recognised|recognized|believed|claimed|suggested|acknowledged)|is\s+(widely\s+)?(believed|thought|considered|known|seen)\s+to\b|can\s+be\s+(largely\s+)?attributed\s+to)/i.test(text);
+    const hasCliche = /\b(plethora|conundrum|ubiquitous|paramount|every\s+coin\s+has\s+two\s+sides|in\s+a\s+nutshell|double-edged\s+sword|fast-paced\s+society)\b/i.test(text);
+
+    setDetectorState('det-cleft', hasCleft, '✓ Wh- / It-Cleft', '◯ Wh- / It-Cleft');
+    setDetectorState('det-inversion', hasInversion, '✓ Negative / Conditional Inversion', '◯ Negative / Conditional Inversion');
+    setDetectorState('det-participle', hasParticiple, '✓ Participle Clause (, thereby -ing)', '◯ Participle Clause (, thereby -ing)');
+    setDetectorState('det-passive', hasPassive, '✓ Passive Reporting', '◯ Passive Reporting');
+
+    const clicheBadge = document.getElementById('det-cliche');
+    if (clicheBadge) {
+      if (hasCliche) {
+        clicheBadge.className = 'c1-detector-pill warn';
+        clicheBadge.textContent = '⚠️ Cut Thesaurus Cliché!';
+      } else {
+        clicheBadge.className = 'c1-detector-pill detected';
+        clicheBadge.textContent = '✓ Zero Thesaurus Clichés';
+      }
+    }
+  }
+
+  function setDetectorState(id, active, activeText, idleText) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.className = active ? 'c1-detector-pill detected' : 'c1-detector-pill';
+    el.textContent = active ? activeText : idleText;
+  }
+
+  function toggleWbModel(btn) {
+    const box = document.getElementById('wb-model-box');
+    if (!box) return;
+    const isOpen = box.classList.contains('open');
+    if (isOpen) {
+      box.classList.remove('open');
+      btn.textContent = '👁️ Reveal Cambridge Model';
+    } else {
+      box.classList.add('open');
+      btn.textContent = '🙈 Hide Cambridge Model';
+    }
+  }
+
   function showEssayModel(idx, btn) {
     document.querySelectorAll('.model-tab-btn').forEach((b) => b.classList.remove('active'));
     if (btn) btn.classList.add('active');
@@ -636,6 +986,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     showEssayModel(0, document.querySelector('.model-tab-btn'));
+    renderWorkbenchCase(0);
   });
 </script>
     <script src="course-bridge.js" defer></script>

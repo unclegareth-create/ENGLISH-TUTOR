@@ -321,6 +321,18 @@
       gap: 1rem;
     }
     .score-total { font-size: 1.5rem; font-weight: 800; color: #60a5fa; }
+    .detector-panel { margin-top: 1.15rem; padding: 1.1rem; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border); border-radius: 12px; }
+    .badge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr)); gap: 0.6rem; margin-top: 0.65rem; }
+    .syntax-badge { padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #64748b; font-size: 0.8rem; transition: all 0.2s ease; }
+    .syntax-badge strong { display: block; font-size: 0.82rem; color: #94a3b8; }
+    .syntax-badge span { font-size: 0.72rem; }
+    .syntax-badge.lit { border-color: #22c55e; background: rgba(34, 197, 94, 0.14); color: #bbf7d0; box-shadow: 0 0 12px rgba(34, 197, 94, 0.2); }
+    .syntax-badge.lit strong { color: #4ade80; }
+    .cliche-guard { margin-top: 0.85rem; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.84rem; border: 1px solid rgba(34, 197, 94, 0.35); background: rgba(34, 197, 94, 0.1); color: #bbf7d0; }
+    .cliche-guard.flagged { border-color: #f43f5e; background: rgba(244, 63, 94, 0.16); color: #fecdd3; }
+    .reveal-panel { display: none; }
+    .reveal-panel.open { display: block; margin-top: 1rem; }
+    .benchmark-card { background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1rem; }
 
     @media print {
       body { background: white; color: black; padding: 0; }
@@ -380,6 +392,43 @@
       <span id="word-count" style="font-size:0.85rem; color:var(--muted);">Word count: 0 words (Target: 220–260)</span>
     </div>
     <div class="essay-output" id="full-essay-output">Your sentences will stitch together here as you type...</div>
+    <div style="margin-top:0.75rem; display:flex; flex-wrap:wrap; gap:0.6rem;">
+      <button type="button" class="btn btn-secondary" onclick="loadAllModelSentences()" style="font-size:0.8rem; padding:0.45rem 0.9rem;">⚡ Load Full C1 Model into Builder</button>
+      <button type="button" class="btn btn-secondary" onclick="clearAllSentences()" style="font-size:0.8rem; padding:0.45rem 0.9rem; background:#334155;">Clear Builder</button>
+    </div>
+
+    <!-- Live 5-Badge C1 Syntactic Detector & Red-Pen Cliché Guard -->
+    <div class="detector-panel" id="c1-detector-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+        <div style="font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:#93c5fd;">Live 5-Badge C1 Syntactic Detector</div>
+        <div id="detector-summary" style="font-size:0.8rem; font-weight:700; color:var(--amber);">0 / 5 C1 Structures Detected</div>
+      </div>
+      <div class="badge-grid">
+        <div class="syntax-badge" id="badge-prep-it">
+          <strong>1. Preparatory 'It'</strong>
+          <span>It is widely acknowledged / apparent that...</span>
+        </div>
+        <div class="syntax-badge" id="badge-passive">
+          <strong>2. Passive Reporting</strong>
+          <span>is believed / thought / said to...</span>
+        </div>
+        <div class="syntax-badge" id="badge-cleft">
+          <strong>3. Cleft Sentence</strong>
+          <span>What ... is ... / It is ... that ...</span>
+        </div>
+        <div class="syntax-badge" id="badge-inversion">
+          <strong>4. Inversion</strong>
+          <span>Not only does... / Were ... to ...</span>
+        </div>
+        <div class="syntax-badge" id="badge-participle">
+          <strong>5. Participle Clause</strong>
+          <span>By -ing... / , thereby -ing...</span>
+        </div>
+      </div>
+      <div class="cliche-guard" id="cliche-guard-box">
+        ✓ <strong>Red-Pen Cliché Guard: Clean</strong> — No robotic templates or memorised exam clichés detected in your draft.
+      </div>
+    </div>
   </div>
 
   <!-- Official C1 Writing Assessment Scale -->
@@ -398,12 +447,69 @@
     </div>
   </div>
 
+  <!-- 3 Complete C1 Benchmark Essays -->
+  <div class="card">
+    <h2>3. Three Complete Band 5 (20/20) C1 Benchmark Essays (220–260 Words)</h2>
+    <p style="font-size:0.9rem; color:var(--muted);">Study how all five C1 syntactic shifts fit naturally inside the strict 220–260 word Cambridge Part 1 limit across three classic exam topics.</p>
+
+    <!-- Benchmark 1 -->
+    <div class="benchmark-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+        <strong style="color:#60a5fa; font-size:0.95rem;">Model 1: Public Health (Junk Food Taxes vs Free Community Sports Facilities)</strong>
+        <span style="font-size:0.78rem; background:#1e293b; padding:0.2rem 0.6rem; border-radius:99px; color:#86efac; border:1px solid #22c55e;">232 words • 20/20 Band 5</span>
+      </div>
+      <p style="font-size:0.84rem; color:#cbd5e1; margin-bottom:0.75rem;"><strong>Prompt Focus:</strong> Discuss two ways governments can combat sedentary urban lifestyles (1. Taxing high-sugar consumables; 2. Funding free local sports facilities) and explain which is more effective.</p>
+      <button type="button" class="btn btn-secondary reveal-model-btn" data-target="bench-essay-1" style="font-size:0.82rem; padding:0.45rem 0.95rem;">👁️ Reveal Cambridge Model</button>
+      <div id="bench-essay-1" class="reveal-panel" style="border-top:1px solid var(--border); padding-top:0.9rem; font-size:0.92rem; color:#e2e8f0; line-height:1.7;">
+        <p style="margin-bottom:0.75rem;">Over the past few decades, it has become increasingly apparent that sedentary urban routines and ultra-processed diets are placing an unprecedented strain on public healthcare systems. While some policymakers advocate punitive taxation on high-sugar consumables, what remains open to debate is whether such fiscal levies are as effective as investing directly in free community sports facilities.</p>
+        <p style="margin-bottom:0.75rem;">Admittedly, imposing steeper duties on sweetened beverages and fast food is widely believed to deter impulsive purchases in the short term. Where fresh produce remains expensive, however, penalising shoppers at the till rarely transforms everyday dietary habits. Moreover, regressive consumption taxes invariably hit low-income households hardest without addressing the scarcity of affordable recreational spaces in densely populated neighbourhoods.</p>
+        <p style="margin-bottom:0.75rem;">By contrast, removing financial barriers to municipal leisure centres, swimming pools, and floodlit pitches empowers citizens of all ages to take ownership of their physical wellbeing. Not only does state-funded sports infrastructure cultivate lifelong exercise habits among adolescents, but it also fosters vital social cohesion across diverse urban communities, thereby reducing both chronic illness and social isolation.</p>
+        <p style="margin-bottom:0.5rem;">On balance, while fiscal disincentives may nudge consumer behaviour at the supermarket checkout, public investment in accessible recreational facilities represents by far the more sustainable intervention. Were governments to prioritise free community sport over punitive taxation, society would reap far more durable health dividends.</p>
+        <div style="font-size:0.78rem; color:#93c5fd; margin-top:0.6rem;"><strong>C1 Shifts Deployed:</strong> Preparatory <em>It</em> ("it has become increasingly apparent that..."), Wh- Cleft ("what remains open to debate is..."), Passive Reporting ("is widely believed to deter..."), Negative Inversion ("Not only does state-funded sports infrastructure cultivate..."), Resultative Participle (", thereby reducing..."), Inverted Conditional ("Were governments to prioritise...").</div>
+      </div>
+    </div>
+
+    <!-- Benchmark 2 -->
+    <div class="benchmark-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+        <strong style="color:#60a5fa; font-size:0.95rem;">Model 2: Youth Employment (University Subsidies vs Paid Apprenticeships)</strong>
+        <span style="font-size:0.78rem; background:#1e293b; padding:0.2rem 0.6rem; border-radius:99px; color:#86efac; border:1px solid #22c55e;">226 words • 20/20 Band 5</span>
+      </div>
+      <p style="font-size:0.84rem; color:#cbd5e1; margin-bottom:0.75rem;"><strong>Prompt Focus:</strong> Discuss two ways to prepare school-leavers for the modern workforce (1. Subsidising university tuition fees; 2. Expanding paid vocational apprenticeships) and select the more effective measure.</p>
+      <button type="button" class="btn btn-secondary reveal-model-btn" data-target="bench-essay-2" style="font-size:0.82rem; padding:0.45rem 0.95rem;">👁️ Reveal Cambridge Model</button>
+      <div id="bench-essay-2" class="reveal-panel" style="border-top:1px solid var(--border); padding-top:0.9rem; font-size:0.92rem; color:#e2e8f0; line-height:1.7;">
+        <p style="margin-bottom:0.75rem;">It is widely acknowledged that equipping young adults for a rapidly evolving labour market represents one of the most pressing challenges facing modern governments. While many administrations continue to prioritise universal university subsidies, what warrants closer scrutiny is whether expanding paid vocational apprenticeships offers a more pragmatic route to long-term employment.</p>
+        <p style="margin-bottom:0.75rem;">Turning first to tertiary education, subsidising university tuition fees is often thought to promote social mobility by opening academic professions to lower-income school-leavers. A broad theoretical grounding undeniably sharpens critical analysis and research literacy. Even so, an oversupply of generalist degrees has left thousands of graduates burdened with underemployment, while technical industries face acute skill shortages.</p>
+        <p style="margin-bottom:0.75rem;">Conversely, structured vocational apprenticeships bridge the divide between classroom theory and workplace reality from day one. By earning a living wage while mastering certified trades in engineering, renewable energy, or digital maintenance, apprentices graduate free of debt and ready for immediate productivity. Not only does this model align training directly with regional employer demand, but it also accords practical craftsmanship the professional esteem it deserves, thereby curbing youth unemployment.</p>
+        <p style="margin-bottom:0.5rem;">Ultimately, while accessible university education remains vital for scientific research, it is the systematic expansion of paid apprenticeships that holds the greater economic value. Were ministries to rebalance funding toward technical pathways, both young workers and national industries would prosper.</p>
+        <div style="font-size:0.78rem; color:#93c5fd; margin-top:0.6rem;"><strong>C1 Shifts Deployed:</strong> Preparatory <em>It</em> ("It is widely acknowledged that..."), Wh- Cleft ("what warrants closer scrutiny is..."), Passive Reporting ("is often thought to promote..."), Negative Inversion ("Not only does this model align..."), Resultative Participle (", thereby curbing..."), It-Cleft ("it is the systematic expansion... that holds...").</div>
+      </div>
+    </div>
+
+    <!-- Benchmark 3 -->
+    <div class="benchmark-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.5rem;">
+        <strong style="color:#60a5fa; font-size:0.95rem;">Model 3: Climate &amp; Transport (Short-Haul Flight Bans vs High-Speed Rail)</strong>
+        <span style="font-size:0.78rem; background:#1e293b; padding:0.2rem 0.6rem; border-radius:99px; color:#86efac; border:1px solid #22c55e;">236 words • 20/20 Band 5</span>
+      </div>
+      <p style="font-size:0.84rem; color:#cbd5e1; margin-bottom:0.75rem;"><strong>Prompt Focus:</strong> Discuss two approaches to reducing domestic transport emissions (1. Banning short-haul domestic flights; 2. Investing in high-speed rail networks) and justify which is more effective.</p>
+      <button type="button" class="btn btn-secondary reveal-model-btn" data-target="bench-essay-3" style="font-size:0.82rem; padding:0.45rem 0.95rem;">👁️ Reveal Cambridge Model</button>
+      <div id="bench-essay-3" class="reveal-panel" style="border-top:1px solid var(--border); padding-top:0.9rem; font-size:0.92rem; color:#e2e8f0; line-height:1.7;">
+        <p style="margin-bottom:0.75rem;">It is generally accepted that curbing aviation emissions is essential if nations are to meet their binding climate commitments over the coming decade. Whether authorities should tackle domestic transport pollution through outright bans on short-haul flights or through large-scale investment in affordable high-speed rail remains fiercely contested. This essay will evaluate both regulatory restrictions and infrastructural investment before determining which approach delivers the more durable environmental impact.</p>
+        <p style="margin-bottom:0.75rem;">Proponents of statutory prohibitions argue that outlawing domestic flights under three hours sends an unmistakable regulatory signal. When short-distance air routes are removed from the timetable, business travellers are compelled to reconsider habitual flying. However, enforcing bans before viable overland alternatives exist is widely believed to penalise peripheral regions, thereby isolating communities that depend on air links for commerce and medical travel.</p>
+        <p style="margin-bottom:0.75rem;">By contrast, modernising intercity rail networks addresses the root cause of short-haul aviation demand. When electric trains offer city-centre-to-city-centre journeys at competitive fares, passengers switch modes voluntarily rather than under coercion. Not only does high-speed rail expansion slash per-capita carbon emissions, but it also stimulates regional economic regeneration along the entire transport corridor.</p>
+        <p style="margin-bottom:0.5rem;">On balance, while legislative restrictions on short-haul routes may serve as a secondary deterrent, what is urgently required first is comprehensive investment in affordable rail infrastructure. Were governments to make train travel faster and cheaper than flying, short-haul flights would become obsolete by choice rather than by decree.</p>
+        <div style="font-size:0.78rem; color:#93c5fd; margin-top:0.6rem;"><strong>C1 Shifts Deployed:</strong> Preparatory <em>It</em> ("It is generally accepted that..."), Passive Reporting ("is widely believed to penalise..."), Resultative Participle (", thereby isolating..."), Negative Inversion ("Not only does high-speed rail expansion slash..."), Wh- Cleft ("what is urgently required first is..."), Inverted Conditional ("Were governments to make...").</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Next Steps: Course & Personalised Feedback CTA -->
   <div class="card" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border-color: #3b82f6;">
     <span class="tag" style="background:#f59e0b; color:#0f172a;">Next Steps with Gareth Montgomery</span>
     <h2 style="color:#ffffff; margin-top:0.25rem;">Want Your C1 Essay Marked Line-by-Line or More C1/C2 Practice?</h2>
     <p style="font-size:0.94rem; color:#cbd5e1; margin-bottom:1.25rem;">
-      Send your completed 220–260 word CAE essay for <strong>Written Essay Feedback (£29)</strong> (line-by-line red-pen rewrites and official 20-mark Cambridge rubric breakdown within 48h), book a <strong>30-minute 1-to-1 Starter Session (£35)</strong>, or master C1/C2 grammar across our <strong>15-Lesson Dark Academia Course (5 lessons free, full course £24)</strong>.
+      Send your completed 220–260 word CAE essay for <strong>Written Essay Feedback (£29)</strong> (line-by-line red-pen rewrites and official 20-mark Cambridge rubric breakdown within 48h), book a <strong>30-minute 1-to-1 Starter Session (£35)</strong>, or master C1/C2 grammar across my <strong>15-Lesson Dark Academia Course (5 lessons free, full course £24)</strong>.
     </p>
     <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
       <a href="index.html?package=Written+essay+feedback+(%C2%A329)&tier=audit_async_29#enquiry-card" class="btn btn-primary" style="text-decoration:none;">Order Written Essay Feedback (£29) →</a>
@@ -602,6 +708,69 @@
     document.getElementById('full-essay-output').textContent = finalStr || "Your sentences will stitch together here as you type...";
     const words = finalStr.trim() ? finalStr.trim().split(/\s+/).length : 0;
     document.getElementById('word-count').textContent = `Word count: ${words} words (Target: 220–260)`;
+    evaluateC1Detector(finalStr);
+  }
+
+  function evaluateC1Detector(text) {
+    const raw = text || "";
+    const checks = [
+      { id: "badge-prep-it", pattern: /\bit\s+(is|has\s+become)\s+(widely\s+|generally\s+|commonly\s+|increasingly\s+|often\s+)?(acknowledged|argued|accepted|apparent|clear|evident|recognised|recognized|claimed)\s+that\b/i },
+      { id: "badge-passive", pattern: /\b(is|are|was|were|has\s+been|have\s+been)\s+(widely\s+|generally\s+|often\s+|frequently\s+|commonly\s+)?(believed|thought|considered|said|held|reported|suggested|argued|acknowledged)\s+(to|that)\b/i },
+      { id: "badge-cleft", pattern: /(\bwhat\s+[a-z\s]{2,40}\s+(is|are|was|were)\b|\bit\s+(is|was)\s+[^.?!]{3,60}\s+(that|who)\s+)/i },
+      { id: "badge-inversion", pattern: /\b(not\s+only\s+(does|do|did|can|will|would|is|are|has|have)|were\s+[a-z\s]+\s+to\s+|should\s+[a-z\s]+\s+(prioritise|prioritize|invest|allocate|implement|adopt)|rarely\s+(do|does|did|have|has)|seldom\s+(do|does|did|have|has)|under\s+no\s+circumstances)/i },
+      { id: "badge-participle", pattern: /(,\s*thereby\s+[a-z]+ing\b|\bby\s+[a-z]+ing\b|\bstripped\s+of\b|\bfaced\s+with\b|\bhaving\s+[a-z]+ed\b|\bremoving\s+financial\s+barriers\b)/i }
+    ];
+
+    let count = 0;
+    checks.forEach(c => {
+      const el = document.getElementById(c.id);
+      if (!el) return;
+      if (c.pattern.test(raw)) {
+        el.classList.add("lit");
+        count++;
+      } else {
+        el.classList.remove("lit");
+      }
+    });
+
+    const summaryEl = document.getElementById("detector-summary");
+    if (summaryEl) {
+      summaryEl.textContent = `${count} / 5 C1 Structures Detected`;
+      summaryEl.style.color = count >= 4 ? "#4ade80" : (count >= 2 ? "#f59e0b" : "#94a3b8");
+    }
+
+    const cliches = [
+      { rx: /\bin\s+a\s+nutshell\b/i, label: '"In a nutshell"', fix: 'Use "On balance," or "Ultimately," instead.' },
+      { rx: /\bevery\s+coin\s+has\s+two\s+sides\b/i, label: '"Every coin has two sides"', fix: 'State the specific dilemma directly with a Wh- cleft.' },
+      { rx: /\bsince\s+the\s+dawn\s+of\s+time\b/i, label: '"Since the dawn of time"', fix: 'Use "Over the past few decades," or anchor to modern policy.' },
+      { rx: /\bdouble-edged\s+sword\b/i, label: '"A double-edged sword"', fix: 'Explain the exact trade-off instead of relying on an overused idiom.' },
+      { rx: /\bplethora\b/i, label: '"Plethora"', fix: 'Replace memorised thesaurus filler with precise collocations ("a wide array of", "acute shortages").' },
+      { rx: /\bin\s+my\s+personal\s+opinion\s+i\s+think\b/i, label: '"In my personal opinion I think"', fix: 'Eliminate the tautology; use "I would contend that..." or keep it impersonal until the verdict.' }
+    ];
+
+    const guardBox = document.getElementById("cliche-guard-box");
+    if (guardBox) {
+      const hit = cliches.find(item => item.rx.test(raw));
+      if (hit) {
+        guardBox.classList.add("flagged");
+        guardBox.innerHTML = `⚠️ <strong>Red-Pen Cliché Alert:</strong> Detected ${hit.label}. Cambridge examiners mark forty scripts before lunch and penalise memorised templates. <em>Fix: ${hit.fix}</em>`;
+      } else {
+        guardBox.classList.remove("flagged");
+        guardBox.innerHTML = `✓ <strong>Red-Pen Cliché Guard: Clean</strong> — No robotic templates or memorised exam clichés detected in your draft.`;
+      }
+    }
+  }
+
+  function loadAllModelSentences() {
+    userInputs = steps.map(s => s.model);
+    checkedState = steps.map(s => Array(s.constraints.length).fill(true));
+    renderStep();
+  }
+
+  function clearAllSentences() {
+    userInputs = Array(steps.length).fill("");
+    checkedState = steps.map(s => Array(s.constraints.length).fill(false));
+    renderStep();
   }
 
   function insertModelHint() {
@@ -642,10 +811,42 @@
   function selectBand(cIdx, band) {
     rubricData[cIdx].selected = band;
     renderRubric();
+
+  document.querySelectorAll('.reveal-model-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-target');
+      const panel = document.getElementById(targetId);
+      if (!panel) return;
+      const isOpen = panel.classList.contains('open');
+      if (isOpen) {
+        panel.classList.remove('open');
+        btn.textContent = '👁️ Reveal Cambridge Model';
+      } else {
+        panel.classList.add('open');
+        btn.textContent = '🙈 Hide Cambridge Model';
+      }
+    });
+  });
   }
 
   renderStep();
   renderRubric();
+
+  document.querySelectorAll('.reveal-model-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-target');
+      const panel = document.getElementById(targetId);
+      if (!panel) return;
+      const isOpen = panel.classList.contains('open');
+      if (isOpen) {
+        panel.classList.remove('open');
+        btn.textContent = '👁️ Reveal Cambridge Model';
+      } else {
+        panel.classList.add('open');
+        btn.textContent = '🙈 Hide Cambridge Model';
+      }
+    });
+  });
 </script>
 
 <script src="analytics.js" defer></script>

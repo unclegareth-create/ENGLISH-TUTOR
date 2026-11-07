@@ -177,7 +177,140 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="assets/fonts/fontawesome-local.css">
   
-  <style>:focus-visible { outline: 3px solid #0284c7; outline-offset: 2px; }</style>
+  <style>
+    :focus-visible { outline: 3px solid #0284c7; outline-offset: 2px; }
+    .belfast-workbench {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-top: 5px solid #0369a1;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.08);
+    }
+    .belfast-editorial-note {
+      background: #f8fafc;
+      border-left: 4px solid #0369a1;
+      border-radius: 0 12px 12px 0;
+      padding: 18px 22px;
+      margin-bottom: 24px;
+    }
+    .p4-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 18px 20px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .p4-card.is-correct {
+      border-color: #059669;
+      background: #f0fdf4;
+    }
+    .p4-card.is-wrong {
+      border-color: #e11d48;
+      background: #fff1f2;
+    }
+    .echo-chunk {
+      transition: all 0.2s ease;
+    }
+    .p4-card.echo-struck .echo-chunk {
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+      text-decoration-color: #94a3b8;
+      color: #94a3b8;
+      opacity: 0.65;
+    }
+    .deficit-chunk {
+      font-weight: 700;
+      color: #0f172a;
+      transition: all 0.2s ease;
+    }
+    .p4-card.echo-struck .deficit-chunk {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 1px 6px;
+      border-radius: 4px;
+      border-bottom: 2px solid #f59e0b;
+    }
+    .p4-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #334155;
+    }
+    .p4-pill.ok {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #166534;
+    }
+    .p4-pill.warn {
+      background: #fef3c7;
+      border-color: #fcd34d;
+      color: #92400e;
+    }
+    .p4-pill.err {
+      background: #ffe4e6;
+      border-color: #fda4af;
+      color: #9f1239;
+    }
+    .p4-input {
+      width: 100%;
+      max-width: 320px;
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 4px 6px;
+      border: 2px solid #94a3b8;
+      border-radius: 8px;
+      background: #ffffff;
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 14px;
+    }
+    .p4-input:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+    .p4-model-box {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 15px;
+      border-radius: 10px;
+      background: #0f172a;
+      color: #f8fafc;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .p4-model-box.open {
+      display: block;
+    }
+    .engine-launch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .engine-launch-card {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .engine-launch-card:hover {
+      transform: translateY(-2px);
+      border-color: #0284c7;
+      box-shadow: 0 10px 24px -8px rgba(2, 132, 199, 0.18);
+      background: #ffffff;
+    }
+  </style>
 </head>
 <body class="font-sans text-slate-800 bg-slate-50 antialiased">
   <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-white focus:text-brand-700 focus:font-semibold focus:shadow-lg">Skip to main content</a>
@@ -240,6 +373,343 @@
           <a href="c1-syntactic-research-lab.html" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 transition text-center">
             Open C1/C2 Syntactic Research Lab &rarr;
           </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FROM THE BELFAST DESK: LIVE C1/C2 SYNTAX & PART 4 WORKBENCH ================= -->
+    <section id="belfast-desk-workbench" class="mb-20" data-category="exam-modules ielts cambridge">
+      <div class="belfast-workbench">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-6">
+          <div>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-100 text-sky-900 border border-sky-300 text-xs font-extrabold uppercase tracking-wider mb-2">
+              ✒️ From the Belfast Desk &middot; Live Interactive Workbench
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+              From the Belfast Desk: Live C1/C2 Syntax &amp; Part 4 Transformation Workbench
+            </h2>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="toggleAllEchoes()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">
+              ✂️ Step 1: Strike Out All Echoes
+            </button>
+            <button type="button" onclick="checkAllPart4Workbench()" class="px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition cursor-pointer">
+              ✓ Score All 6 Items
+            </button>
+            <button type="button" onclick="resetPart4Workbench()" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold transition cursor-pointer">
+              ↺ Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="belfast-editorial-note">
+          <p class="text-slate-800 text-sm sm:text-base leading-relaxed">
+            <strong>A quick word from my desk before you start:</strong> In 19 years of teaching—including 15 years lecturing at Belfast Metropolitan College—I have watched thousands of bright candidates get tied in knots by internet snake oil. Toss out the memorised &ldquo;Band 9 vocabulary lists&rdquo; (<em>plethora, conundrum, ubiquitous, paramount</em>) and robotic four-sentence templates (<em>&ldquo;In a nutshell&rdquo;, &ldquo;Every coin has two sides&rdquo;</em>). Your examiner marks forty scripts before lunch; forced thesaurus words put them to sleep, while clean syntactic variety wakes them right up.
+          </p>
+          <p class="text-slate-700 text-xs sm:text-sm leading-relaxed mt-2">
+            In Cambridge C1/C2 Use of English Part 4—and in high-scoring IELTS writing—three or four well-placed structural shifts do all the heavy lifting. Use my <strong>4-Step Elimination &amp; Deconstruction Strategy</strong> below: <strong>1. Strike Out the Echoes</strong> to isolate the exact meaning left behind; <strong>2. Inspect Tense Harmony</strong>; <strong>3. Check Voice Shift</strong>; and <strong>4. Solve the C1 Pattern</strong> in <strong>3 to 6 words</strong> without ever changing the keyword.
+          </p>
+        </div>
+
+        <!-- 6 Live Part 4 Key Word Transformations Grid -->
+        <div class="grid md:grid-cols-2 gap-5 mb-10" id="belfast-p4-grid">
+          <!-- Item 1: INTENTION -->
+          <div class="p4-card" id="bp4-card-0" data-idx="0" data-keyword="INTENTION" data-ans="has no intention of|have no intention of" data-split="has/have no intention (1 mark) // of (1 mark)">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700">Item 01 &middot; Negative Nominal Refusal</span>
+              <button type="button" onclick="toggleEchoStrike(0)" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition cursor-pointer">
+                ✂️ Step 1: Strike Out the Echoes
+              </button>
+            </div>
+            <p class="text-sm text-slate-800 mb-2">
+              <span class="echo-chunk">The board</span> <span class="deficit-chunk">definitely will not</span> <span class="echo-chunk">revise the quarterly forecast before Friday.</span>
+            </p>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="p4-pill">Step 2 Tense: Present Simple (Future Refusal)</span>
+              <span class="p4-pill">Step 3 Voice: Active &rarr; Nominal Phrase</span>
+              <span class="p4-pill" id="bp4-wc-0">0 / 3&ndash;6 words</span>
+              <span class="p4-pill" id="bp4-kw-0">KEY WORD: INTENTION (Unchanged Guard)</span>
+            </div>
+            <div class="text-sm text-slate-900 font-medium mb-3">
+              The board
+              <input type="text" class="p4-input" id="bp4-inp-0" oninput="onPart4Input(0)" placeholder="3 to 6 words including INTENTION..." aria-label="Item 1 transformation answer" />
+              revising the quarterly forecast before Friday.
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="checkPart4Item(0)" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">Check Answer</button>
+              <button type="button" onclick="revealPart4Model(0)" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>
+              <span class="text-xs font-bold" id="bp4-msg-0"></span>
+            </div>
+            <div class="p4-model-box" id="bp4-model-0">
+              <div class="text-amber-300 font-bold text-xs uppercase tracking-wider mb-1">Cambridge Split-Mark Scheme (1 mark // 1 mark)</div>
+              <div>Model: <strong>has no intention</strong> <span class="text-emerald-400">[1 mark]</span> <strong>// of</strong> <span class="text-emerald-400">[1 mark]</span> (also accepts <em>have no intention // of</em> &middot; 4 words).</div>
+              <div class="text-slate-300 text-xs mt-1">Formula: <code>have no intention + of + V-ing</code>. Notice how <em>revise</em> shifts to the gerund <em>revising</em> after the preposition <em>of</em>.</div>
+            </div>
+          </div>
+
+          <!-- Item 2: RATHER -->
+          <div class="p4-card" id="bp4-card-1" data-idx="1" data-keyword="RATHER" data-ans="would rather you did not|would rather you didn't" data-split="would rather (1 mark) // you did not / didn't (1 mark)">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700">Item 02 &middot; Past Subjunctive Preference</span>
+              <button type="button" onclick="toggleEchoStrike(1)" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition cursor-pointer">
+                ✂️ Step 1: Strike Out the Echoes
+              </button>
+            </div>
+            <p class="text-sm text-slate-800 mb-2">
+              <span class="echo-chunk">I</span> <span class="deficit-chunk">think it would be better if you did not</span> <span class="echo-chunk">mention the audit during lunch.</span>
+            </p>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="p4-pill">Step 2 Tense: Present Preference &rarr; Past Subjunctive</span>
+              <span class="p4-pill">Step 3 Voice: Active &rarr; Active Clause</span>
+              <span class="p4-pill" id="bp4-wc-1">0 / 3&ndash;6 words</span>
+              <span class="p4-pill" id="bp4-kw-1">KEY WORD: RATHER (Unchanged Guard)</span>
+            </div>
+            <div class="text-sm text-slate-900 font-medium mb-3">
+              I
+              <input type="text" class="p4-input" id="bp4-inp-1" oninput="onPart4Input(1)" placeholder="3 to 6 words including RATHER..." aria-label="Item 2 transformation answer" />
+              mention the audit during lunch.
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="checkPart4Item(1)" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">Check Answer</button>
+              <button type="button" onclick="revealPart4Model(1)" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>
+              <span class="text-xs font-bold" id="bp4-msg-1"></span>
+            </div>
+            <div class="p4-model-box" id="bp4-model-1">
+              <div class="text-amber-300 font-bold text-xs uppercase tracking-wider mb-1">Cambridge Split-Mark Scheme (1 mark // 1 mark)</div>
+              <div>Model: <strong>would rather</strong> <span class="text-emerald-400">[1 mark]</span> <strong>// you did not</strong> <span class="text-emerald-400">[1 mark]</span> (5 words; contractions like <em>didn&rsquo;t</em> count as 2 words).</div>
+              <div class="text-slate-300 text-xs mt-1">Formula: <code>Subject 1 + would rather + Subject 2 + Past Simple</code> for present/future preference.</div>
+            </div>
+          </div>
+
+          <!-- Item 3: SAID -->
+          <div class="p4-card" id="bp4-card-2" data-idx="2" data-keyword="SAID" data-ans="is said to have resigned" data-split="is said (1 mark) // to have resigned (1 mark)">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700">Item 03 &middot; Passive Reporting + Perfect Infinitive</span>
+              <button type="button" onclick="toggleEchoStrike(2)" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition cursor-pointer">
+                ✂️ Step 1: Strike Out the Echoes
+              </button>
+            </div>
+            <p class="text-sm text-slate-800 mb-2">
+              <span class="deficit-chunk">Journalists report that</span> <span class="echo-chunk">the minister</span> <span class="deficit-chunk">resigned</span> <span class="echo-chunk">over the leaked memo.</span>
+            </p>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="p4-pill">Step 2 Tense: Present Report + Past Action &rarr; to have + V3</span>
+              <span class="p4-pill">Step 3 Voice: Active &rarr; Impersonal Passive</span>
+              <span class="p4-pill" id="bp4-wc-2">0 / 3&ndash;6 words</span>
+              <span class="p4-pill" id="bp4-kw-2">KEY WORD: SAID (Unchanged Guard)</span>
+            </div>
+            <div class="text-sm text-slate-900 font-medium mb-3">
+              The minister
+              <input type="text" class="p4-input" id="bp4-inp-2" oninput="onPart4Input(2)" placeholder="3 to 6 words including SAID..." aria-label="Item 3 transformation answer" />
+              over the leaked memo.
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="checkPart4Item(2)" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">Check Answer</button>
+              <button type="button" onclick="revealPart4Model(2)" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>
+              <span class="text-xs font-bold" id="bp4-msg-2"></span>
+            </div>
+            <div class="p4-model-box" id="bp4-model-2">
+              <div class="text-amber-300 font-bold text-xs uppercase tracking-wider mb-1">Cambridge Split-Mark Scheme (1 mark // 1 mark)</div>
+              <div>Model: <strong>is said</strong> <span class="text-emerald-400">[1 mark]</span> <strong>// to have resigned</strong> <span class="text-emerald-400">[1 mark]</span> (5 words).</div>
+              <div class="text-slate-300 text-xs mt-1">Formula: <code>Subject + BE + said + to have + Past Participle</code> when the reported action happened before the reporting verb.</div>
+            </div>
+          </div>
+
+          <!-- Item 4: TIME -->
+          <div class="p4-card" id="bp4-card-3" data-idx="3" data-keyword="TIME" data-ans="no time did the auditor" data-split="no time (1 mark) // did the auditor (1 mark)">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700">Item 04 &middot; Fronted Negative Inversion</span>
+              <button type="button" onclick="toggleEchoStrike(3)" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition cursor-pointer">
+                ✂️ Step 1: Strike Out the Echoes
+              </button>
+            </div>
+            <p class="text-sm text-slate-800 mb-2">
+              <span class="deficit-chunk">The auditor never once suspected</span> <span class="echo-chunk">that the ledger had been altered.</span>
+            </p>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="p4-pill">Step 2 Tense: Past Simple &rarr; Inverted Auxiliary (did + inf)</span>
+              <span class="p4-pill">Step 3 Voice: Active &rarr; Inverted Active</span>
+              <span class="p4-pill" id="bp4-wc-3">0 / 3&ndash;6 words</span>
+              <span class="p4-pill" id="bp4-kw-3">KEY WORD: TIME (Unchanged Guard)</span>
+            </div>
+            <div class="text-sm text-slate-900 font-medium mb-3">
+              At
+              <input type="text" class="p4-input" id="bp4-inp-3" oninput="onPart4Input(3)" placeholder="3 to 6 words including TIME..." aria-label="Item 4 transformation answer" />
+              suspect that the ledger had been altered.
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="checkPart4Item(3)" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">Check Answer</button>
+              <button type="button" onclick="revealPart4Model(3)" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>
+              <span class="text-xs font-bold" id="bp4-msg-3"></span>
+            </div>
+            <div class="p4-model-box" id="bp4-model-3">
+              <div class="text-amber-300 font-bold text-xs uppercase tracking-wider mb-1">Cambridge Split-Mark Scheme (1 mark // 1 mark)</div>
+              <div>Model: <strong>no time</strong> <span class="text-emerald-400">[1 mark]</span> <strong>// did the auditor</strong> <span class="text-emerald-400">[1 mark]</span> (5 words).</div>
+              <div class="text-slate-300 text-xs mt-1">Formula: <code>At no time + Auxiliary (did) + Subject + Bare Infinitive</code>.</div>
+            </div>
+          </div>
+
+          <!-- Item 5: SPITE -->
+          <div class="p4-card" id="bp4-card-4" data-idx="4" data-keyword="SPITE" data-ans="in spite of|in spite of the" data-split="in spite (1 mark) // of (the) (1 mark)">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700">Item 05 &middot; Concessive Prepositional Shift</span>
+              <button type="button" onclick="toggleEchoStrike(4)" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition cursor-pointer">
+                ✂️ Step 1: Strike Out the Echoes
+              </button>
+            </div>
+            <p class="text-sm text-slate-800 mb-2">
+              <span class="deficit-chunk">Although</span> <span class="echo-chunk">the harbour</span> <span class="deficit-chunk">experienced</span> <span class="echo-chunk">gale-force winds, the ferry docked on schedule.</span>
+            </p>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="p4-pill">Step 2 Tense: Concessive Clause &rarr; Prepositional Phrase</span>
+              <span class="p4-pill">Step 3 Voice: Clause &rarr; Nominalised Object</span>
+              <span class="p4-pill" id="bp4-wc-4">0 / 3&ndash;6 words</span>
+              <span class="p4-pill" id="bp4-kw-4">KEY WORD: SPITE (Unchanged Guard)</span>
+            </div>
+            <div class="text-sm text-slate-900 font-medium mb-3">
+              The ferry docked on schedule
+              <input type="text" class="p4-input" id="bp4-inp-4" oninput="onPart4Input(4)" placeholder="3 to 6 words including SPITE..." aria-label="Item 5 transformation answer" />
+              gale-force winds in the harbour.
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="checkPart4Item(4)" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">Check Answer</button>
+              <button type="button" onclick="revealPart4Model(4)" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>
+              <span class="text-xs font-bold" id="bp4-msg-4"></span>
+            </div>
+            <div class="p4-model-box" id="bp4-model-4">
+              <div class="text-amber-300 font-bold text-xs uppercase tracking-wider mb-1">Cambridge Split-Mark Scheme (1 mark // 1 mark)</div>
+              <div>Model: <strong>in spite</strong> <span class="text-emerald-400">[1 mark]</span> <strong>// of (the)</strong> <span class="text-emerald-400">[1 mark]</span> (3 or 4 words).</div>
+              <div class="text-slate-300 text-xs mt-1">Formula: <code>in spite of + Noun Phrase / V-ing</code>. Never write <em>despite of</em>.</div>
+            </div>
+          </div>
+
+          <!-- Item 6: SOONER -->
+          <div class="p4-card" id="bp4-card-5" data-idx="5" data-keyword="SOONER" data-ans="sooner had the chair closed" data-split="sooner had the chair (1 mark) // closed (1 mark)">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700">Item 06 &middot; Past Perfect Correlative Inversion</span>
+              <button type="button" onclick="toggleEchoStrike(5)" class="text-xs font-bold px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition cursor-pointer">
+                ✂️ Step 1: Strike Out the Echoes
+              </button>
+            </div>
+            <p class="text-sm text-slate-800 mb-2">
+              <span class="deficit-chunk">Immediately after the chair closed</span> <span class="echo-chunk">the session, the delegates began arguing.</span>
+            </p>
+            <div class="flex flex-wrap gap-1.5 mb-3">
+              <span class="p4-pill">Step 2 Tense: Past Sequence &rarr; Past Perfect Inversion (had + V3)</span>
+              <span class="p4-pill">Step 3 Voice: Active &rarr; Inverted Active</span>
+              <span class="p4-pill" id="bp4-wc-5">0 / 3&ndash;6 words</span>
+              <span class="p4-pill" id="bp4-kw-5">KEY WORD: SOONER (Unchanged Guard)</span>
+            </div>
+            <div class="text-sm text-slate-900 font-medium mb-3">
+              No
+              <input type="text" class="p4-input" id="bp4-inp-5" oninput="onPart4Input(5)" placeholder="3 to 6 words including SOONER..." aria-label="Item 6 transformation answer" />
+              the session than the delegates began arguing.
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="checkPart4Item(5)" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">Check Answer</button>
+              <button type="button" onclick="revealPart4Model(5)" class="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-800 border border-slate-300 text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>
+              <span class="text-xs font-bold" id="bp4-msg-5"></span>
+            </div>
+            <div class="p4-model-box" id="bp4-model-5">
+              <div class="text-amber-300 font-bold text-xs uppercase tracking-wider mb-1">Cambridge Split-Mark Scheme (1 mark // 1 mark)</div>
+              <div>Model: <strong>sooner had the chair</strong> <span class="text-emerald-400">[1 mark]</span> <strong>// closed</strong> <span class="text-emerald-400">[1 mark]</span> (5 words).</div>
+              <div class="text-slate-300 text-xs mt-1">Formula: <code>No sooner + had + Subject + Past Participle ... than</code> (whereas <em>Hardly / Scarcely</em> pairs with <em>when</em>).</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct Launch Cards to the 9 Upgraded Interactive Engines -->
+        <div class="border-t border-slate-200 pt-7">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+            <div>
+              <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700">Standalone Interactive Micro-Engines &amp; Labs</span>
+              <h3 class="text-xl font-extrabold text-slate-900">Launch the Upgraded C1/C2, Speaking, Research &amp; 3D Engines</h3>
+            </div>
+            <span class="text-xs font-mono text-slate-500">Zero Sign-Up &middot; 100% Browser-Native</span>
+          </div>
+
+          <div class="engine-launch-grid">
+            <div class="engine-launch-card">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase text-indigo-700">Cambridge C1/C2 Part 4</span>
+                <h4 class="text-base font-extrabold text-slate-900 mt-1">C1 Part 4 Deconstructor Engine</h4>
+                <p class="text-xs text-slate-600 mt-1 mb-3">Interactive 4-step echo-striker, unchanged keyword guard, 3–6 word counter, and 1+1 split-mark verifier.</p>
+              </div>
+              <a href="c1-part4-deconstructor.html" class="text-xs font-extrabold text-brand-700 hover:underline">Launch Part 4 Deconstructor &rarr;</a>
+            </div>
+
+            <div class="engine-launch-card">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase text-emerald-700">IELTS Band 7.5+ &amp; CAE Writing</span>
+                <h4 class="text-base font-extrabold text-slate-900 mt-1">IELTS &amp; C1 Syntax Workbench</h4>
+                <p class="text-xs text-slate-600 mt-1 mb-3">Transform flat B2 clauses into clefts, negative inversions, passive reporting frames, and participle clauses.</p>
+              </div>
+              <a href="ielts-c1-syntax-workbench.html" class="text-xs font-extrabold text-brand-700 hover:underline">Launch C1 Syntax Workbench &rarr;</a>
+            </div>
+
+            <div class="engine-launch-card">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase text-sky-700">Active Voice First &middot; Part 2</span>
+                <h4 class="text-base font-extrabold text-slate-900 mt-1">Speaking Part 2 3-Act Arc Trainer</h4>
+                <p class="text-xs text-slate-600 mt-1 mb-3">Practise the 1-Minute 4-Keyword Note Secret and the 30s/45s/45s 3-Act Story Arc with a live phase clock.</p>
+              </div>
+              <a href="speaking-part2-arc-trainer.html" class="text-xs font-extrabold text-brand-700 hover:underline">Launch Speaking Arc Trainer &rarr;</a>
+            </div>
+
+            <div class="engine-launch-card">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase text-amber-700">Number Theory &amp; Psychometrics</span>
+                <h4 class="text-base font-extrabold text-slate-900 mt-1">Sprucefield Research Hub</h4>
+                <p class="text-xs text-slate-600 mt-1 mb-3">9 original working papers, KMS diamond determinants, 2-adic Smith normal form proofs, and OEIS verifiers.</p>
+              </div>
+              <a href="sprucefield-research.html" class="text-xs font-extrabold text-brand-700 hover:underline">Open Sprucefield Research &rarr;</a>
+            </div>
+
+            <div class="engine-launch-card">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase text-rose-700">Mathematical Oncology</span>
+                <h4 class="text-base font-extrabold text-slate-900 mt-1">Adaptive Oncology Washout Lab</h4>
+                <p class="text-xs text-slate-600 mt-1 mb-3">Interactive Lotka-Volterra phase-plane simulator and exact PK/PD washout residence-time law verifier.</p>
+              </div>
+              <a href="adaptive-oncology-washout-lab.html" class="text-xs font-extrabold text-brand-700 hover:underline">Launch Oncology Washout Lab &rarr;</a>
+            </div>
+
+            <div class="engine-launch-card">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase text-purple-700">WebGL 3D Dungeon</span>
+                <h4 class="text-base font-extrabold text-slate-900 mt-1">Grammar Crypt 3D</h4>
+                <p class="text-xs text-slate-600 mt-1 mb-3">First-person 3D dungeon crawler where C1 negative inversions, passives, and cleft runes unlock the gates.</p>
+              </div>
+              <a href="grammar-crypt-3d.html" class="text-xs font-extrabold text-brand-700 hover:underline">Play Grammar Crypt 3D &rarr;</a>
+            </div>
+
+            <div class="engine-launch-card">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase text-teal-700">First-Person Island Puzzle</span>
+                <h4 class="text-base font-extrabold text-slate-900 mt-1">Myst Island: C1/C2 Discovery</h4>
+                <p class="text-xs text-slate-600 mt-1 mb-3">Explore an atmospheric island of mechanical beacons and unlock C1/C2 syntactic locks at your own pace.</p>
+              </div>
+              <a href="myst-island.html" class="text-xs font-extrabold text-brand-700 hover:underline">Explore Myst Island &rarr;</a>
+            </div>
+
+            <div class="engine-launch-card">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase text-emerald-800">NEC PC-88 Detective Mystery</span>
+                <h4 class="text-base font-extrabold text-slate-900 mt-1">Chronicle ’88 Visual Novel</h4>
+                <p class="text-xs text-slate-600 mt-1 mb-3">Cross-examine suspects across 3 retro detective episodes by spotting timeline flaws in narrative past tenses.</p>
+              </div>
+              <a href="chronicle-88.html" class="text-xs font-extrabold text-brand-700 hover:underline">Play Chronicle ’88 &rarr;</a>
+            </div>
+
+            <div class="engine-launch-card">
+              <div>
+                <span class="text-[11px] font-mono font-bold uppercase text-amber-900">Gothic Literary Exploration</span>
+                <h4 class="text-base font-extrabold text-slate-900 mt-1">Dark Academia 3D World</h4>
+                <p class="text-xs text-slate-600 mt-1 mb-3">Step inside the interactive Victorian Gothic study and practise literary C1/C2 inversions and participle clauses.</p>
+              </div>
+              <a href="dark-academia-world.html" class="text-xs font-extrabold text-brand-700 hover:underline">Enter Dark Academia World &rarr;</a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1056,8 +1526,153 @@
   </footer>
 
   <script>
+    function countCambridgeWords(str) {
+      var trimmed = String(str || '').trim();
+      if (!trimmed) return 0;
+      var expanded = trimmed.replace(/\b(didn't|didnt|don't|dont|doesn't|doesnt|can't|won't|wouldn't|shouldn't|couldn't|hasn't|haven't|hadn't|isn't|aren't|wasn't|weren't)\b/gi, 'xx yy');
+      return expanded.split(/\s+/).filter(Boolean).length;
+    }
+
+    function normalizePart4(str) {
+      return String(str || '')
+        .toLowerCase()
+        .replace(/[’']/g, "'")
+        .replace(/\bdidn't\b/g, 'did not')
+        .replace(/[.,;:!?]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function hasUnchangedKeyword(rawInput, keyword) {
+      var tokens = String(rawInput || '')
+        .toUpperCase()
+        .replace(/[.,;:!?"'’()-]+/g, ' ')
+        .split(/\s+/)
+        .filter(Boolean);
+      return tokens.indexOf(String(keyword || '').toUpperCase()) !== -1;
+    }
+
+    function toggleEchoStrike(idx) {
+      var card = document.getElementById('bp4-card-' + idx);
+      if (card) card.classList.toggle('echo-struck');
+    }
+
+    function toggleAllEchoes() {
+      var cards = document.querySelectorAll('#belfast-p4-grid .p4-card');
+      var anyUnstruck = Array.prototype.some.call(cards, function (c) { return !c.classList.contains('echo-struck'); });
+      cards.forEach(function (c) {
+        if (anyUnstruck) c.classList.add('echo-struck');
+        else c.classList.remove('echo-struck');
+      });
+    }
+
+    function onPart4Input(idx) {
+      var card = document.getElementById('bp4-card-' + idx);
+      var inp = document.getElementById('bp4-inp-' + idx);
+      var wcPill = document.getElementById('bp4-wc-' + idx);
+      var kwPill = document.getElementById('bp4-kw-' + idx);
+      if (!card || !inp || !wcPill || !kwPill) return;
+
+      var val = inp.value;
+      var keyword = card.getAttribute('data-keyword') || '';
+      var wc = countCambridgeWords(val);
+
+      wcPill.classList.remove('ok', 'warn', 'err');
+      wcPill.textContent = wc + ' / 3–6 words';
+      if (wc >= 3 && wc <= 6) {
+        wcPill.classList.add('ok');
+      } else if (wc > 0 && wc < 3) {
+        wcPill.classList.add('warn');
+      } else if (wc > 6) {
+        wcPill.classList.add('err');
+      }
+
+      kwPill.classList.remove('ok', 'warn', 'err');
+      if (!val.trim()) {
+        kwPill.textContent = 'KEY WORD: ' + keyword + ' (Unchanged Guard)';
+      } else if (hasUnchangedKeyword(val, keyword)) {
+        kwPill.classList.add('ok');
+        kwPill.textContent = '✓ KEY WORD: ' + keyword + ' (Unchanged)';
+      } else {
+        kwPill.classList.add('err');
+        kwPill.textContent = '⚠️ KEY WORD: ' + keyword + ' (Missing or Inflected!)';
+      }
+    }
+
+    function checkPart4Item(idx) {
+      var card = document.getElementById('bp4-card-' + idx);
+      var inp = document.getElementById('bp4-inp-' + idx);
+      var msg = document.getElementById('bp4-msg-' + idx);
+      if (!card || !inp || !msg) return false;
+
+      onPart4Input(idx);
+      var val = inp.value;
+      var keyword = card.getAttribute('data-keyword') || '';
+      var wc = countCambridgeWords(val);
+      var accepted = (card.getAttribute('data-ans') || '').split('|').map(normalizePart4);
+      var normVal = normalizePart4(val);
+
+      card.classList.remove('is-correct', 'is-wrong');
+      if (!hasUnchangedKeyword(val, keyword)) {
+        card.classList.add('is-wrong');
+        msg.className = 'text-xs font-bold text-rose-700';
+        msg.textContent = '0/2 marks — Keyword ' + keyword + ' must appear unchanged.';
+        return false;
+      }
+      if (wc < 3 || wc > 6) {
+        card.classList.add('is-wrong');
+        msg.className = 'text-xs font-bold text-rose-700';
+        msg.textContent = '0/2 marks — Strict Cambridge rule: 3 to 6 words (' + wc + ' used).';
+        return false;
+      }
+      if (accepted.indexOf(normVal) !== -1) {
+        card.classList.add('is-correct');
+        msg.className = 'text-xs font-bold text-emerald-700';
+        msg.textContent = '✓ 2/2 marks (1 mark // 1 mark confirmed!)';
+        return true;
+      } else {
+        card.classList.add('is-wrong');
+        msg.className = 'text-xs font-bold text-amber-800';
+        msg.textContent = 'Check tense/preposition — click 👁️ Reveal Cambridge Model.';
+        return false;
+      }
+    }
+
+    function revealPart4Model(idx) {
+      var box = document.getElementById('bp4-model-' + idx);
+      var card = document.getElementById('bp4-card-' + idx);
+      var inp = document.getElementById('bp4-inp-' + idx);
+      if (box) box.classList.toggle('open');
+      if (card && inp && !inp.value.trim()) {
+        var firstAns = (card.getAttribute('data-ans') || '').split('|')[0];
+        inp.value = firstAns;
+        onPart4Input(idx);
+      }
+    }
+
+    function checkAllPart4Workbench() {
+      for (var i = 0; i < 6; i++) {
+        checkPart4Item(i);
+      }
+    }
+
+    function resetPart4Workbench() {
+      for (var i = 0; i < 6; i++) {
+        var card = document.getElementById('bp4-card-' + i);
+        var inp = document.getElementById('bp4-inp-' + i);
+        var msg = document.getElementById('bp4-msg-' + i);
+        var box = document.getElementById('bp4-model-' + i);
+        if (inp) inp.value = '';
+        if (msg) msg.textContent = '';
+        if (box) box.classList.remove('open');
+        if (card) card.classList.remove('is-correct', 'is-wrong', 'echo-struck');
+        onPart4Input(i);
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
       var filterButtons = document.querySelectorAll('.filter-btn');
+      var workbenchSection = document.getElementById('belfast-desk-workbench');
       var gamesSection = document.getElementById('games');
       var darkAcademiaSection = document.getElementById('dark-academia');
       var examModulesSection = document.getElementById('exam-modules');
@@ -1092,6 +1707,10 @@
             card.style.display = 'none';
           }
         });
+
+        if (workbenchSection) {
+          workbenchSection.style.display = (filter === 'all' || filter === 'exam-modules' || filter === 'ielts' || filter === 'cambridge') ? '' : 'none';
+        }
 
         if (gamesSection) {
           gamesSection.style.display = (filter === 'all' || filter === 'games' || filter === 'business' || filter === 'cambridge') ? '' : 'none';

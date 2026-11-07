@@ -171,11 +171,202 @@
     }
 
     .section-pane {
+      display: block;
+      scroll-margin-top: 5.5rem;
+    }
+
+    .section-pane.hidden-pane {
       display: none;
     }
 
-    .section-pane.active {
-      display: block;
+    /* Echoes, Live Guards, and Workbench */
+    .echo {
+      transition: all 0.2s ease;
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    .echo.struck {
+      text-decoration: line-through;
+      text-decoration-color: var(--rose);
+      text-decoration-thickness: 2px;
+      color: #9ca3af;
+      background: #f3f4f6;
+    }
+
+    .step-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .step-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--ink-muted);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .step-chip strong {
+      color: var(--accent);
+    }
+
+    .kwt-live-meta {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 0.85rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+    }
+
+    .live-pill {
+      padding: 0.22rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--ink-muted);
+      font-weight: 600;
+    }
+
+    .live-pill.ok {
+      background: var(--emerald-bg);
+      border-color: var(--emerald);
+      color: var(--emerald);
+    }
+
+    .live-pill.warn {
+      background: var(--amber-bg);
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    .live-pill.err {
+      background: var(--rose-bg);
+      border-color: var(--rose);
+      color: var(--rose);
+    }
+
+    .split-badge {
+      display: inline-block;
+      background: #ffffff;
+      border: 1px solid var(--emerald);
+      color: var(--emerald);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.3rem 0.7rem;
+      border-radius: 6px;
+      margin-bottom: 0.6rem;
+    }
+
+    .act-stage-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+    }
+
+    .act-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      padding: 0.45rem 0.65rem;
+      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--ink-muted);
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .act-pill.active-act {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .note-slot-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .note-slot-wrap small {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--ink-muted);
+    }
+
+    .workbench-textarea {
+      width: 100%;
+      min-height: 175px;
+      padding: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--ink);
+      background: #fff;
+      resize: vertical;
+      margin: 0.75rem 0;
+    }
+
+    .workbench-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-light);
+    }
+
+    .detector-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.65rem;
+      margin: 1rem 0;
+    }
+
+    .detector-badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      transition: all 0.2s ease;
+    }
+
+    .detector-badge.detected {
+      background: var(--emerald-bg);
+      border-color: var(--emerald);
+      color: var(--emerald);
+      font-weight: 600;
+    }
+
+    .scaffold-chip {
+      background: var(--accent-light);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .scaffold-chip:hover {
+      background: var(--accent);
+      color: #fff;
     }
 
     .card {
@@ -570,10 +761,12 @@
   <header>
     <a href="index.html" class="brand">Gareth<span>English</span></a>
     <nav class="nav-tabs" aria-label="Module Navigation">
-      <button class="tab-btn active" onclick="switchTab('warmup', this)">1. Speaking Warm-Up</button>
+      <button class="tab-btn active" onclick="switchTab('all', this)">All Modules</button>
+      <button class="tab-btn" onclick="switchTab('warmup', this)">1. Speaking Warm-Up</button>
       <button class="tab-btn" onclick="switchTab('story', this)">2. Short Story: The Fordow Hash</button>
-      <button class="tab-btn" onclick="switchTab('part4', this)">3. C1 Part 4 Workout</button>
-      <button class="tab-btn" onclick="switchTab('essay', this)">4. Editorial Essay: Energy Arbitrage</button>
+      <button class="tab-btn" onclick="switchTab('part4', this)">3. Cryptographic Annex (10 Part 4)</button>
+      <button class="tab-btn" onclick="switchTab('essay', this)">4. Editorial Essay</button>
+      <button class="tab-btn" onclick="switchTab('workbench', this)">5. C1 Briefing Workbench</button>
     </nav>
   </header>
 
@@ -588,7 +781,7 @@
             <span class="badge">Executive English &amp; Geopolitics</span>
           </div>
           <h1>The Fordow Hash: Energy, Mountains &amp; Sovereign Compute</h1>
-          <p class="subtitle">An original geopolitical thriller short, non-fiction editorial essay, and interactive C1 structural workout on how stranded energy powers digital currencies and deep-earth data centres.</p>
+          <p class="subtitle">An original geopolitical thriller short, non-fiction editorial essay, 10-item Part 4 Cryptographic Annex, and live C1 Briefing Workbench on how stranded energy powers digital currencies and deep-earth data centres.</p>
         </div>
       </div>
     </div>
@@ -596,14 +789,14 @@
     <!-- PANE 1: ACTIVE SPEAKING WARM-UP -->
     <section id="pane-warmup" class="section-pane active">
       <div class="card">
-        <h2>Step 1: IELTS Speaking Part 2 Long Turn</h2>
-        <p class="rubric">Take 1 minute to prepare your four trigger keywords below, then speak for up to 2 minutes using the live timer.</p>
+        <h2>Step 1: Active Speaking Warm-Up · IELTS Speaking Part 2 Long Turn</h2>
+        <p class="rubric">Open with your voice first. Take 60 seconds to lock in four single trigger keywords down the margin, then speak for 120 seconds across the 3-Act Story Arc.</p>
 
         <div class="grid-3">
           <div class="rule-box">
             <span class="num">Rule 01 · The 1-Minute Note Secret</span>
-            <strong>4 Trigger Keywords Only</strong>
-            <p style="font-size: 0.88rem; color: var(--ink-muted); margin-top: 0.35rem;">Write only four single trigger words down the margin (one per bullet). Never write full sentences on your notepad.</p>
+            <strong>4 Single Trigger Keywords Only</strong>
+            <p style="font-size: 0.88rem; color: var(--ink-muted); margin-top: 0.35rem;">Write only four single trigger words down the margin (one per prompt bullet); never write full sentences.</p>
           </div>
           <div class="rule-box">
             <span class="num">Rule 02 · The 3-Act Story Arc</span>
@@ -613,12 +806,12 @@
           <div class="rule-box">
             <span class="num">Rule 03 · The Cambridge Anchor</span>
             <strong>Springboards, Not Checklists</strong>
-            <p style="font-size: 0.88rem; color: var(--ink-muted); margin-top: 0.35rem;">Bullet points are springboards, not an interrogation checklist. If you finish early, deepen your reflection and comparison until halted.</p>
+            <p style="font-size: 0.88rem; color: var(--ink-muted); margin-top: 0.35rem;">Bullet points are springboards, not an interrogation checklist. If finished early, deepen your reflection and comparison until halted.</p>
           </div>
         </div>
 
         <div class="cue-card">
-          <h3>Part 2 Cue Card</h3>
+          <h3>Part 2 Cue Card · Critical Infrastructure &amp; Energy</h3>
           <p style="margin-bottom: 0.75rem;"><strong>Describe a piece of critical infrastructure, a power plant, or a technological facility that made a strong impression on you.</strong></p>
           <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">You should say:</p>
           <ul>
@@ -629,34 +822,52 @@
           <p><strong>and explain why this particular site or technology stood out to you.</strong></p>
         </div>
 
-        <div class="note-strip" aria-label="1-Minute Trigger Keywords">
-          <input type="text" placeholder="1. Location keyword...">
-          <input type="text" placeholder="2. Output/Service keyword...">
-          <input type="text" placeholder="3. Impact keyword...">
-          <input type="text" placeholder="4. Reflection keyword...">
+        <div class="note-strip" aria-label="4 Single-Keyword Margin Slots">
+          <div class="note-slot-wrap">
+            <input type="text" id="kw-slot-1" oninput="validateMarginSlot(1)" placeholder="1. Location keyword (1 word)">
+            <small id="kw-hint-1">Bullet 1 · Past Context (0–30s)</small>
+          </div>
+          <div class="note-slot-wrap">
+            <input type="text" id="kw-slot-2" oninput="validateMarginSlot(2)" placeholder="2. Output keyword (1 word)">
+            <small id="kw-hint-2">Bullet 2 · Core Scene (30–75s)</small>
+          </div>
+          <div class="note-slot-wrap">
+            <input type="text" id="kw-slot-3" oninput="validateMarginSlot(3)" placeholder="3. Impact keyword (1 word)">
+            <small id="kw-hint-3">Bullet 3 · Core Scene (30–75s)</small>
+          </div>
+          <div class="note-slot-wrap">
+            <input type="text" id="kw-slot-4" oninput="validateMarginSlot(4)" placeholder="4. Reflection keyword (1 word)">
+            <small id="kw-hint-4">Bullet 4 · 'So What?' Arc (75–120s)</small>
+          </div>
         </div>
 
         <div class="timer-bar">
           <div>
-            <strong id="timer-label" style="display:block; font-size:0.85rem; color:var(--ink-muted);">LIVE SPEAKING CLOCK</strong>
+            <strong id="timer-label" style="display:block; font-size:0.85rem; color:var(--ink-muted);">LIVE 60s PREP / 120s SPEAK CLOCK</strong>
             <div id="timer-readout" class="timer-display">01:00</div>
           </div>
           <div class="timer-controls">
-            <button class="reveal-btn" onclick="startTimer(60, '1-Minute Prep Time')">⏱️ Start 1-Min Prep</button>
-            <button class="check-btn" onclick="startTimer(120, '2-Minute Long Turn')">🎙️ Start 2-Min Long Turn</button>
+            <button class="reveal-btn" onclick="startTimer(60, '60s Prep: Lock 4 Single Keywords')">⏱️ 60s Prep Timer</button>
+            <button class="check-btn" onclick="startTimer(120, '120s Long Turn: Follow 3-Act Arc')">🎙️ 120s Speak Timer</button>
             <button class="reveal-btn" onclick="resetTimer()">↺ Reset</button>
           </div>
+        </div>
+
+        <div class="act-stage-row" aria-label="3-Act Story Arc Live Tracker">
+          <div id="act-pill-1" class="act-pill">Act I · Past Context (30s)</div>
+          <div id="act-pill-2" class="act-pill">Act II · Sensory Snapshot (45s)</div>
+          <div id="act-pill-3" class="act-pill">Act III · Reflection / 'So What?' (45s)</div>
         </div>
       </div>
 
       <div class="card">
         <h2>Step 2: Part 3 Discussion (A.R.E.A. Challenge)</h2>
-        <p class="rubric">Answer &rarr; Reason &rarr; Example &rarr; Alternative. Aim to include at least one C1 structural shift (cleft sentence or passive reporting) in each response.</p>
+        <p class="rubric">Answer &rarr; Reason &rarr; Example &rarr; Alternative. Aim to include at least one C1 structural shift (cleft sentence, negative inversion, or passive reporting) in each spoken response.</p>
 
         <div class="kwt-item">
           <div class="kwt-num">QUESTION 01 · ENERGY &amp; COMPUTE</div>
           <p class="kwt-s1"><strong>Why are major technology companies and sovereign governments now competing so fiercely to secure electricity grids and power stations?</strong></p>
-          <div class="formula-banner">Target Frame: What has transformed the energy market is + [Noun Phrase / Clause]</div>
+          <div class="formula-banner">Formula: What + Clause + BE + Noun Phrase / Clause</div>
           <button class="reveal-btn" onclick="toggleModel('p3-1')">👁️ Reveal Cambridge Model</button>
           <div id="p3-1" class="model-box">
             <p><strong>Model Response:</strong> "<em>What has transformed the modern energy market is</em> the sheer appetite of artificial intelligence and cryptographic data centres. Whereas software companies once needed little more than office space, today they are believed to consume as much electricity as entire industrial cities, forcing them to buy direct access to nuclear and hydroelectric plants."</p>
@@ -666,7 +877,7 @@
         <div class="kwt-item">
           <div class="kwt-num">QUESTION 02 · DIGITAL CURRENCIES &amp; SOVEREIGNTY</div>
           <p class="kwt-s1"><strong>Do you think digital currencies and decentralised networks weaken a government's control over its economy, or can states use them to their own advantage?</strong></p>
-          <div class="formula-banner">Target Frame: Not only do [Plural Noun] + [Base Verb]..., but they also...</div>
+          <div class="formula-banner">Formula: Not only + Auxiliary (do) + Subject + Base Verb..., but they also...</div>
           <button class="reveal-btn" onclick="toggleModel('p3-2')">👁️ Reveal Cambridge Model</button>
           <div id="p3-2" class="model-box">
             <p><strong>Model Response:</strong> "It cuts both ways. While retail crypto trading can bypass local capital controls, <em>not only do resource-rich states use industrial mining to monetise trapped natural gas</em>, but they also use those digital reserves to settle cross-border trade outside traditional banking networks."</p>
@@ -676,7 +887,7 @@
         <div class="kwt-item">
           <div class="kwt-num">QUESTION 03 · NATIONAL INFRASTRUCTURE PRIORITIES</div>
           <p class="kwt-s1"><strong>Should governments restrict industrial data centres when domestic households face rising electricity bills or summer power shortages?</strong></p>
-          <div class="formula-banner">Target Frame: It is widely argued that... / Were governments to + [Base Verb]...</div>
+          <div class="formula-banner">Formula: It is widely argued that + Clause // Were + Subject + to-Infinitive</div>
           <button class="reveal-btn" onclick="toggleModel('p3-3')">👁️ Reveal Cambridge Model</button>
           <div id="p3-3" class="model-box">
             <p><strong>Model Response:</strong> "<em>It is widely argued that</em> domestic households and hospitals must come first on any national grid. <em>Were governments to allow</em> private server farms to drain subsidised electricity during peak summer demand, public trust would evaporate overnight—unless those facilities build their own off-grid generation."</p>
@@ -739,150 +950,355 @@
       </div>
     </section>
 
-    <!-- PANE 3: CAMBRIDGE C1 PART 4 WORKOUT -->
+    <!-- PANE 3: CRYPTOGRAPHIC ANNEX · 10 C1/C2 PART 4 KEY WORD TRANSFORMATION INTERCEPTS -->
     <section id="pane-part4" class="section-pane">
       <div class="card">
-        <h2>Cambridge C1 Reading &amp; Use of English: Part 4</h2>
+        <div class="toolbar-row">
+          <div>
+            <h2>Cryptographic Annex: 10 C1/C2 Part 4 Key Word Transformation Intercepts</h2>
+          </div>
+          <button class="reveal-btn" onclick="strikeAllEchoes()">✂️ Step 1: Strike Out All Echoes</button>
+        </div>
         <p class="rubric">Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. <strong>Do not change the word given.</strong> You must use between <strong>three and six words</strong>, including the word given.</p>
 
         <div class="score-banner">
           <div>
-            <strong>Interactive Cambridge Part 4 Validator</strong>
-            <div style="font-size: 0.84rem; opacity: 0.9;">Checks exact C1 syntax, 3-to-6 word count limit, and unchanged keyword integrity.</div>
+            <strong>Interactive Cambridge C1/C2 Part 4 Validator</strong>
+            <div style="font-size: 0.84rem; opacity: 0.9;">Enforces Gareth's 4-Step Deconstruction Strategy, 3–6 word count, unchanged keyword guard, and 1 mark // 1 mark split scoring.</div>
           </div>
-          <div class="score-Readout" id="score-readout">Score: 0 / 12 Marks (2 marks per item)</div>
+          <div class="score-Readout" id="score-readout">Score: 0 / 20 Marks (2 marks per intercept)</div>
         </div>
 
         <div class="formula-banner">
-          Gareth's 4-Step Strategy: 1. Strike Out Echoes &rarr; 2. Inspect Tense Harmony &rarr; 3. Check Voice Shift &rarr; 4. Solve the Pattern
+          Gareth's 4-Step Strategy: ✂️ 1. Strike Out the Echoes &rarr; ⏳ 2. Inspect Tense Harmony &rarr; 🔄 3. Check Voice Shift &rarr; 🧩 4. Solve the Collocation/Pattern
         </div>
 
-        <!-- Q1 -->
+        <!-- INTERCEPT 01 -->
         <div class="kwt-item" id="item-1">
-          <div class="kwt-num">TRANSFORMATION 01 · NEGATIVE INVERSION</div>
+          <div class="kwt-num">INTERCEPT 01 · NEGATIVE INVERSION WITH 'NEVER BEFORE'</div>
           <div class="formula-banner">Formula: Never before + Auxiliary (had) + Subject + Past Participle</div>
-          <p class="kwt-s1">1. None of the visiting physicists had ever asked to inspect the secondary power cables before.</p>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Past Perfect (had asked &rarr; had ... asked)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> Active &rarr; Inverted Active</span>
+          </div>
+          <p class="kwt-s1">1. None of the visiting physicists had ever asked <span class="echo">to inspect the secondary power cables</span> <span class="echo">before</span>.</p>
           <span class="kwt-keyword">ASKED</span>
-          <p class="kwt-s2">Never before <input type="text" id="input-1" class="kwt-input" placeholder="3 to 6 words"> to inspect the secondary power cables.</p>
+          <p class="kwt-s2">Never before <input type="text" id="input-1" class="kwt-input" oninput="updateLiveKwt(1, 'ASKED')" placeholder="3 to 6 words"> to inspect the secondary power cables.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-1" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-1" class="live-pill">KEYWORD: ASKED · Waiting</span>
+          </div>
           <div class="btn-row">
-            <button class="check-btn" onclick="checkKwt(1, 'ASKED', ['had a visiting physicist asked', 'had any visiting physicists asked', 'had any visiting physicist asked'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-1')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(1, 'ASKED', ['had a visiting physicist asked', 'had any visiting physicists asked', 'had any visiting physicist asked'], 'had a visiting physicist', 'asked')">✓ Check Answer</button>
             <button class="reveal-btn" onclick="toggleModel('kwt-1')">👁️ Reveal Cambridge Model</button>
             <span id="fb-1" class="feedback-pill"></span>
           </div>
           <div id="kwt-1" class="model-box">
             <div class="model-answer">had a visiting physicist asked / had any visiting physicists asked (5 words)</div>
+            <div class="split-badge">1 mark: had a visiting physicist / had any visiting physicists // 1 mark: asked</div>
             <ul class="steps-list">
-              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"before"</em> and <em>"to inspect the secondary power cables"</em>.</li>
-              <li><strong>Step 2 (Tense):</strong> Past perfect (<em>had asked</em>) remains past perfect.</li>
-              <li><strong>Step 3 &amp; 4 (Inversion):</strong> Opening with negative adverbial <em>"Never before"</em> forces subject-auxiliary inversion: <em>had + subject + asked</em>.</li>
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"before"</em> and <em>"to inspect the secondary power cables"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Past perfect (<em>had ever asked</em>) remains past perfect.</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Active voice maintained; negative adverbial <em>"Never before"</em> at the start forces subject-auxiliary inversion.</li>
+              <li><strong>Step 4 (Pattern):</strong> <em>had + a visiting physicist + asked</em> (1 mark // 1 mark).</li>
             </ul>
           </div>
         </div>
 
-        <!-- Q2 -->
+        <!-- INTERCEPT 02 -->
         <div class="kwt-item" id="item-2">
-          <div class="kwt-num">TRANSFORMATION 02 · WH- CLEFT SENTENCE</div>
-          <div class="formula-banner">Formula: What + Clause + BE + Noun Phrase</div>
-          <p class="kwt-s1">2. The vibration beneath his boots, rather than the sound of the rotors, revealed the secret.</p>
+          <div class="kwt-num">INTERCEPT 02 · WH- CLEFT SENTENCE</div>
+          <div class="formula-banner">Formula: What + Phrasal Verb Clause + BE (was) + Noun Phrase</div>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Past Simple (revealed &rarr; gave ... was)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> Active &rarr; Wh- Cleft Focus</span>
+          </div>
+          <p class="kwt-s1">2. <span class="echo">The vibration beneath his boots</span>, rather than <span class="echo">the sound of the rotors</span>, revealed the secret.</p>
           <span class="kwt-keyword">GAVE</span>
-          <p class="kwt-s2">What <input type="text" id="input-2" class="kwt-input" placeholder="3 to 6 words"> the vibration beneath his boots, not the sound of the rotors.</p>
+          <p class="kwt-s2">What <input type="text" id="input-2" class="kwt-input" oninput="updateLiveKwt(2, 'GAVE')" placeholder="3 to 6 words"> the vibration beneath his boots, not the sound of the rotors.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-2" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-2" class="live-pill">KEYWORD: GAVE · Waiting</span>
+          </div>
           <div class="btn-row">
-            <button class="check-btn" onclick="checkKwt(2, 'GAVE', ['gave the secret away was', 'gave away the secret was'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-2')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(2, 'GAVE', ['gave the secret away was', 'gave away the secret was'], 'gave the secret away', 'was')">✓ Check Answer</button>
             <button class="reveal-btn" onclick="toggleModel('kwt-2')">👁️ Reveal Cambridge Model</button>
             <span id="fb-2" class="feedback-pill"></span>
           </div>
           <div id="kwt-2" class="model-box">
             <div class="model-answer">gave the secret away was / gave away the secret was (5 words)</div>
+            <div class="split-badge">1 mark: gave the secret away / gave away the secret // 1 mark: was</div>
             <ul class="steps-list">
-              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"the vibration beneath his boots"</em> and <em>"the sound of the rotors"</em>.</li>
-              <li><strong>Step 2 (Tense):</strong> Past simple (<em>revealed</em>) &rarr; <em>gave ... was</em>.</li>
-              <li><strong>Step 4 (Collocation):</strong> Phrasal verb <em>give away a secret</em> inside a <em>What</em>-cleft frame.</li>
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"The vibration beneath his boots"</em> and <em>"the sound of the rotors"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Past simple (<em>revealed</em>) &rarr; past simple (<em>gave ... was</em>).</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Active clause packaged inside a <em>What</em>-cleft subject clause followed by singular copula <em>was</em>.</li>
+              <li><strong>Step 4 (Pattern):</strong> Phrasal verb <em>give away a secret</em> + <em>was</em> (1 mark // 1 mark).</li>
             </ul>
           </div>
         </div>
 
-        <!-- Q3 -->
+        <!-- INTERCEPT 03 -->
         <div class="kwt-item" id="item-3">
-          <div class="kwt-num">TRANSFORMATION 03 · PASSIVE REPORTING VERB</div>
+          <div class="kwt-num">INTERCEPT 03 · PASSIVE CONTINUOUS REPORTING</div>
           <div class="formula-banner">Formula: Subject + BE + Past Participle (thought) + to be + -ing</div>
-          <p class="kwt-s1">3. Intelligence analysts believe that the underground facility is consuming over two hundred megawatts of electricity.</p>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Present Continuous &rarr; Continuous Infinitive (to be consuming)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> Active Reporting &rarr; Passive Reporting</span>
+          </div>
+          <p class="kwt-s1">3. Intelligence analysts believe that <span class="echo">the underground facility</span> is consuming <span class="echo">over two hundred megawatts of electricity</span>.</p>
           <span class="kwt-keyword">THOUGHT</span>
-          <p class="kwt-s2">The underground facility <input type="text" id="input-3" class="kwt-input" placeholder="3 to 6 words"> over two hundred megawatts of electricity.</p>
+          <p class="kwt-s2">The underground facility <input type="text" id="input-3" class="kwt-input" oninput="updateLiveKwt(3, 'THOUGHT')" placeholder="3 to 6 words"> over two hundred megawatts of electricity.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-3" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-3" class="live-pill">KEYWORD: THOUGHT · Waiting</span>
+          </div>
           <div class="btn-row">
-            <button class="check-btn" onclick="checkKwt(3, 'THOUGHT', ['is thought to be consuming'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-3')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(3, 'THOUGHT', ['is thought to be consuming'], 'is thought', 'to be consuming')">✓ Check Answer</button>
             <button class="reveal-btn" onclick="toggleModel('kwt-3')">👁️ Reveal Cambridge Model</button>
             <span id="fb-3" class="feedback-pill"></span>
           </div>
           <div id="kwt-3" class="model-box">
             <div class="model-answer">is thought to be consuming (5 words)</div>
+            <div class="split-badge">1 mark: is thought // 1 mark: to be consuming</div>
             <ul class="steps-list">
-              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"The underground facility"</em> and <em>"over two hundred megawatts of electricity"</em>.</li>
-              <li><strong>Step 2 (Tense &amp; Aspect):</strong> Present continuous (<em>is consuming</em>) shifts to continuous infinitive (<em>to be consuming</em>).</li>
-              <li><strong>Step 3 (Voice):</strong> Active reporting (<em>analysts believe</em>) shifts to passive reporting (<em>is thought</em>).</li>
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"the underground facility"</em> and <em>"over two hundred megawatts of electricity"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Present reporting (<em>believe</em>) + present continuous (<em>is consuming</em>) &rarr; <em>is thought to be consuming</em>.</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Active reporting shifts to impersonal passive reporting.</li>
+              <li><strong>Step 4 (Pattern):</strong> <em>is thought</em> (1 mark) // <em>to be consuming</em> (1 mark).</li>
             </ul>
           </div>
         </div>
 
-        <!-- Q4 -->
+        <!-- INTERCEPT 04 -->
         <div class="kwt-item" id="item-4">
-          <div class="kwt-num">TRANSFORMATION 04 · PARTICIPLE CLAUSE OF RESULT</div>
-          <div class="formula-banner">Formula: Main Clause + , thereby + -ing Participle</div>
-          <p class="kwt-s1">4. State operators convert flared gas into digital currency, and as a result they bypass international banking sanctions.</p>
+          <div class="kwt-num">INTERCEPT 04 · RESULTATIVE PARTICIPLE CLAUSE</div>
+          <div class="formula-banner">Formula: Main Clause + , thereby + Present Participle (-ing) + Object</div>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Finite Clause (bypass) &rarr; Non-Finite Participle (bypassing)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> Active Main Clause &rarr; Active Participle</span>
+          </div>
+          <p class="kwt-s1">4. <span class="echo">State operators convert flared gas into digital currency</span>, and as a result they bypass international <span class="echo">banking sanctions</span>.</p>
           <span class="kwt-keyword">THEREBY</span>
-          <p class="kwt-s2">State operators convert flared gas into digital currency, <input type="text" id="input-4" class="kwt-input" placeholder="3 to 6 words"> banking sanctions.</p>
+          <p class="kwt-s2">State operators convert flared gas into digital currency, <input type="text" id="input-4" class="kwt-input" oninput="updateLiveKwt(4, 'THEREBY')" placeholder="3 to 6 words"> banking sanctions.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-4" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-4" class="live-pill">KEYWORD: THEREBY · Waiting</span>
+          </div>
           <div class="btn-row">
-            <button class="check-btn" onclick="checkKwt(4, 'THEREBY', ['thereby bypassing international'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-4')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(4, 'THEREBY', ['thereby bypassing international'], 'thereby bypassing', 'international')">✓ Check Answer</button>
             <button class="reveal-btn" onclick="toggleModel('kwt-4')">👁️ Reveal Cambridge Model</button>
             <span id="fb-4" class="feedback-pill"></span>
           </div>
           <div id="kwt-4" class="model-box">
             <div class="model-answer">thereby bypassing international (3 words)</div>
+            <div class="split-badge">1 mark: thereby bypassing // 1 mark: international</div>
             <ul class="steps-list">
-              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"State operators convert flared gas into digital currency"</em> and <em>"banking sanctions"</em>.</li>
-              <li><strong>Step 4 (Pattern):</strong> Replace <em>"and as a result they bypass"</em> with <em>thereby + -ing participle</em> (<em>thereby bypassing international</em>).</li>
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"State operators convert flared gas into digital currency"</em> and <em>"banking sanctions"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Coordinate result clause condenses into a non-finite participle clause.</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Active participle sharing the subject <em>State operators</em>.</li>
+              <li><strong>Step 4 (Pattern):</strong> <em>thereby bypassing</em> (1 mark) // <em>international</em> (1 mark).</li>
             </ul>
           </div>
         </div>
 
-        <!-- Q5 -->
+        <!-- INTERCEPT 05 -->
         <div class="kwt-item" id="item-5">
-          <div class="kwt-num">TRANSFORMATION 05 · NOUN + PREPOSITION + GERUND</div>
-          <div class="formula-banner">Formula: have no intention of + -ing</div>
-          <p class="kwt-s1">5. The ministry does not intend to disconnect the high-voltage lines before winter.</p>
+          <div class="kwt-num">INTERCEPT 05 · NOUN + PREPOSITION + GERUND</div>
+          <div class="formula-banner">Formula: have / has no intention of + Gerund (-ing)</div>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Present Simple (does not intend &rarr; has no intention)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> Active Verb &rarr; Nominalised Prepositional Gerund</span>
+          </div>
+          <p class="kwt-s1">5. <span class="echo">The ministry</span> does not intend to disconnect <span class="echo">the high-voltage lines before winter</span>.</p>
           <span class="kwt-keyword">INTENTION</span>
-          <p class="kwt-s2">The ministry <input type="text" id="input-5" class="kwt-input" placeholder="3 to 6 words"> the high-voltage lines before winter.</p>
+          <p class="kwt-s2">The ministry <input type="text" id="input-5" class="kwt-input" oninput="updateLiveKwt(5, 'INTENTION')" placeholder="3 to 6 words"> the high-voltage lines before winter.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-5" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-5" class="live-pill">KEYWORD: INTENTION · Waiting</span>
+          </div>
           <div class="btn-row">
-            <button class="check-btn" onclick="checkKwt(5, 'INTENTION', ['has no intention of disconnecting', 'have no intention of disconnecting'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-5')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(5, 'INTENTION', ['has no intention of disconnecting', 'have no intention of disconnecting'], 'has no intention', 'of disconnecting')">✓ Check Answer</button>
             <button class="reveal-btn" onclick="toggleModel('kwt-5')">👁️ Reveal Cambridge Model</button>
             <span id="fb-5" class="feedback-pill"></span>
           </div>
           <div id="kwt-5" class="model-box">
             <div class="model-answer">has no intention of disconnecting (5 words)</div>
+            <div class="split-badge">1 mark: has/have no intention // 1 mark: of disconnecting</div>
             <ul class="steps-list">
-              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"The ministry"</em> and <em>"the high-voltage lines before winter"</em>.</li>
-              <li><strong>Step 2 (Tense):</strong> Present simple negative (<em>does not intend</em>) &rarr; <em>has no intention</em>.</li>
-              <li><strong>Step 4 (Pattern):</strong> Noun <em>intention</em> takes preposition <em>of + gerund (-ing)</em>.</li>
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"The ministry"</em> and <em>"the high-voltage lines before winter"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Present simple negative (<em>does not intend</em>) &rarr; <em>has no intention</em>.</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Infinitive (<em>to disconnect</em>) shifts to prepositional gerund (<em>of disconnecting</em>).</li>
+              <li><strong>Step 4 (Pattern):</strong> <em>has no intention</em> (1 mark) // <em>of disconnecting</em> (1 mark).</li>
             </ul>
           </div>
         </div>
 
-        <!-- Q6 -->
+        <!-- INTERCEPT 06 -->
         <div class="kwt-item" id="item-6">
-          <div class="kwt-num">TRANSFORMATION 06 · CONTRAST &amp; NOMINALISATION</div>
-          <div class="formula-banner">Formula: in spite of + Noun Phrase / the fact that</div>
-          <p class="kwt-s1">6. Although the government invested heavily in power stations, summer blackouts continued across the capital.</p>
+          <div class="kwt-num">INTERCEPT 06 · CONCESSION &amp; NOMINALISATION</div>
+          <div class="formula-banner">Formula: in spite of + Adjective + Noun Phrase</div>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Finite Clause (invested heavily) &rarr; Noun Phrase (heavy investment)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> Adverbial Clause &rarr; Nominalised Prepositional Phrase</span>
+          </div>
+          <p class="kwt-s1">6. Although the government invested heavily <span class="echo">in power stations</span>, <span class="echo">summer blackouts continued across the capital</span>.</p>
           <span class="kwt-keyword">SPITE</span>
-          <p class="kwt-s2">Summer blackouts continued across the capital <input type="text" id="input-6" class="kwt-input" placeholder="3 to 6 words"> in power stations.</p>
+          <p class="kwt-s2">Summer blackouts continued across the capital <input type="text" id="input-6" class="kwt-input" oninput="updateLiveKwt(6, 'SPITE')" placeholder="3 to 6 words"> in power stations.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-6" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-6" class="live-pill">KEYWORD: SPITE · Waiting</span>
+          </div>
           <div class="btn-row">
-            <button class="check-btn" onclick="checkKwt(6, 'SPITE', ['in spite of heavy investment', 'in spite of the heavy investment'])">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-6')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(6, 'SPITE', ['in spite of heavy investment', 'in spite of the heavy investment'], 'in spite of', 'heavy investment')">✓ Check Answer</button>
             <button class="reveal-btn" onclick="toggleModel('kwt-6')">👁️ Reveal Cambridge Model</button>
             <span id="fb-6" class="feedback-pill"></span>
           </div>
           <div id="kwt-6" class="model-box">
             <div class="model-answer">in spite of heavy investment (5 words)</div>
+            <div class="split-badge">1 mark: in spite of // 1 mark: (the) heavy investment</div>
             <ul class="steps-list">
-              <li><strong>Step 1 (Echoes):</strong> Cross out <em>"Summer blackouts continued across the capital"</em> and <em>"in power stations"</em>.</li>
-              <li><strong>Step 4 (Nominalisation):</strong> Verb + adverb (<em>invested heavily</em>) shifts to adjective + noun (<em>heavy investment</em>) after <em>in spite of</em>.</li>
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"in power stations"</em> and <em>"summer blackouts continued across the capital"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Past clause shifts to timeless nominal phrase after <em>in spite of</em>.</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Verb + adverb (<em>invested heavily</em>) nominalises into adjective + noun (<em>heavy investment</em>).</li>
+              <li><strong>Step 4 (Pattern):</strong> <em>in spite of</em> (1 mark) // <em>heavy investment</em> (1 mark).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- INTERCEPT 07 -->
+        <div class="kwt-item" id="item-7">
+          <div class="kwt-num">INTERCEPT 07 · INVERTED THIRD CONDITIONAL</div>
+          <div class="formula-banner">Formula: Had + Subject + not + Past Participle</div>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Past Perfect (had not audited &rarr; Had ... not audited)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> If-Clause &rarr; Inverted Conditional</span>
+          </div>
+          <p class="kwt-s1">7. If the engineer had not audited <span class="echo">the substation meters, the hidden server cavern would have remained undetected</span>.</p>
+          <span class="kwt-keyword">HAD</span>
+          <p class="kwt-s2"><input type="text" id="input-7" class="kwt-input" oninput="updateLiveKwt(7, 'HAD')" placeholder="3 to 6 words"> the substation meters, the hidden server cavern would have remained undetected.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-7" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-7" class="live-pill">KEYWORD: HAD · Waiting</span>
+          </div>
+          <div class="btn-row">
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-7')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(7, 'HAD', ['had the engineer not audited', 'had the electrical engineer not audited'], 'had the engineer', 'not audited')">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-7')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-7" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-7" class="model-box">
+            <div class="model-answer">Had the engineer not audited (5 words)</div>
+            <div class="split-badge">1 mark: Had the engineer // 1 mark: not audited</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"the substation meters, the hidden server cavern would have remained undetected"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Past perfect in the protasis (<em>had not audited</em>) stays past perfect.</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Omit <em>If</em> and invert auxiliary <em>Had</em> before the subject (never contract <em>not</em> in formal inversion).</li>
+              <li><strong>Step 4 (Pattern):</strong> <em>Had the engineer</em> (1 mark) // <em>not audited</em> (1 mark).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- INTERCEPT 08 -->
+        <div class="kwt-item" id="item-8">
+          <div class="kwt-num">INTERCEPT 08 · NEGATIVE INVERSION WITH 'LITTLE'</div>
+          <div class="formula-banner">Formula: Little + Auxiliary (did) + Subject + Base Verb (suspect)</div>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Past Simple (had no idea &rarr; did ... suspect)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> Active Statement &rarr; Restrictive Negative Inversion</span>
+          </div>
+          <p class="kwt-s1">8. <span class="echo">The Vienna inspectors</span> had no idea <span class="echo">that the mountain was minting digital currency</span>.</p>
+          <span class="kwt-keyword">SUSPECT</span>
+          <p class="kwt-s2">Little <input type="text" id="input-8" class="kwt-input" oninput="updateLiveKwt(8, 'SUSPECT')" placeholder="3 to 6 words"> that the mountain was minting digital currency.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-8" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-8" class="live-pill">KEYWORD: SUSPECT · Waiting</span>
+          </div>
+          <div class="btn-row">
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-8')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(8, 'SUSPECT', ['did the vienna inspectors suspect', 'did the inspectors suspect'], 'did the vienna inspectors', 'suspect')">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-8')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-8" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-8" class="model-box">
+            <div class="model-answer">did the Vienna inspectors suspect (5 words)</div>
+            <div class="split-badge">1 mark: did the (Vienna) inspectors // 1 mark: suspect</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"The Vienna inspectors"</em> and <em>"that the mountain was minting digital currency"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Past simple (<em>had no idea</em>) requires past auxiliary <em>did + base verb</em>.</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Fronted restrictive adverb <em>Little</em> triggers subject-auxiliary inversion.</li>
+              <li><strong>Step 4 (Pattern):</strong> <em>did the Vienna inspectors</em> (1 mark) // <em>suspect</em> (1 mark).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- INTERCEPT 09 -->
+        <div class="kwt-item" id="item-9">
+          <div class="kwt-num">INTERCEPT 09 · PASSIVE PERFECT REPORTING</div>
+          <div class="formula-banner">Formula: Subject + BE (is) + Past Participle (alleged) + to have + Past Participle</div>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Past Action (diverted) &rarr; Perfect Infinitive (to have diverted)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> Active Claim &rarr; Passive Subject-Raised Reporting</span>
+          </div>
+          <p class="kwt-s1">9. Financial investigators claim that <span class="echo">the regime</span> diverted <span class="echo">three hundred megawatts from the national grid</span>.</p>
+          <span class="kwt-keyword">ALLEGED</span>
+          <p class="kwt-s2">The regime <input type="text" id="input-9" class="kwt-input" oninput="updateLiveKwt(9, 'ALLEGED')" placeholder="3 to 6 words"> three hundred megawatts from the national grid.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-9" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-9" class="live-pill">KEYWORD: ALLEGED · Waiting</span>
+          </div>
+          <div class="btn-row">
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-9')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(9, 'ALLEGED', ['is alleged to have diverted', 'was alleged to have diverted'], 'is alleged', 'to have diverted')">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-9')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-9" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-9" class="model-box">
+            <div class="model-answer">is alleged to have diverted (5 words)</div>
+            <div class="split-badge">1 mark: is/was alleged // 1 mark: to have diverted</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"the regime"</em> and <em>"three hundred megawatts from the national grid"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Present reporting (<em>claim</em>) + earlier past action (<em>diverted</em>) &rarr; perfect infinitive (<em>to have diverted</em>).</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Active reporting (<em>investigators claim</em>) shifts to passive (<em>is alleged</em>).</li>
+              <li><strong>Step 4 (Pattern):</strong> <em>is alleged</em> (1 mark) // <em>to have diverted</em> (1 mark).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- INTERCEPT 10 -->
+        <div class="kwt-item" id="item-10">
+          <div class="kwt-num">INTERCEPT 10 · INVERTED SECOND CONDITIONAL</div>
+          <div class="formula-banner">Formula: Were + Subject + to-Infinitive</div>
+          <div class="step-meta-row">
+            <span class="step-chip"><strong>Step 2 Tense Harmony:</strong> Hypothetical Past (disconnected) &rarr; Subjunctive (Were ... to disconnect)</span>
+            <span class="step-chip"><strong>Step 3 Voice Shift:</strong> If-Clause &rarr; Formal Fronted 'Were' Inversion</span>
+          </div>
+          <p class="kwt-s1">10. If the authorities disconnected <span class="echo">the subsidised gas turbines, the entire mining network would collapse</span>.</p>
+          <span class="kwt-keyword">WERE</span>
+          <p class="kwt-s2"><input type="text" id="input-10" class="kwt-input" oninput="updateLiveKwt(10, 'WERE')" placeholder="3 to 6 words"> the subsidised gas turbines, the entire mining network would collapse.</p>
+          <div class="kwt-live-meta">
+            <span id="wc-10" class="live-pill">0 words (Target: 3–6)</span>
+            <span id="kw-10" class="live-pill">KEYWORD: WERE · Waiting</span>
+          </div>
+          <div class="btn-row">
+            <button class="reveal-btn" onclick="strikeItemEchoes('item-10')">✂️ Step 1: Strike Out the Echoes</button>
+            <button class="check-btn" onclick="checkKwt(10, 'WERE', ['were the authorities to disconnect'], 'were the authorities', 'to disconnect')">✓ Check Answer</button>
+            <button class="reveal-btn" onclick="toggleModel('kwt-10')">👁️ Reveal Cambridge Model</button>
+            <span id="fb-10" class="feedback-pill"></span>
+          </div>
+          <div id="kwt-10" class="model-box">
+            <div class="model-answer">Were the authorities to disconnect (5 words)</div>
+            <div class="split-badge">1 mark: Were the authorities // 1 mark: to disconnect</div>
+            <ul class="steps-list">
+              <li><strong>Step 1 (Strike Out Echoes):</strong> Strike out <em>"the subsidised gas turbines, the entire mining network would collapse"</em>.</li>
+              <li><strong>Step 2 (Tense Harmony):</strong> Second conditional past simple (<em>disconnected</em>) shifts to <em>Were + subject + to-infinitive</em>.</li>
+              <li><strong>Step 3 (Voice Shift):</strong> Delete <em>If</em> and front subjunctive <em>Were</em> for C1/C2 academic register.</li>
+              <li><strong>Step 4 (Pattern):</strong> <em>Were the authorities</em> (1 mark) // <em>to disconnect</em> (1 mark).</li>
             </ul>
           </div>
         </div>
@@ -951,6 +1367,74 @@
         </div>
       </div>
     </section>
+
+    <!-- PANE 5: LIVE C1 BRIEFING PARAGRAPH WORKBENCH -->
+    <section id="pane-workbench" class="section-pane">
+      <div class="card">
+        <h2>Live C1 Briefing Paragraph Workbench</h2>
+        <p class="rubric">Draft a 120–180 word executive policy briefing or IELTS Writing Task 2 body paragraph responding to the prompt below. The live C1 detector badges will light up as you deploy target syntactic structures.</p>
+
+        <div class="cue-card" style="margin-top: 0;">
+          <h3>Executive &amp; IELTS Task 2 Prompt</h3>
+          <p><strong>"As artificial intelligence and cryptographic data centres consume an ever-larger share of electricity, national governments should restrict industrial compute facilities whenever domestic households face rising energy costs or grid shortages."</strong></p>
+          <p style="font-size: 0.9rem; margin-top: 0.45rem; color: var(--ink-muted);">Write one cohesive C1 body or briefing paragraph (120–180 words). Aim to deploy at least three of the five C1 structural devices below.</p>
+        </div>
+
+        <div style="margin: 1rem 0;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--ink-muted); margin-bottom: 0.45rem;">CLICK TO INSERT C1 STRUCTURAL STARTER AT CURSOR:</div>
+          <div class="btn-row">
+            <button type="button" class="scaffold-chip" onclick="insertStarter('It is widely argued that ')">+ Preparatory 'It'</button>
+            <button type="button" class="scaffold-chip" onclick="insertStarter('What has placed unprecedented strain on national grids is ')">+ Wh- Cleft</button>
+            <button type="button" class="scaffold-chip" onclick="insertStarter('Not only do industrial server farms consume vast megawatts, but they also ')">+ Negative Inversion</button>
+            <button type="button" class="scaffold-chip" onclick="insertStarter(', thereby safeguarding domestic households from ')">+ Resultative Participle</button>
+            <button type="button" class="scaffold-chip" onclick="insertStarter('Were regulators to permit unrestricted power consumption, ')">+ Inverted Conditional</button>
+          </div>
+        </div>
+
+        <textarea id="briefing-input" class="workbench-textarea" oninput="analyzeBriefing()" placeholder="Start drafting your C1 policy briefing paragraph here... (e.g. It is widely argued that domestic households and hospitals must take precedence over private compute facilities...)"></textarea>
+
+        <div class="kwt-live-meta" style="justify-content: space-between;">
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <span id="wb-word-count" class="live-pill">0 words (Target: 120–180 words)</span>
+            <span id="wb-struct-count" class="live-pill">0 / 5 C1 Structures Detected</span>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="reveal-btn" onclick="loadSampleBriefing()">⚡ Load Sample C1 Draft</button>
+            <button type="button" class="reveal-btn" onclick="toggleModel('wb-model')">👁️ Reveal Cambridge Model</button>
+          </div>
+        </div>
+
+        <div class="detector-grid" aria-label="5 C1 Syntactic Structure Detector Badges">
+          <div id="det-1" class="detector-badge">
+            <span>1. Preparatory 'It' / Passive Reporting</span>
+            <strong id="det-status-1">○ Pending</strong>
+          </div>
+          <div id="det-2" class="detector-badge">
+            <span>2. Cleft Sentence (What / It is... that)</span>
+            <strong id="det-status-2">○ Pending</strong>
+          </div>
+          <div id="det-3" class="detector-badge">
+            <span>3. Negative Inversion (Not only / Never)</span>
+            <strong id="det-status-3">○ Pending</strong>
+          </div>
+          <div id="det-4" class="detector-badge">
+            <span>4. Resultative Participle (, thereby -ing)</span>
+            <strong id="det-status-4">○ Pending</strong>
+          </div>
+          <div id="det-5" class="detector-badge">
+            <span>5. Inverted Conditional / Concession</span>
+            <strong id="det-status-5">○ Pending</strong>
+          </div>
+        </div>
+
+        <div id="wb-model" class="model-box">
+          <div class="model-answer">Band 8.5–9.0 / Cambridge C1 Executive Model (154 words · All 5 C1 Structures Active)</div>
+          <p style="line-height: 1.75; color: #141619; margin-bottom: 0.75rem;">
+            <strong>[1. Preparatory 'It' &amp; Passive Reporting]</strong> <em>It is widely argued that</em> domestic households and public hospitals must take precedence whenever a national electricity grid approaches peak capacity. <strong>[2. Wh- Cleft]</strong> <em>What has placed unprecedented strain on municipal substations over the past five years is</em> the relentless expansion of sovereign crypto-mining warehouses and artificial intelligence clusters, which <em>are believed to draw</em> hundreds of megawatts of continuous baseload power. <strong>[3. Negative Inversion]</strong> <em>Not only do such facilities compete directly with residential consumers during summer heatwaves, but they also</em> inflate wholesale tariffs across the wider economy. <strong>[5. Inverted Conditional]</strong> <em>Were energy ministries to grant</em> private server operators unrestricted access to subsidised power without mandating off-grid generation, public trust in utility regulators would rapidly erode. Consequently, several jurisdictions now require high-density data centres to fund their own captive solar or gas turbines<strong>[4. Resultative Participle]</strong><em>, thereby insulating</em> ordinary citizens from rolling blackouts while preserving technological investment.
+          </p>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -958,10 +1442,24 @@
     const solvedItems = new Set();
 
     function switchTab(tabId, btnEl) {
-      document.querySelectorAll('.section-pane').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById('pane-' + tabId).classList.add('active');
-      btnEl.classList.add('active');
+      if (btnEl) btnEl.classList.add('active');
+      if (tabId === 'all') {
+        document.querySelectorAll('.section-pane').forEach(el => {
+          el.classList.remove('hidden-pane');
+          el.classList.add('active');
+        });
+      } else {
+        document.querySelectorAll('.section-pane').forEach(el => {
+          if (el.id === 'pane-' + tabId) {
+            el.classList.remove('hidden-pane');
+            el.classList.add('active');
+          } else {
+            el.classList.add('hidden-pane');
+            el.classList.remove('active');
+          }
+        });
+      }
     }
 
     function toggleModel(id) {
@@ -978,6 +1476,43 @@
       }
     }
 
+    function validateMarginSlot(num) {
+      const input = document.getElementById('kw-slot-' + num);
+      const hint = document.getElementById('kw-hint-' + num);
+      if (!input || !hint) return;
+      const val = (input.value || '').trim();
+      const words = val ? val.split(/\s+/) : [];
+      if (words.length === 0) {
+        hint.textContent = 'Bullet ' + num + ' · Enter 1 trigger word';
+        hint.style.color = 'var(--ink-muted)';
+      } else if (words.length === 1) {
+        hint.textContent = '✓ Single keyword locked (' + words[0] + ')';
+        hint.style.color = 'var(--emerald)';
+      } else {
+        hint.textContent = '⚠ 1-Minute Secret: Use 1 single keyword only!';
+        hint.style.color = 'var(--rose)';
+      }
+    }
+
+    function updateActStage(secondsTotal, remaining) {
+      const p1 = document.getElementById('act-pill-1');
+      const p2 = document.getElementById('act-pill-2');
+      const p3 = document.getElementById('act-pill-3');
+      if (!p1 || !p2 || !p3) return;
+      p1.classList.remove('active-act');
+      p2.classList.remove('active-act');
+      p3.classList.remove('active-act');
+      if (secondsTotal !== 120 || remaining <= 0) return;
+      const elapsed = 120 - remaining;
+      if (elapsed < 30) {
+        p1.classList.add('active-act');
+      } else if (elapsed < 75) {
+        p2.classList.add('active-act');
+      } else {
+        p3.classList.add('active-act');
+      }
+    }
+
     function startTimer(seconds, labelText) {
       clearInterval(timerInterval);
       let remaining = seconds;
@@ -989,6 +1524,7 @@
         const m = String(Math.floor(remaining / 60)).padStart(2, '0');
         const s = String(remaining % 60).padStart(2, '0');
         readout.textContent = m + ':' + s;
+        updateActStage(seconds, remaining);
       }
 
       render();
@@ -998,6 +1534,7 @@
           clearInterval(timerInterval);
           readout.textContent = '00:00';
           label.textContent = 'TIME UP — DEEPEN REFLECTION OR WRAP UP';
+          updateActStage(seconds, 0);
         } else {
           render();
         }
@@ -1007,10 +1544,58 @@
     function resetTimer() {
       clearInterval(timerInterval);
       document.getElementById('timer-readout').textContent = '01:00';
-      document.getElementById('timer-label').textContent = 'LIVE SPEAKING CLOCK';
+      document.getElementById('timer-label').textContent = 'LIVE 60s PREP / 120s SPEAK CLOCK';
+      updateActStage(0, 0);
     }
 
-    function checkKwt(num, keyword, validAnswers) {
+    function strikeItemEchoes(itemId) {
+      const container = document.getElementById(itemId);
+      if (!container) return;
+      container.querySelectorAll('.echo').forEach(el => el.classList.toggle('struck'));
+    }
+
+    function strikeAllEchoes() {
+      const allEchoes = document.querySelectorAll('#pane-part4 .echo');
+      const anyUnstruck = Array.from(allEchoes).some(el => !el.classList.contains('struck'));
+      allEchoes.forEach(el => {
+        if (anyUnstruck) el.classList.add('struck');
+        else el.classList.remove('struck');
+      });
+    }
+
+    function updateLiveKwt(num, keyword) {
+      const inputEl = document.getElementById('input-' + num);
+      const wcEl = document.getElementById('wc-' + num);
+      const kwEl = document.getElementById('kw-' + num);
+      if (!inputEl || !wcEl || !kwEl) return;
+
+      const raw = (inputEl.value || '').trim().replace(/\s+/g, ' ');
+      const words = raw ? raw.split(' ') : [];
+      const count = words.length;
+
+      wcEl.textContent = count + (count === 1 ? ' word' : ' words') + ' (Target: 3–6)';
+      if (count === 0) {
+        wcEl.className = 'live-pill';
+      } else if (count >= 3 && count <= 6) {
+        wcEl.className = 'live-pill ok';
+      } else {
+        wcEl.className = 'live-pill err';
+      }
+
+      const exactRegex = new RegExp('\\b' + keyword.toLowerCase() + '\\b', 'i');
+      if (!raw) {
+        kwEl.className = 'live-pill';
+        kwEl.textContent = 'KEYWORD: ' + keyword + ' · Waiting';
+      } else if (exactRegex.test(raw)) {
+        kwEl.className = 'live-pill ok';
+        kwEl.textContent = 'KEYWORD: ' + keyword + ' ✓ Unchanged';
+      } else {
+        kwEl.className = 'live-pill err';
+        kwEl.textContent = 'KEYWORD: ' + keyword + ' ✗ Missing/Altered';
+      }
+    }
+
+    function checkKwt(num, keyword, validAnswers, halfMarkPart1, halfMarkPart2) {
       const inputEl = document.getElementById('input-' + num);
       const fbEl = document.getElementById('fb-' + num);
       const itemEl = document.getElementById('item-' + num);
@@ -1018,36 +1603,107 @@
       const lower = raw.toLowerCase();
       const words = raw ? raw.split(' ') : [];
 
+      updateLiveKwt(num, keyword);
+
       if (!raw) {
         fbEl.className = 'feedback-pill fail';
         fbEl.textContent = 'Type 3 to 6 words first.';
         return;
       }
 
-      if (!lower.includes(keyword.toLowerCase())) {
+      const exactKeyword = new RegExp('\\b' + keyword.toLowerCase() + '\\b', 'i');
+      if (!exactKeyword.test(raw)) {
         fbEl.className = 'feedback-pill fail';
-        fbEl.textContent = 'Must include unchanged keyword: ' + keyword + ' (0 marks)';
+        fbEl.textContent = 'Must include unchanged keyword: ' + keyword + ' (0/2 marks)';
         return;
       }
 
       if (words.length < 3 || words.length > 6) {
         fbEl.className = 'feedback-pill fail';
-        fbEl.textContent = 'Word count (' + words.length + ') outside 3–6 word limit.';
+        fbEl.textContent = 'Word count (' + words.length + ') outside strict 3–6 word limit (0/2 marks).';
         return;
       }
 
       const isMatch = validAnswers.some(ans => ans.toLowerCase() === lower);
       if (isMatch) {
         fbEl.className = 'feedback-pill pass';
-        fbEl.textContent = '✓ Spot on! 2/2 Cambridge Marks (' + words.length + ' words)';
+        fbEl.textContent = '✓ Spot on! 2/2 Cambridge Marks (1 mark // 1 mark · ' + words.length + ' words)';
         itemEl.classList.add('correct');
         solvedItems.add(num);
         document.getElementById('score-readout').textContent =
-          'Score: ' + (solvedItems.size * 2) + ' / 12 Marks (2 marks per item)';
+          'Score: ' + (solvedItems.size * 2) + ' / 20 Marks (2 marks per intercept)';
+      } else if ((halfMarkPart1 && lower.includes(halfMarkPart1.toLowerCase())) || (halfMarkPart2 && lower.includes(halfMarkPart2.toLowerCase()))) {
+        fbEl.className = 'feedback-pill fail';
+        fbEl.textContent = '◐ Partial match (1/2 marks) — check tense harmony & exact collocation.';
       } else {
         fbEl.className = 'feedback-pill fail';
-        fbEl.textContent = 'Not quite — check tense harmony & voice shift.';
+        fbEl.textContent = 'Not quite (0/2 marks) — strike out echoes & check the C1 formula above.';
       }
+    }
+
+    function insertStarter(text) {
+      const ta = document.getElementById('briefing-input');
+      if (!ta) return;
+      const start = ta.selectionStart || ta.value.length;
+      const end = ta.selectionEnd || ta.value.length;
+      const before = ta.value.substring(0, start);
+      const after = ta.value.substring(end);
+      ta.value = before + text + after;
+      ta.focus();
+      ta.selectionStart = ta.selectionEnd = start + text.length;
+      analyzeBriefing();
+    }
+
+    function analyzeBriefing() {
+      const ta = document.getElementById('briefing-input');
+      if (!ta) return;
+      const text = (ta.value || '').trim();
+      const words = text ? text.split(/\s+/) : [];
+      const wc = words.length;
+
+      const wcPill = document.getElementById('wb-word-count');
+      if (wcPill) {
+        wcPill.textContent = wc + (wc === 1 ? ' word' : ' words') + ' (Target: 120–180 words)';
+        if (wc >= 120 && wc <= 190) wcPill.className = 'live-pill ok';
+        else if (wc >= 60) wcPill.className = 'live-pill warn';
+        else wcPill.className = 'live-pill';
+      }
+
+      const rules = [
+        { id: 1, regex: /\b(it is (widely|often|generally|commonly)?\s*(argued|believed|thought|claimed|acknowledged|accepted) that|is (thought|believed|alleged|reported|said|known) to (be|have)|are (thought|believed|alleged|reported|said|known) to (be|have))\b/i },
+        { id: 2, regex: /\b(what\s+[a-z0-9\s,'-]{3,60}\s+(is|was|has been|were)|it (is|was)\s+[a-z0-9\s,'-]{2,45}\s+(that|who))\b/i },
+        { id: 3, regex: /\b(not only\s+(do|does|did|is|are|was|were|has|have|had|can|could|will|would|should)|never before\s+(had|have|has|did)|little\s+(did|do|does)|under no circumstances|seldom\s+(do|does|did|have|had)|at no time\s+(did|was|were|had))\b/i },
+        { id: 4, regex: /(,\s*(thereby|thus)\s+[a-z]+ing\b)/i },
+        { id: 5, regex: /\b(were\s+[a-z0-9\s-]+\s+to\s+[a-z]+|had\s+[a-z0-9\s-]+\s+(not\s+)?[a-z]+ed|in spite of\s+[a-z]+|despite\s+(the fact that|heavy|widespread|growing))\b/i }
+      ];
+
+      let activeCount = 0;
+      rules.forEach(r => {
+        const badge = document.getElementById('det-' + r.id);
+        const status = document.getElementById('det-status-' + r.id);
+        const matched = r.regex.test(text);
+        if (matched) {
+          activeCount++;
+          if (badge) badge.classList.add('detected');
+          if (status) status.textContent = '✓ Detected';
+        } else {
+          if (badge) badge.classList.remove('detected');
+          if (status) status.textContent = '○ Pending';
+        }
+      });
+
+      const scPill = document.getElementById('wb-struct-count');
+      if (scPill) {
+        scPill.textContent = activeCount + ' / 5 C1 Structures Detected';
+        scPill.className = activeCount >= 3 ? 'live-pill ok' : (activeCount > 0 ? 'live-pill warn' : 'live-pill');
+      }
+    }
+
+    function loadSampleBriefing() {
+      const ta = document.getElementById('briefing-input');
+      if (!ta) return;
+      ta.value = "It is widely argued that domestic households and public hospitals must take precedence whenever a national electricity grid approaches peak capacity. What has placed unprecedented strain on municipal substations over the past five years is the relentless expansion of sovereign crypto-mining warehouses and artificial intelligence clusters, which are believed to draw hundreds of megawatts of continuous baseload power. Not only do such facilities compete directly with residential consumers during summer heatwaves, but they also inflate wholesale tariffs across the wider economy. Were energy ministries to grant private server operators unrestricted access to subsidised power without mandating off-grid generation, public trust in utility regulators would rapidly erode. Consequently, several jurisdictions now require high-density data centres to fund their own captive gas or solar turbines, thereby insulating ordinary citizens from rolling blackouts while preserving technological investment.";
+      analyzeBriefing();
     }
 
     function copyText(elementId) {

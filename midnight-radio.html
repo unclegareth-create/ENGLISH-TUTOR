@@ -634,6 +634,139 @@
       .preamp-faders-grid { grid-template-columns: 1fr; }
       .knobs-row { flex-wrap: wrap; }
     }
+
+    /* Midnight Tape Broadcast Receiver HUD & Frequency 108.4 MHz Night-Shift C1 Syntax Decoder */
+    .tx-hud-deck {
+      margin-top: 0.75rem;
+      background: linear-gradient(180deg, #17120d 0%, #0d0a07 100%);
+      border: 1px solid var(--border-brass);
+      border-left: 3px solid var(--phosphor-green);
+      border-radius: 7px;
+      padding: 0.65rem 0.8rem;
+    }
+    .tx-hud-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.45rem;
+    }
+    @media (max-width: 860px) {
+      .tx-hud-grid { grid-template-columns: 1fr; }
+    }
+    .tx-hud-card {
+      background: #090705;
+      border: 1px solid #3d2e1e;
+      border-radius: 6px;
+      padding: 0.5rem 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      transition: all 0.15s ease;
+    }
+    .tx-hud-card.active-tx {
+      border-color: var(--phosphor-green);
+      box-shadow: 0 0 12px rgba(74, 246, 131, 0.2);
+    }
+    .tx-audio-player {
+      width: 100%;
+      height: 28px;
+      filter: invert(0.88) hue-rotate(155deg) contrast(1.05);
+    }
+    .decoder-108-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+      margin-top: 0.75rem;
+    }
+    @media (max-width: 980px) {
+      .decoder-108-grid { grid-template-columns: 1fr; }
+    }
+    .decoder-108-card {
+      background: #0c0907;
+      border: 1px solid #453522;
+      border-radius: 8px;
+      padding: 0.8rem 0.95rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.48rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .decoder-108-card.signal-locked {
+      border-color: var(--phosphor-green);
+      box-shadow: inset 0 0 16px rgba(74, 246, 131, 0.1);
+    }
+    .echo-chunk {
+      transition: all 0.2s ease;
+    }
+    .echo-chunk.struck {
+      text-decoration: line-through;
+      text-decoration-color: var(--crimson);
+      text-decoration-thickness: 2px;
+      opacity: 0.42;
+      color: var(--parchment-muted);
+    }
+    .deficit-chunk {
+      transition: all 0.2s ease;
+    }
+    .deficit-chunk.isolated {
+      background: rgba(255, 170, 51, 0.2);
+      color: var(--amber-glow);
+      border-bottom: 1px dashed var(--amber-glow);
+      padding: 0.05rem 0.25rem;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    .decoder-telemetry-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      font-family: 'Consolas', monospace;
+      font-size: 0.72rem;
+      color: var(--parchment-muted);
+      background: #070604;
+      padding: 0.28rem 0.55rem;
+      border-radius: 4px;
+      border: 1px solid #2a2015;
+    }
+    .decoder-harmony-note {
+      display: none;
+      font-family: 'Consolas', monospace;
+      font-size: 0.72rem;
+      color: var(--cyan-neon);
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px dashed rgba(56, 189, 248, 0.35);
+      padding: 0.35rem 0.55rem;
+      border-radius: 4px;
+    }
+    .decoder-harmony-note.open {
+      display: block;
+    }
+    .decoder-model-drawer {
+      display: none;
+      margin-top: 0.25rem;
+      background: rgba(74, 246, 131, 0.08);
+      border: 1px solid rgba(74, 246, 131, 0.35);
+      border-radius: 6px;
+      padding: 0.55rem 0.7rem;
+      font-size: 0.8rem;
+      color: var(--parchment);
+      line-height: 1.45;
+    }
+    .decoder-model-drawer.open {
+      display: block;
+    }
+    .decoder-formula {
+      font-family: 'Consolas', monospace;
+      font-size: 0.73rem;
+      color: var(--amber-glow);
+      background: #070504;
+      border-left: 3px solid var(--amber-glow);
+      padding: 0.3rem 0.55rem;
+      border-radius: 3px;
+      margin-bottom: 0.35rem;
+    }
   </style>
 </head>
 <body>
@@ -694,6 +827,40 @@
         <button class="scene-btn" onclick="selectScene(1)" id="sceneBtn1">🕌 Beyoğlu / Galata</button>
         <button class="scene-btn" onclick="selectScene(2)" id="sceneBtn2">🍵 Lisburn / Belfast Desk</button>
         <button class="scene-btn" onclick="selectScene(3)" id="sceneBtn3">🔢 Cipher Bunker E11</button>
+      </div>
+
+      <!-- Studio-Mastered Midnight Tape Broadcast Receiver HUD (TX-01 .. TX-03) -->
+      <div class="tx-hud-deck" aria-label="Midnight Tape Broadcast Transmissions">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem;">
+          <span class="card-title" style="color:var(--phosphor-green); font-size:0.74rem;">📡 RECEIVER HUD · STUDIO BRITISH NEURAL TAPE TRANSMISSIONS (EBU R128)</span>
+          <span class="card-sub" id="txHudStatusBadge">108.4 MHz NIGHT-SHIFT CARRIER READY</span>
+        </div>
+        <div class="tx-hud-grid">
+          <div class="tx-hud-card" id="txHudCard0">
+            <div style="display:flex; justify-content:space-between; align-items:center;" class="mono">
+              <span style="font-size:0.72rem; color:var(--amber-glow); font-weight:bold;">TX-01 · 108.4 MHz</span>
+              <span style="font-size:0.66rem; color:var(--phosphor-green);">SPRUCEFIELD DESK</span>
+            </div>
+            <audio id="midnightTxAudio0" class="tx-audio-player" controls preload="metadata" src="assets/audio/tapes/midnight-tx-01.mp3"></audio>
+            <button class="hw-btn" onclick="triggerMidnightTapeTx(0)">🎙️ Lock HUD &amp; Filter Bus</button>
+          </div>
+          <div class="tx-hud-card" id="txHudCard1">
+            <div style="display:flex; justify-content:space-between; align-items:center;" class="mono">
+              <span style="font-size:0.72rem; color:var(--amber-glow); font-weight:bold;">TX-02 · MV RHETORICA</span>
+              <span style="font-size:0.66rem; color:var(--phosphor-green);">OFFSHORE C1 RELAY</span>
+            </div>
+            <audio id="midnightTxAudio1" class="tx-audio-player" controls preload="metadata" src="assets/audio/tapes/midnight-tx-02.mp3"></audio>
+            <button class="hw-btn" onclick="triggerMidnightTapeTx(1)">🎙️ Lock HUD &amp; Filter Bus</button>
+          </div>
+          <div class="tx-hud-card" id="txHudCard2">
+            <div style="display:flex; justify-content:space-between; align-items:center;" class="mono">
+              <span style="font-size:0.72rem; color:var(--amber-glow); font-weight:bold;">TX-03 · HADAL CIPHER</span>
+              <span style="font-size:0.66rem; color:var(--phosphor-green);">3–6 WORD GUARD</span>
+            </div>
+            <audio id="midnightTxAudio2" class="tx-audio-player" controls preload="metadata" src="assets/audio/tapes/midnight-tx-03.mp3"></audio>
+            <button class="hw-btn" onclick="triggerMidnightTapeTx(2)">🎙️ Lock HUD &amp; Filter Bus</button>
+          </div>
+        </div>
       </div>
 
       <!-- 4-Channel Atmospheric & Procedural Lo-Fi Synth Mixer -->
@@ -988,6 +1155,31 @@
     </section>
 
   </main>
+
+  <!-- FREQUENCY 108.4 MHz: NIGHT-SHIFT C1 SYNTAX DECODER -->
+  <section id="freq108SyntaxDecoderSection" style="max-width:1540px; margin:1.1rem auto 0;">
+    <div class="chassis-card" style="border: 2px solid var(--phosphor-green); background: linear-gradient(180deg, #171410 0%, #0b0907 100%); box-shadow: 0 18px 42px rgba(0,0,0,0.75), inset 0 0 24px rgba(74,246,131,0.06);">
+      <div class="card-header">
+        <div>
+          <span class="card-title" style="color:var(--phosphor-green);">📡 Frequency 108.4 MHz: Night-Shift C1 Syntax Decoder</span>
+          <div class="card-sub" style="margin-top:0.2rem;">6 Interactive C1/C2 Signal-Reconstruction &amp; Key Word Transformation Intercepts · 3&ndash;6 Word Bandwidth · Unchanged Keyword Guard</div>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+          <span class="mono" style="font-size:0.76rem; color:var(--phosphor-green); font-weight:bold;" id="decoder108ScoreBadge">SIGNALS LOCKED: 0 / 6</span>
+          <button class="hw-btn active" id="strikeAll108Btn" onclick="toggleAll108Echoes()" style="padding:0.35rem 0.75rem;">✂️ Strike Out All Echoes</button>
+          <button class="hw-btn" onclick="reset108Decoder()" style="padding:0.35rem 0.75rem;">↺ Reset Decoder</button>
+        </div>
+      </div>
+
+      <p style="font-size:0.86rem; color:var(--parchment-muted); line-height:1.45;">
+        Apply Gareth&rsquo;s 4-Step Part 4 Deconstruction Strategy across all six midnight intercepts: click <strong>✂️ Strike Out the Echoes</strong> to cross out repeated language from Sentence 1 and isolate the semantic deficit, inspect the Tense &amp; Voice Harmony telemetry, type your <strong>3 to 6 word</strong> signal reconstruction using the <strong>unchanged keyword</strong>, and verify or reveal the Cambridge model.
+      </p>
+
+      <div class="decoder-108-grid" id="decoder108Grid">
+        <!-- Populated dynamically by JS with 6 C1/C2 signal-reconstruction challenges -->
+      </div>
+    </div>
+  </section>
 
   <!-- DEDICATED SECTION FOR DR. DAVID BARR: 3-MINUTE SHOWCASE REEL & AUTO-PILOT CONSOLE -->
   <section id="davidBarrShowcaseSection" style="max-width:1540px; margin:1.1rem auto 0;">
@@ -2899,9 +3091,341 @@
       }, 1000);
     }
 
+    // =========================================================================
+    // 10. MIDNIGHT TAPE BROADCAST HUD (TX-01..03) & 108.4 MHz C1 SYNTAX DECODER
+    // =========================================================================
+    const MIDNIGHT_TAPE_DISPATCHES = [
+      {
+        id: 'midnight_tx_01',
+        freqLabel: '108.4 MHz · TX-01 SPRUCEFIELD NIGHT-SHIFT',
+        url: 'assets/audio/tapes/midnight-tx-01.mp3',
+        transcript: '🇬🇧 “Midnight Shortwave Dispatch Zero One, broadcasting on 108.4 MHz from Sprucefield, Lisburn. The rain is driving across the Lagan valley, the vacuum tubes are warm, and the night-shift syntax decoder is online. Strike out the echoes and keep your keyword untouched.”'
+      },
+      {
+        id: 'midnight_tx_02',
+        freqLabel: '108.4 MHz · TX-02 MV RHETORICA OFFSHORE RELAY',
+        url: 'assets/audio/tapes/midnight-tx-02.mp3',
+        transcript: '🇬🇧 “Midnight Shortwave Dispatch Zero Two, offshore relay MV Rhetorica. Examiners mark forty scripts before lunch. Memorised templates put them straight to sleep, whereas crisp passive reporting and cleft sentences cut through the static plain as day.”'
+      },
+      {
+        id: 'midnight_tx_03',
+        freqLabel: '108.4 MHz · TX-03 HADAL BUOY & CIPHER WATCH',
+        url: 'assets/audio/tapes/midnight-tx-03.mp3',
+        transcript: '🇬🇧 “Midnight Shortwave Dispatch Zero Three, Hadal Buoy and Cipher Bunker watch. When reconstructing a corrupted Cambridge C1 transmission, count every word on the tape. Three to six words is your strict bandwidth, contractions count as two, and inflecting the keyword scores zero.”'
+      }
+    ];
+
+    let activeTapeTxSource = null;
+    const tapeTxBufferCache = {};
+
+    async function triggerMidnightTapeTx(idx) {
+      const tx = MIDNIGHT_TAPE_DISPATCHES[idx];
+      if (!tx) return;
+      if (!isPowered) togglePower();
+
+      // Pause HTML5 audio elements if playing directly
+      [0, 1, 2].forEach(i => {
+        const el = document.getElementById('midnightTxAudio' + i);
+        if (el && !el.paused) el.pause();
+        const card = document.getElementById('txHudCard' + i);
+        if (card) card.classList.toggle('active-tx', i === idx);
+      });
+
+      // Update Receiver HUD Ribbon
+      document.getElementById('liveStationHeader').textContent = tx.freqLabel + ' (STUDIO MASTER LOCKED)';
+      document.getElementById('liveTranscriptText').textContent = tx.transcript;
+      const badge = document.getElementById('txHudStatusBadge');
+      if (badge) badge.textContent = `ON AIR: ${tx.freqLabel}`;
+
+      // Route through Web Audio voiceFilterNode + RE-201 Space Echo chain
+      if (activeTapeTxSource) {
+        try { activeTapeTxSource.stop(); activeTapeTxSource.disconnect(); } catch (_) {}
+        activeTapeTxSource = null;
+      }
+
+      try {
+        if (!tapeTxBufferCache[tx.url]) {
+          const resp = await fetch(tx.url);
+          const ab = await resp.arrayBuffer();
+          tapeTxBufferCache[tx.url] = await audioCtx.decodeAudioData(ab);
+        }
+        const src = audioCtx.createBufferSource();
+        src.buffer = tapeTxBufferCache[tx.url];
+        src.playbackRate.value = dubplateSpeedFactor || 1.0;
+        src.connect(voiceFilterNode);
+        src.start(0);
+        activeTapeTxSource = src;
+      } catch (err) {
+        const fallbackEl = document.getElementById('midnightTxAudio' + idx);
+        if (fallbackEl) {
+          fallbackEl.currentTime = 0;
+          fallbackEl.play().catch(() => {});
+        }
+      }
+    }
+
+    function wireMidnightTxAudioPlayers() {
+      [0, 1, 2].forEach(idx => {
+        const el = document.getElementById('midnightTxAudio' + idx);
+        if (!el) return;
+        el.addEventListener('play', () => {
+          const tx = MIDNIGHT_TAPE_DISPATCHES[idx];
+          [0, 1, 2].forEach(otherIdx => {
+            if (otherIdx !== idx) {
+              const otherEl = document.getElementById('midnightTxAudio' + otherIdx);
+              if (otherEl && !otherEl.paused) otherEl.pause();
+            }
+            const card = document.getElementById('txHudCard' + otherIdx);
+            if (card) card.classList.toggle('active-tx', otherIdx === idx);
+          });
+          if (tx) {
+            document.getElementById('liveStationHeader').textContent = tx.freqLabel + ' (DIRECT TAPE PLAYBACK)';
+            document.getElementById('liveTranscriptText').textContent = tx.transcript;
+            const badge = document.getElementById('txHudStatusBadge');
+            if (badge) badge.textContent = `PLAYING: ${tx.freqLabel}`;
+          }
+        });
+      });
+    }
+
+    const DECODER_108_CHALLENGES = [
+      {
+        code: 'INTERCEPT 01 · NEGATIVE INVERSION',
+        s1Html: '<span class="echo-chunk">Generic essay templates</span> <span class="deficit-chunk">bore</span> <span class="echo-chunk">the examiner, and they also strip your prose of its rhythm.</span>',
+        kw: 'ONLY',
+        lead: 'Not ',
+        tail: ' the examiner, but they also strip your prose of its rhythm.',
+        harmony: 'Step 2 Tense: Present Simple ("bore") → Auxiliary Inversion ("do + subject + bare infinitive") · Step 3 Voice: Active',
+        formula: 'Not only + do/does/did + Subject + Bare Infinitive',
+        valid: ['only do generic essay templates bore', 'only do generic templates bore'],
+        note: 'Opening with "Not only" requires auxiliary inversion ("do generic essay templates bore") before the main clause.'
+      },
+      {
+        code: 'INTERCEPT 02 · PAST SUBJUNCTIVE PREFERENCE',
+        s1Html: '<span class="echo-chunk">I</span> <span class="deficit-chunk">would prefer you to send</span> <span class="echo-chunk">your first draft without using spell check.</span>',
+        kw: 'RATHER',
+        lead: 'I ',
+        tail: ' your first draft without using spell check.',
+        harmony: 'Step 2 Tense: Present/Future Preference with New Subject ("you") → Past Subjunctive ("sent") · Step 3 Voice: Active',
+        formula: 'would rather + Subject + Past Simple (Subjunctive)',
+        valid: ['would rather you sent'],
+        note: 'When "would rather" has a different subject ("you"), the verb shifts into the past subjunctive ("sent") (4 words).'
+      },
+      {
+        code: 'INTERCEPT 03 · PASSIVE REPORTING + PERFECT INFINITIVE',
+        s1Html: '<span class="deficit-chunk">People say that</span> <span class="echo-chunk">the vessel</span> <span class="deficit-chunk">vanished</span> <span class="echo-chunk">in a severe gale off Malin Head.</span>',
+        kw: 'SAID',
+        lead: 'The vessel ',
+        tail: ' in a severe gale off Malin Head.',
+        harmony: 'Step 2 Tense: Present Reporting ("say") + Past Event ("vanished") → Perfect Infinitive ("to have vanished") · Step 3 Voice: Active → Passive',
+        formula: 'Subject + BE + said + to have + Past Participle',
+        valid: ['is said to have vanished'],
+        note: 'Promote "The vessel" to subject, shift "say" to passive "is said", and mark prior past action with "to have vanished" (5 words).'
+      },
+      {
+        code: 'INTERCEPT 04 · INVERTED SECOND CONDITIONAL',
+        s1Html: '<span class="deficit-chunk">If the pressure seal failed</span> <span class="echo-chunk">at this depth, no surface vessel could reach us.</span>',
+        kw: 'WERE',
+        lead: '',
+        tail: ' at this depth, no surface vessel could reach us.',
+        harmony: 'Step 2 Tense: Hypothetical Past ("If ... failed") → Inverted Subjunctive ("Were + subject + to-infinitive") · Step 3 Voice: Active',
+        formula: 'Were + Subject + to + Bare Infinitive',
+        valid: ['were the pressure seal to fail'],
+        note: 'Omit "if" and invert subjunctive "Were" ahead of "the pressure seal" followed by the full infinitive "to fail" (6 words).'
+      },
+      {
+        code: 'INTERCEPT 05 · NEGATIVE TIME INVERSION',
+        s1Html: '<span class="echo-chunk">The radio operator</span> <span class="deficit-chunk">never suspected</span> <span class="echo-chunk">that the cipher had been compromised.</span>',
+        kw: 'TIME',
+        lead: 'At ',
+        tail: ' the radio operator suspect that the cipher had been compromised.',
+        harmony: 'Step 2 Tense: Past Simple ("suspected") → Past Auxiliary Inversion ("did + subject + suspect") · Step 3 Voice: Active',
+        formula: 'At no time + did + Subject + Bare Infinitive',
+        valid: ['no time did'],
+        note: 'Because "the radio operator suspect" already appears after the gap, only the 3-word inverted trigger "no time did" is needed.'
+      },
+      {
+        code: 'INTERCEPT 06 · WH-CLEFT SIGNAL FOCUS',
+        s1Html: '<span class="echo-chunk">Clean syntactic variety</span> <span class="deficit-chunk">wakes the examiner up</span> <span class="echo-chunk">during the graveyard shift.</span>',
+        kw: 'WHAT',
+        lead: '',
+        tail: ' during the graveyard shift is clean syntactic variety.',
+        harmony: 'Step 2 Tense: Present Simple ("wakes") → Singular Wh-Cleft Clause ("What wakes ... up") · Step 3 Voice: Active',
+        formula: 'What + Verb Phrase + BE + Focused Noun Phrase',
+        valid: ['what wakes the examiner up', 'what wakes up the examiner'],
+        note: 'A Wh-cleft packages the verb phrase into a nominal clause ("What wakes the examiner up") to spotlight "clean syntactic variety" at the end (5 words).'
+      }
+    ];
+
+    const decoder108Solved = new Set();
+    let all108EchoesStruck = false;
+
+    function countDecoderWords(str) {
+      const cleaned = (str || '').trim();
+      if (!cleaned) return 0;
+      return cleaned.split(/\s+/).reduce((acc, tok) => {
+        if (/n't$|'re$|'ve$|'ll$|'d$|'m$/i.test(tok) || /^can't$/i.test(tok)) return acc + 2;
+        return acc + 1;
+      }, 0);
+    }
+
+    function render108DecoderGrid() {
+      const grid = document.getElementById('decoder108Grid');
+      if (!grid) return;
+      grid.innerHTML = DECODER_108_CHALLENGES.map((item, idx) => `
+        <div class="decoder-108-card" id="dec108Card_${idx}">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:0.4rem;">
+            <span class="mono" style="font-size:0.74rem; color:var(--brass-bright); font-weight:bold;">${item.code}</span>
+            <span class="c1-keyword-pill" style="margin:0;">${item.kw}</span>
+          </div>
+          <p style="font-size:0.86rem; color:var(--parchment); line-height:1.45;" id="dec108S1_${idx}">
+            1. ${item.s1Html}
+          </p>
+          <div class="decoder-harmony-note" id="dec108Harmony_${idx}">
+            🔍 ${item.harmony}
+          </div>
+          <p style="font-size:0.87rem; color:var(--parchment); line-height:1.55;">
+            2. ${item.lead}<input type="text" class="input-dark" id="dec108Input_${idx}" style="width:235px; display:inline-block; padding:0.25rem 0.55rem;" placeholder="3 to 6 words..." oninput="update108Telemetry(${idx})" onkeydown="if(event.key==='Enter'){event.preventDefault();verify108Signal(${idx});}" />${item.tail}
+          </p>
+          <div class="decoder-telemetry-bar">
+            <span id="dec108Wc_${idx}">WORDS: 0 / 3–6</span>
+            <span id="dec108KwGuard_${idx}">KEYWORD [${item.kw}]: STANDBY</span>
+          </div>
+          <div class="btn-strip">
+            <button class="hw-btn" onclick="toggle108Echo(${idx})">✂️ Strike Out the Echoes</button>
+            <button class="hw-btn active" onclick="verify108Signal(${idx})">🔓 Verify Signal</button>
+            <button class="hw-btn" onclick="reveal108Model(${idx})">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div id="dec108Feedback_${idx}" class="mono" style="font-size:0.74rem; min-height:1rem;"></div>
+          <div class="decoder-model-drawer" id="dec108Drawer_${idx}">
+            <div class="decoder-formula">Blueprint: ${item.formula}</div>
+            <div><strong>Cambridge Model:</strong> <span class="mono" style="color:var(--phosphor-green); font-weight:bold;">${item.valid[0]}</span></div>
+            <div style="color:var(--parchment-muted); font-size:0.76rem; margin-top:0.2rem;">${item.note}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggle108Echo(idx, forceState) {
+      const s1 = document.getElementById(`dec108S1_${idx}`);
+      const harm = document.getElementById(`dec108Harmony_${idx}`);
+      if (!s1) return;
+      const echoes = s1.querySelectorAll('.echo-chunk');
+      const deficits = s1.querySelectorAll('.deficit-chunk');
+      const nextState = typeof forceState === 'boolean'
+        ? forceState
+        : !(echoes[0] && echoes[0].classList.contains('struck'));
+      echoes.forEach(el => el.classList.toggle('struck', nextState));
+      deficits.forEach(el => el.classList.toggle('isolated', nextState));
+      if (harm) harm.classList.toggle('open', nextState);
+    }
+
+    function toggleAll108Echoes() {
+      all108EchoesStruck = !all108EchoesStruck;
+      DECODER_108_CHALLENGES.forEach((_, idx) => toggle108Echo(idx, all108EchoesStruck));
+      const btn = document.getElementById('strikeAll108Btn');
+      if (btn) btn.textContent = all108EchoesStruck ? '↺ Restore All Echoes' : '✂️ Strike Out All Echoes';
+    }
+
+    function update108Telemetry(idx) {
+      const item = DECODER_108_CHALLENGES[idx];
+      const inp = document.getElementById(`dec108Input_${idx}`);
+      const wcEl = document.getElementById(`dec108Wc_${idx}`);
+      const kwEl = document.getElementById(`dec108KwGuard_${idx}`);
+      if (!item || !inp) return;
+      const raw = inp.value.trim();
+      const wc = countDecoderWords(raw);
+      if (wcEl) {
+        wcEl.textContent = `WORDS: ${wc} / 3–6`;
+        wcEl.style.color = (wc >= 3 && wc <= 6) ? 'var(--phosphor-green)' : (wc === 0 ? 'var(--parchment-muted)' : 'var(--crimson)');
+      }
+      const kwRegex = new RegExp(`\\b${item.kw}\\b`, 'i');
+      if (kwEl) {
+        if (!raw) {
+          kwEl.textContent = `KEYWORD [${item.kw}]: STANDBY`;
+          kwEl.style.color = 'var(--parchment-muted)';
+        } else if (kwRegex.test(raw)) {
+          kwEl.textContent = `KEYWORD [${item.kw}]: UNCHANGED ✓`;
+          kwEl.style.color = 'var(--phosphor-green)';
+        } else {
+          kwEl.textContent = `KEYWORD [${item.kw}]: MISSING OR ALTERED ✕`;
+          kwEl.style.color = 'var(--crimson)';
+        }
+      }
+    }
+
+    function verify108Signal(idx) {
+      const item = DECODER_108_CHALLENGES[idx];
+      const inp = document.getElementById(`dec108Input_${idx}`);
+      const fb = document.getElementById(`dec108Feedback_${idx}`);
+      const card = document.getElementById(`dec108Card_${idx}`);
+      if (!item || !inp || !fb) return;
+
+      const norm = inp.value.trim().toLowerCase().replace(/\s+/g, ' ');
+      const wc = countDecoderWords(norm);
+      const kwRegex = new RegExp(`\\b${item.kw}\\b`, 'i');
+
+      if (!kwRegex.test(norm)) {
+        fb.style.color = 'var(--crimson)';
+        fb.textContent = `✕ Keyword guard alert: keep "${item.kw}" completely unchanged.`;
+        return;
+      }
+      if (wc < 3 || wc > 6) {
+        fb.style.color = 'var(--amber-glow)';
+        fb.textContent = `✕ Bandwidth alert (${wc} words): use strictly 3 to 6 words.`;
+        return;
+      }
+      if (item.valid.includes(norm)) {
+        decoder108Solved.add(idx);
+        if (card) card.classList.add('signal-locked');
+        fb.style.color = 'var(--phosphor-green)';
+        fb.textContent = `✓ CARRIER LOCKED! Exact C1 structure verified (${wc} words, "${item.kw}" intact).`;
+        const badge = document.getElementById('decoder108ScoreBadge');
+        if (badge) badge.textContent = `SIGNALS LOCKED: ${decoder108Solved.size} / 6`;
+      } else {
+        fb.style.color = 'var(--amber-glow)';
+        fb.textContent = `✕ Static on the line: click "✂️ Strike Out the Echoes" to inspect the Tense & Voice Harmony.`;
+      }
+    }
+
+    function reveal108Model(idx) {
+      const item = DECODER_108_CHALLENGES[idx];
+      const drawer = document.getElementById(`dec108Drawer_${idx}`);
+      const inp = document.getElementById(`dec108Input_${idx}`);
+      if (drawer) drawer.classList.toggle('open');
+      if (inp && !inp.value.trim()) {
+        inp.value = item.valid[0];
+        update108Telemetry(idx);
+      }
+      toggle108Echo(idx, true);
+    }
+
+    function reset108Decoder() {
+      decoder108Solved.clear();
+      all108EchoesStruck = false;
+      const badge = document.getElementById('decoder108ScoreBadge');
+      if (badge) badge.textContent = 'SIGNALS LOCKED: 0 / 6';
+      const strikeBtn = document.getElementById('strikeAll108Btn');
+      if (strikeBtn) strikeBtn.textContent = '✂️ Strike Out All Echoes';
+      DECODER_108_CHALLENGES.forEach((_, idx) => {
+        toggle108Echo(idx, false);
+        const inp = document.getElementById(`dec108Input_${idx}`);
+        const fb = document.getElementById(`dec108Feedback_${idx}`);
+        const dr = document.getElementById(`dec108Drawer_${idx}`);
+        const card = document.getElementById(`dec108Card_${idx}`);
+        if (inp) inp.value = '';
+        if (fb) fb.textContent = '';
+        if (dr) dr.classList.remove('open');
+        if (card) card.classList.remove('signal-locked');
+        update108Telemetry(idx);
+      });
+    }
+
     // Boot UI
     buildStationStrip();
     renderC1Intercept();
+    render108DecoderGrid();
+    wireMidnightTxAudioPlayers();
     updateRadioDsp();
     requestAnimationFrame(drawWaterfallAndRain);
   </script>

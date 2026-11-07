@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>50 Essential Cambridge C1/C2 Key Word Transformation Patterns: Interactive Checklist &amp; Live Drill | Gareth Montgomery</title>
-  <meta name="description" content="Track your mastery of the 50 most common Cambridge C1 Advanced (CAE) and C2 Proficiency (CPE) Use of English Part 4 Key Word Transformation patterns, plus a 10-question live exam drill." />
+  <meta name="description" content="Track your mastery of the 50 most common Cambridge C1 Advanced (CAE) and C2 Proficiency (CPE) Use of English Part 4 Key Word Transformation patterns with live search, Self-Test Mode, and a 10-item Quick-Fire Test Drawer." />
   <link rel="canonical" href="https://garethenglish.com/c1-50-key-word-transformations-checklist.html" />
   <meta name="theme-color" content="#0369a1" />
 
   <meta property="og:type" content="article" />
   <meta property="og:title" content="50 Essential Cambridge C1/C2 Key Word Transformation Patterns: Interactive Checklist & Live Drill" />
-  <meta property="og:description" content="Filter, study, and tick off all 50 high-frequency CAE/CPE Part 4 patterns with persistent progress tracking and Gareth's 4-step Elimination Method." />
+  <meta property="og:description" content="Filter, search, self-test, and tick off all 50 high-frequency CAE/CPE Part 4 patterns with persistent progress tracking and Gareth's 4-step Elimination Method." />
   <meta property="og:url" content="https://garethenglish.com/c1-50-key-word-transformations-checklist.html" />
 
   <script type="application/ld+json">
@@ -20,7 +20,7 @@
       {
         "@type": "LearningResource",
         "name": "50 Essential Cambridge C1/C2 Key Word Transformation Patterns: Interactive Study Checklist & Live Drill",
-        "description": "An interactive 50-pattern study checklist and 10-question live Use of English Part 4 drill for Cambridge C1 Advanced (CAE) and C2 Proficiency (CPE) candidates.",
+        "description": "An interactive 50-pattern study checklist with live search, Self-Test Practice Mode, and a 10-question Quick-Fire Use of English Part 4 Test Drawer for Cambridge C1 Advanced (CAE) and C2 Proficiency (CPE) candidates.",
         "educationalLevel": "CEFR C1–C2 / Cambridge Advanced & Proficiency",
         "learningResourceType": ["Interactive Checklist", "Practice Exam Drill"],
         "datePublished": "2026-10-24",
@@ -74,20 +74,23 @@
     details > summary { cursor: pointer; list-style: none; }
     details > summary::-webkit-details-marker { display: none; }
     .reveal-panel { display: none; }
-    .reveal-panel.open { display: block; animation: fadeIn 0.25s ease-out; }
+    .reveal-panel.open { display: block; animation: fadeIn 0.22s ease-out; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-4px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .cat-filter-btn.active {
-      background-color: #0f172a !important;
-      color: #ffffff !important;
-      border-color: #0f172a !important;
+      background-color: #f59e0b !important;
+      color: #0f172a !important;
+      border-color: #f59e0b !important;
     }
     .pattern-row.checked-row {
       background-color: #ecfdf5;
       border-color: #6ee7b7;
     }
+    .echo-word { transition: all 0.2s ease; }
+    .echo-word.struck { text-decoration: line-through; color: #94a3b8; opacity: 0.6; }
+    .deficit-word.highlighted { background-color: #fef3c7; color: #92400e; padding: 1px 4px; border-radius: 4px; font-weight: 700; }
   </style>
   <!-- Google AdSense (guarded against hanging on local file:/// protocol) -->
   <script>
@@ -153,25 +156,43 @@
       <hr class="my-10 border-slate-200" />
 
       <h2>Interactive 50-Pattern Mastery Checklist</h2>
-      <p>Filter by grammatical family or view all 50 patterns at once. Tick the box beside each formula once you can produce it from memory without hesitation.</p>
+      <p>Filter by grammatical family, search by keyword, or switch on <strong>🎯 Hide Answers / Practice Mode</strong> to test your recall from the keyword alone before revealing the Cambridge model.</p>
 
-      <!-- Progress & Filter Controls -->
-      <div class="not-prose my-6 p-5 rounded-2xl bg-slate-900 text-white border border-slate-800 shadow-lg">
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-3">
+      <!-- Progress, Search, Self-Test Mode & Category Filter Toolbar -->
+      <div class="not-prose my-6 p-5 rounded-2xl bg-slate-900 text-white border border-slate-800 shadow-lg space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <span class="text-xs font-extrabold uppercase tracking-wider text-amber-400 block">Your Saved Mastery Progress</span>
-            <span id="checklist-progress-label" class="text-lg font-extrabold text-white">0 / 50 Patterns Mastered (0%)</span>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-amber-400 block">Your Saved Mastery Progress (localStorage)</span>
+            <span id="checklist-progress-label" class="text-lg font-extrabold text-white">0 / 50 Mastered (0%)</span>
           </div>
-          <div class="flex gap-2">
-            <button type="button" id="check-clear-btn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 border border-slate-700 transition cursor-pointer">
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" id="self-test-toggle-btn" aria-pressed="false" class="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-extrabold text-white border border-indigo-400/40 transition cursor-pointer">
+              🎯 Hide Answers / Practice Mode
+            </button>
+            <button type="button" id="jump-drawer-btn" class="px-3.5 py-2 rounded-lg bg-amber-400 hover:bg-amber-300 text-xs font-extrabold text-slate-950 transition cursor-pointer">
+              ⚡ Open 10-Item Quick-Fire Test Drawer &darr;
+            </button>
+            <button type="button" id="check-clear-btn" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 border border-slate-700 transition cursor-pointer">
               Reset Progress
             </button>
           </div>
         </div>
-        <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden mb-5">
+
+        <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
           <div id="checklist-progress-bar" class="h-full bg-emerald-400 transition-all duration-300" style="width: 0%"></div>
         </div>
 
+        <!-- Live Search Bar -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div class="relative flex-1">
+            <input type="search" id="pattern-search-input" placeholder="🔍 Live Search: type a keyword (e.g. SOONER, RATHER, SPITE) or grammar term..." aria-label="Search 50 Key Word Transformation patterns" class="w-full px-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-sm text-white placeholder-slate-400 focus:border-amber-400 focus:outline-none" />
+          </div>
+          <span id="pattern-count-badge" class="px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs font-mono font-bold text-slate-300 whitespace-nowrap text-center">
+            Showing 50 of 50
+          </span>
+        </div>
+
+        <!-- Category Filter Buttons -->
         <div class="flex flex-wrap gap-2" role="group" aria-label="Filter patterns by category">
           <button type="button" class="cat-filter-btn active px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold transition cursor-pointer" data-filter="all">All 50 Patterns</button>
           <button type="button" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold transition cursor-pointer" data-filter="inversion">1. Inversion (1–10)</button>
@@ -179,6 +200,7 @@
           <button type="button" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold transition cursor-pointer" data-filter="passive">3. Reporting Passives (21–30)</button>
           <button type="button" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold transition cursor-pointer" data-filter="cleft">4. Clefts &amp; Concession (31–40)</button>
           <button type="button" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold transition cursor-pointer" data-filter="collocation">5. Collocations &amp; Phrasals (41–50)</button>
+          <button type="button" class="cat-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold transition cursor-pointer" data-filter="unmastered">Remaining Unmastered</button>
         </div>
       </div>
 
@@ -187,21 +209,29 @@
 
       <hr class="my-12 border-slate-200" />
 
-      <h2>Live 10-Question Part 4 Exam Workout (3–6 Words)</h2>
-      <p>Put the 4-Step Elimination Strategy to the test. Type your <strong>3 to 6 word</strong> answer (including the unchanged keyword) into each box and click <strong>Check Answer</strong>, or click <strong>👁️ Reveal Cambridge Model</strong> to study the 2-mark split.</p>
-
-      <!-- Drill Score Bar -->
-      <div class="not-prose my-6 p-4 rounded-xl bg-slate-900 text-white flex flex-wrap items-center justify-between gap-4 border border-slate-800">
-        <div class="flex items-center gap-3">
-          <span class="px-3 py-1 rounded-lg bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 font-mono text-xs font-bold">PART 4 SCORE</span>
-          <span id="p4-score-display" class="text-sm font-bold text-slate-200">0 / 10 Solved</span>
+      <!-- 10-Item Quick-Fire Interactive Test Drawer -->
+      <section id="quickfire-test-drawer" class="not-prose my-10 rounded-3xl border-2 border-indigo-200 bg-slate-50 overflow-hidden shadow-md">
+        <div class="bg-slate-900 text-white p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span class="inline-block px-2.5 py-0.5 rounded bg-amber-400 text-slate-950 font-mono text-[11px] font-extrabold uppercase tracking-wider mb-1">Interactive Exam Workbench</span>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-white">10-Item Quick-Fire Interactive Test Drawer (3–6 Words)</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1">Use <strong>✂️ Strike Out the Echoes</strong>, watch the live 3–6 word counter, and click <strong>👁️ Reveal Cambridge Model</strong> to check the official <code>1 mark // 1 mark</code> split.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="p4-score-display" class="px-3.5 py-1.5 rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-indigo-200 font-mono text-xs font-extrabold">0 / 20 Marks (0 / 10 Solved)</span>
+            <button type="button" id="drawer-collapse-btn" aria-expanded="true" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700 transition cursor-pointer">
+              Collapse Drawer &uarr;
+            </button>
+            <button type="button" id="p4-reset-btn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 border border-slate-700 transition cursor-pointer">
+              Clear All Answers
+            </button>
+          </div>
         </div>
-        <button type="button" id="p4-reset-btn" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 border border-slate-700 transition cursor-pointer">
-          Clear All Answers
-        </button>
-      </div>
 
-      <div id="p4-drill-container" class="not-prose space-y-6 my-8"></div>
+        <div id="quickfire-drawer-body" class="p-5 sm:p-6">
+          <div id="p4-drill-container" class="space-y-6"></div>
+        </div>
+      </section>
 
       <h2>Frequently Asked Questions: Cambridge Use of English Part 4</h2>
       <div class="not-prose space-y-3 my-6">
@@ -229,7 +259,7 @@
             <span class="text-brand-600 text-xs font-bold uppercase tracking-wider group-open:rotate-180 transition-transform">&#9660;</span>
           </summary>
           <p class="mt-3 text-sm text-slate-600 leading-relaxed pt-3 border-t border-slate-100">
-            Every Part 4 item is worth 2 marks, divided by a vertical bar in the examiner's mark scheme (for example, <code>had it not | been for</code>). Even if you forget one half of the phrase, writing the other half accurately within the 3–6 word limit secures 1 mark. Never leave a Part 4 gap blank!
+            Every Part 4 item is worth 2 marks, divided by a vertical bar in the examiner's mark scheme (for example, <code>had it not // been for</code>). Even if you forget one half of the phrase, writing the other half accurately within the 3–6 word limit secures 1 mark. Never leave a Part 4 gap blank!
           </p>
         </details>
       </div>
@@ -347,7 +377,7 @@
         { id: 25, cat: 'passive', kw: 'ALLEGED', formula: 'Subject + is alleged + to have + Past Participle', example: 'The director is alleged to have falsified the accounts.' },
         { id: 26, cat: 'passive', kw: 'MADE', formula: 'Subject + was made + to + Infinitive (Passive of make)', example: 'We were made to wait outside in the pouring rain.' },
         { id: 27, cat: 'passive', kw: 'SEEN', formula: 'Subject + was seen + entering / to enter', example: 'A stranger was seen unlocking the side gate at midnight.' },
-        { id: 28, cat: 'passive', kw: 'NEED', formula: ' be in need of + [Noun] / need + [-ing]', example: 'The conservatory roof is in urgent need of repair.' },
+        { id: 28, cat: 'passive', kw: 'NEED', formula: 'be in need of + [Noun] / need + [-ing]', example: 'The conservatory roof is in urgent need of repair.' },
         { id: 29, cat: 'passive', kw: 'BLAME', formula: 'be to blame for + [Noun / -ing]', example: 'Faulty wiring was to blame for the power outage.' },
         { id: 30, cat: 'passive', kw: 'SUPPOSED', formula: 'was supposed + to have been + Past Participle', example: 'The parcel was supposed to have been delivered yesterday.' },
 
@@ -385,10 +415,19 @@
       }
 
       var currentFilter = 'all';
+      var searchQuery = '';
+      var selfTestMode = false;
+
       var listEl = document.getElementById('patterns-list');
       var progLabel = document.getElementById('checklist-progress-label');
       var progBar = document.getElementById('checklist-progress-bar');
       var clearBtn = document.getElementById('check-clear-btn');
+      var searchInput = document.getElementById('pattern-search-input');
+      var countBadge = document.getElementById('pattern-count-badge');
+      var selfTestBtn = document.getElementById('self-test-toggle-btn');
+      var jumpDrawerBtn = document.getElementById('jump-drawer-btn');
+      var drawerCollapseBtn = document.getElementById('drawer-collapse-btn');
+      var drawerBody = document.getElementById('quickfire-drawer-body');
 
       function saveChecked() {
         try {
@@ -399,40 +438,83 @@
       function updateProgressUI() {
         var count = Object.keys(checkedMap).filter(function(k) { return checkedMap[k]; }).length;
         var pct = Math.round((count / 50) * 100);
-        if (progLabel) progLabel.textContent = count + ' / 50 Patterns Mastered (' + pct + '%)';
+        if (progLabel) progLabel.textContent = count + ' / 50 Mastered (' + pct + '%)';
         if (progBar) progBar.style.width = pct + '%';
       }
 
       function renderPatterns() {
         if (!listEl) return;
         listEl.innerHTML = '';
+        var visibleCount = 0;
+
         PATTERNS.forEach(function(item) {
-          if (currentFilter !== 'all' && item.cat !== currentFilter) return;
           var isChecked = !!checkedMap[item.id];
-          var row = document.createElement('label');
-          row.className = 'pattern-row flex items-start gap-3.5 p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition cursor-pointer ' + (isChecked ? 'checked-row' : '');
+          if (currentFilter === 'unmastered' && isChecked) return;
+          if (currentFilter !== 'all' && currentFilter !== 'unmastered' && item.cat !== currentFilter) return;
+
+          if (searchQuery) {
+            var haystack = ('#' + item.id + ' ' + item.kw + ' ' + item.formula + ' ' + item.example + ' ' + item.cat).toLowerCase();
+            if (haystack.indexOf(searchQuery) === -1) return;
+          }
+
+          visibleCount += 1;
+          var row = document.createElement('div');
+          row.className = 'pattern-row flex items-start gap-3.5 p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition ' + (isChecked ? 'checked-row' : '');
+
+          var detailsHtml = '';
+          if (selfTestMode) {
+            detailsHtml =
+              '<div class="mt-2">' +
+                '<button type="button" class="self-reveal-btn px-3 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-bold transition cursor-pointer">' +
+                  '👁️ Reveal Cambridge Model' +
+                '</button>' +
+                '<div class="self-reveal-box hidden mt-2 p-3 rounded-lg bg-slate-50 border border-slate-200">' +
+                  '<p class="text-sm font-bold text-slate-900 mb-1">' + item.formula + '</p>' +
+                  '<p class="text-xs text-slate-600 italic">&ldquo;' + item.example + '&rdquo;</p>' +
+                '</div>' +
+              '</div>';
+          } else {
+            detailsHtml =
+              '<span class="text-sm font-bold text-slate-900 block sm:inline">' + item.formula + '</span>' +
+              '<p class="text-xs text-slate-600 italic mt-1">&ldquo;' + item.example + '&rdquo;</p>';
+          }
+
           row.innerHTML =
             '<input type="checkbox" aria-label="Mastered pattern #' + item.id + ': ' + item.kw + '" class="mt-1 w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer" data-pid="' + item.id + '" ' + (isChecked ? 'checked' : '') + ' />' +
             '<div class="flex-1 min-w-0">' +
-              '<div class="flex flex-wrap items-center gap-2 mb-1">' +
+              '<div class="flex flex-wrap items-center gap-2 mb-0.5">' +
                 '<span class="text-xs font-mono font-extrabold px-2 py-0.5 rounded bg-slate-900 text-amber-300">#' + item.id + ' · ' + item.kw + '</span>' +
-                '<span class="text-sm font-bold text-slate-900">' + item.formula + '</span>' +
+                '<span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 text-slate-600">' + item.cat + '</span>' +
+                (selfTestMode ? '<span class="text-xs text-indigo-700 font-semibold">Recall the 3–6 word formula for ' + item.kw + '...</span>' : '') +
               '</div>' +
-              '<p class="text-xs text-slate-600 italic">&ldquo;' + item.example + '&rdquo;</p>' +
+              detailsHtml +
             '</div>';
+
           var cb = row.querySelector('input[type="checkbox"]');
           cb.addEventListener('change', function() {
             checkedMap[item.id] = cb.checked;
-            if (cb.checked) {
-              row.classList.add('checked-row');
-            } else {
-              row.classList.remove('checked-row');
-            }
+            row.classList.toggle('checked-row', cb.checked);
             saveChecked();
             updateProgressUI();
+            if (currentFilter === 'unmastered') renderPatterns();
           });
+
+          var selfRevBtn = row.querySelector('.self-reveal-btn');
+          var selfRevBox = row.querySelector('.self-reveal-box');
+          if (selfRevBtn && selfRevBox) {
+            selfRevBtn.addEventListener('click', function() {
+              var hidden = selfRevBox.classList.contains('hidden');
+              selfRevBox.classList.toggle('hidden', !hidden);
+              selfRevBtn.textContent = hidden ? '🙈 Hide Cambridge Model' : '👁️ Reveal Cambridge Model';
+            });
+          }
+
           listEl.appendChild(row);
         });
+
+        if (countBadge) {
+          countBadge.textContent = 'Showing ' + visibleCount + ' of 50';
+        }
       }
 
       document.querySelectorAll('.cat-filter-btn').forEach(function(btn) {
@@ -443,6 +525,47 @@
           renderPatterns();
         });
       });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          searchQuery = (searchInput.value || '').trim().toLowerCase();
+          renderPatterns();
+        });
+      }
+
+      if (selfTestBtn) {
+        selfTestBtn.addEventListener('click', function() {
+          selfTestMode = !selfTestMode;
+          selfTestBtn.setAttribute('aria-pressed', selfTestMode ? 'true' : 'false');
+          selfTestBtn.textContent = selfTestMode ? '📖 Exit Practice Mode (Show All Answers)' : '🎯 Hide Answers / Practice Mode';
+          selfTestBtn.className = selfTestMode
+            ? 'px-3.5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-xs font-extrabold text-slate-950 transition cursor-pointer'
+            : 'px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-xs font-extrabold text-white border border-indigo-400/40 transition cursor-pointer';
+          renderPatterns();
+        });
+      }
+
+      if (jumpDrawerBtn) {
+        jumpDrawerBtn.addEventListener('click', function() {
+          var drawer = document.getElementById('quickfire-test-drawer');
+          if (drawerBody && drawerBody.classList.contains('hidden')) {
+            drawerBody.classList.remove('hidden');
+            if (drawerCollapseBtn) {
+              drawerCollapseBtn.setAttribute('aria-expanded', 'true');
+              drawerCollapseBtn.textContent = 'Collapse Drawer ↑';
+            }
+          }
+          if (drawer) drawer.scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+
+      if (drawerCollapseBtn && drawerBody) {
+        drawerCollapseBtn.addEventListener('click', function() {
+          var isHidden = drawerBody.classList.toggle('hidden');
+          drawerCollapseBtn.setAttribute('aria-expanded', isHidden ? 'false' : 'true');
+          drawerCollapseBtn.textContent = isHidden ? 'Expand 10-Item Test Drawer ↓' : 'Collapse Drawer ↑';
+        });
+      }
 
       if (clearBtn) {
         clearBtn.addEventListener('click', function() {
@@ -456,106 +579,126 @@
       updateProgressUI();
       renderPatterns();
 
-      // 10-Question Interactive Part 4 Workout
+      // 10-Question Quick-Fire Interactive Part 4 Workout
       var DRILL_ITEMS = [
         {
           num: 1,
-          s1: "Immediately after the curtain rose, the fire alarm went off.",
+          s1Html: '<span class="deficit-word">Immediately after</span> <span class="echo-word">the curtain</span> <span class="deficit-word">rose,</span> <span class="echo-word">the fire alarm went off.</span>',
           kw: "SOONER",
           pre: "No",
           post: "the fire alarm went off.",
           accepted: ["sooner had the curtain risen than"],
-          split: "sooner had the curtain | risen than (6 words)",
+          part1: ["sooner had the curtain"],
+          part2: ["risen than"],
+          split: "sooner had the curtain // risen than (6 words)",
           note: "Step 1: Strike out 'the fire alarm went off'. Step 2: Past simple ('rose') shifts to Past Perfect inverted ('had the curtain risen') paired with 'than'."
         },
         {
           num: 2,
-          s1: "We only realised how steep the mountain was when we reached the ridge.",
+          s1Html: '<span class="echo-word">We</span> <span class="deficit-word">only</span> <span class="echo-word">realised how steep the mountain was</span> <span class="deficit-word">when</span> <span class="echo-word">we reached the ridge.</span>',
           kw: "DID",
           pre: "Not until we reached the ridge",
           post: "how steep the mountain was.",
           accepted: ["did we realise", "did we realize"],
-          split: "did we | realise (3 words)",
+          part1: ["did we"],
+          part2: ["realise", "realize"],
+          split: "did we // realise (3 words)",
           note: "Fronting 'Not until + time clause' triggers auxiliary inversion in the main clause: 'did we realise'."
         },
         {
           num: 3,
-          s1: "Please don't mention the merger during tonight's dinner.",
+          s1Html: '<span class="deficit-word">Please do not</span> <span class="echo-word">mention the merger during tonight\'s dinner.</span>',
           kw: "RATHER",
           pre: "I",
           post: "mention the merger during tonight's dinner.",
           accepted: ["would rather you did not", "'d rather you didn't", "would rather you didn't"],
-          split: "would rather | you did not (5 words)",
+          part1: ["would rather"],
+          part2: ["you did not", "you didn't"],
+          split: "would rather // you did not (5 words)",
           note: "When 'would rather' has a different subject ('you'), the verb shifts into the unreal past simple ('did not')."
         },
         {
           num: 4,
-          s1: "Without the coastguard's rapid intervention, the yacht would have sunk.",
+          s1Html: '<span class="deficit-word">Without</span> <span class="echo-word">the coastguard\'s rapid intervention, the yacht would have sunk.</span>',
           kw: "FOR",
           pre: "Had",
           post: "the coastguard's rapid intervention, the yacht would have sunk.",
           accepted: ["it not been for"],
-          split: "it not | been for (4 words)",
+          part1: ["it not"],
+          part2: ["been for"],
+          split: "it not // been for (4 words)",
           note: "Replaces 'Without' in a past counterfactual using the inverted third conditional: 'Had it not been for'."
         },
         {
           num: 5,
-          s1: "Journalists believe that the minister tendered his resignation yesterday evening.",
+          s1Html: '<span class="deficit-word">Journalists believe that</span> <span class="echo-word">the minister</span> <span class="deficit-word">tendered</span> <span class="echo-word">his resignation yesterday evening.</span>',
           kw: "BELIEVED",
           pre: "The minister",
           post: "his resignation yesterday evening.",
           accepted: ["is believed to have tendered"],
-          split: "is believed | to have tendered (5 words)",
+          part1: ["is believed"],
+          part2: ["to have tendered"],
+          split: "is believed // to have tendered (5 words)",
           note: "Present reporting verb ('believe') + past action ('tendered') requires 'is believed + perfect infinitive (to have tendered)'."
         },
         {
           num: 6,
-          s1: "Although she was exhausted after the marathon, Clara insisted on walking home.",
+          s1Html: '<span class="deficit-word">Although she was exhausted</span> <span class="echo-word">after the marathon, Clara insisted on walking home.</span>',
           kw: "SPITE",
           pre: "In",
           post: "after the marathon, Clara insisted on walking home.",
           accepted: ["spite of her exhaustion", "spite of being exhausted"],
-          split: "spite of | her exhaustion / being exhausted (4 words)",
+          part1: ["spite of"],
+          part2: ["her exhaustion", "being exhausted"],
+          split: "spite of // her exhaustion / being exhausted (4 words)",
           note: "'In spite of' must be followed by a noun phrase ('her exhaustion') or gerund ('being exhausted'), never a direct clause."
         },
         {
           num: 7,
-          s1: "I have no plans whatsoever to sell my grandfather's violin.",
+          s1Html: '<span class="echo-word">I have</span> <span class="deficit-word">no plans whatsoever to sell</span> <span class="echo-word">my grandfather\'s violin.</span>',
           kw: "INTENTION",
           pre: "I have",
           post: "my grandfather's violin.",
           accepted: ["no intention of selling"],
-          split: "no intention | of selling (4 words)",
+          part1: ["no intention"],
+          part2: ["of selling"],
+          split: "no intention // of selling (4 words)",
           note: "Fixed nominal collocation: 'have no intention + of + -ing'."
         },
         {
           num: 8,
-          s1: "His sudden departure from the board completely surprised everyone.",
+          s1Html: '<span class="echo-word">His sudden departure from the board</span> <span class="deficit-word">completely surprised</span> <span class="echo-word">everyone.</span>',
           kw: "CAME",
           pre: "His sudden departure from the board",
           post: "to everyone.",
           accepted: ["came as a complete surprise", "came as a total surprise"],
-          split: "came as a | complete surprise (5 words)",
+          part1: ["came as a"],
+          part2: ["complete surprise", "total surprise"],
+          split: "came as a // complete surprise (5 words)",
           note: "Adverb + verb ('completely surprised') transforms into verb + adjective + noun ('came as a complete surprise')."
         },
         {
           num: 9,
-          s1: "We couldn't land at Belfast International because of the dense fog.",
+          s1Html: '<span class="deficit-word">We could not land</span> <span class="echo-word">at Belfast International</span> <span class="deficit-word">because of</span> <span class="echo-word">the dense fog.</span>',
           kw: "PREVENTED",
           pre: "The dense fog",
           post: "at Belfast International.",
           accepted: ["prevented us from landing"],
-          split: "prevented us | from landing (4 words)",
+          part1: ["prevented us"],
+          part2: ["from landing"],
+          split: "prevented us // from landing (4 words)",
           note: "Active complementation: 'prevent + object + from + -ing'."
         },
         {
           num: 10,
-          s1: "People say that the portrait was painted by a student of Rembrandt.",
+          s1Html: '<span class="deficit-word">People say that</span> <span class="echo-word">the portrait</span> <span class="deficit-word">was</span> <span class="echo-word">painted by a student of Rembrandt.</span>',
           kw: "SAID",
           pre: "The portrait",
           post: "painted by a student of Rembrandt.",
           accepted: ["is said to have been"],
-          split: "is said | to have been (5 words)",
+          part1: ["is said"],
+          part2: ["to have been"],
+          split: "is said // to have been (5 words)",
           note: "Double passive shift: present reporting ('is said') + past passive infinitive ('to have been [painted]')."
         }
       ];
@@ -563,69 +706,148 @@
       var p4Container = document.getElementById('p4-drill-container');
       var p4ScoreEl = document.getElementById('p4-score-display');
       var p4ResetBtn = document.getElementById('p4-reset-btn');
-      var p4Solved = {};
+      var p4Marks = {};
+
+      function countExamWords(str) {
+        var cleaned = (str || '').trim();
+        if (!cleaned) return 0;
+        var count = 0;
+        cleaned.split(/\s+/).forEach(function(tok) {
+          if (/n't$/i.test(tok) || /'(m|re|ve|ll|d|s)$/i.test(tok)) {
+            count += 2;
+          } else {
+            count += 1;
+          }
+        });
+        return count;
+      }
+
+      function hasExactKeyword(str, kw) {
+        var re = new RegExp('\\b' + kw.toLowerCase() + '\\b', 'i');
+        return re.test(str || '');
+      }
 
       function updateP4Score() {
-        var c = Object.keys(p4Solved).filter(function(k) { return p4Solved[k]; }).length;
-        if (p4ScoreEl) p4ScoreEl.textContent = c + ' / 10 Solved';
+        var totalM = 0;
+        var solvedC = 0;
+        Object.keys(p4Marks).forEach(function(k) {
+          var m = p4Marks[k] || 0;
+          totalM += m;
+          if (m > 0) solvedC += 1;
+        });
+        if (p4ScoreEl) p4ScoreEl.textContent = totalM + ' / 20 Marks (' + solvedC + ' / 10 Solved)';
       }
 
       function normalise(str) {
-        return (str || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        return (str || '').trim().toLowerCase().replace(/[.,!?;:]+$/g, '').replace(/\s+/g, ' ');
       }
 
       if (p4Container) {
         DRILL_ITEMS.forEach(function(item) {
           var card = document.createElement('div');
-          card.className = 'rounded-2xl border border-slate-200 bg-slate-50/70 p-6 shadow-sm';
+          card.className = 'rounded-2xl border border-slate-200 bg-white p-6 shadow-sm';
           card.innerHTML =
-            '<div class="flex items-center justify-between gap-2 mb-2">' +
-              '<span class="text-xs font-extrabold uppercase tracking-wider text-indigo-700">Question ' + item.num + ' of 10</span>' +
-              '<span class="px-2.5 py-0.5 rounded bg-slate-900 text-amber-300 font-mono text-xs font-extrabold">KEYWORD: ' + item.kw + '</span>' +
+            '<div class="flex flex-wrap items-center justify-between gap-2 mb-2">' +
+              '<span class="text-xs font-extrabold uppercase tracking-wider text-indigo-700">Quick-Fire Question ' + item.num + ' of 10</span>' +
+              '<div class="flex items-center gap-2">' +
+                '<button type="button" class="strike-btn px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold transition cursor-pointer">' +
+                  '✂️ Strike Out the Echoes' +
+                '</button>' +
+                '<span class="px-2.5 py-0.5 rounded bg-slate-900 text-amber-300 font-mono text-xs font-extrabold">KEYWORD: ' + item.kw + '</span>' +
+              '</div>' +
             '</div>' +
-            '<p class="text-sm text-slate-700 mb-3"><strong>Sentence 1:</strong> ' + item.s1 + '</p>' +
-            '<div class="bg-white p-4 rounded-xl border border-slate-200 mb-3">' +
+            '<p class="s1-line text-sm text-slate-700 mb-3"><strong>Sentence 1:</strong> ' + item.s1Html + '</p>' +
+            '<div class="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-3">' +
               '<p class="text-sm font-semibold text-slate-900 mb-2">' + item.pre + ' <span class="text-indigo-600 font-mono">[3–6 words]</span> ' + item.post + '</p>' +
-              '<div class="flex flex-col sm:flex-row gap-2">' +
-                '<input type="text" class="p4-input flex-1 px-3.5 py-2 rounded-lg border border-slate-300 text-sm font-mono focus:border-indigo-600 focus:outline-none" placeholder="Type 3 to 6 words including ' + item.kw + '..." aria-label="Question ' + item.num + ' transformation answer" />' +
-                '<button type="button" class="p4-check-btn px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition cursor-pointer">Check Answer</button>' +
+              '<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">' +
+                '<input type="text" class="p4-input flex-1 px-3.5 py-2 rounded-lg border border-slate-300 bg-white text-sm font-mono focus:border-indigo-600 focus:outline-none" placeholder="Type 3 to 6 words including ' + item.kw + '..." aria-label="Question ' + item.num + ' transformation answer" />' +
+                '<div class="flex items-center gap-2">' +
+                  '<span class="wc-pill px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-600 border border-slate-200 font-mono text-xs font-bold whitespace-nowrap">0 / 3–6 words</span>' +
+                  '<span class="kw-pill px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-500 border border-slate-200 font-mono text-xs font-bold whitespace-nowrap">' + item.kw + ': waiting</span>' +
+                  '<button type="button" class="p4-check-btn px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition cursor-pointer whitespace-nowrap">Check Answer</button>' +
+                '</div>' +
               '</div>' +
               '<p class="p4-feedback text-xs font-bold mt-2 hidden"></p>' +
             '</div>' +
             '<button type="button" class="reveal-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="p4-model-' + item.num + '">' +
               '👁️ Reveal Cambridge Model' +
             '</button>' +
-            '<div id="p4-model-' + item.num + '" class="reveal-panel mt-4 pt-4 border-t border-slate-200 bg-white p-4 rounded-xl">' +
-              '<p class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 mb-1">Official 2-Mark Split:</p>' +
+            '<div id="p4-model-' + item.num + '" class="reveal-panel mt-4 pt-4 border-t border-slate-200 bg-slate-50 p-4 rounded-xl">' +
+              '<p class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 mb-1">Official 1 mark // 1 mark Split:</p>' +
               '<p class="text-sm font-mono font-bold text-slate-900 mb-1">' + item.split + '</p>' +
               '<p class="text-xs text-slate-600">' + item.note + '</p>' +
             '</div>';
 
+          var strikeBtn = card.querySelector('.strike-btn');
+          var s1Line = card.querySelector('.s1-line');
           var input = card.querySelector('.p4-input');
+          var wcPill = card.querySelector('.wc-pill');
+          var kwPill = card.querySelector('.kw-pill');
           var checkBtn = card.querySelector('.p4-check-btn');
           var fb = card.querySelector('.p4-feedback');
 
+          strikeBtn.addEventListener('click', function() {
+            var echoes = s1Line.querySelectorAll('.echo-word');
+            var deficits = s1Line.querySelectorAll('.deficit-word');
+            var isStruck = echoes.length > 0 && echoes[0].classList.contains('struck');
+            echoes.forEach(function(el) { el.classList.toggle('struck', !isStruck); });
+            deficits.forEach(function(el) { el.classList.toggle('highlighted', !isStruck); });
+            strikeBtn.textContent = isStruck ? '✂️ Strike Out the Echoes' : '↺ Restore Sentence';
+          });
+
+          input.addEventListener('input', function() {
+            var val = input.value;
+            var wc = countExamWords(val);
+            wcPill.textContent = wc + ' / 3–6 words';
+            wcPill.className = 'wc-pill px-2.5 py-1.5 rounded-lg font-mono text-xs font-bold whitespace-nowrap border ' +
+              (wc === 0 ? 'bg-slate-100 text-slate-600 border-slate-200' : (wc >= 3 && wc <= 6 ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-rose-50 text-rose-800 border-rose-300'));
+
+            var kwOk = hasExactKeyword(val, item.kw);
+            kwPill.className = 'kw-pill px-2.5 py-1.5 rounded-lg font-mono text-xs font-bold whitespace-nowrap border ' +
+              (!val.trim() ? 'bg-slate-100 text-slate-500 border-slate-200' : (kwOk ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-rose-50 text-rose-800 border-rose-300'));
+            kwPill.textContent = !val.trim() ? (item.kw + ': waiting') : (kwOk ? ('✓ ' + item.kw + ' intact') : ('✗ ' + item.kw + ' missing'));
+          });
+
           function checkNow() {
             var val = normalise(input.value);
-            fb.classList.remove('hidden', 'text-emerald-700', 'text-rose-700');
+            var wc = countExamWords(val);
+            var kwOk = hasExactKeyword(val, item.kw);
+            fb.classList.remove('hidden', 'text-emerald-700', 'text-amber-700', 'text-rose-700');
             if (!val) {
               fb.classList.add('text-rose-700');
               fb.textContent = 'Please enter between 3 and 6 words including ' + item.kw + '.';
               return;
             }
+            if (!kwOk) {
+              p4Marks[item.num] = 0;
+              updateP4Score();
+              fb.classList.add('text-rose-700');
+              fb.textContent = '✗ 0 / 2 Marks — Keyword Guard: You must include the exact unchanged keyword "' + item.kw + '".';
+              return;
+            }
+            if (wc < 3 || wc > 6) {
+              p4Marks[item.num] = 0;
+              updateP4Score();
+              fb.classList.add('text-rose-700');
+              fb.textContent = '✗ 0 / 2 Marks — Word Count Violation: Your answer has ' + wc + ' words (strictly 3 to 6 words required).';
+              return;
+            }
             var isMatch = item.accepted.some(function(ans) { return normalise(ans) === val; });
             if (isMatch) {
-              p4Solved[item.num] = true;
+              p4Marks[item.num] = 2;
               fb.classList.add('text-emerald-700');
-              fb.textContent = '✓ Full 2/2 Marks! Clean C1 syntax and exact word count.';
+              fb.textContent = '✓ Full 2/2 Marks (1 mark // 1 mark)! Clean C1 syntax and exact word count.';
             } else {
-              p4Solved[item.num] = false;
-              fb.classList.add('text-rose-700');
-              var hasKw = val.indexOf(item.kw.toLowerCase()) !== -1;
-              if (!hasKw) {
-                fb.textContent = '✗ Careful: you must include the exact unchanged keyword "' + item.kw + '".';
+              var p1 = item.part1.some(function(p) { return val.indexOf(p) !== -1; });
+              var p2 = item.part2.some(function(p) { return val.indexOf(p) !== -1; });
+              if (p1 || p2) {
+                p4Marks[item.num] = 1;
+                fb.classList.add('text-amber-700');
+                fb.textContent = '½ 1/2 Marks (Partial Split Credit)! One half of your transformation is right. Click "Reveal Cambridge Model" below.';
               } else {
-                fb.textContent = '✗ Not quite the 2/2 Cambridge split. Check tense harmony or click "Reveal Cambridge Model" below.';
+                p4Marks[item.num] = 0;
+                fb.classList.add('text-rose-700');
+                fb.textContent = '✗ 0/2 Marks. Check tense harmony or click "Reveal Cambridge Model" below.';
               }
             }
             updateP4Score();
@@ -645,9 +867,12 @@
 
       if (p4ResetBtn) {
         p4ResetBtn.addEventListener('click', function() {
-          p4Solved = {};
+          p4Marks = {};
           updateP4Score();
-          document.querySelectorAll('.p4-input').forEach(function(inp) { inp.value = ''; });
+          document.querySelectorAll('.p4-input').forEach(function(inp) {
+            inp.value = '';
+            inp.dispatchEvent(new Event('input'));
+          });
           document.querySelectorAll('.p4-feedback').forEach(function(fb) { fb.classList.add('hidden'); fb.textContent = ''; });
         });
       }
@@ -670,6 +895,6 @@
     })();
   </script>
   <script src="analytics.js"></script>
-    <script src="course-bridge.js" defer></script>
+  <script src="course-bridge.js" defer></script>
 </body>
 </html>

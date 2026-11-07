@@ -85,6 +85,17 @@
     :focus-visible { outline: 3px solid #0284c7; outline-offset: 2px; }
     details > summary { cursor: pointer; list-style: none; }
     details > summary::-webkit-details-marker { display: none; }
+    .reveal-panel { display: none; }
+    .reveal-panel.open { display: block; animation: fadeIn 0.25s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .topic-tab.active {
+      background-color: #0369a1 !important;
+      color: #ffffff !important;
+      border-color: #0369a1 !important;
+    }
   </style>
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4576939732610828"
@@ -263,6 +274,242 @@
         </details>
       </div>
 
+      <hr class="my-10 border-slate-200" />
+
+      <section id="area-live-builder" class="not-prose my-10">
+        <div class="rounded-3xl border border-slate-200 bg-slate-50/80 p-6 sm:p-8 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <span class="px-3 py-1 rounded-full bg-brand-100 text-brand-800 text-xs font-extrabold uppercase tracking-wider">Interactive Part 3 Workout</span>
+            <span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">8 High-Frequency Topics &bull; 90s Timer</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">A.R.E.A. Live Builder &amp; 90-Second Part 3 Response Timer</h2>
+          <p class="text-sm text-slate-600 leading-relaxed mb-5">
+            In my live 1-to-1 lessons, we drill the <strong>A.R.E.A. blueprint</strong> (<strong>Assertion &rarr; Reason &rarr; Evidence &rarr; Alternative</strong>) so you never freeze or fall back on family stories. Choose one of the 8 high-frequency Cambridge topics below, start the <strong>90-second extended Part 3 timer</strong>, assemble your C1 speculative stems, and click <strong>👁️ Reveal Cambridge Model</strong> to study the full Band 8.5 transcript.
+          </p>
+
+          <!-- Structural Blueprint Banner -->
+          <div class="bg-slate-900 text-sky-300 font-mono text-xs sm:text-sm p-4 rounded-2xl mb-6 border border-slate-800">
+            <strong>A.R.E.A. Blueprint:</strong> [A] Hedged Assertion (0–15s) &rarr; [R] Societal Reason (15–40s) &rarr; [E] Demographic Evidence (40–65s) &rarr; [A] Speculative Alternative (65–90s)
+          </div>
+
+          <!-- 8 Topic Selector Tabs -->
+          <div class="mb-6">
+            <p class="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-2">1. Select an Abstract Part 3 Topic (8 Exam Themes):</p>
+            <div class="flex flex-wrap gap-2" id="area-topic-tabs">
+              <button type="button" class="topic-tab active px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer" data-topic="0">1. Technology &amp; Attention</button>
+              <button type="button" class="topic-tab px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer" data-topic="1">2. Urbanisation</button>
+              <button type="button" class="topic-tab px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer" data-topic="2">3. Public Transport vs Cars</button>
+              <button type="button" class="topic-tab px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer" data-topic="3">4. Work-Life Balance</button>
+              <button type="button" class="topic-tab px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer" data-topic="4">5. AI &amp; Creative Craft</button>
+              <button type="button" class="topic-tab px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer" data-topic="5">6. Heritage Architecture</button>
+              <button type="button" class="topic-tab px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer" data-topic="6">7. Environmental Policy</button>
+              <button type="button" class="topic-tab px-3.5 py-2 rounded-xl border border-slate-300 bg-white text-xs font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer" data-topic="7">8. University vs Apprenticeships</button>
+            </div>
+          </div>
+
+          <!-- Active Prompt & 90-Second Timer Console -->
+          <div class="rounded-2xl bg-white border border-slate-200 p-5 mb-6 shadow-xs">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+              <div>
+                <span id="area-active-badge" class="text-[11px] font-extrabold uppercase tracking-wider text-brand-700">Topic 1 of 8 · Technology &amp; Attention</span>
+                <h3 id="area-active-question" class="text-base sm:text-lg font-extrabold text-slate-900 mt-0.5">&ldquo;To what extent have smartphones eroded people's capacity for deep concentration?&rdquo;</h3>
+                <p id="area-active-vocab" class="text-xs text-slate-600 mt-1"><strong>Target C1 Lexis:</strong> <em>fragmented attention, constant notifications, sustained focus, digital detox</em></p>
+              </div>
+              <div class="flex flex-col items-start md:items-end shrink-0 bg-slate-900 text-white p-3.5 rounded-xl border border-slate-800">
+                <div class="flex items-center gap-3 mb-2">
+                  <span class="font-mono text-2xl font-extrabold text-sky-400" id="area-timer-display">01:30</span>
+                  <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 text-amber-300" id="area-phase-badge">Ready (90s)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button type="button" id="area-timer-start" class="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">&#9654; Start 90s</button>
+                  <button type="button" id="area-timer-45" class="px-2.5 py-1 rounded-lg bg-sky-700 hover:bg-sky-600 text-white text-xs font-bold transition cursor-pointer">45s Sprint</button>
+                  <button type="button" id="area-timer-reset" class="px-2.5 py-1 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold transition cursor-pointer">Reset</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4-Step Interactive A.R.E.A. Stem Builder -->
+            <div class="mt-4">
+              <p class="text-xs font-bold text-slate-700 mb-3">2. Click a C1 Speculative/Hedging Stem in each column to insert it into your live speaking draft (or type your own):</p>
+              <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <p class="text-xs font-extrabold text-brand-700 mb-1.5">[A] Assertion Stems</p>
+                  <div class="space-y-1.5">
+                    <button type="button" class="stem-insert-btn w-full text-left text-[11px] p-1.5 rounded bg-white border border-slate-200 hover:border-brand-500 font-medium text-slate-700 cursor-pointer transition" data-slot="a" data-text="That's a tough one to generalise about, but on balance, I'd say ">&ldquo;That's a tough one to generalise about, but on balance...&rdquo;</button>
+                    <button type="button" class="stem-insert-btn w-full text-left text-[11px] p-1.5 rounded bg-white border border-slate-200 hover:border-brand-500 font-medium text-slate-700 cursor-pointer transition" data-slot="a" data-text="Broadly speaking, it depends on the demographic, though there is little doubt that ">&ldquo;Broadly speaking, it depends on the demographic...&rdquo;</button>
+                  </div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <p class="text-xs font-extrabold text-indigo-700 mb-1.5">[R] Reason Stems</p>
+                  <div class="space-y-1.5">
+                    <button type="button" class="stem-insert-btn w-full text-left text-[11px] p-1.5 rounded bg-white border border-slate-200 hover:border-indigo-500 font-medium text-slate-700 cursor-pointer transition" data-slot="r" data-text="The primary driver behind this shift is that ">&ldquo;The primary driver behind this shift is that...&rdquo;</button>
+                    <button type="button" class="stem-insert-btn w-full text-left text-[11px] p-1.5 rounded bg-white border border-slate-200 hover:border-indigo-500 font-medium text-slate-700 cursor-pointer transition" data-slot="r" data-text="What really underpins this trend is the fact that ">&ldquo;What really underpins this trend is the fact that...&rdquo;</button>
+                  </div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <p class="text-xs font-extrabold text-emerald-700 mb-1.5">[E] Evidence Stems</p>
+                  <div class="space-y-1.5">
+                    <button type="button" class="stem-insert-btn w-full text-left text-[11px] p-1.5 rounded bg-white border border-slate-200 hover:border-emerald-500 font-medium text-slate-700 cursor-pointer transition" data-slot="e" data-text="If you compare major metropolitan centres with thirty years ago, for instance, ">&ldquo;If you compare major metropolitan centres with...&rdquo;</button>
+                    <button type="button" class="stem-insert-btn w-full text-left text-[11px] p-1.5 rounded bg-white border border-slate-200 hover:border-emerald-500 font-medium text-slate-700 cursor-pointer transition" data-slot="e" data-text="Take younger professionals entering the workforce today: ">&ldquo;Take younger professionals entering the workforce...&rdquo;</button>
+                  </div>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+                  <p class="text-xs font-extrabold text-amber-800 mb-1.5">[A] Alternative Stems</p>
+                  <div class="space-y-1.5">
+                    <button type="button" class="stem-insert-btn w-full text-left text-[11px] p-1.5 rounded bg-white border border-slate-200 hover:border-amber-500 font-medium text-slate-700 cursor-pointer transition" data-slot="alt" data-text="That being said, had governments intervened earlier, we might be looking at a very different picture today.">&ldquo;That being said, had governments intervened...&rdquo;</button>
+                    <button type="button" class="stem-insert-btn w-full text-left text-[11px] p-1.5 rounded bg-white border border-slate-200 hover:border-amber-500 font-medium text-slate-700 cursor-pointer transition" data-slot="alt" data-text="Having said that, there is another angle to this: unless policies adapt, ">&ldquo;Having said that, there is another angle to this...&rdquo;</button>
+                  </div>
+                </div>
+              </div>
+
+              <label for="area-draft-box" class="block text-xs font-bold text-slate-700 mb-1">Your Live A.R.E.A. Response Draft / Spoken Notes:</label>
+              <textarea id="area-draft-box" rows="3" class="w-full rounded-xl border border-slate-300 p-3 text-xs sm:text-sm text-slate-800 focus:border-brand-600 focus:outline-none" placeholder="Click the C1 stems above or type your 4-step A.R.E.A. response here while speaking aloud..."></textarea>
+              <div class="flex flex-wrap items-center justify-between gap-3 mt-2">
+                <span id="area-draft-status" class="text-xs font-semibold text-slate-500">0 words drafted &bull; Aim for 4 connected sentences (60–90 words)</span>
+                <div class="flex items-center gap-2">
+                  <button type="button" id="area-load-scaffold" class="px-3 py-1.5 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-800 border border-brand-200 text-xs font-bold transition cursor-pointer">Load Topic A.R.E.A. Scaffold</button>
+                  <button type="button" id="area-clear-draft" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer">Clear Box</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- All 8 High-Frequency Topics Cards with Reveal Cambridge Model Buttons -->
+          <h3 class="text-lg font-extrabold text-slate-900 mb-3">All 8 High-Frequency Abstract Topics &amp; Band 8.5 Model Transcripts</h3>
+          <div class="space-y-4" id="area-models-container">
+
+            <!-- 1. Technology & Attention -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full">1 · Technology &amp; Attention</span>
+                <span class="text-xs font-semibold text-slate-500">C1 Focus: Clefts &amp; Contrastive Hedging</span>
+              </div>
+              <p class="text-sm font-bold text-slate-900 mb-3">&ldquo;To what extent have smartphones eroded people's capacity for deep concentration?&rdquo;</p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="p3-model-1">👁️ Reveal Cambridge Model</button>
+              <div id="p3-model-1" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-4 rounded-xl text-xs sm:text-sm text-slate-800 space-y-2">
+                <p><strong>[A - Assertion]</strong> &ldquo;That's quite a tough one to generalise about, but on balance, I'd say our capacity for sustained focus has taken a noticeable hit over the past decade.&rdquo;</p>
+                <p><strong>[R - Reason]</strong> &ldquo;What really drives this is the commercial design of short-form media, which rewards rapid scrolling rather than patience.&rdquo;</p>
+                <p><strong>[E - Evidence]</strong> &ldquo;If you look at university students or commuters today compared with twenty years ago, reading an uninterrupted forty-page chapter without checking a screen has become far rarer.&rdquo;</p>
+                <p><strong>[A - Alternative]</strong> &ldquo;Having said that, we are beginning to see a pushback—many younger people are actively turning off notifications or buying basic phones to reclaim their quiet time.&rdquo;</p>
+              </div>
+            </div>
+
+            <!-- 2. Urbanisation -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full">2 · Urbanisation</span>
+                <span class="text-xs font-semibold text-slate-500">C1 Focus: Passive Reporting &amp; Participles</span>
+              </div>
+              <p class="text-sm font-bold text-slate-900 mb-3">&ldquo;Why do young graduates continue moving to megacities despite the astronomical cost of living?&rdquo;</p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="p3-model-2">👁️ Reveal Cambridge Model</button>
+              <div id="p3-model-2" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-4 rounded-xl text-xs sm:text-sm text-slate-800 space-y-2">
+                <p><strong>[A - Assertion]</strong> &ldquo;At first glance it seems counter-intuitive, yet major capitals still act as an irresistible magnet for ambitious twenty-somethings.&rdquo;</p>
+                <p><strong>[R - Reason]</strong> &ldquo;The underlying reason is that specialist industries—whether finance, law, or media—remain heavily concentrated in metropolitan hubs, offering early-career mentoring you simply cannot replicate online.&rdquo;</p>
+                <p><strong>[E - Evidence]</strong> &ldquo;Take cities like London or Dublin: graduates willingly sacrifice living space and disposable income in their twenties to build a strong professional network.&rdquo;</p>
+                <p><strong>[A - Alternative]</strong> &ldquo;That being said, once people reach their thirties and start families, the equation flips, prompting a steady exodus toward smaller regional towns.&rdquo;</p>
+              </div>
+            </div>
+
+            <!-- 3. Public Transport vs Private Cars -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full">3 · Public Transport vs Private Cars</span>
+                <span class="text-xs font-semibold text-slate-500">C1 Focus: Conditionals &amp; Concession</span>
+              </div>
+              <p class="text-sm font-bold text-slate-900 mb-3">&ldquo;Is taxing private motorists the most effective way to reduce urban traffic congestion?&rdquo;</p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="p3-model-3">👁️ Reveal Cambridge Model</button>
+              <div id="p3-model-3" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-4 rounded-xl text-xs sm:text-sm text-slate-800 space-y-2">
+                <p><strong>[A - Assertion]</strong> &ldquo;Up to a point, yes, but punitive taxes alone rarely solve congestion unless reliable alternatives are already in place.&rdquo;</p>
+                <p><strong>[R - Reason]</strong> &ldquo;If commuters have no affordable bus or rail connection near their homes, raising fuel duty simply penalises working households without taking cars off the road.&rdquo;</p>
+                <p><strong>[E - Evidence]</strong> &ldquo;Where congestion charging has worked well, revenue was immediately ring-fenced to fund frequent, affordable metro and bus services.&rdquo;</p>
+                <p><strong>[A - Alternative]</strong> &ldquo;So rather than relying purely on financial penalties, municipal authorities would do far better to subsidise clean public transit first.&rdquo;</p>
+              </div>
+            </div>
+
+            <!-- 4. Work-Life Balance -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full">4 · Work-Life Balance</span>
+                <span class="text-xs font-semibold text-slate-500">C1 Focus: Negative Inversion &amp; Speculation</span>
+              </div>
+              <p class="text-sm font-bold text-slate-900 mb-3">&ldquo;Do you think a four-day working week is realistic for most modern industries?&rdquo;</p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="p3-model-4">👁️ Reveal Cambridge Model</button>
+              <div id="p3-model-4" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-4 rounded-xl text-xs sm:text-sm text-slate-800 space-y-2">
+                <p><strong>[A - Assertion]</strong> &ldquo;It really depends on the sector, but for office-based knowledge work, a four-day week is far more viable than sceptics used to claim.&rdquo;</p>
+                <p><strong>[R - Reason]</strong> &ldquo;Not only does a compressed schedule reduce staff burnout, but it also forces teams to cut out pointless meetings and focus on actual output.&rdquo;</p>
+                <p><strong>[E - Evidence]</strong> &ldquo;In recent UK pilot trials, the vast majority of participating firms kept the policy permanently because productivity either held steady or improved.&rdquo;</p>
+                <p><strong>[A - Alternative]</strong> &ldquo;Having said that, in front-line services like healthcare, hospitality, or logistics, cutting hours without hiring extra staff would obviously create severe staffing bottlenecks.&rdquo;</p>
+              </div>
+            </div>
+
+            <!-- 5. AI & Creative Craft -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full">5 · AI &amp; Creative Craft</span>
+                <span class="text-xs font-semibold text-slate-500">C1 Focus: Wh- Clefts &amp; Nuanced Contrast</span>
+              </div>
+              <p class="text-sm font-bold text-slate-900 mb-3">&ldquo;Could computer-generated art and music ever replace human artists?&rdquo;</p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="p3-model-5">👁️ Reveal Cambridge Model</button>
+              <div id="p3-model-5" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-4 rounded-xl text-xs sm:text-sm text-slate-800 space-y-2">
+                <p><strong>[A - Assertion]</strong> &ldquo;While automated tools can certainly churn out commercial background music or stock illustrations, I doubt they will ever replace genuine human artistry.&rdquo;</p>
+                <p><strong>[R - Reason]</strong> &ldquo;What gives a novel, a painting, or a piece of theatre its emotional weight is the lived human experience and vulnerability behind it.&rdquo;</p>
+                <p><strong>[E - Evidence]</strong> &ldquo;Just as photography didn't kill portrait painting in the nineteenth century, digital automation is more likely to push live performance and handmade craft into a more prized category.&rdquo;</p>
+                <p><strong>[A - Alternative]</strong> &ldquo;Still, for entry-level commercial illustrators and copywriters, the economic disruption over the next few years is undeniably a serious concern.&rdquo;</p>
+              </div>
+            </div>
+
+            <!-- 6. Heritage Architecture -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full">6 · Heritage Architecture</span>
+                <span class="text-xs font-semibold text-slate-500">C1 Focus: Passive Voice &amp; Adaptive Reuse</span>
+              </div>
+              <p class="text-sm font-bold text-slate-900 mb-3">&ldquo;Should cities preserve historic buildings at all costs, or replace them with modern high-density housing?&rdquo;</p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="p3-model-6">👁️ Reveal Cambridge Model</button>
+              <div id="p3-model-6" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-4 rounded-xl text-xs sm:text-sm text-slate-800 space-y-2">
+                <p><strong>[A - Assertion]</strong> &ldquo;I don't think it has to be an either-or choice; the smartest urban planning blends architectural preservation with practical modern use.&rdquo;</p>
+                <p><strong>[R - Reason]</strong> &ldquo;Once nineteenth-century stonework or industrial heritage is demolished, a city loses its sense of character and begins to look like an anonymous glass clone.&rdquo;</p>
+                <p><strong>[E - Evidence]</strong> &ldquo;Across many European port cities, disused linen mills and Victorian warehouses have been sensitively converted into apartments and cultural hubs rather than bulldozed.&rdquo;</p>
+                <p><strong>[A - Alternative]</strong> &ldquo;Of course, if a structure is structurally unsafe and holds zero historical merit, then replacing it with energy-efficient social housing is entirely sensible.&rdquo;</p>
+              </div>
+            </div>
+
+            <!-- 7. Environmental Policy -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full">7 · Environmental Policy</span>
+                <span class="text-xs font-semibold text-slate-500">C1 Focus: Preparatory It &amp; Structural Balance</span>
+              </div>
+              <p class="text-sm font-bold text-slate-900 mb-3">&ldquo;Does the responsibility for tackling plastic waste lie primarily with individual consumers or large corporations?&rdquo;</p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="p3-model-7">👁️ Reveal Cambridge Model</button>
+              <div id="p3-model-7" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-4 rounded-xl text-xs sm:text-sm text-slate-800 space-y-2">
+                <p><strong>[A - Assertion]</strong> &ldquo;While everyday habits matter, I'd argue that the lion's share of responsibility rests squarely with manufacturers and government regulators.&rdquo;</p>
+                <p><strong>[R - Reason]</strong> &ldquo;Individual shoppers can only choose from what sits on supermarket shelves; if every item is wrapped in single-use film, personal goodwill has very limited reach.&rdquo;</p>
+                <p><strong>[E - Evidence]</strong> &ldquo;When governments introduced mandatory charges on disposable carrier bags and strict packaging rules, waste dropped dramatically within months.&rdquo;</p>
+                <p><strong>[A - Alternative]</strong> &ldquo;That said, consumer pressure still plays a vital role, because companies rarely redesign their supply chains unless shoppers vote with their wallets.&rdquo;</p>
+              </div>
+            </div>
+
+            <!-- 8. University vs Apprenticeships -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-brand-700 bg-brand-50 border border-brand-200 px-2.5 py-0.5 rounded-full">8 · University vs Apprenticeships</span>
+                <span class="text-xs font-semibold text-slate-500">C1 Focus: Contrastive Clauses &amp; Speculative Modals</span>
+              </div>
+              <p class="text-sm font-bold text-slate-900 mb-3">&ldquo;Have societies placed too much emphasis on academic university degrees at the expense of vocational trades?&rdquo;</p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="p3-model-8">👁️ Reveal Cambridge Model</button>
+              <div id="p3-model-8" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-4 rounded-xl text-xs sm:text-sm text-slate-800 space-y-2">
+                <p><strong>[A - Assertion]</strong> &ldquo;Without a doubt, yes—for decades, school leavers were funnelled toward university degrees regardless of whether it suited their talents or the job market.&rdquo;</p>
+                <p><strong>[R - Reason]</strong> &ldquo;This created a dual problem: an oversupply of graduates burdened with tuition debt, alongside a severe shortage of skilled electricians, plumbers, and engineering technicians.&rdquo;</p>
+                <p><strong>[E - Evidence]</strong> &ldquo;In countries like Germany and Switzerland, where vocational apprenticeships carry high social esteem, youth employment and technical craftsmanship remain exceptionally strong.&rdquo;</p>
+                <p><strong>[A - Alternative]</strong> &ldquo;Thankfully, attitudes are shifting now, as many school leavers realise an apprenticeship offers debt-free training and immediate career security.&rdquo;</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       <h2>Frequently Asked Questions: IELTS Speaking Part 3</h2>
       <div class="not-prose space-y-3 my-6">
         <details class="group rounded-xl border border-slate-200 bg-slate-50 p-4" open>
@@ -331,6 +578,211 @@
     </div>
   </footer>
 
+  <script>
+    (function() {
+      var topics = [
+        {
+          badge: 'Topic 1 of 8 · Technology & Attention',
+          question: '“To what extent have smartphones eroded people\'s capacity for deep concentration?”',
+          vocab: 'fragmented attention, constant notifications, sustained focus, digital detox',
+          scaffold: '[A] On balance, I\'d say our capacity for sustained focus has taken a noticeable hit. [R] What really drives this is the commercial design of short-form media. [E] Compare university students today with twenty years ago: reading a long chapter uninterrupted is far rarer. [A] Having said that, many young adults are now actively turning off notifications.'
+        },
+        {
+          badge: 'Topic 2 of 8 · Urbanisation',
+          question: '“Why do young graduates continue moving to megacities despite the astronomical cost of living?”',
+          vocab: 'metropolitan hubs, early-career mentoring, disposable income, regional exodus',
+          scaffold: '[A] At first glance it seems counter-intuitive, yet major capitals remain a magnet for ambitious graduates. [R] The primary driver is that specialist industries remain heavily concentrated in metropolitan hubs. [E] Take cities like London or Dublin: twenty-somethings sacrifice space to build a career network. [A] That being said, once people start families in their thirties, many relocate to smaller towns.'
+        },
+        {
+          badge: 'Topic 3 of 8 · Public Transport vs Private Cars',
+          question: '“Is taxing private motorists the most effective way to reduce urban traffic congestion?”',
+          vocab: 'punitive taxation, commuter infrastructure, ring-fenced revenue, subsidised transit',
+          scaffold: '[A] Up to a point, yes, but punitive taxes alone rarely solve congestion without reliable alternatives. [R] If commuters lack affordable rail links, higher fuel duty simply penalises working households. [E] Where congestion charging has succeeded, revenue was immediately ring-fenced for frequent buses. [A] So rather than relying purely on penalties, councils should subsidise clean public transit first.'
+        },
+        {
+          badge: 'Topic 4 of 8 · Work-Life Balance',
+          question: '“Do you think a four-day working week is realistic for most modern industries?”',
+          vocab: 'compressed schedule, staff burnout, knowledge economy, staffing bottlenecks',
+          scaffold: '[A] It depends on the sector, but for office-based roles, a four-day week is far more viable than sceptics claimed. [R] Not only does a compressed schedule reduce burnout, but it also cuts out pointless meetings. [E] In recent UK pilot trials, most participating firms kept the policy permanently. [A] Having said that, in healthcare or hospitality, cutting hours without extra staff would create bottlenecks.'
+        },
+        {
+          badge: 'Topic 5 of 8 · AI & Creative Craft',
+          question: '“Could computer-generated art and music ever replace human artists?”',
+          vocab: 'lived human experience, commercial illustration, handmade craft, emotional resonance',
+          scaffold: '[A] While automated tools can churn out stock graphics, I doubt they will ever replace genuine human artistry. [R] What gives a painting or play its emotional weight is the lived human experience behind it. [E] Just as photography didn\'t kill portrait painting, automation makes live craft more prized. [A] Still, for entry-level commercial illustrators, the short-term economic disruption is a real concern.'
+        },
+        {
+          badge: 'Topic 6 of 8 · Heritage Architecture',
+          question: '“Should cities preserve historic buildings at all costs, or replace them with modern high-density housing?”',
+          vocab: 'architectural preservation, adaptive reuse, industrial heritage, energy-efficient housing',
+          scaffold: '[A] It doesn\'t have to be an either-or choice; smart urban planning blends preservation with modern use. [R] Once historic stonework is demolished, a city loses its character and looks like an anonymous glass clone. [E] Across European port cities, disused Victorian warehouses have been sensitively converted into apartments. [A] Of course, if a building is unsafe and lacks historical merit, replacing it with social housing makes sense.'
+        },
+        {
+          badge: 'Topic 7 of 8 · Environmental Policy',
+          question: '“Does the responsibility for tackling plastic waste lie primarily with individual consumers or large corporations?”',
+          vocab: 'the lion\'s share of responsibility, single-use packaging, regulatory intervention, supply chains',
+          scaffold: '[A] While everyday habits matter, I\'d argue the lion\'s share of responsibility rests with manufacturers and regulators. [R] Shoppers can only choose from what sits on shelves; if everything is wrapped in plastic, personal choice is limited. [E] When governments introduced mandatory carrier-bag charges, plastic waste dropped within months. [A] That said, consumer pressure still matters because firms rarely change unless shoppers vote with their wallets.'
+        },
+        {
+          badge: 'Topic 8 of 8 · University vs Apprenticeships',
+          question: '“Have societies placed too much emphasis on academic university degrees at the expense of vocational trades?”',
+          vocab: 'vocational apprenticeships, tuition debt, skilled tradespeople, social esteem',
+          scaffold: '[A] Without a doubt, yes—for decades school leavers were funnelled into degrees regardless of the job market. [R] This created an oversupply of indebted graduates alongside a shortage of skilled electricians and technicians. [E] In countries like Germany and Switzerland, vocational apprenticeships carry high esteem and strong pay. [A] Thankfully, attitudes are shifting as young people see apprenticeships offer debt-free career security.'
+        }
+      ];
+
+      var activeTopicIdx = 0;
+      var badgeEl = document.getElementById('area-active-badge');
+      var questionEl = document.getElementById('area-active-question');
+      var vocabEl = document.getElementById('area-active-vocab');
+      var draftBox = document.getElementById('area-draft-box');
+      var draftStatus = document.getElementById('area-draft-status');
+      var loadScaffoldBtn = document.getElementById('area-load-scaffold');
+      var clearDraftBtn = document.getElementById('area-clear-draft');
+
+      function updateWordCount() {
+        if (!draftBox || !draftStatus) return;
+        var text = draftBox.value.trim();
+        var words = text ? text.split(/\s+/).length : 0;
+        draftStatus.textContent = words + ' words drafted • Aim for 4 connected sentences (60–90 words)';
+      }
+
+      if (draftBox) {
+        draftBox.addEventListener('input', updateWordCount);
+      }
+
+      document.querySelectorAll('.topic-tab').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var idx = parseInt(btn.getAttribute('data-topic'), 10) || 0;
+          activeTopicIdx = idx;
+          document.querySelectorAll('.topic-tab').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          var t = topics[idx];
+          if (t) {
+            if (badgeEl) badgeEl.textContent = t.badge;
+            if (questionEl) questionEl.textContent = t.question;
+            if (vocabEl) vocabEl.innerHTML = '<strong>Target C1 Lexis:</strong> <em>' + t.vocab + '</em>';
+          }
+        });
+      });
+
+      document.querySelectorAll('.stem-insert-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (!draftBox) return;
+          var snippet = btn.getAttribute('data-text') || '';
+          var current = draftBox.value;
+          draftBox.value = current ? (current.replace(/\s*$/, '') + ' ' + snippet) : snippet;
+          draftBox.focus();
+          updateWordCount();
+        });
+      });
+
+      if (loadScaffoldBtn) {
+        loadScaffoldBtn.addEventListener('click', function() {
+          if (!draftBox) return;
+          var t = topics[activeTopicIdx];
+          if (t) {
+            draftBox.value = t.scaffold;
+            updateWordCount();
+          }
+        });
+      }
+
+      if (clearDraftBtn) {
+        clearDraftBtn.addEventListener('click', function() {
+          if (!draftBox) return;
+          draftBox.value = '';
+          updateWordCount();
+        });
+      }
+
+      // 90-Second / 45-Second Part 3 Timer
+      var timerDisplay = document.getElementById('area-timer-display');
+      var phaseBadge = document.getElementById('area-phase-badge');
+      var start90Btn = document.getElementById('area-timer-start');
+      var start45Btn = document.getElementById('area-timer-45');
+      var resetTimerBtn = document.getElementById('area-timer-reset');
+      var timerInterval = null;
+      var remainingSecs = 90;
+      var totalDuration = 90;
+
+      function formatTime(secs) {
+        var m = Math.floor(secs / 60);
+        var s = secs % 60;
+        return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+      }
+
+      function updateTimerUI() {
+        if (timerDisplay) timerDisplay.textContent = formatTime(remainingSecs);
+        if (!phaseBadge) return;
+        var elapsed = totalDuration - remainingSecs;
+        if (remainingSecs === 0) {
+          phaseBadge.textContent = 'Time Up · Check Model';
+        } else if (elapsed === 0) {
+          phaseBadge.textContent = 'Ready (' + totalDuration + 's)';
+        } else if (elapsed <= totalDuration * 0.2) {
+          phaseBadge.textContent = '[A] Hedged Assertion';
+        } else if (elapsed <= totalDuration * 0.5) {
+          phaseBadge.textContent = '[R] Societal Reason';
+        } else if (elapsed <= totalDuration * 0.8) {
+          phaseBadge.textContent = '[E] Demographic Evidence';
+        } else {
+          phaseBadge.textContent = '[A] Speculative Alternative';
+        }
+      }
+
+      function startCountdown(seconds) {
+        if (timerInterval) clearInterval(timerInterval);
+        totalDuration = seconds;
+        remainingSecs = seconds;
+        updateTimerUI();
+        timerInterval = setInterval(function() {
+          if (remainingSecs > 0) {
+            remainingSecs--;
+            updateTimerUI();
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+          }
+        }, 1000);
+      }
+
+      if (start90Btn) {
+        start90Btn.addEventListener('click', function() { startCountdown(90); });
+      }
+      if (start45Btn) {
+        start45Btn.addEventListener('click', function() { startCountdown(45); });
+      }
+      if (resetTimerBtn) {
+        resetTimerBtn.addEventListener('click', function() {
+          if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+          }
+          totalDuration = 90;
+          remainingSecs = 90;
+          updateTimerUI();
+        });
+      }
+
+      // Reveal Cambridge Model Buttons
+      document.querySelectorAll('.reveal-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var targetId = btn.getAttribute('data-target');
+          var panel = document.getElementById(targetId);
+          if (!panel) return;
+          var isOpen = panel.classList.contains('open');
+          if (isOpen) {
+            panel.classList.remove('open');
+            btn.textContent = '👁️ Reveal Cambridge Model';
+          } else {
+            panel.classList.add('open');
+            btn.textContent = '🙈 Hide Cambridge Model';
+          }
+        });
+      });
+    })();
+  </script>
   <script src="analytics.js"></script>
   <!-- Sticky Bottom Quick Booking Bar -->
       <aside class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-700/80 px-4 py-3 shadow-2xl flex items-center justify-between gap-4 text-white" aria-label="IELTS Practice and Diagnostic Session">

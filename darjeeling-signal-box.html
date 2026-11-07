@@ -287,6 +287,105 @@
       transition: background 0.15s;
     }
     .btn-action-rail:hover { background: #b45309; color: #fff; }
+
+    /* 4-Step Deconstruction & Echo Strike-Out */
+    .echo-struck .echo-word {
+      text-decoration: line-through;
+      color: #64748b;
+      opacity: 0.55;
+      transition: all 0.2s ease;
+    }
+    .echo-struck .deficit-word {
+      background: rgba(245, 158, 11, 0.24);
+      border-bottom: 2px solid var(--amber-bright);
+      color: #fef08a;
+      padding: 1px 4px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .step-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0 10px 0;
+      align-items: center;
+    }
+    .step-pill {
+      font-size: 0.73rem;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: #0d1a36;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      color: var(--text-muted);
+    }
+    .step-pill strong { color: var(--amber-bright); }
+    .kw-guard-pill {
+      font-family: var(--font-code) !important;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 99px;
+      background: rgba(244, 63, 94, 0.15);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+    .kw-guard-pill.ok {
+      background: rgba(16, 185, 129, 0.16);
+      color: #6ee7b7;
+      border-color: var(--emerald);
+    }
+    .btn-strike-echo {
+      background: rgba(245, 158, 11, 0.14);
+      border: 1px solid var(--amber);
+      color: var(--amber-bright);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-strike-echo:hover, .btn-strike-echo.active {
+      background: var(--amber);
+      color: #040813;
+    }
+    .btn-reveal-model {
+      background: #1e293b;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: #e2e8f0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 7px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-reveal-model:hover {
+      border-color: var(--amber);
+      color: #fff;
+    }
+    .cambridge-model-box {
+      display: none;
+      margin-top: 10px;
+      padding: 12px 14px;
+      background: #040914;
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-left: 4px solid var(--amber-bright);
+      border-radius: 6px;
+      font-size: 0.86rem;
+      color: var(--text-main);
+    }
+    .cambridge-model-box.open { display: block; }
+    .mark-split-pill {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid var(--emerald);
+      color: #a7f3d0;
+      font-family: var(--font-code) !important;
+      font-size: 0.82rem;
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin: 4px 0;
+    }
   </style>
 </head>
 <body>
@@ -317,7 +416,7 @@
     </div>
     <div class="score-box-rail">
       <div class="score-title-rail">Session Score</div>
-      <div class="score-val-rail" id="session-score">0 / 20</div>
+      <div class="score-val-rail" id="session-score">0 / 32</div>
     </div>
   </header>
 
@@ -463,59 +562,92 @@
       <span class="badge-rail">Cambridge Part 4 Format</span>
     </div>
     <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:14px;">
-      Complete the second sentence using between <strong>3 and 6 words</strong> including the keyword:
+      Complete the second sentence using between <strong>3 and 6 words</strong> including the unchanged keyword:
     </p>
 
     <!-- KWT 1 -->
-    <div class="kwt-row-clean" data-valid="thereby curbing peak traffic congestion|thereby reducing peak traffic congestion">
+    <div class="kwt-row-clean" id="kwt-row-1" data-keyword="THEREBY" data-valid="thereby curbing peak traffic congestion|thereby reducing peak traffic congestion">
       <div class="kwt-head">
-        <span style="font-size:0.92rem; color:#e2e8f0;">1. The municipal council subsidised off-peak rail tickets, which curbed peak traffic congestion.</span>
-        <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:0.92rem; color:#e2e8f0;">1. <span class="echo-word">The municipal council subsidised off-peak rail tickets,</span> <span class="deficit-word">which curbed peak traffic congestion.</span></span>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="railApp.toggleEcho('kwt-row-1', this)">✂️ Strike Out the Echoes</button>
           <span class="badge-rail" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">THEREBY</span>
+          <span class="kw-guard-pill" id="kwt-kw-1">KEYWORD: THEREBY (MISSING)</span>
           <span class="kwt-badge-pill" id="kwt-pill-1">0 WORDS (3–6 REQ)</span>
         </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Tense Harmony:</strong> Past Simple (curbed) &rarr; Present Participle (-ing)</span>
+        <span class="step-pill"><strong>Voice Shift:</strong> Active Relative Clause &rarr; Resultative Participle</span>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
         <span style="font-size:0.92rem;">The council subsidised off-peak tickets,</span>
         <input type="text" class="kwt-input-clean" id="kwt-in-1" placeholder="3–6 words..." oninput="railApp.trackWords(1)">
         <span style="font-size:0.92rem;">across central arteries.</span>
         <button type="button" class="btn-action-rail" onclick="railApp.checkKWT(1, 'thereby curbing peak traffic congestion', 'Resultative participle: comma + thereby + -ing.')">Check</button>
+        <button type="button" class="btn-reveal-model" onclick="railApp.toggleModelBox('kwt-model-1')">👁️ Reveal Cambridge Model</button>
       </div>
       <div class="feedback-rail" id="kwt-fb-1"></div>
+      <div class="cambridge-model-box" id="kwt-model-1">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">thereby curbing (1 mark) // peak traffic congestion (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">Resultative participle chain replaces <em>which curbed</em> with <em>, thereby curbing</em>.</div>
+      </div>
     </div>
 
     <!-- KWT 2 -->
-    <div class="kwt-row-clean" data-valid="cramped though the sleeper was|cramped though the carriage was">
+    <div class="kwt-row-clean" id="kwt-row-2" data-keyword="THOUGH" data-valid="cramped though the sleeper was|cramped though the carriage was">
       <div class="kwt-head">
-        <span style="font-size:0.92rem; color:#e2e8f0;">2. Although the overnight sleeper carriage was cramped, the journey provided memorable stories.</span>
-        <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:0.92rem; color:#e2e8f0;">2. <span class="deficit-word">Although the overnight sleeper carriage was cramped,</span> <span class="echo-word">the journey provided memorable stories.</span></span>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="railApp.toggleEcho('kwt-row-2', this)">✂️ Strike Out the Echoes</button>
           <span class="badge-rail" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">THOUGH</span>
+          <span class="kw-guard-pill" id="kwt-kw-2">KEYWORD: THOUGH (MISSING)</span>
           <span class="kwt-badge-pill" id="kwt-pill-2">0 WORDS (3–6 REQ)</span>
         </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Tense Harmony:</strong> Past Simple (was) retained at clause end</span>
+        <span class="step-pill"><strong>Voice Shift:</strong> Concessive Clause &rarr; Fronted Adjective + though</span>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
         <input type="text" class="kwt-input-clean" id="kwt-in-2" placeholder="3–6 words..." oninput="railApp.trackWords(2)">
         <span style="font-size:0.92rem;">, the journey provided memorable stories.</span>
-        <button type="button" class="btn-action-rail" onclick="railApp.checkKWT(2, 'cramped though the carriage was', 'Fronted concession: Adjective (Cramped) + though + subject + verb.')">Check</button>
+        <button type="button" class="btn-action-rail" onclick="railApp.checkKWT(2, 'Cramped though the carriage was', 'Fronted concession: Adjective (Cramped) + though + subject + verb.')">Check</button>
+        <button type="button" class="btn-reveal-model" onclick="railApp.toggleModelBox('kwt-model-2')">👁️ Reveal Cambridge Model</button>
       </div>
       <div class="feedback-rail" id="kwt-fb-2"></div>
+      <div class="cambridge-model-box" id="kwt-model-2">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">Cramped though (1 mark) // the carriage/sleeper was (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">Fronted adjective concession places the predicative adjective before <em>though + subject + verb</em>.</div>
+      </div>
     </div>
 
     <!-- KWT 3 -->
-    <div class="kwt-row-clean" data-valid="what impressed the inspectors most was|what impressed the inspectors was">
+    <div class="kwt-row-clean" id="kwt-row-3" data-keyword="WHAT" data-valid="what impressed the inspectors most was|what impressed the inspectors was">
       <div class="kwt-head">
-        <span style="font-size:0.92rem; color:#e2e8f0;">3. The punctuality of the mountain rail service impressed the safety inspectors the most.</span>
-        <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:0.92rem; color:#e2e8f0;">3. <span class="echo-word">The punctuality of the mountain rail service</span> <span class="deficit-word">impressed the safety inspectors the most.</span></span>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="railApp.toggleEcho('kwt-row-3', this)">✂️ Strike Out the Echoes</button>
           <span class="badge-rail" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">WHAT</span>
+          <span class="kw-guard-pill" id="kwt-kw-3">KEYWORD: WHAT (MISSING)</span>
           <span class="kwt-badge-pill" id="kwt-pill-3">0 WORDS (3–6 REQ)</span>
         </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Tense Harmony:</strong> Past Simple (impressed) &rarr; Past Copula (was)</span>
+        <span class="step-pill"><strong>Voice Shift:</strong> Standard SVO &rarr; Emphatic Wh-Cleft</span>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
         <input type="text" class="kwt-input-clean" id="kwt-in-3" placeholder="3–6 words..." oninput="railApp.trackWords(3)">
         <span style="font-size:0.92rem;">the punctuality of the mountain service.</span>
-        <button type="button" class="btn-action-rail" onclick="railApp.checkKWT(3, 'what impressed the inspectors most was', 'Wh-cleft sentence for emphatic focus.')">Check</button>
+        <button type="button" class="btn-action-rail" onclick="railApp.checkKWT(3, 'What impressed the inspectors most was', 'Wh-cleft sentence for emphatic focus.')">Check</button>
+        <button type="button" class="btn-reveal-model" onclick="railApp.toggleModelBox('kwt-model-3')">👁️ Reveal Cambridge Model</button>
       </div>
       <div class="feedback-rail" id="kwt-fb-3"></div>
+      <div class="cambridge-model-box" id="kwt-model-3">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">What impressed the inspectors (1 mark) // (most) was (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">Wh-cleft packages the verb phrase inside a nominal <em>What</em>-clause followed by singular <em>was</em>.</div>
+      </div>
     </div>
   </section>
 
@@ -549,16 +681,219 @@
       <div class="feedback-rail" id="rail-sim-feedback"></div>
 
       <div style="display:flex; justify-content:space-between; margin-top:12px; padding-top:10px; border-top:1px solid rgba(148,163,184,0.12);">
-        <button type="button" class="btn-action-rail" style="background:#1e293b; color:#fff;" onclick="railApp.revealSimModel()">👁️ Reveal Model</button>
+        <button type="button" class="btn-action-rail" style="background:#1e293b; color:#fff;" onclick="railApp.revealSimModel()">👁️ Reveal Cambridge Model</button>
         <button type="button" class="btn-action-rail" onclick="railApp.nextJunction()">Next Mountain Junction &rarr;</button>
       </div>
     </div>
   </section>
 
-  <!-- Section 5: Speaking Part 2 Warm-Up -->
+  <!-- Section 5: 6 Himalayan Night-Express C1/C2 Track-Switching Transformations -->
+  <section class="card-rail" id="night-express-section">
+    <div class="card-header-rail">
+      <div>
+        <h2>5. Himalayan Night-Express: 6 C1/C2 Track-Switching Transformations</h2>
+        <p style="font-size:0.86rem; color:var(--text-muted); margin-top:4px;">
+          Master <strong>No sooner... than</strong>, <strong>Hardly... when</strong>, <strong>Lest / In case / Provided that</strong>, and <strong>Inverted Conditionals</strong> using Gareth's 4-Step Deconstruction Strategy.
+        </p>
+      </div>
+      <span class="badge-rail" style="border-color:var(--cyan); color:var(--cyan-bright);">Night-Express Switches</span>
+    </div>
+
+    <!-- Track Switch 1: SOONER -->
+    <div class="kwt-row-clean" id="nx-row-1" data-keyword="SOONER" data-valid="sooner had the night express cleared|sooner had the express cleared|sooner had the train cleared">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-rail" style="font-size:0.7rem; margin-right:6px;">SWITCH 1 • GHOOM MIST SIDING</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="deficit-word">Immediately after the night express cleared</span> <span class="echo-word">the tunnel, thick mountain fog descended on the valley.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="railApp.toggleEcho('nx-row-1', this)">✂️ Strike Out the Echoes</button>
+          <span class="badge-rail" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">SOONER</span>
+          <span class="kw-guard-pill" id="nx-kw-1">KEYWORD: SOONER (MISSING)</span>
+          <span class="kwt-badge-pill" id="nx-pill-1">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Past Simple (cleared) &rarr; Past Perfect Inversion (had... cleared)</span>
+        <span class="step-pill"><strong>Step 3 Correlative Pairing:</strong> No sooner + had + Subject + V3 ... than</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.92rem;">No</span>
+        <input type="text" class="kwt-input-clean" id="nx-in-1" placeholder="3–6 words including SOONER..." oninput="railApp.trackNxWords(1)">
+        <span style="font-size:0.92rem;">the tunnel than thick mountain fog descended on the valley.</span>
+        <button type="button" class="btn-action-rail" onclick="railApp.checkNxSwitch(1)">Switch Track</button>
+        <button type="button" class="btn-reveal-model" onclick="railApp.toggleModelBox('nx-model-1')">👁️ Reveal Cambridge Model</button>
+      </div>
+      <div class="feedback-rail" id="nx-fb-1"></div>
+      <div class="cambridge-model-box" id="nx-model-1">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">sooner had (1 mark) // the (night) express cleared (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: <em>Immediately after</em> triggers negative inversion <em>No sooner had + subject + past participle ... than</em>.</div>
+      </div>
+    </div>
+
+    <!-- Track Switch 2: HARDLY -->
+    <div class="kwt-row-clean" id="nx-row-2" data-keyword="HARDLY" data-valid="hardly had the signalman pulled">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-rail" style="font-size:0.7rem; margin-right:6px;">SWITCH 2 • BATASIA LOOP VIADUCT</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="deficit-word">The signalman had only just pulled</span> <span class="echo-word">the brass lever when the locomotive whistle echoed across the ridge.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="railApp.toggleEcho('nx-row-2', this)">✂️ Strike Out the Echoes</button>
+          <span class="badge-rail" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">HARDLY</span>
+          <span class="kw-guard-pill" id="nx-kw-2">KEYWORD: HARDLY (MISSING)</span>
+          <span class="kwt-badge-pill" id="nx-pill-2">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Past Perfect (had only just pulled) &rarr; Inverted Past Perfect</span>
+        <span class="step-pill"><strong>Step 3 Correlative Pairing:</strong> Hardly + had + Subject + V3 ... when</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <input type="text" class="kwt-input-clean" id="nx-in-2" placeholder="3–6 words including HARDLY..." oninput="railApp.trackNxWords(2)">
+        <span style="font-size:0.92rem;">the brass lever when the locomotive whistle echoed across the ridge.</span>
+        <button type="button" class="btn-action-rail" onclick="railApp.checkNxSwitch(2)">Switch Track</button>
+        <button type="button" class="btn-reveal-model" onclick="railApp.toggleModelBox('nx-model-2')">👁️ Reveal Cambridge Model</button>
+      </div>
+      <div class="feedback-rail" id="nx-fb-2"></div>
+      <div class="cambridge-model-box" id="nx-model-2">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">Hardly had (1 mark) // the signalman pulled (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: Notice that Sentence 2 already contains <em>when</em>, locking in the <em>Hardly had + subject + V3 ... when</em> pattern.</div>
+      </div>
+    </div>
+
+    <!-- Track Switch 3: LEST -->
+    <div class="kwt-row-clean" id="nx-row-3" data-keyword="LEST" data-valid="lest the freight carriages should|lest the freight carriages|lest the carriages should">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-rail" style="font-size:0.7rem; margin-right:6px;">SWITCH 3 • KURSEONG TEA RIDGE</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="echo-word">The stationmaster lit the oil flares</span> <span class="deficit-word">because he feared the freight carriages might</span> <span class="echo-word">overshoot the siding.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="railApp.toggleEcho('nx-row-3', this)">✂️ Strike Out the Echoes</button>
+          <span class="badge-rail" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">LEST</span>
+          <span class="kw-guard-pill" id="nx-kw-3">KEYWORD: LEST (MISSING)</span>
+          <span class="kwt-badge-pill" id="nx-pill-3">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Past Fear (feared... might) &rarr; Subjunctive / should + V1</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Active Clause &rarr; Precautionary Conjunction (lest)</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.92rem;">The stationmaster lit the oil flares</span>
+        <input type="text" class="kwt-input-clean" id="nx-in-3" placeholder="3–6 words including LEST..." oninput="railApp.trackNxWords(3)">
+        <span style="font-size:0.92rem;">overshoot the siding.</span>
+        <button type="button" class="btn-action-rail" onclick="railApp.checkNxSwitch(3)">Switch Track</button>
+        <button type="button" class="btn-reveal-model" onclick="railApp.toggleModelBox('nx-model-3')">👁️ Reveal Cambridge Model</button>
+      </div>
+      <div class="feedback-rail" id="nx-fb-3"></div>
+      <div class="cambridge-model-box" id="nx-model-3">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">lest (1 mark) // the (freight) carriages (should) (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: <em>Lest</em> means "for fear that" and takes either <em>should + bare infinitive</em> or the present subjunctive.</div>
+      </div>
+    </div>
+
+    <!-- Track Switch 4: PROVIDED -->
+    <div class="kwt-row-clean" id="nx-row-4" data-keyword="PROVIDED" data-valid="provided that no landslides|provided no landslides">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-rail" style="font-size:0.7rem; margin-right:6px;">SWITCH 4 • TINDHARIA STEEP GRADE</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="echo-word">The mountain locomotive will reach Darjeeling by dawn</span> <span class="deficit-word">as long as no landslides</span> <span class="echo-word">block the gorge.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="railApp.toggleEcho('nx-row-4', this)">✂️ Strike Out the Echoes</button>
+          <span class="badge-rail" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">PROVIDED</span>
+          <span class="kw-guard-pill" id="nx-kw-4">KEYWORD: PROVIDED (MISSING)</span>
+          <span class="kwt-badge-pill" id="nx-pill-4">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Future Main Clause + Present Simple Condition (block)</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Active &rarr; Strict Prerequisite Conjunction</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.92rem;">The mountain locomotive will reach Darjeeling by dawn</span>
+        <input type="text" class="kwt-input-clean" id="nx-in-4" placeholder="3–6 words including PROVIDED..." oninput="railApp.trackNxWords(4)">
+        <span style="font-size:0.92rem;">block the gorge.</span>
+        <button type="button" class="btn-action-rail" onclick="railApp.checkNxSwitch(4)">Switch Track</button>
+        <button type="button" class="btn-reveal-model" onclick="railApp.toggleModelBox('nx-model-4')">👁️ Reveal Cambridge Model</button>
+      </div>
+      <div class="feedback-rail" id="nx-fb-4"></div>
+      <div class="cambridge-model-box" id="nx-model-4">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">provided (that) (1 mark) // no landslides (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: <em>Provided (that)</em> replaces <em>as long as</em> to state an essential condition.</div>
+      </div>
+    </div>
+
+    <!-- Track Switch 5: HAD -->
+    <div class="kwt-row-clean" id="nx-row-5" data-keyword="HAD" data-valid="had the monsoon rains eroded|had monsoon rains eroded">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-rail" style="font-size:0.7rem; margin-right:6px;">SWITCH 5 • SONADA TIMBER TRESTLE</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="deficit-word">If the monsoon rains had eroded</span> <span class="echo-word">the embankment, the morning mail train would have been diverted.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="railApp.toggleEcho('nx-row-5', this)">✂️ Strike Out the Echoes</button>
+          <span class="badge-rail" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">HAD</span>
+          <span class="kw-guard-pill" id="nx-kw-5">KEYWORD: HAD (MISSING)</span>
+          <span class="kwt-badge-pill" id="nx-pill-5">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Past Perfect (had eroded) &rarr; Inverted Third Conditional</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Active Condition + Passive Main Clause (would have been diverted)</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <input type="text" class="kwt-input-clean" id="nx-in-5" placeholder="3–6 words including HAD..." oninput="railApp.trackNxWords(5)">
+        <span style="font-size:0.92rem;">the embankment, the morning mail train would have been diverted.</span>
+        <button type="button" class="btn-action-rail" onclick="railApp.checkNxSwitch(5)">Switch Track</button>
+        <button type="button" class="btn-reveal-model" onclick="railApp.toggleModelBox('nx-model-5')">👁️ Reveal Cambridge Model</button>
+      </div>
+      <div class="feedback-rail" id="nx-fb-5"></div>
+      <div class="cambridge-model-box" id="nx-model-5">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">Had (the) monsoon rains (1 mark) // eroded (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: Dropping <em>If</em> fronts the auxiliary <em>Had</em> before the subject <em>the monsoon rains</em>.</div>
+      </div>
+    </div>
+
+    <!-- Track Switch 6: CASE -->
+    <div class="kwt-row-clean" id="nx-row-6" data-keyword="CASE" data-valid="in case frost|just in case frost">
+      <div class="kwt-head">
+        <div>
+          <span class="badge-rail" style="font-size:0.7rem; margin-right:6px;">SWITCH 6 • DARJEELING SUMMIT TERMINUS</span>
+          <span style="font-size:0.92rem; color:#e2e8f0;"><span class="echo-word">Emergency brake sand is stored on board</span> <span class="deficit-word">so that the crew are prepared if frost</span> <span class="echo-word">forms on the rails.</span></span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+          <button type="button" class="btn-strike-echo" onclick="railApp.toggleEcho('nx-row-6', this)">✂️ Strike Out the Echoes</button>
+          <span class="badge-rail" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">CASE</span>
+          <span class="kw-guard-pill" id="nx-kw-6">KEYWORD: CASE (MISSING)</span>
+          <span class="kwt-badge-pill" id="nx-pill-6">0 WORDS (3–6 REQ)</span>
+        </div>
+      </div>
+      <div class="step-meta-bar">
+        <span class="step-pill"><strong>Step 2 Tense Harmony:</strong> Present Simple Precaution (is stored / forms)</span>
+        <span class="step-pill"><strong>Step 3 Voice Shift:</strong> Passive Main Clause + Active Precautionary Conjunction (in case)</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <span style="font-size:0.92rem;">Emergency brake sand is stored on board</span>
+        <input type="text" class="kwt-input-clean" id="nx-in-6" placeholder="3–6 words including CASE..." oninput="railApp.trackNxWords(6)">
+        <span style="font-size:0.92rem;">forms on the rails.</span>
+        <button type="button" class="btn-action-rail" onclick="railApp.checkNxSwitch(6)">Switch Track</button>
+        <button type="button" class="btn-reveal-model" onclick="railApp.toggleModelBox('nx-model-6')">👁️ Reveal Cambridge Model</button>
+      </div>
+      <div class="feedback-rail" id="nx-fb-6"></div>
+      <div class="cambridge-model-box" id="nx-model-6">
+        <div><strong>Cambridge Model:</strong> <span class="mark-split-pill">(just) in case (1 mark) // frost (1 mark)</span></div>
+        <div style="margin-top:4px; color:var(--text-muted);">4-Step Check: Precautionary actions taken in advance of a possible risk use <em>in case + Present Simple</em>.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Speaking Part 2 Warm-Up -->
   <section class="card-rail">
     <div class="card-header-rail">
-      <h2>5. Speaking Warm-Up: 2-Minute Long Turn</h2>
+      <h2>6. Speaking Warm-Up: 2-Minute Long Turn</h2>
       <span class="badge-rail" style="border-color:var(--emerald); color:#6ee7b7;">Active Voice First</span>
     </div>
     <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:12px;">
@@ -643,8 +978,37 @@ const railApp = (() => {
       answered.add(key);
       score += pts;
       const el = document.getElementById('session-score');
-      if (el) el.textContent = `${score} / 20`;
+      if (el) el.textContent = `${score} / 32`;
     }
+  }
+
+  function toggleEcho(rowId, btn) {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    const isStruck = row.classList.toggle('echo-struck');
+    if (btn) btn.classList.toggle('active', isStruck);
+    playTone(isStruck ? [660, 880] : [440], 0.08);
+  }
+
+  function toggleModelBox(boxId) {
+    const box = document.getElementById(boxId);
+    if (!box) return;
+    box.classList.toggle('open');
+    playTone([523, 659], 0.08);
+  }
+
+  function checkKeywordGuard(text, keyword, guardEl) {
+    if (!guardEl || !keyword) return true;
+    const tokens = text.trim().toUpperCase().split(/\s+/).filter(Boolean);
+    const hasExact = tokens.includes(keyword.toUpperCase());
+    if (hasExact) {
+      guardEl.textContent = `KEYWORD: ${keyword} ✓`;
+      guardEl.classList.add('ok');
+    } else {
+      guardEl.textContent = `KEYWORD: ${keyword} (UNCHANGED REQ)`;
+      guardEl.classList.remove('ok');
+    }
+    return hasExact;
   }
 
   function handleMC(btn, chosen, explanation) {
@@ -667,30 +1031,107 @@ const railApp = (() => {
   }
 
   function trackWords(id) {
+    const row = document.getElementById(`kwt-row-${id}`);
     const input = document.getElementById(`kwt-in-${id}`);
     const pill = document.getElementById(`kwt-pill-${id}`);
+    const kwGuard = document.getElementById(`kwt-kw-${id}`);
     if (!input || !pill) return;
-    const count = input.value.trim() ? input.value.trim().split(/\s+/).length : 0;
+    const raw = input.value.trim();
+    const count = raw ? raw.split(/\s+/).length : 0;
     pill.textContent = `${count} WORDS (3–6 REQ)`;
     pill.classList.toggle('valid', count >= 3 && count <= 6);
+    if (row && kwGuard) {
+      checkKeywordGuard(raw, row.dataset.keyword, kwGuard);
+    }
   }
 
   function checkKWT(id, model, explanation) {
-    const row = document.querySelectorAll('.kwt-row-clean')[id - 1];
+    const row = document.getElementById(`kwt-row-${id}`);
     const input = document.getElementById(`kwt-in-${id}`);
     const fb = document.getElementById(`kwt-fb-${id}`);
-    const val = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+    const raw = input.value.trim();
+    const val = raw.toLowerCase().replace(/\s+/g, ' ');
+    const count = raw ? raw.split(/\s+/).length : 0;
+    const kw = row.dataset.keyword;
+    const hasKw = checkKeywordGuard(raw, kw, document.getElementById(`kwt-kw-${id}`));
     const valid = row.dataset.valid.split('|').map(s => s.trim().toLowerCase());
+
+    if (!hasKw) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-rail visible wrong';
+      fb.innerHTML = `<strong>⚠️ Keyword Guard:</strong> You must include the exact unchanged keyword <strong>${kw}</strong>.`;
+      return;
+    }
+    if (count < 3 || count > 6) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-rail visible wrong';
+      fb.innerHTML = `<strong>⚠️ Word Count Guard:</strong> Your answer has ${count} words (strictly 3 to 6 words required).`;
+      return;
+    }
 
     if (valid.includes(val)) {
       playTone([523, 659, 783]);
       fb.className = 'feedback-rail visible correct';
-      fb.innerHTML = `<strong>✓ Spot on (+2 pts):</strong> <em>"${val}"</em>. ${explanation}`;
+      fb.innerHTML = `<strong>✓ Spot on (+2 pts):</strong> <em>"${raw}"</em>. ${explanation}`;
       addScore(2, `kwt_rail_${id}`);
     } else {
       playTone([220, 160], 0.25, 'sawtooth');
       fb.className = 'feedback-rail visible wrong';
       fb.innerHTML = `<strong>Model:</strong> <em>"${model}"</em> (${explanation})`;
+    }
+  }
+
+  function trackNxWords(id) {
+    const row = document.getElementById(`nx-row-${id}`);
+    const input = document.getElementById(`nx-in-${id}`);
+    const pill = document.getElementById(`nx-pill-${id}`);
+    const kwGuard = document.getElementById(`nx-kw-${id}`);
+    if (!input || !pill || !row) return;
+    const raw = input.value.trim();
+    const count = raw ? raw.split(/\s+/).length : 0;
+    pill.textContent = `${count} WORDS (3–6 REQ)`;
+    pill.classList.toggle('valid', count >= 3 && count <= 6);
+    checkKeywordGuard(raw, row.dataset.keyword, kwGuard);
+  }
+
+  function checkNxSwitch(id) {
+    const row = document.getElementById(`nx-row-${id}`);
+    const input = document.getElementById(`nx-in-${id}`);
+    const fb = document.getElementById(`nx-fb-${id}`);
+    const modelBox = document.getElementById(`nx-model-${id}`);
+    if (!row || !input || !fb) return;
+
+    const raw = input.value.trim();
+    const val = raw.toLowerCase().replace(/\s+/g, ' ');
+    const count = raw ? raw.split(/\s+/).length : 0;
+    const kw = row.dataset.keyword;
+    const hasKw = checkKeywordGuard(raw, kw, document.getElementById(`nx-kw-${id}`));
+    const valid = row.dataset.valid.split('|').map(s => s.trim().toLowerCase());
+
+    if (!hasKw) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-rail visible wrong';
+      fb.innerHTML = `<strong>⚠️ Unchanged Keyword Guard:</strong> You must use the exact word <strong>${kw}</strong> without altering its form.`;
+      return;
+    }
+    if (count < 3 || count > 6) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-rail visible wrong';
+      fb.innerHTML = `<strong>⚠️ Word Count Guard:</strong> You wrote ${count} words. Cambridge Part 4 requires between 3 and 6 words.`;
+      return;
+    }
+
+    if (valid.includes(val)) {
+      playTone([523, 659, 783, 1046]);
+      fb.className = 'feedback-rail visible correct';
+      fb.innerHTML = `<strong>✓ Track Switch ${id} Coupled (+2 pts)!</strong> 1 mark // 1 mark confirmed.`;
+      if (modelBox) modelBox.classList.add('open');
+      addScore(2, `nx_switch_${id}`);
+      blowWhistle();
+    } else {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-rail visible wrong';
+      fb.innerHTML = `<strong>⚠️ Signal Misalignment:</strong> Check Step 1 (isolated deficit) and Step 2 (tense harmony), or click <em>👁️ Reveal Cambridge Model</em>.`;
     }
   }
 
@@ -905,8 +1346,12 @@ const railApp = (() => {
 
   return {
     handleMC,
+    toggleEcho,
+    toggleModelBox,
     trackWords,
     checkKWT,
+    trackNxWords,
+    checkNxSwitch,
     blowWhistle,
     revealSimModel,
     nextJunction,

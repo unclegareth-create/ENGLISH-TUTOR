@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chronicle '88 | Interactive B1–B2 Visual Novel — Gareth's English Lab</title>
+  <title>Chronicle '88 | Interactive B1–C2 Visual Novel — Gareth's English Lab</title>
   <link rel="canonical" href="https://garethenglish.com/chronicle-88.html" />
-  <meta name="description" content="Play Chronicle '88: three streamlined retro visual novel adventures where B1–B2 English grammar clues solve the mystery." />
+  <meta name="description" content="Play Chronicle '88: five streamlined retro visual novel adventures (including The Harland &amp; Wolff Blueprint) where B1–C2 English grammar clues solve the mystery." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet" />
@@ -43,10 +43,10 @@
 
     /* 2. Tape tabs */
     .episode-nav { max-width: 840px; margin: 0 auto .6rem; padding: 0 1rem; }
-    .episode-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; }
-    .episode-tab { border: 2px solid var(--b); padding: .3rem .5rem; text-align: left; color: var(--c); font-size: .85rem; line-height: 1.35; }
+    .episode-tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: .4rem; }
+    .episode-tab { border: 2px solid var(--b); padding: .3rem .5rem; text-align: left; color: var(--c); font-size: .78rem; line-height: 1.32; }
     .episode-tab[aria-selected="true"] { background: var(--b); color: var(--w); border-color: var(--w); }
-    .badge { display: block; color: var(--g); font-size: .75rem; min-height: 1.1em; }
+    .badge { display: block; color: var(--g); font-size: .72rem; min-height: 1.1em; }
 
     /* 3. The monitor: CG window / text window / command menu */
     .pc88 { max-width: 840px; margin: 0 auto; padding: 0 1rem; }
@@ -99,6 +99,31 @@
     #ui-notes .empty::before { content: none; }
     .keys { color: var(--c); font-size: .8rem; margin-top: .5rem; }
 
+    /* Case Dossier / Grammar Codex */
+    .codex { margin-top: .8rem; border: 2px solid var(--y); box-shadow: inset 0 0 0 2px var(--k), inset 0 0 0 4px var(--b); padding: .7rem .85rem; background: var(--k); }
+    .codex[hidden] { display: none; }
+    .codex-top { display: flex; justify-content: space-between; align-items: center; gap: .6rem; flex-wrap: wrap; border-bottom: 2px solid var(--b); padding-bottom: .45rem; margin-bottom: .6rem; }
+    .codex-top h2 { font-size: 1rem; color: var(--y); font-weight: normal; letter-spacing: .06em; }
+    .codex-filters { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .65rem; }
+    .codex-filter { border: 2px solid var(--b); padding: .1rem .55rem; color: var(--c); font-size: .8rem; }
+    .codex-filter:hover, .codex-filter:focus-visible { background: var(--b); color: var(--w); }
+    .codex-filter[aria-pressed="true"] { background: var(--b); color: var(--y); border-color: var(--y); }
+    .codex-grid { display: grid; grid-template-columns: 1fr; gap: .65rem; }
+    .codex-card { border: 2px solid var(--b); padding: .55rem .7rem; background: var(--k); }
+    .codex-card.unlocked { border-color: var(--g); }
+    .codex-card-head { display: flex; justify-content: space-between; align-items: center; gap: .4rem; flex-wrap: wrap; margin-bottom: .35rem; }
+    .codex-tag { color: var(--y); font-size: .92rem; }
+    .codex-status { font-size: .75rem; padding: 0 .4rem; border: 2px solid var(--c); color: var(--c); }
+    .codex-card.unlocked .codex-status { border-color: var(--g); color: var(--g); }
+    .codex-formula { border: 2px dashed var(--m); padding: .25rem .5rem; margin: .35rem 0; color: var(--g); font-size: .85rem; }
+    .codex-rule { color: var(--w); font-size: .88rem; margin-bottom: .45rem; }
+    .codex-workout { border-top: 2px dotted var(--b); padding-top: .4rem; margin-top: .35rem; font-size: .86rem; }
+    .codex-prompt { color: var(--c); margin-bottom: .35rem; }
+    .codex-reveal-btn { border: 2px solid var(--y); color: var(--y); padding: .1rem .55rem; font-size: .8rem; }
+    .codex-reveal-btn:hover, .codex-reveal-btn:focus-visible { background: var(--y); color: var(--k); }
+    .codex-model { margin-top: .4rem; border-left: 4px solid var(--g); padding: .25rem .55rem; color: var(--w); }
+    .codex-model[hidden] { display: none; }
+
     .shake { animation: shake .3s steps(2); }
     @keyframes shake { 0%, 100% { transform: none; } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 
@@ -123,6 +148,9 @@
     #selftest { white-space: pre-wrap; max-width: 840px; margin: 1rem auto; padding: .8rem; border: 2px solid var(--g); color: var(--g); font-family: ui-monospace, monospace; font-size: .8rem; }
     #selftest[data-pass="false"] { border-color: var(--r); color: var(--r); }
 
+    @media (max-width: 780px) {
+      .episode-tabs { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 640px) {
       .lower { grid-template-columns: 1fr; }
       .textwin { border-right: 0; border-bottom: 2px solid var(--w); }
@@ -147,13 +175,14 @@
       <span class="stat" id="stat-sta" title="Stamina: a wrong deduction costs 3. At 0 the case fails.">STA <b id="ui-stat-stamina">12</b>/12</span>
       <span class="stat" title="Composure: your target for 2d6 hazard rolls. +1 per right answer, −2 per wrong one.">CMP <b id="ui-stat-composure">7</b></span>
       <span class="stat" title="Rewind tokens: spend one on a word-tile rewind to recover stamina.">TOK <b id="ui-stat-tokens">3</b></span>
+      <button type="button" class="toggle" id="codex-btn" aria-pressed="false" aria-controls="codex-panel">CASE DOSSIER / CODEX</button>
       <button type="button" class="toggle" id="bgm-btn" aria-pressed="true">MUSIC: ON</button>
       <button type="button" class="toggle" id="sfx-btn" aria-pressed="true">SFX: ON</button>
       <button type="button" class="toggle" id="speed-btn" title="Text speed">TEXT: NORMAL</button>
     </div>
   </header>
 
-  <h1 class="sr-only">Chronicle '88: a B1–B2 English grammar detective adventure in 8-bit PC-88 style</h1>
+  <h1 class="sr-only">Chronicle '88: a B1–C1 English grammar detective adventure in 8-bit PC-88 style</h1>
 
   <!-- 2. TAPE SWITCHER -->
   <nav class="episode-nav" aria-label="Choose tape">
@@ -166,6 +195,12 @@
       </button>
       <button type="button" class="episode-tab" role="tab" id="tape-tab-3" data-tape="3" aria-controls="game" aria-selected="false" tabindex="-1">
         3. Station Zero — Passive, Causative &amp; Future Forms<span class="badge"></span>
+      </button>
+      <button type="button" class="episode-tab" role="tab" id="tape-tab-4" data-tape="4" aria-controls="game" aria-selected="false" tabindex="-1">
+        4. TAPE 4: THE MIDNIGHT SLEEPER (C1) — Inversions, Reporting &amp; Modals<span class="badge"></span>
+      </button>
+      <button type="button" class="episode-tab" role="tab" id="tape-tab-5" data-tape="5" aria-controls="game" aria-selected="false" tabindex="-1">
+        5. TAPE 5: THE SHIPYARD CIPHER (C1/C2) — The Harland &amp; Wolff Blueprint<span class="badge"></span>
       </button>
     </div>
   </nav>
@@ -204,9 +239,21 @@
     </div>
 
     <section class="notebook" aria-labelledby="notes-title">
-      <h2 id="notes-title">EVIDENCE NOTEBOOK</h2>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem;flex-wrap:wrap;">
+        <h2 id="notes-title">EVIDENCE NOTEBOOK</h2>
+        <button type="button" class="toggle" id="codex-inline-btn" aria-controls="codex-panel">📂 OPEN CASE DOSSIER / GRAMMAR CODEX</button>
+      </div>
       <ul id="ui-notes"></ul>
-      <p class="keys">Keys: Space/Enter = continue · ↑↓ + Enter = menu · 1–4 or A–D = choose · H = hint · Esc = close</p>
+      <p class="keys">Keys: Space/Enter = continue · ↑↓ + Enter = menu · 1–4 or A–D = choose · H = hint · C = codex · Esc = close</p>
+    </section>
+
+    <section class="codex" id="codex-panel" aria-labelledby="codex-title" hidden>
+      <div class="codex-top">
+        <h2 id="codex-title">CASE DOSSIER // GRAMMAR CODEX (TAPES 1–5)</h2>
+        <button type="button" class="toggle" id="codex-close-btn">✕ CLOSE DOSSIER</button>
+      </div>
+      <div class="codex-filters" id="codex-filters" role="group" aria-label="Filter grammar rules by tape"></div>
+      <div class="codex-grid" id="codex-grid"></div>
     </section>
     <div class="sr-only" id="sr-live" aria-live="polite"></div>
   </main>
@@ -251,20 +298,49 @@
     const VERBS = ['LOOK', 'TALK', 'EXAMINE'];
 
     /* ================================================================
-       1. TAPE DATA
+       1. PARRY POOL & TAPE DATA
        Markup: **x** = highlight, *x* = emphasis, \n = line break.
        Every choice: text, correct, error (wrong only: names the error
        type WITHOUT giving the answer), why (full explanation, shown
        after a correct answer or a second miss).
        ================================================================ */
+    const PARRY_POOL = [
+      // Tape 1 core parries
+      { original: 'Vance locked the vault before the 23:15 alarm went off.', keyword: 'ALREADY', before: 'When the 23:15 alarm went off, Vance', after: 'the vault.', answer: ['had', 'already', 'locked'], distractors: ['has', 'locking', 'was'] },
+      { original: '“I won\'t hand over the chip!” shouted Kael.', keyword: 'WOULD', before: 'Kael shouted that he', after: 'over the chip.', answer: ['would', 'not', 'hand'], distractors: ['will', 'handing', 'had'] },
+      { original: 'It\'s impossible that Kael used the stairs.', keyword: 'HAVE', before: 'Kael', after: 'the stairs.', answer: ['can\'t', 'have', 'used'], distractors: ['mustn\'t', 'use', 'had'] },
+      // Tape 2 core parries
+      { original: 'I didn\'t read the warning rune, so I stepped on the trap.', keyword: 'HAD', before: 'If I', after: 'the warning rune, I wouldn\'t have stepped on the trap.', answer: ['had', 'read'], distractors: ['would', 'have', 'reading'] },
+      { original: 'I\'m sure somebody pulled Lever 2 recently.', keyword: 'BEEN', before: 'Lever 2', after: 'recently.', answer: ['must', 'have', 'been', 'pulled'], distractors: ['can\'t', 'pulling', 'had'] },
+      { original: 'The south mirror reflects the red flame. It is cursed.', keyword: 'WHICH', before: 'The south mirror,', after: 'the red flame, is cursed.', answer: ['which', 'reflects'], distractors: ['that', 'reflecting', 'who'] },
+      // Tape 3 core parries
+      { original: 'Drone-9 is welding the hull breach for us right now.', keyword: 'WELDED', before: 'We are', after: 'by Drone-9 right now.', answer: ['having', 'the', 'hull', 'breach', 'welded'], distractors: ['welding', 'had', 'been'] },
+      { original: 'Technicians have just replaced the seals.', keyword: 'BEEN', before: 'The seals', after: 'by technicians.', answer: ['have', 'just', 'been', 'replaced'], distractors: ['has', 'replacing', 'being'] },
+      { original: 'Life-support will finish booting before 06:00.', keyword: 'HAVE', before: 'By 06:00, life-support', after: 'booting.', answer: ['will', 'have', 'finished'], distractors: ['is', 'finishing', 'had'] },
+      // 10 New B2/C1 Expansion Parries (Tapes 1–4)
+      { original: 'Finch did not realise that the wet chalk had marked his cuff.', keyword: 'LITTLE', before: '', after: 'that the wet chalk had marked his cuff.', answer: ['Little', 'did', 'Finch', 'realise'], distractors: ['realised', 'had', 'not'] },
+      { original: 'The guard never left the platform during the fog.', keyword: 'TIME', before: 'At', after: 'the guard leave the platform during the fog.', answer: ['no', 'time', 'did'], distractors: ['never', 'had', 'was'] },
+      { original: 'People rumour that Lady Vane boarded the train at an unscheduled halt.', keyword: 'RUMOURED', before: 'Lady Vane', after: 'the train at an unscheduled halt.', answer: ['is', 'rumoured', 'to', 'have', 'boarded'], distractors: ['boarding', 'that', 'was'] },
+      { original: 'If the conductor had not pulled the brake cord, the train would have derailed.', keyword: 'HAD', before: '', after: 'the brake cord, the train would have derailed.', answer: ['Had', 'the', 'conductor', 'not', 'pulled'], distractors: ['If', 'would', 'pulling'] },
+      { original: 'It is certain that someone tampered with the signal box lever from inside.', keyword: 'MUST', before: 'The signal box lever', after: 'with from inside.', answer: ['must', 'have', 'been', 'tampered'], distractors: ['can\'t', 'tampering', 'be'] },
+      { original: 'The wet chalk on Finch\'s sleeve betrayed his alibi.', keyword: 'WHAT', before: '', after: 'was the wet chalk on his sleeve.', answer: ['What', 'betrayed', 'Finch\'s', 'alibi'], distractors: ['That', 'betraying', 'which'] },
+      { original: 'The whistle blew immediately after the courier locked the briefcase.', keyword: 'SOONER', before: 'No', after: 'the briefcase than the whistle blew.', answer: ['sooner', 'had', 'the', 'courier', 'locked'], distractors: ['did', 'locking', 'when'] },
+      { original: 'I regret leaving the Silver Key on the inn table yesterday.', keyword: 'ONLY', before: 'If', after: 'the Silver Key on the inn table yesterday!', answer: ['only', 'I', 'had', 'not', 'left'], distractors: ['would', 'leaving', 'did'] },
+      { original: 'Experts say that the prototype chip is worth millions.', keyword: 'SAID', before: 'The prototype chip', after: 'worth millions.', answer: ['is', 'said', 'to', 'be'], distractors: ['says', 'being', 'having'] },
+      { original: 'Although the fog was thick, the driver spotted the red lantern.', keyword: 'SPITE', before: 'In', after: 'fog, the driver spotted the red lantern.', answer: ['spite', 'of', 'the', 'thick'], distractors: ['despite', 'although', 'being'] },
+      // Tape 5 C1/C2 Shipyard Cipher Parries
+      { original: 'The Prussian blue grease on the rivet hammer betrayed the saboteur.', keyword: 'WHAT', before: '', after: 'the Prussian blue grease on the rivet hammer.', answer: ['What', 'betrayed', 'the', 'saboteur', 'was'], distractors: ['That', 'betraying', 'were'] },
+      { original: 'After he had forged the hull manifest, Mercer switched the linen blueprints.', keyword: 'HAVING', before: '', after: 'the hull manifest, Mercer switched the linen blueprints.', answer: ['Having', 'forged'], distractors: ['Forged', 'Being', 'Had'] },
+      { original: 'The saboteur only loosened the turbine bolts when the tide turned at 04:00.', keyword: 'DID', before: 'Only when the tide turned at 04:00', after: 'the turbine bolts.', answer: ['did', 'the', 'saboteur', 'loosen'], distractors: ['loosened', 'had', 'was'] },
+      { original: 'The Admiralty prefers the blueprint to remain under seal.', keyword: 'RATHER', before: 'The Admiralty would', after: 'under seal.', answer: ['rather', 'the', 'blueprint', 'remained'], distractors: ['prefer', 'remains', 'remain'] }
+    ];
+
     const TAPES = {
       1: {
         id: 1, title: 'Neon Alibi 1989',
         outro: 'The harbour drone net snags a tiny courier drone. Inside: the Omega Chip, exactly where your deduction said it would be. Kael has nothing left to say.',
         parries: [
-          { original: 'Vance locked the vault before the 23:15 alarm went off.', keyword: 'ALREADY', before: 'When the 23:15 alarm went off, Vance', after: 'the vault.', answer: ['had', 'already', 'locked'], distractors: ['has', 'locking', 'was'] },
-          { original: '“I won\'t hand over the chip!” shouted Kael.', keyword: 'WOULD', before: 'Kael shouted that he', after: 'over the chip.', answer: ['would', 'not', 'hand'], distractors: ['will', 'handing', 'had'] },
-          { original: 'It\'s impossible that Kael used the stairs.', keyword: 'HAVE', before: 'Kael', after: 'the stairs.', answer: ['can\'t', 'have', 'used'], distractors: ['mustn\'t', 'use', 'had'] }
+          PARRY_POOL[0], PARRY_POOL[1], PARRY_POOL[2], PARRY_POOL[15], PARRY_POOL[17]
         ],
         scenes: [
           {
@@ -390,9 +466,7 @@
         id: 2, title: 'The Citadel of Echoes',
         outro: 'The drawbridge thunders down across the abyss. Beyond it, the Citadel\'s heart glows, and the echoes finally fall silent.',
         parries: [
-          { original: 'I didn\'t read the warning rune, so I stepped on the trap.', keyword: 'HAD', before: 'If I', after: 'the warning rune, I wouldn\'t have stepped on the trap.', answer: ['had', 'read'], distractors: ['would', 'have', 'reading'] },
-          { original: 'I\'m sure somebody pulled Lever 2 recently.', keyword: 'BEEN', before: 'Lever 2', after: 'recently.', answer: ['must', 'have', 'been', 'pulled'], distractors: ['can\'t', 'pulling', 'had'] },
-          { original: 'The south mirror reflects the red flame. It is cursed.', keyword: 'WHICH', before: 'The south mirror,', after: 'the red flame, is cursed.', answer: ['which', 'reflects'], distractors: ['that', 'reflecting', 'who'] }
+          PARRY_POOL[3], PARRY_POOL[4], PARRY_POOL[5], PARRY_POOL[16], PARRY_POOL[18]
         ],
         scenes: [
           {
@@ -483,9 +557,7 @@
         id: 3, title: 'Signal Lost at Station Zero',
         outro: 'The escape pod drops clear of Station Zero as the rescue cruiser\'s searchlights sweep across the stars. Signal restored.',
         parries: [
-          { original: 'Drone-9 is welding the hull breach for us right now.', keyword: 'WELDED', before: 'We are', after: 'by Drone-9 right now.', answer: ['having', 'the', 'hull', 'breach', 'welded'], distractors: ['welding', 'had', 'been'] },
-          { original: 'Technicians have just replaced the seals.', keyword: 'BEEN', before: 'The seals', after: 'by technicians.', answer: ['have', 'just', 'been', 'replaced'], distractors: ['has', 'replacing', 'being'] },
-          { original: 'Life-support will finish booting before 06:00.', keyword: 'HAVE', before: 'By 06:00, life-support', after: 'booting.', answer: ['will', 'have', 'finished'], distractors: ['is', 'finishing', 'had'] }
+          PARRY_POOL[6], PARRY_POOL[7], PARRY_POOL[8], PARRY_POOL[14]
         ],
         scenes: [
           {
@@ -570,6 +642,283 @@
               { correct: false, text: '“By 06:00, life-support **has booted up**, and at 06:00 the solar storm will still be passing.”', error: 'Time error: this tense can\'t look back from a future deadline.', why: 'The present perfect looks back from **now**. To look back from 06:00 in the future, use the future perfect.' }
             ],
             lesson: '**Future perfect** (*will have + past participle*) = completed before a future time: *By 06:00 it will have booted up*. **Future continuous** (*will be + -ing*) = in progress at a future time: *At 06:00 the storm will still be passing*. *By* goes with completion.'
+          }
+        ]
+      },
+
+      4: {
+        id: 4, title: 'The Midnight Sleeper to Belfast',
+        outro: 'As dawn breaks over Belfast Great Victoria Street, Finch is led away in handcuffs and the Star of Antrim is returned to its vault. Every C1 clue held firm.',
+        parries: [
+          PARRY_POOL[9], PARRY_POOL[10], PARRY_POOL[11], PARRY_POOL[12], PARRY_POOL[13]
+        ],
+        scenes: [
+          {
+            location: 'PLATFORM 4 • DUBLIN CONNOLLY (23:40)', tag: 'Negative Inversion', speaker: 'INSPECTOR DECK',
+            sceneType: 'train_platform', deduceLabel: 'ACCUSE',
+            intro: [
+              'Thick sea fog rolls across **Platform 4** as the 23:40 Midnight Sleeper to Belfast builds steam. Lord Castell\'s courier case holding the Star of Antrim has just been switched.',
+              'Courier **Doyle** and antique dealer **Finch** stand beside the luggage trolley. Investigate the platform clues, then ACCUSE.'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'fog', label: 'PLATFORM 4 FOG', text: 'Yellow lamps glow in the mist. The departure board clatters: 23:40 BELFAST SLEEPER — PLATFORM 4.' },
+                { id: 'trolley', label: 'LUGGAGE TROLLEY', text: 'Two leather briefcases sit by the guard\'s van. Fresh blue station chalk clings to the brass latch.' }
+              ],
+              TALK: [
+                { id: 'doyle1', label: 'COURIER DOYLE', who: 'DOYLE', key: true, clue: 'Courier Doyle: never stepped away from his post on Platform 4.', text: '“I swear to you, Inspector: not for a single second did I leave the trolley! Finch brushed past me in the fog, claiming he had dropped his ticket.”' },
+                { id: 'finch1', label: 'SUSPECT FINCH', who: 'FINCH', key: true, clue: 'Finch: claims he never touched the courier\'s case and was unaware of the chalk trap.', text: '“Preposterous! I merely adjusted my overcoat in the mist. I never laid a finger on the courier\'s luggage.”' }
+              ],
+              EXAMINE: [
+                { id: 'cuff', label: 'FINCH\'S CUFF', key: true, clue: 'Finch\'s velvet cuff: stained with fresh blue chalk from the briefcase latch.', text: 'A bright streak of wet blue station chalk marks Finch\'s dark velvet cuff — straight from the courier\'s brass latch.' },
+                { id: 'chalk', label: 'CHALK TRAP', clue: 'Guard\'s blue chalk: rubbed onto the courier latch at 23:35 as a security trap.', text: 'The station guard coated the briefcase latch with wet blue chalk at 23:35 to mark anyone tampering with the lock.' }
+              ]
+            },
+            mission: 'Expose Finch\'s lie using C1 negative inversion:',
+            hint: 'When a negative or restrictive expression opens a clause for emphasis, the auxiliary and subject swap places like a question. Also check what verb form must follow the auxiliary.',
+            key: 'little did Finch realise',
+            failTitle: 'Finch adjusts his lapel and slips toward the sleeper carriage.',
+            choices: [
+              { correct: true, text: '“**At no time did** the courier leave his post, and **little did Finch realise** that the wet chalk had marked his sleeve.”', title: 'FINCH FLINCHES: the blue chalk trap caught him red-handed!', why: 'After negative or restrictive opening adverbials (*At no time*, *Little*), C1 English uses **subject-auxiliary inversion**: *At no time did the courier leave* and *little did Finch realise* (auxiliary *did* + subject + bare infinitive).' },
+              { correct: false, text: '“**At no time the courier left** his post, and **little Finch realised** that the wet chalk had marked his sleeve.”', error: 'Word order error: missing subject-auxiliary inversion after negative opening phrases.', why: 'When a negative or restrictive adverbial (*At no time*, *Little*) starts the clause, the auxiliary must precede the subject: *did the courier leave*, *did Finch realise*.' },
+              { correct: false, text: '“At no time **did the courier left** his post, and little **did Finch realised** that the wet chalk had marked his sleeve.”', error: 'Verb form error: past simple inflection used after the auxiliary "did".', why: 'The auxiliary *did* already carries the past tense, so the main verb must be the bare infinitive (*leave*, *realise*).' },
+              { correct: false, text: '“At no time **did the courier not leave** his post, and little **had Finch not realised** the chalk mark.”', error: 'Polarity error: double negation reverses the meaning of the evidence.', why: '*At no time* and *little* are already negative in meaning; adding *not* creates a double negative that contradicts the clues.' }
+            ],
+            lesson: 'C1 Negative Inversion: **Negative Adverbial (At no time / Little / Never / Seldom) + Auxiliary + Subject + Bare Infinitive / Participle** (*At no time did he leave...*, *Little did he realise...*).'
+          },
+          {
+            location: 'CARRIAGE B • THE DINING CAR ALIBI', tag: 'Passive Reporting Verbs', speaker: 'INSPECTOR DECK',
+            sceneType: 'train_dining', deduceLabel: 'CONFRONT',
+            intro: [
+              'The Midnight Sleeper rattles north past Drogheda. In the **Dining Car**, a veiled passenger in Booth 3 — **Lady Vane** — insists she boarded at Dublin and has never met Finch.',
+              'Question Steward Connolly and inspect the dining car ledger before confronting her.'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'booth', label: 'BOOTH 3', text: 'Crystal glasses chime on white linen as telegraph poles flash past. Two porcelain cups rest on Lady Vane\'s table.' }
+              ],
+              TALK: [
+                { id: 'vane', label: 'LADY VANE', who: 'VANE', key: true, clue: 'Lady Vane: claims she boarded at Dublin and dined alone all evening.', text: '“I boarded at Dublin Connolly like every other passenger, Inspector, and I have been dining quite alone.”' },
+                { id: 'connolly', label: 'STEWARD CONNOLLY', who: 'CONNOLLY', key: true, clue: 'Steward Connolly: staff rumour she boarded at the border halt and met Finch at 23:50.', text: '“Word along the train is that her ladyship slipped aboard at the unscheduled border halt — and she was seen meeting Finch at Booth 3 before midnight.”' }
+              ],
+              EXAMINE: [
+                { id: 'ledger', label: 'SEATING LEDGER', key: true, clue: 'Dining ledger: Booth 3 served two coffees at 23:50 (Lady Vane & Finch).', text: 'DINING CAR LEDGER\n23:50  BOOTH 3 — TWO COFFEES SERVED (LADY VANE & MR FINCH).' },
+                { id: 'stub', label: 'TICKET STUB', clue: 'Ticket stub under Booth 3: stamped BORDER HALT, 23:48.', text: 'A discarded first-class ticket stub under the table is stamped: BORDER HALT — 23:48.' }
+              ]
+            },
+            mission: 'Confront Lady Vane using C1 passive reporting structures:',
+            hint: 'The rumour and knowledge exist now in the present, but the boarding and meeting took place earlier tonight. After a passive reporting verb with a personal subject, which infinitive form points back to an earlier past action?',
+            key: 'is rumoured to have boarded',
+            failTitle: 'Lady Vane rings for the steward and waves away your accusation.',
+            choices: [
+              { correct: true, text: '“Lady Vane **is rumoured to have boarded** at the border halt, and she **is known to have met** Finch before midnight.”', title: 'LADY VANE CRUMBLES: she admits Finch passed her the guard\'s van cipher!', why: '*Subject + passive reporting verb (is rumoured / is known) + perfect infinitive (to have + past participle)* reports a present belief about an earlier past event.' },
+              { correct: false, text: '“Lady Vane **is rumoured to board** at the border halt every night, and she **is known to meet** Finch.”', error: 'Infinitive aspect error: a simple infinitive is used instead of a perfect infinitive for an earlier past event.', why: '*To board* and *to meet* describe general habits or present actions. Because the boarding and meeting happened earlier tonight, use the perfect infinitive (*to have + past participle*).' },
+              { correct: false, text: '“Lady Vane **is rumoured that she boarded** at the border halt, and she **is known that she met** Finch.”', error: 'Structural blend: a personal subject cannot be followed directly by a that-clause.', why: 'Use either impersonal *It* (*It is rumoured that Lady Vane boarded...*) or a personal subject + infinitive (*Lady Vane is rumoured to have boarded...*).' },
+              { correct: false, text: '“Lady Vane **is rumoured to have been boarded** at the border halt, and she **is known to have been met**.”', error: 'Voice error inside the infinitive: the passenger performed the action of boarding.', why: 'A passenger boards a train actively. The reporting verb is passive, but the perfect infinitive here must be active.' }
+            ],
+            lesson: 'C1 Passive Reporting: **It is said/rumoured/known that + clause** OR **Subject + is/are said/rumoured/known + to be** (present) / **to have + past participle** (earlier past).'
+          },
+          {
+            location: 'CARRIAGE D • THE GUARD\'S VAN CIPHER', tag: 'Inverted 3rd Conditional', speaker: 'INSPECTOR DECK',
+            sceneType: 'train_van', deduceLabel: 'DECODE', dice: true,
+            hazardOk: 'You catch the iron mail rail as the sleeper lurches across the viaduct points!',
+            hazardBad: 'A heavy mailbag tumbles from the rack and clips your shoulder.',
+            intro: [
+              'You unlock the **Guard\'s Van**. Finch wired a tripwire between the decoy jewel case and the coupling release above the Boyne Viaduct!',
+              'Conductor **Doyle** spotted the wire and pulled the emergency brake cord with four seconds to spare. Inspect the mechanism and log how disaster was averted.'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'cord', label: 'EMERGENCY CORD', key: true, clue: 'Emergency brake cord: pulled down by Conductor Doyle just before the viaduct.', text: 'The red vacuum brake cord hangs slack. Conductor Doyle yanked it down five seconds before the viaduct.' }
+              ],
+              TALK: [
+                { id: 'doyle3', label: 'CONDUCTOR DOYLE', who: 'DOYLE', key: true, clue: 'Doyle: without the emergency brake, the coupling would have snapped on the viaduct.', text: '“If I hadn\'t pulled that cord when I did, the tripwire would have snapped the coupling right above the gorge!”' }
+              ],
+              EXAMINE: [
+                { id: 'coupling', label: 'COUPLING WIRE', key: true, clue: 'Sabotaged coupling timer: frozen at 00:04 when the brake slackened the line.', text: 'The brass clockwork timer on the coupling pin is stopped at **00:04**. Only the emergency brake slackened the cable in time.' },
+                { id: 'case', label: 'DECOY CASE', clue: 'Decoy case: filled with iron bolts; Finch is heading for the Belfast signal box.', text: 'The case in the van is weighted with railway bolts. Finch intends to divert the train at the Belfast approach signal box!' }
+              ]
+            },
+            mission: 'Log how the viaduct disaster was prevented using a C1 inverted conditional:',
+            hint: 'In formal C1 English, an unreal past condition can drop "if" by placing the Past Perfect auxiliary before the subject. Check where "not" goes in that formal inversion, and check the form of the past result clause.',
+            key: 'Had the conductor not pulled',
+            failTitle: 'Your log entry is rejected as the guard\'s van rattles over the joints.',
+            choices: [
+              { correct: true, text: '“**Had the conductor not pulled** the emergency cord, the coupling **would have snapped** on the viaduct.”', title: 'CIPHER DECODED: forward bulkhead unlocked!', why: 'Inverted 3rd Conditional: **Had + subject + (not) + past participle** replaces *If the conductor had not pulled*, paired with **would have + past participle** for the unreal past result.' },
+              { correct: false, text: '“**Did the conductor not pull** the emergency cord, the coupling **would have snapped** on the viaduct.”', error: 'Auxiliary error: an unreal past conditional inversion requires the Past Perfect auxiliary, not Past Simple.', why: 'Third conditional inversion uses *Had + subject + past participle*, never *Did + subject + base verb*.' },
+              { correct: false, text: '“**Had the conductor not would have pulled** the emergency cord, the coupling would have snapped on the viaduct.”', error: 'Modal intrusion: a conditional modal phrase cannot appear inside the condition clause.', why: '*Would have* belongs in the main result clause, never inside the condition clause.' },
+              { correct: false, text: '“Had the conductor not pulled the emergency cord, the coupling **would snap** on the viaduct last night.”', error: 'Result clause timeline error: a present/future result form is used for a completed past event.', why: 'Because the viaduct crossing is already in the past, the unreal past result requires *would have + past participle*.' }
+            ],
+            lesson: 'C1 Inverted 3rd Conditional: **Had + subject + (not) + past participle, ... would have + past participle**. Never contract *not* onto *Had* in formal inversion (*Had he not pulled...*, never *Hadn\'t he pulled...*).'
+          },
+          {
+            location: 'MILEPOST 112 • THE SIGNAL BOX CONFRONTATION', tag: 'Past Modal Deduction (Passive)', speaker: 'INSPECTOR DECK',
+            sceneType: 'train_signal', deduceLabel: 'DEDUCE',
+            intro: [
+              'The Midnight Sleeper halts in the rain below the **Belfast Approach Signal Box**. You corner Finch beside the row of iron point levers.',
+              'The sleeper was diverted onto a locked goods siding and the telegraph cable is severed. Prove how the sabotage was carried out!'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'signals', label: 'SIGNAL LEVERS', text: 'Heavy iron point levers gleam in the cabin light. Lever 4 has been pulled over to GOODS SIDING.' }
+              ],
+              TALK: [
+                { id: 'finch4', label: 'FINCH', who: 'FINCH', text: '“A purely accidental fault in the storm, Inspector! The points lock simply failed on its own.”' }
+              ],
+              EXAMINE: [
+                { id: 'points', label: 'POINTS LOCK', key: true, clue: 'Points lock: brass safety pin unscrewed with a wrench from inside the cabin.', text: 'The brass safety pin on Lever 4 has been cleanly unscrewed with an adjustable wrench from inside the signal box.' },
+                { id: 'wire', label: 'TELEGRAPH WIRE', key: true, clue: 'Steel lock & telegraph cable: certified yesterday; impossible to fail by accident.', text: 'The case-hardened lock was inspected yesterday, and the telegraph cable shows clean pliers cuts. Accidental failure is impossible.' }
+              ]
+            },
+            mission: 'Shatter Finch\'s final excuse with a passive past modal deduction:',
+            hint: 'First ask whether the points performed the action or received it — that decides active vs passive. Then combine the past modal of certainty with the passive perfect, and use the past modal of impossibility for the lock.',
+            key: 'must have been tampered with',
+            failTitle: 'Finch edges toward the signal box steps in the driving rain!',
+            choices: [
+              { correct: true, text: '“The points **must have been tampered with** from inside, because the lock **can\'t have failed** on its own!”', title: 'CHECKMATE AT BELFAST: Finch surrenders the Star of Antrim!', why: '*Must have been + past participle* (*must have been tampered with*) expresses logical certainty about a passive past action; *can\'t have + past participle* (*can\'t have failed*) expresses logical impossibility in the past.' },
+              { correct: false, text: '“The points **must have tampered with** from inside, because the lock can\'t have failed on its own!”', error: 'Voice error: the points received the action, so the passive auxiliary "been" is required.', why: 'Someone tampered with the points, so with *the points* as subject we need the passive: *must have **been** tampered with*.' },
+              { correct: false, text: '“The points **should have been tampered with** from inside, because the lock **mustn\'t have failed** on its own!”', error: 'Modal meaning error: this modal expresses advisable action rather than logical deduction.', why: '*Should have been* means it would have been advisable, not a deduction. And for negative past deduction in British English, use *can\'t/couldn\'t have*, not *mustn\'t have*.' },
+              { correct: false, text: '“The points **must be tampered with** from inside, because the lock **can\'t fail** earlier tonight!”', error: 'Time reference error: present modal forms are used to deduce a completed past sabotage.', why: 'The sabotage took place before the train halted. Past deduction requires *modal + have (been) + past participle*.' }
+            ],
+            lesson: 'C1 Past Modal Deduction (Active & Passive): **must have (been) + past participle** (logical certainty that it happened) vs **can\'t / couldn\'t have (been) + past participle** (logical impossibility).'
+          }
+        ]
+      },
+
+      5: {
+        id: 5, title: 'The Harland & Wolff Blueprint',
+        outro: 'As dawn gilds the twin yellow gantry cranes of Queen\'s Island, the Star of the Lough glides undamaged down the slipway while Draughtsman Mercer is escorted to the harbour launch in handcuffs. Every C1/C2 syntactic lock held firm.',
+        parries: [
+          PARRY_POOL[19], PARRY_POOL[20], PARRY_POOL[21], PARRY_POOL[22], PARRY_POOL[14]
+        ],
+        scenes: [
+          {
+            location: 'SLIPWAY NO. 3 • QUEEN\'S ISLAND, BELFAST', tag: 'Wh-Cleft & It-Cleft Focus', speaker: 'INSPECTOR DECK',
+            sceneType: 'ship_slipway', deduceLabel: 'ACCUSE',
+            intro: [
+              'Searchlights sweep across the twin yellow gantry cranes of **Harland & Wolff**. Beneath the hull of the *Star of the Lough*, someone has tampered with the keel blocks on **Slipway No. 3**.',
+              'Foreman **McKee** and Senior Draughtsman **Mercer** stand by the gantry steps. Inspect the slipway evidence, then ACCUSE.'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'cranes', label: 'GANTRY CRANES', text: 'Twin yellow gantry cranes tower over Belfast Lough. Below, the iron hull rests on greased oak launch blocks.' },
+                { id: 'keel', label: 'KEEL BLOCKS', text: 'One of the starboard oak wedges has been knocked askew with a heavy rivet hammer.' }
+              ],
+              TALK: [
+                { id: 'mckee1', label: 'FOREMAN MCKEE', who: 'MCKEE', key: true, clue: 'McKee: only Draughtsman Mercer signed the night pass for Slipway No. 3.', text: '“No riveter was down here after midnight, Inspector. Check the gatehouse book — Draughtsman Mercer himself signed the night slipway pass!”' },
+                { id: 'mercer1', label: 'DRAUGHTSMAN MERCER', who: 'MERCER', key: true, clue: 'Mercer: claims he stayed in the drawing office and never touched a shipyard tool.', text: '“Absurd! My hands only touch tracing cloth and brass dividers. I haven\'t been near the slipway tools all evening.”' }
+              ],
+              EXAMINE: [
+                { id: 'hammer', label: 'RIVET HAMMER', key: true, clue: 'Rivet hammer handle: stained with Prussian blue draughtsman\'s ink-grease.', text: 'The iron rivet hammer beside the keel block is smeared with **Prussian blue** draughtsman\'s ink-grease — used only in the Drawing Office.' },
+                { id: 'pass', label: 'GATEHOUSE PASS', clue: 'Gatehouse ledger: night pass for Slipway No. 3 signed by H. Mercer at 01:15.', text: 'SLIPWAY LEDGER\n01:15  SLIPWAY NO. 3 ACCESS — SIGNED: H. MERCER.' }
+              ]
+            },
+            mission: 'Pinpoint the crucial evidence and the culprit using C1/C2 cleft sentences:',
+            hint: 'To spotlight the decisive clue at the start of the first clause, open with a nominal relative clause followed by a singular past linking verb; to spotlight the person in the second clause, use preparatory It + past linking verb + the culprit + a personal relative pronoun.',
+            key: 'What betrayed the saboteur was',
+            failTitle: 'Mercer tucks his cuffs into his coat pockets and demands to see the yard director.',
+            choices: [
+              { correct: true, text: '“**What betrayed the saboteur was** the Prussian blue grease on the rivet hammer, and **it was Mercer who** signed the slipway pass.”', title: 'MERCER PALES: the Prussian blue ink-grease links him straight to the Drawing Office!', why: 'A **Wh-cleft** (*What + verb phrase + singular be*) focuses attention on the decisive evidence, while an **It-cleft** (*It + was + focused noun + who/that*) isolates the exact person responsible.' },
+              { correct: false, text: '“**That betrayed the saboteur were** the Prussian blue grease on the rivet hammer, and **it was Mercer which** signed the slipway pass.”', error: 'Pronoun and agreement error: wrong cleft opener, plural verb with an uncountable noun, and non-personal pronoun for a person.', why: 'A nominal cleft opener requires *What* (meaning *the thing that*), singular *was* to agree with uncountable *grease*, and *who* (or *that*) for a person.' },
+              { correct: false, text: '“**What did betray the saboteur** the Prussian blue grease on the rivet hammer, and **it were Mercer who** signed the slipway pass.”', error: 'Missing main linking verb in the first cleft and wrong verb agreement after preparatory It.', why: 'Every *What*-cleft needs a form of *be* (*was*) to link the *What*-clause to its complement, and preparatory *It* always takes singular *was*.' },
+              { correct: false, text: '“**Which betrayed the saboteur was** the Prussian blue grease on the rivet hammer, and **Mercer it was whom** signed the slipway pass.”', error: 'Relative pronoun error: "Which" cannot open a free nominal cleft, and "whom" cannot act as the subject of "signed".', why: '*Which* requires a preceding noun; use *What* for a free nominal clause, and subject pronoun *who* before the verb *signed*.' }
+            ],
+            lesson: 'C1/C2 Cleft Sentences: **Wh-Cleft**: *What + clause + is/was + focused element* (*What betrayed the saboteur was the grease*). **It-Cleft**: *It + is/was + focused element + who/that + clause* (*It was Mercer who signed the pass*).'
+          },
+          {
+            location: 'DRAWING OFFICE • HARLAND & WOLFF', tag: 'Fronted Perfect Participle Clauses', speaker: 'INSPECTOR DECK',
+            sceneType: 'ship_office', deduceLabel: 'RECONSTRUCT',
+            intro: [
+              'You climb to the vaulted **Harland & Wolff Drawing Office**. The heavy steel door of the **Chief Draughtsman\'s Safe** stands ajar beneath rows of slanted drawing boards.',
+              'Chief Draughtsman **Andrews** points to a forged hull manifest and an empty blueprint tube. Reconstruct Mercer\'s sequence of actions.'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'boards', label: 'DRAWING BOARDS', text: 'Long oak drawing tables stretch under brass lamps. Rolls of waxed linen blueprints gleam in cyan.' }
+              ],
+              TALK: [
+                { id: 'andrews2', label: 'CHIEF ANDREWS', who: 'ANDREWS', key: true, clue: 'Chief Andrews: Mercer first forged the hull manifest at 01:30, then switched the linen blueprints in the safe.', text: '“Look at the timestamps, Inspector: Mercer forged the hull manifest at 01:30 first, and only after that did he switch the waxed linen blueprints inside my safe!”' }
+              ],
+              EXAMINE: [
+                { id: 'manifest', label: 'FORGED MANIFEST', key: true, clue: 'Hull manifest: forged in wet India ink at 01:30 before the safe was opened.', text: 'HULL MANIFEST — STAMPED 01:30.\nThe ballast figures have been altered in fresh India ink before the safe combination was dialled.' },
+                { id: 'safe', label: 'SAFE INTERIOR', key: true, clue: 'Chief Draughtsman\'s safe: original turbine blueprint replaced with a decoy sheet at 01:45.', text: 'Inside the iron safe, the original *Star of the Lough* turbine blueprint has been replaced with a blank decoy linen roll at 01:45.' }
+              ]
+            },
+            mission: 'Reconstruct the exact sequence using a C1/C2 fronted perfect participle clause:',
+            hint: 'When one active action is completed before a second action by the very same person, open with the perfect participle of the auxiliary plus the past participle, and ensure the subject immediately after the comma is the person who performed the action.',
+            key: 'Having forged the manifest',
+            failTitle: 'Chief Andrews shakes his head — your timeline muddles the forensic order.',
+            choices: [
+              { correct: true, text: '“**Having forged the manifest**, Mercer **switched the linen blueprints** before locking the safe.”', title: 'TIMELINE LOCKED: the hidden compartment behind Drawing Board 7 clicks open!', why: '**Having + past participle** (*Having forged*) expresses an active action completed **before** the main clause action, and its implied subject matches *Mercer* immediately after the comma.' },
+              { correct: false, text: '“**Having forged the manifest**, the **linen blueprints were switched** by Mercer before locking the safe.”', error: 'Dangling participle error: the subject after the comma is the inanimate blueprints, not the person who forged the manifest.', why: 'The participle clause *Having forged the manifest* must share its subject with the main clause (*Mercer*). Putting *the linen blueprints* after the comma implies the blueprints forged the manifest!' },
+              { correct: false, text: '“**Forged the manifest**, Mercer **switched the linen blueprints** before locking the safe.”', error: 'Participle voice error: a bare past participle is passive in meaning, so it cannot describe Mercer\'s active forgery.', why: 'A fronted past participle (*Forged...*) means *having been forged* (passive). Because Mercer actively forged the document, use the active perfect participle.' },
+              { correct: false, text: '“**Having been forged the manifest**, Mercer **switched the linen blueprints** before locking the safe.”', error: 'Voice error: a passive perfect participle cannot take a direct object or modify the active agent.', why: '*Having been forged* is passive and cannot take the direct object *the manifest* or attach to *Mercer*.' }
+            ],
+            lesson: 'C1/C2 Fronted Perfect Participle: **Having + past participle (V3), Subject + Past Simple** shows that the first action was completed before the second. The subject right after the comma **must** be the agent of the participle.'
+          },
+          {
+            location: 'ENGINE ROOM • PORT TURBINE CASING', tag: 'Restrictive Inversion (Only when)', speaker: 'INSPECTOR DECK',
+            sceneType: 'ship_turbine', deduceLabel: 'INTERCEPT', dice: true,
+            hazardOk: 'You duck beneath the hissing steam pipe and shut the main valve in time!',
+            hazardBad: 'A jet of scalding steam blisters your coat sleeve.',
+            intro: [
+              'You race down into the cavernous **Turbine Room** deep inside the hull. High-pressure steam hisses from the **Starboard Turbine Casing**!',
+              'Foreman **McKee** points to the tide gauge and the loosened coupling bolts. Log the exact moment of sabotage before the pressure gauge redlines.'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'casing', label: 'TURBINE CASING', text: 'Two massive cylindrical steam turbines dominate the engine room. A brass gauge flashes: PSI CRITICAL.' }
+              ],
+              TALK: [
+                { id: 'mckee3', label: 'FOREMAN MCKEE', who: 'MCKEE', key: true, clue: 'McKee: the hull only settled onto the keel blocks when the tide turned at 04:00, masking the sound of the wrench.', text: '“The noise of the river covered his work, Inspector! Only when the tide turned at 04:00 did the hull groan loud enough to hide the sound of his spanner!”' }
+              ],
+              EXAMINE: [
+                { id: 'gauge', label: 'TIDE GAUGE', key: true, clue: 'Belfast Lough tide gauge: high-water turn recorded at 04:00.', text: 'TIDAL RECORDER\n04:00  BELFAST LOUGH TIDE TURN — MAXIMUM HULL SETTLEMENT.' },
+                { id: 'bolts', label: 'TURBINE BOLTS', key: true, clue: 'Starboard turbine bolts: loosened with a heavy spanner at 04:00.', text: 'Four high-tensile steel bolts on the starboard turbine shaft have been loosened three turns.' }
+              ]
+            },
+            mission: 'Log how the sabotage was timed using C1/C2 restrictive inversion:',
+            hint: 'When a restrictive time phrase begins the sentence, keep normal subject-verb order inside the subordinate time clause itself, and delay the auxiliary-subject inversion until the start of the main clause.',
+            key: 'did the saboteur loosen',
+            failTitle: 'The pressure needle spikes into the red as steam fills the catwalk!',
+            choices: [
+              { correct: true, text: '“**Only when the tide turned** at 04:00 **did the saboteur loosen** the starboard turbine bolts.”', title: 'VALVE SEALED: Foreman McKee torques the turbine bolts back into place!', why: 'After fronted **Only when + subordinate time clause**, the time clause itself stays in normal order (*the tide turned*), and the **main clause** inverts (**did + subject + bare infinitive**).' },
+              { correct: false, text: '“**Only when did the tide turn** at 04:00 **the saboteur loosened** the starboard turbine bolts.”', error: 'Premature inversion error: you inverted the subordinate time clause instead of the main clause.', why: 'With *Only when*, *Only after*, and *Not until*, never invert the subordinate clause; invert the **main clause** that follows it.' },
+              { correct: false, text: '“Only when the tide turned at 04:00 **did the saboteur loosened** the starboard turbine bolts.”', error: 'Double past marking error: an inflected past verb is used after the auxiliary "did".', why: 'Once *did* carries the past tense in the inversion, the lexical verb must be the bare infinitive (*loosen*, never *loosened*).' },
+              { correct: false, text: '“Only when the tide turned at 04:00 **the saboteur did loosen** the starboard turbine bolts.”', error: 'Word order error: the auxiliary "did" must precede the main-clause subject.', why: 'Restrictive inversion requires *Auxiliary + Subject + Bare Infinitive*, not *Subject + Auxiliary*.' }
+            ],
+            lesson: 'C1/C2 Delayed Restrictive Inversion: **Only when / Only after / Not until + [Subordinate Clause in Normal Order] + Auxiliary + Subject + Verb** (*Only when the tide turned did the saboteur loosen...*).'
+          },
+          {
+            location: 'BELFAST LOUGH • THE DAWN LAUNCH', tag: 'Past Subjunctive & Preference (would rather)', speaker: 'INSPECTOR DECK',
+            sceneType: 'ship_dawn', deduceLabel: 'SEAL CASE',
+            intro: [
+              'Dawn breaks in gold and crimson across **Belfast Lough**. On the launch dais, Mercer is in handcuffs and the genuine turbine blueprint is back in **Chief Andrews\'s** hands.',
+              'The Admiralty representative awaits your final dispatch before the *Star of the Lough* slides down into the water.'
+            ],
+            cmds: {
+              LOOK: [
+                { id: 'lough', label: 'BELFAST LOUGH', text: 'Sunlight glitters on Belfast Lough as tugs sound their horns beneath the twin gantry cranes.' }
+              ],
+              TALK: [
+                { id: 'andrews4', label: 'CHIEF ANDREWS', who: 'ANDREWS', key: true, clue: 'Chief Andrews: the Admiralty prefers the blueprint to stay under seal and wants Mercer brought to court immediately.', text: '“The Admiralty\'s instructions are clear, Inspector: they would prefer the turbine blueprint to stay under official seal, and it is past time Mercer answered for his crimes in court.”' },
+                { id: 'mercer4', label: 'MERCER', who: 'MERCER', text: '“A single smudge of Prussian blue... and twelve thousand tons of steel slip out of my grasp.”' }
+              ],
+              EXAMINE: [
+                { id: 'dispatch', label: 'ADMIRALTY CABLE', key: true, clue: 'Admiralty cable: keep the blueprint under seal; send Mercer to the assizes without delay.', text: 'ADMIRALTY DISPATCH\n1. BLUEPRINT TO REMAIN UNDER OFFICIAL SEAL.\n2. SUSPECT MERCER TO FACE THE ASSIZES FORTHWITH.' }
+              ]
+            },
+            mission: 'Transmit the final Admiralty dispatch using C1/C2 unreal past subjunctive forms:',
+            hint: 'When expressing a present or future preference for a different subject, or stating that an action is already overdue, English shifts the finite verb in the subordinate clause into the past subjunctive form rather than using a present tense or bare infinitive.',
+            key: 'would rather the blueprint remained',
+            failTitle: 'The Admiralty telegraph operator queries your dispatch wording.',
+            choices: [
+              { correct: true, text: '“The Admiralty **would rather the blueprint remained** under seal, as **it is high time Mercer faced** the assizes.”', title: 'LAUNCH SUCCESSFUL: the Star of the Lough glides out into Belfast Lough!', why: 'Both **would rather + different subject** and **it is high time + subject** take the **past subjunctive** (past simple form *remained*, *faced*) to express present/future preference and overdue action.' },
+              { correct: false, text: '“The Admiralty **would rather the blueprint remains** under seal, as **it is high time Mercer faces** the assizes.”', error: 'Tense error: present simple indicative used instead of the unreal past subjunctive.', why: 'In formal British English and Cambridge exams, *would rather + new subject* and *it is high time + subject* require the past simple form (*remained*, *faced*) for present/future reference.' },
+              { correct: false, text: '“The Admiralty **would rather the blueprint to remain** under seal, as **it is high time for Mercer facing** the assizes.”', error: 'Complement structure error: "would rather" never takes a to-infinitive clause, and "high time" does not take "for + -ing".', why: '*Would Prefer* takes *object + to-infinitive*, whereas *would rather + subject* requires a finite past-tense verb; *it is high time* takes *subject + past simple* (or *for + object + to-infinitive*).' },
+              { correct: false, text: '“The Admiralty **would rather that the blueprint would remain** under seal, as **it is high time Mercer would face** the assizes.”', error: 'Modal intrusion error: "would" cannot be used inside the subordinate clause after "would rather" or "it is high time".', why: 'Never put *would* inside the clause after *would rather* or *it is high time*; use the past simple subjunctive (*remained*, *faced*).' }
+            ],
+            lesson: 'C1/C2 Past Subjunctive for Present/Future: **Subject 1 + would rather + Subject 2 + Past Simple** (*would rather the blueprint remained*) and **It is (high/about) time + Subject + Past Simple** (*it is high time Mercer faced*).'
           }
         ]
       }
@@ -711,7 +1060,9 @@
     const SONGS = {
       1: { lead: [69, 0, 72, 74, 76, 0, 74, 72, 69, 0, 67, 69, 72, 0, 0, 0], bass: [45, 45, 57, 45, 48, 48, 60, 48, 43, 43, 55, 43, 45, 45, 57, 45] },
       2: { lead: [62, 65, 69, 0, 67, 65, 64, 0, 62, 0, 60, 62, 65, 0, 64, 0], bass: [38, 0, 50, 38, 36, 0, 48, 36, 34, 0, 46, 34, 36, 0, 48, 36] },
-      3: { lead: [76, 0, 79, 0, 81, 79, 76, 0, 74, 0, 72, 74, 76, 0, 0, 0], bass: [40, 52, 40, 52, 45, 57, 45, 57, 43, 55, 43, 55, 40, 52, 40, 52] }
+      3: { lead: [76, 0, 79, 0, 81, 79, 76, 0, 74, 0, 72, 74, 76, 0, 0, 0], bass: [40, 52, 40, 52, 45, 57, 45, 57, 43, 55, 43, 55, 40, 52, 40, 52] },
+      4: { lead: [64, 0, 67, 71, 72, 0, 71, 67, 64, 0, 62, 64, 67, 0, 66, 0], bass: [40, 40, 52, 40, 40, 40, 52, 40, 45, 45, 57, 45, 47, 47, 59, 47] },
+      5: { lead: [62, 0, 69, 67, 65, 0, 64, 62, 69, 0, 72, 71, 69, 0, 65, 0], bass: [38, 38, 50, 38, 41, 41, 53, 41, 43, 43, 55, 43, 45, 45, 57, 45] }
     };
     const STEP = 60 / 132 / 2;
     const mus = { on: false, timer: null, next: 0, step: 0 };
@@ -761,6 +1112,8 @@
     let cx = null;
     const K = PAL.K, B = PAL.B, Rd = PAL.R, M = PAL.M, G = PAL.G, C = PAL.C, Y = PAL.Y, W = PAL.W;
     function R(x, y, w, h, c) { cx.fillStyle = c; cx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
+    const fill = c => R(0, 0, 640, 200, c || K);
+    const rect = R;
     const patCache = {};
     function pat(c1, c2, kind) {
       const k = (c1 || 'none') + c2 + kind;
@@ -779,6 +1132,20 @@
       return (patCache[k] = cx.createPattern(p, 'repeat'));
     }
     function D(x, y, w, h, c1, c2, kind) { R(x, y, w, h, pat(c1, c2, kind || 'check')); }
+    const dither = D;
+    function line(x0, y0, x1, y1, c, th) {
+      th = th || 1;
+      let dx = Math.abs(Math.round(x1) - Math.round(x0)), sx = x0 < x1 ? 1 : -1;
+      let dy = -Math.abs(Math.round(y1) - Math.round(y0)), sy = y0 < y1 ? 1 : -1;
+      let err = dx + dy, x = Math.round(x0), y = Math.round(y0);
+      for (let step = 0; step < 1000; step++) {
+        R(x, y, th, th, c);
+        if (x === Math.round(x1) && y === Math.round(y1)) break;
+        const e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x += sx; }
+        if (e2 <= dx) { err += dx; y += sy; }
+      }
+    }
     function disc(x0, y0, rx, ry, c) {
       for (let dy = -ry; dy <= ry; dy++) {
         const w = Math.round(rx * Math.sqrt(Math.max(0, 1 - (dy * dy) / (ry * ry))));
@@ -803,6 +1170,7 @@
         x += 8 * sc;
       }
     }
+    const text = txt;
     function person(x, fy, coat, hair, legs) {
       R(x - 1, fy - 54, 18, 6, hair);
       R(x - 3, fy - 50, 4, 8, hair); R(x + 15, fy - 50, 4, 8, hair);
@@ -826,9 +1194,9 @@
       if (key === 'failed' || key === 'victory') return;
       const rawWho = String((el && el.speaker && el.speaker.textContent) || (S && curScene && curScene().speaker) || 'DECK').toUpperCase();
       const px = 510, py = 10, pw = 118, ph = 118;
-      const isSci = key.startsWith('scifi_'), isDng = key.startsWith('dungeon_');
-      const borderCol = isSci ? C : isDng ? Y : M;
-      const bgCol = isSci ? B : isDng ? M : B;
+      const isSci = key.startsWith('scifi_'), isDng = key.startsWith('dungeon_'), isTrn = key.startsWith('train_'), isShp = key.startsWith('ship_');
+      const borderCol = isSci ? C : isDng ? Y : isTrn ? G : isShp ? Y : M;
+      const bgCol = isSci ? B : isDng ? M : isTrn ? B : isShp ? B : B;
       R(px - 2, py - 2, pw + 4, ph + 4, K);
       R(px, py, pw, ph, borderCol); R(px + 2, py + 2, pw - 4, ph - 4, W);
       R(px + 4, py + 4, pw - 8, ph - 20, K);
@@ -848,6 +1216,13 @@
       else if (rawWho.includes('YUKI')) { coat = W; hair = C; trim = Rd; visor = G; short = 'CMDR YUKI'; }
       else if (rawWho.includes('MOTHER') || rawWho.includes('AI')) { coat = C; hair = G; trim = Y; robot = true; short = 'MOTHER-88'; }
       else if (rawWho.includes('CRUISER')) { coat = G; hair = Y; trim = W; visor = Y; short = 'CRUISER'; }
+      else if (rawWho.includes('FINCH')) { coat = M; hair = Y; trim = W; short = 'FINCH'; }
+      else if (rawWho.includes('VANE')) { coat = Rd; hair = W; trim = Y; hood = true; short = 'LADY VANE'; }
+      else if (rawWho.includes('DOYLE')) { coat = B; hair = C; trim = Y; short = 'DOYLE'; }
+      else if (rawWho.includes('CONNOLLY')) { coat = W; hair = Y; trim = B; short = 'CONNOLLY'; }
+      else if (rawWho.includes('MERCER')) { coat = M; hair = W; trim = Y; short = 'MERCER'; }
+      else if (rawWho.includes('ANDREWS')) { coat = B; hair = W; trim = Y; short = 'CH. ANDREWS'; }
+      else if (rawWho.includes('MCKEE')) { coat = C; hair = Rd; trim = Y; short = 'MCKEE'; }
       else if (rawWho.includes('NOTEBOOK')) { coat = M; hair = Y; trim = C; short = 'NOTEBOOK'; }
       else { coat = B; hair = M; trim = Y; short = 'INSP. DECK'; }
 
@@ -1064,6 +1439,208 @@
         for (let i = 0; i < 8; i++) R(180 + i * 28, 174, 12, 5, (i + f) % 4 ? G : Y);
         person(168, 184, W, C, B);
       },
+      train_platform(f) {
+        fill(K); dither(0, 0, 640, 144, K, B, 'sparse');
+        // Victorian station canopy & iron trusses
+        rect(0, 0, 500, 18, B); rect(0, 18, 500, 3, C);
+        for (let x = 24; x < 480; x += 92) {
+          rect(x, 18, 6, 130, B); rect(x + 6, 18, 2, 130, C);
+          line(x + 6, 36, x + 28, 18, C, 2);
+        }
+        // Midnight Sleeper carriage & locomotive resting at Platform 4
+        rect(28, 54, 444, 78, B); dither(32, 58, 436, 70, B, K, 'check');
+        rect(28, 54, 444, 4, C); rect(28, 122, 444, 4, Y);
+        for (let wx = 52; wx < 420; wx += 56) {
+          rect(wx, 68, 38, 28, W); rect(wx + 2, 70, 34, 24, K);
+          dither(wx + 4, 72, 30, 20, K, Y, 'sparse');
+          rect(wx + 6, 74, 10, 4, Y);
+        }
+        // Wheels & undercarriage
+        for (let wx = 64; wx < 440; wx += 72) {
+          disc(wx, 138, 12, 10, W); disc(wx, 138, 8, 6, B);
+        }
+        // Swirling Platform 4 fog bands
+        for (let i = 0; i < 5; i++) {
+          const fx = ((i * 112 + f * 6) % 460);
+          dither(fx, 104 + (i % 3) * 14, 68, 10, null, W, 'sparse');
+        }
+        // Platform pavement & luggage trolley with blue chalk briefcase
+        rect(0, 146, 640, 54, K); rect(0, 146, 640, 3, Y);
+        dither(0, 150, 640, 50, K, B, 'check');
+        rect(286, 134, 52, 26, W); rect(288, 136, 48, 22, Rd);
+        rect(296, 122, 28, 14, Y); rect(306, 126, 8, 4, C);
+        text('PLATFORM 4', 180, 28, Y, 2);
+        text('23:40', 360, 28, f % 2 ? G : W, 2);
+        person(140, 184, B, C, W); person(384, 184, M, Y, W);
+      },
+      train_dining(f) {
+        fill(K);
+        // Mahogany carriage walls (Rd + K check dither) & brass trim
+        dither(0, 0, 640, 148, K, Rd, 'check');
+        rect(0, 12, 500, 4, Y); rect(0, 144, 640, 4, Y);
+        // Panoramic carriage windows with rushing night stars & telegraph poles
+        [28, 188, 348].forEach((wx, idx) => {
+          rect(wx, 28, 132, 76, Y); rect(wx + 4, 32, 124, 68, K);
+          for (let s = 0; s < 8; s++) {
+            const sx = wx + 8 + ((s * 29 + idx * 17 + f * 9) % 114);
+            const sy = 38 + ((s * 19 + idx * 11) % 44);
+            rect(sx, sy, 2, 2, s % 2 ? W : C);
+          }
+          const poleX = wx + 116 - ((f * 16 + idx * 40) % 112);
+          rect(poleX, 36, 4, 60, B); rect(poleX - 6, 42, 16, 2, C);
+        });
+        text('DINING CAR', 190, 16, Y, 1);
+        // White-linen dining tables & warm table lamps
+        rect(0, 148, 640, 52, K); dither(0, 150, 640, 50, B, K, 'sparse');
+        [84, 256, 412].forEach(tx => {
+          rect(tx - 38, 134, 76, 18, W); rect(tx - 34, 152, 68, 28, B);
+          rect(tx - 4, 118, 8, 16, Y);
+          disc(tx, 114, 10, 7, f % 2 ? Y : Rd);
+          rect(tx - 20, 128, 8, 6, C); rect(tx + 12, 128, 8, 6, C);
+        });
+        person(192, 182, Rd, W, B); person(336, 182, W, Y, B);
+      },
+      train_van(f) {
+        fill(K);
+        // Steel-ribbed Guard's Van interior
+        dither(0, 0, 640, 150, K, B, 'check');
+        for (let x = 20; x < 490; x += 68) { rect(x, 0, 6, 150, B); rect(x + 6, 0, 2, 150, C); }
+        // Red emergency vacuum brake cord along the top bulkhead
+        rect(0, 22, 500, 4, Rd); rect(236, 22, 4, 42, Rd);
+        disc(238, 66, 8, 6, f % 2 ? Y : Rd);
+        // Mail crates & coupling cipher box
+        rect(28, 84, 96, 66, Y); dither(32, 88, 88, 58, Rd, K, 'check');
+        line(32, 88, 120, 146, Y, 2); line(120, 88, 32, 146, Y, 2);
+        consoleBank(154, 68, 136, 82, f, Rd);
+        text('00:04', 184, 44, f % 2 ? Rd : Y, 2);
+        // Guard's handbrake wheel
+        disc(364, 108, 26, 24, W); disc(364, 108, 20, 18, K);
+        rect(362, 84, 4, 48, W); rect(340, 106, 48, 4, W);
+        rect(0, 150, 640, 50, K); rect(0, 150, 640, 3, C);
+        dither(0, 154, 640, 46, K, B, 'sparse');
+        person(424, 184, B, C, W);
+      },
+      train_signal(f) {
+        fill(K); dither(0, 0, 640, 146, K, B, 'sparse');
+        // Signal box windows looking out on Belfast tracks in the rain
+        for (let wx = 20; wx < 340; wx += 108) {
+          rect(wx, 18, 96, 86, W); rect(wx + 3, 21, 90, 80, K);
+          line(wx + 12, 98, wx + 46, 54, C, 2);
+          line(wx + 80, 98, wx + 54, 54, C, 2);
+          disc(wx + 48, 38, 6, 6, wx === 128 ? (f % 2 ? Rd : Y) : G);
+        }
+        // Track diagram console
+        consoleBank(356, 24, 136, 78, f, G);
+        text('BELFAST', 368, 34, Y, 2);
+        // Mechanical point levers row
+        rect(0, 146, 640, 54, K); dither(0, 148, 640, 52, B, K, 'check');
+        rect(36, 136, 260, 14, W); rect(40, 138, 252, 10, B);
+        for (let i = 0; i < 6; i++) {
+          const lx = 58 + i * 38;
+          const pulled = i === 3;
+          line(lx, 136, pulled ? lx + 14 : lx - 8, 88, pulled ? Rd : W, 3);
+          disc(pulled ? lx + 14 : lx - 8, 86, 5, 4, pulled ? Y : C);
+        }
+        person(316, 186, B, M, C); person(424, 186, M, Y, W);
+        rain(f, C);
+      },
+      ship_slipway(f) {
+        fill(K); dither(0, 0, 640, 146, K, B, 'sparse'); stars(13, 36, f, 90);
+        // Twin Harland & Wolff yellow gantry cranes (Samson & Goliath)
+        [36, 296].forEach((gx, idx) => {
+          rect(gx, 16, 10, 130, Y); rect(gx + 136, 16, 10, 130, Y);
+          rect(gx - 8, 12, 162, 10, Y);
+          for (let tx = gx; tx < gx + 144; tx += 18) {
+            line(tx, 12, tx + 14, 22, K, 2);
+          }
+          text(idx === 0 ? 'H&W' : 'NO.3', gx + 54, 14, K, 1);
+        });
+        // Towering ship hull on Slipway No. 3
+        rect(96, 54, 276, 62, B); dither(100, 58, 268, 54, B, K, 'check');
+        rect(104, 116, 260, 22, Rd); rect(96, 54, 276, 4, W);
+        for (let px = 116; px < 350; px += 28) rect(px, 68, 8, 6, f % 2 ? Y : W);
+        // Oak keel blocks & Prussian blue stained rivet hammer
+        for (let kx = 112; kx < 356; kx += 36) {
+          rect(kx, 138, 18, 8, Y);
+        }
+        rect(224, 134, 14, 4, C); rect(230, 130, 4, 10, W);
+        // Slipway apron & Belfast Lough water
+        rect(0, 146, 640, 54, K); rect(0, 146, 640, 3, Y);
+        dither(0, 150, 640, 50, B, K, 'check');
+        text('SLIPWAY 3', 188, 34, Y, 2);
+        person(144, 186, C, Rd, W); person(386, 186, M, W, Y);
+      },
+      ship_office(f) {
+        fill(K); dither(0, 0, 640, 148, K, B, 'check');
+        // High arched Drawing Office windows
+        [24, 156, 288].forEach(wx => {
+          rect(wx, 18, 104, 78, W); rect(wx + 4, 22, 96, 70, K);
+          dither(wx + 6, 24, 92, 66, K, B, 'sparse');
+          rect(wx + 50, 22, 4, 70, W); rect(wx + 4, 54, 96, 4, W);
+        });
+        // Chief Draughtsman's heavy steel safe (ajar)
+        rect(412, 38, 76, 108, W); rect(416, 42, 68, 100, B);
+        dither(418, 44, 64, 96, B, K, 'check');
+        disc(450, 86, 12, 12, Y); disc(450, 86, 6, 6, K);
+        rect(424, 54, 36, 10, C); rect(424, 114, 42, 8, f % 2 ? Y : W);
+        // Slanted oak drawing tables & cyan linen blueprints
+        rect(0, 148, 640, 52, K); rect(0, 148, 640, 3, Y);
+        dither(0, 152, 640, 48, K, Rd, 'sparse');
+        [44, 180, 312].forEach(tx => {
+          rect(tx, 118, 84, 12, Y); rect(tx + 8, 120, 68, 8, C);
+          rect(tx + 12, 130, 8, 22, Y); rect(tx + 64, 130, 8, 22, Y);
+        });
+        text('DRAWING OFFICE', 142, 6, Y, 1);
+        person(132, 184, B, W, Y); person(268, 184, B, M, C);
+      },
+      ship_turbine(f) {
+        fill(K); dither(0, 0, 640, 150, K, B, 'sparse');
+        // Overhead high-pressure steam pipes
+        rect(0, 16, 500, 8, W); rect(0, 24, 500, 4, C);
+        for (let sx = 60; sx < 460; sx += 96) rect(sx, 12, 8, 18, Y);
+        // Port & Starboard cylindrical steam turbine casings
+        [124, 308].forEach((tx, idx) => {
+          disc(tx, 98, 64, 48, W); disc(tx, 98, 58, 42, B);
+          dither(tx - 44, 68, 88, 60, B, K, 'check');
+          disc(tx, 98, 20, 16, idx === 1 && f % 2 ? Rd : Y);
+          for (let b = -40; b <= 40; b += 20) {
+            rect(tx + b - 3, 54, 6, 6, idx === 1 ? Rd : C);
+            rect(tx + b - 3, 136, 6, 6, idx === 1 ? Rd : C);
+          }
+        });
+        // Hissing steam jet on starboard turbine
+        dither(348, 32, 28, 34, null, f % 2 ? W : C, 'sparse');
+        consoleBank(394, 44, 96, 96, f, Rd);
+        text('04:00', 408, 28, f % 2 ? Rd : Y, 2);
+        rect(0, 150, 640, 50, K); rect(0, 150, 640, 3, C);
+        dither(0, 154, 640, 46, B, K, 'check');
+        person(212, 186, C, Rd, W);
+      },
+      ship_dawn(f) {
+        fill(K);
+        // Golden & crimson dawn sky over Belfast Lough
+        dither(0, 0, 640, 44, K, M, 'check');
+        dither(0, 44, 640, 44, M, Rd, 'check');
+        dither(0, 88, 640, 42, Rd, Y, 'check');
+        disc(248, 118, 42, 24, Y);
+        // Twin yellow gantry cranes silhouetted on horizon
+        [44, 356].forEach(gx => {
+          rect(gx, 28, 8, 102, Y); rect(gx + 96, 28, 8, 102, Y);
+          rect(gx - 6, 24, 116, 8, Y);
+        });
+        // Star of the Lough gliding into Belfast Lough waters
+        rect(148, 78, 196, 36, K); rect(148, 78, 196, 4, W);
+        rect(156, 114, 180, 14, Rd);
+        rect(204, 54, 22, 24, Y); rect(204, 54, 22, 6, K);
+        rect(252, 54, 22, 24, Y); rect(252, 54, 22, 6, K);
+        // Shimmering Belfast Lough waves
+        rect(0, 130, 640, 70, B); dither(0, 130, 640, 70, B, C, 'sparse');
+        for (let wy = 136; wy < 194; wy += 10) {
+          rect(((wy * 17 + f * 8) % 440), wy, 48, 2, Y);
+        }
+        text('STAR OF THE LOUGH', 124, 12, Y, 2);
+        person(76, 186, B, W, Y); person(424, 186, B, M, C);
+      },
       failed(f) {
         for (let y = 0; y < 200; y += 4) {
           const c = (y * 7 + f * 13) % 11 < 3 ? Rd : ((y * 3 + f) % 17 < 2 ? M : K);
@@ -1155,14 +1732,209 @@
       el.staWrap.classList.toggle('low', S.stamina <= 3);
     }
     function renderTabs() {
-      [1, 2, 3].forEach(id => {
+      [1, 2, 3, 4, 5].forEach(id => {
         const b = document.getElementById('tape-tab-' + id), on = id === S.tapeId;
+        if (!b) return;
         b.classList.toggle('active', on);
         b.setAttribute('aria-selected', on ? 'true' : 'false');
         b.tabIndex = on ? 0 : -1;
         b.querySelector('.badge').textContent = STORE.tapesCleared.includes(id) ? '✓ CLEARED · BEST RANK ' + (STORE.bestRank[id] || '?') : '';
       });
       el.game.setAttribute('aria-labelledby', 'tape-tab-' + S.tapeId);
+      if (el.codexPanel && !el.codexPanel.hidden) renderCodex();
+    }
+
+    /* ================================================================
+       8B. CASE DOSSIER / GRAMMAR CODEX (TAPES 1–4)
+       ================================================================ */
+    const CODEX_WORKOUTS = {
+      '1-0': {
+        formula: 'When + Past Simple, Past Simple (sequence)  |  When + Past Simple, Past Perfect (had + V3 = earlier past)',
+        prompt: 'Rewrite using ALREADY: “Vance locked the vault before the 23:15 alarm rang.” → When the 23:15 alarm rang, Vance ______ the vault.',
+        model: 'When the 23:15 alarm rang, Vance **had already locked** the vault. (Past Perfect places the locking before 23:15.)'
+      },
+      '1-1': {
+        formula: 'say (that) + clause  |  tell + object + (that) + clause  |  won\'t → wouldn\'t + bare infinitive',
+        prompt: 'Report Kael\'s line: “I am hiding in Sector 4 and I won\'t surrender!” → Kael said he ______ in Sector 4 and that he ______.',
+        model: 'Kael said he **was hiding** in Sector 4 and that he **wouldn\'t surrender**.'
+      },
+      '1-2': {
+        formula: 'Negative Statement (never / hardly / no one) + Positive Auxiliary Tag (had you? / did she?)',
+        prompt: 'Add the question tag: “You\'d never entered Sector 4 before tonight, ______?”',
+        model: '“You\'d never entered Sector 4 before tonight, **had you**?” (\'d + entered = had; never makes the clause negative.)'
+      },
+      '1-3': {
+        formula: 'must have + V3 (certainly happened)  |  can\'t / couldn\'t have + V3 (certainly did not happen)',
+        prompt: 'Deduce from the welded door and hot launcher: “He ______ (use) the stairs; he ______ (launch) the chip by drone.”',
+        model: '“He **can\'t have used** the stairs; he **must have launched** the chip by drone.”'
+      },
+      '2-0': {
+        formula: 'must have been + V3 (passive certainty)  |  can\'t have been + V3 (passive impossibility)',
+        prompt: 'Transform into passive past deduction: “I\'m certain the scout pulled Lever 2.” → Lever 2 ______ by the scout.',
+        model: 'Lever 2 **must have been pulled** by the scout.'
+      },
+      '2-1': {
+        formula: 'Defining (no commas): Noun + which/that + clause  |  Non-defining (commas): Noun, which + clause, ...',
+        prompt: 'Combine with WHICH: “The south mirror reflects the red flame. It is cursed.”',
+        model: 'The south mirror, **which reflects** the red flame, is cursed. (Commas mark extra information about a unique noun.)'
+      },
+      '2-2': {
+        formula: 'If + Past Perfect (had + V3) [unreal past cause], ... would + bare infinitive + now [present result]',
+        prompt: 'Complete the mixed conditional: “I left the Silver Key at the inn yesterday, so the bridge isn\'t down now.” → If I ______ the Silver Key yesterday, the bridge ______ down now.',
+        model: '**If I had brought** the Silver Key yesterday, the bridge **would be** down now.'
+      },
+      '3-0': {
+        formula: 'Present Continuous Passive: is/are being + V3  |  Present Perfect Passive: has/have (just) been + V3',
+        prompt: 'Rewrite in the passive: “Bots are repairing Bay 1 right now, and technicians have just replaced Bay 2\'s seals.”',
+        model: 'Bay 1 **is being repaired** right now, and Bay 2\'s seals **have just been replaced**.'
+      },
+      '3-1': {
+        formula: 'Causative: have + object + past participle (V3)  |  Agentive: have + person/drone + bare infinitive',
+        prompt: 'Rewrite using the causative with WELDED: “Drone-9 must weld the hull breach for us immediately.”',
+        model: 'We must **have the hull breach welded** by Drone-9 immediately.'
+      },
+      '3-2': {
+        formula: 'Future Perfect: will have + V3 (done by a deadline)  |  Future Continuous: will be + V-ing (in progress at a time)',
+        prompt: 'Complete for 06:00: “By 06:00, life-support ______ (boot up), and at 06:00 the storm ______ (still / pass).”',
+        model: 'By 06:00, life-support **will have booted up**, and at 06:00 the storm **will still be passing**.'
+      },
+      '4-0': {
+        formula: 'Negative Adverbial (At no time / Little / Never / No sooner) + Auxiliary (did/had) + Subject + Bare Infinitive / V3',
+        prompt: 'Invert with LITTLE: “Finch did not realise that the wet chalk had marked his sleeve.” → Little ______ that the wet chalk had marked his sleeve.',
+        model: '**Little did Finch realise** that the wet chalk had marked his sleeve.'
+      },
+      '4-1': {
+        formula: 'Subject + is/are rumoured/said/known + to be (present)  |  + to have + V3 (earlier past)',
+        prompt: 'Rewrite with RUMOURED: “People rumour that Lady Vane boarded the train at the border halt.” → Lady Vane ______ at the border halt.',
+        model: 'Lady Vane **is rumoured to have boarded** at the border halt.'
+      },
+      '4-2': {
+        formula: 'Had + Subject + (not) + Past Participle (V3), ... would have + Past Participle (V3)',
+        prompt: 'Invert without IF: “If the conductor had not pulled the emergency cord, the coupling would have snapped.”',
+        model: '**Had the conductor not pulled** the emergency cord, the coupling **would have snapped**.'
+      },
+      '4-3': {
+        formula: 'Subject + must have been + V3 (passive past certainty)  |  Subject + can\'t have + V3 (active past impossibility)',
+        prompt: 'Complete the deduction: “Someone certainly tampered with the points from inside, because it\'s impossible that the lock failed on its own.”',
+        model: 'The points **must have been tampered with** from inside, because the lock **can\'t have failed** on its own.'
+      },
+      '5-0': {
+        formula: 'Wh-Cleft: What + clause + is/was + focus  |  It-Cleft: It + is/was + focus + who/that + clause',
+        prompt: 'Rewrite with WHAT and IT: “The Prussian blue grease on the rivet hammer betrayed the saboteur, and Mercer signed the slipway pass.”',
+        model: '**What betrayed the saboteur was** the Prussian blue grease on the rivet hammer, and **it was Mercer who** signed the slipway pass.'
+      },
+      '5-1': {
+        formula: 'Fronted Perfect Participle: Having + Past Participle (V3), Subject (same agent) + Past Simple',
+        prompt: 'Combine using HAVING: “After Mercer had forged the manifest, he switched the linen blueprints.”',
+        model: '**Having forged the manifest**, Mercer **switched the linen blueprints**.'
+      },
+      '5-2': {
+        formula: 'Only when + [Time Clause in normal order] + Auxiliary (did/had) + Subject + Bare Infinitive / V3',
+        prompt: 'Front ONLY WHEN: “The saboteur only loosened the starboard turbine bolts when the tide turned at 04:00.”',
+        model: '**Only when the tide turned** at 04:00 **did the saboteur loosen** the starboard turbine bolts.'
+      },
+      '5-3': {
+        formula: 'Subject 1 + would rather + Subject 2 + Past Subjunctive (V2)  |  It is high time + Subject + Past Subjunctive (V2)',
+        prompt: 'Rewrite with WOULD RATHER and HIGH TIME: “The Admiralty prefers the blueprint to remain under seal, and Mercer should face the assizes now.”',
+        model: 'The Admiralty **would rather the blueprint remained** under seal, as **it is high time Mercer faced** the assizes.'
+      }
+    };
+    let codexFilter = 0;
+    function toggleCodex(force) {
+      if (!el.codexPanel) return false;
+      const open = typeof force === 'boolean' ? force : el.codexPanel.hidden;
+      el.codexPanel.hidden = !open;
+      if (el.codexBtn) el.codexBtn.setAttribute('aria-pressed', String(open));
+      if (el.codexInlineBtn) el.codexInlineBtn.textContent = open ? '📂 HIDE CASE DOSSIER / GRAMMAR CODEX' : '📂 OPEN CASE DOSSIER / GRAMMAR CODEX';
+      if (open) {
+        renderCodex();
+        if (el.codexPanel.scrollIntoView && !SELFTEST) el.codexPanel.scrollIntoView({ block: 'nearest', behavior: REDUCED ? 'auto' : 'smooth' });
+      }
+      sfx('select');
+      return open;
+    }
+    function renderCodex() {
+      if (!el.codexFilters || !el.codexGrid) return;
+      el.codexFilters.textContent = '';
+      [
+        { id: 0, label: 'ALL TAPES (18)' },
+        { id: 1, label: 'TAPE 1: NEON ALIBI' },
+        { id: 2, label: 'TAPE 2: CITADEL' },
+        { id: 3, label: 'TAPE 3: STATION ZERO' },
+        { id: 4, label: 'TAPE 4: MIDNIGHT SLEEPER (C1)' },
+        { id: 5, label: 'TAPE 5: SHIPYARD CIPHER (C1/C2)' }
+      ].forEach(f => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'codex-filter';
+        b.setAttribute('aria-pressed', String(codexFilter === f.id));
+        b.textContent = f.label;
+        b.addEventListener('click', () => { codexFilter = f.id; sfx('select'); renderCodex(); });
+        el.codexFilters.appendChild(b);
+      });
+      el.codexGrid.textContent = '';
+      Object.values(TAPES).forEach(t => {
+        if (codexFilter !== 0 && codexFilter !== t.id) return;
+        t.scenes.forEach((sc, idx) => {
+          const w = CODEX_WORKOUTS[`${t.id}-${idx}`] || {};
+          const unlocked = STORE.tapesCleared.includes(t.id) || (S && S.tapeId === t.id && S.sceneIdx >= idx);
+          const card = document.createElement('article');
+          card.className = 'codex-card' + (unlocked ? ' unlocked' : '');
+
+          const head = document.createElement('div');
+          head.className = 'codex-card-head';
+          const tag = document.createElement('strong');
+          tag.className = 'codex-tag';
+          tag.textContent = `TAPE ${t.id} · SCENE ${idx + 1} // ${sc.tag}`;
+          const st = document.createElement('span');
+          st.className = 'codex-status';
+          st.textContent = STORE.tapesCleared.includes(t.id) ? '✓ CASE CLEARED' : (unlocked ? '● ACTIVE LEAD' : '◇ DOSSIER FILE');
+          head.appendChild(tag);
+          head.appendChild(st);
+          card.appendChild(head);
+
+          if (w.formula) {
+            const fm = document.createElement('div');
+            fm.className = 'codex-formula';
+            fm.textContent = 'BLUEPRINT: ' + w.formula;
+            card.appendChild(fm);
+          }
+
+          const rule = document.createElement('div');
+          rule.className = 'codex-rule';
+          rule.appendChild(rich(sc.lesson));
+          card.appendChild(rule);
+
+          if (w.prompt && w.model) {
+            const wk = document.createElement('div');
+            wk.className = 'codex-workout';
+            const pr = document.createElement('div');
+            pr.className = 'codex-prompt';
+            pr.textContent = 'DRILL: ' + w.prompt;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'codex-reveal-btn';
+            btn.setAttribute('aria-expanded', 'false');
+            btn.textContent = '👁️ Reveal Model';
+            const md = document.createElement('div');
+            md.className = 'codex-model';
+            md.hidden = true;
+            md.appendChild(rich(w.model));
+            btn.addEventListener('click', () => {
+              const show = md.hidden;
+              md.hidden = !show;
+              btn.setAttribute('aria-expanded', String(show));
+              btn.textContent = show ? '🙈 Hide Model' : '👁️ Reveal Model';
+              sfx('select');
+            });
+            wk.appendChild(pr);
+            wk.appendChild(btn);
+            wk.appendChild(md);
+            card.appendChild(wk);
+          }
+          el.codexGrid.appendChild(card);
+        });
+      });
     }
     function clearNotes() {
       el.notes.textContent = '';
@@ -1367,6 +2139,7 @@
       hud(); startWipe();
       say(sc.intro, sc.speaker);
       rootMenu();
+      if (el.codexPanel && !el.codexPanel.hidden) renderCodex();
     }
     function hint() {
       if (!['investigate', 'deduce', 'result_bad'].includes(S.phase)) return false;
@@ -1422,9 +2195,9 @@
       startWipe();
       say(t.outro, 'CASE FILE');
       const items = [];
-      if (t.id < 3) items.push({ label: 'NEXT TAPE ▶', cls: 'accent', act: () => loadTape(t.id + 1) });
+      if (t.id < 5) items.push({ label: 'NEXT TAPE ▶', cls: 'accent', act: () => loadTape(t.id + 1) });
       items.push({ label: 'REPLAY THIS TAPE', act: () => loadTape(t.id) });
-      if (t.id === 3) items.push({ label: 'BACK TO TAPE 1', act: () => loadTape(1) });
+      if (t.id === 5) items.push({ label: 'BACK TO TAPE 1', act: () => loadTape(1) });
       menu('CASE CLOSED', items);
       sfx('ok');
       track('chronicle88_tape_cleared', { tape: t.id, rank, firstTry: st.firstTry, scenes: n, wrong: st.wrong, hints: st.hints });
@@ -1435,7 +2208,7 @@
           try {
             window.showDiagnosticGate({
               gameName: "Chronicle '88: " + t.title, score: st.firstTry, maxScore: n,
-              weakArea: missed ? missed[0] : 'Accuracy under pressure across B2 grammar structures',
+              weakArea: missed ? missed[0] : 'Accuracy under pressure across B2–C1 grammar structures',
               onReplay: () => loadTape(tapeId)
             });
           } catch (e) { /* ignore */ }
@@ -1462,7 +2235,8 @@
        ================================================================ */
     function openParry() {
       if (S.phase !== 'result_bad' || P.open || S.tokens <= 0 || S.busy) return false;
-      const t = tape(), item = t.parries[S.parryIdx % t.parries.length];
+      const t = tape(), pool = (t.parries && t.parries.length) ? t.parries : PARRY_POOL;
+      const item = pool[S.parryIdx % pool.length];
       S.parryIdx++; S.tokens--; hud();
       P = freshParry();
       P.open = true; P.item = item;
@@ -1565,6 +2339,9 @@
         }
         return;
       }
+      if (k === 'Escape' && el.codexPanel && !el.codexPanel.hidden) {
+        e.preventDefault(); toggleCodex(false); return;
+      }
       const t = e.target, onBtn = t && t.closest && t.closest('button, a, input, select, textarea');
       const locked = performance.now() < S.inputLockUntil;
       if (k === 'Enter' || k === ' ') {
@@ -1578,7 +2355,7 @@
       }
       if (t && t.closest && t.closest('[role="tablist"]') && (k === 'ArrowLeft' || k === 'ArrowRight')) {
         e.preventDefault();
-        const id = ((S.tapeId - 1 + (k === 'ArrowRight' ? 1 : 2)) % 3) + 1;
+        const id = ((S.tapeId - 1 + (k === 'ArrowRight' ? 1 : 4)) % 5) + 1;
         loadTape(id); document.getElementById('tape-tab-' + id).focus();
         return;
       }
@@ -1592,6 +2369,7 @@
         return;
       }
       if (k === 'h' || k === 'H') { hint(); return; }
+      if ((k === 'c' || k === 'C') && S.phase !== 'deduce') { toggleCodex(); return; }
       if (S.phase === 'deduce' && k.length === 1) {
         let pos = '1234'.indexOf(k); if (pos < 0) pos = 'abcd'.indexOf(k.toLowerCase());
         if (pos >= 0 && pos < S.order.length) { e.preventDefault(); if (!locked) selectChoice(pos); }
@@ -1617,6 +2395,8 @@
         cmdTitle: $('ui-cmd-title'), menu: $('ui-menu'), notes: $('ui-notes'), srLive: $('sr-live'),
         sta: $('ui-stat-stamina'), cmp: $('ui-stat-composure'), tok: $('ui-stat-tokens'), staWrap: $('stat-sta'),
         bgm: $('bgm-btn'), sfxBtn: $('sfx-btn'), speed: $('speed-btn'),
+        codexBtn: $('codex-btn'), codexInlineBtn: $('codex-inline-btn'), codexCloseBtn: $('codex-close-btn'),
+        codexPanel: $('codex-panel'), codexFilters: $('codex-filters'), codexGrid: $('codex-grid'),
         modal: $('parry-modal'), pOrig: $('parry-original'), pKey: $('parry-key'), pBefore: $('parry-before'), pAfter: $('parry-after'),
         pSlot: $('parry-slot'), pBank: $('parry-bank'), pStatus: $('parry-status'), check: $('parry-check')
       };
@@ -1628,6 +2408,9 @@
       el.check.addEventListener('click', checkParryTiles);
       $('parry-clear').addEventListener('click', clearParryTiles);
       $('parry-cancel').addEventListener('click', () => { if (!P.locked) closeParryModal(); });
+      if (el.codexBtn) el.codexBtn.addEventListener('click', () => toggleCodex());
+      if (el.codexInlineBtn) el.codexInlineBtn.addEventListener('click', () => toggleCodex());
+      if (el.codexCloseBtn) el.codexCloseBtn.addEventListener('click', () => toggleCodex(false));
       el.bgm.addEventListener('click', () => {
         unlocked = true;
         STORE.settings.music = !STORE.settings.music;
@@ -1740,7 +2523,7 @@
         const rc = retryCheckpoint();
         check('f checkpoint retry restores the scene', rc && S.phase === 'investigate' && S.sceneIdx === 1 && S.stamina >= 6 && S.stats.retries === 1);
         // integration: perfect run through every tape → victory, rank S, progress saved in memory
-        [1, 2, 3].forEach(id => {
+        [1, 2, 3, 4, 5].forEach(id => {
           loadTape(id); S.rng = () => 0;
           tape().scenes.forEach(() => {
             S.inputLockUntil = 0; revealAll(); deduce(); const s = curScene();
@@ -1768,6 +2551,16 @@
           });
           check(`g palette ${key}: ${bad} off-palette pixels in 4 frames`, bad === 0, sample);
         });
+        // (h) every parry across PARRY_POOL and TAPES[1..5].parries has an unchanged keyword, valid answer tiles, and distractors
+        let parryOk = 0, parryFail = [];
+        PARRY_POOL.forEach((p, idx) => {
+          const lenOk = Array.isArray(p.answer) && p.answer.length >= 2 && p.answer.length <= 6;
+          const keyOk = p.keyword && p.answer.some(w => w.toUpperCase() === p.keyword.toUpperCase());
+          const distOk = Array.isArray(p.distractors) && p.distractors.length >= 2;
+          if (lenOk && keyOk && distOk) parryOk++; else parryFail.push(`parry[${idx}] ${p.keyword}`);
+        });
+        const tapeParryIds = [1, 2, 3, 4, 5].every(id => TAPES[id] && Array.isArray(TAPES[id].parries) && TAPES[id].parries.length >= 4);
+        check(`h all ${PARRY_POOL.length} parries valid (unchanged keyword, answer tiles, distractors) & wired across Tapes 1-5`, parryOk === PARRY_POOL.length && tapeParryIds, parryFail.join(','));
       } catch (e) {
         check('exception during self-test', false, (e && (e.stack || e.message)) || String(e));
       }
@@ -1782,7 +2575,8 @@
     }
 
     window.Chronicle88 = {
-      loadTape, selectChoice, rollHazardCheck, advanceScene, checkParryTiles, openParry, closeParryModal, hint, deduce,
+      loadTape, selectChoice, rollHazardCheck, advanceScene, checkParryTiles, openParry, closeParryModal, hint, deduce, toggleCodex,
+      TAPES, SCENES, PARRY_POOL,
       get state() { return S; }
     };
 

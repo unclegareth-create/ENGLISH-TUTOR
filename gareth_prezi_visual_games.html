@@ -351,6 +351,151 @@
     }
 
     .reveal-box.show { display: block; }
+
+    /* ================= PREZI ZOOMABLE NODE MAP & NODES VII / VIII ================= */
+    .prezi-node-overview {
+      background: radial-gradient(circle at 50% 40%, #132038 0%, #090d16 80%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+    }
+
+    .prezi-zoom-plane {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+      gap: 12px;
+      transition: transform 0.55s cubic-bezier(0.2, 0.85, 0.25, 1);
+      transform-origin: center center;
+    }
+
+    .zoom-node-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .zoom-node-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.2);
+    }
+
+    .zoom-node-card.active-node {
+      border-color: var(--gold);
+      background: rgba(245, 158, 11, 0.14);
+      box-shadow: 0 0 22px rgba(245, 158, 11, 0.28);
+    }
+
+    .node-num-tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .prezi-echo-token {
+      transition: all 0.2s ease;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    .prezi-echo-token.struck {
+      text-decoration: line-through;
+      text-decoration-color: var(--rose);
+      text-decoration-thickness: 2px;
+      opacity: 0.35;
+    }
+
+    .prezi-deficit-token {
+      transition: all 0.2s ease;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .prezi-deficit-token.isolated {
+      background: rgba(245, 158, 11, 0.25);
+      border-bottom: 2px solid var(--gold);
+      color: #fef08a;
+      font-weight: 800;
+    }
+
+    .decon-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 820px) {
+      .decon-steps-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .decon-step-box {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 0.82rem;
+    }
+
+    .act-pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 18px 0;
+    }
+
+    @media (max-width: 820px) {
+      .act-pillars-grid { grid-template-columns: 1fr; }
+    }
+
+    .act-pillar {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.25s ease;
+    }
+
+    .act-pillar.active-act {
+      border-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.14);
+      box-shadow: 0 0 22px rgba(16, 185, 129, 0.25);
+    }
+
+    .note-margin-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    @media (max-width: 720px) {
+      .note-margin-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .note-trigger-box {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-align: center;
+      width: 100%;
+    }
   </style>
 </head>
 <body>
@@ -369,15 +514,78 @@
 
   <!-- WORLD SELECTOR STRIP -->
   <nav class="world-selector-bar">
-    <button class="world-btn active" onclick="switchWorld('iceberg')">🧊 The Arctic Iceberg (Mixed Conditionals)</button>
-    <button class="world-btn" onclick="switchWorld('trail')">🚂 Darjeeling Footprint Trail (Travel & Speaking)</button>
-    <button class="world-btn" onclick="switchWorld('cat')">🐾 Silhouette Desk & Black Cat (The Third Conditional)</button>
-    <button class="world-btn" onclick="switchWorld('dolmen')">🪨 Celtic Portal Dolmen (The Selfish Giant / Deep Speaking)</button>
-    <button class="world-btn" onclick="switchWorld('book')">📖 The Battle Against Boredom (Flying Pages)</button>
-    <button class="world-btn" onclick="switchWorld('vault')">🏦 The Blueprint Vault (Money & Causative Passives)</button>
+    <button class="world-btn active" data-world="iceberg" onclick="switchWorld('iceberg')">🧊 I. Arctic Iceberg (Mixed Conditionals)</button>
+    <button class="world-btn" data-world="trail" onclick="switchWorld('trail')">🚂 II. Darjeeling Footprint Trail (Travel & Speaking)</button>
+    <button class="world-btn" data-world="cat" onclick="switchWorld('cat')">🐾 III. Silhouette Desk & Black Cat (Third Conditional)</button>
+    <button class="world-btn" data-world="dolmen" onclick="switchWorld('dolmen')">🪨 IV. Celtic Portal Dolmen (A.R.E.A. Speaking)</button>
+    <button class="world-btn" data-world="book" onclick="switchWorld('book')">📖 V. Battle Against Boredom (Flying Pages)</button>
+    <button class="world-btn" data-world="vault" onclick="switchWorld('vault')">🏦 VI. Blueprint Vault (Causative Passives)</button>
+    <button class="world-btn" data-world="part4" onclick="switchWorld('part4')">✂️ VII. Gareth's 4-Step Part 4 Deconstructor</button>
+    <button class="world-btn" data-world="speaking3act" onclick="switchWorld('speaking3act')">🎙️ VIII. 1-Minute Note Secret & 3-Act Timer</button>
   </nav>
 
   <main class="main-stage">
+
+    <!-- ================= ZOOMABLE 8-NODE PREZI CONSTELLATION MAP ================= -->
+    <section class="prezi-node-overview" aria-label="Zoomable Prezi Nodes I to VIII">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+        <div>
+          <span style="font-size: 0.75rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em;">
+            SPATIAL PREZI CANVAS · NODES I – VIII
+          </span>
+          <h2 style="font-size: 1.15rem; font-weight: 800; color: #fff;">
+            Click Any Prezi Node to Zoom Into Its Interactive Workout
+          </h2>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span id="preziZoomReadout" style="font-size: 0.78rem; font-weight: 700; color: var(--gold);">ACTIVE: NODE I (100% ZOOM)</span>
+          <button type="button" class="btn" style="padding: 6px 12px; font-size: 0.8rem;" onclick="resetPreziOverviewZoom()">🌌 Reset Zoom</button>
+        </div>
+      </div>
+
+      <div id="preziZoomPlane" class="prezi-zoom-plane">
+        <div class="zoom-node-card active-node" data-node="iceberg" onclick="switchWorld('iceberg')">
+          <span class="node-num-tag">Node I · Mixed Conditionals</span>
+          <strong style="font-size: 0.92rem; color: #fff;">🧊 The Arctic Iceberg</strong>
+          <span style="font-size: 0.76rem; color: var(--muted);">Submerged Counterfactuals &amp; Bingo</span>
+        </div>
+        <div class="zoom-node-card" data-node="trail" onclick="switchWorld('trail')">
+          <span class="node-num-tag">Node II · Narrative Arc</span>
+          <strong style="font-size: 0.92rem; color: #fff;">🚂 Darjeeling Trail</strong>
+          <span style="font-size: 0.76rem; color: var(--muted);">5-Stop Expedition &amp; Inversions</span>
+        </div>
+        <div class="zoom-node-card" data-node="cat" onclick="switchWorld('cat')">
+          <span class="node-num-tag">Node III · Past Criticism</span>
+          <strong style="font-size: 0.92rem; color: #fff;">🐾 Silhouette Desk &amp; Cat</strong>
+          <span style="font-size: 0.76rem; color: var(--muted);">Third Conditional Regret Flipper</span>
+        </div>
+        <div class="zoom-node-card" data-node="dolmen" onclick="switchWorld('dolmen')">
+          <span class="node-num-tag">Node IV · Part 3 Depth</span>
+          <strong style="font-size: 0.92rem; color: #fff;">🪨 Celtic Portal Dolmen</strong>
+          <span style="font-size: 0.76rem; color: var(--muted);">A.R.E.A. Philosophical Builder</span>
+        </div>
+        <div class="zoom-node-card" data-node="book" onclick="switchWorld('book')">
+          <span class="node-num-tag">Node V · Idiomatic Prose</span>
+          <strong style="font-size: 0.92rem; color: #fff;">📖 Flying Pages</strong>
+          <span style="font-size: 0.76rem; color: var(--muted);">C1 Literary Collocations</span>
+        </div>
+        <div class="zoom-node-card" data-node="vault" onclick="switchWorld('vault')">
+          <span class="node-num-tag">Node VI · C2 Passives</span>
+          <strong style="font-size: 0.92rem; color: #fff;">🏦 The Blueprint Vault</strong>
+          <span style="font-size: 0.76rem; color: var(--muted);">Strip-in-a-Box Causatives</span>
+        </div>
+        <div class="zoom-node-card" data-node="part4" onclick="switchWorld('part4')">
+          <span class="node-num-tag" style="color: var(--gold);">Node VII · Exam Strategy</span>
+          <strong style="font-size: 0.92rem; color: #fff;">✂️ 4-Step Part 4 Engine</strong>
+          <span style="font-size: 0.76rem; color: var(--muted);">Echo Strike &amp; 3–6 Word Deconstructor</span>
+        </div>
+        <div class="zoom-node-card" data-node="speaking3act" onclick="switchWorld('speaking3act')">
+          <span class="node-num-tag" style="color: var(--emerald);">Node VIII · Active Voice First</span>
+          <strong style="font-size: 0.92rem; color: #fff;">🎙️ 1-Min Note &amp; 3-Act Timer</strong>
+          <span style="font-size: 0.76rem; color: var(--muted);">4 Trigger Keywords &amp; Live Part 2 Pacer</span>
+        </div>
+      </div>
+    </section>
 
     <!-- ================= WORLD 1: THE ARCTIC ICEBERG ================= -->
     <div id="world-iceberg" class="stage-card">

@@ -121,6 +121,27 @@
     .nav-btn { background: var(--navy-800); border: 1px solid var(--navy-800); color: #fff; padding: 0.45rem 1.1rem; border-radius: 6px; font-weight: 700; font-size: 0.84rem; cursor: pointer; }
     .nav-btn#prev-btn { background: #fff; border: 1.5px solid var(--border); color: var(--ink-700); }
     .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .gauntlet-section { max-width: 1120px; width: 100%; margin: 0.5rem auto 2.5rem; padding: 0 1.2rem; }
+    .gauntlet-panel { background: var(--paper-bg); border: 2px solid var(--navy-800); border-radius: 14px; padding: 1.8rem 2.2rem; box-shadow: 0 12px 32px rgba(15,37,87,0.08); }
+    .gauntlet-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; border-bottom: 1.5px solid var(--border); padding-bottom: 1.1rem; margin-bottom: 1.2rem; }
+    .gauntlet-badge-bar { display: grid; grid-template-columns: repeat(10, 1fr); gap: 0.45rem; margin-bottom: 1.25rem; }
+    @media (max-width: 820px) { .gauntlet-badge-bar { grid-template-columns: repeat(5, 1fr); } .gauntlet-panel { padding: 1.2rem 1rem; } }
+    .pat-chip { background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.4rem 0.35rem; text-align: center; font-size: 0.72rem; font-weight: 800; color: var(--ink-500); transition: all 0.15s; cursor: pointer; }
+    .pat-chip.m2 { background: var(--emerald-bg); border-color: var(--emerald-border); color: var(--emerald-text); }
+    .pat-chip.m1 { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber-text); }
+    .gauntlet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 900px) { .gauntlet-grid { grid-template-columns: 1fr; } }
+    .mg-card { background: #f8fafc; border: 1.5px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.55rem; transition: border-color 0.15s; }
+    .mg-card.mastered { border-color: var(--emerald-border); background: #f0fdf4; }
+    .mg-card.echo-struck .echo-word { text-decoration: line-through; color: #94a3b8; background: #e2e8f0; padding: 0 3px; border-radius: 3px; }
+    .mg-card.echo-struck .deficit-word { background: #fef3c7; color: #92400e; font-weight: 700; padding: 1px 5px; border-radius: 4px; border-bottom: 2px solid #d97706; }
+    .echo-btn { background: #fff; border: 1.5px solid var(--amber-border); color: var(--amber-text); padding: 0.25rem 0.65rem; border-radius: 6px; font-size: 0.73rem; font-weight: 800; cursor: pointer; transition: all 0.15s; }
+    .echo-btn:hover, .echo-btn.active { background: var(--amber-border); color: #fff; }
+    .decon-box { display: none; background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: 8px; padding: 0.6rem 0.8rem; font-size: 0.78rem; color: var(--amber-text); line-height: 1.45; }
+    .mg-card.echo-struck .decon-box { display: block; }
+    .key-guard-pill { font-family: 'Consolas', monospace; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--ink-500); }
+    .key-guard-pill.ok { background: var(--emerald-bg); border-color: var(--emerald-border); color: var(--emerald-text); }
+    .key-guard-pill.bad { background: var(--rose-bg); border-color: var(--rose-border); color: var(--rose-text); }
     @media print { .top-hud, .nav-bar, .reveal-btn, .check-btn, .answer-row { display: none !important; } .slide { display: flex !important; page-break-after: always; } .solution { display: block !important; } }
   </style>
 </head>
@@ -131,10 +152,12 @@
       <a href="index.html" class="hud-badge">GarethEnglish.com · C2 Proficiency (CPE)</a>
       <a href="index.html" class="hud-link">&larr; Home</a>
       <a href="key-word-transformations.html" class="hud-link">C1/C2 Transformations Guide</a>
+      <a href="c1-syntactic-research-lab.html" class="hud-link">C1/C2 Research Lab</a>
       <span class="hud-title">Part 4: Top 10 Tested Patterns</span>
     </div>
     <div class="hud-right">
       <button type="button" class="fp-launch-btn" onclick="openFingerprintSlide()">⚡ 3-Question Level Check</button>
+      <a href="#mastery-gauntlet" class="fp-launch-btn" style="background: #065f46; border-color: #065f46; text-decoration: none;" id="hud-gauntlet-pill">🏆 Mastery Gauntlet: 0/20</a>
       <span class="hud-rule">3–6 words &bull; key word unchanged &bull; 1 + 1 split</span>
       <span class="split-pill" id="split-tuple-pill" title="Left-Half Marks (Structure/Verb) | Right-Half Marks (Preposition/Complement)">L:0 | R:0</span>
       <span class="score-pill" id="total-score-pill">Score: 0 / 40</span>
@@ -239,7 +262,7 @@
             <span class="kwt-num">Item 01 of 20 &bull; Nominalisation (Verb &rarr; Noun + To)</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(1)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s1', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s1', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">The biographer argued that the television drama did not look at all like the real historical events.</div>
@@ -255,7 +278,7 @@
             <span class="kwt-num">Item 02 of 20 &bull; Nominalisation (Adjective &rarr; Noun + Of)</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(2)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s2', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s2', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Clara didn't appear nervous, even though she was performing the violin concerto without sheet music.</div>
@@ -279,7 +302,7 @@
             <span class="kwt-num">Item 03 of 20 &bull; Probability Noun + Of + Gerund</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(3)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s3', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s3', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Julian doubts he'll be able to join us in the Highlands next month.</div>
@@ -295,7 +318,7 @@
             <span class="kwt-num">Item 04 of 20 &bull; Prepositional Noun Frame + Collocation</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(4)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s4', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s4', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">The antique dealer assured us that we didn't have to buy anything; we were welcome just to look around.</div>
@@ -319,7 +342,7 @@
             <span class="kwt-num">Item 05 of 20 &bull; Possessive + Nominalised Subject</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(5)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s5', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s5', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Nobody on the editorial board expected Helena to resign.</div>
@@ -335,7 +358,7 @@
             <span class="kwt-num">Item 06 of 20 &bull; Adjective &rarr; Abstract Noun (Clarity)</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(6)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s6', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s6', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">What the barrister argued in court was not very clear at times.</div>
@@ -359,7 +382,7 @@
             <span class="kwt-num">Item 07 of 20 &bull; Passive Idiomatic Collocation</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(7)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s7', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s7', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">I trust the planning council will consider these environmental findings when they vote on Thursday.</div>
@@ -375,7 +398,7 @@
             <span class="kwt-num">Item 08 of 20 &bull; Fixed Prepositional Idiom + Infinitive</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(8)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s8', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s8', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">I have no idea why my grant application was turned down.</div>
@@ -399,7 +422,7 @@
             <span class="kwt-num">Item 09 of 20 &bull; Epistemic Set Phrase</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(9)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s9', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s9', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">The curator stated that, as far as he knows, the medieval charter is genuine.</div>
@@ -415,7 +438,7 @@
             <span class="kwt-num">Item 10 of 20 &bull; Fixed Frame (No Choice But To)</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(10)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s10', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s10', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Although she disagreed with the tribunal's verdict, Fiona was forced to accept it.</div>
@@ -439,7 +462,7 @@
             <span class="kwt-num">Item 11 of 20 &bull; Noun + Gerund Phrasal Verb + Noun</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(11)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s11', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s11', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Marcus did not find it difficult to answer the panel's technical questions.</div>
@@ -455,7 +478,7 @@
             <span class="kwt-num">Item 12 of 20 &bull; Reflexive + Passive Phrasal Verb</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(12)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s12', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s12', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Don't let Patrick's easy-going manner deceive you; he is an extraordinarily sharp negotiator.</div>
@@ -479,7 +502,7 @@
             <span class="kwt-num">Item 13 of 20 &bull; Passive + Dependent Preposition + Relative</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(13)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s13', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s13', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Researchers can only enter the archive if they have registered in advance.</div>
@@ -495,7 +518,7 @@
             <span class="kwt-num">Item 14 of 20 &bull; Prepositional To + Possessive Gerund</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(14)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s14', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s14', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Do you mind if I sketch you while you rehearse?</div>
@@ -519,7 +542,7 @@
             <span class="kwt-num">Item 15 of 20 &bull; But For + Nominalised Action + In + -ing</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(15)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s15', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s15', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">If Liam hadn't acted promptly to shut off the main valve, there might have been severe damage to the laboratory.</div>
@@ -535,7 +558,7 @@
             <span class="kwt-num">Item 16 of 20 &bull; Conditional Linker + Nominalisation</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(16)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s16', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s16', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Unless Hannah's plans change over the weekend, we'll catch the early ferry on Monday morning.</div>
@@ -559,7 +582,7 @@
             <span class="kwt-num">Item 17 of 20 &bull; Negative Inversion + Existential Noun Shift</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(17)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s17', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s17', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">The part played by the coastguard crew in saving the vessel was never acknowledged officially.</div>
@@ -575,7 +598,7 @@
             <span class="kwt-num">Item 18 of 20 &bull; On No Account + Passive Inversion</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(18)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s18', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s18', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">Spectators are strictly forbidden to step onto the athletics track.</div>
@@ -599,7 +622,7 @@
             <span class="kwt-num">Item 19 of 20 &bull; Not-Until Cleft + Collocation</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(19)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s19', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s19', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">It was only when it grew dark that Mateo decided to head back down the mountain.</div>
@@ -615,7 +638,7 @@
             <span class="kwt-num">Item 20 of 20 &bull; Perfect Infinitive Reporting + Formal Noun</span>
             <div class="kwt-actions">
               <button class="check-btn" onclick="checkItem(20)">✓ Check (1+1)</button>
-              <button class="reveal-btn" onclick="reveal('s20', this)">👁️ Reveal Key</button>
+              <button class="reveal-btn" onclick="reveal('s20', this)">👁️ Reveal Cambridge Model</button>
             </div>
           </div>
           <div class="kwt-s1">There is a rumour that the shipping line lost over £25 million during the port strike.</div>
@@ -637,6 +660,42 @@
 
     </div>
   </div>
+
+  <!-- MASTERY GAUNTLET: 10 LIVE CPE/C1 PART 4 DECONSTRUCTION DRILLS (ONE PER TOP-10 PATTERN) -->
+  <section class="gauntlet-section" id="mastery-gauntlet">
+    <div class="gauntlet-panel">
+      <div class="gauntlet-header">
+        <div style="max-width: 720px;">
+          <div class="slide-tag">🏆 Interactive Deconstruction Workbench &bull; 10 Core C2/C1 Patterns</div>
+          <h2 class="slide-title" style="margin-bottom: 0.35rem;">Mastery Gauntlet: 10 Live CPE/C1 Part 4 Deconstruction Drills (One Per Top-10 Pattern)</h2>
+          <p class="slide-desc" style="margin-bottom: 0;">
+            Test your command of all ten past-paper transformation patterns on a single page. Use <strong>✂️ Strike Out the Echoes</strong> on any sentence to isolate the exact semantic deficit and inspect the 4-Step Deconstruction breakdown (Step 1 Echoes, Step 2 Tense Harmony, Step 3 Voice/Nominal Shift, Step 4 Preposition Lock). Your progress and pattern badges save automatically in your browser.
+          </p>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.45rem;">
+          <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+            <span class="split-pill" id="mg-split-pill">Gauntlet Split: L:0 // R:0</span>
+            <span class="score-pill" id="mg-score-pill">Gauntlet: 0 / 20 Marks (0/10 Mastered)</span>
+          </div>
+          <div style="display: flex; gap: 0.45rem; flex-wrap: wrap;">
+            <button type="button" class="echo-btn" id="mg-strike-all-btn" onclick="toggleAllGauntletEchoes()">✂️ Strike Out All 10 Echoes</button>
+            <button type="button" class="check-btn" onclick="scoreAllGauntletItems()">✓ Score All 10 Drills</button>
+            <button type="button" class="reveal-btn" onclick="resetGauntlet()">↺ Reset Gauntlet</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10-Pattern Mastery Tracker Chips -->
+      <div class="gauntlet-badge-bar" id="mg-badge-bar">
+        <!-- Populated by renderGauntlet() -->
+      </div>
+
+      <!-- 10 Live Deconstruction Drill Cards -->
+      <div class="gauntlet-grid" id="mg-grid">
+        <!-- Populated by renderGauntlet() -->
+      </div>
+    </div>
+  </section>
 
   <script>
     let currentSlide = 1;
@@ -824,7 +883,7 @@
       const sol = document.getElementById(id);
       const hidden = window.getComputedStyle(sol).display === 'none';
       sol.style.display = hidden ? 'block' : 'none';
-      btn.textContent = hidden ? '🙈 Hide Key' : '👁️ Reveal Key';
+      btn.textContent = hidden ? '🙈 Hide Model' : '👁️ Reveal Cambridge Model';
       btn.style.background = hidden ? 'var(--navy-800)' : '#ffffff';
       btn.style.color = hidden ? '#ffffff' : 'var(--navy-800)';
     }

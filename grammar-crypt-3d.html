@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Grammar Crypt 3D: The Full 25-Floor Gothic Syntax Crawl</title>
-  <meta name="description" content="Master Cambridge C1/C2 syntax, inversions, and cleft sentences in full 3D. 25 procedural floors, 5 boss battles, and legendary relics in Three.js WebGL.">
+  <meta name="description" content="Master Cambridge C1/C2 syntax, inversions, and cleft sentences in full 3D. 223 items across 25 procedural floors, 5 voiced boss battles, daily seeded gauntlets, and legendary relics in Three.js WebGL.">
   <meta name="theme-color" content="#090514">
   <link rel="canonical" href="https://garethenglish.com/grammar-crypt-3d.html">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://garethenglish.com/grammar-crypt-3d.html">
   <meta property="og:title" content="Grammar Crypt 3D (Beta): 25-Floor Gothic Syntax Crawl">
-  <meta property="og:description" content="Master C1/C2 syntax in full 3D: 25 floors, 5 boss battles and legendary relics. Prefer the original? Play the classic 2D version.">
+  <meta property="og:description" content="Master C1/C2 syntax in full 3D: 223 items across 25 floors, 5 voiced boss battles, daily seeded gauntlets, and legendary relics. Prefer the original? Play the classic 2D version.">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 
   <!-- Fonts & Local FontAwesome -->
@@ -776,6 +776,420 @@
       .fade-overlay { transition: none; }
       .victory-modal { animation: none; }
     }
+
+    /* ---------- Torchlight Theme Selector & Boss Rush HUD ---------- */
+    .btn-hud-gold {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.22), rgba(147, 51, 234, 0.32));
+      border-color: rgba(251, 191, 36, 0.75);
+      color: #fef08a;
+    }
+    .btn-hud-gold:hover {
+      background: linear-gradient(135deg, rgba(251, 191, 36, 0.4), rgba(147, 51, 234, 0.5));
+      box-shadow: 0 0 14px rgba(251, 191, 36, 0.35);
+    }
+    .theme-picker-wrap {
+      background: rgba(18, 10, 31, 0.85);
+      border: 1px solid rgba(147, 51, 234, 0.45);
+      border-radius: 10px;
+      padding: 0.32rem 0.65rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      backdrop-filter: blur(8px);
+    }
+    .theme-picker-wrap i {
+      color: var(--gold);
+      font-size: 0.82rem;
+    }
+    .theme-select-hud {
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.78rem;
+      cursor: pointer;
+      outline: none;
+    }
+    .theme-select-hud option {
+      background: #120a1f;
+      color: #f8fafc;
+    }
+    .boss-rush-pill {
+      font-size: 0.75rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #7f1d1d, #450a0a);
+      color: #fecaca;
+      border: 1px solid #ef4444;
+      padding: 0.24rem 0.65rem;
+      border-radius: 9999px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
+    }
+    .pool-badge-3d {
+      font-size: 0.73rem;
+      font-weight: 900;
+      background: rgba(251, 191, 36, 0.14);
+      color: #fde68a;
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      padding: 0.22rem 0.6rem;
+      border-radius: 9999px;
+      letter-spacing: 0.04em;
+    }
+    .daily-seed-pill {
+      font-size: 0.75rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #065f46, #064e3b);
+      color: #a7f3d0;
+      border: 1px solid #10b981;
+      padding: 0.24rem 0.65rem;
+      border-radius: 9999px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.45);
+    }
+    .btn-boss-voice-3d {
+      margin-top: 0.35rem;
+      background: rgba(127, 29, 29, 0.75);
+      border: 1px solid #fca5a5;
+      color: #fef08a;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0.24rem 0.7rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-boss-voice-3d:hover {
+      background: #dc2626;
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .btn-daily-seed-3d {
+      background: linear-gradient(135deg, #059669, #047857);
+      border: 1px solid #6ee7b7;
+      color: #ecfdf5;
+      font-family: inherit;
+      font-weight: 900;
+      font-size: 0.86rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+      transition: all 0.2s;
+    }
+    .btn-daily-seed-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+    }
+
+    /* Rune Hotkey Keycap Badge via data-key */
+    .rune-chip[data-key]::before {
+      content: attr(data-key);
+      display: inline-block;
+      font-size: 0.66rem;
+      font-weight: 900;
+      color: var(--gold);
+      background: rgba(251, 191, 36, 0.14);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      border-radius: 4px;
+      padding: 0.05rem 0.3rem;
+      margin-right: 0.38rem;
+      vertical-align: middle;
+    }
+
+    /* ---------- 25-Floor Crypt Map & Boss Rush Modal ---------- */
+    .crypt-map-modal {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(13, 7, 23, 0.98);
+      border: 2px solid rgba(251, 191, 36, 0.65);
+      border-radius: 22px;
+      padding: 1.5rem 1.75rem;
+      max-width: 820px;
+      width: 94%;
+      max-height: 88vh;
+      overflow-y: auto;
+      z-index: 105;
+      pointer-events: auto;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 0 60px rgba(147, 51, 234, 0.35), 0 25px 60px rgba(0, 0, 0, 0.9);
+    }
+    .crypt-map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(147, 51, 234, 0.35);
+      padding-bottom: 0.75rem;
+    }
+    .crypt-map-header h2 {
+      font-family: var(--font-gothic);
+      font-size: 1.9rem;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+    .boss-rush-banner {
+      background: linear-gradient(135deg, rgba(127, 29, 29, 0.42), rgba(59, 7, 100, 0.45));
+      border: 1px solid rgba(239, 68, 68, 0.6);
+      border-radius: 14px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.15rem;
+    }
+    .boss-rush-info strong {
+      display: block;
+      color: #fca5a5;
+      font-size: 0.95rem;
+      margin-bottom: 0.15rem;
+    }
+    .boss-rush-info span {
+      font-size: 0.8rem;
+      color: #e2e8f0;
+    }
+    .btn-boss-rush {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      border: 1px solid #fca5a5;
+      color: #fff;
+      font-family: inherit;
+      font-weight: 900;
+      font-size: 0.86rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+      transition: all 0.2s;
+    }
+    .btn-boss-rush:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.65);
+    }
+    .act-section {
+      margin-bottom: 1rem;
+    }
+    .act-section-title {
+      font-size: 0.82rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #fde68a;
+      margin-bottom: 0.45rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .act-floors-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.5rem;
+    }
+    @media (max-width: 680px) {
+      .act-floors-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    .map-floor-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(147, 51, 234, 0.35);
+      border-radius: 10px;
+      padding: 0.5rem 0.55rem;
+      text-align: left;
+      color: #f8fafc;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      position: relative;
+    }
+    .map-floor-btn:hover {
+      border-color: var(--gold);
+      background: rgba(147, 51, 234, 0.22);
+      transform: translateY(-2px);
+    }
+    .map-floor-btn.current {
+      border: 2px solid var(--gold);
+      background: rgba(251, 191, 36, 0.14);
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.3);
+    }
+    .map-floor-btn.cleared {
+      border-color: rgba(16, 185, 129, 0.55);
+    }
+    .map-floor-btn.boss-node {
+      background: linear-gradient(135deg, rgba(127, 29, 29, 0.28), rgba(18, 10, 31, 0.8));
+      border-color: rgba(239, 68, 68, 0.55);
+    }
+    .map-floor-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: 900;
+      color: #c084fc;
+    }
+    .map-floor-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.25;
+    }
+
+    /* ---------- Interactive Relic Grimoire & Blueprint Inspector ---------- */
+    .relics-modal {
+      max-width: 680px;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+    .relics-sub {
+      text-align: center;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      margin: -0.75rem 0 1rem;
+    }
+    .relic-item-card {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      color: inherit;
+    }
+    .relic-item-card:hover, .relic-item-card.active-relic {
+      border-color: var(--gold);
+      background: rgba(251, 191, 36, 0.12);
+      transform: translateY(-2px);
+      opacity: 1;
+      filter: none;
+    }
+    .grimoire-inspector {
+      background: rgba(9, 5, 18, 0.92);
+      border: 1px solid rgba(251, 191, 36, 0.5);
+      border-radius: 14px;
+      padding: 1.15rem;
+      margin-bottom: 1.1rem;
+      text-align: left;
+    }
+    .grimoire-top {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.9rem;
+    }
+    .grimoire-emblem-wrap {
+      width: 72px;
+      height: 72px;
+      position: relative;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 400px;
+    }
+    .grimoire-svg-ring {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      animation: spinRuneRing 14s linear infinite;
+    }
+    @keyframes spinRuneRing {
+      0% { transform: rotateZ(0deg) rotateY(18deg); }
+      50% { transform: rotateZ(180deg) rotateY(-18deg); }
+      100% { transform: rotateZ(360deg) rotateY(18deg); }
+    }
+    .grimoire-emblem-Core {
+      font-size: 2rem;
+      z-index: 2;
+      filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.6));
+    }
+    .grimoire-head-info h3 {
+      font-family: var(--font-gothic);
+      font-size: 1.35rem;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.15rem;
+    }
+    .grimoire-head-info .grimoire-pillar {
+      font-size: 0.76rem;
+      font-weight: 900;
+      color: #c084fc;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .grimoire-formula-box {
+      background: rgba(147, 51, 234, 0.14);
+      border: 1px solid rgba(147, 51, 234, 0.45);
+      border-radius: 8px;
+      padding: 0.55rem 0.8rem;
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #fde68a;
+      margin-bottom: 0.75rem;
+    }
+    .belfast-red-pen {
+      background: rgba(185, 28, 28, 0.12);
+      border-left: 3px solid #ef4444;
+      border-radius: 6px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.83rem;
+      color: #e2e8f0;
+      line-height: 1.45;
+      margin-bottom: 0.85rem;
+    }
+    .belfast-red-pen strong {
+      color: #fca5a5;
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .grimoire-workout-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+    }
+    .grimoire-workout-prompt {
+      font-size: 0.82rem;
+      color: #f8fafc;
+      margin-bottom: 0.55rem;
+    }
+    .btn-reveal-model {
+      background: rgba(251, 191, 36, 0.18);
+      border: 1px solid var(--gold);
+      color: #fef08a;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 0.78rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-reveal-model:hover {
+      background: rgba(251, 191, 36, 0.32);
+    }
+    .grimoire-model-answer {
+      margin-top: 0.6rem;
+      padding-top: 0.6rem;
+      border-top: 1px dashed rgba(251, 191, 36, 0.35);
+      font-size: 0.83rem;
+      color: #a7f3d0;
+    }
   </style>
 </head>
 <body>
@@ -793,6 +1207,9 @@
           </a>
           <h1>Grammar Crypt 3D</h1>
           <span class="level-badge" id="hudFloor">Floor 1 / 25</span>
+          <span class="pool-badge-3d" id="hudPoolBadge" title="223 B1–C2 syntax items across 25 floors">📜 223-Item Pool</span>
+          <span class="boss-rush-pill" id="bossRushPill" hidden>⚔️ Boss Rush <span id="bossRushStep">1/5</span></span>
+          <span class="daily-seed-pill" id="dailySeedPill" hidden>🎲 Daily Seed <span id="dailySeedStep">1/5</span></span>
           <a href="grammar-crypt.html" class="back-nav-link" title="Switch to the classic 2D Grammar Crypt">
             <span class="lbl-long">Classic </span>2D
           </a>
@@ -808,9 +1225,25 @@
           <div class="hud-pill interactive-element" title="Winning streak">
             <i class="fa-solid fa-fire" aria-hidden="true"></i> <span id="hudStreak">0</span>
           </div>
-          <button type="button" class="btn-hud interactive-element" id="btnRelics" aria-haspopup="dialog">
-            <i class="fa-solid fa-trophy" aria-hidden="true"></i> <span>Relics</span>
+          <button type="button" class="btn-hud btn-hud-gold interactive-element" id="btnDailySeedHud" title="Launch today's deterministic 5-question C1/C2 Daily Crypt Seed">
+            <i class="fa-solid fa-dice" aria-hidden="true"></i> <span>🎲 Daily Crypt Seed</span>
           </button>
+          <button type="button" class="btn-hud btn-hud-gold interactive-element" id="btnCryptMap" aria-haspopup="dialog" title="Open 25-Floor Dungeon Map &amp; Boss Rush (Hotkey: M)">
+            <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> <span>🗺️ Crypt Map &amp; Boss Rush</span>
+          </button>
+          <button type="button" class="btn-hud interactive-element" id="btnRelics" aria-haspopup="dialog" title="Open Relic Grimoire &amp; Syntax Blueprints">
+            <i class="fa-solid fa-book-skull" aria-hidden="true"></i> <span>Relics</span>
+          </button>
+          <div class="theme-picker-wrap interactive-element" title="Select 3D Dungeon Torchlight Atmosphere">
+            <i class="fa-solid fa-fire-flame-curved" aria-hidden="true"></i>
+            <select id="torchThemeSelect" class="theme-select-hud" aria-label="3D Dungeon Torchlight Theme">
+              <option value="auto">Act Torch</option>
+              <option value="violet">Obsidian Violet</option>
+              <option value="emerald">Abyssal Emerald</option>
+              <option value="blood">Blood Moon Boss</option>
+              <option value="gold">Golden Sanctuary</option>
+            </select>
+          </div>
           <button type="button" class="btn-hud interactive-element" id="audioToggle" aria-pressed="true">
             <i class="fa-solid fa-volume-high" aria-hidden="true"></i> <span>Audio: ON</span>
           </button>
@@ -826,6 +1259,7 @@
         <div class="boss-taunt" id="bossTaunt"></div>
         <div class="boss-hp" role="progressbar" aria-label="Boss health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100" id="bossHpBar"><div id="bossHpFill"></div></div>
         <div class="boss-lives" id="bossLives"></div>
+        <button type="button" class="btn-boss-voice-3d" id="btnBossVoice" title="Replay Boss Voice Track">🔊 Boss Voice</button>
       </div>
 
       <!-- Quest Objective: title + one button per altar slot -->
@@ -848,7 +1282,7 @@
       </div>
 
       <div class="rune-selector-panel interactive-element">
-        <span id="runeTrayLabel">Runes: tap to place, tap again to recall</span>
+        <span id="runeTrayLabel">Runes: tap or press 1–9 · Backspace undo · H hint · Enter next floor</span>
         <div class="rune-tokens-row" id="runeTokensRow" role="group" aria-labelledby="runeTrayLabel"></div>
       </div>
 
@@ -885,7 +1319,7 @@
   <!-- End-of-run Modal -->
   <div class="victory-modal" id="endModal" role="dialog" aria-modal="true" aria-labelledby="endTitle" hidden>
     <h2 id="endTitle">THE CRYPT IS CONQUERED</h2>
-    <p>You have climbed out of all 25 floors, from B1 questions to C2 clefts and inversion.</p>
+    <p id="endDesc">You have climbed out of all 25 floors, from B1 questions to C2 clefts and inversion.</p>
     <div class="end-stats" id="endStats"></div>
     <div class="diagnostic-lead-box">
       <strong>Ready for C1/C2 exams?</strong> Get a 1-to-1 syntax diagnostic with Gareth Montgomery.
@@ -894,11 +1328,58 @@
     <button type="button" class="btn-next-level" id="btnNewRun">Start a New Run &#8635;</button>
   </div>
 
-  <!-- Relics Modal -->
+  <!-- Relics & Grimoire Inspector Modal -->
   <div class="relics-modal" id="relicsModal" role="dialog" aria-modal="true" aria-labelledby="relicsTitle" hidden>
-    <h2 id="relicsTitle">Vault of Relics</h2>
+    <h2 id="relicsTitle">Vault of Relics &amp; Syntax Grimoire</h2>
+    <p class="relics-sub">Select any relic below to inspect its C1/C2 structural blueprint, Belfast Desk Red Pen note, and live Cambridge workout.</p>
     <div class="relics-grid" id="relicsGrid"></div>
-    <button type="button" class="btn-hud" id="btnCloseRelics" style="width:100%; justify-content:center; padding:0.75rem;">Close Vault</button>
+    <div class="grimoire-inspector" id="grimoireInspector">
+      <div class="grimoire-top">
+        <div class="grimoire-emblem-wrap" aria-hidden="true">
+          <svg class="grimoire-svg-ring" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="46" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.75"/>
+            <polygon points="50,6 88,28 88,72 50,94 12,72 12,28" stroke="#c084fc" stroke-width="1.5" opacity="0.65"/>
+            <circle cx="50" cy="50" r="32" stroke="#f59e0b" stroke-width="1" opacity="0.5"/>
+          </svg>
+          <span class="grimoire-emblem-Core" id="grimoireEmblemEmoji">🍷</span>
+        </div>
+        <div class="grimoire-head-info">
+          <span class="grimoire-pillar" id="grimoirePillar">Act I Relic Blueprint</span>
+          <h3 id="grimoireRelicTitle">Goblet of Huel Stamina</h3>
+        </div>
+      </div>
+      <div class="grimoire-formula-box" id="grimoireFormula"></div>
+      <div class="belfast-red-pen">
+        <strong>🖋️ Belfast Desk Red Pen — Gareth Montgomery</strong>
+        <span id="grimoireRedPen"></span>
+      </div>
+      <div class="grimoire-workout-box">
+        <div class="grimoire-workout-prompt" id="grimoireWorkoutPrompt"></div>
+        <button type="button" class="btn-reveal-model" id="btnRevealGrimoireModel" aria-expanded="false">👁️ Reveal Cambridge Model</button>
+        <div class="grimoire-model-answer" id="grimoireModelAnswer" hidden></div>
+      </div>
+    </div>
+    <button type="button" class="btn-hud" id="btnCloseRelics" style="width:100%; justify-content:center; padding:0.75rem;">Close Grimoire</button>
+  </div>
+
+  <!-- 25-Floor Crypt Map & Boss Rush Teleporter Modal -->
+  <div class="crypt-map-modal" id="cryptMapModal" role="dialog" aria-modal="true" aria-labelledby="cryptMapTitle" hidden>
+    <div class="crypt-map-header">
+      <h2 id="cryptMapTitle">🗺️ Crypt Map &amp; Boss Rush · 223-Item Pool</h2>
+      <button type="button" class="btn-hud" id="btnCloseCryptMapTop">✕ Close Map</button>
+    </div>
+    <div class="boss-rush-banner">
+      <div class="boss-rush-info">
+        <strong>⚔️ 5-Boss Gauntlet Rush &amp; 🎲 Daily Crypt Seed</strong>
+        <span>Face all 5 Voiced Syntax Bosses back-to-back or run today's deterministic 5-question C1/C2 Daily Seed.</span>
+      </div>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+        <button type="button" class="btn-boss-rush" id="btnStartBossRush">⚔️ 5-Boss Rush Mode</button>
+        <button type="button" class="btn-daily-seed-3d" id="btnStartDailySeed">🎲 Daily Crypt Seed (5-Q C1/C2)</button>
+      </div>
+    </div>
+    <div id="cryptMapActs"></div>
+    <button type="button" class="btn-hud" id="btnCloseCryptMap" style="width:100%; justify-content:center; padding:0.75rem; margin-top:0.5rem;">Close Crypt Map</button>
   </div>
 
   <!-- WebGL failure / context loss -->
@@ -1012,6 +1493,7 @@
 
       return {
         init,
+        isEnabled: () => enabled,
         toggle() {
           enabled = !enabled;
           if (!ctx) init();
@@ -1217,15 +1699,43 @@
     }
 
     /* ==========================================================
-       4. CAMERA
+       4. CAMERA & TORCHLIGHT ATMOSPHERE THEMES
        ========================================================== */
+    const TORCH_THEMES = {
+      violet:  { torch: 0xa855f7, amb: 0x2a1048, gate: 0xc084fc, bg: 0x070312 },
+      emerald: { torch: 0x10b981, amb: 0x0a291e, gate: 0x34d399, bg: 0x030c09 },
+      blood:   { torch: 0xef4444, amb: 0x300a12, gate: 0xf87171, bg: 0x0d0305 },
+      gold:    { torch: 0xfbbf24, amb: 0x2e1f08, gate: 0xf59e0b, bg: 0x0c0802 }
+    };
+    let currentTorchTheme = 'auto';
+
+    function activePalette() {
+      if (currentTorchTheme !== 'auto' && TORCH_THEMES[currentTorchTheme]) {
+        return TORCH_THEMES[currentTorchTheme];
+      }
+      const act = actOf(floorIdx);
+      return { torch: act.torch, amb: act.amb, gate: act.gate, bg: 0x06030c };
+    }
+
+    function applyTorchTheme() {
+      if (solvedGlow) return;
+      const pal = activePalette();
+      setTorches(pal.torch);
+      ambientLight.color.setHex(pal.amb);
+      gateTorch.color.setHex(pal.gate);
+      scene.background.setHex(pal.bg);
+      scene.fog.color.setHex(pal.bg);
+    }
+
     const cameraPresets = {
-      altar:   { pos: new THREE.Vector3(0, 3.9, 5.4), lookAt: new THREE.Vector3(0, 1.2, -0.6) },
-      room:    { pos: new THREE.Vector3(0, 5.8, 9.0), lookAt: new THREE.Vector3(0, 1.8, -2) },
-      gate:    { pos: new THREE.Vector3(0, 3.2, -4.5), lookAt: new THREE.Vector3(0, 3.5, -12) },
-      through: { pos: new THREE.Vector3(0, 3.0, -13.2), lookAt: new THREE.Vector3(0, 3.0, -20) }
+      altar:     { pos: new THREE.Vector3(0, 3.9, 5.4), lookAt: new THREE.Vector3(0, 1.2, -0.6) },
+      room:      { pos: new THREE.Vector3(0, 5.8, 9.0), lookAt: new THREE.Vector3(0, 1.8, -2) },
+      gate:      { pos: new THREE.Vector3(0, 3.2, -4.5), lookAt: new THREE.Vector3(0, 3.5, -12) },
+      through:   { pos: new THREE.Vector3(0, 3.0, -13.2), lookAt: new THREE.Vector3(0, 3.0, -20) },
+      bossIntro: { pos: new THREE.Vector3(0, 2.5, 2.2), lookAt: new THREE.Vector3(0, 2.3, -4.6) }
     };
     let currentCamTarget = cameraPresets.altar;
+    let sweepTimer = 0;
     const orbit = { x: 0, y: 0 };
     const cameraLookAt = new THREE.Vector3();
     const ALTAR_DIR = new THREE.Vector3(0, 2.7, 6.0).normalize();
@@ -1251,6 +1761,30 @@
     let targetSlot = -1, wrongSlot = -1, hintSlot = -1;
     let hintsUsed = 0, mistakes = 0, lives = 3, bossHP = 1, boss = null;
     let torchTimer = 0, gateAnim = null, solvedGlow = false;
+    const bossRush = { active: false, floors: [4, 9, 14, 19, 24], step: 0 };
+    const dailyRun = { active: false, seed: '', steps: [], step: 0 };
+    let bossVoiceAudio = null;
+
+    function stopBossVoice() {
+      if (bossVoiceAudio) {
+        try { bossVoiceAudio.pause(); bossVoiceAudio.currentTime = 0; } catch (_) {}
+        bossVoiceAudio = null;
+      }
+    }
+
+    function playBossVoice(idx, force) {
+      if (SELFTEST) return;
+      const b = L.bosses[idx];
+      if (!b || !b.audio) return;
+      if (!force && !AudioEngine.isEnabled()) return;
+      stopBossVoice();
+      try {
+        bossVoiceAudio = new Audio(b.audio);
+        bossVoiceAudio.volume = 0.85;
+        const p = bossVoiceAudio.play();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      } catch (_) {}
+    }
 
     function setTorches(hex) { torch1.color.setHex(hex); torch2.color.setHex(hex); }
 
@@ -1268,10 +1802,7 @@
       gateAnim = null;
       gateGroup.position.y = 0;
 
-      const act = actOf(floorIdx);
-      setTorches(act.torch);
-      ambientLight.color.setHex(act.amb);
-      gateTorch.color.setHex(act.gate);
+      applyTorchTheme();
       eyeMat.color.setHex(fl.boss ? 0xf87171 : 0x551111);
 
       const n = item.tokens.length;
@@ -1312,7 +1843,12 @@
       sceneHalfWidth = Math.max(w + 1, perRow * rs) / 2;
       updateCameraForViewport();
 
-      if (fl.boss) buildBoss(L.bosses[floorIdx]);
+      if (fl.boss) {
+        buildBoss(L.bosses[floorIdx]);
+        playBossVoice(floorIdx, false);
+      } else {
+        stopBossVoice();
+      }
       renderAll();
       setFeedback(fl.boss ? 'Boss floor: three lives. A wrong sentence costs a life.' : '');
     }
@@ -1345,6 +1881,7 @@
 
     function renderHUD() {
       $('hudFloor').textContent = `Floor ${floorIdx + 1} / ${L.floors.length}`;
+      if ($('hudPoolBadge')) $('hudPoolBadge').textContent = `📜 ${L.totalItems || 223}-Item Pool`;
       $('hudGold').textContent = state.gold;
       $('hudXP').textContent = `${state.xp % 100} / 100 XP · Rank ${Math.floor(state.xp / 100) + 1}`;
       $('hudStreak').textContent = `${state.streak}`;
@@ -1352,8 +1889,27 @@
       $('questTitle').innerHTML = '';
       const icon = document.createElement('i');
       icon.className = 'fa-solid fa-scroll'; icon.setAttribute('aria-hidden', 'true');
-      $('questTitle').append(icon, ` ${floorIdx + 1}. ${fl.title} (${fl.cefr})`);
+      const titlePrefix = dailyRun.active
+        ? ` 🎲 Seed ${dailyRun.step + 1}/${dailyRun.steps.length} · F${floorIdx + 1} ${fl.title} (${fl.cefr})`
+        : ` ${floorIdx + 1}. ${fl.title} (${fl.cefr})`;
+      $('questTitle').append(icon, titlePrefix);
       $('btnHint').querySelector('span').textContent = hintsUsed ? `Hint (${hintsUsed}): no rewards` : 'Hint';
+      const brPill = $('bossRushPill');
+      if (brPill) {
+        brPill.hidden = !bossRush.active;
+        if (bossRush.active) $('bossRushStep').textContent = `${bossRush.step + 1}/${bossRush.floors.length}`;
+      }
+      const dsPill = $('dailySeedPill');
+      if (dsPill) {
+        dsPill.hidden = !dailyRun.active;
+        if (dailyRun.active) $('dailySeedStep').textContent = `${dailyRun.step + 1}/${dailyRun.steps.length}`;
+      }
+      const dsBtn = $('btnDailySeedHud');
+      if (dsBtn) {
+        const sp = dsBtn.querySelector('span');
+        const seedLbl = typeof L.getTodaySeed === 'function' ? L.getTodaySeed() : 'Daily';
+        if (sp) sp.textContent = dailyRun.active ? `Exit Seed (${dailyRun.step + 1}/5)` : `🎲 Daily Seed (${seedLbl})`;
+      }
     }
 
     function renderBoss() {
@@ -1393,11 +1949,12 @@
     function renderTray() {
       const row = $('runeTokensRow');
       row.textContent = '';
-      runes.forEach((r) => {
+      runes.forEach((r, idx) => {
         const chip = document.createElement('button');
         chip.type = 'button';
         chip.className = 'rune-chip' + (r.slot >= 0 ? ' placed' : '');
         chip.textContent = r.text;
+        if (idx < 9) chip.setAttribute('data-key', String(idx + 1));
         chip.setAttribute('aria-pressed', String(r.slot >= 0));
         chip.setAttribute('aria-label', r.slot >= 0 ? `${r.text}, in slot ${r.slot + 1}: activate to recall` : `${r.text}: activate to place`);
         chip.addEventListener('click', () => userToggleRune(r.id));
@@ -1512,7 +2069,7 @@
     function flashTorches(hex) {
       clearTimeout(torchTimer);
       setTorches(hex);
-      torchTimer = setTimeout(() => { if (gameState === GS.PLAYING) setTorches(actOf(floorIdx).torch); }, 650);
+      torchTimer = setTimeout(() => { if (gameState === GS.PLAYING) applyTorchTheme(); }, 650);
     }
 
     function submit() {
@@ -1541,7 +2098,7 @@
         if (lives <= 0) {
           setFeedback('Out of lives! The boss reshuffles the crypt: a fresh sentence rises...', 'error');
           gameState = GS.TRANSITION;
-          setTimeout(() => transitionTo(floorIdx, { fresh: true }), SELFTEST ? 0 : 1400);
+          setTimeout(() => transitionTo(floorIdx, dailyRun.active ? { fresh: true, item } : { fresh: true }), SELFTEST ? 0 : 1400);
         }
       }
       return r;
@@ -1607,10 +2164,56 @@
     }
 
     /* ==========================================================
-       8. MODALS (role=dialog, focus management, Esc, no click-through)
+       8. MODALS, RELIC GRIMOIRE & 25-FLOOR CRYPT MAP
        ========================================================== */
+    const ACT_META = [
+      { title: 'Act I: B1 Questions (Floors 1–5)', icon: 'fa-circle-question' },
+      { title: 'Act II: B1+/B2 Indirect & Tag Questions (Floors 6–10)', icon: 'fa-comments' },
+      { title: 'Act III: B2+/C1 Conditionals & Passive Reporting (Floors 11–15)', icon: 'fa-scale-balanced' },
+      { title: 'Act IV: C1 Clefts & Fronting (Floors 16–20)', icon: 'fa-wand-sparkles' },
+      { title: 'Act V: C1/C2 Negative Inversions (Floors 21–25)', icon: 'fa-dragon' }
+    ];
+
+    const GRIMOIRE_DATA = {
+      4: {
+        pillar: 'Act I Blueprint · Subject vs. Object Questions (B1+)',
+        formula: 'Object Q: Wh-Word + Auxiliary (did/do/has) + Subject + Base Verb   |   Subject Q: Wh-Word (Subject) + Inflected Verb + Object',
+        redPen: 'When I mark diagnostic scripts at my desk, the classic slip is shoving "did" into a subject question ("Who did break the window?"). Right off the bat, ask yourself: is the Wh-word doing the action? If "who" or "what" is the subject, toss the auxiliary out and inflect the main verb directly.',
+        prompt: 'Workout Challenge: Turn this statement into a question where "What" asks about the subject: "[Something] caused the power cut last night."',
+        model: '✅ Cambridge Model: "What caused the power cut last night?" (Zero auxiliary "did" because "What" is the subject of the verb.)'
+      },
+      9: {
+        pillar: 'Act II Blueprint · Passive Reporting & Distancing (B2+ / C1)',
+        formula: 'It + BE + Past Participle (said/thought/believed) + that-Clause   |   Subject + BE + Past Participle + to + Base Verb / to have + Past Participle',
+        redPen: 'Examiners mark forty essays before lunch, and seeing "People say that..." in every paragraph puts them straight to sleep. Shift the subject to the front and link it with a passive reporting verb plus a perfect infinitive ("is believed to have escaped"). It sounds restrained, objective, and effortlessly C1.',
+        prompt: 'Workout Challenge: Rewrite using a Personal Passive Reporting structure: "Historians think the manuscript was written in Belfast."',
+        model: '✅ Cambridge Model: "The manuscript is thought to have been written in Belfast." (Present reporting verb + perfect passive infinitive "to have been written".)'
+      },
+      14: {
+        pillar: 'Act III Blueprint · Negative & Restrictive Inversions (C1 / C2)',
+        formula: 'Negative/Restrictive Adverbial (Never / Seldom / Under no circumstances / No sooner) + Auxiliary + Subject + Main Verb',
+        redPen: 'Here is the golden rule from my red pen: the moment you place a negative or restrictive adverbial at the very start of a sentence for dramatic emphasis, the subject and auxiliary must swap places—just like a question. Keep it to one or two per essay so your syntax looks purposeful, never forced.',
+        prompt: 'Workout Challenge: Invert this sentence beginning with "Under no circumstances": "You must not share the vault key under any circumstances."',
+        model: '✅ Cambridge Model: "Under no circumstances must you share the vault key." (Fronted negative prepositional phrase + inverted modal auxiliary "must you".)'
+      },
+      19: {
+        pillar: 'Act IV Blueprint · Inverted Conditionals & So/Such Fronting (C1 / C2)',
+        formula: 'Should / Were / Had + Subject + (not) + Verb, Main Clause   |   So + Adjective + BE + Subject + that-Clause',
+        redPen: 'Tossing out "if" and opening with "Had", "Were", or "Should" is one of the cleanest upgrades you can make in formal reports and proposals. Watch out for negative inverted conditionals: the word "not" never contracts onto the auxiliary—it sits calmly after the subject ("Had I not noticed...").',
+        prompt: 'Workout Challenge: Rewrite without "if" using C1 conditional inversion: "If the committee had known the full cost, they would have rejected the plan."',
+        model: '✅ Cambridge Model: "Had the committee known the full cost, they would have rejected the plan." (Dropped "if", fronted "Had" before the subject.)'
+      },
+      24: {
+        pillar: 'Act V Blueprint · It-Clefts, Wh-Clefts & Emphatic Fronting (C1 / C2)',
+        formula: 'It-Cleft: It + BE + Focused Element + that/who + Clause   |   Wh-Cleft: What + Subject + Verb + BE + Focused Noun/Infinitive/Clause',
+        redPen: 'In the cold light of day, a cleft sentence is simply a spotlight. Instead of relies on exclamation marks or heavy thesaurus adjectives, use "What sets this apart is..." or "It was only when... that..." to lock your examiner\'s eye onto the exact argument that matters.',
+        prompt: 'Workout Challenge: Emphasise "the sheer simplicity of the design" using a Wh-Cleft opening with "What": "The sheer simplicity of the design impressed the judges."',
+        model: '✅ Cambridge Model: "What impressed the judges was the sheer simplicity of the design." (Wh-clause acts as grammatical subject + singular "was" + focused noun phrase.)'
+      }
+    };
+
     let openModalEl = null, modalReturnFocus = null, stateBeforeModal = GS.PLAYING;
-    const focusables = (el) => Array.from(el.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])')).filter((x) => !x.disabled && x.offsetParent !== null);
+    const focusables = (el) => Array.from(el.querySelectorAll('button, select, a[href], [tabindex]:not([tabindex="-1"])')).filter((x) => !x.disabled && x.offsetParent !== null);
 
     function openModal(el, focusEl) {
       if (openModalEl) closeModal(openModalEl, true);
@@ -1655,11 +2258,28 @@
         else $('modalLootIcon').innerHTML = '<i class="fa-solid fa-award"></i>';
       }
       $('coachingAd').style.display = w.boss ? 'block' : 'none';   // coaching ad only on boss floors
-      $('btnNextFloor').textContent = floorIdx === LAST ? 'Claim the Crown →' : `Descend to Floor ${floorIdx + 2} →`;
+      if (dailyRun.active) {
+        const isLastSeed = dailyRun.step >= dailyRun.steps.length - 1;
+        $('btnNextFloor').textContent = isLastSeed ? '🎲 Claim Daily Seed Crown (+100 Gold) →' : `🎲 Next Daily Seed (${dailyRun.step + 2}/${dailyRun.steps.length}) →`;
+      } else if (bossRush.active) {
+        const isLastBoss = bossRush.step >= bossRush.floors.length - 1;
+        $('btnNextFloor').textContent = isLastBoss ? '👑 Claim Boss Rush Crown →' : `⚔️ Next Boss (${bossRush.step + 2}/${bossRush.floors.length}) →`;
+      } else {
+        $('btnNextFloor').textContent = floorIdx === LAST ? 'Claim the Crown →' : `Descend to Floor ${floorIdx + 2} →`;
+      }
       openModal($('victoryModal'), $('btnNextFloor'));
     }
 
-    function openEndModal() {
+    function openEndModal(wasBossRush) {
+      const isDaily = wasBossRush === 'daily';
+      $('endTitle').textContent = isDaily
+        ? '🎲 DAILY CRYPT SEED CONQUERED!'
+        : (wasBossRush ? '⚔️ 5-BOSS RUSH CONQUERED!' : 'THE CRYPT IS CONQUERED');
+      $('endDesc').textContent = isDaily
+        ? `You have conquered today's deterministic 5-question C1/C2 Daily Crypt Seed (${dailyRun.seed}) and earned +100 bonus gold!`
+        : (wasBossRush
+          ? 'You have vanquished all 5 Syntax Bosses back-to-back in the 3D Crypt Gauntlet!'
+          : 'You have climbed out of all 25 floors, from B1 questions to C2 clefts and inversion.');
       const box = $('endStats');
       box.textContent = '';
       [['Floors cleared', `${state.completed.length} / ${L.floors.length}`], ['Flawless floors', state.perfect],
@@ -1668,27 +2288,157 @@
       openModal($('endModal'), $('btnNewRun'));
     }
 
+    let activeRelicKey = '4';
+    function inspectRelic(k) {
+      activeRelicKey = String(k);
+      const m = L.milestones[k] || L.milestones[4];
+      const g = GRIMOIRE_DATA[k] || GRIMOIRE_DATA[4];
+      const unlocked = state.relics.includes(m.name);
+      $('grimoireEmblemEmoji').textContent = m.emoji;
+      $('grimoirePillar').textContent = g.pillar + (unlocked ? ' · UNLOCKED' : ' · PREVIEW');
+      $('grimoireRelicTitle').textContent = m.name;
+      $('grimoireFormula').textContent = g.formula;
+      $('grimoireRedPen').textContent = g.redPen;
+      $('grimoireWorkoutPrompt').textContent = g.prompt;
+      const ansEl = $('grimoireModelAnswer');
+      ansEl.textContent = g.model;
+      ansEl.hidden = true;
+      const revBtn = $('btnRevealGrimoireModel');
+      revBtn.setAttribute('aria-expanded', 'false');
+      revBtn.textContent = '👁️ Reveal Cambridge Model';
+      document.querySelectorAll('#relicsGrid .relic-item-card').forEach((card) => {
+        card.classList.toggle('active-relic', card.dataset.relicKey === activeRelicKey);
+      });
+    }
+
     function openRelics() {
       if (gameState !== GS.PLAYING || openModalEl) return;   // never stack over the victory flow
       const grid = $('relicsGrid');
       grid.textContent = '';
-      Object.keys(L.milestones).forEach((k) => {
+      const keys = Object.keys(L.milestones);
+      keys.forEach((k) => {
         const m = L.milestones[k];
         const unlocked = state.relics.includes(m.name);
-        const card = document.createElement('div');
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.dataset.relicKey = String(k);
         card.className = 'relic-item-card' + (unlocked ? '' : ' locked');
         const em = document.createElement('div'); em.className = 'relic-emoji'; em.textContent = m.emoji; em.setAttribute('aria-hidden', 'true');
         const det = document.createElement('div'); det.className = 'relic-details';
         const st = document.createElement('strong'); st.textContent = m.name;
-        const sp = document.createElement('span'); sp.textContent = unlocked ? m.desc : `Locked: floor ${parseInt(k, 10) + 1} boss relic`;
-        det.append(st, sp); card.append(em, det); grid.appendChild(card);
+        const sp = document.createElement('span'); sp.textContent = unlocked ? m.desc : `Floor ${parseInt(k, 10) + 1} Relic · Click to inspect blueprint`;
+        det.append(st, sp); card.append(em, det);
+        card.addEventListener('click', () => { AudioEngine.playGrab(); inspectRelic(k); });
+        grid.appendChild(card);
       });
+      inspectRelic(activeRelicKey || keys[0]);
       openModal($('relicsModal'), $('btnCloseRelics'));
+    }
+
+    function openCryptMap() {
+      if (gameState !== GS.PLAYING || openModalEl) return;
+      const container = $('cryptMapActs');
+      container.textContent = '';
+      for (let a = 0; a < 5; a++) {
+        const sec = document.createElement('div');
+        sec.className = 'act-section';
+        const title = document.createElement('div');
+        title.className = 'act-section-title';
+        const meta = ACT_META[a] || { title: `Act ${a + 1}`, icon: 'fa-dungeon' };
+        title.innerHTML = `<i class="fa-solid ${meta.icon}" aria-hidden="true"></i> <span>${meta.title}</span>`;
+        const grid = document.createElement('div');
+        grid.className = 'act-floors-grid';
+        for (let f = a * 5; f < Math.min(L.floors.length, (a + 1) * 5); f++) {
+          const fl = L.floors[f];
+          const cleared = state.completed.includes(f);
+          const isCurr = f === floorIdx;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'map-floor-btn' + (isCurr ? ' current' : '') + (cleared ? ' cleared' : '') + (fl.boss ? ' boss-node' : '');
+          const top = document.createElement('div');
+          top.className = 'map-floor-top';
+          top.textContent = `F${f + 1} · ${fl.cefr}` + (fl.boss ? ' 💀' : '') + (cleared ? ' ✓' : '');
+          const name = document.createElement('div');
+          name.className = 'map-floor-title';
+          name.textContent = fl.title;
+          btn.append(top, name);
+          btn.addEventListener('click', () => teleportToFloor(f));
+          grid.appendChild(btn);
+        }
+        sec.append(title, grid);
+        container.appendChild(sec);
+      }
+      $('btnStartBossRush').textContent = bossRush.active ? '✕ Exit Boss Rush Mode' : '⚔️ 5-Boss Rush Mode';
+      if ($('btnStartDailySeed')) {
+        const seedLbl = typeof L.getTodaySeed === 'function' ? L.getTodaySeed() : '5-Q C1/C2';
+        $('btnStartDailySeed').textContent = dailyRun.active
+          ? `✕ Exit Daily Seed (${dailyRun.step + 1}/5)`
+          : `🎲 Daily Crypt Seed (${seedLbl})`;
+      }
+      openModal($('cryptMapModal'), $('btnStartBossRush'));
+    }
+
+    function teleportToFloor(targetIdx) {
+      if (openModalEl) closeModal(openModalEl, true);
+      bossRush.active = false;
+      dailyRun.active = false;
+      AudioEngine.init();
+      AudioEngine.playGateRumble();
+      transitionTo(targetIdx);
+    }
+
+    function startBossRush() {
+      if (openModalEl) closeModal(openModalEl, true);
+      if (bossRush.active) {
+        bossRush.active = false;
+        renderHUD();
+        gameState = GS.PLAYING;
+        setFeedback('Exited Boss Rush Mode. Returned to standard dungeon exploration.', 'hint');
+        return;
+      }
+      dailyRun.active = false;
+      const bossFloors = L.floors.map((fl, i) => (fl.boss ? i : -1)).filter((i) => i >= 0);
+      bossRush.floors = bossFloors.length ? bossFloors : [4, 9, 14, 19, 24];
+      bossRush.step = 0;
+      bossRush.active = true;
+      AudioEngine.init();
+      AudioEngine.playGateRumble();
+      transitionTo(bossRush.floors[0]);
+    }
+
+    function startDailySeed() {
+      if (openModalEl) closeModal(openModalEl, true);
+      if (dailyRun.active) {
+        dailyRun.active = false;
+        renderHUD();
+        gameState = GS.PLAYING;
+        setFeedback('Exited Daily Crypt Seed Mode. Returned to standard dungeon exploration.', 'hint');
+        return;
+      }
+      if (typeof L.dailyGauntlet !== 'function') return;
+      bossRush.active = false;
+      const g = L.dailyGauntlet();
+      dailyRun.seed = g.seed;
+      dailyRun.steps = g.steps;
+      dailyRun.step = 0;
+      dailyRun.active = true;
+      AudioEngine.init();
+      AudioEngine.playGateRumble();
+      const first = dailyRun.steps[0];
+      transitionTo(first.floorIdx, { item: first.item });
     }
 
     document.addEventListener('keydown', (e) => {
       if (openModalEl) {
-        if (e.key === 'Escape' && openModalEl === $('relicsModal')) { e.preventDefault(); closeModal(openModalEl); return; }
+        if (e.key === 'Escape' && (openModalEl === $('relicsModal') || openModalEl === $('cryptMapModal'))) {
+          e.preventDefault(); closeModal(openModalEl); return;
+        }
+        if (e.key === 'Enter' && openModalEl === $('victoryModal')) {
+          e.preventDefault(); $('btnNextFloor').click(); return;
+        }
+        if (e.key === 'Enter' && openModalEl === $('endModal')) {
+          e.preventDefault(); $('btnNewRun').click(); return;
+        }
         if (e.key === 'Tab') {
           const f = focusables(openModalEl);
           if (!f.length) { e.preventDefault(); return; }
@@ -1696,6 +2446,12 @@
           if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
           else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
         }
+        return;
+      }
+      if (e.key === 'Enter' && gameState === GS.SOLVED) {
+        e.preventDefault();
+        if (gateAnim) { gateGroup.position.y = gateAnim.to; gateAnim = null; }
+        openVictoryModal();
         return;
       }
       if (!canPlay() || e.ctrlKey || e.altKey || e.metaKey) return;
@@ -1710,25 +2466,44 @@
         e.preventDefault(); useHint();
       } else if (e.key === 'r' || e.key === 'R') {
         e.preventDefault(); resetBoard();
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault(); openCryptMap();
       }
     });
 
     /* ==========================================================
-       9. DESCENT TRANSITION (fly through the gate, fade, rebuild, fade in)
+       9. DESCENT TRANSITION & CINEMATIC CAMERA SWEEP
        ========================================================== */
     function transitionTo(idx, opts = {}) {
       gameState = GS.TRANSITION;
+      clearTimeout(sweepTimer);
       const fade = $('fadeOverlay');
       if (!opts.fresh) currentCamTarget = cameraPresets.through;
       fade.classList.add('on');
       const rebuild = () => {
         buildFloor(idx, opts.item);
-        currentCamTarget = cameraPresets.altar;
         orbit.x = orbit.y = 0;
-        camera.position.copy(cameraPresets.altar.pos);
-        cameraLookAt.copy(cameraPresets.altar.lookAt);
+        const isBoss = !!L.floors[floorIdx].boss;
+        if (SELFTEST) {
+          currentCamTarget = cameraPresets.altar;
+          camera.position.copy(cameraPresets.altar.pos);
+          cameraLookAt.copy(cameraPresets.altar.lookAt);
+        } else if (isBoss) {
+          // Dramatic Boss Spawn Sweep: start close on the Boss, then sweep back to Altar
+          camera.position.copy(cameraPresets.bossIntro.pos);
+          cameraLookAt.copy(cameraPresets.bossIntro.lookAt);
+          currentCamTarget = cameraPresets.bossIntro;
+          sweepTimer = setTimeout(() => { currentCamTarget = cameraPresets.altar; }, 680);
+        } else {
+          // Smooth Hall-to-Altar Descent Sweep
+          camera.position.copy(cameraPresets.room.pos);
+          cameraLookAt.copy(cameraPresets.room.lookAt);
+          currentCamTarget = cameraPresets.altar;
+        }
         document.querySelectorAll('.cam-btn').forEach((b) => { const on = b.dataset.cam === 'altar'; b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on)); });
         if (opts.fresh) setFeedback('A fresh sentence rises from the pool. Three lives restored.', 'hint');
+        else if (dailyRun.active) setFeedback(`🎲 Daily Crypt Seed (${dailyRun.seed}) · Step ${dailyRun.step + 1}/${dailyRun.steps.length}: ${L.floors[floorIdx].title} (${L.floors[floorIdx].cefr})`, 'hint');
+        else if (bossRush.active) setFeedback(`⚔️ Boss Rush (${bossRush.step + 1}/${bossRush.floors.length}): ${L.bosses[floorIdx] ? L.bosses[floorIdx].name : 'Boss Floor'}!`, 'hint');
         setTimeout(() => { fade.classList.remove('on'); gameState = GS.PLAYING; }, SELFTEST ? 0 : 120);
       };
       if (SELFTEST) rebuild(); else setTimeout(rebuild, 950);
@@ -1808,14 +2583,63 @@
     $('btnHint').addEventListener('click', useHint);
     $('btnRelics').addEventListener('click', openRelics);
     $('btnCloseRelics').addEventListener('click', () => closeModal($('relicsModal')));
+    $('btnCryptMap').addEventListener('click', openCryptMap);
+    $('btnCloseCryptMap').addEventListener('click', () => closeModal($('cryptMapModal')));
+    $('btnCloseCryptMapTop').addEventListener('click', () => closeModal($('cryptMapModal')));
+    $('btnStartBossRush').addEventListener('click', startBossRush);
+    if ($('btnStartDailySeed')) $('btnStartDailySeed').addEventListener('click', startDailySeed);
+    if ($('btnDailySeedHud')) $('btnDailySeedHud').addEventListener('click', startDailySeed);
+    if ($('btnBossVoice')) $('btnBossVoice').addEventListener('click', () => playBossVoice(floorIdx, true));
+    $('btnRevealGrimoireModel').addEventListener('click', () => {
+      const ans = $('grimoireModelAnswer');
+      const open = ans.hidden;
+      ans.hidden = !open;
+      $('btnRevealGrimoireModel').setAttribute('aria-expanded', String(open));
+      $('btnRevealGrimoireModel').textContent = open ? '🙈 Hide Cambridge Model' : '👁️ Reveal Cambridge Model';
+      AudioEngine.init();
+      AudioEngine.playSlot();
+    });
+    $('torchThemeSelect').addEventListener('change', (e) => {
+      currentTorchTheme = e.target.value || 'auto';
+      applyTorchTheme();
+      AudioEngine.init();
+      AudioEngine.playGrab();
+    });
     $('btnNextFloor').addEventListener('click', () => {
       if (gameState !== GS.MODAL || openModalEl !== $('victoryModal')) return;
       closeModal($('victoryModal'), true);
       gameState = GS.SOLVED;
-      if (floorIdx === LAST) openEndModal(); else transitionTo(floorIdx + 1);
+      if (dailyRun.active) {
+        if (dailyRun.step >= dailyRun.steps.length - 1) {
+          dailyRun.active = false;
+          state.gold += 100;
+          saveState();
+          renderHUD();
+          openEndModal('daily');
+        } else {
+          dailyRun.step++;
+          const nxt = dailyRun.steps[dailyRun.step];
+          transitionTo(nxt.floorIdx, { item: nxt.item });
+        }
+        return;
+      }
+      if (bossRush.active) {
+        if (bossRush.step >= bossRush.floors.length - 1) {
+          bossRush.active = false;
+          renderHUD();
+          openEndModal(true);
+        } else {
+          bossRush.step++;
+          transitionTo(bossRush.floors[bossRush.step]);
+        }
+        return;
+      }
+      if (floorIdx === LAST) openEndModal(false); else transitionTo(floorIdx + 1);
     });
     $('btnNewRun').addEventListener('click', () => {
       closeModal($('endModal'), true);
+      bossRush.active = false;
+      dailyRun.active = false;
       state = L.store.fresh(state);
       saveState();
       transitionTo(0);

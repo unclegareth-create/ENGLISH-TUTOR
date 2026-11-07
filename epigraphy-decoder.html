@@ -1,0 +1,2161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Britannia &amp; Hellas Epigraphy Decoder · Google DeepMind Aeneas &amp; Ithaca Stone Restoration Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-abyss: #0b0a08;
+      --bg-study: #13110d;
+      --bg-panel: #191611;
+      --bg-card: #211d16;
+      --border-gold: rgba(212, 168, 83, 0.26);
+      --border-bright: rgba(255, 213, 107, 0.65);
+      --gold-primary: #d4a853;
+      --gold-bright: #ffd56b;
+      --gold-muted: #9c8454;
+      --text-parchment: #f2ead7;
+      --text-secondary: #c4b699;
+      --text-dim: #8a7c62;
+      --crimson-wax: #b84a39;
+      --emerald-patina: #4a9d7c;
+      --azure-ithaca: #5b9bd5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #1d1811 0%, var(--bg-abyss) 75%);
+      color: var(--text-parchment);
+      font-family: 'Inter', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-bottom: 64px;
+    }
+
+    /* Top Navigation Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: rgba(11, 10, 8, 0.92);
+      border-bottom: 1px solid var(--border-gold);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-crest {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      border: 1px solid var(--gold-primary);
+      background: linear-gradient(135deg, #2b2317, #14100b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      color: var(--gold-bright);
+      font-size: 18px;
+      box-shadow: 0 0 14px rgba(212, 168, 83, 0.25);
+    }
+
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--text-parchment);
+    }
+
+    .brand-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--gold-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      text-decoration: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-gold);
+      background: rgba(25, 22, 17, 0.8);
+      transition: all 0.2s;
+    }
+
+    .nav-pill:hover {
+      border-color: var(--gold-bright);
+      color: var(--gold-bright);
+      transform: translateY(-1px);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px 28px;
+    }
+
+    /* Hero Header */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(33, 29, 22, 0.95), rgba(19, 17, 13, 0.98));
+      border: 1px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 26px 32px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      flex-wrap: wrap;
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+    }
+
+    .hero-kicker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--gold-bright);
+      margin-bottom: 8px;
+    }
+
+    .hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 700;
+      color: var(--text-parchment);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .hero-desc {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 19px;
+      color: var(--text-secondary);
+      max-width: 860px;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .stat-box {
+      background: rgba(11, 10, 8, 0.75);
+      border: 1px solid var(--border-gold);
+      border-radius: 10px;
+      padding: 12px 16px;
+      min-width: 135px;
+      text-align: center;
+    }
+
+    .stat-val {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold-bright);
+    }
+
+    .stat-lbl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* Filter Bar & Monument Selector Grid */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      color: var(--gold-bright);
+      letter-spacing: 0.04em;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-gold);
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: rgba(212, 168, 83, 0.2);
+      color: var(--gold-bright);
+      border-color: var(--gold-bright);
+    }
+
+    .monument-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(305px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .monument-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-gold);
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: left;
+      color: var(--text-parchment);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .monument-card:hover {
+      border-color: var(--gold-primary);
+      background: var(--bg-card);
+      transform: translateY(-2px);
+    }
+
+    .monument-card.active {
+      border-color: var(--gold-bright);
+      background: linear-gradient(135deg, rgba(212, 168, 83, 0.16), rgba(33, 29, 22, 0.95));
+      box-shadow: 0 0 20px rgba(212, 168, 83, 0.2);
+    }
+
+    .monument-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .monument-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--gold-bright);
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .badge-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9.5px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .badge-latin {
+      background: rgba(184, 74, 57, 0.24);
+      color: #f4a293;
+      border: 1px solid rgba(184, 74, 57, 0.5);
+    }
+
+    .badge-greek {
+      background: rgba(91, 155, 213, 0.22);
+      color: #9dc8f0;
+      border: 1px solid rgba(91, 155, 213, 0.5);
+    }
+
+    .badge-verified {
+      background: rgba(74, 157, 124, 0.24);
+      color: #82e0b6;
+      border: 1px solid rgba(74, 157, 124, 0.55);
+    }
+
+    .monument-title {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-parchment);
+    }
+
+    .monument-meta {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    /* Main Workbench Grid: Stone Slab Left + Metadata Right */
+    .workbench-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 22px;
+      margin-bottom: 26px;
+    }
+
+    @media (max-width: 1100px) {
+      .workbench-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 20px 22px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(212, 168, 83, 0.35);
+      background: #0c0b09;
+      margin-bottom: 14px;
+    }
+
+    #stoneCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .raking-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      background: var(--bg-study);
+      border: 1px solid rgba(212, 168, 83, 0.18);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: var(--text-secondary);
+    }
+
+    input[type='range'] {
+      accent-color: var(--gold-primary);
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .material-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .btn-restore-primary {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 9px;
+      border: 1px solid var(--gold-bright);
+      background: linear-gradient(135deg, #d4a853 0%, #9e7323 100%);
+      color: #0b0a08;
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      box-shadow: 0 0 24px rgba(212, 168, 83, 0.35);
+      transition: all 0.2s;
+    }
+
+    .btn-restore-primary:hover {
+      background: linear-gradient(135deg, #ffe082 0%, #d4a853 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 0 32px rgba(255, 213, 107, 0.55);
+    }
+
+    .status-banner {
+      margin-top: 12px;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .status-banner.damaged {
+      background: rgba(184, 74, 57, 0.16);
+      border: 1px solid rgba(184, 74, 57, 0.5);
+      color: #f4b8ae;
+    }
+
+    .status-banner.restored {
+      background: rgba(74, 157, 124, 0.18);
+      border: 1px solid rgba(74, 157, 124, 0.55);
+      color: #b8f2d6;
+    }
+
+    .gold-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: #0b0a08;
+      background: var(--gold-bright);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .btn-subtle {
+      background: rgba(11, 10, 8, 0.6);
+      color: var(--text-parchment);
+      border: 1px solid var(--border-gold);
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    /* Scholarly Dossier Right Column */
+    .dossier-header {
+      border-bottom: 1px solid var(--border-gold);
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .dossier-code-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .dossier-title {
+      font-family: 'Cinzel', serif;
+      font-size: 21px;
+      color: var(--gold-bright);
+      margin-bottom: 4px;
+    }
+
+    .dossier-sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .field-block {
+      margin-bottom: 14px;
+    }
+
+    .field-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--gold-primary);
+      margin-bottom: 4px;
+    }
+
+    .code-box {
+      background: var(--bg-abyss);
+      border: 1px solid rgba(212, 168, 83, 0.22);
+      border-radius: 7px;
+      padding: 10px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      color: var(--text-parchment);
+      word-break: break-word;
+    }
+
+    .translation-box {
+      background: rgba(212, 168, 83, 0.08);
+      border-left: 3px solid var(--gold-primary);
+      padding: 12px 14px;
+      border-radius: 0 7px 7px 0;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 18px;
+      font-style: italic;
+      color: var(--text-parchment);
+    }
+
+    .notes-box {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+
+    /* 4-Panel Neural Attribution & Contextualization Dashboard */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 1100px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-kicker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold-primary);
+      margin-bottom: 4px;
+    }
+
+    .panel-heading {
+      font-family: 'Cinzel', serif;
+      font-size: 17px;
+      color: var(--text-parchment);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(212, 168, 83, 0.2);
+    }
+
+    /* Panel A: Beam Search & Saliency */
+    .beam-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-bottom: 18px;
+    }
+
+    .beam-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--bg-study);
+      border: 1px solid rgba(212, 168, 83, 0.18);
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: all 0.16s;
+    }
+
+    .beam-row:hover,
+    .beam-row.active {
+      border-color: var(--gold-bright);
+      background: rgba(212, 168, 83, 0.13);
+    }
+
+    .beam-rank {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--gold-bright);
+      min-width: 28px;
+    }
+
+    .beam-main {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .beam-top-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .beam-chars {
+      color: var(--gold-bright);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .beam-full-text {
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .restored-char-inline {
+      background: rgba(255, 213, 107, 0.3);
+      color: var(--gold-bright);
+      font-weight: 700;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    .beam-score {
+      color: var(--text-parchment);
+      font-weight: 700;
+    }
+
+    .beam-bar-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .beam-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold-primary), var(--gold-bright));
+      border-radius: 3px;
+    }
+
+    .beam-note {
+      font-size: 11.5px;
+      color: var(--text-dim);
+    }
+
+    .saliency-box {
+      background: var(--bg-abyss);
+      border: 1px solid rgba(212, 168, 83, 0.22);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    .sal-char {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 24px;
+      padding: 0 3px;
+      border-radius: 3px;
+      color: var(--text-parchment);
+      transition: transform 0.12s;
+    }
+
+    .sal-char:hover {
+      transform: scale(1.25);
+      z-index: 5;
+    }
+
+    .sal-gap {
+      color: var(--gold-bright);
+      font-weight: 700;
+    }
+
+    /* Panel B: Map & Geographical Attribution */
+    .map-container {
+      background: #0d1318;
+      border: 1px solid rgba(212, 168, 83, 0.28);
+      border-radius: 9px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .geo-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .geo-row {
+      display: grid;
+      grid-template-columns: 32px 165px 1fr 56px;
+      align-items: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .geo-row.top-geo {
+      color: var(--gold-bright);
+      font-weight: 600;
+    }
+
+    .geo-bar-wrap {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.07);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .geo-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #b84a39, var(--gold-bright));
+      border-radius: 4px;
+    }
+
+    .geo-pct {
+      text-align: right;
+    }
+
+    @keyframes pulseRing {
+      0% { opacity: 0.95; transform: scale(0.95); }
+      50% { opacity: 0.45; transform: scale(1.12); }
+      100% { opacity: 0.95; transform: scale(0.95); }
+    }
+
+    .pulse-ring {
+      animation: pulseRing 2.4s infinite ease-in-out;
+      transform-origin: center;
+      transform-box: fill-box;
+    }
+
+    /* Panel C: Chronological Histogram */
+    .chrono-metrics {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chrono-chip {
+      background: var(--bg-study);
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .chrono-chip strong {
+      color: var(--gold-bright);
+      font-size: 15px;
+      margin-left: 6px;
+    }
+
+    #chronoCanvas {
+      width: 100%;
+      height: auto;
+      background: var(--bg-abyss);
+      border: 1px solid rgba(212, 168, 83, 0.22);
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* Panel D: Contextual Parallels */
+    .parallels-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .parallel-card {
+      background: var(--bg-study);
+      border: 1px solid rgba(212, 168, 83, 0.22);
+      border-radius: 9px;
+      padding: 13px 15px;
+    }
+
+    .parallel-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .parallel-rank {
+      color: var(--gold-bright);
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    .parallel-id {
+      color: var(--text-parchment);
+    }
+
+    .parallel-tm {
+      color: var(--text-dim);
+      font-size: 11px;
+      margin-left: 6px;
+    }
+
+    .cosine-badge {
+      background: rgba(212, 168, 83, 0.15);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-bright);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .parallel-text {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 17px;
+      color: var(--text-parchment);
+      margin-bottom: 5px;
+    }
+
+    .parallel-note {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .parallel-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 7px;
+    }
+
+    .parallel-link {
+      color: var(--gold-bright);
+      text-decoration: none;
+    }
+
+    .parallel-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Custom Sandbox Section */
+    .sandbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 22px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 1000px) {
+      .sandbox-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .markup-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .markup-card {
+      background: var(--bg-study);
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .markup-sym {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold-bright);
+    }
+
+    .sandbox-textarea {
+      width: 100%;
+      min-height: 92px;
+      background: var(--bg-abyss);
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      color: var(--text-parchment);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      padding: 10px 12px;
+      margin: 8px 0 10px;
+      resize: vertical;
+    }
+
+    .sandbox-controls-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .select-dark {
+      background: var(--bg-study);
+      color: var(--text-parchment);
+      border: 1px solid var(--border-gold);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .valid-ok {
+      color: #82e0b6;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    .warn-item {
+      color: #f4b8ae;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+
+    /* Footer Citations */
+    .citation-footer {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 22px 26px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .citation-footer a {
+      color: var(--gold-bright);
+    }
+
+    /* ==========================================================
+       ROSETTA C1/C2 PART 4 INSCRIPTION LAB & OPEN CLOZE STYLES
+       ========================================================== */
+    .rosetta-strategy-banner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 980px) {
+      .rosetta-strategy-banner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 580px) {
+      .rosetta-strategy-banner {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .strategy-step-card {
+      background: var(--bg-study);
+      border: 1px solid var(--border-gold);
+      border-radius: 9px;
+      padding: 12px 14px;
+    }
+    .strategy-step-card .step-kicker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+    .strategy-step-card h4 {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      color: var(--text-parchment);
+      margin-bottom: 4px;
+    }
+    .strategy-step-card p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .stelae-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .stela-card {
+      background: var(--bg-study);
+      border: 1px solid var(--border-gold);
+      border-radius: 11px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s;
+    }
+    .stela-card:hover {
+      border-color: var(--gold-bright);
+    }
+
+    .stela-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid rgba(212, 168, 83, 0.16);
+      padding-bottom: 8px;
+    }
+
+    .stela-id-badge {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--gold-bright);
+    }
+
+    .stela-blueprint {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: #82e0b6;
+      background: rgba(74, 157, 124, 0.14);
+      border: 1px solid rgba(74, 157, 124, 0.45);
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+
+    .stela-s1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 20px;
+      color: var(--text-parchment);
+      line-height: 1.45;
+    }
+    .stela-s1.echo-struck .echo-seg {
+      text-decoration: line-through;
+      color: var(--text-dim);
+      opacity: 0.45;
+    }
+
+    .stela-steps-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stela-kw-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: #0b0a08;
+      background: var(--gold-bright);
+      padding: 5px 12px;
+      border-radius: 6px;
+    }
+
+    .stela-step-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn-strike-echo {
+      background: rgba(184, 74, 57, 0.2);
+      border: 1px solid rgba(184, 74, 57, 0.55);
+      color: #f4b8ae;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-strike-echo:hover,
+    .btn-strike-echo.active {
+      background: rgba(184, 74, 57, 0.4);
+      color: #fff;
+    }
+
+    .diag-step-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-secondary);
+      background: var(--bg-abyss);
+      border: 1px solid rgba(212, 168, 83, 0.22);
+      padding: 4px 9px;
+      border-radius: 5px;
+    }
+
+    .stela-s2-row {
+      font-size: 15.5px;
+      font-weight: 500;
+      color: var(--text-parchment);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.6;
+    }
+
+    .stela-input {
+      background: var(--bg-abyss);
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 7px;
+      color: var(--gold-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 7px 12px;
+      min-width: 265px;
+      text-align: center;
+    }
+    .stela-input:focus {
+      outline: none;
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 12px rgba(255, 213, 107, 0.25);
+    }
+
+    .stela-footer-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stela-guards {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .guard-chip {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--bg-abyss);
+      border: 1px solid var(--border-gold);
+      color: var(--text-secondary);
+    }
+    .guard-chip.ok {
+      background: rgba(74, 157, 124, 0.18);
+      border-color: var(--emerald-patina);
+      color: #82e0b6;
+    }
+    .guard-chip.err {
+      background: rgba(184, 74, 57, 0.2);
+      border-color: var(--crimson-wax);
+      color: #f4b8ae;
+    }
+
+    .stela-feedback {
+      display: none;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .stela-feedback.show {
+      display: block;
+    }
+    .stela-feedback.pass {
+      background: rgba(74, 157, 124, 0.16);
+      border: 1px solid var(--emerald-patina);
+      color: #d8f8e8;
+    }
+    .stela-feedback.fail {
+      background: rgba(184, 74, 57, 0.18);
+      border: 1px solid var(--crimson-wax);
+      color: #fadbd5;
+    }
+
+    /* Epigraphic C1 Open Cloze Styles */
+    .cloze-passage-box {
+      background: var(--bg-study);
+      border: 1px solid var(--border-gold);
+      border-radius: 10px;
+      padding: 20px 24px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 20px;
+      line-height: 1.95;
+      color: var(--text-parchment);
+      margin-bottom: 16px;
+    }
+
+    .cloze-gap-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin: 0 3px;
+    }
+
+    .cloze-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--gold-bright);
+      font-weight: 700;
+    }
+
+    .cloze-input {
+      background: var(--bg-abyss);
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 6px;
+      color: var(--gold-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      width: 115px;
+      padding: 3px 7px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .cloze-input.correct {
+      border-color: var(--emerald-patina);
+      background: rgba(74, 157, 124, 0.2);
+      color: #82e0b6;
+    }
+    .cloze-input.wrong {
+      border-color: var(--crimson-wax);
+      background: rgba(184, 74, 57, 0.2);
+      color: #f4b8ae;
+    }
+
+    .cloze-notes-grid {
+      display: none;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .cloze-notes-grid.show {
+      display: grid;
+    }
+
+    .cloze-explain-card {
+      background: var(--bg-study);
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12.5px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <nav class="top-bar">
+    <div class="brand-cluster">
+      <div class="brand-crest">Æ</div>
+      <div>
+        <div class="brand-title">BRITANNIA &amp; HELLAS EPIGRAPHY DECODER</div>
+        <div class="brand-sub">Google DeepMind Aeneas (Latin · Nature 2025) &amp; Ithaca (Ancient Greek · Nature 2022)</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="dark-academia-index.html" class="nav-pill">🏛️ Athenaeum Index</a>
+      <a href="AGENT-COMMAND-CENTER.html" class="nav-pill">⚡ Command Center</a>
+      <a href="#epigraphic-cloze-lab" class="nav-pill">📜 IV. C1 Discourse Cloze (8)</a>
+      <a href="#tablet-archive-v" class="nav-pill">🏺 V. Rosetta Part 4 Lab (10)</a>
+      <a href="assets/epigraphy/rib-2142_deepmind_dashboard.html" target="_blank" class="nav-pill">📊 Official DeepMind View (RIB 2142)</a>
+      <a href="assets/epigraphy/ig-i3-40_deepmind_dashboard.html" target="_blank" class="nav-pill">🏺 Official DeepMind View (IG I³ 40)</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Banner -->
+    <header class="hero-banner">
+      <div>
+        <div class="hero-kicker">NEURAL EPIGRAPHY &amp; RAKING-LIGHT ARCHAEOLOGICAL WORKBENCH</div>
+        <h1 class="hero-title">Ancient Stone Restoration, Attribution &amp; Contextualization Desk</h1>
+        <p class="hero-desc">
+          Inspect weathered Roman frontier slabs from Hadrian’s Wall and the Antonine Wall, anaerobic birchwood ink letters from Fort Vindolanda, lead <em>defixiones</em> from the sacred spring at Bath, and Attic <em>stoichedon</em> marble decrees under interactive raking oil-lamp light. Engage DeepMind’s <strong>Aeneas</strong> and <strong>Ithaca</strong> neural transformers to reconstruct damaged lacunae (<code>[???]</code>), map provincial attribution across 84 regions, and date inscriptions across 160 decade bins.
+        </p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-val">176,000+</div>
+          <div class="stat-lbl">Latin &amp; Greek Texts</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">84 Regions</div>
+          <div class="stat-lbl">Provincial Map</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">800 BCE–800 CE</div>
+          <div class="stat-lbl">160 Date Bins</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-val">384-Dim</div>
+          <div class="stat-lbl">Neural Embedding</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Curated 8-Monument Selector -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">I. Select Curated Epigraphic Monument (Roman Britain, Rome &amp; Classical Hellas)</h2>
+        <div class="filter-pills">
+          <button class="filter-btn active" data-filter="all">All Monuments (8)</button>
+          <button class="filter-btn" data-filter="britannia">Roman Britain · RIB &amp; Vindolanda (5)</button>
+          <button class="filter-btn" data-filter="rome">Imperial Rome &amp; Pompeii (2)</button>
+          <button class="filter-btn" data-filter="greek">Ancient Greece · Ithaca (1)</button>
+          <button class="filter-btn" data-filter="verified">⚡ Live JAX Checkpoint Verified</button>
+        </div>
+      </div>
+      <div class="monument-grid" id="monumentGrid"></div>
+    </section>
+
+    <!-- Workbench: Raking-Light Stone Canvas (Left) + Epigraphic Dossier (Right) -->
+    <section class="workbench-grid">
+      <!-- Left: Interactive Raking-Light Stone Slab & Vindolanda Tablet Canvas -->
+      <div class="panel-box">
+        <div class="panel-kicker">INTERACTIVE 3D NORMAL-MAPPED MONUMENT SURFACE (MOVE MOUSE OR DRAG SLIDERS)</div>
+        <h3 class="panel-heading">Raking-Light Epigraphic Inspection &amp; Neural Chisel Restoration</h3>
+
+        <div class="canvas-wrapper">
+          <canvas id="stoneCanvas" width="760" height="390"></canvas>
+        </div>
+
+        <div class="raking-controls">
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>🕯️ Oil Lamp Raking Azimuth</span>
+              <strong id="azimuthVal">135°</strong>
+            </div>
+            <input type="range" id="azimuthSlider" min="0" max="360" value="135" />
+          </div>
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>📐 Grazing Light Elevation Angle</span>
+              <strong id="elevationVal">32°</strong>
+            </div>
+            <input type="range" id="elevationSlider" min="8" max="75" value="32" />
+          </div>
+        </div>
+
+        <div class="material-bar">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-secondary);">Surface Substrate:</span>
+          <div class="filter-pills">
+            <button class="filter-btn active" data-material="limestone">🪨 Roman Limestone</button>
+            <button class="filter-btn" data-material="marble">🏛️ Pentelic / Imperial Marble</button>
+            <button class="filter-btn" data-material="lead">🛡️ Bath Lead Curse Tablet</button>
+            <button class="filter-btn" data-material="vindolanda">📜 Vindolanda Birchwood Ink</button>
+          </div>
+        </div>
+
+        <button class="btn-restore-primary" id="btnEngageRestoration">
+          ⚡ ENGAGE DEEPMIND AENEAS / ITHACA RESTORATION
+        </button>
+
+        <div id="restorationStatusBanner" class="status-banner damaged"></div>
+      </div>
+
+      <!-- Right: Diplomatic Transcription, Preprocessed Input & Archaeological Notes -->
+      <div class="panel-box">
+        <div class="dossier-header">
+          <div class="dossier-code-row">
+            <span class="monument-code" id="activeCode">RIB 2142</span>
+            <span class="badge-pill badge-latin" id="activeModelBadge">Aeneas (Latin · Nature 2025)</span>
+          </div>
+          <h3 class="dossier-title" id="activeTitle">The Antonine Wall Legionary Distance Slab</h3>
+          <div class="dossier-sub" id="activeProvenance">Braidfield, Duntocher — Hunterian Museum</div>
+          <div class="dossier-sub" style="color:var(--gold-primary);margin-top:2px;" id="activeDateLabel">~142 CE</div>
+        </div>
+
+        <div class="field-block">
+          <div class="field-label">1. Diplomatic Epigraphic Transcription (Leiden Conventions)</div>
+          <div class="code-box" id="activeDiplomatic"></div>
+        </div>
+
+        <div class="field-block">
+          <div class="field-label">2. Aeneas / Ithaca Restoration Input String (With ? Lacuna Markers)</div>
+          <div class="code-box" id="activePreprocessed" style="color:var(--gold-bright);"></div>
+        </div>
+
+        <div class="field-block">
+          <div class="field-label">3. Strict preprocess.py Output (Numerals → 0, Brackets Stripped)</div>
+          <div class="code-box" id="activeStrictPreprocessed" style="color:var(--text-secondary);font-size:11.5px;"></div>
+        </div>
+
+        <div class="field-block">
+          <div class="field-label">4. Scholarly English Translation</div>
+          <div class="translation-box" id="activeTranslation"></div>
+        </div>
+
+        <div class="field-block" style="margin-bottom:0;">
+          <div class="field-label">5. Archaeological &amp; Paleographical Commentary</div>
+          <div class="notes-box" id="activeNotes"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4-Panel Neural Attribution & Contextualization Dashboard -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">II. 4-Panel DeepMind Neural Attribution &amp; Contextualization Dashboard</h2>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- Panel A: Top-K Beam Search & Saliency Heatmap -->
+        <div class="panel-box">
+          <div class="panel-kicker">PANEL A · NEURAL BEAM SEARCH &amp; ATTENTION SALIENCY</div>
+          <h3 class="panel-heading">Top-5 Restoration Candidates &amp; Character Saliency Map</h3>
+          <p style="font-size:12.5px;color:var(--text-secondary);margin-bottom:10px;">
+            Click any beam-search hypothesis below to chisel that restoration directly onto the stone monument:
+          </p>
+          <div class="beam-list" id="beamCandidatesList"></div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+            <span class="field-label" style="margin:0;">Character-Level Saliency (Gradient Attention Weights)</span>
+            <div class="filter-pills">
+              <button class="filter-btn active" data-saliency="restoration">Restoration</button>
+              <button class="filter-btn" data-saliency="location">Geographical</button>
+              <button class="filter-btn" data-saliency="date">Chronological</button>
+            </div>
+          </div>
+          <div class="saliency-box" id="saliencyHeatmapBox"></div>
+        </div>
+
+        <!-- Panel B: Interactive SVG Map of Britannia, Rome & Hellas -->
+        <div class="panel-box">
+          <div class="panel-kicker">PANEL B · 84-PROVINCE GEOGRAPHICAL ATTRIBUTION</div>
+          <h3 class="panel-heading">Interactive Provincial Probability Map (Britannia, Imperium &amp; Hellas)</h3>
+
+          <div class="map-container">
+            <svg id="empireMapSvg" viewBox="0 0 640 400" width="100%" height="260" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="seaGrad" cx="50%" cy="50%" r="65%">
+                  <stop offset="0%" stop-color="#141e28" />
+                  <stop offset="100%" stop-color="#090d12" />
+                </radialGradient>
+              </defs>
+              <rect width="640" height="400" fill="url(#seaGrad)" />
+              <!-- Graticule Grid -->
+              <g stroke="rgba(212,168,83,0.08)" stroke-width="1">
+                <line x1="0" y1="80" x2="640" y2="80" />
+                <line x1="0" y1="160" x2="640" y2="160" />
+                <line x1="0" y1="240" x2="640" y2="240" />
+                <line x1="0" y1="320" x2="640" y2="320" />
+                <line x1="120" y1="0" x2="120" y2="400" />
+                <line x1="240" y1="0" x2="240" y2="400" />
+                <line x1="360" y1="0" x2="360" y2="400" />
+                <line x1="480" y1="0" x2="480" y2="400" />
+              </g>
+              <!-- Stylized Landmasses: Britannia, Hibernia, Continental Europe, Italia, Hellas, Anatolia, North Africa -->
+              <g fill="#231f18" stroke="rgba(212,168,83,0.38)" stroke-width="1.2">
+                <!-- Britannia -->
+                <path d="M 122 36 L 154 44 L 166 78 L 172 104 L 128 110 L 116 86 Z" />
+                <!-- Hibernia -->
+                <path d="M 88 62 L 108 66 L 106 94 L 84 92 Z" />
+                <!-- Gaul, Hispania, Germania, Danubian Provinces -->
+                <path d="M 52 205 L 132 195 L 152 128 L 218 96 L 310 105 L 445 135 L 468 188 L 395 215 L 348 195 L 270 198 L 222 222 L 138 286 L 58 282 Z" />
+                <!-- Italia -->
+                <path d="M 262 196 L 305 196 L 358 265 L 344 296 L 322 282 L 284 236 Z" />
+                <!-- Sicily -->
+                <path d="M 304 304 L 334 302 L 326 320 Z" />
+                <!-- Hellas & Peloponnese -->
+                <path d="M 392 212 L 452 218 L 448 298 L 414 316 L 396 276 Z" />
+                <!-- Asia Minor / Anatolia & Syria -->
+                <path d="M 475 232 L 615 224 L 622 315 L 555 322 L 472 296 Z" />
+                <!-- North Africa & Aegyptus -->
+                <path d="M 65 325 L 315 335 L 560 348 L 575 395 L 55 395 Z" />
+              </g>
+              <!-- Frontier Walls Markers -->
+              <line x1="128" y1="54" x2="156" y2="54" stroke="#e07a5f" stroke-width="2" />
+              <line x1="130" y1="68" x2="162" y2="68" stroke="#ffd56b" stroke-width="2" />
+              <!-- Dynamic Radar Pins Layer -->
+              <g id="mapPinsGroup"></g>
+            </svg>
+          </div>
+
+          <div class="geo-rows" id="geoAttributionRows"></div>
+        </div>
+
+        <!-- Panel C: Chronological Dating Histogram (600 BCE – 400 CE) -->
+        <div class="panel-box">
+          <div class="panel-kicker">PANEL C · 160-BIN CHRONOLOGICAL DATING DISTRIBUTION</div>
+          <h3 class="panel-heading">Chronological Attribution Curve (600 BCE – 400 CE)</h3>
+
+          <div class="chrono-metrics">
+            <div class="chrono-chip">Peak Mode (Argmax): <strong id="chronoTopYear">145 CE</strong></div>
+            <div class="chrono-chip">Weighted Mean Date: <strong id="chronoAvgYear">144 CE</strong></div>
+          </div>
+
+          <canvas id="chronoCanvas" width="640" height="250"></canvas>
+          <p style="font-size:12px;color:var(--text-dim);margin-top:8px;">
+            Gold curve traces the probability density across 10-year intervals; dashed vertical markers highlight major historical epochs in Roman Britain, Imperial Rome, and Classical Athens.
+          </p>
+        </div>
+
+        <!-- Panel D: Contextual Parallels (EDCS / EDH / EDR / RIB / PHI) -->
+        <div class="panel-box">
+          <div class="panel-kicker">PANEL D · 384-DIMENSIONAL COSINE SIMILARITY RETRIEVAL</div>
+          <h3 class="panel-heading">Contextual Epigraphic Parallels (RIB · EDCS · EDH · EDR · PHI)</h3>
+          <div class="parallels-list" id="parallelsGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Custom Inscription Sandbox & DeepMind Markup Guide -->
+    <section class="panel-box" style="margin-bottom:28px;">
+      <div class="panel-kicker">III. CUSTOM EPIGRAPHIC SANDBOX &amp; DEEPMIND RESTORATION MARKUP GUIDE</div>
+      <h3 class="panel-heading">Live Client-Side Preprocessor (<code>preprocess.py</code>) &amp; Custom Stone Restoration Simulator</h3>
+
+      <div class="sandbox-grid">
+        <div>
+          <p style="font-size:13.5px;color:var(--text-secondary);">
+            Aeneas and Ithaca use four specialized restoration and editorial damage symbols. Use them in your input string on the right:
+          </p>
+          <div class="markup-cards">
+            <div class="markup-card">
+              <div class="markup-sym">?</div>
+              <div style="font-size:12.5px;font-weight:600;color:var(--text-parchment);">Known-Length Gap</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);">Predict exactly 1 missing character per <code>?</code> (e.g. <code>anima ??? ita</code> → <code>anima mea ita</code>).</div>
+            </div>
+            <div class="markup-card">
+              <div class="markup-sym">#</div>
+              <div style="font-size:12.5px;font-weight:600;color:var(--text-parchment);">Unknown-Length Gap</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);">Predict a sequence of unknown length up to <code>--restore_max_len</code> (e.g. <code>donat in #rtis</code>).</div>
+            </div>
+            <div class="markup-card">
+              <div class="markup-sym">-</div>
+              <div style="font-size:12.5px;font-weight:600;color:var(--text-parchment);">Ignored Single Damage</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);">Missing character that does <em>not</em> need restoring; also used to pad short texts to 25 chars.</div>
+            </div>
+            <div class="markup-card">
+              <div class="markup-sym">_</div>
+              <div style="font-size:12.5px;font-weight:600;color:var(--text-parchment);">Ignored Long Lacuna</div>
+              <div style="font-size:11.5px;color:var(--text-secondary);">Missing section of unknown length that does <em>not</em> need restoring (<code>prolixin_s fecit</code>).</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="sandbox-controls-row">
+            <label for="sandboxLanguage" class="field-label" style="margin:0;">Model &amp; Alphabet:</label>
+            <select id="sandboxLanguage" class="select-dark">
+              <option value="latin">Aeneas — Classical Latin (abcdefghiklmnopqrstuvxyz)</option>
+              <option value="greek">Ithaca — Ancient Greek (αβγδεζηθικλμνξοπρςστυφχψωϛ)</option>
+            </select>
+            <button class="filter-btn active" id="btnRunSandbox" style="margin-left:auto;padding:8px 16px;">
+              ⚡ Carve &amp; Restore on Stone Slab
+            </button>
+          </div>
+
+          <textarea id="sandboxInput" class="sandbox-textarea" placeholder="Enter Latin or Greek inscription with ??? or # gap..."></textarea>
+
+          <div class="field-label">Live Cleaned Output (Exact DeepMind <code>preprocess.py</code> Pipeline):</div>
+          <div class="code-box" id="sandboxCleanedOutput" style="margin-bottom:8px;color:var(--gold-bright);"></div>
+          <div id="sandboxWarnings"></div>
+          <div id="sandboxRunStatus" style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--gold-primary);margin-top:6px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         IV. EPIGRAPHIC C1 DISCOURSE RECONSTRUCTION CLOZE (8-GAP PART 2 OPEN CLOZE)
+         ========================================================== -->
+    <section class="panel-box" id="epigraphic-cloze-lab" style="margin-bottom:28px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+        <div>
+          <div class="panel-kicker">IV. CAMBRIDGE C1 ADVANCED PART 2 · EPIGRAPHIC DISCOURSE RECONSTRUCTION CLOZE</div>
+          <h3 class="panel-heading" style="border-bottom:none;margin-bottom:0;padding-bottom:0;">
+            Restoring Voices from Weathered Stone: 8-Gap Structural Open Cloze
+          </h3>
+        </div>
+        <div class="chrono-chip">
+          Cloze Restored: <strong id="epigraphy-cloze-score">0 / 8</strong>
+        </div>
+      </div>
+
+      <p style="font-size:13.5px;color:var(--text-secondary);margin-bottom:14px;">
+        Complete each lacuna in the scholarly commentary below with <strong>one single structural word</strong> (auxiliary, relative pronoun, preposition, or determiner). Press <code>Enter</code> or click <strong>Verify All 8 Lacunae</strong>.
+      </p>
+
+      <div class="cloze-passage-box">
+        Were it
+        <span class="cloze-gap-wrap"><span class="cloze-num">(1)</span><input type="text" class="cloze-input" id="epi-cloze-1" placeholder="1 word" aria-label="Cloze gap 1" oninput="checkSingleEpiCloze(1)" /></span>
+        for the surviving inscriptions of the Roman frontier, much of
+        <span class="cloze-gap-wrap"><span class="cloze-num">(2)</span><input type="text" class="cloze-input" id="epi-cloze-2" placeholder="1 word" aria-label="Cloze gap 2" oninput="checkSingleEpiCloze(2)" /></span>
+        we know about everyday garrison life on Hadrian&rsquo;s Wall would have vanished forever.
+        <span class="cloze-gap-wrap"><span class="cloze-num">(3)</span><input type="text" class="cloze-input" id="epi-cloze-3" placeholder="1 word" aria-label="Cloze gap 3" oninput="checkSingleEpiCloze(3)" /></span>
+        enduring nearly two millennia of frost and acid rain, carved limestone altars and ink tablets, many of
+        <span class="cloze-gap-wrap"><span class="cloze-num">(4)</span><input type="text" class="cloze-input" id="epi-cloze-4" placeholder="1 word" aria-label="Cloze gap 4" oninput="checkSingleEpiCloze(4)" /></span>
+        were inscribed by auxiliary cohorts far from Rome, still preserve intimate personal voices. Not
+        <span class="cloze-gap-wrap"><span class="cloze-num">(5)</span><input type="text" class="cloze-input" id="epi-cloze-5" placeholder="1 word" aria-label="Cloze gap 5" oninput="checkSingleEpiCloze(5)" /></span>
+        can raking oil-lamp light expose worn chisel grooves on stone, but anaerobic clay at Vindolanda has also protected birchwood letters regarded
+        <span class="cloze-gap-wrap"><span class="cloze-num">(6)</span><input type="text" class="cloze-input" id="epi-cloze-6" placeholder="1 word" aria-label="Cloze gap 6" oninput="checkSingleEpiCloze(6)" /></span>
+        the richest archive of non-literary Latin in north-western Europe. Whereas historians previously had
+        <span class="cloze-gap-wrap"><span class="cloze-num">(7)</span><input type="text" class="cloze-input" id="epi-cloze-7" placeholder="1 word" aria-label="Cloze gap 7" oninput="checkSingleEpiCloze(7)" /></span>
+        choice but to guess at broken lines, neural models now compare 176,000 texts to
+        <span class="cloze-gap-wrap"><span class="cloze-num">(8)</span><input type="text" class="cloze-input" id="epi-cloze-8" placeholder="1 word" aria-label="Cloze gap 8" oninput="checkSingleEpiCloze(8)" /></span>
+        an extent that fractured stelae can be dated within a single decade.
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <button class="filter-btn active" onclick="verifyAllEpiCloze()" style="padding:8px 16px;">
+          ✓ Verify All 8 Lacunae
+        </button>
+        <button class="filter-btn" onclick="revealAllEpiCloze()" style="padding:8px 16px;">
+          👁️ Reveal Cambridge Model
+        </button>
+        <button class="btn-subtle" onclick="resetEpiCloze()" style="padding:8px 12px;">
+          ↺ Clear Lacunae
+        </button>
+      </div>
+
+      <div class="cloze-notes-grid" id="epi-cloze-explanations"></div>
+    </section>
+
+    <!-- ==========================================================
+         V. TABLET ARCHIVE V: THE ROSETTA C1/C2 PART 4 INSCRIPTION LAB (10 INTERACTIVE STELAE)
+         ========================================================== -->
+    <section class="panel-box" id="tablet-archive-v" style="margin-bottom:28px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:14px;">
+        <div>
+          <div class="panel-kicker">V. TABLET ARCHIVE V · CAMBRIDGE C1/C2 KEY WORD TRANSFORMATION WORKBENCH</div>
+          <h2 class="section-title" style="margin-bottom:4px;">
+            The Rosetta C1/C2 Part 4 Inscription Lab (10 Interactive Stelae)
+          </h2>
+          <p style="font-size:13.5px;color:var(--text-secondary);max-width:880px;">
+            Apply Gareth&rsquo;s <strong>4-Step Elimination &amp; Deconstruction Strategy</strong> to restore each epigraphic transformation. Keep the chiseled keyword <strong>100% unchanged</strong> and use strictly <strong>3 to 6 words</strong>.
+          </p>
+        </div>
+        <div class="chrono-chip">
+          Stelae Restored: <strong id="rosetta-stelae-score">0 / 10 (0 / 20 Marks)</strong>
+        </div>
+      </div>
+
+      <!-- Gareth's 4-Step Elimination & Deconstruction Strategy Cards -->
+      <div class="rosetta-strategy-banner">
+        <div class="strategy-step-card">
+          <div class="step-kicker">Step 1 · Isolate the Deficit</div>
+          <h4>✂️ Strike Out the Echoes</h4>
+          <p>Cross out the repeated language from Sentence 1 that already appears in Sentence 2 to isolate the exact missing meaning.</p>
+        </div>
+        <div class="strategy-step-card">
+          <div class="step-kicker">Step 2 · Temporal Anchor</div>
+          <h4>⏳ Inspect Tense Harmony</h4>
+          <p>Check the tense of Sentence 1 (past simple, past perfect, present reporting), which dictates the exact auxiliary in the gap.</p>
+        </div>
+        <div class="strategy-step-card">
+          <div class="step-kicker">Step 3 · Syntactic Axis</div>
+          <h4>🔄 Check Voice &amp; Inversion</h4>
+          <p>Spot whether an active-to-passive shift, negative inversion (<em>At no time did...</em>), or cleft frame has taken place.</p>
+        </div>
+        <div class="strategy-step-card">
+          <div class="step-kicker">Step 4 · 3–6 Word Chisel</div>
+          <h4>🔑 Solve the Collocation</h4>
+          <p>Fit the isolated deficit into the required C1/C2 structural frame with the <strong>unchanged keyword</strong> (3 to 6 words).</p>
+        </div>
+      </div>
+
+      <div class="stelae-grid" id="rosetta-stelae-container"></div>
+    </section>
+
+    <!-- Mandatory Academic Citations & Dataset Acknowledgements -->
+    <footer class="citation-footer">
+      <div class="panel-kicker">MANDATORY ACADEMIC CITATIONS &amp; PRIMARY EPIGRAPHIC DATASET ACKNOWLEDGEMENTS</div>
+      <p style="margin-bottom:10px;">
+        <strong>Aeneas (Latin):</strong> Assael, Y., Sommerschield, T., Cooley, A. et al. Contextualizing ancient texts with generative neural networks. <em>Nature</em> 645, 141–147 (2025). <a href="https://doi.org/10.1038/s41586-025-09111-x" target="_blank" rel="noopener">https://doi.org/10.1038/s41586-025-09111-x</a><br />
+        <strong>Ithaca (Ancient Greek):</strong> Assael, Y., Sommerschield, T., Shillingford, B. et al. Restoring and attributing ancient texts using deep neural networks. <em>Nature</em> 603, 280–283 (2022). <a href="https://doi.org/10.1038/s41586-022-04448-z" target="_blank" rel="noopener">https://doi.org/10.1038/s41586-022-04448-z</a>
+      </p>
+      <p>
+        <strong>Dataset Acknowledgements:</strong> Ithaca draws on the Searchable Greek Inscriptions database made available by the <strong>Packard Humanities Institute (PHI)</strong> (<a href="https://inscriptions.packhum.org" target="_blank" rel="noopener">inscriptions.packhum.org</a>). Aeneas was trained on data from the <strong>Epigraphic Database Roma (EDR)</strong> (CC-BY 4.0, <a href="http://www.edr-edr.it/" target="_blank" rel="noopener">edr-edr.it</a>), the <strong>Epigraphic Database Heidelberg (EDH)</strong> (CC-BY-SA 4.0, <a href="https://edh.ub.uni-heidelberg.de/" target="_blank" rel="noopener">edh.ub.uni-heidelberg.de</a>), and the <strong>Epigraphic Database Clauss Slaby (EDCS_ETL)</strong> (CC-BY 4.0, <a href="http://www.manfredclauss.de/" target="_blank" rel="noopener">manfredclauss.de</a>), alongside Romano-British records from <strong>Roman Inscriptions of Britain (RIB)</strong>. License notification recorded at <code>.licenses/predictingthepast_LICENSE.txt</code>.
+      </p>
+    </footer>
+  </main>
+
+  <script src="assets/epigraphy/epigraphy-data.js"></script>
+  <script src="assets/epigraphy/epigraphy-engine.js"></script>
+  <script>
+    /* ==========================================================
+       IV. EPIGRAPHIC C1 DISCOURSE RECONSTRUCTION CLOZE (8 GAPS)
+       ========================================================== */
+    const EPI_CLOZE_KEYS = [
+      {
+        gap: 1,
+        accepted: ['NOT'],
+        model: 'NOT',
+        rule: 'Inverted Conditional (Were it not for + Noun Phrase)',
+        note: 'Replaces "If it had not been for..." in formal academic prose.'
+      },
+      {
+        gap: 2,
+        accepted: ['WHAT'],
+        model: 'WHAT',
+        rule: 'Nominal Relative Pronoun (much of what + clause)',
+        note: 'Means "that which / the things that" after a quantifier + of.'
+      },
+      {
+        gap: 3,
+        accepted: ['DESPITE'],
+        model: 'DESPITE',
+        rule: 'Preposition of Concession (Despite + Gerund -ing)',
+        note: 'Single-word concessive preposition directly followed by "enduring" (no "of").'
+      },
+      {
+        gap: 4,
+        accepted: ['WHICH'],
+        model: 'WHICH',
+        rule: 'Partitive Relative Clause (many of which)',
+        note: 'Refers back to non-human plural antecedents ("carved limestone altars and ink tablets").'
+      },
+      {
+        gap: 5,
+        accepted: ['ONLY'],
+        model: 'ONLY',
+        rule: 'Negative Inversion (Not only + auxiliary + subject + verb)',
+        note: 'Correlative pair "Not only can raking light..., but anaerobic clay has also...".'
+      },
+      {
+        gap: 6,
+        accepted: ['AS'],
+        model: 'AS',
+        rule: 'Fixed Prepositional Collocation (regarded as)',
+        note: 'Verbs of perception/evaluation (regard, view, see, recognise) take "as".'
+      },
+      {
+        gap: 7,
+        accepted: ['LITTLE', 'NO'],
+        model: 'LITTLE',
+        rule: 'Negative Determiner Collocation (had little / no choice but to)',
+        note: 'Fixed C1 idiom meaning they had virtually no alternative.'
+      },
+      {
+        gap: 8,
+        accepted: ['SUCH'],
+        model: 'SUCH',
+        rule: 'Consecutive Degree Phrase (to such an extent that)',
+        note: 'Pairs with singular countable "an extent" + result that-clause.'
+      }
+    ];
+
+    function updateEpiClozeScore() {
+      let count = 0;
+      EPI_CLOZE_KEYS.forEach(item => {
+        const el = document.getElementById(`epi-cloze-${item.gap}`);
+        if (el && item.accepted.includes(el.value.trim().toUpperCase())) {
+          count++;
+        }
+      });
+      const badge = document.getElementById('epigraphy-cloze-score');
+      if (badge) badge.textContent = `${count} / 8`;
+    }
+
+    function checkSingleEpiCloze(gapNum) {
+      const item = EPI_CLOZE_KEYS.find(x => x.gap === gapNum);
+      const el = document.getElementById(`epi-cloze-${gapNum}`);
+      if (!item || !el) return;
+      const val = el.value.trim().toUpperCase();
+      if (!val) {
+        el.className = 'cloze-input';
+      } else if (item.accepted.includes(val)) {
+        el.className = 'cloze-input correct';
+      } else {
+        el.className = 'cloze-input';
+      }
+      updateEpiClozeScore();
+    }
+
+    function verifyAllEpiCloze() {
+      EPI_CLOZE_KEYS.forEach(item => {
+        const el = document.getElementById(`epi-cloze-${item.gap}`);
+        if (!el) return;
+        const val = el.value.trim().toUpperCase();
+        if (item.accepted.includes(val)) {
+          el.className = 'cloze-input correct';
+        } else {
+          el.className = 'cloze-input wrong';
+        }
+      });
+      updateEpiClozeScore();
+      renderEpiClozeExplanations(true);
+    }
+
+    function revealAllEpiCloze() {
+      EPI_CLOZE_KEYS.forEach(item => {
+        const el = document.getElementById(`epi-cloze-${item.gap}`);
+        if (!el) return;
+        el.value = item.model;
+        el.className = 'cloze-input correct';
+      });
+      updateEpiClozeScore();
+      renderEpiClozeExplanations(true);
+    }
+
+    function resetEpiCloze() {
+      EPI_CLOZE_KEYS.forEach(item => {
+        const el = document.getElementById(`epi-cloze-${item.gap}`);
+        if (!el) return;
+        el.value = '';
+        el.className = 'cloze-input';
+      });
+      updateEpiClozeScore();
+      renderEpiClozeExplanations(false);
+    }
+
+    function renderEpiClozeExplanations(visible) {
+      const box = document.getElementById('epi-cloze-explanations');
+      if (!box) return;
+      if (!visible) {
+        box.classList.remove('show');
+        return;
+      }
+      box.innerHTML = EPI_CLOZE_KEYS.map(item => `
+        <div class="cloze-explain-card">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--gold-bright);font-weight:700;margin-bottom:3px;">
+            (${item.gap}) ${item.model} &middot; ${item.rule}
+          </div>
+          <div>${item.note}</div>
+        </div>
+      `).join('');
+      box.classList.add('show');
+    }
+
+    /* ==========================================================
+       V. TABLET ARCHIVE V: THE ROSETTA C1/C2 PART 4 INSCRIPTION LAB (10 STELAE)
+       ========================================================== */
+    const ROSETTA_STELAE = [
+      {
+        id: 1,
+        code: 'STELA I · RIB 2142',
+        blueprint: 'Subject + BE + said + to have + Past Participle',
+        s1Html: 'Historians believe that <span class="echo-seg">the Sixth Legion</span> carved <span class="echo-seg">this distance slab in 142 CE.</span>',
+        keyword: 'SAID',
+        step2Tense: 'Step 2 Tense: Present belief + Past event → Perfect Infinitive (to have been carved)',
+        step3Voice: 'Step 3 Voice: Active "carved" → Passive "to have been carved"',
+        s2Prefix: 'This distance slab',
+        s2Suffix: 'by the Sixth Legion in 142 CE.',
+        accepted: ['is said to have been carved'],
+        split: '1 mark: is said to // 1 mark: have been carved',
+        commentary: 'When the reported action happened before the present reporting verb (<em>believe &rarr; carved in 142 CE</em>), use the passive perfect infinitive: <strong>is said to have been carved</strong>.'
+      },
+      {
+        id: 2,
+        code: 'STELA II · VINDOLANDA II 291',
+        blueprint: 'At no time + Auxiliary (did) + Subject + Bare Infinitive',
+        s1Html: '<span class="echo-seg">The garrison commander</span> never doubted <span class="echo-seg">that the supply convoy would arrive before winter.</span>',
+        keyword: 'NO',
+        step2Tense: 'Step 2 Tense: Past Simple ("doubted" → auxiliary "did + doubt")',
+        step3Voice: 'Step 3 Shift: Fronted negative adverbial triggers subject-auxiliary inversion',
+        s2Prefix: 'At',
+        s2Suffix: 'the garrison commander doubt that the supply convoy would arrive before winter.',
+        accepted: ['no time did'],
+        split: '1 mark: no time // 1 mark: did',
+        commentary: 'Placing <strong>At no time</strong> at the start of the clause forces interrogative inversion in the past simple: <strong>no time did</strong> (+ bare infinitive <em>doubt</em>).'
+      },
+      {
+        id: 3,
+        code: 'STELA III · RIB 1544',
+        blueprint: 'in spite of + Definite Noun Phrase / Gerund (-ing)',
+        s1Html: 'Although <span class="echo-seg">the limestone surface</span> was severely weathered, <span class="echo-seg">the raking lamp revealed the consul’s name.</span>',
+        keyword: 'SPITE',
+        step2Tense: 'Step 2 Tense: Concessive clause → Prepositional Noun Phrase',
+        step3Voice: 'Step 3 Shift: "Although ... was severely weathered" → "in spite of the severe weathering"',
+        s2Prefix: 'The raking lamp revealed the consul’s name',
+        s2Suffix: 'severe weathering of the limestone surface.',
+        accepted: ['in spite of the'],
+        split: '1 mark: in spite // 1 mark: of the',
+        commentary: 'Because <em>"severe weathering of the limestone surface"</em> is a specific post-modified noun phrase, you need the three-word preposition <strong>in spite of</strong> plus the definite article <strong>the</strong>.'
+      },
+      {
+        id: 4,
+        code: 'STELA IV · HUNTERIAN ARCHIVE',
+        blueprint: 'have + no intention + of + Gerund (-ing)',
+        s1Html: '<span class="echo-seg">The museum curator</span> categorically refuses to loan <span class="echo-seg">the fragile birchwood tablets abroad.</span>',
+        keyword: 'INTENTION',
+        step2Tense: 'Step 2 Tense: Present Simple (refuses → has)',
+        step3Voice: 'Step 3 Shift: Verb "refuses to" → Nominal "has no intention of"',
+        s2Prefix: 'The museum curator',
+        s2Suffix: 'loaning the fragile birchwood tablets abroad.',
+        accepted: ['has no intention of', 'has no intention whatsoever of'],
+        split: '1 mark: has no intention // 1 mark: (whatsoever) of',
+        commentary: 'Before the gerund <em>loaning</em>, Cambridge tests the fixed nominal pattern <strong>has no intention of</strong>.'
+      },
+      {
+        id: 5,
+        code: 'STELA V · IG I³ 40 CHALKIS DECREE',
+        blueprint: 'Subject 1 + would rather + Subject 2 + Past Simple (Unreal Present)',
+        s1Html: '<span class="echo-seg">The conservation team</span> prefers visitors not to touch <span class="echo-seg">the incised Pentelic marble.</span>',
+        keyword: 'RATHER',
+        step2Tense: 'Step 2 Tense: Present preference with new subject → Past Subjunctive (did not / didn’t)',
+        step3Voice: 'Step 3 Shift: "prefers [obj] not to" → "would rather [subj] did not"',
+        s2Prefix: 'The conservation team',
+        s2Suffix: 'touch the incised Pentelic marble.',
+        accepted: ['would rather visitors did not', "would rather visitors didn't", 'would rather that visitors did not'],
+        split: '1 mark: would rather (that) visitors // 1 mark: did not / didn’t',
+        commentary: 'When the subject changes after <strong>would rather</strong> (<em>team &rarr; visitors</em>), English shifts into the past simple to express a present preference: <strong>would rather visitors did not</strong>.'
+      },
+      {
+        id: 6,
+        code: 'STELA VI · DEEPMIND AENEAS LAB',
+        blueprint: 'Not only + Auxiliary (does) + Subject + Bare Infinitive',
+        s1Html: 'The neural model <span class="echo-seg">restores missing Latin characters</span> and <span class="echo-seg">also attributes the province of origin.</span>',
+        keyword: 'ONLY',
+        step2Tense: 'Step 2 Tense: Present Simple 3rd Person ("restores" → "does ... restore")',
+        step3Voice: 'Step 3 Shift: Negative inversion after fronted "Not only"',
+        s2Prefix: 'Not',
+        s2Suffix: 'restore missing Latin characters, but it also attributes the province of origin.',
+        accepted: ['only does the neural model'],
+        split: '1 mark: only does // 1 mark: the neural model',
+        commentary: 'Look at the bare infinitive <em>restore</em> after the gap: that tells you the auxiliary <strong>does</strong> must invert before the subject: <strong>only does the neural model</strong>.'
+      },
+      {
+        id: 7,
+        code: 'STELA VII · ANAEROBIC TRENCH IV',
+        blueprint: 'Had it not been for + Noun Phrase (3rd Conditional Inversion)',
+        s1Html: 'If <span class="echo-seg">the anaerobic clay at Vindolanda</span> had not preserved them, <span class="echo-seg">the wooden letters would have decayed completely.</span>',
+        keyword: 'BEEN',
+        step2Tense: 'Step 2 Tense: Past Perfect Conditional ("had not" → "Had it not been for")',
+        step3Voice: 'Step 3 Shift: Omit "if" and invert auxiliary "Had" before "it"',
+        s2Prefix: '',
+        s2Suffix: 'the anaerobic clay at Vindolanda, the wooden letters would have decayed completely.',
+        accepted: ['had it not been for'],
+        split: '1 mark: Had it not // 1 mark: been for',
+        commentary: '<strong>Had it not been for</strong> is the premier C1/C2 inverted third conditional structure replacing <em>"If it had not been for..."</em>.'
+      },
+      {
+        id: 8,
+        code: 'STELA VIII · ATTIC STOICHEDON GRID',
+        blueprint: 'What + Subject + Verb + BE + Focus Element (Wh-Cleft)',
+        s1Html: '<span class="echo-seg">The extraordinary precision of the stoichedon grid</span> astonished the epigraphers <span class="echo-seg">most.</span>',
+        keyword: 'WHAT',
+        step2Tense: 'Step 2 Tense: Past Simple ("astonished")',
+        step3Voice: 'Step 3 Shift: Subject-focus Wh-cleft ("What astonished the epigraphers")',
+        s2Prefix: '',
+        s2Suffix: 'most was the extraordinary precision of the stoichedon grid.',
+        accepted: ['what astonished the epigraphers'],
+        split: '1 mark: What astonished // 1 mark: the epigraphers',
+        commentary: 'A Wh-cleft packages the verb and object into a nominal clause at the front of the sentence so the main focus lands after <em>was</em>: <strong>What astonished the epigraphers</strong>.'
+      },
+      {
+        id: 9,
+        code: 'STELA IX · AQUAE SULIS SPRING',
+        blueprint: 'No sooner + had + Subject + Past Participle + than...',
+        s1Html: 'Immediately after <span class="echo-seg">the sanctuary trench</span> was <span class="echo-seg">excavated, thermal water flooded the stone floor.</span>',
+        keyword: 'SOONER',
+        step2Tense: 'Step 2 Tense: Past Passive ("was excavated") → Past Perfect Passive ("had ... been excavated")',
+        step3Voice: 'Step 3 Shift: Inverted Past Perfect Passive ("sooner had the sanctuary trench been")',
+        s2Prefix: 'No',
+        s2Suffix: 'excavated than thermal water flooded the stone floor.',
+        accepted: ['sooner had the sanctuary trench been', 'sooner had the trench been'],
+        split: '1 mark: sooner had // 1 mark: the (sanctuary) trench been',
+        commentary: 'Notice both Tense Harmony (Past Perfect <em>had</em>) and Voice Shift (Passive <em>been</em> before <em>excavated</em>): <strong>sooner had the (sanctuary) trench been</strong>.'
+      },
+      {
+        id: 10,
+        code: 'STELA X · BATH DEFIXIO CONSERVATION',
+        blueprint: 'On no account + Modal (must / should) + Subject + Bare Infinitive',
+        s1Html: 'Conservators must never <span class="echo-seg">apply harsh chemical solvents to a lead curse tablet.</span>',
+        keyword: 'ACCOUNT',
+        step2Tense: 'Step 2 Tense: Modal obligation (must / should)',
+        step3Voice: 'Step 3 Shift: Fronted negative prepositional phrase + modal inversion',
+        s2Prefix: 'On',
+        s2Suffix: 'apply harsh chemical solvents to a lead curse tablet.',
+        accepted: ['no account must conservators', 'no account should conservators', 'no account are conservators to'],
+        split: '1 mark: no account // 1 mark: must / should conservators',
+        commentary: '<strong>On no account</strong> triggers immediate inversion of the modal auxiliary before the subject: <strong>no account must conservators</strong>.'
+      }
+    ];
+
+    const restoredStelaeSet = new Set();
+
+    function normStelaText(s) {
+      return s
+        .trim()
+        .toLowerCase()
+        .replace(/['’]/g, "'")
+        .replace(/\s+/g, ' ');
+    }
+
+    function stelaWordCount(s) {
+      const t = s.trim();
+      if (!t) return 0;
+      return t.split(/\s+/).length;
+    }
+
+    function renderRosettaStelae() {
+      const container = document.getElementById('rosetta-stelae-container');
+      if (!container) return;
+
+      container.innerHTML = ROSETTA_STELAE.map(stela => `
+        <article class="stela-card" id="stela-card-${stela.id}">
+          <div class="stela-header">
+            <span class="stela-id-badge">🏺 ${stela.code}</span>
+            <span class="stela-blueprint">${stela.blueprint}</span>
+          </div>
+
+          <div class="stela-s1" id="stela-s1-${stela.id}">
+            1. ${stela.s1Html}
+          </div>
+
+          <div class="stela-steps-row">
+            <span class="stela-kw-chip">🔑 KEYWORD: ${stela.keyword}</span>
+            <div class="stela-step-pills">
+              <button class="btn-strike-echo" id="stela-strike-${stela.id}" onclick="toggleStelaEcho(${stela.id})">
+                ✂️ Step 1: Strike Out the Echoes
+              </button>
+              <span class="diag-step-pill">${stela.step2Tense}</span>
+              <span class="diag-step-pill">${stela.step3Voice}</span>
+            </div>
+          </div>
+
+          <div class="stela-s2-row">
+            <span>2. ${stela.s2Prefix}</span>
+            <input
+              type="text"
+              class="stela-input"
+              id="stela-input-${stela.id}"
+              placeholder="3–6 words (include ${stela.keyword})"
+              oninput="onStelaInput(${stela.id})"
+              onkeydown="if(event.key==='Enter') verifyStela(${stela.id})"
+              aria-label="Restoration input for ${stela.code}"
+            />
+            <span>${stela.s2Suffix}</span>
+          </div>
+
+          <div class="stela-footer-bar">
+            <div class="stela-guards">
+              <span class="guard-chip" id="stela-wc-${stela.id}">0 / 3–6 words</span>
+              <span class="guard-chip" id="stela-kw-${stela.id}">Keyword ${stela.keyword}: waiting...</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="filter-btn active" onclick="verifyStela(${stela.id})">
+                ⚡ Chisel &amp; Verify Stela
+              </button>
+              <button class="filter-btn" onclick="revealStelaModel(${stela.id})">
+                👁️ Reveal Cambridge Model
+              </button>
+            </div>
+          </div>
+
+          <div class="stela-feedback" id="stela-fb-${stela.id}"></div>
+        </article>
+      `).join('');
+    }
+
+    function toggleStelaEcho(id) {
+      const s1 = document.getElementById(`stela-s1-${id}`);
+      const btn = document.getElementById(`stela-strike-${id}`);
+      if (!s1 || !btn) return;
+      s1.classList.toggle('echo-struck');
+      btn.classList.toggle('active');
+    }
+
+    function onStelaInput(id) {
+      const stela = ROSETTA_STELAE.find(x => x.id === id);
+      const input = document.getElementById(`stela-input-${id}`);
+      const wcChip = document.getElementById(`stela-wc-${id}`);
+      const kwChip = document.getElementById(`stela-kw-${id}`);
+      if (!stela || !input || !wcChip || !kwChip) return;
+
+      const raw = input.value;
+      const wc = stelaWordCount(raw);
+      wcChip.textContent = `${wc} / 3–6 words`;
+      wcChip.className = 'guard-chip ' + (wc >= 3 && wc <= 6 ? 'ok' : wc === 0 ? '' : 'err');
+
+      const words = raw.trim().toUpperCase().split(/[^A-Z]+/).filter(Boolean);
+      const hasKw = words.includes(stela.keyword);
+      if (!raw.trim()) {
+        kwChip.textContent = `Keyword ${stela.keyword}: waiting...`;
+        kwChip.className = 'guard-chip';
+      } else if (hasKw) {
+        kwChip.textContent = `Keyword ${stela.keyword}: UNCHANGED ✓`;
+        kwChip.className = 'guard-chip ok';
+      } else {
+        kwChip.textContent = `⚠️ Unchanged keyword ${stela.keyword} required`;
+        kwChip.className = 'guard-chip err';
+      }
+    }
+
+    function updateRosettaScoreBanner() {
+      const el = document.getElementById('rosetta-stelae-score');
+      if (!el) return;
+      const count = restoredStelaeSet.size;
+      el.textContent = `${count} / 10 (${count * 2} / 20 Marks)`;
+    }
+
+    function verifyStela(id) {
+      const stela = ROSETTA_STELAE.find(x => x.id === id);
+      const input = document.getElementById(`stela-input-${id}`);
+      const fb = document.getElementById(`stela-fb-${id}`);
+      if (!stela || !input || !fb) return;
+
+      const val = normStelaText(input.value);
+      const wc = stelaWordCount(input.value);
+      const words = input.value.trim().toUpperCase().split(/[^A-Z]+/).filter(Boolean);
+      const hasKw = words.includes(stela.keyword);
+      const matched = stela.accepted.includes(val);
+
+      if (matched && wc >= 3 && wc <= 6 && hasKw) {
+        fb.className = 'stela-feedback show pass';
+        fb.innerHTML = `<strong>✅ Stela Restored (2 / 2 Cambridge Marks)</strong> &middot; <code>${stela.split}</code><br>${stela.commentary}`;
+        restoredStelaeSet.add(id);
+        updateRosettaScoreBanner();
+      } else {
+        fb.className = 'stela-feedback show fail';
+        let diag = 'Inspect Step 2 (Tense Harmony) and Step 3 (Voice/Inversion).';
+        if (!hasKw) diag = `The keyword <strong>${stela.keyword}</strong> must appear in your gap without changing its form.`;
+        else if (wc < 3 || wc > 6) diag = `Your restoration uses <strong>${wc} words</strong> (strictly 3 to 6 words required).`;
+        fb.innerHTML = `<strong>⚠️ Lacuna Mismatch:</strong> ${diag} Click <em>👁️ Reveal Cambridge Model</em> to view the 1 mark // 1 mark split.`;
+      }
+    }
+
+    function revealStelaModel(id) {
+      const stela = ROSETTA_STELAE.find(x => x.id === id);
+      const input = document.getElementById(`stela-input-${id}`);
+      const fb = document.getElementById(`stela-fb-${id}`);
+      if (!stela || !fb) return;
+
+      if (input && !input.value.trim()) {
+        input.value = stela.accepted[0];
+        onStelaInput(id);
+      }
+      fb.className = 'stela-feedback show pass';
+      fb.innerHTML = `<strong>👁️ Cambridge Model Restoration: <span style="color:var(--gold-bright);">${stela.accepted[0]}</span></strong> &middot; <code>${stela.split}</code><br>${stela.commentary}`;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderRosettaStelae();
+    });
+  </script>
+</body>
+</html>

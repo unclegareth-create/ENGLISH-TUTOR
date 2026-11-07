@@ -1,0 +1,3108 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Rhetorical Arcana · C1/C2 Live Speaking &amp; Debate Card Table | GarethEnglish</title>
+  <meta name="description" content="A Victorian Dark Academia C1/C2 live speaking and debate card game. Deal your hand of twelve Cambridge rhetorical structures, ignite cards in live speech, and master syntactic balance at the green baize table." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&amp;family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-obsidian: #080604;
+      --bg-mahogany: #140e09;
+      --bg-baize: #0a1b13;
+      --bg-baize-deep: #06110c;
+      --bg-card: #120d08;
+      --bg-parchment: #1a130c;
+      --gold-bright: #f7e09e;
+      --gold-primary: #d4af37;
+      --gold-muted: #9b7722;
+      --gold-dark: #5c430d;
+      --crimson-seal: #9e2318;
+      --crimson-glow: #e04636;
+      --emerald-glow: #2ec47d;
+      --text-ivory: #f4ece1;
+      --text-warm: #d5c7b2;
+      --text-dim: #9a8b75;
+      --border-gold: rgba(212, 175, 55, 0.35);
+      --border-gold-strong: rgba(247, 224, 158, 0.72);
+      --shadow-heavy: 0 20px 50px rgba(0, 0, 0, 0.82);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.12), transparent 55%),
+        radial-gradient(circle at 50% 60%, rgba(16, 48, 34, 0.32), transparent 70%),
+        var(--bg-obsidian);
+      color: var(--text-ivory);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.55;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Fullscreen Particle Canvas for Card Ignition */
+    #ember-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Top Navigation & Status Ribbon */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 90;
+      background: rgba(10, 7, 5, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-gold);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .brand-crest {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1px solid var(--gold-primary);
+      background: radial-gradient(circle, #24190d, #0c0805);
+      display: grid;
+      place-items: center;
+      font-size: 1.35rem;
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+    }
+
+    .brand-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--gold-bright);
+    }
+
+    .brand-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--text-warm);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      text-decoration: none;
+      color: var(--text-warm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 0.42rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      background: rgba(24, 17, 11, 0.75);
+      transition: all 0.2s ease;
+    }
+
+    .nav-pill:hover {
+      border-color: var(--gold-bright);
+      color: var(--gold-bright);
+      transform: translateY(-1px);
+    }
+
+    .score-hud {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .hud-chip {
+      background: linear-gradient(135deg, rgba(31, 22, 13, 0.95), rgba(15, 11, 7, 0.95));
+      border: 1px solid var(--border-gold);
+      border-radius: 8px;
+      padding: 0.38rem 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+    }
+
+    .hud-chip strong {
+      color: var(--gold-bright);
+      font-size: 0.95rem;
+    }
+
+    .combo-badge {
+      background: linear-gradient(135deg, #5e150e, #2b0805);
+      border-color: #e0533c;
+      color: #ffdfcc;
+      box-shadow: 0 0 15px rgba(224, 70, 54, 0.35);
+    }
+
+    /* Hero Header & Mode Switcher */
+    .hero-header {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 1.25rem;
+      text-align: center;
+    }
+
+    .eyebrow-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0.95rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-gold);
+      background: rgba(212, 175, 55, 0.08);
+      color: var(--gold-bright);
+      font-family: 'Cinzel', serif;
+      font-size: 0.76rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.85rem, 3.6vw, 2.95rem);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      background: linear-gradient(180deg, #fff6d1 0%, #d4af37 65%, #9a7018 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.65rem;
+    }
+
+    .hero-lead {
+      max-width: 820px;
+      margin: 0 auto 1.5rem;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.22rem;
+      color: var(--text-warm);
+    }
+
+    /* Mode Tabs */
+    .mode-switcher {
+      display: inline-flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      background: rgba(18, 13, 8, 0.9);
+      padding: 0.45rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-gold);
+      box-shadow: var(--shadow-heavy);
+    }
+
+    .mode-btn {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-warm);
+      font-family: 'Cinzel', serif;
+      font-weight: 600;
+      font-size: 0.86rem;
+      letter-spacing: 0.05em;
+      padding: 0.68rem 1.25rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mode-btn:hover {
+      color: var(--gold-bright);
+      background: rgba(212, 175, 55, 0.08);
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, #332410, #1c1308);
+      color: var(--gold-bright);
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+    }
+
+    /* Main Container */
+    .main-stage {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0.5rem 1.5rem 4rem;
+    }
+
+    .mode-panel {
+      display: none;
+      animation: fadeIn 0.32s ease;
+    }
+
+    .mode-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* MODE 1: THE GREEN BAIZE SPEAKING ARENA */
+    .baize-arena {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1120px) {
+      .baize-arena {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Column: Prompt Deck, Timer & 1-Minute Note Secret */
+    .arena-sidebar {
+      background: linear-gradient(180deg, rgba(24, 17, 11, 0.96), rgba(13, 9, 6, 0.98));
+      border: 1px solid var(--border-gold);
+      border-radius: 16px;
+      padding: 1.35rem;
+      box-shadow: var(--shadow-heavy);
+      display: flex;
+      flex-direction: column;
+      gap: 1.15rem;
+    }
+
+    .panel-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+      padding-bottom: 0.6rem;
+    }
+
+    .panel-heading h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.98rem;
+      letter-spacing: 0.08em;
+      color: var(--gold-bright);
+      text-transform: uppercase;
+    }
+
+    .track-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+    }
+
+    .track-tab {
+      background: rgba(12, 9, 6, 0.8);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      color: var(--text-warm);
+      padding: 0.48rem 0.4rem;
+      border-radius: 7px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.18s ease;
+    }
+
+    .track-tab.active {
+      background: rgba(212, 175, 55, 0.18);
+      border-color: var(--gold-bright);
+      color: var(--gold-bright);
+    }
+
+    .prompt-card-box {
+      background: radial-gradient(circle at top right, rgba(212, 175, 55, 0.1), transparent 65%), #0e0a06;
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .prompt-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.74rem;
+      color: var(--gold-primary);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 0.45rem;
+    }
+
+    .prompt-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-ivory);
+      margin-bottom: 0.55rem;
+      line-height: 1.3;
+    }
+
+    .prompt-bullets {
+      list-style: none;
+      font-size: 0.84rem;
+      color: var(--text-warm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .prompt-bullets li::before {
+      content: "✦ ";
+      color: var(--gold-primary);
+    }
+
+    .prompt-controls {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-bright);
+      padding: 0.48rem 0.75rem;
+      border-radius: 7px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(212, 175, 55, 0.22);
+      border-color: var(--gold-bright);
+    }
+
+    /* Pacing Ring & Timer */
+    .timer-cockpit {
+      background: #0b0805;
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 12px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .ring-wrapper {
+      position: relative;
+      width: 156px;
+      height: 156px;
+      display: grid;
+      place-items: center;
+    }
+
+    .ring-svg {
+      width: 156px;
+      height: 156px;
+      transform: rotate(-90deg);
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke: rgba(212, 175, 55, 0.14);
+      stroke-width: 10;
+    }
+
+    .ring-progress {
+      fill: none;
+      stroke: var(--gold-primary);
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 408;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.35s linear, stroke 0.3s ease;
+    }
+
+    .ring-center {
+      position: absolute;
+      text-align: center;
+    }
+
+    .timer-digits {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--gold-bright);
+    }
+
+    .timer-act-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-warm);
+      max-width: 110px;
+      margin: 0 auto;
+    }
+
+    .arc-legend {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.35rem;
+      font-size: 0.7rem;
+    }
+
+    .arc-step {
+      padding: 0.35rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      background: rgba(20, 14, 9, 0.8);
+      text-align: center;
+      color: var(--text-dim);
+    }
+
+    .arc-step.active {
+      border-color: var(--gold-bright);
+      background: rgba(212, 175, 55, 0.16);
+      color: var(--gold-bright);
+      font-weight: 600;
+    }
+
+    .timer-btn-row {
+      display: flex;
+      width: 100%;
+      gap: 0.45rem;
+    }
+
+    .btn-gold {
+      flex: 1;
+      background: linear-gradient(135deg, #e5c158, #b38720);
+      color: #090603;
+      border: none;
+      padding: 0.6rem 0.9rem;
+      border-radius: 8px;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-gold:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    /* Gareth's 1-Minute Note Secret Scratchpad */
+    .note-secret-box {
+      background: rgba(15, 11, 7, 0.92);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 12px;
+      padding: 0.95rem;
+    }
+
+    .note-secret-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.45rem;
+    }
+
+    .note-secret-header h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      color: var(--gold-bright);
+      letter-spacing: 0.05em;
+    }
+
+    .note-secret-tip {
+      font-size: 0.76rem;
+      color: var(--text-dim);
+      margin-bottom: 0.65rem;
+    }
+
+    .keyword-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+    }
+
+    .keyword-input {
+      background: #080604;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 6px;
+      padding: 0.42rem 0.6rem;
+      color: var(--gold-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      width: 100%;
+    }
+
+    .keyword-input:focus {
+      outline: none;
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+    }
+
+    .cambridge-anchor-note {
+      margin-top: 0.65rem;
+      padding-top: 0.55rem;
+      border-top: 1px dashed rgba(212, 175, 55, 0.22);
+      font-size: 0.75rem;
+      color: var(--text-warm);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+    }
+
+    /* Right Column: The Green Baize Card Table */
+    .green-baize-table {
+      background:
+        radial-gradient(circle at 50% 35%, rgba(28, 82, 56, 0.42), rgba(7, 22, 15, 0.96) 75%),
+        var(--bg-baize-deep);
+      border: 2px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow:
+        inset 0 0 60px rgba(0, 0, 0, 0.85),
+        var(--shadow-heavy);
+      position: relative;
+      min-height: 730px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .table-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.85rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+    }
+
+    .deal-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .voice-ignite-btn {
+      background: rgba(18, 13, 9, 0.9);
+      border: 1px solid var(--border-gold);
+      color: var(--text-ivory);
+      padding: 0.58rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+
+    .voice-ignite-btn.listening {
+      background: linear-gradient(135deg, #7a1810, #3d0905);
+      border-color: #ff6b57;
+      color: #fff;
+      box-shadow: 0 0 18px rgba(255, 107, 87, 0.45);
+    }
+
+    /* Live Voice Ribbon */
+    .voice-ribbon {
+      margin-top: 0.85rem;
+      background: rgba(8, 6, 4, 0.78);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 10px;
+      padding: 0.6rem 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+    }
+
+    .voice-transcript {
+      color: var(--gold-bright);
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.02rem;
+      flex: 1;
+    }
+
+    /* Dealt Hand Grid (3 or 4 Cards) */
+    .hand-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+      gap: 1.25rem;
+      margin: 1.35rem 0;
+      perspective: 1200px;
+    }
+
+    /* 3D Tarot Card Styling */
+    .arcana-card-slot {
+      perspective: 1200px;
+      min-height: 510px;
+    }
+
+    .arcana-card {
+      position: relative;
+      width: 100%;
+      min-height: 510px;
+      border-radius: 16px;
+      background: linear-gradient(165deg, #1b130b 0%, #0d0905 60%, #171008 100%);
+      border: 2px solid var(--gold-primary);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75);
+      padding: 0.95rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transform-style: preserve-3d;
+      transition: transform 0.18s ease-out, box-shadow 0.25s ease, border-color 0.25s ease;
+      overflow: hidden;
+    }
+
+    .arcana-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at var(--glare-x, 50%) var(--glare-y, 30%),
+        rgba(255, 240, 185, 0.18),
+        transparent 55%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .arcana-card.ignited {
+      border-color: #ff9c40;
+      box-shadow:
+        0 0 32px rgba(255, 136, 34, 0.55),
+        inset 0 0 24px rgba(212, 175, 55, 0.28);
+    }
+
+    .card-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      color: var(--gold-bright);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.28);
+      padding-bottom: 0.42rem;
+      position: relative;
+      z-index: 3;
+    }
+
+    .card-points {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(212, 175, 55, 0.16);
+      border: 1px solid var(--border-gold);
+      padding: 0.12rem 0.45rem;
+      border-radius: 5px;
+      font-size: 0.72rem;
+      color: var(--gold-bright);
+    }
+
+    .card-art-frame {
+      position: relative;
+      width: 100%;
+      height: 155px;
+      margin: 0.55rem 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-gold);
+      background: #080604;
+      z-index: 3;
+    }
+
+    .card-art-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .arcana-card:hover .card-art-frame img {
+      transform: scale(1.05);
+    }
+
+    .card-suit-badge {
+      position: absolute;
+      bottom: 6px;
+      right: 6px;
+      background: rgba(10, 7, 5, 0.88);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-bright);
+      padding: 0.15rem 0.5rem;
+      border-radius: 99px;
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .card-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: var(--gold-bright);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.35rem;
+      z-index: 3;
+    }
+
+    .card-blueprint {
+      background: rgba(8, 6, 4, 0.9);
+      border-left: 3px solid var(--gold-primary);
+      padding: 0.42rem 0.55rem;
+      border-radius: 0 6px 6px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #ffeaad;
+      margin-bottom: 0.5rem;
+      z-index: 3;
+    }
+
+    .card-triggers {
+      list-style: none;
+      font-size: 0.78rem;
+      color: var(--text-warm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+      margin-bottom: 0.55rem;
+      z-index: 3;
+    }
+
+    .card-triggers li {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.28rem 0.48rem;
+      border-radius: 5px;
+      border: 1px solid rgba(212, 175, 55, 0.14);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.92rem;
+    }
+
+    /* Interactive Drill inside Card */
+    .card-mini-drill {
+      background: rgba(15, 11, 7, 0.92);
+      border: 1px dashed rgba(212, 175, 55, 0.32);
+      border-radius: 8px;
+      padding: 0.48rem 0.6rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.75rem;
+      z-index: 3;
+    }
+
+    .drill-flat {
+      color: var(--text-dim);
+      margin-bottom: 0.3rem;
+    }
+
+    .drill-model-reveal {
+      display: none;
+      margin-top: 0.38rem;
+      padding-top: 0.38rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      color: #a9f5cb;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.94rem;
+      font-weight: 600;
+    }
+
+    .drill-model-reveal.visible {
+      display: block;
+    }
+
+    .card-action-row {
+      display: flex;
+      gap: 0.4rem;
+      z-index: 3;
+    }
+
+    .btn-reveal-mini {
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-bright);
+      padding: 0.42rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .btn-reveal-mini:hover {
+      background: rgba(212, 175, 55, 0.25);
+    }
+
+    .btn-ignite {
+      flex: 1;
+      background: linear-gradient(135deg, #b82918, #6e1209);
+      border: 1px solid #ff7b61;
+      color: #fff5eb;
+      padding: 0.48rem 0.65rem;
+      border-radius: 6px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-ignite:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 0 14px rgba(255, 102, 71, 0.5);
+    }
+
+    .arcana-card.ignited .btn-ignite {
+      background: linear-gradient(135deg, #1b6e44, #0e3d25);
+      border-color: #5ce6a0;
+      color: #e6fff2;
+    }
+
+    /* Crimson & Gold Wax Seal Stamp */
+    .wax-seal-stamp {
+      position: absolute;
+      top: 118px;
+      right: 14px;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #d63222, #781209 70%, #420703);
+      border: 2.5px solid var(--gold-bright);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.75), 0 0 18px rgba(224, 70, 54, 0.6);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      font-weight: 800;
+      color: var(--gold-bright);
+      letter-spacing: 0.06em;
+      padding: 0.35rem;
+      transform: scale(0) rotate(-18deg);
+      opacity: 0;
+      transition: transform 0.35s cubic-bezier(0.22, 1.4, 0.36, 1), opacity 0.25s ease;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .arcana-card.ignited .wax-seal-stamp {
+      transform: scale(1) rotate(-12deg);
+      opacity: 1;
+    }
+
+    /* Post-Turn Debrief Scroll */
+    .debrief-scroll {
+      background: linear-gradient(135deg, rgba(28, 20, 12, 0.96), rgba(14, 10, 6, 0.98));
+      border: 1px solid var(--gold-primary);
+      border-radius: 14px;
+      padding: 1.15rem 1.35rem;
+      margin-top: 0.75rem;
+    }
+
+    .debrief-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.65rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .debrief-header h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      color: var(--gold-bright);
+    }
+
+    /* MODE 2: THE RHETORICAL GAUNTLET (12-Card Workout) */
+    .gauntlet-header-bar {
+      background: linear-gradient(135deg, rgba(26, 18, 11, 0.95), rgba(12, 9, 6, 0.95));
+      border: 1px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .gauntlet-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(410px, 1fr));
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 600px) {
+      .gauntlet-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .gauntlet-card {
+      background: linear-gradient(160deg, #17110a, #0c0905);
+      border: 1px solid var(--border-gold);
+      border-radius: 14px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: var(--shadow-heavy);
+    }
+
+    .gauntlet-card.mastered {
+      border-color: var(--emerald-glow);
+      box-shadow: 0 0 24px rgba(46, 196, 125, 0.22);
+    }
+
+    .gauntlet-top {
+      display: flex;
+      gap: 0.9rem;
+      align-items: center;
+    }
+
+    .gauntlet-thumb {
+      width: 68px;
+      height: 68px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--gold-primary);
+      flex-shrink: 0;
+    }
+
+    .gauntlet-input {
+      width: 100%;
+      background: #070503;
+      border: 1px solid rgba(212, 175, 55, 0.32);
+      border-radius: 8px;
+      padding: 0.65rem 0.8rem;
+      color: var(--text-ivory);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      resize: vertical;
+      min-height: 62px;
+    }
+
+    .gauntlet-reveal-panel {
+      display: none;
+      background: rgba(16, 38, 27, 0.55);
+      border: 1px solid rgba(46, 196, 125, 0.45);
+      border-radius: 8px;
+      padding: 0.75rem 0.9rem;
+    }
+
+    .gauntlet-reveal-panel.visible {
+      display: block;
+    }
+
+    /* MODE 3: THE 12-CARD CODEX & 3D HOLOGRAPHIC INSPECTOR */
+    .codex-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-bottom: 1.35rem;
+      justify-content: center;
+    }
+
+    .filter-pill {
+      background: rgba(18, 13, 8, 0.9);
+      border: 1px solid var(--border-gold);
+      color: var(--text-warm);
+      padding: 0.48rem 0.95rem;
+      border-radius: 99px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .filter-pill.active {
+      background: var(--gold-primary);
+      color: #090603;
+      border-color: var(--gold-bright);
+    }
+
+    .codex-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .codex-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .inspector-pedestal {
+      position: sticky;
+      top: 5.2rem;
+      background: radial-gradient(circle at 50% 30%, rgba(212, 175, 55, 0.14), rgba(12, 9, 6, 0.98));
+      border: 1px solid var(--gold-primary);
+      border-radius: 18px;
+      padding: 1.35rem;
+      box-shadow: var(--shadow-heavy);
+    }
+
+    .codex-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+      gap: 1rem;
+    }
+
+    .codex-mini-card {
+      background: linear-gradient(160deg, #17110a, #0b0805);
+      border: 1px solid var(--border-gold);
+      border-radius: 12px;
+      padding: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .codex-mini-card:hover,
+    .codex-mini-card.selected {
+      border-color: var(--gold-bright);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
+    }
+
+    .codex-mini-card img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 0.55rem;
+      border: 1px solid rgba(212, 175, 55, 0.28);
+    }
+
+    /* Static Asset Verification Gallery (Visually tucked in footer for instant preloading) */
+    .engraving-archive-strip {
+      max-width: 1440px;
+      margin: 2rem auto 1rem;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      color: var(--text-dim);
+      font-size: 0.78rem;
+    }
+
+    .archive-thumbs {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .archive-thumbs img {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      object-fit: cover;
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      opacity: 0.75;
+    }
+
+    /* =========================================================================
+       THE GRIMOIRE OF UNCHANGED KEYWORDS · 8 C1/C2 PART 4 TRANSFORMATION TRIALS
+       ========================================================================= */
+    .grimoire-part4-sanctum {
+      margin-top: 2.5rem;
+      background: linear-gradient(155deg, rgba(24, 17, 11, 0.96), rgba(8, 22, 15, 0.96));
+      border: 2px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 1.85rem 2rem;
+      box-shadow: var(--shadow-heavy), 0 0 38px rgba(212, 175, 55, 0.14);
+    }
+
+    .grimoire-strategy-banner {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.85rem;
+      margin: 1.15rem 0 1.5rem;
+    }
+
+    .strategy-step-pill {
+      background: rgba(8, 6, 4, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.32);
+      border-left: 3px solid var(--gold-primary);
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.8rem;
+      color: var(--text-warm);
+    }
+
+    .strategy-step-pill strong {
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: 0.76rem;
+      color: var(--gold-bright);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.2rem;
+    }
+
+    .grimoire-trials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 640px) {
+      .grimoire-trials-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .grimoire-trial-card {
+      background: linear-gradient(165deg, #161009 0%, #0b0805 100%);
+      border: 1px solid var(--border-gold);
+      border-radius: 15px;
+      padding: 1.25rem 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.78rem;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.72);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .grimoire-trial-card.trial-solved {
+      border-color: var(--emerald-glow);
+      box-shadow: 0 0 26px rgba(46, 196, 125, 0.25);
+    }
+
+    .echo-span {
+      transition: all 0.22s ease;
+    }
+
+    .echo-span.struck {
+      text-decoration: line-through;
+      text-decoration-color: var(--crimson-glow);
+      text-decoration-thickness: 2px;
+      color: rgba(154, 139, 117, 0.42);
+    }
+
+    .deficit-span {
+      transition: all 0.22s ease;
+    }
+
+    .deficit-span.isolated {
+      background: rgba(212, 175, 55, 0.22);
+      color: var(--gold-bright);
+      padding: 0.08rem 0.38rem;
+      border-radius: 4px;
+      border: 1px solid rgba(247, 224, 158, 0.6);
+      font-weight: 700;
+    }
+
+    .grimoire-gap-input {
+      background: #060402;
+      border: 1px solid var(--gold-primary);
+      border-radius: 6px;
+      padding: 0.38rem 0.65rem;
+      color: var(--gold-bright);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84rem;
+      min-width: 225px;
+      outline: none;
+    }
+
+    .grimoire-gap-input:focus {
+      border-color: var(--emerald-glow);
+      box-shadow: 0 0 10px rgba(46, 196, 125, 0.35);
+    }
+
+    .grimoire-meta-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.69rem;
+    }
+
+    .grimoire-meta-pill {
+      padding: 0.2rem 0.55rem;
+      border-radius: 5px;
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.26);
+      color: var(--text-warm);
+    }
+
+    .grimoire-model-box {
+      display: none;
+      background: rgba(14, 42, 29, 0.62);
+      border: 1px solid rgba(46, 196, 125, 0.5);
+      border-radius: 10px;
+      padding: 0.8rem 0.95rem;
+    }
+
+    .grimoire-model-box.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="ember-canvas"></canvas>
+
+  <!-- Top Navigation & Score Bar -->
+  <header class="top-bar">
+    <div class="brand-cluster">
+      <div class="brand-crest" aria-hidden="true">🃏</div>
+      <div>
+        <div class="brand-title">THE RHETORICAL ARCANA</div>
+        <div class="brand-sub">Belfast Study Edition · C1/C2 Syntactic Mastery &amp; Live Speaking Table</div>
+      </div>
+    </div>
+
+    <div class="score-hud">
+      <div class="hud-chip">
+        <span>CADENCE SCORE:</span>
+        <strong id="hud-score">0</strong>
+      </div>
+      <div class="hud-chip combo-badge">
+        <span>COMBO:</span>
+        <strong id="hud-combo">1×</strong>
+      </div>
+      <div class="hud-chip">
+        <span>ARCANA IGNITED:</span>
+        <strong id="hud-ignited">0 / 12</strong>
+      </div>
+    </div>
+
+    <nav class="nav-links" aria-label="Study Navigation">
+      <a class="nav-pill" href="dark-academia-index.html">🏛️ Study Index</a>
+      <a class="nav-pill" href="AGENT-COMMAND-CENTER.html">⚡ Command Center</a>
+      <a class="nav-pill" href="index.html">🕯️ GarethEnglish Home</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section & Mode Switcher -->
+  <section class="hero-header">
+    <div class="eyebrow-tag">✦ Sovereign C1 &amp; C2 Spoken Cadence Engine ✦</div>
+    <h1>THE RHETORICAL ARCANA</h1>
+    <p class="hero-lead">
+      Examiners hear forty flat scripts before lunch. Deal three rhetorical cards onto the green baize, take the microphone, and weave high-scoring C1 structures into your live response to ignite your hand in golden fire.
+    </p>
+
+    <div class="mode-switcher" role="tablist" aria-label="Arcana Game Modes">
+      <button class="mode-btn active" data-mode="table" onclick="switchArcanaMode('table')">
+        🎴 Mode I · The Live Speaking Table
+      </button>
+      <button class="mode-btn" data-mode="gauntlet" onclick="switchArcanaMode('gauntlet')">
+        ⚔️ Mode II · The 12-Card Rhetorical Gauntlet
+      </button>
+      <button class="mode-btn" data-mode="codex" onclick="switchArcanaMode('codex')">
+        📖 Mode III · The 12-Card Codex &amp; 3D Inspector
+      </button>
+      <button class="mode-btn" data-mode="grimoire" onclick="jumpToGrimoirePart4()">
+        🗝️ Mode IV · The Grimoire of Unchanged Keywords (Part 4)
+      </button>
+    </div>
+  </section>
+
+  <main class="main-stage">
+    <!-- =====================================================================
+         MODE 1: THE LIVE SPEAKING TABLE (GREEN BAIZE ARENA)
+         ===================================================================== -->
+    <section id="mode-table" class="mode-panel active">
+      <div class="baize-arena">
+        <!-- Left Sidebar: Speaking Prompts, 3-Act Pacing Ring, 1-Minute Note Secret -->
+        <aside class="arena-sidebar">
+          <div class="panel-heading">
+            <h2>🎙️ I · Active Speaking Prompt</h2>
+            <span id="prompt-counter" style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--gold-primary);">1 / 6</span>
+          </div>
+
+          <div class="track-selector" role="group" aria-label="Exam Track Selector">
+            <button class="track-tab active" data-track="part2" onclick="selectExamTrack('part2')">IELTS Part 2 (2:00)</button>
+            <button class="track-tab" data-track="part3" onclick="selectExamTrack('part3')">C1/IELTS Part 3 (1:30)</button>
+            <button class="track-tab" data-track="c2cpe" onclick="selectExamTrack('c2cpe')">C2 Long Turn (2:00)</button>
+          </div>
+
+          <div class="prompt-card-box">
+            <div class="prompt-meta">
+              <span id="prompt-track-badge">IELTS SPEAKING PART 2 LONG TURN</span>
+              <span id="prompt-duration-badge">120s</span>
+            </div>
+            <div class="prompt-title" id="active-prompt-title">
+              Describe a piece of craftsmanship, architecture, or historical object that left a lasting impression on you.
+            </div>
+            <ul class="prompt-bullets" id="active-prompt-bullets">
+              <li>Where and when you first encountered it</li>
+              <li>How it was crafted or what gives it character</li>
+              <li>Why it stood out from ordinary modern objects</li>
+              <li>And explain why it still lingers in your memory today</li>
+            </ul>
+            <div class="prompt-controls">
+              <button class="btn-secondary" onclick="cyclePrompt(-1)">◀ Prev Prompt</button>
+              <button class="btn-secondary" onclick="cyclePrompt(1)">Next Prompt ▶</button>
+            </div>
+          </div>
+
+          <!-- 3-Act Story Arc Timer Ring -->
+          <div class="timer-cockpit">
+            <div class="ring-wrapper">
+              <svg class="ring-svg" viewBox="0 0 140 140">
+                <circle class="ring-bg" cx="70" cy="70" r="65"></circle>
+                <circle id="timer-ring-circle" class="ring-progress" cx="70" cy="70" r="65"></circle>
+              </svg>
+              <div class="ring-center">
+                <div class="timer-digits" id="timer-display">02:00</div>
+                <div class="timer-act-label" id="timer-phase-label">Ready at the Desk</div>
+              </div>
+            </div>
+
+            <div class="arc-legend" id="arc-steps-bar">
+              <div class="arc-step active" id="arc-step-1">
+                <strong>Act I (0–30s)</strong><br />Past Context
+              </div>
+              <div class="arc-step" id="arc-step-2">
+                <strong>Act II (30–75s)</strong><br />Sensory Scene
+              </div>
+              <div class="arc-step" id="arc-step-3">
+                <strong>Act III (75–120s)</strong><br />Reflection / Why
+              </div>
+            </div>
+
+            <div class="timer-btn-row">
+              <button class="btn-gold" id="btn-start-timer" onclick="toggleSpeakingTimer()">▶ Start Turn</button>
+              <button class="btn-secondary" onclick="startOneMinutePrep()">⏱️ 1-Min Prep</button>
+              <button class="btn-secondary" onclick="resetSpeakingTimer()">↺ Reset</button>
+            </div>
+          </div>
+
+          <!-- Gareth's Practical Talk-Structuring Rules & 1-Minute Note Secret -->
+          <div class="note-secret-box">
+            <div class="note-secret-header">
+              <h3>✒️ The 1-Minute Note Secret</h3>
+              <button class="btn-reveal-mini" onclick="clearTriggerNotes()">Clear</button>
+            </div>
+            <p class="note-secret-tip">
+              Write only <strong>4 single trigger keywords</strong> down the margin (one per bullet)—never write full sentences that tie your eyes to the page.
+            </p>
+            <div class="keyword-grid">
+              <input type="text" class="keyword-input" id="kw-1" placeholder="1. Past trigger word..." maxlength="24" />
+              <input type="text" class="keyword-input" id="kw-2" placeholder="2. Sensory detail..." maxlength="24" />
+              <input type="text" class="keyword-input" id="kw-3" placeholder="3. Pivotal contrast..." maxlength="24" />
+              <input type="text" class="keyword-input" id="kw-4" placeholder="4. 'So what?' reflection..." maxlength="24" />
+            </div>
+            <div class="cambridge-anchor-note">
+              <strong>The Cambridge Anchor:</strong> Bullet points are springboards, not an interrogation checklist. If you finish early, deepen your reflection and comparison until the timer halts you.
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right Stage: The Green Baize Card Table -->
+        <div class="green-baize-table">
+          <div>
+            <div class="table-toolbar">
+              <div class="deal-controls">
+                <button class="btn-gold" onclick="dealRhetoricalHand(3)">🎴 Deal 3-Card Hand</button>
+                <button class="btn-secondary" onclick="dealRhetoricalHand(4)">🎴 Deal 4-Card Sovereign Hand</button>
+                <button class="btn-secondary" onclick="igniteAllDemo()">✨ Ignite Hand Demo</button>
+              </div>
+
+              <div class="deal-controls">
+                <button class="voice-ignite-btn" id="btn-voice-auto" onclick="toggleVoiceAutoIgnite()">
+                  🎙️ Live Voice Auto-Ignite: <span id="voice-status-text">OFF</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Live Speech Recognition Transcript Ribbon -->
+            <div class="voice-ribbon">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--gold-primary);">
+                🎤 SPOKEN STREAM &amp; KEYBOARD HOTKEYS [1 · 2 · 3 · 4]:
+              </span>
+              <div class="voice-transcript" id="live-speech-transcript">
+                Speak aloud with Live Voice Auto-Ignite active—or press keys 1, 2, 3 (or click 🔥 Ignite Card) the moment you weave a card's structure into your turn!
+              </div>
+            </div>
+
+            <!-- Dealt Cards Container -->
+            <div class="hand-grid" id="dealt-hand-container">
+              <!-- Populated dynamically by JS on load -->
+            </div>
+          </div>
+
+          <!-- Post-Turn Session Mastery Scroll -->
+          <div class="debrief-scroll" id="session-debrief-box">
+            <div class="debrief-header">
+              <h3>📜 Live Turn Rhetoric Ledger &amp; Model Audio</h3>
+              <span id="debrief-summary-badge" style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--gold-bright);">
+                Three or four well-placed structural pivots will wake any examiner up.
+              </span>
+            </div>
+            <p id="debrief-body-text" style="font-size:0.86rem;color:var(--text-warm);">
+              Deal your hand above. Whenever you deploy one of your three cards in live speech, ignite it to stamp the crimson wax seal and build your Sovereign Cadence multiplier.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MODE 2: THE RHETORICAL GAUNTLET (12-CARD TRANSFORMATION WORKOUT)
+         ===================================================================== -->
+    <section id="mode-gauntlet" class="mode-panel">
+      <div class="gauntlet-header-bar">
+        <div>
+          <h2 style="font-family:'Cinzel',serif;color:var(--gold-bright);font-size:1.25rem;">
+            ⚔️ The 12-Card Rhetorical Gauntlet · B1-to-C1 Syntactic Forge
+          </h2>
+          <p style="font-size:0.88rem;color:var(--text-warm);">
+            Take each flat, everyday sentence below and recast it using the card's explicit structural blueprint. Then click <strong>👁️ Reveal Cambridge Model</strong> to inspect the cadence and hear the British model aloud.
+          </p>
+        </div>
+        <div class="hud-chip">
+          <span>GAUNTLET SEALS EARNED:</span>
+          <strong id="gauntlet-progress-count">0 / 12</strong>
+        </div>
+      </div>
+
+      <div class="gauntlet-grid" id="gauntlet-cards-container">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MODE 3: THE 12-CARD CODEX & 3D HOLOGRAPHIC INSPECTOR
+         ===================================================================== -->
+    <section id="mode-codex" class="mode-panel">
+      <div class="codex-filter-bar" role="group" aria-label="Filter Cards by Suit or Exam Track">
+        <button class="filter-pill active" onclick="filterCodex('all', this)">All 12 Arcana Cards</button>
+        <button class="filter-pill" onclick="filterCodex('Suit of Inversion', this)">🗡️ Suit of Inversion</button>
+        <button class="filter-pill" onclick="filterCodex('Suit of Clefts', this)">🔮 Suit of Clefts</button>
+        <button class="filter-pill" onclick="filterCodex('Suit of Participles & Time', this)">⏳ Suit of Participles &amp; Time</button>
+        <button class="filter-pill" onclick="filterCodex('Suit of Concession & Authority', this)">⚖️ Suit of Concession &amp; Authority</button>
+      </div>
+
+      <div class="codex-layout">
+        <!-- Sticky 3D Inspector Pedestal -->
+        <div class="inspector-pedestal" id="codex-inspector-panel">
+          <!-- Populated dynamically when a card is clicked -->
+        </div>
+
+        <!-- 12-Card Thumb Grid -->
+        <div class="codex-cards-grid" id="codex-grid-container">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         MODE 4: THE GRIMOIRE OF UNCHANGED KEYWORDS · 8 C1/C2 PART 4 TRIALS
+         ===================================================================== -->
+    <section id="mode-grimoire" class="grimoire-part4-sanctum" aria-label="The Grimoire of Unchanged Keywords: 8 C1/C2 Part 4 Transformation Trials">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+        <div>
+          <div class="eyebrow-tag" style="margin-bottom:0.45rem;">
+            🗝️ Gareth's 4-Step Elimination &amp; Deconstruction Strategy · Cambridge C1/C2 Use of English Part 4
+          </div>
+          <h2 style="font-family:'Cinzel',serif; color:var(--gold-bright); font-size:clamp(1.3rem, 2.3vw, 1.85rem); margin-bottom:0.35rem;">
+            The Grimoire of Unchanged Keywords: 8 C1/C2 Part 4 Transformation Trials
+          </h2>
+          <p style="font-size:0.95rem; color:var(--text-warm); max-width:880px;">
+            In Cambridge C1 Advanced and C2 Proficiency Part 4, inflecting the printed keyword scores zero marks. Work through all 8 Arcana-linked transformation trials below using our 4-Step Elimination Strategy: strike out the repeated echoes, inspect tense harmony, check the voice shift, and lock the unchanged keyword into a <strong>3-to-6-word</strong> frame.
+          </p>
+        </div>
+
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.55rem;">
+          <div class="hud-chip">
+            <span>GRIMOIRE SEALS CLAIMED:</span>
+            <strong id="grimoire-part4-score">0 / 8 (0 / 16 Marks)</strong>
+          </div>
+          <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <button type="button" class="btn-secondary" onclick="strikeAllGrimoireEchoes()">
+              ✂️ Step 1: Strike Out All Echoes
+            </button>
+            <button type="button" class="btn-gold" onclick="revealAllGrimoireModels()">
+              👁️ Reveal All Cambridge Models
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gareth's 4-Step Elimination & Deconstruction Blueprint Bar -->
+      <div class="grimoire-strategy-banner">
+        <div class="strategy-step-pill">
+          <strong>✂️ Step 1: Strike Out the Echoes</strong>
+          Cross out every word from Sentence 1 that already appears in Sentence 2 to isolate the exact semantic deficit.
+        </div>
+        <div class="strategy-step-pill">
+          <strong>🕰️ Step 2: Inspect Tense Harmony</strong>
+          Match the source tense (past simple, present perfect, modal past) so the gap preserves exact temporal logic.
+        </div>
+        <div class="strategy-step-pill">
+          <strong>🔄 Step 3: Check Voice Shift</strong>
+          Identify whether an active-to-passive reporting shift, fronting inversion, or nominalisation has taken place.
+        </div>
+        <div class="strategy-step-pill">
+          <strong>🔒 Step 4: Unchanged Keyword (3–6 Words)</strong>
+          Fit the deficit into 3 to 6 words inclusive of the printed keyword—never alter its spelling or tense.
+        </div>
+      </div>
+
+      <!-- 8 Interactive Part 4 Transformation Trial Cards -->
+      <div class="grimoire-trials-grid" id="grimoire-trials-container">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Verified Local Engraving Archive Strip (Also guarantees static asset preloading & audit verification) -->
+  <footer class="engraving-archive-strip">
+    <div>
+      <strong>GarethEnglish · The Rhetorical Arcana</strong> — Crafted at the Belfast Study Desk. Pure syntactic poise, zero memorised templates.
+    </div>
+    <div class="archive-thumbs" aria-label="Engraved Tarot Plate Archive">
+      <img src="assets/rhetoric/suit_inversion_blade.png" alt="Plate I: The Negative Inversion" />
+      <img src="assets/rhetoric/suit_cleft_prism.png" alt="Plate II: The Wh-Cleft Pivot" />
+      <img src="assets/rhetoric/suit_it_cleft_spotlight.svg" alt="Plate III: The It-Cleft Spotlight" />
+      <img src="assets/rhetoric/suit_participle_bridge.png" alt="Plate IV: The Participle Gambit" />
+      <img src="assets/rhetoric/suit_concession_scales.png" alt="Plate V: The Concessive Trap" />
+      <img src="assets/rhetoric/suit_passive_oracle.png" alt="Plate VI: The Passive Oracle" />
+      <img src="assets/rhetoric/suit_scarcity_inversion.svg" alt="Plate VII: The Inversion of Scarcity" />
+      <img src="assets/rhetoric/suit_subjunctive_decree.svg" alt="Plate VIII: The Subjunctive Decree" />
+      <img src="assets/rhetoric/suit_double_comparative.svg" alt="Plate IX: The Double Comparative Escalator" />
+      <img src="assets/rhetoric/suit_nominalisation_anchor.svg" alt="Plate X: The Nominalisation Anchor" />
+      <img src="assets/rhetoric/suit_counterfactual_clock.png" alt="Plate XI: The Unreal Past Counterfactual" />
+      <img src="assets/rhetoric/suit_tricolon_finale.svg" alt="Plate XII: The Tricolon Finale" />
+      <img src="assets/rhetoric/card_back_rhetoric.svg" alt="Arcana Card Back" />
+    </div>
+  </footer>
+
+  <script>
+    /* =========================================================================
+       1. THE 12 PLAYABLE C1/C2 RHETORICAL ARCANA CARDS
+       ========================================================================= */
+    const ARCANA_DECK = [
+      {
+        id: "card-1",
+        roman: "I",
+        title: "THE NEGATIVE INVERSION",
+        suit: "Suit of Inversion",
+        suitIcon: "🗡️",
+        points: 350,
+        art: "assets/rhetoric/suit_inversion_blade.png",
+        blueprint: "Not only + Auxiliary + Subject + Bare Verb, but [Subject] also...",
+        triggers: [
+          "“Not only does this erode public trust, but it also...”",
+          "“Rarely have I encountered a place so steeped in...”",
+          "“Under no circumstances should we assume that...”"
+        ],
+        voiceRegex: /\b(not only does|not only did|not only is|not only has|rarely have i|rarely do we|under no circumstances|seldom have|at no time did)\b/i,
+        flatB1: "This policy wastes municipal funds and also damages local heritage.",
+        cambridgeModel: "Not only does this policy squander municipal funds, but it also undermines local heritage.",
+        useCases: ["Speaking Part 3", "Essays", "Debate Opening"]
+      },
+      {
+        id: "card-2",
+        roman: "II",
+        title: "THE WH-CLEFT PIVOT",
+        suit: "Suit of Clefts",
+        suitIcon: "🔮",
+        points: 300,
+        art: "assets/rhetoric/suit_cleft_prism.png",
+        blueprint: "What + Subject + Verb + BE + [Noun Phrase / That-Clause]",
+        triggers: [
+          "“What struck me most vividly was the sheer stillness of...”",
+          "“What makes this dilemma so thorny is that...”",
+          "“What people often overlook is the quiet craftsmanship behind...”"
+        ],
+        voiceRegex: /\b(what struck me|what makes this|what people often overlook|what stands out|what fascinated me|what really matters is)\b/i,
+        flatB1: "The sheer silence of the stone courtyard surprised me most of all.",
+        cambridgeModel: "What struck me most vividly was the sheer silence of the stone courtyard.",
+        useCases: ["Speaking Part 2", "Speaking Part 3", "Reviews"]
+      },
+      {
+        id: "card-3",
+        roman: "III",
+        title: "THE IT-CLEFT SPOTLIGHT",
+        suit: "Suit of Clefts",
+        suitIcon: "🔮",
+        points: 300,
+        art: "assets/rhetoric/suit_it_cleft_spotlight.svg",
+        blueprint: "It + BE + [Focused Element] + that / who + [Remainder Clause]",
+        triggers: [
+          "“It is precisely this attention to proportion that sets...”",
+          "“It was not until I stepped inside that I realised...”",
+          "“It is the subtle interplay of light and stone that creates...”"
+        ],
+        voiceRegex: /\b(it is precisely|it was precisely|it was not until|it is the subtle|it was only when)\b/i,
+        flatB1: "I only understood the scale of the library when I looked up at the dome.",
+        cambridgeModel: "It was not until I looked up at the dome that I grasped the true scale of the library.",
+        useCases: ["Speaking Part 2", "Essays", "Articles"]
+      },
+      {
+        id: "card-4",
+        roman: "IV",
+        title: "THE PARTICIPLE GAMBIT",
+        suit: "Suit of Participles & Time",
+        suitIcon: "⏳",
+        points: 350,
+        art: "assets/rhetoric/suit_participle_bridge.png",
+        blueprint: "[ Clause ], thereby + Present Participle (-ing) / Having + Past Participle, [ Main Clause ]",
+        triggers: [
+          "“..., thereby fostering a genuine sense of civic pride.”",
+          "“Having spent years honing the craft, the artisan...”",
+          "“..., leaving visitors with an unmistakable impression of...”"
+        ],
+        voiceRegex: /\b(thereby fostering|thereby creating|thereby reducing|having spent|having seen|having experienced|leaving visitors)\b/i,
+        flatB1: "The town pedestrianised the old quarter, and this revived independent bookshops.",
+        cambridgeModel: "The town pedestrianised the historic quarter, thereby breathing new life into independent bookshops.",
+        useCases: ["Essays", "Reports", "Speaking Part 3"]
+      },
+      {
+        id: "card-5",
+        roman: "V",
+        title: "THE CONCESSIVE TRAP",
+        suit: "Suit of Concession & Authority",
+        suitIcon: "⚖️",
+        points: 350,
+        art: "assets/rhetoric/suit_concession_scales.png",
+        blueprint: "Much as + [Subject + Verb] / Adjective + though + [Subject + Verb], [Counter-Pivot]",
+        triggers: [
+          "“Much as I admire modern convenience, there is no substitute for...”",
+          "“Tempting though it may be to blame individuals, the root lies in...”",
+          "“Compelling as that argument sounds on paper, in practice...”"
+        ],
+        voiceRegex: /\b(much as i|tempting though|compelling as|attractive though|valid as that|albeit)\b/i,
+        flatB1: "Although I appreciate digital books, I still prefer the smell of printed paper.",
+        cambridgeModel: "Much as I appreciate the convenience of digital screens, nothing replaces the tactile weight of printed paper.",
+        useCases: ["Speaking Part 3", "Essays", "C2 Long Turn"]
+      },
+      {
+        id: "card-6",
+        roman: "VI",
+        title: "THE PASSIVE ORACLE",
+        suit: "Suit of Concession & Authority",
+        suitIcon: "⚖️",
+        points: 300,
+        art: "assets/rhetoric/suit_passive_oracle.png",
+        blueprint: "It is widely held that... / [Subject] + BE + thought / said / believed + to + Infinitive",
+        triggers: [
+          "“It is often assumed that younger generations care little for...”",
+          "“This structure is widely regarded as a masterpiece of...”",
+          "“Public green spaces are increasingly recognised to be vital for...”"
+        ],
+        voiceRegex: /\b(it is widely|it is often assumed|widely regarded as|is said to have|are believed to|is thought to)\b/i,
+        flatB1: "Many historians think the guildhall was built in the late sixteenth century.",
+        cambridgeModel: "The guildhall is widely believed to have been erected in the late sixteenth century.",
+        useCases: ["Essays", "Reports", "Speaking Part 3"]
+      },
+      {
+        id: "card-7",
+        roman: "VII",
+        title: "THE INVERSION OF SCARCITY",
+        suit: "Suit of Inversion",
+        suitIcon: "🗡️",
+        points: 400,
+        art: "assets/rhetoric/suit_scarcity_inversion.svg",
+        blueprint: "Hardly / Scarcely + had + Subject + Past Participle + when... / No sooner + had... + than...",
+        triggers: [
+          "“No sooner had I crossed the threshold than the noise of the street vanished.”",
+          "“Scarcely had the restoration begun when artisans uncovered...”",
+          "“Little did I anticipate how deeply the place would affect me.”"
+        ],
+        voiceRegex: /\b(no sooner had|scarcely had|hardly had|little did i|little do we)\b/i,
+        flatB1: "As soon as we stepped onto the moor, the mist rolled in over the heather.",
+        cambridgeModel: "No sooner had we stepped onto the moor than a thick mist rolled in across the heather.",
+        useCases: ["Speaking Part 2", "Reviews", "Narrative Openings"]
+      },
+      {
+        id: "card-8",
+        roman: "VIII",
+        title: "THE SUBJUNCTIVE DECREE",
+        suit: "Suit of Concession & Authority",
+        suitIcon: "⚖️",
+        points: 350,
+        art: "assets/rhetoric/suit_subjunctive_decree.svg",
+        blueprint: "It is imperative / vital / essential + that + [Subject] + [Bare Infinitive]",
+        triggers: [
+          "“It is vital that local councils preserve these workshops before...”",
+          "“It is high time we stopped treating education as a mere conveyor belt.”",
+          "“I would rather policymakers invested in apprenticeships than...”"
+        ],
+        voiceRegex: /\b(it is imperative that|it is vital that|it is essential that|it is high time|would rather)\b/i,
+        flatB1: "City planners really need to protect historic market squares from demolition.",
+        cambridgeModel: "It is imperative that municipal planners protect historic market squares from short-sighted demolition.",
+        useCases: ["Reports", "Proposals", "Speaking Part 3"]
+      },
+      {
+        id: "card-9",
+        roman: "IX",
+        title: "THE DOUBLE COMPARATIVE ESCALATOR",
+        suit: "Suit of Participles & Time",
+        suitIcon: "⏳",
+        points: 250,
+        art: "assets/rhetoric/suit_double_comparative.svg",
+        blueprint: "The + [Comparative Phrase + Clause], the + [Comparative Phrase + Clause]",
+        triggers: [
+          "“The longer you examine the brushwork, the more subtleties emerge.”",
+          "“The more detached we become from manual craft, the less we value durability.”",
+          "“The further one looks beyond the headlines, the clearer it becomes that...”"
+        ],
+        voiceRegex: /\b(the more we|the longer you|the further one|the more closely|the less we)\b/i,
+        flatB1: "If we automate everything, we lose our appreciation for handmade things.",
+        cambridgeModel: "The more relentlessly we automate daily life, the more precious genuine handcraft becomes.",
+        useCases: ["Speaking Part 2", "Speaking Part 3", "Essays"]
+      },
+      {
+        id: "card-10",
+        roman: "X",
+        title: "THE NOMINALISATION ANCHOR",
+        suit: "Suit of Clefts",
+        suitIcon: "🔮",
+        points: 300,
+        art: "assets/rhetoric/suit_nominalisation_anchor.svg",
+        blueprint: "[Abstract Noun Phrase + of + Noun] + [Strong Active Verb] + [Object]",
+        triggers: [
+          "“The gradual erosion of neighbourhood libraries has deprived towns of...”",
+          "“A relentless pursuit of convenience often comes at the expense of...”",
+          "“The sheer durability of traditional timber joinery testifies to...”"
+        ],
+        voiceRegex: /\b(the gradual erosion of|a relentless pursuit of|the sheer durability of|at the expense of|the rapid proliferation of)\b/i,
+        flatB1: "Because people want everything fast, things are not made to last anymore.",
+        cambridgeModel: "Our relentless appetite for instant convenience has steadily eroded the durability of everyday goods.",
+        useCases: ["Essays", "Reports", "C2 Long Turn"]
+      },
+      {
+        id: "card-11",
+        roman: "XI",
+        title: "THE UNREAL PAST COUNTERFACTUAL",
+        suit: "Suit of Inversion",
+        suitIcon: "🗡️",
+        points: 400,
+        art: "assets/rhetoric/suit_counterfactual_clock.png",
+        blueprint: "Had + Subject + (not) + Past Participle, Subject + would / might + have + Past Participle",
+        triggers: [
+          "“Had it not been for a local historian’s intervention, the archive would have...”",
+          "“Were it not for public subsidies, regional theatres would struggle to...”",
+          "“Had I not wandered down that side street, I would never have discovered...”"
+        ],
+        voiceRegex: /\b(had it not been for|were it not for|had i not|but for the)\b/i,
+        flatB1: "If my grandfather hadn't shown me his workshop, I wouldn't love woodwork today.",
+        cambridgeModel: "Had my grandfather not welcomed me into his workshop, I would never have developed a lifelong respect for timber craft.",
+        useCases: ["Speaking Part 2", "Speaking Part 3", "Reviews"]
+      },
+      {
+        id: "card-12",
+        roman: "XII",
+        title: "THE TRICOLON FINALE",
+        suit: "Suit of Participles & Time",
+        suitIcon: "⏳",
+        points: 350,
+        art: "assets/rhetoric/suit_tricolon_finale.svg",
+        blueprint: "Whether through [A], through [B], or through [C], [Sovereign Concluding Clause]",
+        triggers: [
+          "“It is a work of quiet proportion, enduring timber, and unhurried grace.”",
+          "“Whether in its acoustics, its stonework, or its stillness, the hall commands respect.”",
+          "“Such places do not merely shelter us; they ground us, steady us, and outlive us.”"
+        ],
+        voiceRegex: /\b(whether through|whether in its|not merely|they ground us|quiet proportion)\b/i,
+        flatB1: "The building is well designed, strong, and peaceful to visit.",
+        cambridgeModel: "Whether in the balance of its arches, the warmth of its oak, or the hush of its nave, the building leaves you visibly steadied.",
+        useCases: ["Speaking Part 2 Finale", "Essay Conclusion", "C2 Long Turn"]
+      }
+    ];
+
+    /* =========================================================================
+       2. 18 NATIONALITY-NEUTRAL SPEAKING PROMPTS ACROSS 3 TRACKS
+       ========================================================================= */
+    const SPEAKING_PROMPTS = {
+      part2: [
+        {
+          badge: "IELTS SPEAKING PART 2 LONG TURN",
+          duration: 120,
+          title: "Describe a piece of craftsmanship, architecture, or historical object that left a lasting impression on you.",
+          bullets: [
+            "Where and when you first encountered it",
+            "How it was crafted or what gives it character",
+            "Why it stood out from ordinary modern objects",
+            "And explain why it still lingers in your memory today"
+          ]
+        },
+        {
+          badge: "IELTS SPEAKING PART 2 LONG TURN",
+          duration: 120,
+          title: "Describe a quiet place—such as a library, garden, or study—where you go to think clearly.",
+          bullets: [
+            "Where this place is located and how you discovered it",
+            "What the atmosphere, light, and sounds are like there",
+            "What you usually do or reflect upon when you visit",
+            "And explain why this setting restores your composure"
+          ]
+        },
+        {
+          badge: "IELTS SPEAKING PART 2 LONG TURN",
+          duration: 120,
+          title: "Describe a skill or craft that took you a long time and patience to learn.",
+          bullets: [
+            "What the skill is and who or what inspired you to begin",
+            "What the hardest early obstacle was to overcome",
+            "How you practised and refined your technique over time",
+            "And explain how mastering it changed your outlook on patience"
+          ]
+        },
+        {
+          badge: "IELTS SPEAKING PART 2 LONG TURN",
+          duration: 120,
+          title: "Describe a book, essay, or film that challenged the way you previously looked at a subject.",
+          bullets: [
+            "When you read or watched it and what drew you to it",
+            "What its central argument or narrative premise was",
+            "Which specific scene or passage stayed with you most",
+            "And explain how it shifted your perspective afterwards"
+          ]
+        },
+        {
+          badge: "IELTS SPEAKING PART 2 LONG TURN",
+          duration: 120,
+          title: "Describe a time when a small detour or unplanned change of schedule led to a memorable discovery.",
+          bullets: [
+            "Where you were originally intending to go",
+            "What caused your plan to change at the last moment",
+            "What you stumbled across as a result of the detour",
+            "And explain why that unexpected moment proved worthwhile"
+          ]
+        },
+        {
+          badge: "IELTS SPEAKING PART 2 LONG TURN",
+          duration: 120,
+          title: "Describe a mentor, teacher, or craftsperson whose way of explaining things you greatly admired.",
+          bullets: [
+            "When and in what setting you worked with or observed them",
+            "What made their manner of speaking or demonstrating distinct",
+            "One particular lesson or piece of advice they gave you",
+            "And explain why their example still influences how you work"
+          ]
+        }
+      ],
+      part3: [
+        {
+          badge: "IELTS & C1 ADVANCED PART 3 · A.R.E.A. DEBATE",
+          duration: 90,
+          title: "Why do you think handmade goods are regaining prestige in an era of mass manufacturing?",
+          bullets: [
+            "Anchor: State your direct claim with a C1 cleft or passive frame",
+            "Reason: Unpack the contrast between disposable speed and lasting craft",
+            "Example: Cite a concrete domain (furniture, bookbinding, tailoring, repairs)",
+            "Alternative: Acknowledge cost barriers using a concessive pivot"
+          ]
+        },
+        {
+          badge: "IELTS & C1 ADVANCED PART 3 · A.R.E.A. DEBATE",
+          duration: 90,
+          title: "To what extent should historic town centres restrict modern commercial signage and glass facades?",
+          bullets: [
+            "Anchor: Establish where the balance between preservation and commerce lies",
+            "Reason: Explain how visual harmony shapes civic identity",
+            "Example: Contrast sensitively restored quarters with generic high streets",
+            "Alternative: Concede the practical needs of working shopkeepers"
+          ]
+        },
+        {
+          badge: "IELTS & C1 ADVANCED PART 3 · A.R.E.A. DEBATE",
+          duration: 90,
+          title: "Does constant access to instant summaries weaken people's patience for deep, unhurried reading?",
+          bullets: [
+            "Anchor: Frame the distinction between skimming facts and weighing arguments",
+            "Reason: Explore how sustained attention builds independent judgement",
+            "Example: Compare digesting a long-form treatise with scrolling headlines",
+            "Alternative: Note when rapid reference tools remain genuinely useful"
+          ]
+        },
+        {
+          badge: "IELTS & C1 ADVANCED PART 3 · A.R.E.A. DEBATE",
+          duration: 90,
+          title: "Should municipal museums and galleries remain entirely free of charge to the public?",
+          bullets: [
+            "Anchor: Weigh universal cultural access against institutional upkeep",
+            "Reason: Consider who benefits most from unhindered entry",
+            "Example: Point to students sketching or pensioners visiting for twenty minutes",
+            "Alternative: Propose how special exhibitions or endowments can bridge funding"
+          ]
+        },
+        {
+          badge: "IELTS & C1 ADVANCED PART 3 · A.R.E.A. DEBATE",
+          duration: 90,
+          title: "Why do many people find it harder to disconnect from work today than forty years ago?",
+          bullets: [
+            "Anchor: Pinpoint the blurring of physical and temporal boundaries",
+            "Reason: Examine expectations of immediate availability",
+            "Example: Contrast leaving a workshop at five o'clock with carrying a pocket inbox",
+            "Alternative: Consider how flexible hours can still benefit disciplined workers"
+          ]
+        },
+        {
+          badge: "IELTS & C1 ADVANCED PART 3 · A.R.E.A. DEBATE",
+          duration: 90,
+          title: "Is failure a better teacher than immediate success when learning a complex discipline?",
+          bullets: [
+            "Anchor: Challenge the romantic cliché while acknowledging diagnostic value",
+            "Reason: Explain why analysing a misstep reveals structural weaknesses",
+            "Example: Illustrate with music, carpentry, or language acquisition",
+            "Alternative: Warn against unguided repetition of errors without feedback"
+          ]
+        }
+      ],
+      c2cpe: [
+        {
+          badge: "CAMBRIDGE C2 PROFICIENCY (CPE) · 2-MINUTE LONG TURN",
+          duration: 120,
+          title: "How do we decide which elements of the past deserve preservation and which must give way to renewal?",
+          bullets: [
+            "Whether utility or beauty should carry greater weight",
+            "The risk of turning living towns into sterile open-air museums",
+            "How future generations might judge the buildings we erect today",
+            "Weave at least three Rhetorical Arcana structures into your synthesis"
+          ]
+        },
+        {
+          badge: "CAMBRIDGE C2 PROFICIENCY (CPE) · 2-MINUTE LONG TURN",
+          duration: 120,
+          title: "In what ways does the language we choose shape—rather than merely describe—our perception of events?",
+          bullets: [
+            "How euphemism and passive framing soften accountability",
+            "Why precision of vocabulary sharpens moral and analytical clarity",
+            "The difference between ornate jargon and honest syntactic poise",
+            "Weave at least three Rhetorical Arcana structures into your synthesis"
+          ]
+        },
+        {
+          badge: "CAMBRIDGE C2 PROFICIENCY (CPE) · 2-MINUTE LONG TURN",
+          duration: 120,
+          title: "Has modern society confused the velocity of activity with genuine human progress?",
+          bullets: [
+            "Why stillness and deliberation are often mistaken for idleness",
+            "Areas of science or medicine where rapid advances are undeniably vital",
+            "How individuals can reclaim unhurried reflection in daily life",
+            "Weave at least three Rhetorical Arcana structures into your synthesis"
+          ]
+        },
+        {
+          badge: "CAMBRIDGE C2 PROFICIENCY (CPE) · 2-MINUTE LONG TURN",
+          duration: 120,
+          title: "What responsibilities do experts have when communicating complex uncertainty to the wider public?",
+          bullets: [
+            "The tension between reassuring simplicity and honest nuance",
+            "How oversimplified claims can backfire when evidence evolves",
+            "Cultivating public literacy in weighing probabilities",
+            "Weave at least three Rhetorical Arcana structures into your synthesis"
+          ]
+        },
+        {
+          badge: "CAMBRIDGE C2 PROFICIENCY (CPE) · 2-MINUTE LONG TURN",
+          duration: 120,
+          title: "To what extent is solitude necessary for original creative or intellectual work?",
+          bullets: [
+            "The interplay between solitary draughtsmanship and lively public debate",
+            "Why uninterrupted hours are becoming a rare luxury",
+            "Historical and contemporary habits of serious thinkers and artisans",
+            "Weave at least three Rhetorical Arcana structures into your synthesis"
+          ]
+        },
+        {
+          badge: "CAMBRIDGE C2 PROFICIENCY (CPE) · 2-MINUTE LONG TURN",
+          duration: 120,
+          title: "Does true mastery in any art lie in following established rules or knowing when to depart from them?",
+          bullets: [
+            "Why foundational discipline must precede expressive freedom",
+            "The difference between deliberate stylistic departure and mere carelessness",
+            "How traditions renew themselves across generations",
+            "Weave at least three Rhetorical Arcana structures into your synthesis"
+          ]
+        }
+      ]
+    };
+
+    /* =========================================================================
+       3. STATE & WEB AUDIO SYNTHESIS ENGINE
+       ========================================================================= */
+    let currentTrack = "part2";
+    let currentPromptIndex = 0;
+    let currentHand = [];
+    let totalScore = 0;
+    let currentCombo = 1;
+    let ignitedSet = new Set();
+    let masteredGauntletSet = new Set();
+
+    let timerInterval = null;
+    let timerTotalSeconds = 120;
+    let timerRemainingSeconds = 120;
+    let timerRunning = false;
+    let isPrepMode = false;
+
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playCardRiffleSound() {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      for (let i = 0; i < 4; i++) {
+        setTimeout(() => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = "triangle";
+          osc.frequency.setValueAtTime(220 + i * 75, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(95, ctx.currentTime + 0.065);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.065);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.07);
+        }, i * 55);
+      }
+    }
+
+    function playIgniteChord(comboLevel) {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const baseFreqs = comboLevel >= 3 ? [293.66, 369.99, 440.0, 587.33] : [261.63, 329.63, 392.0, 523.25];
+      baseFreqs.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = idx % 2 === 0 ? "triangle" : "sine";
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.04);
+        gain.gain.setValueAtTime(0.14, ctx.currentTime + idx * 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0008, ctx.currentTime + 0.85 + idx * 0.05);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + idx * 0.04);
+        osc.stop(ctx.currentTime + 0.92 + idx * 0.05);
+      });
+    }
+
+    /* =========================================================================
+       4. 60FPS GOLDEN EMBER PARTICLE ENGINE (<canvas>)
+       ========================================================================= */
+    const canvas = document.getElementById("ember-canvas");
+    const ctx2d = canvas.getContext("2d");
+    let particles = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function spawnGoldenEmbers(rect) {
+      const cx = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+      const cy = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+      const colors = ["#fff4b8", "#f7d560", "#d4af37", "#ff8c2b", "#e04636"];
+      for (let i = 0; i < 68; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 1.5 + Math.random() * 6.5;
+        particles.push({
+          x: cx + (Math.random() - 0.5) * (rect ? rect.width * 0.7 : 140),
+          y: cy + (Math.random() - 0.5) * (rect ? rect.height * 0.5 : 140),
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 2.4,
+          size: 2 + Math.random() * 4.5,
+          alpha: 1,
+          decay: 0.012 + Math.random() * 0.018,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+      }
+    }
+
+    function animateEmbers() {
+      ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy -= 0.035; // rising ember buoyancy
+        p.alpha -= p.decay;
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+        ctx2d.save();
+        ctx2d.globalAlpha = Math.max(0, p.alpha);
+        ctx2d.fillStyle = p.color;
+        ctx2d.shadowColor = p.color;
+        ctx2d.shadowBlur = 10;
+        ctx2d.beginPath();
+        ctx2d.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx2d.fill();
+        ctx2d.restore();
+      }
+      requestAnimationFrame(animateEmbers);
+    }
+    requestAnimationFrame(animateEmbers);
+
+    /* =========================================================================
+       5. BRITISH NEURAL TTS PLAYBACK (Pre-Generated Studio MP3s + LAN Piper TTS)
+       ========================================================================= */
+    let activeRhetoricAudio = null;
+
+    async function speakBritishModel(text, cardId = null) {
+      if (activeRhetoricAudio) {
+        activeRhetoricAudio.pause();
+        activeRhetoricAudio = null;
+      }
+
+      // 1. Try pre-generated British Neural TTS MP3 on disk first (instant zero-latency)
+      const matchedCard = cardId
+        ? ARCANA_DECK.find(c => c.id === cardId)
+        : ARCANA_DECK.find(c => c.cambridgeModel === text);
+      if (matchedCard) {
+        const localUrl = `assets/rhetoric/audio/${matchedCard.id}-model.mp3`;
+        const playedLocal = await new Promise(resolve => {
+          const a = new Audio(localUrl);
+          activeRhetoricAudio = a;
+          a.onended = () => resolve(true);
+          a.onerror = () => resolve(false);
+          a.play().catch(() => resolve(false));
+        });
+        if (playedLocal) return;
+      }
+
+      // 2. Otherwise synthesize via LAN Piper British Neural TTS (`en_GB-alba-medium.onnx`)
+      const bases = ["http://localhost:8080", "http://127.0.0.1:8080", "http://192.168.1.106:8080"];
+      for (const base of bases) {
+        try {
+          const res = await fetch(`${base}/api/tts`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            const rel = data.relativeUrl ? "/" + data.relativeUrl.replace(/^\/+/, "") : null;
+            const audioUrl = data.audioUrl || data.mp3Url || (rel ? `${base}${rel}` : null);
+            if (audioUrl) {
+              const audio = new Audio(audioUrl);
+              activeRhetoricAudio = audio;
+              await audio.play();
+              return;
+            }
+          }
+        } catch (_) {}
+      }
+    }
+
+    /* =========================================================================
+       6. MODE 1: DEALING HAND, 3D TILT, IGNITING CARDS & LIVE VOICE AUTO-IGNITE
+       ========================================================================= */
+    function dealRhetoricalHand(count = 3) {
+      playCardRiffleSound();
+      currentCombo = 1;
+      updateHud();
+
+      const shuffled = [...ARCANA_DECK].sort(() => Math.random() - 0.5);
+      currentHand = shuffled.slice(0, count).map(card => ({
+        ...card,
+        ignitedInHand: false
+      }));
+
+      renderDealtHand();
+      updateDebriefScroll();
+    }
+
+    function renderDealtHand() {
+      const container = document.getElementById("dealt-hand-container");
+      container.innerHTML = currentHand
+        .map(
+          (card, idx) => `
+        <div class="arcana-card-slot">
+          <article class="arcana-card ${card.ignitedInHand ? "ignited" : ""}" id="hand-card-${idx}" onmousemove="handleCardTilt(event, this)" onmouseleave="resetCardTilt(this)">
+            <div class="wax-seal-stamp">DEPLOYED<br/>IN SPEECH<br/>✦ C1 ✦</div>
+            <div>
+              <div class="card-top-bar">
+                <span>ARCANA ${card.roman} · KEY [${idx + 1}]</span>
+                <span class="card-points">+${card.points} PTS</span>
+              </div>
+              <div class="card-art-frame">
+                <img src="${card.art}" alt="${card.title}" />
+                <span class="card-suit-badge">${card.suitIcon} ${card.suit}</span>
+              </div>
+              <h3 class="card-name">${card.roman} · ${card.title}</h3>
+              <div class="card-blueprint">${card.blueprint}</div>
+              <ul class="card-triggers">
+                ${card.triggers.map(t => `<li>${t}</li>`).join("")}
+              </ul>
+            </div>
+
+            <div>
+              <div class="card-mini-drill">
+                <div class="drill-flat"><strong>Flat B1:</strong> “${card.flatB1}”</div>
+                <div class="drill-model-reveal" id="hand-reveal-${idx}">
+                  <strong>Cambridge C1 Model:</strong> “${card.cambridgeModel}”
+                </div>
+              </div>
+              <div class="card-action-row">
+                <button class="btn-reveal-mini" onclick="toggleHandReveal(${idx})">👁️ Reveal Cambridge Model</button>
+                <button class="btn-reveal-mini" title="Listen to British Model" onclick="speakBritishModel('${card.cambridgeModel.replace(/'/g, "\\'")}')">🔊</button>
+                <button class="btn-ignite" onclick="igniteCardInHand(${idx})">
+                  ${card.ignitedInHand ? "✓ IGNITED" : "🔥 IGNITE [" + (idx + 1) + "]"}
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      `
+        )
+        .join("");
+    }
+
+    function handleCardTilt(e, cardEl) {
+      const rect = cardEl.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const px = (x / rect.width) * 100;
+      const py = (y / rect.height) * 100;
+      const rotY = ((x - rect.width / 2) / (rect.width / 2)) * 8;
+      const rotX = -((y - rect.height / 2) / (rect.height / 2)) * 8;
+      cardEl.style.setProperty("--glare-x", `${px}%`);
+      cardEl.style.setProperty("--glare-y", `${py}%`);
+      cardEl.style.transform = `rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) translateY(-4px)`;
+    }
+
+    function resetCardTilt(cardEl) {
+      cardEl.style.transform = "rotateX(0deg) rotateY(0deg) translateY(0)";
+    }
+
+    function toggleHandReveal(idx) {
+      const el = document.getElementById(`hand-reveal-${idx}`);
+      if (el) el.classList.toggle("visible");
+    }
+
+    function igniteCardInHand(idx, viaVoice = false) {
+      const card = currentHand[idx];
+      if (!card) return;
+      const cardEl = document.getElementById(`hand-card-${idx}`);
+      const rect = cardEl ? cardEl.getBoundingClientRect() : null;
+
+      if (!card.ignitedInHand) {
+        card.ignitedInHand = true;
+        ignitedSet.add(card.id);
+        const earned = card.points * currentCombo;
+        totalScore += earned;
+        currentCombo = Math.min(4, currentCombo + 1);
+      } else {
+        totalScore += 50;
+      }
+
+      playIgniteChord(currentCombo);
+      spawnGoldenEmbers(rect);
+      updateHud();
+      renderDealtHand();
+      updateDebriefScroll(viaVoice ? `🎙️ Voice Auto-Ignited: ${card.roman} · ${card.title}!` : null);
+    }
+
+    function igniteAllDemo() {
+      currentHand.forEach((_, idx) => {
+        setTimeout(() => igniteCardInHand(idx), idx * 240);
+      });
+    }
+
+    function updateHud() {
+      document.getElementById("hud-score").textContent = totalScore.toLocaleString();
+      const comboLabels = { 1: "1×", 2: "2× CADENCE", 3: "3× SOVEREIGN!", 4: "4× GRANDMASTER!" };
+      document.getElementById("hud-combo").textContent = comboLabels[currentCombo] || `${currentCombo}×`;
+      document.getElementById("hud-ignited").textContent = `${ignitedSet.size} / 12`;
+    }
+
+    function updateDebriefScroll(customBanner) {
+      const ignitedCards = currentHand.filter(c => c.ignitedInHand);
+      const badge = document.getElementById("debrief-summary-badge");
+      const body = document.getElementById("debrief-body-text");
+
+      if (customBanner) {
+        badge.textContent = customBanner;
+      } else if (ignitedCards.length === currentHand.length && currentHand.length > 0) {
+        badge.textContent = "👑 FULL HAND DEPLOYED · SOVEREIGN SYNTACTIC COMPOSURE!";
+      } else {
+        badge.textContent = `${ignitedCards.length} of ${currentHand.length} cards deployed in this turn`;
+      }
+
+      if (ignitedCards.length === 0) {
+        body.innerHTML =
+          "No cards ignited in this hand yet. Choose one trigger phrase above and weave it naturally into your next sentence—then click <strong>🔥 IGNITE</strong> or press keys <strong>1, 2, 3</strong>.";
+      } else {
+        body.innerHTML =
+          "<strong>Structures Woven Into Your Turn:</strong> " +
+          ignitedCards
+            .map(
+              c =>
+                `<span style="color:var(--gold-bright);margin-right:0.75rem;">✦ ${c.roman} · ${c.title} (<em>“${c.cambridgeModel}”</em>)</span>`
+            )
+            .join(" ");
+      }
+    }
+
+    // Keyboard Hotkeys 1, 2, 3, 4 for instant classroom/solo card ignition
+    window.addEventListener("keydown", e => {
+      const tag = (e.target && e.target.tagName) || "";
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+      if (["1", "2", "3", "4"].includes(e.key)) {
+        const idx = parseInt(e.key, 10) - 1;
+        if (currentHand[idx]) igniteCardInHand(idx);
+      }
+    });
+
+    /* =========================================================================
+       7. LIVE MICROPHONE SPEECH RECOGNITION AUTO-IGNITE
+       ========================================================================= */
+    let recognition = null;
+    let isListening = false;
+
+    function toggleVoiceAutoIgnite() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const btn = document.getElementById("btn-voice-auto");
+      const statusText = document.getElementById("voice-status-text");
+      const transcriptEl = document.getElementById("live-speech-transcript");
+
+      if (!SpeechRec) {
+        transcriptEl.textContent =
+          "Browser SpeechRecognition is unavailable in this window—use keys [1], [2], [3] or click 🔥 Ignite Card directly!";
+        return;
+      }
+
+      if (isListening && recognition) {
+        isListening = false;
+        recognition.stop();
+        btn.classList.remove("listening");
+        statusText.textContent = "OFF";
+        return;
+      }
+
+      recognition = new SpeechRec();
+      recognition.lang = "en-GB";
+      recognition.continuous = true;
+      recognition.interimResults = true;
+
+      recognition.onresult = event => {
+        let combined = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          combined += event.results[i][0].transcript + " ";
+        }
+        const cleaned = combined.trim();
+        if (cleaned) {
+          transcriptEl.textContent = `“${cleaned}”`;
+          currentHand.forEach((card, idx) => {
+            if (!card.ignitedInHand && card.voiceRegex.test(cleaned)) {
+              igniteCardInHand(idx, true);
+            }
+          });
+        }
+      };
+
+      recognition.onerror = () => {
+        isListening = false;
+        btn.classList.remove("listening");
+        statusText.textContent = "OFF";
+      };
+
+      recognition.onend = () => {
+        if (isListening) {
+          try {
+            recognition.start();
+          } catch (_) {}
+        }
+      };
+
+      try {
+        recognition.start();
+        isListening = true;
+        btn.classList.add("listening");
+        statusText.textContent = "LISTENING (en-GB)";
+        transcriptEl.textContent = "🎙️ Microphone live—speak your response and weave your dealt C1 structures...";
+      } catch (_) {}
+    }
+
+    /* =========================================================================
+       8. SPEAKING PROMPTS & 3-ACT STORY ARC TIMER
+       ========================================================================= */
+    function selectExamTrack(trackKey) {
+      currentTrack = trackKey;
+      currentPromptIndex = 0;
+      document.querySelectorAll(".track-tab").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.track === trackKey);
+      });
+      renderActivePrompt();
+      resetSpeakingTimer();
+    }
+
+    function cyclePrompt(delta) {
+      const list = SPEAKING_PROMPTS[currentTrack];
+      currentPromptIndex = (currentPromptIndex + delta + list.length) % list.length;
+      renderActivePrompt();
+    }
+
+    function renderActivePrompt() {
+      const list = SPEAKING_PROMPTS[currentTrack];
+      const item = list[currentPromptIndex];
+      document.getElementById("prompt-counter").textContent = `${currentPromptIndex + 1} / ${list.length}`;
+      document.getElementById("prompt-track-badge").textContent = item.badge;
+      document.getElementById("prompt-duration-badge").textContent = `${item.duration}s`;
+      document.getElementById("active-prompt-title").textContent = item.title;
+      document.getElementById("active-prompt-bullets").innerHTML = item.bullets.map(b => `<li>${b}</li>`).join("");
+    }
+
+    function toggleSpeakingTimer() {
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        document.getElementById("btn-start-timer").textContent = "▶ Resume Turn";
+        return;
+      }
+      timerRunning = true;
+      document.getElementById("btn-start-timer").textContent = "⏸ Pause";
+      timerInterval = setInterval(() => {
+        if (timerRemainingSeconds > 0) {
+          timerRemainingSeconds--;
+          updateTimerUI();
+        } else {
+          clearInterval(timerInterval);
+          timerRunning = false;
+          document.getElementById("btn-start-timer").textContent = "▶ Start Turn";
+          playIgniteChord(3);
+        }
+      }, 1000);
+    }
+
+    function startOneMinutePrep() {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      isPrepMode = true;
+      timerTotalSeconds = 60;
+      timerRemainingSeconds = 60;
+      updateTimerUI();
+      toggleSpeakingTimer();
+    }
+
+    function resetSpeakingTimer() {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      isPrepMode = false;
+      const item = SPEAKING_PROMPTS[currentTrack][currentPromptIndex];
+      timerTotalSeconds = item.duration;
+      timerRemainingSeconds = item.duration;
+      document.getElementById("btn-start-timer").textContent = "▶ Start Turn";
+      updateTimerUI();
+    }
+
+    function updateTimerUI() {
+      const mins = String(Math.floor(timerRemainingSeconds / 60)).padStart(2, "0");
+      const secs = String(timerRemainingSeconds % 60).padStart(2, "0");
+      document.getElementById("timer-display").textContent = `${mins}:${secs}`;
+
+      const circle = document.getElementById("timer-ring-circle");
+      const circumference = 408;
+      const elapsed = timerTotalSeconds - timerRemainingSeconds;
+      const ratio = timerTotalSeconds > 0 ? timerRemainingSeconds / timerTotalSeconds : 0;
+      circle.style.strokeDashoffset = String(circumference * (1 - ratio));
+
+      const phaseLabel = document.getElementById("timer-phase-label");
+      const s1 = document.getElementById("arc-step-1");
+      const s2 = document.getElementById("arc-step-2");
+      const s3 = document.getElementById("arc-step-3");
+      s1.classList.remove("active");
+      s2.classList.remove("active");
+      s3.classList.remove("active");
+
+      if (isPrepMode) {
+        phaseLabel.textContent = "1-Min Keyword Prep";
+        s1.classList.add("active");
+        return;
+      }
+
+      if (elapsed <= 30) {
+        phaseLabel.textContent = "Act I · Past Context";
+        s1.classList.add("active");
+      } else if (elapsed <= 75) {
+        phaseLabel.textContent = "Act II · Core Scene";
+        s2.classList.add("active");
+      } else {
+        phaseLabel.textContent = "Act III · Reflection";
+        s3.classList.add("active");
+      }
+    }
+
+    function clearTriggerNotes() {
+      ["kw-1", "kw-2", "kw-3", "kw-4"].forEach(id => {
+        document.getElementById(id).value = "";
+      });
+    }
+
+    /* =========================================================================
+       9. MODE 2: THE 12-CARD RHETORICAL GAUNTLET
+       ========================================================================= */
+    function renderGauntlet() {
+      const container = document.getElementById("gauntlet-cards-container");
+      container.innerHTML = ARCANA_DECK.map(
+        (card, idx) => `
+        <article class="gauntlet-card ${masteredGauntletSet.has(card.id) ? "mastered" : ""}" id="gauntlet-card-${idx}">
+          <div class="gauntlet-top">
+            <img class="gauntlet-thumb" src="${card.art}" alt="${card.title}" />
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--gold-primary);">
+                ARCANA ${card.roman} · ${card.suitIcon} ${card.suit}
+              </div>
+              <h3 style="font-family:'Cinzel',serif;font-size:1.02rem;color:var(--gold-bright);">
+                ${card.title}
+              </h3>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:#ffeaad;margin-top:0.2rem;">
+                ${card.blueprint}
+              </div>
+            </div>
+          </div>
+
+          <div style="font-size:0.84rem;color:var(--text-warm);background:rgba(0,0,0,0.35);padding:0.55rem 0.75rem;border-radius:7px;border-left:3px solid var(--crimson-glow);">
+            <strong>Flat B1 Draft:</strong> “${card.flatB1}”
+          </div>
+
+          <textarea class="gauntlet-input" id="gauntlet-input-${idx}" placeholder="Forge your C1 transformation here using ${card.title}..."></textarea>
+
+          <div class="card-action-row">
+            <button class="btn-reveal-mini" onclick="revealGauntletModel(${idx})">👁️ Reveal Cambridge Model</button>
+            <button class="btn-reveal-mini" onclick="speakBritishModel('${card.cambridgeModel.replace(/'/g, "\\'")}')">🔊 Listen (en-GB)</button>
+            <button class="btn-gold" onclick="claimGauntletSeal(${idx})">
+              ${masteredGauntletSet.has(card.id) ? "✓ Seal Claimed" : "🏆 Claim Mastery Seal"}
+            </button>
+          </div>
+
+          <div class="gauntlet-reveal-panel" id="gauntlet-reveal-${idx}">
+            <div style="font-size:0.74rem;font-family:'JetBrains Mono',monospace;color:var(--emerald-glow);margin-bottom:0.25rem;">
+              CAMBRIDGE C1/C2 MODEL TRANSFORMATION:
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.12rem;color:#e8fff2;font-weight:600;">
+              “${card.cambridgeModel}”
+            </div>
+          </div>
+        </article>
+      `
+      ).join("");
+    }
+
+    function revealGauntletModel(idx) {
+      const panel = document.getElementById(`gauntlet-reveal-${idx}`);
+      if (panel) panel.classList.toggle("visible");
+    }
+
+    function claimGauntletSeal(idx) {
+      const card = ARCANA_DECK[idx];
+      const cardEl = document.getElementById(`gauntlet-card-${idx}`);
+      const rect = cardEl ? cardEl.getBoundingClientRect() : null;
+      if (!masteredGauntletSet.has(card.id)) {
+        masteredGauntletSet.add(card.id);
+        ignitedSet.add(card.id);
+        totalScore += card.points;
+      }
+      const panel = document.getElementById(`gauntlet-reveal-${idx}`);
+      if (panel) panel.classList.add("visible");
+      playIgniteChord(2);
+      spawnGoldenEmbers(rect);
+      updateHud();
+      document.getElementById("gauntlet-progress-count").textContent = `${masteredGauntletSet.size} / 12`;
+      if (cardEl) cardEl.classList.add("mastered");
+    }
+
+    /* =========================================================================
+       10. MODE 3: THE 12-CARD CODEX & 3D HOLOGRAPHIC INSPECTOR
+       ========================================================================= */
+    let currentCodexFilter = "all";
+    let selectedCodexCardId = "card-1";
+
+    function filterCodex(filterValue, btnEl) {
+      currentCodexFilter = filterValue;
+      document.querySelectorAll(".filter-pill").forEach(b => b.classList.remove("active"));
+      if (btnEl) btnEl.classList.add("active");
+      renderCodexGrid();
+    }
+
+    function renderCodexGrid() {
+      const filtered =
+        currentCodexFilter === "all"
+          ? ARCANA_DECK
+          : ARCANA_DECK.filter(c => c.suit === currentCodexFilter);
+
+      if (!filtered.some(c => c.id === selectedCodexCardId) && filtered.length > 0) {
+        selectedCodexCardId = filtered[0].id;
+      }
+
+      const grid = document.getElementById("codex-grid-container");
+      grid.innerHTML = filtered
+        .map(
+          card => `
+        <div class="codex-mini-card ${card.id === selectedCodexCardId ? "selected" : ""}" onclick="selectCodexCard('${card.id}')">
+          <img src="${card.art}" alt="${card.title}" />
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--gold-primary);">
+            ARCANA ${card.roman} · +${card.points} PTS
+          </div>
+          <h3 style="font-family:'Cinzel',serif;font-size:0.9rem;color:var(--gold-bright);margin:0.2rem 0;">
+            ${card.title}
+          </h3>
+          <div style="font-size:0.74rem;color:var(--text-warm);">${card.suitIcon} ${card.suit}</div>
+        </div>
+      `
+        )
+        .join("");
+
+      renderCodexInspector();
+    }
+
+    function selectCodexCard(cardId) {
+      selectedCodexCardId = cardId;
+      renderCodexGrid();
+    }
+
+    function renderCodexInspector() {
+      const card = ARCANA_DECK.find(c => c.id === selectedCodexCardId) || ARCANA_DECK[0];
+      const panel = document.getElementById("codex-inspector-panel");
+      panel.innerHTML = `
+        <article class="arcana-card" onmousemove="handleCardTilt(event, this)" onmouseleave="resetCardTilt(this)">
+          <div>
+            <div class="card-top-bar">
+              <span>ARCANA ${card.roman} · HOLOGRAPHIC PLATE</span>
+              <span class="card-points">+${card.points} PTS</span>
+            </div>
+            <div class="card-art-frame" style="height:210px;">
+              <img src="${card.art}" alt="${card.title}" />
+              <span class="card-suit-badge">${card.suitIcon} ${card.suit}</span>
+            </div>
+            <h3 class="card-name" style="font-size:1.1rem;">${card.roman} · ${card.title}</h3>
+            <div class="card-blueprint">${card.blueprint}</div>
+            <div style="font-size:0.75rem;color:var(--gold-primary);font-family:'JetBrains Mono',monospace;margin-bottom:0.35rem;">
+              SPOKEN TRIGGER ANCHORS:
+            </div>
+            <ul class="card-triggers">
+              ${card.triggers.map(t => `<li>${t}</li>`).join("")}
+            </ul>
+          </div>
+          <div>
+            <div class="card-mini-drill">
+              <div class="drill-flat"><strong>Flat B1:</strong> “${card.flatB1}”</div>
+              <div class="drill-model-reveal visible">
+                <strong>Cambridge C1 Model:</strong> “${card.cambridgeModel}”
+              </div>
+            </div>
+            <div class="card-action-row">
+              <button class="btn-gold" onclick="speakBritishModel('${card.cambridgeModel.replace(/'/g, "\\'")}')">
+                🔊 Play British Studio Model
+              </button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    /* =========================================================================
+       11. THE GRIMOIRE OF UNCHANGED KEYWORDS · 8 C1/C2 PART 4 TRIALS ENGINE
+       ========================================================================= */
+    const GRIMOIRE_PART4_TRIALS = [
+      {
+        id: "grimoire-1",
+        roman: "I",
+        arcanaRef: "Arcana VII · The Inversion of Scarcity",
+        suitIcon: "🗡️",
+        s1Html: '<span class="deficit-span">As soon as</span> <span class="echo-span">the artisan</span> <span class="deficit-span">laid</span> <span class="echo-span">down his chisel, the apprentice began varnishing the soundboard.</span>',
+        deficitLabel: 'Deficit: "As soon as ... laid" → "No sooner had [subject] + V3"',
+        tenseHarmony: "Past Simple (laid) → Past Perfect Inversion (had ... laid)",
+        voiceShift: "Active Temporal Clause → Fronted Scarcity Auxiliary Inversion",
+        keyword: "SOONER",
+        s2Prefix: "No",
+        s2Suffix: "down his chisel than the apprentice began varnishing the soundboard.",
+        acceptedAnswers: ["sooner had the artisan laid"],
+        markSplit: "sooner had (1 mark) // the artisan laid (1 mark)",
+        fullModel: "No sooner had the artisan laid down his chisel than the apprentice began varnishing the soundboard."
+      },
+      {
+        id: "grimoire-2",
+        roman: "II",
+        arcanaRef: "Arcana I · The Negative Inversion",
+        suitIcon: "🗡️",
+        s1Html: '<span class="echo-span">Candidates</span> <span class="deficit-span">must never</span> <span class="echo-span">alter the printed form of the given keyword in Part 4.</span>',
+        deficitLabel: 'Deficit: "must never" → "Under no circumstances should/must [subject]"',
+        tenseHarmony: "Modal Prohibition (must never → should/must candidates)",
+        voiceShift: "Active Declarative → Fronted Negative Prepositional Inversion",
+        keyword: "CIRCUMSTANCES",
+        s2Prefix: "Under",
+        s2Suffix: "alter the printed form of the given keyword in Part 4.",
+        acceptedAnswers: ["no circumstances should candidates", "no circumstances must candidates"],
+        markSplit: "no circumstances (1 mark) // should/must candidates (1 mark)",
+        fullModel: "Under no circumstances should candidates alter the printed form of the given keyword in Part 4."
+      },
+      {
+        id: "grimoire-3",
+        roman: "III",
+        arcanaRef: "Arcana VIII · The Subjunctive Decree",
+        suitIcon: "⚖️",
+        s1Html: '<span class="echo-span">I</span> <span class="deficit-span">would prefer you not to</span> <span class="echo-span">rely on memorised internet templates in tomorrow\'s essay.</span>',
+        deficitLabel: 'Deficit: "would prefer you not to" → "would rather you did not"',
+        tenseHarmony: "Present/Future Preference → Unreal Past Subjunctive (did not)",
+        voiceShift: "Object + Infinitive → Finite Clause with Distinct Subject",
+        keyword: "RATHER",
+        s2Prefix: "I",
+        s2Suffix: "rely on memorised internet templates in tomorrow's essay.",
+        acceptedAnswers: ["would rather you did not"],
+        markSplit: "would rather (1 mark) // you did not (1 mark)",
+        fullModel: "I would rather you did not rely on memorised internet templates in tomorrow's essay."
+      },
+      {
+        id: "grimoire-4",
+        roman: "IV",
+        arcanaRef: "Arcana VI · The Passive Oracle",
+        suitIcon: "⚖️",
+        s1Html: '<span class="deficit-span">Architectural historians say that</span> <span class="echo-span">the sixteenth-century guildhall</span> <span class="deficit-span">survived</span> <span class="echo-span">three major fires.</span>',
+        deficitLabel: 'Deficit: "historians say that ... survived" → "is said to have survived"',
+        tenseHarmony: "Present Reporting + Past Simple → Present Passive + Perfect Infinitive",
+        voiceShift: "Active Reporting Clause → Impersonal Passive Reporting Construction",
+        keyword: "SAID",
+        s2Prefix: "The sixteenth-century guildhall",
+        s2Suffix: "three major fires.",
+        acceptedAnswers: ["is said to have survived"],
+        markSplit: "is said (1 mark) // to have survived (1 mark)",
+        fullModel: "The sixteenth-century guildhall is said to have survived three major fires."
+      },
+      {
+        id: "grimoire-5",
+        roman: "V",
+        arcanaRef: "Arcana XI · The Unreal Past Counterfactual",
+        suitIcon: "🗡️",
+        s1Html: '<span class="deficit-span">If</span> <span class="echo-span">the night watchman</span> <span class="deficit-span">had not</span> <span class="echo-span">spotted the embers, the entire manuscript archive would have perished.</span>',
+        deficitLabel: 'Deficit: "If ... had not" → "Had it not been for"',
+        tenseHarmony: "Past Perfect Conditional → Inverted Third Conditional (Had it not been for)",
+        voiceShift: "Finite If-Clause → Inverted Counterfactual Prepositional Phrase",
+        keyword: "BEEN",
+        s2Prefix: "Had",
+        s2Suffix: "the night watchman spotting the embers, the entire manuscript archive would have perished.",
+        acceptedAnswers: ["it not been for"],
+        markSplit: "it not (1 mark) // been for (1 mark)",
+        fullModel: "Had it not been for the night watchman spotting the embers, the entire manuscript archive would have perished."
+      },
+      {
+        id: "grimoire-6",
+        roman: "VI",
+        arcanaRef: "Arcana V · The Concessive Trap",
+        suitIcon: "⚖️",
+        s1Html: '<span class="deficit-span">Although</span> <span class="echo-span">the winter gale</span> <span class="deficit-span">was ferocious</span><span class="echo-span">, the ferryman navigated the narrow sound with complete composure.</span>',
+        deficitLabel: 'Deficit: "Although ... was ferocious" → "In spite of the ferocity"',
+        tenseHarmony: "Past Simple Clause → Prepositional Phrase + Nominalisation (ferocity)",
+        voiceShift: "Finite Concessive Clause → C1 Nominalised Prepositional Frame",
+        keyword: "SPITE",
+        s2Prefix: "In",
+        s2Suffix: "of the winter gale, the ferryman navigated the narrow sound with complete composure.",
+        acceptedAnswers: ["spite of the ferocity"],
+        markSplit: "spite of (1 mark) // the ferocity (1 mark)",
+        fullModel: "In spite of the ferocity of the winter gale, the ferryman navigated the narrow sound with complete composure."
+      },
+      {
+        id: "grimoire-7",
+        roman: "VII",
+        arcanaRef: "Arcana IV · The Participle Gambit",
+        suitIcon: "⏳",
+        s1Html: '<span class="echo-span">Looking back, I</span> <span class="deficit-span">wish I had</span> <span class="echo-span">spent more time learning traditional bookbinding from my grandfather.</span>',
+        deficitLabel: 'Deficit: "wish I had" → "regret not having"',
+        tenseHarmony: "Wish + Past Perfect → Regret + Negative Perfect Participle/Gerund",
+        voiceShift: "Finite Wish Clause → Non-Finite Perfect Gerund Complement",
+        keyword: "REGRET",
+        s2Prefix: "Looking back, I",
+        s2Suffix: "spent more time learning traditional bookbinding from my grandfather.",
+        acceptedAnswers: ["regret not having"],
+        markSplit: "regret not (1 mark) // having (1 mark)",
+        fullModel: "Looking back, I regret not having spent more time learning traditional bookbinding from my grandfather."
+      },
+      {
+        id: "grimoire-8",
+        roman: "VIII",
+        arcanaRef: "Arcana X · The Nominalisation Anchor",
+        suitIcon: "🔮",
+        s1Html: '<span class="echo-span">Because the stone bridge is structurally unsound,</span> <span class="deficit-span">the council cannot possibly reopen it</span> <span class="echo-span">this autumn.</span>',
+        deficitLabel: 'Deficit: "the council cannot possibly reopen it" → "(reopening) it is out of the question"',
+        tenseHarmony: "Modal Present Prohibition → Present Idiomatic C1 Predicate",
+        voiceShift: "Active Modal Clause → Gerund Subject + Idiomatic Be-Complement",
+        keyword: "QUESTION",
+        s2Prefix: "Because the stone bridge is structurally unsound, reopening",
+        s2Suffix: "this autumn.",
+        acceptedAnswers: ["it is out of the question"],
+        markSplit: "it is out (1 mark) // of the question (1 mark)",
+        fullModel: "Because the stone bridge is structurally unsound, reopening it is out of the question this autumn."
+      }
+    ];
+
+    let solvedGrimoireSet = new Set();
+
+    function renderGrimoirePart4Trials() {
+      const container = document.getElementById("grimoire-trials-container");
+      if (!container) return;
+
+      container.innerHTML = GRIMOIRE_PART4_TRIALS.map(
+        (t, idx) => `
+        <article class="grimoire-trial-card ${solvedGrimoireSet.has(t.id) ? "trial-solved" : ""}" id="grimoire-card-${idx}">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+            <span style="font-family:'Cinzel',serif; font-size:0.8rem; font-weight:700; color:var(--gold-bright);">
+              TRIAL ${t.roman} · ${t.suitIcon} ${t.arcanaRef}
+            </span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; background:rgba(212,175,55,0.16); border:1px solid var(--gold-primary); color:var(--gold-bright); padding:0.15rem 0.55rem; border-radius:6px;">
+              KEYWORD: <strong>${t.keyword}</strong> (3–6 words)
+            </span>
+          </div>
+
+          <div style="font-family:'Cormorant Garamond',serif; font-size:1.08rem; color:var(--text-ivory); background:rgba(0,0,0,0.42); padding:0.65rem 0.85rem; border-radius:8px; border-left:3px solid var(--gold-primary);" id="grimoire-s1-${idx}">
+            ${t.s1Html}
+          </div>
+
+          <div class="grimoire-meta-pills">
+            <span class="grimoire-meta-pill" style="border-color:rgba(46,196,125,0.4); color:#a9f5cb;">
+              🕰️ Tense Harmony: ${t.tenseHarmony}
+            </span>
+            <span class="grimoire-meta-pill">
+              🔄 Voice Shift: ${t.voiceShift}
+            </span>
+          </div>
+
+          <div style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:var(--gold-bright); line-height:1.65;">
+            ${t.s2Prefix}
+            <input
+              type="text"
+              class="grimoire-gap-input"
+              id="grimoire-input-${idx}"
+              placeholder="3–6 words incl. ${t.keyword}..."
+              oninput="updateGrimoireTrialLiveHUD(${idx})"
+            />
+            ${t.s2Suffix}
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; font-family:'JetBrains Mono',monospace; font-size:0.71rem;">
+            <span id="grimoire-wordpill-${idx}" style="color:var(--text-dim);">
+              📏 3–6 Word Pill: 0 words
+            </span>
+            <span id="grimoire-kwguard-${idx}" style="color:var(--gold-primary);">
+              🔒 Unchanged Keyword Guard: awaiting "${t.keyword}"
+            </span>
+          </div>
+
+          <div class="card-action-row">
+            <button type="button" class="btn-reveal-mini" onclick="toggleGrimoireEchoes(${idx})">
+              ✂️ Step 1: Strike Out the Echoes
+            </button>
+            <button type="button" class="btn-gold" style="padding:0.42rem 0.7rem; font-size:0.74rem;" onclick="checkGrimoireTrial(${idx})">
+              ✓ Check Trial
+            </button>
+            <button type="button" class="btn-reveal-mini" onclick="toggleGrimoireModel(${idx})">
+              👁️ Reveal Cambridge Model
+            </button>
+            <button type="button" class="btn-reveal-mini" title="Listen to British Model" onclick="speakBritishModel('${t.fullModel.replace(/'/g, "\\'")}')">
+              🔊
+            </button>
+          </div>
+
+          <div id="grimoire-feedback-${idx}" style="font-family:'JetBrains Mono',monospace; font-size:0.73rem; min-height:1.1rem;"></div>
+
+          <div class="grimoire-model-box" id="grimoire-model-${idx}">
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.71rem; color:var(--emerald-glow); margin-bottom:0.25rem;">
+              CAMBRIDGE C1/C2 MODEL · 1 MARK // 1 MARK SPLIT BREAKDOWN:
+            </div>
+            <div style="font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:#e8fff2; font-weight:600; margin-bottom:0.25rem;">
+              “${t.fullModel}”
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.71rem; color:var(--gold-bright);">
+              🎯 <strong>Split:</strong> ${t.markSplit} · <em>${t.deficitLabel}</em>
+            </div>
+          </div>
+        </article>
+      `
+      ).join("");
+    }
+
+    function toggleGrimoireEchoes(idx, forceState = null) {
+      playCardRiffleSound();
+      const s1 = document.getElementById(`grimoire-s1-${idx}`);
+      if (!s1) return;
+      s1.querySelectorAll(".echo-span").forEach(el => {
+        if (forceState === true) el.classList.add("struck");
+        else if (forceState === false) el.classList.remove("struck");
+        else el.classList.toggle("struck");
+      });
+      s1.querySelectorAll(".deficit-span").forEach(el => {
+        if (forceState === true) el.classList.add("isolated");
+        else if (forceState === false) el.classList.remove("isolated");
+        else el.classList.toggle("isolated");
+      });
+    }
+
+    function strikeAllGrimoireEchoes() {
+      GRIMOIRE_PART4_TRIALS.forEach((_, idx) => toggleGrimoireEchoes(idx, true));
+    }
+
+    function updateGrimoireTrialLiveHUD(idx) {
+      const trial = GRIMOIRE_PART4_TRIALS[idx];
+      const input = document.getElementById(`grimoire-input-${idx}`);
+      const wordPill = document.getElementById(`grimoire-wordpill-${idx}`);
+      const kwGuard = document.getElementById(`grimoire-kwguard-${idx}`);
+      if (!trial || !input) return;
+
+      const raw = input.value.trim();
+      const words = raw ? raw.split(/\s+/) : [];
+      const count = words.length;
+
+      if (wordPill) {
+        wordPill.textContent = `📏 3–6 Word Pill: ${count} word${count === 1 ? "" : "s"}`;
+        wordPill.style.color =
+          count >= 3 && count <= 6
+            ? "var(--emerald-glow)"
+            : count === 0
+              ? "var(--text-dim)"
+              : "var(--crimson-glow)";
+      }
+
+      const kwRegex = new RegExp(`\\b${trial.keyword}\\b`, "i");
+      const hasKw = kwRegex.test(raw);
+      if (kwGuard) {
+        if (!raw) {
+          kwGuard.textContent = `🔒 Unchanged Keyword Guard: awaiting "${trial.keyword}"`;
+          kwGuard.style.color = "var(--gold-primary)";
+        } else if (hasKw) {
+          kwGuard.textContent = `✓ Keyword "${trial.keyword}" Unchanged`;
+          kwGuard.style.color = "var(--emerald-glow)";
+        } else {
+          kwGuard.textContent = `⚠️ Never omit or alter "${trial.keyword}" (0 marks!)`;
+          kwGuard.style.color = "var(--crimson-glow)";
+        }
+      }
+    }
+
+    function checkGrimoireTrial(idx) {
+      const trial = GRIMOIRE_PART4_TRIALS[idx];
+      const input = document.getElementById(`grimoire-input-${idx}`);
+      const fb = document.getElementById(`grimoire-feedback-${idx}`);
+      const cardEl = document.getElementById(`grimoire-card-${idx}`);
+      if (!trial || !input || !fb) return;
+
+      const cleaned = input.value.trim().replace(/\s+/g, " ").toLowerCase();
+      const words = cleaned ? cleaned.split(" ") : [];
+      const kwRegex = new RegExp(`\\b${trial.keyword.toLowerCase()}\\b`);
+
+      if (!kwRegex.test(cleaned)) {
+        fb.style.color = "var(--crimson-glow)";
+        fb.textContent = `✗ Unchanged Keyword Guard: "${trial.keyword}" must appear without any inflection.`;
+        return;
+      }
+      if (words.length < 3 || words.length > 6) {
+        fb.style.color = "var(--crimson-glow)";
+        fb.textContent = `✗ Word Count (${words.length} words): Strictly 3 to 6 words required in Cambridge Part 4.`;
+        return;
+      }
+
+      const matched = trial.acceptedAnswers.some(a => a.toLowerCase() === cleaned);
+      if (matched) {
+        if (!solvedGrimoireSet.has(trial.id)) {
+          solvedGrimoireSet.add(trial.id);
+          totalScore += 400;
+          updateHud();
+        }
+        fb.style.color = "var(--emerald-glow)";
+        fb.textContent = `✓ 2 / 2 Marks! "${trial.acceptedAnswers[0]}" (${words.length} words · ${trial.markSplit}).`;
+        if (cardEl) {
+          cardEl.classList.add("trial-solved");
+          spawnGoldenEmbers(cardEl.getBoundingClientRect());
+        }
+        playIgniteChord(3);
+        const modelEl = document.getElementById(`grimoire-model-${idx}`);
+        if (modelEl) modelEl.classList.add("visible");
+        const scoreEl = document.getElementById("grimoire-part4-score");
+        if (scoreEl) {
+          scoreEl.textContent = `${solvedGrimoireSet.size} / 8 (${solvedGrimoireSet.size * 2} / 16 Marks)`;
+        }
+      } else {
+        fb.style.color = "var(--gold-bright)";
+        fb.textContent = `↺ Not quite—click "✂️ Step 1: Strike Out the Echoes" or "👁️ Reveal Cambridge Model".`;
+      }
+    }
+
+    function toggleGrimoireModel(idx) {
+      const modelEl = document.getElementById(`grimoire-model-${idx}`);
+      if (modelEl) modelEl.classList.toggle("visible");
+    }
+
+    function revealAllGrimoireModels() {
+      playIgniteChord(2);
+      GRIMOIRE_PART4_TRIALS.forEach((_, idx) => {
+        const modelEl = document.getElementById(`grimoire-model-${idx}`);
+        if (modelEl) modelEl.classList.add("visible");
+      });
+    }
+
+    function jumpToGrimoirePart4() {
+      document.querySelectorAll(".mode-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.mode === "grimoire");
+      });
+      const el = document.getElementById("mode-grimoire");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    /* =========================================================================
+       12. MODE SWITCHING & INITIALIZATION
+       ========================================================================= */
+    function switchArcanaMode(modeKey) {
+      document.querySelectorAll(".mode-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.mode === modeKey);
+      });
+      document.querySelectorAll(".mode-panel").forEach(panel => {
+        panel.classList.toggle("active", panel.id === `mode-${modeKey}`);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderActivePrompt();
+      dealRhetoricalHand(3);
+      renderGauntlet();
+      renderCodexGrid();
+      renderGrimoirePart4Trials();
+    });
+  </script>
+</body>
+</html>

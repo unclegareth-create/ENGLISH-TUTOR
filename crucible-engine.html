@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GarethEnglish · Speaking &amp; C1 Structural Crucible Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(18, 24, 38, 0.88);
+      --card-border: rgba(148, 163, 184, 0.14);
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --gold: #d4af37;
+      --gold-hover: #e6c253;
+      --gold-glow: rgba(212, 175, 55, 0.22);
+      --cyan: #38bdf8;
+      --emerald: #34d399;
+      --amber: #fbbf24;
+      --rose: #f43f5e;
+      --purple: #c084fc;
+      --font-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-display: 'Cinzel', Georgia, serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 85% 85%, rgba(212, 175, 55, 0.06) 0%, transparent 40%);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem 3.5rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1020px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.65rem;
+    }
+
+    /* TOP BAR / CONTROL HUB */
+    .top-hub {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid var(--card-border);
+      border-radius: 0.85rem;
+      padding: 0.85rem 1.25rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .hub-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hub-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--gold);
+      color: #000;
+      font-weight: 800;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px var(--gold-glow);
+    }
+
+    .hub-title {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .hub-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .hub-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+
+    .preset-selector-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .preset-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .preset-select {
+      background: rgba(0, 0, 0, 0.45);
+      color: #fff;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 0.5rem;
+      padding: 0.45rem 1.85rem 0.45rem 0.75rem;
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23d4af37%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.65rem top 50%;
+      background-size: 0.65rem auto;
+      transition: all 0.2s ease;
+    }
+
+    .preset-select:hover {
+      border-color: var(--gold);
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .preset-select:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--gold-glow);
+    }
+
+    /* CARD STYLING */
+    .workshop-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 1.25rem;
+      padding: 1.75rem 2rem;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .workshop-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.45;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .card-header h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      background: rgba(212, 175, 55, 0.12);
+      color: var(--gold);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    /* SPEAKING TIMER MODULE */
+    .speaking-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 1.75rem;
+      align-items: start;
+    }
+
+    @media (max-width: 820px) {
+      .speaking-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .timer-display-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.28);
+      padding: 1.5rem;
+      border-radius: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .time-digits {
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+      color: #ffffff;
+      line-height: 1;
+      margin: 0.4rem 0;
+      text-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+    }
+
+    .phase-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--cyan);
+      margin-bottom: 0.2rem;
+    }
+
+    .phase-cue {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      min-height: 1.3rem;
+    }
+
+    .act-progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      margin: 1rem 0 0.75rem 0;
+      display: flex;
+      overflow: hidden;
+      gap: 2px;
+    }
+
+    .act-segment {
+      height: 100%;
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      transition: background 0.3s ease;
+    }
+
+    .act-segment.active {
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .act-segment[data-act="1"] { flex-basis: 25%; }
+    .act-segment[data-act="2"] { flex-basis: 37.5%; }
+    .act-segment[data-act="3"] { flex-basis: 37.5%; }
+
+    .act-legend {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .timer-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1.25rem;
+    }
+
+    .btn {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.6rem 1.15rem;
+      border-radius: 0.55rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: #000;
+    }
+    .btn-primary:hover {
+      background: var(--gold-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .btn-emerald {
+      background: rgba(52, 211, 153, 0.16);
+      color: var(--emerald);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+    }
+    .btn-emerald:hover {
+      background: rgba(52, 211, 153, 0.25);
+    }
+
+    /* Speaking Prompt Card */
+    .prompt-box {
+      background: rgba(0, 0, 0, 0.24);
+      border-left: 3px solid var(--gold);
+      padding: 1.2rem 1.35rem;
+      border-radius: 0 0.75rem 0.75rem 0;
+    }
+
+    .prompt-topic {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.65rem;
+      line-height: 1.4;
+    }
+
+    .prompt-bullets {
+      list-style: none;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .prompt-bullets li {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .prompt-bullets li::before {
+      content: '•';
+      color: var(--gold);
+      font-weight: bold;
+    }
+
+    .margin-keywords-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.55rem;
+      margin-top: 0.9rem;
+    }
+
+    .margin-kw-input {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 0.45rem;
+      padding: 0.45rem 0.65rem;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      width: 100%;
+    }
+
+    .margin-kw-input:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .rule-pill-box {
+      margin-top: 0.9rem;
+      padding: 0.75rem 0.9rem;
+      background: rgba(212, 175, 55, 0.05);
+      border: 1px dashed rgba(212, 175, 55, 0.25);
+      border-radius: 0.5rem;
+      font-size: 0.75rem;
+      color: #fde68a;
+      line-height: 1.45;
+    }
+
+    /* SYNTAX BLUEPRINT & DRILL */
+    .drills-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .blueprint-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      color: var(--cyan);
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .drill-exercise {
+      background: rgba(0, 0, 0, 0.22);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .source-text {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      line-height: 1.5;
+      margin-bottom: 0.65rem;
+    }
+
+    .source-text strong {
+      color: var(--amber);
+      font-weight: 600;
+    }
+
+    .task-instruction {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-bottom: 0.75rem;
+    }
+
+    .reveal-box {
+      margin-top: 0.85rem;
+      padding: 0.9rem 1.15rem;
+      border-radius: 0.5rem;
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.24);
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .reveal-box.open {
+      display: block;
+    }
+
+    .model-header {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--emerald);
+      margin-bottom: 0.3rem;
+    }
+
+    .model-sentence {
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.5;
+    }
+
+    .model-breakdown {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 0.4rem;
+      line-height: 1.45;
+    }
+
+    /* SECTION 3: ALCHEMICAL FORGE (10 PART 4 CRUCIBLES) */
+    .strategy-banner {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .strategy-step {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-left: 3px solid var(--gold);
+      border-radius: 0.6rem;
+      padding: 0.75rem 0.9rem;
+    }
+
+    .strategy-step strong {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+
+    .strategy-step p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .crucible-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .crucible-item {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      border-radius: 0.85rem;
+      padding: 1.15rem 1.3rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .crucible-item.solved {
+      border-color: rgba(52, 211, 153, 0.45);
+    }
+
+    .crucible-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .crucible-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .meta-pill {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .meta-pill.tense {
+      color: var(--cyan);
+      border-color: rgba(56, 189, 248, 0.3);
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    .meta-pill.voice {
+      color: var(--purple);
+      border-color: rgba(192, 132, 252, 0.3);
+      background: rgba(192, 132, 252, 0.08);
+    }
+
+    .keyword-chip {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.7rem;
+      border-radius: 0.4rem;
+      background: rgba(212, 175, 55, 0.16);
+      color: var(--gold);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+    }
+
+    .s1-sentence {
+      font-size: 0.95rem;
+      color: #f1f5f9;
+      margin-bottom: 0.75rem;
+      line-height: 1.55;
+    }
+
+    .echo-token {
+      transition: all 0.2s ease;
+    }
+
+    .crucible-item.echo-struck .echo-token {
+      text-decoration: line-through;
+      color: rgba(148, 163, 184, 0.38);
+    }
+
+    .crucible-item.echo-struck .deficit-token {
+      color: var(--amber);
+      font-weight: 700;
+      background: rgba(251, 191, 36, 0.12);
+      padding: 0.05rem 0.3rem;
+      border-radius: 0.25rem;
+    }
+
+    .s2-input-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.93rem;
+      color: #e2e8f0;
+      margin-bottom: 0.75rem;
+    }
+
+    .crucible-input {
+      flex: 1;
+      min-width: 230px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+    }
+
+    .crucible-input:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px var(--gold-glow);
+    }
+
+    .crucible-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .status-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .wc-pill, .kw-guard-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.22rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      color: var(--text-muted);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .wc-pill.valid, .kw-guard-pill.valid {
+      background: rgba(52, 211, 153, 0.14);
+      color: var(--emerald);
+      border-color: rgba(52, 211, 153, 0.4);
+    }
+
+    .wc-pill.warn, .kw-guard-pill.warn {
+      background: rgba(244, 63, 94, 0.14);
+      color: #fda4af;
+      border-color: rgba(244, 63, 94, 0.4);
+    }
+
+    .crucible-feedback {
+      margin-top: 0.65rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 0.5rem;
+      font-size: 0.84rem;
+      display: none;
+    }
+
+    .crucible-feedback.open {
+      display: block;
+    }
+
+    .crucible-feedback.ok {
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.35);
+      color: #d1fae5;
+    }
+
+    .crucible-feedback.err {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      color: #ffe4e6;
+    }
+
+    /* SECTION 4: TRANSMUTATION SANDBOX */
+    .sandbox-prompt-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(0, 0, 0, 0.28);
+      border: 1px solid rgba(212, 175, 55, 0.25);
+      border-radius: 0.75rem;
+      padding: 0.95rem 1.15rem;
+      margin-bottom: 1rem;
+    }
+
+    .sandbox-b2-text {
+      font-size: 0.95rem;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .sandbox-textarea {
+      width: 100%;
+      min-height: 110px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: 0.75rem;
+      padding: 0.9rem 1.1rem;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      resize: vertical;
+      margin-bottom: 0.85rem;
+    }
+
+    .sandbox-textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px var(--gold-glow);
+    }
+
+    .detector-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .detector-pill {
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.32rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .detector-pill.detected {
+      background: rgba(52, 211, 153, 0.16);
+      color: var(--emerald);
+      border-color: var(--emerald);
+      box-shadow: 0 0 12px rgba(52, 211, 153, 0.2);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sound-toggle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: none;
+      border: none;
+    }
+    .sound-toggle:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- TOP CONTROL HUB -->
+    <header class="top-hub">
+      <div class="hub-brand">
+        <div class="hub-logo">G</div>
+        <div>
+          <div class="hub-title">GarethEnglish · Speaking &amp; C1 Structural Crucible Engine</div>
+          <div class="hub-subtitle">Active Speaking Long Turn &bull; 4-Step Part 4 Crucible &bull; Live C1 Transmutation Sandbox</div>
+        </div>
+      </div>
+
+      <div class="hub-controls">
+        <div class="preset-selector-wrap">
+          <label for="presetSelect" class="preset-label">Workshop Preset:</label>
+          <select id="presetSelect" class="preset-select">
+            <option value="preset1">Preset 1: Decisions &amp; Structural Focus (Clefts &amp; Inversion)</option>
+            <option value="preset2">Preset 2: Policy &amp; Impact (Inverted Conditionals &amp; Participles)</option>
+            <option value="preset3">Preset 3: Technology &amp; Objectivity (Passive Reporting &amp; Concessives)</option>
+            <option value="preset4">Preset 4: Leadership &amp; Advocacy (Hypothetical &amp; Nominalisation)</option>
+          </select>
+        </div>
+
+        <button id="soundBtn" class="sound-toggle" title="Toggle audio chimes">
+          <span>🔊 ON</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- SECTION 1: SPEAKING LONG TURN HARNESS -->
+    <section class="workshop-card" aria-label="Speaking Part 2 Long Turn Workout">
+      <div class="card-header">
+        <h2>
+          <span>🎙️</span>
+          <span>1. Speaking Part 2: Long Turn &amp; The 3-Act Arc</span>
+        </h2>
+        <span class="badge" id="activeWarmupBadge">Active Warm-Up First</span>
+      </div>
+
+      <div class="speaking-grid">
+        <!-- Prompt Column -->
+        <div>
+          <div class="prompt-box">
+            <div class="prompt-topic" id="promptTopic">Describe a complex decision that fundamentally changed your path.</div>
+            <ul class="prompt-bullets" id="promptBullets">
+              <li>What the decision was and when you made it</li>
+              <li>What alternatives or obstacles you had to balance</li>
+              <li>Who influenced or challenged your perspective</li>
+              <li>And explain how you reflect on the outcome today</li>
+            </ul>
+          </div>
+
+          <!-- 4 Single-Keyword Margin Slots -->
+          <div class="margin-keywords-grid" aria-label="1-Minute Note Margin Keywords">
+            <input type="text" class="margin-kw-input" id="kwSlot1" placeholder="1. Trigger keyword (Context)..." />
+            <input type="text" class="margin-kw-input" id="kwSlot2" placeholder="2. Trigger keyword (Obstacle)..." />
+            <input type="text" class="margin-kw-input" id="kwSlot3" placeholder="3. Trigger keyword (Turning point)..." />
+            <input type="text" class="margin-kw-input" id="kwSlot4" placeholder="4. Trigger keyword (Reflection)..." />
+          </div>
+
+          <div class="rule-pill-box" id="kwNoteGuard">
+            <strong>Gareth's 3 Structuring Rules:</strong><br>
+            1. <em>The 1-Minute Note Secret:</em> Write only 4 single trigger keywords down your margin—never full sentences.<br>
+            2. <em>The 3-Act Story Arc:</em> Past Context (30s) &rarr; Sensory Snapshot / Core Scene (45s) &rarr; Reflection / 'So What?' (45s).<br>
+            3. <em>The Cambridge Anchor:</em> Bullet points are springboards, not an interrogation checklist. If finished early, deepen your reflection until halted.
+          </div>
+        </div>
+
+        <!-- Timer / Pacing Column -->
+        <div class="timer-display-box">
+          <div class="phase-label" id="phaseLabel">Awaiting Start</div>
+          <div class="time-digits" id="timeDisplay">02:00</div>
+          <div class="phase-cue" id="phaseCue">Press '1-Min Prep' or 'Start 2-Min Turn'</div>
+
+          <!-- 3-Act Track -->
+          <div class="act-progress-track">
+            <div class="act-segment" data-act="1" id="seg1"></div>
+            <div class="act-segment" data-act="2" id="seg2"></div>
+            <div class="act-segment" data-act="3" id="seg3"></div>
+          </div>
+          <div class="act-legend">
+            <span>Act 1: Past Context (30s)</span>
+            <span>Act 2: Core Scene (45s)</span>
+            <span>Act 3: Reflection (45s)</span>
+          </div>
+
+          <div class="timer-actions">
+            <button class="btn btn-secondary" id="prepBtn">1-Min Prep</button>
+            <button class="btn btn-primary" id="startBtn">Start 2-Min Turn</button>
+            <button class="btn btn-secondary" id="resetBtn">Reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: SYNTAX BLUEPRINT & DRILL -->
+    <section class="workshop-card" aria-label="C1 Syntactic Drill Workout">
+      <div class="card-header">
+        <h2>
+          <span>⚡</span>
+          <span id="drillSectionTitle">2. C1 Structural Workout: Precision &amp; Authority</span>
+        </h2>
+        <span class="badge">Structural Blueprints</span>
+      </div>
+
+      <div class="drills-container" id="drillsContainer">
+        <!-- Injected via JavaScript from preset database -->
+      </div>
+    </section>
+
+    <!-- SECTION 3: THE ALCHEMICAL FORGE (10 C1/C2 PART 4 KEY WORD TRANSFORMATION CRUCIBLES) -->
+    <section class="workshop-card" aria-label="The Alchemical Forge: 10 Part 4 Crucibles">
+      <div class="card-header">
+        <h2>
+          <span>⚗️</span>
+          <span>3. The Alchemical Forge: 10 C1/C2 Part 4 Key Word Transformation Crucibles</span>
+        </h2>
+        <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary" id="strikeAllBtn" style="font-size:0.76rem; padding:0.4rem 0.8rem;">
+            ✂️ Strike Out All Echoes
+          </button>
+          <span class="badge" id="forgeScoreBadge">Forge Score: 0 / 20 Marks</span>
+        </div>
+      </div>
+
+      <!-- Gareth's 4-Step Elimination & Deconstruction Strategy -->
+      <div class="strategy-banner">
+        <div class="strategy-step">
+          <strong>Step 1: Strike Out the Echoes</strong>
+          <p>Cross out the words from Sentence 1 that already appear in Sentence 2 to isolate the exact semantic deficit.</p>
+        </div>
+        <div class="strategy-step">
+          <strong>Step 2: Inspect Tense Harmony</strong>
+          <p>Match the tense and aspect of Sentence 1 (past simple, present perfect, counterfactual past) inside the gap.</p>
+        </div>
+        <div class="strategy-step">
+          <strong>Step 3: Check Voice Shift</strong>
+          <p>Spot whether the new subject forces an active-to-passive shift, a cleft frame, or a negative inversion.</p>
+        </div>
+        <div class="strategy-step">
+          <strong>Step 4: Solve the Pattern (3–6 Words)</strong>
+          <p>Fit the isolated deficit into 3 to 6 words using the unchanged keyword. Never inflect the keyword.</p>
+        </div>
+      </div>
+
+      <div class="crucible-list" id="crucibleList">
+        <!-- Rendered dynamically from CRUCIBLE_ITEMS -->
+      </div>
+    </section>
+
+    <!-- SECTION 4: LIVE SENTENCE TRANSMUTATION SANDBOX -->
+    <section class="workshop-card" aria-label="Live Sentence Transmutation Sandbox">
+      <div class="card-header">
+        <h2>
+          <span>🔮</span>
+          <span>4. Live Sentence Transmutation Sandbox (5 Core C1 Structural Devices)</span>
+        </h2>
+        <span class="badge">Live Syntax Detector</span>
+      </div>
+
+      <div class="sandbox-prompt-bar">
+        <div>
+          <div style="font-size:0.74rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--gold); font-weight:700; margin-bottom:0.2rem;">
+            Flat B2 Baseline Sentence (<span id="sandboxPromptIndex">Prompt 1 of 5</span>)
+          </div>
+          <div class="sandbox-b2-text" id="sandboxB2Text">
+            "People think that short-term subsidies will solve the housing shortage, and this makes young buyers wait."
+          </div>
+        </div>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary" id="prevSandboxBtn" style="padding:0.45rem 0.85rem;">&larr; Prev</button>
+          <button type="button" class="btn btn-secondary" id="nextSandboxBtn" style="padding:0.45rem 0.85rem;">Next B2 Prompt &rarr;</button>
+        </div>
+      </div>
+
+      <textarea
+        id="sandboxInput"
+        class="sandbox-textarea"
+        placeholder="Rewrite the flat B2 sentence above using one or more of the 5 core C1 structural devices (Preparatory 'It', Passive Reporting, Cleft Sentence, Negative Inversion, or Participle Clause)..."
+      ></textarea>
+
+      <div class="detector-badges" id="detectorBadges">
+        <span class="detector-pill" id="detPrepIt">1. Preparatory 'It' (It is argued that...)</span>
+        <span class="detector-pill" id="detPassive">2. Passive Reporting (...is believed to...)</span>
+        <span class="detector-pill" id="detCleft">3. Cleft Sentence (What... is / It is... that)</span>
+        <span class="detector-pill" id="detInversion">4. Negative Inversion (Not only / Seldom / Little...)</span>
+        <span class="detector-pill" id="detParticiple">5. Participle Clause (..., thereby -ing / Having + V3)</span>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+        <div class="status-pills">
+          <span class="wc-pill" id="sandboxWordCount">0 words</span>
+          <span class="kw-guard-pill valid" id="sandboxRegisterPill">100% Depersonalised ✓</span>
+        </div>
+        <div style="display:flex; gap:0.55rem; flex-wrap:wrap;">
+          <button type="button" class="btn btn-secondary" id="sandboxSampleBtn" style="font-size:0.8rem; padding:0.48rem 0.95rem;">
+            ✨ Insert C1 Draft to Test Detector
+          </button>
+          <button type="button" class="btn btn-emerald" id="sandboxRevealBtn" style="font-size:0.8rem; padding:0.48rem 0.95rem;">
+            👁️ Reveal Cambridge Model
+          </button>
+        </div>
+      </div>
+
+      <div class="reveal-box" id="sandboxModelBox">
+        <div class="model-header">Cambridge C1 Transmutation Exemplars</div>
+        <div class="model-sentence" id="sandboxModelPrimary"></div>
+        <div class="model-breakdown" id="sandboxModelNotes"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // =========================================================
+    // WORKSHOP PRESETS (Gareth's Core Pedagogical Canon)
+    // =========================================================
+    const PRESETS = {
+      preset1: {
+        title: "Preset 1: Decisions & Structural Focus",
+        prompt: {
+          topic: "Describe a complex decision that fundamentally changed your path.",
+          bullets: [
+            "What the decision was and when you made it",
+            "What alternatives or obstacles you had to balance",
+            "Who influenced or challenged your perspective",
+            "And explain how you reflect on the outcome today"
+          ]
+        },
+        drills: [
+          {
+            badgeText: "Structure 1: The Wh- Cleft Sentence",
+            formula: "What + [Clause] + BE (is/was) + [Noun / Focus Clause]",
+            colorClass: "cyan",
+            rawText: "I was really worried because the company didn't give clear instructions about the project timeline.",
+            instruction: "Transform this sentence using an introductory Wh- Cleft to place absolute focus on the lack of clarity.",
+            modelSentence: "What caused the greatest anxiety was the total absence of clear guidance regarding the project schedule.",
+            breakdown: "✓ <strong>C1 Transformation:</strong> Elevated from a weak causal chain (<em>'I was worried because...'</em>) into an authoritative focus cleft, replacing personal emotion with depersonalised academic precision."
+          },
+          {
+            badgeText: "Structure 2: Negative Inversion",
+            formula: "Not only + Auxiliary + Subject + Verb, but [Subject] also...",
+            colorClass: "amber",
+            rawText: "The government should invest in green transit. It will also reduce urban respiratory disease.",
+            instruction: "Combine these two points using a Negative Inversion for formal rhetorical balance.",
+            modelSentence: "Not only would decisive investment in clean transit curb carbon emissions, but it would also alleviate chronic urban respiratory conditions.",
+            breakdown: "✓ <strong>C1 Transformation:</strong> Inverts auxiliary <em>would</em> before the subject <em>decisive investment</em>, creating formal balance and sophisticated flow across both clauses."
+          }
+        ]
+      },
+      preset2: {
+        title: "Preset 2: Policy & Impact",
+        prompt: {
+          topic: "Describe an environmental or infrastructural change in your home area.",
+          bullets: [
+            "What the development was and where it took place",
+            "Why the intervention was initiated",
+            "How local residents and businesses responded",
+            "And explain whether you consider it a sustainable long-term success"
+          ]
+        },
+        drills: [
+          {
+            badgeText: "Structure 3: Inverted Conditional (Counterfactual)",
+            formula: "Had + [Subject] + [Past Participle], [Subject] would have + [Past Participle]",
+            colorClass: "purple",
+            rawText: "If municipal planners had anticipated the rapid growth of the district, they wouldn't have underfunded public transport.",
+            instruction: "Eliminate 'If' and restructure using a counterfactual Inverted Conditional.",
+            modelSentence: "Had municipal planners anticipated the exponential growth of the district, they would never have curtailed capital expenditure on mass transit.",
+            breakdown: "✓ <strong>C1 Transformation:</strong> Fronting <em>Had</em> eliminates standard B2 conditional markers, instantly establishing high academic register and counterfactual precision."
+          },
+          {
+            badgeText: "Structure 4: Participle Clause (Result / Consequence)",
+            formula: "[Main Clause], + thereby / thus + [Present Participle (-ing)] + [Object]",
+            colorClass: "emerald",
+            rawText: "The local council pedestrianised the town centre, and this led to a noticeable drop in retail footfall.",
+            instruction: "Combine clauses using a Resulting Participle Clause with 'thereby' to avoid clunky coordinators.",
+            modelSentence: "The municipal council pedestrianised the historic commercial quarter, thereby triggering an unforeseen contraction in high-street footfall.",
+            breakdown: "✓ <strong>C1 Transformation:</strong> The trailing participle clause (<em>', thereby triggering...'</em>) replaces weak additive connectors (<em>'and this led to...'</em>) with dynamic causal momentum."
+          }
+        ]
+      },
+      preset3: {
+        title: "Preset 3: Technology & Objectivity",
+        prompt: {
+          topic: "Describe a technological innovation that significantly transformed interpersonal communication.",
+          bullets: [
+            "What the innovation is and when it became widespread",
+            "How daily interactions shifted as a result",
+            "What unintended consequences or debate followed",
+            "And evaluate whether this shift has strengthened or diluted authentic connection"
+          ]
+        },
+        drills: [
+          {
+            badgeText: "Structure 5: Passive Reporting with Preparatory 'It'",
+            formula: "It is [widely maintained / contended / argued] that + [Clause]",
+            colorClass: "cyan",
+            rawText: "A lot of people think that artificial intelligence tools will replace creative workers soon.",
+            instruction: "Depersonalise this claim using Preparatory 'It' and an academic Passive Reporting verb.",
+            modelSentence: "It is widely contended that generative digital tools will fundamentally displace white-collar creative roles within the decade.",
+            breakdown: "✓ <strong>C1 Transformation:</strong> Strips out informal collective hearsay (<em>'A lot of people think...'</em>) and frames the proposition with clinical academic distance."
+          },
+          {
+            badgeText: "Structure 6: Concessive Fronting (Mature Thesis Balance)",
+            formula: "Much as + [Subject] + [Verb], [Main Clause]",
+            colorClass: "amber",
+            rawText: "I acknowledge that automated feed curation keeps users engaged, but it definitely reduces attention spans.",
+            instruction: "Structure a sophisticated concession using 'Much as...' without relying on basic 'Although' or 'Even though'.",
+            modelSentence: "Much as automated feeds maximise user engagement, they inevitably fragment sustained intellectual concentration.",
+            breakdown: "✓ <strong>C1 Transformation:</strong> <em>'Much as...'</em> delivers an immediate concessive pivot that signals Band 8.0+ thesis nuance before delivering the decisive counter-clause."
+          }
+        ]
+      },
+      preset4: {
+        title: "Preset 4: Leadership & Advocacy",
+        prompt: {
+          topic: "Describe a demanding situation where you had to persuade a sceptical group.",
+          bullets: [
+            "What the initiative was and who opposed it",
+            "What rationale or evidence you presented",
+            "How you managed dissent or emotional resistance",
+            "And explain what that experience taught you about effective advocacy"
+          ]
+        },
+        drills: [
+          {
+            badgeText: "Structure 7: Hypothetical Inversion ('Were... to')",
+            formula: "Were + [Subject] + to + [Infinitive], [Subject] would + [Infinitive]",
+            colorClass: "purple",
+            rawText: "If the committee were to reject this proposal today, the entire project timeline would collapse.",
+            instruction: "Restructure into a formal hypothetical inversion to deliver maximum urgency.",
+            modelSentence: "Were the oversight committee to reject this proposal at this juncture, the operational timeline would suffer an irrecoverable collapse.",
+            breakdown: "✓ <strong>C1 Transformation:</strong> <em>'Were the committee to reject...'</em> heightens formality and diplomatic tension without sounding panicked."
+          },
+          {
+            badgeText: "Structure 8: Nominalisation (Noun-Packing for Authority)",
+            formula: "[Complex Nominal Group] + [Precise Analytical Verb] + [Impact]",
+            colorClass: "emerald",
+            rawText: "Because the team didn't communicate clearly and delays kept happening, our client lost faith in us.",
+            instruction: "Condense the informal causal verbs into a compact, authoritative nominal subject.",
+            modelSentence: "Persistent deficits in inter-team communication and recurrent delivery slippages irrevocably eroded client confidence.",
+            breakdown: "✓ <strong>C1 Transformation:</strong> Transforms three weak verbs (<em>didn't communicate</em>, <em>delays happened</em>, <em>client lost faith</em>) into dense, muscular academic noun phrases."
+          }
+        ]
+      }
+    };
+
+    // =========================================================
+    // THE ALCHEMICAL FORGE: 10 PART 4 CRUCIBLES (3-6 WORDS)
+    // =========================================================
+    const CRUCIBLE_ITEMS = [
+      {
+        id: 1,
+        keyword: "INTENTION",
+        tenseStep: "Step 2 Tense: Present Simple (refuses → has)",
+        voiceStep: "Step 3 Shift: Verb → Nominal + -ing (no intention of)",
+        s1Html: `<span class="echo-token">The board</span> <span class="deficit-token">refuses to</span> <span class="echo-token">relocate the manufacturing plant this year.</span>`,
+        prefix: "The board",
+        suffix: "the manufacturing plant this year.",
+        valid: ["has no intention of relocating", "have no intention of relocating"],
+        model: "has no intention of relocating",
+        split: "1 mark: has no intention // 1 mark: of relocating"
+      },
+      {
+        id: 2,
+        keyword: "SAID",
+        tenseStep: "Step 2 Tense: Past Event → Perfect Infinitive (to have + V3)",
+        voiceStep: "Step 3 Shift: Active Reporting → Passive Reporting",
+        s1Html: `<span class="deficit-token">Journalists report that</span> <span class="echo-token">the director</span> <span class="deficit-token">resigned</span> <span class="echo-token">over budgetary disputes.</span>`,
+        prefix: "The director",
+        suffix: "over budgetary disputes.",
+        valid: ["is said to have resigned"],
+        model: "is said to have resigned",
+        split: "1 mark: is said // 1 mark: to have resigned"
+      },
+      {
+        id: 3,
+        keyword: "RATHER",
+        tenseStep: "Step 2 Tense: Present Preference → Past Subjunctive (did not)",
+        voiceStep: "Step 3 Shift: Object Infinitive → Finite Clause (would rather + Subj)",
+        s1Html: `<span class="echo-token">I</span> <span class="deficit-token">would prefer you not to</span> <span class="echo-token">disclose these figures before Friday.</span>`,
+        prefix: "I",
+        suffix: "disclose these figures before Friday.",
+        valid: ["would rather you did not", "would rather you didn't"],
+        model: "would rather you did not",
+        split: "1 mark: would rather // 1 mark: you did not"
+      },
+      {
+        id: 4,
+        keyword: "SPITE",
+        tenseStep: "Step 2 Tense: Past Clause → Prepositional Gerund (-ing)",
+        voiceStep: "Step 3 Shift: Concessive Clause → Prepositional Phrase",
+        s1Html: `<span class="deficit-token">Although he lacked</span> <span class="echo-token">formal qualifications, he secured the fellowship.</span>`,
+        prefix: "He secured the fellowship",
+        suffix: "formal qualifications.",
+        valid: ["in spite of lacking", "in spite of having no", "in spite of his lack of"],
+        model: "in spite of lacking",
+        split: "1 mark: in spite of // 1 mark: lacking (or having no)"
+      },
+      {
+        id: 5,
+        keyword: "NO",
+        tenseStep: "Step 2 Tense: Past Simple Inversion (suspected → did ... suspect)",
+        voiceStep: "Step 3 Shift: Declarative → Fronted Negative Inversion",
+        s1Html: `<span class="echo-token">The auditors</span> <span class="deficit-token">never suspected</span> <span class="echo-token">that the records had been altered.</span>`,
+        prefix: "At",
+        suffix: "that the records had been altered.",
+        valid: ["no time did the auditors suspect"],
+        model: "no time did the auditors suspect",
+        split: "1 mark: no time did // 1 mark: the auditors suspect"
+      },
+      {
+        id: 6,
+        keyword: "REGRET",
+        tenseStep: "Step 2 Tense: Past Transition (eventually wished → came to regret)",
+        voiceStep: "Step 3 Shift: Wish + Past Perfect → Regret + Gerund (-ing)",
+        s1Html: `<span class="echo-token">She eventually</span> <span class="deficit-token">wished she had not declined</span> <span class="echo-token">the post in Vienna.</span>`,
+        prefix: "She eventually",
+        suffix: "the post in Vienna.",
+        valid: ["came to regret declining", "came to regret turning down"],
+        model: "came to regret declining",
+        split: "1 mark: came to regret // 1 mark: declining"
+      },
+      {
+        id: 7,
+        keyword: "ONLY",
+        tenseStep: "Step 2 Tense: Present Simple Inversion (reduces → does ... reduce)",
+        voiceStep: "Step 3 Shift: Additive Coordination → Correlative Inversion",
+        s1Html: `<span class="echo-token">The new turbine</span> <span class="deficit-token">reduces</span> <span class="echo-token">emissions</span> <span class="deficit-token">and</span> <span class="echo-token">cuts maintenance costs</span> <span class="deficit-token">as well.</span>`,
+        prefix: "Not",
+        suffix: "emissions, but it also cuts maintenance costs.",
+        valid: ["only does the new turbine reduce"],
+        model: "only does the new turbine reduce",
+        split: "1 mark: only does the // 1 mark: new turbine reduce"
+      },
+      {
+        id: 8,
+        keyword: "WHAT",
+        tenseStep: "Step 2 Tense: Past Simple Copula (impressed → was)",
+        voiceStep: "Step 3 Shift: Standard Subject → Wh- Cleft Focus Frame",
+        s1Html: `<span class="echo-token">The sheer clarity of her argument</span> <span class="deficit-token">impressed the panel most.</span>`,
+        prefix: "",
+        suffix: "the sheer clarity of her argument.",
+        valid: ["what impressed the panel most was"],
+        model: "What impressed the panel most was",
+        split: "1 mark: What impressed the panel // 1 mark: most was"
+      },
+      {
+        id: 9,
+        keyword: "HAD",
+        tenseStep: "Step 2 Tense: Past Perfect Counterfactual (had not intervened)",
+        voiceStep: "Step 3 Shift: 'If' Clause → Fronted Auxiliary Inversion",
+        s1Html: `<span class="deficit-token">If you had not intervened</span> <span class="echo-token">so promptly, the negotiations would have collapsed.</span>`,
+        prefix: "",
+        suffix: "so promptly, the negotiations would have collapsed.",
+        valid: ["had you not intervened", "had it not been for intervening"],
+        model: "Had you not intervened",
+        split: "1 mark: Had you // 1 mark: not intervened"
+      },
+      {
+        id: 10,
+        keyword: "POINT",
+        tenseStep: "Step 2 Tense: Present Simple Existential (is)",
+        voiceStep: "Step 3 Shift: Adjective + Infinitive → Noun + Preposition + -ing",
+        s1Html: `<span class="deficit-token">It is useless to appeal</span> <span class="echo-token">against the referee's final decision.</span>`,
+        prefix: "There",
+        suffix: "against the referee's final decision.",
+        valid: ["is no point in appealing", "is little point in appealing", "is no point appealing"],
+        model: "is no point in appealing",
+        split: "1 mark: is no point // 1 mark: in appealing"
+      }
+    ];
+
+    // =========================================================
+    // TRANSMUTATION SANDBOX PROMPTS
+    // =========================================================
+    const SANDBOX_PROMPTS = [
+      {
+        b2: "People think that short-term subsidies will solve the housing shortage, and this makes young buyers wait.",
+        sample: "It is widely argued that short-term subsidies are believed to resolve acute housing shortages, thereby prompting prospective buyers to defer entry into the market.",
+        primaryModel: "It is widely contended that short-term fiscal subsidies will resolve the housing deficit, thereby inducing first-time buyers to delay purchasing.",
+        notes: "✓ <strong>Preparatory 'It' + Passive Reporting:</strong> <em>'It is widely contended that...'</em><br>✓ <strong>Participle Clause of Consequence:</strong> <em>'..., thereby inducing...'</em><br>✓ <strong>Alternative Cleft Version:</strong> <em>'What deters prospective buyers from entering the market is the widespread belief that short-term subsidies will resolve the shortage.'</em>"
+      },
+      {
+        b2: "The municipality didn't consult local residents, and it also ignored the environmental impact report.",
+        sample: "Not only did the municipality fail to consult local residents, but it also disregarded the environmental impact assessment, thereby eroding public trust.",
+        primaryModel: "Not only did the municipal authority fail to consult local residents, but it also disregarded the statutory environmental assessment.",
+        notes: "✓ <strong>Negative Inversion:</strong> <em>'Not only did the municipal authority fail..., but it also...'</em><br>✓ <strong>Alternative Passive Reporting Version:</strong> <em>'The municipal authority is reported to have disregarded the environmental assessment whilst sidelining local residents.'</em>"
+      },
+      {
+        b2: "I think the lack of affordable rural transport is the biggest problem for small towns today.",
+        sample: "What poses the most acute challenge to rural municipalities today is the persistent absence of affordable public transit.",
+        primaryModel: "What poses the most acute threat to rural vitality is the chronic underfunding of regional public transport.",
+        notes: "✓ <strong>Wh- Cleft Sentence:</strong> <em>'What poses the most acute threat... is...'</em><br>✓ <strong>100% Depersonalisation:</strong> Eliminates <em>'I think'</em> in favour of objective syntactic emphasis."
+      },
+      {
+        b2: "Many experts say that remote work has improved productivity, so companies are reducing office space.",
+        sample: "Remote working arrangements are widely reported to have enhanced output, thereby enabling corporations to rationalise commercial floor space.",
+        primaryModel: "Hybrid working models are widely reported to have bolstered white-collar productivity, thereby enabling enterprises to downsize commercial estates.",
+        notes: "✓ <strong>Passive Reporting Verb + Perfect Infinitive:</strong> <em>'...are widely reported to have bolstered...'</em><br>✓ <strong>Participle Clause:</strong> <em>'..., thereby enabling...'</em>"
+      },
+      {
+        b2: "We rarely see such a dramatic shift in consumer behaviour in just one decade.",
+        sample: "Seldom has such a profound transformation in consumer behaviour been witnessed within a single decade.",
+        primaryModel: "Seldom has so pronounced a shift in consumer purchasing habits been observed within the span of a single decade.",
+        notes: "✓ <strong>Negative Inversion + Passive Voice:</strong> <em>'Seldom has... been observed...'</em><br>✓ <strong>Alternative Preparatory 'It' Cleft:</strong> <em>'It is rare that so dramatic a transformation in consumer habits occurs within a single decade.'</em>"
+      }
+    ];
+
+    // ==========================================
+    // PROCEDURAL AUDIO SYNTHESIZER
+    // ==========================================
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playTone(freq, duration = 0.15, type = 'sine') {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playPhaseChime(step) {
+      if (!soundEnabled) return;
+      if (step === 1) playTone(440, 0.2);
+      else if (step === 2) playTone(554.37, 0.25);
+      else if (step === 3) playTone(659.25, 0.35);
+      else if (step === 'finish') {
+        playTone(523.25, 0.15);
+        setTimeout(() => playTone(659.25, 0.3), 150);
+      }
+    }
+
+    document.getElementById('soundBtn').addEventListener('click', () => {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundBtn').innerHTML = soundEnabled ? '<span>🔊 ON</span>' : '<span>🔇 OFF</span>';
+    });
+
+    // Guard for 4 single-keyword margin inputs
+    ['kwSlot1', 'kwSlot2', 'kwSlot3', 'kwSlot4'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', () => {
+        const words = el.value.trim() ? el.value.trim().split(/\s+/).length : 0;
+        el.style.borderColor = words > 2 ? 'var(--rose)' : 'rgba(212, 175, 55, 0.28)';
+      });
+    });
+
+    // ==========================================
+    // 3-ACT SPEAKING TIMER ENGINE
+    // ==========================================
+    let timerInterval = null;
+    let totalSeconds = 120;
+    let currentMode = 'idle';
+
+    const phaseLabel = document.getElementById('phaseLabel');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const phaseCue = document.getElementById('phaseCue');
+    const seg1 = document.getElementById('seg1');
+    const seg2 = document.getElementById('seg2');
+    const seg3 = document.getElementById('seg3');
+
+    function formatTime(secs) {
+      const m = Math.floor(secs / 60);
+      const s = secs % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function clearTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function resetTimer() {
+      clearTimer();
+      currentMode = 'idle';
+      totalSeconds = 120;
+      timeDisplay.textContent = '02:00';
+      timeDisplay.style.color = '#ffffff';
+      phaseLabel.textContent = 'Awaiting Start';
+      phaseLabel.style.color = 'var(--cyan)';
+      phaseCue.textContent = "Press '1-Min Prep' or 'Start 2-Min Turn'";
+      seg1.style.background = 'rgba(255, 255, 255, 0.05)';
+      seg2.style.background = 'rgba(255, 255, 255, 0.05)';
+      seg3.style.background = 'rgba(255, 255, 255, 0.05)';
+      seg1.classList.remove('active');
+      seg2.classList.remove('active');
+      seg3.classList.remove('active');
+    }
+
+    function startPrepCountdown() {
+      clearTimer();
+      getAudioContext();
+      currentMode = 'prep';
+      totalSeconds = 60;
+      phaseLabel.textContent = '⏱️ 1-Minute Note-Taking';
+      phaseLabel.style.color = 'var(--amber)';
+      phaseCue.textContent = 'Write ONLY 4 trigger keywords down your margin.';
+      timeDisplay.style.color = 'var(--amber)';
+      timeDisplay.textContent = '01:00';
+
+      timerInterval = setInterval(() => {
+        totalSeconds--;
+        timeDisplay.textContent = formatTime(totalSeconds);
+
+        if (totalSeconds <= 0) {
+          clearTimer();
+          playPhaseChime('finish');
+          phaseLabel.textContent = 'Prep Time Concluded';
+          phaseCue.textContent = 'Ready? Begin your 2-minute turn!';
+          timeDisplay.textContent = '02:00';
+          totalSeconds = 120;
+        }
+      }, 1000);
+    }
+
+    function startSpeakingTurn() {
+      clearTimer();
+      getAudioContext();
+      currentMode = 'speaking';
+      totalSeconds = 120;
+      updateSpeakingPhase(totalSeconds);
+
+      timerInterval = setInterval(() => {
+        totalSeconds--;
+        timeDisplay.textContent = formatTime(totalSeconds);
+        updateSpeakingPhase(totalSeconds);
+
+        if (totalSeconds <= 0) {
+          clearTimer();
+          playPhaseChime('finish');
+          phaseLabel.textContent = '🏁 Long Turn Concluded';
+          phaseLabel.style.color = 'var(--emerald)';
+          phaseCue.textContent = 'Excellent. Full 2-minute cadence sustained.';
+          timeDisplay.textContent = '00:00';
+        }
+      }, 1000);
+    }
+
+    function updateSpeakingPhase(remaining) {
+      const elapsed = 120 - remaining;
+
+      if (elapsed < 30) {
+        phaseLabel.textContent = 'Act 1: Past Context';
+        phaseLabel.style.color = 'var(--cyan)';
+        phaseCue.textContent = 'Anchor the situation in time, setting, and original intent.';
+        timeDisplay.style.color = 'var(--cyan)';
+        seg1.style.background = 'var(--cyan)';
+        seg1.classList.add('active');
+        seg2.style.background = 'rgba(255, 255, 255, 0.05)';
+        seg3.style.background = 'rgba(255, 255, 255, 0.05)';
+      } else if (elapsed >= 30 && elapsed < 75) {
+        if (elapsed === 30) playPhaseChime(2);
+        phaseLabel.textContent = 'Act 2: The Core Scene';
+        phaseLabel.style.color = 'var(--amber)';
+        phaseCue.textContent = 'Zoom into the turning point: friction, sensory detail, choices.';
+        timeDisplay.style.color = 'var(--amber)';
+        seg2.style.background = 'var(--amber)';
+        seg2.classList.add('active');
+      } else {
+        if (elapsed === 75) playPhaseChime(3);
+        phaseLabel.textContent = 'Act 3: Reflection & Impact';
+        phaseLabel.style.color = 'var(--emerald)';
+        phaseCue.textContent = 'Synthesise: How has this reshaped your outlook or perspective today?';
+        timeDisplay.style.color = 'var(--emerald)';
+        seg3.style.background = 'var(--emerald)';
+        seg3.classList.add('active');
+      }
+    }
+
+    document.getElementById('prepBtn').addEventListener('click', startPrepCountdown);
+    document.getElementById('startBtn').addEventListener('click', startSpeakingTurn);
+    document.getElementById('resetBtn').addEventListener('click', resetTimer);
+
+    // ==========================================
+    // PRESET LOADER & DRILL RENDERER
+    // ==========================================
+    function loadPreset(presetKey) {
+      const data = PRESETS[presetKey];
+      if (!data) return;
+
+      document.getElementById('promptTopic').textContent = data.prompt.topic;
+      const bulletsEl = document.getElementById('promptBullets');
+      bulletsEl.innerHTML = '';
+      data.prompt.bullets.forEach(bullet => {
+        const li = document.createElement('li');
+        li.textContent = bullet;
+        bulletsEl.appendChild(li);
+      });
+
+      resetTimer();
+
+      const container = document.getElementById('drillsContainer');
+      container.innerHTML = '';
+
+      data.drills.forEach((drill, index) => {
+        const drillEl = document.createElement('div');
+        drillEl.className = 'drill-exercise';
+
+        const colorVar = drill.colorClass === 'amber' ? 'var(--amber)' 
+          : drill.colorClass === 'purple' ? 'var(--purple)' 
+          : drill.colorClass === 'emerald' ? 'var(--emerald)' 
+          : 'var(--cyan)';
+
+        drillEl.innerHTML = `
+          <div class="blueprint-badge" style="color: ${colorVar}; border-color: ${colorVar}40; background: ${colorVar}15;">
+            <strong>${drill.badgeText}</strong> &bull; Formula: <code>${drill.formula}</code>
+          </div>
+
+          <div class="source-text">
+            <strong>Raw Student Thought (Band 6.0/6.5 baseline):</strong><br>
+            &ldquo;${drill.rawText}&rdquo;
+          </div>
+
+          <div class="task-instruction">
+            <em>Task: ${drill.instruction}</em>
+          </div>
+
+          <button class="btn btn-secondary reveal-toggle" data-target="box-${presetKey}-${index}" style="font-size: 0.8rem; padding: 0.45rem 0.9rem;">
+            👁️ Reveal Cambridge Model
+          </button>
+
+          <div class="reveal-box" id="box-${presetKey}-${index}">
+            <div class="model-header">Cambridge C1 Benchmark Model</div>
+            <div class="model-sentence">&ldquo;${drill.modelSentence}&rdquo;</div>
+            <div class="model-breakdown">${drill.breakdown}</div>
+          </div>
+        `;
+
+        container.appendChild(drillEl);
+      });
+
+      container.querySelectorAll('.reveal-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const box = document.getElementById(targetId);
+          const isOpen = box.classList.contains('open');
+
+          if (isOpen) {
+            box.classList.remove('open');
+            btn.textContent = '👁️ Reveal Cambridge Model';
+          } else {
+            box.classList.add('open');
+            btn.textContent = '🙈 Hide Cambridge Model';
+            playTone(600, 0.08, 'triangle');
+          }
+        });
+      });
+    }
+
+    document.getElementById('presetSelect').addEventListener('change', (e) => {
+      loadPreset(e.target.value);
+    });
+
+    // ==========================================
+    // SECTION 3: 10 PART 4 CRUCIBLES ENGINE
+    // ==========================================
+    const solvedCrucibles = new Set();
+
+    function renderCrucibles() {
+      const list = document.getElementById('crucibleList');
+      list.innerHTML = '';
+
+      CRUCIBLE_ITEMS.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'crucible-item';
+        card.id = `crucible-card-${item.id}`;
+
+        card.innerHTML = `
+          <div class="crucible-top">
+            <div class="crucible-meta">
+              <span class="meta-pill">Crucible #${item.id}</span>
+              <span class="meta-pill tense">${item.tenseStep}</span>
+              <span class="meta-pill voice">${item.voiceStep}</span>
+            </div>
+            <span class="keyword-chip" title="Keyword must remain 100% unchanged">${item.keyword}</span>
+          </div>
+
+          <div class="s1-sentence">
+            ${item.s1Html}
+          </div>
+
+          <div class="s2-input-row">
+            ${item.prefix ? `<span>${item.prefix}</span>` : ''}
+            <input
+              type="text"
+              class="crucible-input"
+              id="crucible-in-${item.id}"
+              placeholder="Type 3–6 words including ${item.keyword}..."
+              autocomplete="off"
+            />
+            <span>${item.suffix}</span>
+          </div>
+
+          <div class="crucible-controls">
+            <div class="status-pills">
+              <span class="wc-pill" id="crucible-wc-${item.id}">0 / 3–6 words</span>
+              <span class="kw-guard-pill" id="crucible-kw-${item.id}">Keyword: awaiting ${item.keyword}</span>
+            </div>
+
+            <div style="display:flex; gap:0.45rem; flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary" data-strike="${item.id}" style="font-size:0.75rem; padding:0.38rem 0.75rem;">
+                ✂️ Step 1: Strike Out the Echoes
+              </button>
+              <button type="button" class="btn btn-primary" data-check="${item.id}" style="font-size:0.75rem; padding:0.38rem 0.85rem;">
+                Check Answer
+              </button>
+              <button type="button" class="btn btn-emerald" data-model="${item.id}" style="font-size:0.75rem; padding:0.38rem 0.85rem;">
+                👁️ Reveal Cambridge Model
+              </button>
+            </div>
+          </div>
+
+          <div class="crucible-feedback" id="crucible-fb-${item.id}"></div>
+
+          <div class="reveal-box" id="crucible-model-${item.id}">
+            <div class="model-header">Cambridge Part 4 Split-Mark Key (2 Marks)</div>
+            <div class="model-sentence">${item.prefix ? item.prefix + ' ' : ''}<strong style="color:var(--gold);">${item.model}</strong> ${item.suffix}</div>
+            <div class="model-breakdown">✓ <strong>Marking Split:</strong> <code>${item.split}</code></div>
+          </div>
+        `;
+
+        list.appendChild(card);
+
+        const inputEl = card.querySelector(`#crucible-in-${item.id}`);
+        inputEl.addEventListener('input', () => updateCrucibleLivePills(item));
+
+        card.querySelector(`[data-strike="${item.id}"]`).addEventListener('click', (e) => {
+          card.classList.toggle('echo-struck');
+          const struck = card.classList.contains('echo-struck');
+          e.currentTarget.textContent = struck ? '↺ Restore Echoes' : '✂️ Step 1: Strike Out the Echoes';
+          playTone(struck ? 520 : 380, 0.08, 'triangle');
+        });
+
+        card.querySelector(`[data-check="${item.id}"]`).addEventListener('click', () => {
+          checkCrucibleAnswer(item);
+        });
+
+        card.querySelector(`[data-model="${item.id}"]`).addEventListener('click', (e) => {
+          const box = document.getElementById(`crucible-model-${item.id}`);
+          const isOpen = box.classList.contains('open');
+          box.classList.toggle('open');
+          e.currentTarget.textContent = isOpen ? '👁️ Reveal Cambridge Model' : '🙈 Hide Cambridge Model';
+          playTone(620, 0.09, 'triangle');
+        });
+      });
+    }
+
+    function updateCrucibleLivePills(item) {
+      const inputEl = document.getElementById(`crucible-in-${item.id}`);
+      const wcPill = document.getElementById(`crucible-wc-${item.id}`);
+      const kwPill = document.getElementById(`crucible-kw-${item.id}`);
+      const raw = inputEl.value.trim();
+      const tokens = raw ? raw.split(/\s+/) : [];
+      const count = tokens.length;
+
+      wcPill.textContent = `${count} / 3–6 words`;
+      wcPill.className = 'wc-pill ' + (count >= 3 && count <= 6 ? 'valid' : (count > 0 ? 'warn' : ''));
+
+      const cleanTokens = tokens.map(t => t.replace(/[^a-zA-Z']/g, '').toUpperCase());
+      const hasExactKeyword = cleanTokens.includes(item.keyword);
+
+      if (!raw) {
+        kwPill.textContent = `Keyword: awaiting ${item.keyword}`;
+        kwPill.className = 'kw-guard-pill';
+      } else if (hasExactKeyword) {
+        kwPill.textContent = `Keyword ${item.keyword} intact ✓`;
+        kwPill.className = 'kw-guard-pill valid';
+      } else {
+        kwPill.textContent = `⚠️ Must include unchanged ${item.keyword}`;
+        kwPill.className = 'kw-guard-pill warn';
+      }
+    }
+
+    function checkCrucibleAnswer(item) {
+      const inputEl = document.getElementById(`crucible-in-${item.id}`);
+      const fbEl = document.getElementById(`crucible-fb-${item.id}`);
+      const cardEl = document.getElementById(`crucible-card-${item.id}`);
+      const normalized = inputEl.value.trim().toLowerCase().replace(/\s+/g, ' ');
+      const tokens = normalized ? normalized.split(' ') : [];
+      const cleanUpper = tokens.map(t => t.replace(/[^a-z']/g, '').toUpperCase());
+
+      if (!cleanUpper.includes(item.keyword)) {
+        playTone(210, 0.2, 'sawtooth');
+        fbEl.className = 'crucible-feedback open err';
+        fbEl.innerHTML = `<strong>⚠️ Keyword Guard:</strong> You must use the exact keyword <strong>${item.keyword}</strong> without inflecting or changing it.`;
+        return;
+      }
+
+      if (tokens.length < 3 || tokens.length > 6) {
+        playTone(210, 0.2, 'sawtooth');
+        fbEl.className = 'crucible-feedback open err';
+        fbEl.innerHTML = `<strong>⚠️ Word Count Guard:</strong> Your gap has <strong>${tokens.length} words</strong>. Cambridge Part 4 strictly requires between <strong>3 and 6 words</strong>.`;
+        return;
+      }
+
+      if (item.valid.includes(normalized)) {
+        playTone(587.33, 0.14);
+        setTimeout(() => playTone(880, 0.22), 120);
+        fbEl.className = 'crucible-feedback open ok';
+        fbEl.innerHTML = `<strong>✓ 2 / 2 Marks Confirmed:</strong> <em>"${item.model}"</em> &mdash; ${item.split}`;
+        cardEl.classList.add('solved');
+        solvedCrucibles.add(item.id);
+        document.getElementById('forgeScoreBadge').textContent = `Forge Score: ${solvedCrucibles.size * 2} / 20 Marks`;
+      } else {
+        playTone(240, 0.2, 'sawtooth');
+        fbEl.className = 'crucible-feedback open err';
+        fbEl.innerHTML = `<strong>Not quite:</strong> Check Step 2 Tense Harmony and Step 3 Voice Shift, or click <em>👁️ Reveal Cambridge Model</em> to inspect the <code>1 mark // 1 mark</code> split.`;
+      }
+    }
+
+    let allEchoesStruck = false;
+    document.getElementById('strikeAllBtn').addEventListener('click', (e) => {
+      allEchoesStruck = !allEchoesStruck;
+      document.querySelectorAll('.crucible-item').forEach(card => {
+        card.classList.toggle('echo-struck', allEchoesStruck);
+        const btn = card.querySelector('[data-strike]');
+        if (btn) btn.textContent = allEchoesStruck ? '↺ Restore Echoes' : '✂️ Step 1: Strike Out the Echoes';
+      });
+      e.currentTarget.textContent = allEchoesStruck ? '↺ Restore All Echoes' : '✂️ Strike Out All Echoes';
+      playTone(allEchoesStruck ? 540 : 380, 0.1, 'triangle');
+    });
+
+    // ==========================================
+    // SECTION 4: LIVE TRANSMUTATION SANDBOX
+    // ==========================================
+    let sandboxIdx = 0;
+
+    function loadSandboxPrompt(idx) {
+      sandboxIdx = (idx + SANDBOX_PROMPTS.length) % SANDBOX_PROMPTS.length;
+      const item = SANDBOX_PROMPTS[sandboxIdx];
+      document.getElementById('sandboxPromptIndex').textContent = `Prompt ${sandboxIdx + 1} of ${SANDBOX_PROMPTS.length}`;
+      document.getElementById('sandboxB2Text').textContent = `"${item.b2}"`;
+      document.getElementById('sandboxModelPrimary').innerHTML = `&ldquo;${item.primaryModel}&rdquo;`;
+      document.getElementById('sandboxModelNotes').innerHTML = item.notes;
+      document.getElementById('sandboxModelBox').classList.remove('open');
+      document.getElementById('sandboxRevealBtn').textContent = '👁️ Reveal Cambridge Model';
+      evaluateSandboxInput();
+    }
+
+    function evaluateSandboxInput() {
+      const val = document.getElementById('sandboxInput').value;
+      const words = val.trim() ? val.trim().split(/\s+/).length : 0;
+
+      const wcEl = document.getElementById('sandboxWordCount');
+      wcEl.textContent = `${words} words`;
+      wcEl.className = 'wc-pill ' + (words >= 12 ? 'valid' : '');
+
+      // 5 Core C1 Structural Device Regex Detectors
+      const hasPrepIt = /\bit\s+is\s+(?:widely\s+|generally\s+|often\s+|commonly\s+)?(?:argued|contended|maintained|acknowledged|accepted|recognised|recognized|claimed|suggested|rare|clear)\s+that\b/i.test(val);
+      const hasPassive = /\b(?:is|are|was|were)\s+(?:widely\s+|generally\s+|universally\s+)?(?:believed|said|thought|reported|known|understood|considered|expected)\s+to\b/i.test(val);
+      const hasCleft = /\b(?:what\s+[a-z\s]{3,45}\s+(?:is|was|are|were)\b|it\s+(?:is|was)\s+[^.?!]{2,40}\s+(?:that|who)\b)/i.test(val);
+      const hasInversion = /\b(?:not\s+only\s+(?:do|does|did|has|have|had|will|would|can|could|is|are)|(?:seldom|rarely|little|never|scarcely|hardly|no\s+sooner)\s+(?:do|does|did|has|have|had|will|would|can|could|is|are)|(?:at\s+no\s+time|under\s+no\s+circumstances|on\s+no\s+account)\s+(?:do|does|did|has|have|had|will|would|should|must|can|could)|had\s+\w+\s+(?:not\s+)?\w+ed\b|were\s+[\w\s]+\s+to\s+\w+)/i.test(val);
+      const hasParticiple = /(?:,\s*(?:thereby|thus)\s+\w+ing\b|\bhaving\s+\w+(?:ed|en|t)\b)/i.test(val);
+
+      document.getElementById('detPrepIt').classList.toggle('detected', hasPrepIt);
+      document.getElementById('detPassive').classList.toggle('detected', hasPassive);
+      document.getElementById('detCleft').classList.toggle('detected', hasCleft);
+      document.getElementById('detInversion').classList.toggle('detected', hasInversion);
+      document.getElementById('detParticiple').classList.toggle('detected', hasParticiple);
+
+      const hasFirstPerson = /\b(?:i\s+think|in\s+my\s+opinion|i\s+believe|we\s+see)\b/i.test(val);
+      const regPill = document.getElementById('sandboxRegisterPill');
+      if (hasFirstPerson) {
+        regPill.textContent = "⚠️ Prune 1st-Person ('I think')";
+        regPill.className = 'kw-guard-pill warn';
+      } else {
+        regPill.textContent = '100% Depersonalised ✓';
+        regPill.className = 'kw-guard-pill valid';
+      }
+    }
+
+    document.getElementById('sandboxInput').addEventListener('input', evaluateSandboxInput);
+    document.getElementById('prevSandboxBtn').addEventListener('click', () => loadSandboxPrompt(sandboxIdx - 1));
+    document.getElementById('nextSandboxBtn').addEventListener('click', () => loadSandboxPrompt(sandboxIdx + 1));
+
+    document.getElementById('sandboxSampleBtn').addEventListener('click', () => {
+      document.getElementById('sandboxInput').value = SANDBOX_PROMPTS[sandboxIdx].sample;
+      evaluateSandboxInput();
+      playTone(550, 0.1, 'triangle');
+    });
+
+    document.getElementById('sandboxRevealBtn').addEventListener('click', (e) => {
+      const box = document.getElementById('sandboxModelBox');
+      const isOpen = box.classList.contains('open');
+      box.classList.toggle('open');
+      e.currentTarget.textContent = isOpen ? '👁️ Reveal Cambridge Model' : '🙈 Hide Cambridge Model';
+      playTone(620, 0.09, 'triangle');
+    });
+
+    // Initial Load
+    loadPreset('preset1');
+    renderCrucibles();
+    loadSandboxPrompt(0);
+  </script>
+</body>
+</html>

@@ -73,6 +73,16 @@
   <link rel="preload" href="assets/fonts/plus-jakarta-sans-500-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="assets/fonts/fontawesome-local.css">
+  <style>
+    .sim-crit-highlight { transition: all 0.2s ease; cursor: pointer; border-radius: 0.375rem; padding: 0.1rem 0.3rem; }
+    .sim-crit-highlight.active-crit { ring: 2px solid #4f46e5; box-shadow: 0 0 0 2px #4f46e5; }
+    .kwt-model-drawer { display: none; }
+    .kwt-model-drawer.open { display: block; animation: fadeInSim 0.22s ease-out; }
+    @keyframes fadeInSim {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 
 <body class="font-sans text-slate-800 bg-slate-50/50 antialiased selection:bg-brand-100 selection:text-brand-900">
@@ -408,6 +418,143 @@
       </div>
     </section>
 
+    <!-- Live Examiner Red-Pen Script Comparison & Criteria Simulator -->
+    <section id="red-pen-criteria-simulator" class="py-16 sm:py-20 bg-white border-t border-slate-200 scroll-mt-24" aria-labelledby="sim-section-heading">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mb-8">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-xs font-bold text-rose-800 mb-3 shadow-sm">
+            <i class="fa-solid fa-pen-clip text-rose-600" aria-hidden="true"></i>
+            <span>Examiner Criteria Simulator &bull; Band 6.5 vs Band 8.0</span>
+          </div>
+          <h2 id="sim-section-heading" class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            Inside the Examiner's Head: <span class="text-indigo-600">Band 6.5 Template Trap vs Band 8.0 Restraint</span>
+          </h2>
+          <p class="text-slate-600 text-sm sm:text-base mt-2 leading-relaxed">
+            Toggle between the <strong>Band 6.5 (Template Trap)</strong> paragraph and the <strong>Band 8.0 (Belfast Desk C1 Restraint)</strong> rewrite below, or click any of the four official marking criteria badges (<strong>TR</strong>, <strong>CC</strong>, <strong>LR</strong>, <strong>GRA</strong>) to see how I diagnose and rebuild each sentence in real time.
+          </p>
+        </div>
+
+        <!-- Simulator Card -->
+        <div class="rounded-3xl border border-slate-200 bg-slate-50/70 shadow-lg overflow-hidden mb-14">
+          <!-- Top Bar: Script Toggle & Criteria Selector -->
+          <div class="bg-slate-900 text-white p-4 sm:p-5 border-b border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2" role="group" aria-label="Select Script Band Level">
+              <button type="button" id="sim-btn-65" onclick="setSimBand('65')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer bg-rose-600 text-white shadow-sm">
+                Band 6.5 Script (Template Trap)
+              </button>
+              <button type="button" id="sim-btn-80" onclick="setSimBand('80')" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer bg-slate-800 text-slate-300 hover:text-white">
+                Band 8.0 Script (Belfast Desk C1 Restraint)
+              </button>
+              <button type="button" id="sim-btn-both" onclick="setSimBand('both')" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer bg-slate-800 text-slate-300 hover:text-white">
+                Side-by-Side Compare
+              </button>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-1.5" role="group" aria-label="Filter by Official Marking Criterion">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mr-1">Inspect Criterion:</span>
+              <button type="button" onclick="selectSimCriterion('TR')" id="crit-pill-TR" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer bg-indigo-600 text-white border border-indigo-400">
+                TR · Task Response
+              </button>
+              <button type="button" onclick="selectSimCriterion('CC')" id="crit-pill-CC" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+                CC · Coherence &amp; Cohesion
+              </button>
+              <button type="button" onclick="selectSimCriterion('LR')" id="crit-pill-LR" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+                LR · Lexical Resource
+              </button>
+              <button type="button" onclick="selectSimCriterion('GRA')" id="crit-pill-GRA" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer bg-slate-800 text-slate-300 hover:text-white border border-slate-700">
+                GRA · Grammatical Range
+              </button>
+            </div>
+          </div>
+
+          <!-- Script + Red-Pen Inspector Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-12">
+            <!-- Left: Script Display -->
+            <div class="lg:col-span-7 p-6 sm:p-8 bg-white border-b lg:border-b-0 lg:border-r border-slate-200">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-100">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500">Task 2 Topic: Regional Job Creation vs Megacity Growth</span>
+                <span id="sim-band-status" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">Viewing: Band 6.5 (Stuck on Memorised Clichés)</span>
+              </div>
+
+              <!-- Band 6.5 Panel -->
+              <div id="sim-script-65" class="space-y-3 text-sm sm:text-base leading-relaxed text-slate-800">
+                <p>
+                  <span onclick="selectSimCriterion('CC')" data-crit="CC" class="sim-crit-highlight bg-rose-50 text-rose-900 border-b-2 border-rose-400 font-medium">
+                    <span class="inline-block px-1.5 py-0.2 rounded bg-rose-700 text-white text-[10px] font-extrabold mr-1">CC 6.0</span>Nowadays, in today's fast-paced modern world, every coin has two sides when we talk about urbanisation.
+                  </span>
+                  <span onclick="selectSimCriterion('LR')" data-crit="LR" class="sim-crit-highlight bg-amber-50 text-amber-950 border-b-2 border-amber-400 font-medium">
+                    <span class="inline-block px-1.5 py-0.2 rounded bg-amber-700 text-white text-[10px] font-extrabold mr-1">LR 6.5</span>A plethora of young people face a paramount conundrum because jobs in small towns are very scarce.
+                  </span>
+                  <span onclick="selectSimCriterion('TR')" data-crit="TR" class="sim-crit-highlight bg-indigo-50 text-indigo-950 border-b-2 border-indigo-400 font-medium">
+                    <span class="inline-block px-1.5 py-0.2 rounded bg-indigo-700 text-white text-[10px] font-extrabold mr-1">TR 6.5</span>A lot of people think that if the government gives money to companies, everyone will stay in the countryside and be happy.
+                  </span>
+                  <span onclick="selectSimCriterion('GRA')" data-crit="GRA" class="sim-crit-highlight bg-purple-50 text-purple-950 border-b-2 border-purple-400 font-medium">
+                    <span class="inline-block px-1.5 py-0.2 rounded bg-purple-700 text-white text-[10px] font-extrabold mr-1">GRA 6.5</span>Moreover, companies can open offices in small towns, and this will reduce traffic in big cities.
+                  </span>
+                </p>
+              </div>
+
+              <!-- Band 8.0 Panel -->
+              <div id="sim-script-80" class="hidden space-y-3 text-sm sm:text-base leading-relaxed text-slate-800">
+                <p>
+                  <span onclick="selectSimCriterion('CC')" data-crit="CC" class="sim-crit-highlight bg-emerald-50 text-emerald-950 border-b-2 border-emerald-500 font-medium">
+                    <span class="inline-block px-1.5 py-0.2 rounded bg-emerald-700 text-white text-[10px] font-extrabold mr-1">CC 8.0</span>While it is widely argued that metropolitan capitals naturally attract ambitious talent, regional depopulation is primarily driven by economic centralisation.
+                  </span>
+                  <span onclick="selectSimCriterion('LR')" data-crit="LR" class="sim-crit-highlight bg-sky-50 text-sky-950 border-b-2 border-sky-500 font-medium">
+                    <span class="inline-block px-1.5 py-0.2 rounded bg-sky-700 text-white text-[10px] font-extrabold mr-1">LR 8.0</span>What compels young graduates to leave provincial towns is the chronic scarcity of graduate-level career pathways.
+                  </span>
+                  <span onclick="selectSimCriterion('TR')" data-crit="TR" class="sim-crit-highlight bg-indigo-50 text-indigo-950 border-b-2 border-indigo-500 font-medium">
+                    <span class="inline-block px-1.5 py-0.2 rounded bg-indigo-700 text-white text-[10px] font-extrabold mr-1">TR 8.0</span>Were municipal authorities to offer targeted payroll tax relief to technology and finance firms, high-skilled employers would decentralise their recruitment.
+                  </span>
+                  <span onclick="selectSimCriterion('GRA')" data-crit="GRA" class="sim-crit-highlight bg-purple-50 text-purple-950 border-b-2 border-purple-500 font-medium">
+                    <span class="inline-block px-1.5 py-0.2 rounded bg-purple-700 text-white text-[10px] font-extrabold mr-1">GRA 8.5</span>Not only would such incentives revitalise local high streets, but they would also relieve acute housing pressure in overcrowded capitals, thereby fostering balanced national growth.
+                  </span>
+                </p>
+              </div>
+
+              <div class="mt-6 pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
+                <span>💡 Click any badge (<strong>TR</strong>, <strong>CC</strong>, <strong>LR</strong>, <strong>GRA</strong>) in the text above to inspect my red-pen diagnosis.</span>
+                <span class="font-mono font-bold text-slate-700">100% Depersonalised C1 Standard</span>
+              </div>
+            </div>
+
+            <!-- Right: Red-Pen Marginalia Diagnostic Inspector -->
+            <div class="lg:col-span-5 p-6 sm:p-7 bg-slate-50 flex flex-col justify-between">
+              <div id="sim-criterion-detail" class="space-y-4">
+                <!-- Populated dynamically via JS -->
+              </div>
+              <div class="mt-6 pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
+                <span class="font-semibold text-slate-800">Structural Blueprint:</span>
+                <code id="sim-criterion-formula" class="px-2 py-1 rounded bg-slate-900 text-amber-300 font-mono text-[11px]">Were + Subject + to + Infinitive</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6-Item "Fix the Script" Part 4 Structural Upgrade Workout -->
+        <div id="fix-the-script-part4" class="pt-4">
+          <div class="max-w-3xl mb-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-xs font-bold text-indigo-800 mb-2">
+              <span>Interactive Red-Pen Drill &bull; 4-Step Deconstruction Strategy</span>
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+              6-Item &ldquo;Fix the Script&rdquo; Structural Upgrade Workout
+            </h3>
+            <p class="text-slate-600 text-sm sm:text-base mt-2 leading-relaxed">
+              Put my 4-step marking strategy into practice. Complete the second sentence so that it has a similar meaning to the first sentence, using the <strong>unchanged</strong> capitalised keyword in <strong>3 to 6 words</strong>:
+            </p>
+            <div class="mt-3 p-3.5 rounded-xl bg-slate-900 text-slate-200 text-xs font-mono leading-relaxed border border-slate-800">
+              <strong class="text-amber-300">Gareth's 4-Step Strategy:</strong> 1. Click <strong>✂️ Step 1: Strike Out the Echoes</strong> to cross out repeated words &rarr; 2. Inspect Tense Harmony &rarr; 3. Check Voice Shift &rarr; 4. Fit the C1 pattern (3–6 words, keyword unchanged).
+            </div>
+          </div>
+
+          <div id="howimark-kwt-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Primary Hero Offer CTA Banner (Fixed Pricing Hierarchy) -->
     <section class="py-16 sm:py-20 bg-slate-900 text-white border-t border-slate-800">
       <div class="max-w-4xl mx-auto px-6">
@@ -467,5 +614,350 @@
   <script src="analytics-funnel.js" defer></script>
   <script src="dossier.js" defer></script>
   <script src="writing-stress-tester.js" defer></script>
+  <script>
+    var simCriteriaData = {
+      TR: {
+        code: "TR",
+        title: "Task Response (TR): Band 6.5 vs Band 8.0",
+        badScore: "Band 6.5 (Over-generalised & Personal)",
+        goodScore: "Band 8.0 (Fully Developed & Policy-Specific)",
+        badQuote: "“A lot of people think that if the government gives money to companies, everyone will stay in the countryside and be happy.”",
+        badWhy: "Relies on street-level generalisation ('A lot of people think', 'everyone will be happy') and a vague mechanism ('gives money to companies'). Examiners cap over-simplified causal leaps at 6.5.",
+        goodQuote: "“Were municipal authorities to offer targeted payroll tax relief to technology and finance firms, high-skilled employers would decentralise their recruitment.”",
+        goodWhy: "Replaces vague cash handouts with a concrete policy mechanism ('targeted payroll tax relief') and uses an inverted second conditional ('Were municipal authorities to offer...') to evaluate hypothetical outcomes with scholarly restraint.",
+        formula: "Were + [Subject] + to + [Infinitive], [Subject] would + [Base Verb]"
+      },
+      CC: {
+        code: "CC",
+        title: "Coherence & Cohesion (CC): Band 6.0 vs Band 8.0",
+        badScore: "Band 6.0 (Mechanical Template Opener)",
+        goodScore: "Band 8.0 (Organic Concessive Framing)",
+        badQuote: "“Nowadays, in today's fast-paced modern world, every coin has two sides when we talk about urbanisation.”",
+        badWhy: "Stacks three memorised internet clichés in a single breath ('Nowadays', 'fast-paced modern world', 'every coin has two sides'). It signals a rehearsed template rather than genuine argument progression.",
+        goodQuote: "“While it is widely argued that metropolitan capitals naturally attract ambitious talent, regional depopulation is primarily driven by economic centralisation.”",
+        goodWhy: "Uses a subordinate concessive clause ('While it is widely argued that...') to acknowledge the counter-view and pivot straight into a clear thesis without mechanical linkers.",
+        formula: "While it is widely argued that [Claim A], [Core Thesis B]"
+      },
+      LR: {
+        code: "LR",
+        title: "Lexical Resource (LR): Band 6.5 vs Band 8.0",
+        badScore: "Band 6.5 (Forced Thesaurus Clichés)",
+        goodScore: "Band 8.0 (Natural Academic Collocation)",
+        badQuote: "“A plethora of young people face a paramount conundrum because jobs in small towns are very scarce.”",
+        badWhy: "Forces archaic or mismatched 'Band 9 list' words ('plethora', 'paramount conundrum') alongside flat B1 phrasing ('jobs in small towns are very scarce').",
+        goodQuote: "“What compels young graduates to leave provincial towns is the chronic scarcity of graduate-level career pathways.”",
+        goodWhy: "Pairs a Wh- cleft spotlight with natural, high-precision academic collocations ('provincial towns', 'chronic scarcity', 'graduate-level career pathways')—zero thesaurus showing off.",
+        formula: "What + [Verb + Object] + is + [Precise Nominal Group]"
+      },
+      GRA: {
+        code: "GRA",
+        title: "Grammatical Range & Accuracy (GRA): Band 6.5 vs Band 8.5",
+        badScore: "Band 6.5 (Flat Compound Chain)",
+        goodScore: "Band 8.5 (Negative Inversion + Participle Clause)",
+        badQuote: "“Moreover, companies can open offices in small towns, and this will reduce traffic in big cities.”",
+        badWhy: "Tacks clauses together with 'Moreover' and ', and this will...'. Grammatically accurate, but lacks complex syntactic subordination.",
+        goodQuote: "“Not only would such incentives revitalise local high streets, but they would also relieve acute housing pressure in overcrowded capitals, thereby fostering balanced national growth.”",
+        goodWhy: "Combines a fronted negative inversion ('Not only would such incentives revitalise...') with a trailing resultative participle clause (', thereby fostering...').",
+        formula: "Not only + [Aux] + [Subj] + [Verb], but... , thereby + [-ing]"
+      }
+    };
+
+    var activeSimBand = '65';
+    var activeSimCriterion = 'TR';
+
+    function setSimBand(mode) {
+      activeSimBand = mode;
+      var p65 = document.getElementById('sim-script-65');
+      var p80 = document.getElementById('sim-script-80');
+      var b65 = document.getElementById('sim-btn-65');
+      var b80 = document.getElementById('sim-btn-80');
+      var bBoth = document.getElementById('sim-btn-both');
+      var status = document.getElementById('sim-band-status');
+      if (!p65 || !p80) return;
+
+      b65.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer bg-slate-800 text-slate-300 hover:text-white';
+      b80.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer bg-slate-800 text-slate-300 hover:text-white';
+      bBoth.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer bg-slate-800 text-slate-300 hover:text-white';
+
+      if (mode === '65') {
+        p65.classList.remove('hidden');
+        p80.classList.add('hidden');
+        b65.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer bg-rose-600 text-white shadow-sm';
+        status.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200';
+        status.textContent = 'Viewing: Band 6.5 (Template Trap)';
+      } else if (mode === '80') {
+        p65.classList.add('hidden');
+        p80.classList.remove('hidden');
+        b80.className = 'px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer bg-emerald-600 text-white shadow-sm';
+        status.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200';
+        status.textContent = 'Viewing: Band 8.0 (Belfast Desk C1 Restraint)';
+      } else {
+        p65.classList.remove('hidden');
+        p80.classList.remove('hidden');
+        bBoth.className = 'px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer bg-indigo-600 text-white shadow-sm';
+        status.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200';
+        status.textContent = 'Comparing: Band 6.5 vs Band 8.0 Side-by-Side';
+      }
+    }
+
+    function selectSimCriterion(crit) {
+      if (!simCriteriaData[crit]) return;
+      activeSimCriterion = crit;
+      var d = simCriteriaData[crit];
+
+      ['TR', 'CC', 'LR', 'GRA'].forEach(function(code) {
+        var pill = document.getElementById('crit-pill-' + code);
+        if (!pill) return;
+        if (code === crit) {
+          pill.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer bg-indigo-600 text-white border border-indigo-400';
+        } else {
+          pill.className = 'px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer bg-slate-800 text-slate-300 hover:text-white border border-slate-700';
+        }
+      });
+
+      document.querySelectorAll('.sim-crit-highlight').forEach(function(el) {
+        if (el.getAttribute('data-crit') === crit) {
+          el.classList.add('active-crit');
+        } else {
+          el.classList.remove('active-crit');
+        }
+      });
+
+      var detail = document.getElementById('sim-criterion-detail');
+      var formula = document.getElementById('sim-criterion-formula');
+      if (formula) formula.textContent = d.formula;
+      if (detail) {
+        detail.innerHTML =
+          '<div class="flex items-center justify-between gap-2">' +
+            '<span class="px-2.5 py-1 rounded-md bg-indigo-600 text-white text-xs font-extrabold uppercase tracking-wider">' + d.code + ' Diagnostic</span>' +
+            '<span class="text-xs font-bold text-slate-500">Official IELTS / C1 Rubric</span>' +
+          '</div>' +
+          '<h3 class="text-base sm:text-lg font-extrabold text-slate-900">' + d.title + '</h3>' +
+          '<div class="p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-1">' +
+            '<div class="text-[11px] font-extrabold uppercase tracking-wider text-rose-800">✗ ' + d.badScore + '</div>' +
+            '<p class="text-xs text-slate-800 italic">' + d.badQuote + '</p>' +
+            '<p class="text-xs text-slate-600 leading-relaxed pt-1">' + d.badWhy + '</p>' +
+          '</div>' +
+          '<div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1">' +
+            '<div class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800">✓ ' + d.goodScore + '</div>' +
+            '<p class="text-xs text-slate-900 font-semibold">' + d.goodQuote + '</p>' +
+            '<p class="text-xs text-slate-600 leading-relaxed pt-1">' + d.goodWhy + '</p>' +
+          '</div>';
+      }
+    }
+
+    var howIMarkKwtItems = [
+      {
+        id: 1,
+        tag: "Passive Reporting Infinitive",
+        s1Plain: "Many economists claim that rapid automation has widened regional wage gaps.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Many economists claim that</span> <del class='text-slate-400'>rapid automation</del> <span class='text-rose-700 font-bold'>has</span> <del class='text-slate-400'>widened regional wage gaps.</del>",
+        stepNote: "Step 1 Deficit: 'Many economists claim that... has' | Step 2 Tense: Present reporting + Perfect aspect | Step 3 Voice: Active → Impersonal Passive",
+        keyword: "SAID",
+        pre: "Rapid automation",
+        post: "widened regional wage gaps.",
+        validRegex: /^is\s+(widely\s+|often\s+)?said\s+to\s+have$/i,
+        answer: "is said to have",
+        wordCount: 4,
+        explanation: "Replaces 'Many economists claim that... has' with the passive reporting perfect infinitive 'is said to have' (4 words, SAID unchanged)."
+      },
+      {
+        id: 2,
+        tag: "Negative Inversion",
+        s1Plain: "Subsidised childcare boosts female workforce participation and strengthens household savings.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Subsidised childcare boosts</span> <del class='text-slate-400'>female workforce participation</del> <span class='text-rose-700 font-bold'>and</span> <del class='text-slate-400'>strengthens household savings.</del>",
+        stepNote: "Step 1 Deficit: 'Subsidised childcare boosts... and' | Step 2 Tense: Present simple ('does') | Step 3 Shift: Fronted Negative Inversion",
+        keyword: "ONLY",
+        pre: "",
+        post: "boost female workforce participation, but it also strengthens household savings.",
+        validRegex: /^not\s+only\s+does\s+subsidised\s+childcare$/i,
+        answer: "Not only does subsidised childcare",
+        wordCount: 5,
+        explanation: "Fronting 'Not only' requires auxiliary inversion ('does subsidised childcare') before the bare infinitive 'boost' (5 words, ONLY unchanged)."
+      },
+      {
+        id: 3,
+        tag: "Wh- Cleft Spotlight",
+        s1Plain: "Many candidates stay stuck at Band 6.5 primarily because their sentence structures lack variety.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Many candidates stay stuck</span> <del class='text-slate-400'>at Band 6.5</del> <span class='text-rose-700 font-bold'>primarily because</span> <del class='text-slate-400'>their sentence structures lack variety.</del>",
+        stepNote: "Step 1 Deficit: 'Many candidates stay stuck... primarily because' | Step 2 Tense: Present simple | Step 3 Shift: Wh- Cleft Focus",
+        keyword: "WHAT",
+        pre: "",
+        post: "at Band 6.5 is a lack of variety in their sentence structures.",
+        validRegex: /^what\s+(keeps|holds|leaves)\s+(many\s+)?candidates\s+stuck$/i,
+        answer: "What keeps many candidates stuck",
+        wordCount: 5,
+        explanation: "Uses the Wh- cleft frame 'What keeps many candidates stuck' (5 words, WHAT unchanged) to spotlight the nominalised cause after 'is'."
+      },
+      {
+        id: 4,
+        tag: "Concessive Nominalisation",
+        s1Plain: "Although the council invested heavily in cycle lanes, commuter traffic remained congested.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Although the</span> <del class='text-slate-400'>council</del> <span class='text-rose-700 font-bold'>invested heavily</span> <del class='text-slate-400'>in cycle lanes, commuter traffic remained congested.</del>",
+        stepNote: "Step 1 Deficit: 'Although... invested heavily' | Step 2 Shift: Verb ('invested') nominalised to 'investment', so adverb 'heavily' becomes adjective 'heavy'",
+        keyword: "SPITE",
+        pre: "",
+        post: "council investment in cycle lanes, commuter traffic remained congested.",
+        validRegex: /^in\s+spite\s+of\s+(heavy|substantial|significant)$/i,
+        answer: "In spite of heavy",
+        wordCount: 4,
+        explanation: "Converts the concessive clause 'Although... invested heavily' into the prepositional phrase 'In spite of heavy' (4 words, SPITE unchanged)."
+      },
+      {
+        id: 5,
+        tag: "Past Subjunctive Preference",
+        s1Plain: "Most examiners prefer candidates to write clear arguments instead of memorised templates.",
+        s1Struck: "<del class='text-slate-400'>Most examiners</del> <span class='text-rose-700 font-bold'>prefer candidates to write</span> <del class='text-slate-400'>clear arguments instead of memorised templates.</del>",
+        stepNote: "Step 1 Deficit: 'prefer candidates to write' | Step 2 Pattern: 'would rather + new subject + past simple subjunctive'",
+        keyword: "RATHER",
+        pre: "Most examiners",
+        post: "clear arguments instead of memorised templates.",
+        validRegex: /^(would|'d)\s+rather\s+candidates\s+wrote$/i,
+        answer: "would rather candidates wrote",
+        wordCount: 4,
+        explanation: "When 'would rather' introduces a different subject ('candidates'), the verb shifts to the past subjunctive: 'would rather candidates wrote' (4 words, RATHER unchanged)."
+      },
+      {
+        id: 6,
+        tag: "Fronted Emphatic Inversion",
+        s1Plain: "Students rarely realise how quickly examiners spot memorised openings.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Students rarely realise</span> <del class='text-slate-400'>how quickly examiners spot memorised openings.</del>",
+        stepNote: "Step 1 Deficit: 'Students rarely realise' | Step 2 Tense: Present simple ('do') | Step 3 Shift: Negative adverbial fronting",
+        keyword: "LITTLE",
+        pre: "",
+        post: "how quickly examiners spot memorised openings.",
+        validRegex: /^little\s+do\s+students\s+(realise|realize)$/i,
+        answer: "Little do students realise",
+        wordCount: 4,
+        explanation: "Fronting the restrictive adverb 'Little' triggers present simple auxiliary inversion: 'Little do students realise' (4 words, LITTLE unchanged)."
+      }
+    ];
+
+    function renderHowIMarkKwt() {
+      var list = document.getElementById('howimark-kwt-list');
+      if (!list) return;
+      list.innerHTML = howIMarkKwtItems.map(function(item) {
+        return '<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm flex flex-col justify-between">' +
+          '<div>' +
+            '<div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">' +
+              '<span class="text-[11px] font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-md">Fix #' + item.id + ' &bull; ' + item.tag + '</span>' +
+              '<span class="px-2.5 py-0.5 rounded bg-slate-900 text-amber-300 font-mono text-xs font-extrabold">KEYWORD: ' + item.keyword + '</span>' +
+            '</div>' +
+            '<p id="him-s1-' + item.id + '" class="text-sm text-slate-800 font-medium mb-2">' + item.s1Plain + '</p>' +
+            '<div id="him-step-' + item.id + '" class="hidden mb-2.5 p-2 rounded-lg bg-rose-50 border border-rose-200 text-[11px] font-mono text-rose-900">' + item.stepNote + '</div>' +
+            '<div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-900 space-y-2 my-2">' +
+              '<div class="flex flex-wrap items-center gap-1.5">' +
+                (item.pre ? '<span>' + item.pre + '</span>' : '') +
+                '<input type="text" id="him-inp-' + item.id + '" oninput="updateHimCounter(' + item.id + ')" aria-label="Transformation answer ' + item.id + '" placeholder="3–6 words with ' + item.keyword + '..." class="flex-1 min-w-[180px] rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-900 focus:border-indigo-600 focus:outline-none" />' +
+                '<span>' + item.post + '</span>' +
+              '</div>' +
+              '<div class="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200/70">' +
+                '<span id="him-wc-' + item.id + '" class="font-mono font-semibold">0 words (Target: 3–6 words)</span>' +
+                '<span id="him-kw-guard-' + item.id + '" class="font-mono text-slate-400">Keyword ' + item.keyword + ': waiting</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            '<div class="flex flex-wrap gap-2 mt-3">' +
+              '<button type="button" onclick="toggleHimEchoes(' + item.id + ', this)" class="px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-300 text-xs font-bold transition cursor-pointer">✂️ Step 1: Strike Out the Echoes</button>' +
+              '<button type="button" onclick="checkHimKwt(' + item.id + ')" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer">Check Upgrade</button>' +
+              '<button type="button" onclick="toggleHimModel(' + item.id + ', this)" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>' +
+            '</div>' +
+            '<div id="him-fb-' + item.id + '" class="hidden mt-2.5 p-2.5 rounded-lg text-xs leading-relaxed"></div>' +
+            '<div id="him-model-' + item.id + '" class="kwt-model-drawer mt-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-slate-800 space-y-1">' +
+              '<div class="font-extrabold text-emerald-900 uppercase tracking-wider text-[10px]">✓ Official Cambridge C1 Model (' + item.wordCount + ' Words):</div>' +
+              '<p class="font-bold text-slate-900">' + (item.pre ? item.pre + ' ' : '') + '<span class="underline decoration-emerald-500 decoration-2 text-emerald-900">' + item.answer + '</span> ' + item.post + '</p>' +
+              '<p class="text-slate-600">' + item.explanation + '</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function updateHimCounter(id) {
+      var item = howIMarkKwtItems.find(function(x) { return x.id === id; });
+      var inp = document.getElementById('him-inp-' + id);
+      var wcEl = document.getElementById('him-wc-' + id);
+      var kwEl = document.getElementById('him-kw-guard-' + id);
+      if (!item || !inp || !wcEl || !kwEl) return;
+      var val = inp.value.trim().replace(/\s+/g, ' ');
+      var words = val ? val.split(' ').length : 0;
+      wcEl.textContent = words + (words === 1 ? ' word' : ' words') + ' (Target: 3–6 words)';
+      wcEl.className = (words >= 3 && words <= 6) ? 'font-mono font-bold text-emerald-700' : 'font-mono font-semibold text-amber-700';
+
+      var hasKw = new RegExp('\\b' + item.keyword + '\\b', 'i').test(val);
+      if (!val) {
+        kwEl.textContent = 'Keyword ' + item.keyword + ': waiting';
+        kwEl.className = 'font-mono text-slate-400';
+      } else if (hasKw) {
+        kwEl.textContent = '✓ ' + item.keyword + ' unchanged';
+        kwEl.className = 'font-mono font-bold text-emerald-700';
+      } else {
+        kwEl.textContent = '⚠️ Keep ' + item.keyword + ' unchanged!';
+        kwEl.className = 'font-mono font-bold text-rose-700';
+      }
+    }
+
+    function toggleHimEchoes(id, btn) {
+      var item = howIMarkKwtItems.find(function(x) { return x.id === id; });
+      var s1 = document.getElementById('him-s1-' + id);
+      var st = document.getElementById('him-step-' + id);
+      if (!item || !s1 || !st) return;
+      if (st.classList.contains('hidden')) {
+        s1.innerHTML = item.s1Struck;
+        st.classList.remove('hidden');
+        if (btn) btn.textContent = '↺ Restore Sentence 1';
+      } else {
+        s1.innerHTML = item.s1Plain;
+        st.classList.add('hidden');
+        if (btn) btn.textContent = '✂️ Step 1: Strike Out the Echoes';
+      }
+    }
+
+    function checkHimKwt(id) {
+      var item = howIMarkKwtItems.find(function(x) { return x.id === id; });
+      var inp = document.getElementById('him-inp-' + id);
+      var fb = document.getElementById('him-fb-' + id);
+      if (!item || !inp || !fb) return;
+      var val = inp.value.trim().replace(/\s+/g, ' ');
+      var wc = val ? val.split(' ').length : 0;
+      fb.classList.remove('hidden');
+
+      if (!new RegExp('\\b' + item.keyword + '\\b', 'i').test(val)) {
+        fb.className = 'mt-2.5 p-2.5 rounded-lg text-xs leading-relaxed bg-rose-50 border border-rose-300 text-rose-900';
+        fb.innerHTML = '<strong>Keyword Guard:</strong> You must use the exact unchanged word <code>' + item.keyword + '</code>.';
+        return;
+      }
+      if (wc < 3 || wc > 6) {
+        fb.className = 'mt-2.5 p-2.5 rounded-lg text-xs leading-relaxed bg-amber-50 border border-amber-300 text-amber-900';
+        fb.innerHTML = '<strong>Word Count Guard:</strong> You used ' + wc + ' words. Keep your answer between <strong>3 and 6 words</strong>.';
+        return;
+      }
+      if (item.validRegex.test(val)) {
+        fb.className = 'mt-2.5 p-2.5 rounded-lg text-xs leading-relaxed bg-emerald-50 border border-emerald-300 text-emerald-900';
+        fb.innerHTML = '<strong>Spot on (2/2 marks)!</strong> ' + item.explanation;
+      } else {
+        fb.className = 'mt-2.5 p-2.5 rounded-lg text-xs leading-relaxed bg-amber-50 border border-amber-300 text-amber-900';
+        fb.innerHTML = '<strong>Not quite the C1 pattern yet:</strong> Click <em>✂️ Step 1: Strike Out the Echoes</em> or <em>👁️ Reveal Cambridge Model</em> to inspect the exact structure.';
+      }
+    }
+
+    function toggleHimModel(id, btn) {
+      var drawer = document.getElementById('him-model-' + id);
+      if (!drawer) return;
+      if (drawer.classList.contains('open')) {
+        drawer.classList.remove('open');
+        if (btn) btn.textContent = '👁️ Reveal Cambridge Model';
+      } else {
+        drawer.classList.add('open');
+        if (btn) btn.textContent = '🙈 Hide Cambridge Model';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      selectSimCriterion('TR');
+      renderHowIMarkKwt();
+    });
+  </script>
 </body>
 </html>

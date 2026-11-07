@@ -303,7 +303,7 @@
 
       <h2>The Band 6.5 Trap: Why Memorising "Advanced Words" Backfires</h2>
       <p>When you get your results back and see 6.5 staring at you for the third time, it is tempting to blame your vocabulary. You assume you simply didn't use enough "Band 9 words." So you head straight to the internet, find a list of fifty impressive-sounding terms, and start shoehorning <em>plethora</em>, <em>conundrum</em>, and <em>ubiquitous</em> into an essay on bus lanes.</p>
-      <p>In eighteen years of teaching—including fifteen years lecturing at Belfast Metropolitan College—I have watched this backfire with depressing regularity. The examiner doesn't hand out Band 7.5 for dusting off an obscure word from a nineteenth-century novel; in fact, when an unusual word is forced into an unnatural collocation, they mark you down for awkward, inaccurate style.</p>
+      <p>In nineteen years of teaching—including fifteen years lecturing at Belfast Metropolitan College—I have watched this backfire with depressing regularity. The examiner doesn't hand out Band 7.5 for dusting off an obscure word from a nineteenth-century novel; in fact, when an unusual word is forced into an unnatural collocation, they mark you down for awkward, inaccurate style.</p>
       <p>The real culprit holding your score down isn't your vocabulary. It is <strong>sentence monotony</strong>. Even when an intelligent candidate uses sophisticated words, almost every sentence arrives in the exact same uniform:</p>
       <ul>
         <li><code>Subject + Verb + Object + because / and / so + Clause</code></li>
@@ -541,6 +541,69 @@
       </ul>
       <p>In the cold light of day, three or four cleanly executed C1 shifts across the entire essay—anchored by simple, robust, error-free sentences—is all it takes. The examiner isn't grading your essay on how many tricks you can cram into a page; they're listening for a writer who can control the tempo of their thoughts without stumbling.</p>
 
+      <hr class="my-10 border-slate-200" />
+
+      <!-- LIVE ESSAY DEPERSONALISATION & SYNTACTIC VARIETY SCANNER -->
+      <h2 id="depersonalisation-scanner">Live Essay Depersonalisation &amp; Syntactic Variety Scanner</h2>
+      <p>Before you send a draft to my desk, run your essay (or body paragraph) through the live diagnostic scanner below. It checks four things I audit in every first tutorial: <strong>100% academic depersonalisation</strong> (no chatty <em>"we / you / people know"</em> gossip frames), <strong>250–290 word count discipline</strong>, <strong>zero memorised thesaurus clichés</strong> (<em>plethora, conundrum, ubiquitous, paramount</em>), and <strong>active C1 structural devices</strong>.</p>
+
+      <div class="not-prose my-8 rounded-2xl border-2 border-slate-200 bg-slate-50 p-5 sm:p-7 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full">Belfast Desk Audit Tool</span>
+            <h3 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-1">Test Your Draft or Load 3 Sample Scripts</h3>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" onclick="loadScannerDraft(0)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-100 hover:bg-rose-200 text-rose-900 border border-rose-300 transition cursor-pointer">Sample 1: Band 6.0 (Cliché + Personal)</button>
+            <button type="button" onclick="loadScannerDraft(1)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 transition cursor-pointer">Sample 2: Band 7.0 (Clean Body Para)</button>
+            <button type="button" onclick="loadScannerDraft(2)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 transition cursor-pointer">Sample 3: Band 8.5 (268w Full Essay)</button>
+          </div>
+        </div>
+
+        <textarea id="depers-textarea" rows="7" aria-label="Paste your IELTS or Cambridge C1 essay draft here" placeholder="Paste your essay or paragraph here (or click one of the 3 sample drafts above)..." oninput="runDepersScanner()" class="w-full rounded-xl border border-slate-300 bg-white p-4 text-sm text-slate-900 leading-relaxed focus:border-brand-600 focus:outline-none"></textarea>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+          <div id="metric-depers" class="p-3.5 rounded-xl border border-slate-200 bg-white">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">1. Depersonalisation</div>
+            <div class="text-base font-extrabold text-slate-900 mt-1" id="metric-depers-val">100% Objective</div>
+            <div class="text-xs text-slate-600 mt-0.5" id="metric-depers-sub">Zero informal pronouns detected</div>
+          </div>
+          <div id="metric-wc" class="p-3.5 rounded-xl border border-slate-200 bg-white">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">2. Word Count Discipline</div>
+            <div class="text-base font-extrabold text-slate-900 mt-1" id="metric-wc-val">0 words</div>
+            <div class="text-xs text-slate-600 mt-0.5" id="metric-wc-sub">Target: 250–290w (or 65–95w body)</div>
+          </div>
+          <div id="metric-cliche" class="p-3.5 rounded-xl border border-slate-200 bg-white">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">3. Thesaurus &amp; Templates</div>
+            <div class="text-base font-extrabold text-slate-900 mt-1" id="metric-cliche-val">Zero Clichés</div>
+            <div class="text-xs text-slate-600 mt-0.5" id="metric-cliche-sub">No memorised snake-oil detected</div>
+          </div>
+          <div id="metric-c1" class="p-3.5 rounded-xl border border-slate-200 bg-white">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-500">4. Active C1 Shifts</div>
+            <div class="text-base font-extrabold text-slate-900 mt-1" id="metric-c1-val">0 / 4 Target</div>
+            <div class="text-xs text-slate-600 mt-0.5" id="metric-c1-sub">Aim for 3–4 across a full essay</div>
+          </div>
+        </div>
+
+        <div id="scanner-detail-box" class="mt-4 p-4 rounded-xl bg-slate-900 text-slate-200 text-xs sm:text-sm leading-relaxed">
+          Select one of the three sample drafts above or paste your own writing to inspect your live C1 structural profile.
+        </div>
+      </div>
+
+      <hr class="my-10 border-slate-200" />
+
+      <!-- 8 INTERACTIVE 4-STEP KEY WORD TRANSFORMATIONS -->
+      <h2 id="part4-deconstruction-workout">8 Interactive 4-Step Key Word Transformations (C1 Structural Workout)</h2>
+      <p>Whether you are sitting Cambridge C1 Advanced (Use of English Part 4) or training your hand to produce Band 8.0+ IELTS sentences under exam pressure, the fastest way to master these patterns is my <strong>4-Step Elimination &amp; Deconstruction Strategy</strong>:</p>
+      <ol>
+        <li><strong>Step 1: Strike Out the Echoes:</strong> Click <code>✂️ Strike Out the Echoes</code> on any card below to cross out the words from Sentence 1 that are already accounted for in Sentence 2. What remains is your exact semantic deficit.</li>
+        <li><strong>Step 2: Inspect Tense Harmony:</strong> Match the tense and aspect of Sentence 1.</li>
+        <li><strong>Step 3: Check Voice Shift:</strong> Notice whether the sentence shifts from active to passive (or personal to impersonal).</li>
+        <li><strong>Step 4: Solve the Pattern (3–6 Words):</strong> Fit the isolated deficit into the C1 frame using <strong>3 to 6 words</strong>, keeping the capitalised keyword <strong>100% unchanged</strong>.</li>
+      </ol>
+
+      <div class="not-prose my-8 space-y-4" id="kwt-8-container"></div>
+
       <!-- Interactive Workshop Callout -->
       <div class="not-prose my-10 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white border border-slate-800 shadow-xl">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -607,6 +670,352 @@
           btn.textContent = '🙈 Hide Cambridge Model';
         }
       });
+    });
+
+    var sampleDrafts = [
+      "In today's fast-paced society, we can see a plethora of young people leaving rural towns. Every coin has two sides, and a lot of people think you cannot find good jobs in the countryside. In a nutshell, if the government gives money to companies, people will stay in small towns and solve this big conundrum.",
+      "It is widely contended that regional migration stems from economic centralisation rather than lifestyle preferences. What drives young graduates out of rural towns is the chronic scarcity of graduate-level career pathways. Were municipal authorities to offer targeted tax relief to technology firms, skilled roles would emerge outside major cities, thereby revitalising local communities.",
+      "Across many developed economies, a growing proportion of young graduates are relocating from regional towns to metropolitan capitals. While it is widely argued that urban centres naturally offer richer cultural amenities, I contend that this outward migration is primarily driven by economic necessity and can be reversed through targeted regional investment.\n\nWhat compels ambitious school-leavers and graduates to abandon smaller towns is the chronic scarcity of high-skilled career pathways. Over the past three decades, corporate headquarters, financial institutions, and research laboratories have clustered heavily inside capital cities. Consequently, even when young professionals would prefer the lower housing costs and tighter community bonds of their hometowns, they are forced to move in order to secure entry-level roles that match their qualifications.\n\nNevertheless, this demographic drain is far from inevitable. Were national governments to combine high-speed digital infrastructure with payroll tax incentives for firms that establish regional offices, employers would rapidly decentralise their recruitment, thereby enabling graduates to build rewarding careers without uprooting their lives. Not only would such measures relieve acute housing pressure in overcrowded capitals, but they would also restore vital tax revenue and spending power to provincial high streets.\n\nIn conclusion, rural depopulation is the predictable result of concentrating high-value employment in a handful of megacities. Provided that policymakers decentralise infrastructure and incentivise regional hiring, smaller towns can retain their brightest talent."
+    ];
+
+    function loadScannerDraft(idx) {
+      var ta = document.getElementById('depers-textarea');
+      if (!ta || sampleDrafts[idx] === undefined) return;
+      ta.value = sampleDrafts[idx];
+      runDepersScanner();
+    }
+
+    function runDepersScanner() {
+      var ta = document.getElementById('depers-textarea');
+      if (!ta) return;
+      var text = ta.value.trim();
+      var words = text ? text.split(/\s+/).length : 0;
+
+      // 1. Depersonalisation check
+      var gossipMatches = text.match(/\b(we\s+can\s+see|you\s+can|you\s+cannot|you\s+will|a\s+lot\s+of\s+people|everybody\s+knows|everyone\s+knows|people\s+know|i\s+was\s+worried|we\s+must|we\s+should|our\s+society)\b/gi) || [];
+      var depCard = document.getElementById('metric-depers');
+      var depVal = document.getElementById('metric-depers-val');
+      var depSub = document.getElementById('metric-depers-sub');
+      if (gossipMatches.length === 0 && words > 0) {
+        depCard.className = 'p-3.5 rounded-xl border border-emerald-400 bg-emerald-50/70';
+        depVal.className = 'text-base font-extrabold text-emerald-900 mt-1';
+        depVal.textContent = '✓ 100% Depersonalised';
+        depSub.textContent = 'Clean objective academic register';
+      } else if (gossipMatches.length > 0) {
+        depCard.className = 'p-3.5 rounded-xl border border-rose-400 bg-rose-50/70';
+        depVal.className = 'text-base font-extrabold text-rose-900 mt-1';
+        depVal.textContent = '⚠️ ' + gossipMatches.length + ' Informal Frame(s)';
+        depSub.textContent = 'Flagged: "' + gossipMatches.slice(0, 2).join('", "') + '"';
+      } else {
+        depCard.className = 'p-3.5 rounded-xl border border-slate-200 bg-white';
+        depVal.className = 'text-base font-extrabold text-slate-900 mt-1';
+        depVal.textContent = '100% Objective';
+        depSub.textContent = 'Zero informal pronouns detected';
+      }
+
+      // 2. Word Count Discipline (250-290 full essay or 50-100 single paragraph)
+      var wcCard = document.getElementById('metric-wc');
+      var wcVal = document.getElementById('metric-wc-val');
+      var wcSub = document.getElementById('metric-wc-sub');
+      wcVal.textContent = words + (words === 1 ? ' word' : ' words');
+      if (words >= 250 && words <= 295) {
+        wcCard.className = 'p-3.5 rounded-xl border border-emerald-400 bg-emerald-50/70';
+        wcVal.className = 'text-base font-extrabold text-emerald-900 mt-1';
+        wcSub.textContent = '✓ Spot-on Full Essay Sweet Spot (250–290w)';
+      } else if (words >= 45 && words <= 110) {
+        wcCard.className = 'p-3.5 rounded-xl border border-sky-400 bg-sky-50/70';
+        wcVal.className = 'text-base font-extrabold text-sky-900 mt-1';
+        wcSub.textContent = '✓ Ideal Single Body Paragraph Length';
+      } else if (words > 0) {
+        wcCard.className = 'p-3.5 rounded-xl border border-amber-400 bg-amber-50/70';
+        wcVal.className = 'text-base font-extrabold text-amber-900 mt-1';
+        wcSub.textContent = words < 250 ? 'Under 250w full-essay minimum' : 'Over 295w — leave time to proofread!';
+      } else {
+        wcCard.className = 'p-3.5 rounded-xl border border-slate-200 bg-white';
+        wcVal.className = 'text-base font-extrabold text-slate-900 mt-1';
+        wcSub.textContent = 'Target: 250–290w (or 65–95w body)';
+      }
+
+      // 3. Thesaurus & Template Clichés
+      var clicheMatches = text.match(/\b(plethora|conundrum|ubiquitous|paramount|every\s+coin\s+has\s+two\s+sides|in\s+a\s+nutshell|double-edged\s+sword|fast-paced\s+society|nowadays\s+it\s+is\s+universally)\b/gi) || [];
+      var clCard = document.getElementById('metric-cliche');
+      var clVal = document.getElementById('metric-cliche-val');
+      var clSub = document.getElementById('metric-cliche-sub');
+      if (clicheMatches.length === 0 && words > 0) {
+        clCard.className = 'p-3.5 rounded-xl border border-emerald-400 bg-emerald-50/70';
+        clVal.className = 'text-base font-extrabold text-emerald-900 mt-1';
+        clVal.textContent = '✓ Zero Clichés';
+        clSub.textContent = 'No memorised snake-oil detected';
+      } else if (clicheMatches.length > 0) {
+        clCard.className = 'p-3.5 rounded-xl border border-rose-400 bg-rose-50/70';
+        clVal.className = 'text-base font-extrabold text-rose-900 mt-1';
+        clVal.textContent = '⚠️ ' + clicheMatches.length + ' Cliché(s) Found';
+        clSub.textContent = 'Toss out: "' + clicheMatches.slice(0, 3).join('", "') + '"';
+      } else {
+        clCard.className = 'p-3.5 rounded-xl border border-slate-200 bg-white';
+        clVal.className = 'text-base font-extrabold text-slate-900 mt-1';
+        clVal.textContent = 'Zero Clichés';
+        clSub.textContent = 'No memorised snake-oil detected';
+      }
+
+      // 4. Active C1 Structural Devices
+      var detectedShifts = [];
+      if (/\b(it\s+is\s+(widely|often|commonly|frequently|generally)?\s*(argued|contended|maintained|believed|recognised|recognized|claimed)|is\s+(widely\s+)?(believed|thought|known)\s+to)\b/i.test(text)) {
+        detectedShifts.push('Passive Reporting / Preparatory It');
+      }
+      if (/\b(what\s+[a-z]+\s+[^.?!]+?\b(is|was|are|were)\b|it\s+(is|was)\s+[^.?!]+?\bthat\b)/i.test(text)) {
+        detectedShifts.push('Wh- / It-Cleft');
+      }
+      if (/\b(not\s+only\s+(does|do|did|is|are|was|were|can|could|would|should|will|has|have)|seldom\s+(do|does|did|have)|rarely\s+(do|does|did|have))\b/i.test(text)) {
+        detectedShifts.push('Negative Inversion');
+      }
+      if (/(,\s*(thereby|thus|hence)\s+[a-z]+ing\b)/i.test(text)) {
+        detectedShifts.push('Resultative Participle (, thereby -ing)');
+      }
+      if (/\b(were\s+[a-z\s]+to\s+[a-z]+|had\s+[a-z\s]+(been|invested|acted|known|prioritised))\b/i.test(text)) {
+        detectedShifts.push('Inverted Conditional');
+      }
+
+      var c1Card = document.getElementById('metric-c1');
+      var c1Val = document.getElementById('metric-c1-val');
+      var c1Sub = document.getElementById('metric-c1-sub');
+      c1Val.textContent = detectedShifts.length + ' Active Shift' + (detectedShifts.length === 1 ? '' : 's');
+      if (detectedShifts.length >= 2) {
+        c1Card.className = 'p-3.5 rounded-xl border border-emerald-400 bg-emerald-50/70';
+        c1Val.className = 'text-base font-extrabold text-emerald-900 mt-1';
+        c1Sub.textContent = '✓ Strong C1 syntactic variety!';
+      } else if (detectedShifts.length === 1) {
+        c1Card.className = 'p-3.5 rounded-xl border border-sky-400 bg-sky-50/70';
+        c1Val.className = 'text-base font-extrabold text-sky-900 mt-1';
+        c1Sub.textContent = 'Add 1–2 more C1 shifts for Band 7.5+';
+      } else {
+        c1Card.className = 'p-3.5 rounded-xl border border-slate-200 bg-white';
+        c1Val.className = 'text-base font-extrabold text-slate-900 mt-1';
+        c1Sub.textContent = 'Aim for 3–4 across a full essay';
+      }
+
+      var detailBox = document.getElementById('scanner-detail-box');
+      if (detailBox) {
+        if (words === 0) {
+          detailBox.innerHTML = 'Select one of the three sample drafts above or paste your own writing to inspect your live C1 structural profile.';
+        } else {
+          var shiftHtml = detectedShifts.length > 0
+            ? '<span class="text-emerald-400 font-bold">Detected C1 Shifts:</span> ' + detectedShifts.join(' &bull; ')
+            : '<span class="text-amber-300 font-bold">No C1 structural shifts detected yet:</span> Try introducing a Wh-cleft (<em>What drives... is...</em>), a passive reporting frame (<em>It is widely contended that...</em>), an inverted conditional (<em>Were authorities to...</em>), or a trailing participle clause (<em>, thereby enabling...</em>).';
+          detailBox.innerHTML = '<div class="space-y-1">' +
+            '<div>' + shiftHtml + '</div>' +
+            (clicheMatches.length > 0 ? '<div class="text-rose-300"><strong>Red-Pen Alert:</strong> Cut memorised clichés (' + clicheMatches.join(', ') + ')—examiners spot them immediately.</div>' : '') +
+            (gossipMatches.length > 0 ? '<div class="text-rose-300"><strong>Register Alert:</strong> Replace conversational pronouns/frames (' + gossipMatches.join(', ') + ') with impersonal academic structures.</div>' : '') +
+          '</div>';
+        }
+      }
+    }
+
+    var kwt8Items = [
+      {
+        id: 1,
+        shiftTag: "Shift 1 · Passive Reporting",
+        s1Plain: "Many economists argue that subsidising rail travel boosts regional productivity.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Many economists argue that</span> <del class='text-slate-400'>subsidising rail travel boosts regional productivity.</del>",
+        deficitNote: "Deficit to convert: 'Many economists argue that' (Present simple active → Impersonal passive reporting)",
+        keyword: "CONTENDED",
+        pre: "It",
+        post: "subsidising rail travel boosts regional productivity.",
+        validRegex: /^is\s+(widely|often|frequently|commonly|generally)\s+contended\s+that$/i,
+        answer: "is widely contended that",
+        wordCount: 4,
+        explanation: "Step 1 isolates 'Many economists argue that'. Step 2 keeps present simple ('is'). Step 3 shifts to impersonal passive ('is widely contended that' — 4 words, CONTENDED unchanged)."
+      },
+      {
+        id: 2,
+        shiftTag: "Shift 2 · Wh- Cleft Focus",
+        s1Plain: "Young graduates leave rural towns primarily because high-skilled jobs are scarce.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Young graduates leave</span> <del class='text-slate-400'>rural towns</del> <span class='text-rose-700 font-bold'>primarily because</span> <del class='text-slate-400'>high-skilled jobs are scarce.</del>",
+        deficitNote: "Deficit to convert: 'Young graduates leave... primarily because' (Present simple → Wh-Cleft opener)",
+        keyword: "DRIVES",
+        pre: "",
+        post: "rural towns is the scarcity of high-skilled jobs.",
+        validRegex: /^what\s+drives\s+(young\s+)?graduates\s+from$/i,
+        answer: "What drives young graduates from",
+        wordCount: 5,
+        explanation: "Opening with a Wh-cleft ('What drives young graduates from' — 5 words, DRIVES unchanged) spotlights 'the scarcity of high-skilled jobs' after 'is'."
+      },
+      {
+        id: 3,
+        shiftTag: "Shift 3 · Negative Inversion",
+        s1Plain: "Congestion pricing reduces peak-hour traffic and raises funds for electric buses.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Congestion pricing reduces</span> <del class='text-slate-400'>peak-hour traffic</del> <span class='text-rose-700 font-bold'>and</span> <del class='text-slate-400'>raises funds for electric buses.</del>",
+        deficitNote: "Deficit to convert: 'Congestion pricing reduces... and' (Present simple → Fronted negative inversion)",
+        keyword: "ONLY",
+        pre: "",
+        post: "reduce peak-hour traffic, but it also raises funds for electric buses.",
+        validRegex: /^not\s+only\s+does\s+congestion\s+pricing$/i,
+        answer: "Not only does congestion pricing",
+        wordCount: 5,
+        explanation: "Because 'reduce' in Sentence 2 is a bare infinitive, we supply the inverted present simple auxiliary 'does': 'Not only does congestion pricing' (5 words, ONLY unchanged)."
+      },
+      {
+        id: 4,
+        shiftTag: "Shift 4 · Resultative Participle",
+        s1Plain: "Universities now offer accredited remote degrees, which allows working adults to upskill.",
+        s1Struck: "<del class='text-slate-400'>Universities now offer accredited remote degrees,</del> <span class='text-rose-700 font-bold'>which allows working adults to</span> <del class='text-slate-400'>upskill.</del>",
+        deficitNote: "Deficit to convert: ', which allows working adults to' (Relative clause → Resultative participle clause)",
+        keyword: "THEREBY",
+        pre: "Universities now offer accredited remote degrees,",
+        post: "upskill.",
+        validRegex: /^thereby\s+(allowing|enabling)\s+working\s+adults\s+to$/i,
+        answer: "thereby allowing working adults to",
+        wordCount: 5,
+        explanation: "Replaces ', which allows...' with the participle clause 'thereby allowing working adults to' (5 words, THEREBY unchanged)."
+      },
+      {
+        id: 5,
+        shiftTag: "Shift 5 · Inverted Conditional",
+        s1Plain: "If governments taxed ultra-processed food, manufacturers would reformulate their recipes.",
+        s1Struck: "<span class='text-rose-700 font-bold'>If governments taxed</span> <del class='text-slate-400'>ultra-processed food, manufacturers would reformulate their recipes.</del>",
+        deficitNote: "Deficit to convert: 'If governments taxed' (Second conditional → Inverted 'Were... to' conditional)",
+        keyword: "WERE",
+        pre: "",
+        post: "ultra-processed food, manufacturers would reformulate their recipes.",
+        validRegex: /^were\s+governments\s+to\s+tax$/i,
+        answer: "Were governments to tax",
+        wordCount: 4,
+        explanation: "Eliminates 'If' and inverts the subjunctive auxiliary: 'Were governments to tax' (4 words, WERE unchanged)."
+      },
+      {
+        id: 6,
+        shiftTag: "Shift 6 · Subject + Passive Infinitive",
+        s1Plain: "Researchers think that chronic sleep deprivation impairs adolescents' academic performance.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Researchers think that</span> <del class='text-slate-400'>chronic sleep deprivation</del> <span class='text-rose-700 font-bold'>impairs</span> <del class='text-slate-400'>adolescents' academic performance.</del>",
+        deficitNote: "Deficit to convert: 'Researchers think that... impairs' (Active reporting → Passive reporting infinitive)",
+        keyword: "BELIEVED",
+        pre: "Chronic sleep deprivation",
+        post: "adolescents' academic performance.",
+        validRegex: /^is\s+(widely\s+)?believed\s+to\s+impair$/i,
+        answer: "is widely believed to impair",
+        wordCount: 5,
+        explanation: "Shifts 'Chronic sleep deprivation' to subject position followed by 'is widely believed to impair' (5 words, or 'is believed to impair' 4 words, BELIEVED unchanged)."
+      },
+      {
+        id: 7,
+        shiftTag: "Shift 7 · C1 Nominal Collocation",
+        s1Plain: "The municipal council does not plan to demolish the historic market hall.",
+        s1Struck: "<del class='text-slate-400'>The municipal council</del> <span class='text-rose-700 font-bold'>does not plan to demolish</span> <del class='text-slate-400'>the historic market hall.</del>",
+        deficitNote: "Deficit to convert: 'does not plan to demolish' (Verb chain → Nominal 'have no intention of + -ing')",
+        keyword: "INTENTION",
+        pre: "The municipal council",
+        post: "the historic market hall.",
+        validRegex: /^has\s+no\s+intention\s+of\s+demolishing$/i,
+        answer: "has no intention of demolishing",
+        wordCount: 5,
+        explanation: "Classic Cambridge Part 4 nominalisation: 'have no intention of + gerund (-ing)' → 'has no intention of demolishing' (5 words, INTENTION unchanged)."
+      },
+      {
+        id: 8,
+        shiftTag: "Shift 8 · Concessive Nominalisation",
+        s1Plain: "Although the government invested heavily in motorways, peak-hour congestion worsened.",
+        s1Struck: "<span class='text-rose-700 font-bold'>Although</span> <del class='text-slate-400'>the government</del> <span class='text-rose-700 font-bold'>invested heavily</span> <del class='text-slate-400'>in motorways, peak-hour congestion worsened.</del>",
+        deficitNote: "Deficit to convert: 'Although... invested heavily' (Concessive clause → Prepositional 'In spite of + Noun Phrase')",
+        keyword: "SPITE",
+        pre: "",
+        post: "government investment in motorways, peak-hour congestion worsened.",
+        validRegex: /^in\s+spite\s+of\s+heavy$/i,
+        answer: "In spite of heavy",
+        wordCount: 4,
+        explanation: "Notice that 'invested' has been nominalised into 'investment' in Sentence 2, so the adverb 'heavily' shifts to the adjective 'heavy': 'In spite of heavy' (4 words, SPITE unchanged)."
+      }
+    ];
+
+    function renderKwt8() {
+      var box = document.getElementById('kwt-8-container');
+      if (!box) return;
+      box.innerHTML = kwt8Items.map(function(item) {
+        return '<div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-xs">' +
+          '<div class="flex flex-wrap items-center justify-between gap-2 mb-3">' +
+            '<span class="text-xs font-extrabold uppercase tracking-wider text-indigo-800 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-md">Item ' + item.id + ' of 8 &bull; ' + item.shiftTag + '</span>' +
+            '<span class="px-3 py-0.5 rounded-md bg-slate-900 text-amber-300 font-mono text-xs font-extrabold tracking-wider">KEYWORD: ' + item.keyword + ' (3–6 words)</span>' +
+          '</div>' +
+          '<p id="kwt8-s1-' + item.id + '" class="text-sm sm:text-base text-slate-800 font-medium mb-2">' + item.s1Plain + '</p>' +
+          '<div id="kwt8-deficit-' + item.id + '" class="hidden mb-3 text-xs font-mono text-rose-800 bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-lg">' + item.deficitNote + '</div>' +
+          '<div class="flex flex-wrap items-center gap-2 text-sm text-slate-900 bg-slate-50 p-3.5 rounded-xl border border-slate-200 my-2">' +
+            (item.pre ? '<span>' + item.pre + '</span>' : '') +
+            '<input type="text" id="kwt8-input-' + item.id + '" aria-label="Answer for transformation ' + item.id + '" placeholder="3–6 words including ' + item.keyword + '..." class="flex-1 min-w-[210px] rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-900 focus:border-indigo-600 focus:outline-none" />' +
+            '<span>' + item.post + '</span>' +
+          '</div>' +
+          '<div class="flex flex-wrap gap-2 mt-3">' +
+            '<button type="button" onclick="strikeEchoes8(' + item.id + ', this)" class="px-3.5 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 border border-amber-300 text-xs font-bold transition cursor-pointer">✂️ Strike Out the Echoes</button>' +
+            '<button type="button" onclick="checkKwt8(' + item.id + ')" class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer">Check Answer</button>' +
+            '<button type="button" onclick="toggleKwt8Model(' + item.id + ', this)" class="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>' +
+          '</div>' +
+          '<div id="kwt8-fb-' + item.id + '" class="hidden mt-3 p-3 rounded-lg text-xs leading-relaxed"></div>' +
+          '<div id="kwt8-model-' + item.id + '" class="hidden mt-3 p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-800 space-y-1">' +
+            '<div class="font-extrabold text-emerald-900 uppercase tracking-wider text-[11px]">✓ Cambridge Model (' + item.wordCount + ' Words):</div>' +
+            '<p class="text-sm font-bold text-slate-900">' + (item.pre ? item.pre + ' ' : '') + '<span class="underline decoration-emerald-500 decoration-2 text-emerald-900">' + item.answer + '</span> ' + item.post + '</p>' +
+            '<p class="text-xs text-slate-600"><strong>4-Step Breakdown:</strong> ' + item.explanation + '</p>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    function strikeEchoes8(id, btn) {
+      var item = kwt8Items.find(function(x) { return x.id === id; });
+      var s1El = document.getElementById('kwt8-s1-' + id);
+      var defEl = document.getElementById('kwt8-deficit-' + id);
+      if (!item || !s1El || !defEl) return;
+      if (defEl.classList.contains('hidden')) {
+        s1El.innerHTML = item.s1Struck;
+        defEl.classList.remove('hidden');
+        if (btn) btn.textContent = '↺ Restore Full Sentence';
+      } else {
+        s1El.innerHTML = item.s1Plain;
+        defEl.classList.add('hidden');
+        if (btn) btn.textContent = '✂️ Strike Out the Echoes';
+      }
+    }
+
+    function checkKwt8(id) {
+      var item = kwt8Items.find(function(x) { return x.id === id; });
+      var inp = document.getElementById('kwt8-input-' + id);
+      var fb = document.getElementById('kwt8-fb-' + id);
+      if (!item || !inp || !fb) return;
+      var val = inp.value.trim().replace(/\s+/g, ' ');
+      var wc = val ? val.split(' ').length : 0;
+      fb.classList.remove('hidden');
+
+      if (!new RegExp('\\b' + item.keyword + '\\b', 'i').test(val)) {
+        fb.className = 'mt-3 p-3 rounded-lg text-xs leading-relaxed bg-rose-50 border border-rose-300 text-rose-900';
+        fb.innerHTML = '<strong>Keyword Rule Violation:</strong> You must include the exact unchanged keyword <code>' + item.keyword + '</code>.';
+        return;
+      }
+      if (wc < 3 || wc > 6) {
+        fb.className = 'mt-3 p-3 rounded-lg text-xs leading-relaxed bg-amber-50 border border-amber-300 text-amber-900';
+        fb.innerHTML = '<strong>Word Count Alert:</strong> Your answer has ' + wc + ' words. Cambridge Part 4 strictly requires <strong>3 to 6 words</strong>.';
+        return;
+      }
+      if (item.validRegex.test(val)) {
+        fb.className = 'mt-3 p-3 rounded-lg text-xs leading-relaxed bg-emerald-50 border border-emerald-300 text-emerald-900';
+        fb.innerHTML = '<strong>Spot on (2/2 marks)!</strong> ' + item.explanation;
+      } else {
+        fb.className = 'mt-3 p-3 rounded-lg text-xs leading-relaxed bg-amber-50 border border-amber-300 text-amber-900';
+        fb.innerHTML = '<strong>Close, but check the exact pattern:</strong> Click <em>✂️ Strike Out the Echoes</em> to isolate the missing words or <em>👁️ Reveal Cambridge Model</em> to inspect the solution.';
+      }
+    }
+
+    function toggleKwt8Model(id, btn) {
+      var m = document.getElementById('kwt8-model-' + id);
+      if (!m) return;
+      if (m.classList.contains('hidden')) {
+        m.classList.remove('hidden');
+        if (btn) btn.textContent = '🙈 Hide Cambridge Model';
+      } else {
+        m.classList.add('hidden');
+        if (btn) btn.textContent = '👁️ Reveal Cambridge Model';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      renderKwt8();
+      loadScannerDraft(2);
     });
   </script>
   <script src="analytics.js"></script>

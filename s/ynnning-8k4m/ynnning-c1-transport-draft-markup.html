@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="paper">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing Mark-Up &amp; C1 Upgrade Lab &middot; Ynnning | GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="paper"] {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --card-alt: #f1f5f9;
+      --ink: #0f172a;
+      --text: #1e293b;
+      --muted: #64748b;
+      --navy: #1e3a8a;
+      --navy-soft: #dbeafe;
+      --gold: #b45309;
+      --gold-soft: #fef3c7;
+      --emerald: #059669;
+      --emerald-bg: #d1fae5;
+      --emerald-text: #065f46;
+      --crimson: #e11d48;
+      --crimson-bg: #ffe4e6;
+      --crimson-text: #9f1239;
+      --amber: #d97706;
+      --amber-bg: #fef3c7;
+      --amber-text: #92400e;
+      --border: #e2e8f0;
+      --shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+    }
+    [data-theme="dark"] {
+      --bg: #0b0f19;
+      --card: #111827;
+      --card-alt: #1e293b;
+      --ink: #f8fafc;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --navy: #60a5fa;
+      --navy-soft: rgba(96, 165, 250, 0.15);
+      --gold: #fbbf24;
+      --gold-soft: rgba(251, 191, 36, 0.16);
+      --emerald: #34d399;
+      --emerald-bg: rgba(16, 185, 129, 0.2);
+      --emerald-text: #6ee7b7;
+      --crimson: #fb7185;
+      --crimson-bg: rgba(244, 63, 94, 0.2);
+      --crimson-text: #fda4af;
+      --amber: #fbbf24;
+      --amber-bg: rgba(245, 158, 11, 0.2);
+      --amber-text: #fcd34d;
+      --border: rgba(255, 255, 255, 0.1);
+      --shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      line-height: 1.65;
+      padding: 0 0 4rem;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .top-bar {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .top-bar-inner {
+      max-width: 1020px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .back-link {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.86rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+    .theme-btn {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .container { max-width: 1020px; margin: 1.75rem auto 0; padding: 0 1.25rem; }
+    .hero-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+    .hero-banner {
+      height: 190px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .hero-banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.25) 0%, rgba(15, 23, 42, 0.78) 100%);
+      display: flex;
+      align-items: flex-end;
+      padding: 1.25rem 1.75rem;
+    }
+    .hero-banner-overlay span {
+      color: #f8fafc;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(15, 23, 42, 0.65);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+    .hero-body {
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 2.15rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.15;
+    }
+    .badge {
+      background: var(--gold-soft);
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+    }
+    .desk-note {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy);
+      padding: 1.35rem 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+    .desk-note h2 {
+      font-size: 1.02rem;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+      font-weight: 700;
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1.75rem;
+    }
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem;
+      box-shadow: var(--shadow);
+    }
+    .metric-val { font-size: 1.6rem; font-weight: 800; color: var(--navy); font-family: 'JetBrains Mono', monospace; }
+    .metric-label { font-size: 0.74rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 700; }
+    .metric-sub { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
+    .section-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.6rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.5rem;
+      color: var(--ink);
+      margin-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+    .section-rubric {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .essay-para {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      padding: 1rem 1.15rem;
+      background: var(--card-alt);
+      border-radius: 10px;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.03rem;
+      line-height: 1.75;
+    }
+    .para-num {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 0.85rem;
+      min-width: 2rem;
+      padding-top: 0.15rem;
+    }
+    mark.c1-hit {
+      background: var(--emerald-bg);
+      color: var(--emerald-text);
+      border-bottom: 2px solid var(--emerald);
+      padding: 0.05rem 0.3rem;
+      border-radius: 4px;
+    }
+    mark.cliche-hit, mark.personal-hit {
+      background: var(--crimson-bg);
+      color: var(--crimson-text);
+      border-bottom: 2px dashed var(--crimson);
+      padding: 0.05rem 0.3rem;
+      border-radius: 4px;
+    }
+    .legend {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      margin-bottom: 1rem;
+      color: var(--muted);
+    }
+    .xray-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .xray-card {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.15rem;
+    }
+    .xray-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .xray-role { font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+    .xray-wc { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 999px; }
+    .xray-wc.optimal { background: var(--emerald-bg); color: var(--emerald-text); }
+    .xray-wc.acceptable { background: var(--gold-soft); color: var(--gold); }
+    .xray-wc.warning { background: var(--crimson-bg); color: var(--crimson-text); }
+    .xray-check {
+      font-size: 0.84rem;
+      margin-bottom: 0.45rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+    .xray-note {
+      margin-top: 0.75rem;
+      padding-top: 0.6rem;
+      border-top: 1px dashed var(--border);
+      font-size: 0.82rem;
+      color: var(--navy);
+      font-weight: 600;
+    }
+    .cadence-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+    }
+    .cadence-row {
+      display: grid;
+      grid-template-columns: 42px 1fr 185px;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.45rem 0.65rem;
+      background: var(--card-alt);
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: border-color 0.15s ease;
+    }
+    .cadence-row:hover, .cadence-row.active {
+      border-color: var(--navy);
+    }
+    .cadence-id { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--navy); font-size: 0.82rem; }
+    .cadence-bar-wrap {
+      background: var(--border);
+      height: 16px;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+    .cadence-bar {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+    .cadence-bar.c1-peak { background: linear-gradient(90deg, #059669, #10b981); }
+    .cadence-bar.balanced { background: linear-gradient(90deg, #1d4ed8, #3b82f6); }
+    .cadence-bar.brisk, .cadence-bar.extended { background: linear-gradient(90deg, #d97706, #f59e0b); }
+    .cadence-bar.alert { background: linear-gradient(90deg, #e11d48, #f43f5e); }
+    .cadence-meta {
+      font-size: 0.78rem;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cadence-inspector {
+      margin-top: 1rem;
+      padding: 1rem 1.2rem;
+      background: var(--card-alt);
+      border-left: 4px solid var(--navy);
+      border-radius: 0 8px 8px 0;
+    }
+    .c1-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .c1-table th, .c1-table td {
+      padding: 0.8rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .c1-table th { color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .pill-ok { background: var(--emerald-bg); color: var(--emerald-text); padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.76rem; font-weight: 700; }
+    .pill-miss { background: var(--amber-bg); color: var(--amber-text); padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.76rem; font-weight: 700; }
+    .pill-alert { background: var(--crimson-bg); color: var(--crimson-text); padding: 0.2rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; }
+    .workout-box {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-bottom: 1.15rem;
+    }
+    .formula-bar {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--navy-soft);
+      color: var(--navy);
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin: 0.55rem 0 0.85rem;
+      display: inline-block;
+    }
+    .draft-quote {
+      border-left: 3px solid var(--muted);
+      padding-left: 0.85rem;
+      color: var(--muted);
+      font-style: italic;
+      margin: 0.45rem 0 0.8rem;
+    }
+    .practice-input {
+      width: 100%;
+      background: var(--card);
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.94rem;
+      margin-bottom: 0.65rem;
+    }
+    .practice-input:focus {
+      outline: none;
+      border-color: var(--navy);
+    }
+    .workout-actions {
+      display: flex;
+      gap: 0.65rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .check-btn {
+      background: var(--emerald);
+      color: #fff;
+      border: 1px solid var(--emerald);
+      padding: 0.45rem 0.95rem;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.83rem;
+    }
+    .reveal-btn {
+      background: var(--card);
+      color: var(--navy);
+      border: 1px solid var(--border);
+      padding: 0.45rem 0.95rem;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.83rem;
+    }
+    .workout-feedback {
+      font-size: 0.84rem;
+      font-weight: 600;
+      margin-top: 0.6rem;
+      padding: 0.55rem 0.8rem;
+      border-radius: 6px;
+      display: none;
+    }
+    .model-reveal {
+      display: none;
+      margin-top: 0.8rem;
+      padding: 0.85rem 1rem;
+      background: var(--emerald-bg);
+      border-left: 3px solid var(--emerald);
+      border-radius: 6px;
+      color: var(--emerald-text);
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <a href="index.html" class="back-link">&larr; Back to Ynnning's Portal</a>
+      <button type="button" class="theme-btn" onclick="const h=document.documentElement; h.setAttribute('data-theme', h.getAttribute('data-theme')==='dark'?'paper':'dark');">
+        &#127769; Toggle Theme
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="hero-card">
+      <div class="hero-banner">
+        <img src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1400&q=80" alt="Fountain pen and notebook on study desk" />
+        <div class="hero-banner-overlay">
+          <span>Gareth Montgomery &middot; Red-Pen Writing Mark-Up</span>
+        </div>
+      </div>
+      <div class="hero-body">
+        <div>
+          <div class="eyebrow">Cambridge C1 &amp; IELTS Writing Feedback</div>
+          <h1>Writing Mark-Up &amp; C1 Upgrade Lab</h1>
+          <p style="color: var(--muted); font-size: 0.88rem; margin-top: 0.25rem;">
+            Student: <strong>Ynnning</strong> &middot; Draft: <code>ynnning-c1-transport-draft.docx</code>
+          </p>
+        </div>
+        <div class="badge">Band 6.5 → 7.0 (Template Over-Stuffing Flagged: Prioritise Natural Cadence)</div>
+      </div>
+    </div>
+
+    <section class="desk-note">
+      <h2>&#128395;&#65039; Gareth's Feedback</h2>
+      <p>Hi Ynnning! Well done on putting together a 179-word draft across 4 paragraphs with 90% objective academic register. Your core argument comes through clearly, and you already have 6 C1 structural shifts working in your favour. Below, let's clear out the 19 red-pen traps, check your sentence rhythm, and practise the 4 sentence upgrades taken directly from your draft.</p>
+    </section>
+
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Word Count</div>
+        <div class="metric-val">179</div>
+        <div class="metric-sub">4 paragraphs &middot; 10 sentences</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Sentence Rhythm</div>
+        <div class="metric-val">17.9 <span style="font-size:0.85rem">w/s</span></div>
+        <div class="metric-sub">Spread: &plusmn;6.7w &middot; 2 splice(s)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Academic Tone</div>
+        <div class="metric-val">90%</div>
+        <div class="metric-sub">1 personal pronoun(s) to shift</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">C1 Structures</div>
+        <div class="metric-val">6</div>
+        <div class="metric-sub">5 of 5 core C1 patterns used</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Red-Pen Fixes</div>
+        <div class="metric-val">19</div>
+        <div class="metric-sub">Clich&eacute;s, uncountables &amp; punctuation</div>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h2 class="section-title">1. Your Annotated Draft</h2>
+      <div class="legend">
+        <span><mark class="c1-hit">Green Highlight</mark> = Strong C1 Structure</span>
+        <span><mark class="cliche-hit">Red Highlight</mark> = Phrase or Grammar Point to Upgrade</span>
+      </div>
+      <div class="essay-para"><span class="para-num">¶1</span><p><mark class="cliche-hit" title="Memorised Band-9 Snake Oil — Replace with: In contemporary society, / Increasingly, / In recent years,">Nowadays</mark>, urban congestion is <mark class="cliche-hit" title="Memorised Band-9 Snake Oil — Replace with: a subject of intense debate / a pressing policy issue">a hot topic</mark> that people <mark class="cliche-hit" title="Grammar &amp; Uncountable Noun Trap — Replace with: discuss [direct object] / examine / debate">discuss about</mark> in every major city, and <mark class="cliche-hit" title="Personal Pronoun Drift — Replace with: It is widely argued that... / It appears evident that...">I think</mark> <mark class="cliche-hit" title="Memorised Band-9 Snake Oil — Replace with: While this approach carries clear merits, its drawbacks warrant scrutiny">every coin has two sides</mark> when governments consider road tolls. Whilst charging motorists can raise municipal revenue, investing in modern rail infrastructure is far more sustainable.</p></div>
+<div class="essay-para"><span class="para-num">¶2</span><p><mark class="cliche-hit" title="Grammar &amp; Uncountable Noun Trap — Replace with: Pair with 'On the other hand,' in the next paragraph, or replace with 'Granted,'">On the one hand</mark>, recent <mark class="cliche-hit" title="Grammar &amp; Uncountable Noun Trap — Replace with: research / empirical studies / bodies of research">researches</mark> and <mark class="cliche-hit" title="Grammar &amp; Uncountable Noun Trap — Replace with: information / data / pieces of information">informations</mark> show that punitive congestion charges burden low-income commuters<mark class="cliche-hit" title="Punctuation &amp; Clause Boundary Trap — Replace with: ; however,  OR  . However,">, however,</mark> many councils still rely on them. Traffic is bad. <mark class="cliche-hit" title="Grammar &amp; Uncountable Noun Trap — Replace with: despite [noun] / in spite of [noun]">Despite of</mark> these financial pressures, <mark class="c1-hit" title="C1 Structure: Introductory / Preparatory 'It'">it is widely argued that</mark> expanding affordable metro networks offers a cleaner alternative<mark class="c1-hit" title="C1 Structure: Resultative Participle Clauses">, thereby fostering</mark> social mobility and quieter neighbourhoods.</p></div>
+<div class="essay-para"><span class="para-num">¶3</span><p>Furthermore, <mark class="c1-hit" title="C1 Structure: Cleft Sentences (Wh- &amp; It-Clefts)">what makes this transition challenging is the</mark> initial capital required for new <mark class="cliche-hit" title="Grammar &amp; Uncountable Noun Trap — Replace with: equipment / infrastructure / specialist apparatus">equipments</mark> and carriages. High-speed rail links <mark class="c1-hit" title="C1 Structure: Passive Reporting Verbs">are widely believed to reduce</mark> carbon emissions significantly<mark class="cliche-hit" title="Punctuation &amp; Clause Boundary Trap — Replace with: ; therefore,  OR  . Therefore,">, therefore,</mark> planners should follow expert <mark class="cliche-hit" title="Grammar &amp; Uncountable Noun Trap — Replace with: advice / guidance / recommendations">advices</mark> rather than short-term politics. <mark class="c1-hit" title="C1 Structure: Negative &amp; Restrictive Inversions">Not only does</mark> reliable public transit cut commuter stress, but it also strengthens regional commerce.</p></div>
+<div class="essay-para"><span class="para-num">¶4</span><p><mark class="cliche-hit" title="Memorised Band-9 Snake Oil — Replace with: In conclusion, / Ultimately, / On balance,">In a nutshell</mark>, solving this urban <mark class="cliche-hit" title="Memorised Band-9 Snake Oil — Replace with: dilemma / complex challenge / policy tension">conundrum</mark> <mark class="cliche-hit" title="Grammar &amp; Uncountable Noun Trap — Replace with: do not / cannot / will not / is not / does not / it is">shouldn't</mark> <mark class="cliche-hit" title="Grammar &amp; Uncountable Noun Trap — Replace with: comprise / consist of / be composed of">comprise of</mark> punitive taxes alone. Ultimately, balanced transport policies give citizens a <mark class="cliche-hit" title="Memorised Band-9 Snake Oil — Replace with: a wide range of / numerous / substantial">plethora of</mark> travel choices and <mark class="cliche-hit" title="Memorised Band-9 Snake Oil — Replace with: expand one’s perspective / cultivate cross-cultural awareness">broaden our horizons</mark> over the long term.</p></div>
+    </section>
+
+    <section class="section-card">
+      <h2 class="section-title">2. Paragraph Check</h2>
+      <p class="section-rubric">
+        How each paragraph balances length, topic focus, and linking words:
+      </p>
+      <div class="xray-grid">
+        
+          <div class="xray-card">
+            <div class="xray-header">
+              <span class="xray-role">Introduction (¶1)</span>
+              <span class="xray-wc optimal">44w (Target: 35–60 words)</span>
+            </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Introductory Length (35–60w):</strong>
+                  <span style="color:var(--muted);"> 44 words — right in the 35–60w sweet spot.</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--crimson); font-weight:700;">⚠</span>
+                <div>
+                  <strong style="color:var(--ink);">Impersonal Framing Hook:</strong>
+                  <span style="color:var(--muted);"> Swap out conversational/cliché openers ('Nowadays', 'Many people think') for 'In recent years, it has been widely debated whether...'.</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Clear Thesis / Scope Indicator:</strong>
+                  <span style="color:var(--muted);"> Clear thesis trajectory signposted for the examiner.</span>
+                </div>
+              </div>
+            
+            <div class="xray-note">&#128161; Tighten ¶1 into a 2-sentence frame: [1] Impersonal Context Hook + [2] Concessive Thesis Statement.</div>
+          </div>
+        
+          <div class="xray-card">
+            <div class="xray-header">
+              <span class="xray-role">Body Paragraph 1 (¶2)</span>
+              <span class="xray-wc warning">51w (Target: 75–115 words)</span>
+            </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--crimson); font-weight:700;">⚠</span>
+                <div>
+                  <strong style="color:var(--ink);">Body Paragraph Depth (75–115w):</strong>
+                  <span style="color:var(--muted);"> 51 words — under-developed (target 75–115w). Add a concrete example or resultative clause to deepen the point.</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Topic Sentence Opener:</strong>
+                  <span style="color:var(--muted);"> Clear topic sentence opener (23 words).</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Discourse Signpost:</strong>
+                  <span style="color:var(--muted);"> Active cohesion marker: &quot;On the one hand&quot;.</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Supporting Example / Result Clause:</strong>
+                  <span style="color:var(--muted);"> Concrete support / causal link active (&quot;thereby&quot;).</span>
+                </div>
+              </div>
+            
+            <div class="xray-note">&#128161; Aim for the 4-part C1 body rhythm: Topic Claim → Explanation → Concrete Example → Resultative Clause (75–115 words).</div>
+          </div>
+        
+          <div class="xray-card">
+            <div class="xray-header">
+              <span class="xray-role">Body Paragraph 2 (¶3)</span>
+              <span class="xray-wc warning">52w (Target: 75–115 words)</span>
+            </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--crimson); font-weight:700;">⚠</span>
+                <div>
+                  <strong style="color:var(--ink);">Body Paragraph Depth (75–115w):</strong>
+                  <span style="color:var(--muted);"> 52 words — under-developed (target 75–115w). Add a concrete example or resultative clause to deepen the point.</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Topic Sentence Opener:</strong>
+                  <span style="color:var(--muted);"> Clear topic sentence opener (16 words).</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Discourse Signpost:</strong>
+                  <span style="color:var(--muted);"> Active cohesion marker: &quot;Furthermore&quot;.</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Supporting Example / Result Clause:</strong>
+                  <span style="color:var(--muted);"> Concrete support / causal link active (&quot;therefore&quot;).</span>
+                </div>
+              </div>
+            
+            <div class="xray-note">&#128161; Aim for the 4-part C1 body rhythm: Topic Claim → Explanation → Concrete Example → Resultative Clause (75–115 words).</div>
+          </div>
+        
+          <div class="xray-card">
+            <div class="xray-header">
+              <span class="xray-role">Conclusion (¶4)</span>
+              <span class="xray-wc optimal">32w (Target: 30–65 words)</span>
+            </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Conclusion Length (30–65w):</strong>
+                  <span style="color:var(--muted);"> 32 words — crisp, balanced synthesis.</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--crimson); font-weight:700;">⚠</span>
+                <div>
+                  <strong style="color:var(--ink);">Synthesis Signpost (No Clichés):</strong>
+                  <span style="color:var(--muted);"> Red alert: cut 'In a nutshell' / 'Last but not least' and open cleanly with 'In conclusion,' or 'Ultimately,'.</span>
+                </div>
+              </div>
+            
+              <div class="xray-check">
+                <span style="color: var(--emerald); font-weight:700;">✓</span>
+                <div>
+                  <strong style="color:var(--ink);">Balanced Final Verdict:</strong>
+                  <span style="color:var(--muted);"> Restates and weighs the core position with authority.</span>
+                </div>
+              </div>
+            
+            <div class="xray-note">&#128161; Open with 'In conclusion,' or 'Ultimately,' and synthesize both body points without cliché idioms.</div>
+          </div>
+        
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h2 class="section-title">3. Sentence Length &amp; Flow</h2>
+      <p class="section-rubric">
+        Click any bar below to read that sentence and check its length and punctuation:
+      </p>
+      <div class="legend">
+        <span><span class="pill-ok">Green</span> = C1 Structure</span>
+        <span><span class="badge" style="padding:0.15rem 0.5rem; font-size:0.75rem;">Blue</span> = Balanced (12–32w)</span>
+        <span><span class="pill-miss">Amber</span> = Short (8–11w) / Long (33–38w)</span>
+        <span><span class="pill-alert">Red</span> = Very Short (&lt;8w), Overlong (&gt;38w), or Comma Splice</span>
+      </div>
+      <div class="cadence-chart">
+        
+            <div class="cadence-row active" onclick="inspectSentence(0)" id="cadence-row-0">
+              <span class="cadence-id">S1</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar balanced" style="width: 67%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>28w</strong> &middot; Balanced</span>
+            </div>
+          
+            <div class="cadence-row " onclick="inspectSentence(1)" id="cadence-row-1">
+              <span class="cadence-id">S2</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar balanced" style="width: 38%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>16w</strong> &middot; Balanced</span>
+            </div>
+          
+            <div class="cadence-row " onclick="inspectSentence(2)" id="cadence-row-2">
+              <span class="cadence-id">S3</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar alert" style="width: 55%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>23w</strong> &middot; ⚠ Comma Splice</span>
+            </div>
+          
+            <div class="cadence-row " onclick="inspectSentence(3)" id="cadence-row-3">
+              <span class="cadence-id">S4</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar alert" style="width: 8%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>3w</strong> &middot; ⚠ Short (&lt;8w)</span>
+            </div>
+          
+            <div class="cadence-row " onclick="inspectSentence(4)" id="cadence-row-4">
+              <span class="cadence-id">S5</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar c1-peak" style="width: 60%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>25w</strong> &middot; ✓ C1 Structure</span>
+            </div>
+          
+            <div class="cadence-row " onclick="inspectSentence(5)" id="cadence-row-5">
+              <span class="cadence-id">S6</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar c1-peak" style="width: 38%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>16w</strong> &middot; ✓ C1 Structure</span>
+            </div>
+          
+            <div class="cadence-row " onclick="inspectSentence(6)" id="cadence-row-6">
+              <span class="cadence-id">S7</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar alert" style="width: 50%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>21w</strong> &middot; ⚠ Comma Splice</span>
+            </div>
+          
+            <div class="cadence-row " onclick="inspectSentence(7)" id="cadence-row-7">
+              <span class="cadence-id">S8</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar c1-peak" style="width: 36%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>15w</strong> &middot; ✓ C1 Structure</span>
+            </div>
+          
+            <div class="cadence-row " onclick="inspectSentence(8)" id="cadence-row-8">
+              <span class="cadence-id">S9</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar balanced" style="width: 31%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>13w</strong> &middot; Balanced</span>
+            </div>
+          
+            <div class="cadence-row " onclick="inspectSentence(9)" id="cadence-row-9">
+              <span class="cadence-id">S10</span>
+              <div class="cadence-bar-wrap">
+                <div class="cadence-bar balanced" style="width: 45%;"></div>
+              </div>
+              <span class="cadence-meta"><strong>19w</strong> &middot; Balanced</span>
+            </div>
+          
+      </div>
+      <div class="cadence-inspector" id="cadence-inspector">
+        <div style="font-size:0.78rem; color:var(--navy); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:0.25rem;" id="inspector-title">
+          Sentence S1 (28 words)
+        </div>
+        <p style="font-style:italic; color:var(--ink); margin-bottom:0.4rem;" id="inspector-quote">
+          "Nowadays, urban congestion is a hot topic that people discuss about in every major city, and I think every coin has two sides when governments consider road tolls."
+        </p>
+        <p style="font-size:0.86rem; color:var(--muted);" id="inspector-diag">
+          Balanced C1 academic sentence cadence (12–32 words).
+        </p>
+      </div>
+    </section>
+
+    <section class="section-card">
+      <h2 class="section-title">4. Core C1 Grammar Patterns</h2>
+      <p class="section-rubric">
+        Aim to include three or four of these patterns naturally across your essay:
+      </p>
+      <table class="c1-table">
+        <thead>
+          <tr>
+            <th>Pattern</th>
+            <th>Structure</th>
+            <th>In Your Draft</th>
+            <th>How to Use It</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><strong>Introductory / Preparatory 'It'</strong></td>
+              <td><code>It + BE + Adverb + Past Participle / Adjective + that-clause</code></td>
+              <td>
+                <span class="pill-ok">✓ 1 Found (it is widely argued that)</span>
+              </td>
+              <td>Replace personal 'I think that...' or flat 'Many people say...' with 'It is widely acknowledged that...'.</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Passive Reporting Verbs</strong></td>
+              <td><code>Subject + BE + believed / thought / said / expected + to + Infinitive</code></td>
+              <td>
+                <span class="pill-ok">✓ 1 Found (are widely believed to reduce)</span>
+              </td>
+              <td>Shift active generalisations ('Experts believe this causes...') into sleek passive reporting ('This is widely believed to cause...').</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Cleft Sentences (Wh- &amp; It-Clefts)</strong></td>
+              <td><code>What + Subject + Verb + BE + Noun/Clause  |  It is [X] that [Y]</code></td>
+              <td>
+                <span class="pill-ok">✓ 2 Found (it is widely argued that expanding)</span>
+              </td>
+              <td>Use a Wh-cleft at the start of a body paragraph to spotlight your core argument: 'What drives this shift is not cost, but convenience.'</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Negative &amp; Restrictive Inversions</strong></td>
+              <td><code>Negative Adverbial + Auxiliary + Subject + Main Verb</code></td>
+              <td>
+                <span class="pill-ok">✓ 1 Found (Not only does)</span>
+              </td>
+              <td>Place ONE well-judged negative inversion in your essay ('Not only does this policy burden commuters, but it also...'). Never force more than one.</td>
+            </tr>
+          
+            <tr>
+              <td><strong>Resultative Participle Clauses</strong></td>
+              <td><code>Main Clause + , + thereby / thus + Present Participle (-ing)</code></td>
+              <td>
+                <span class="pill-ok">✓ 1 Found (, thereby fostering)</span>
+              </td>
+              <td>Merge choppy cause-and-effect sentences ('This cuts funding. As a result, it weakens schools.') into a resultative participle clause (', thereby weakening local schools.').</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </section>
+
+    
+    <section class="section-card">
+      <h2 class="section-title">5. Vocabulary &amp; Grammar Corrections</h2>
+      <p class="section-rubric">
+        Replace memorised templates, informal contractions, and grammar slips with clean phrasing:
+      </p>
+      <table class="c1-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>In Your Draft</th>
+            <th>Better Alternative</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td><span class="pill-alert">Memorised Band-9 Snake Oil</span></td>
+              <td><mark class="cliche-hit">plethora of</mark> </td>
+              <td><strong>a wide range of / numerous / substantial</strong></td>
+              <td>Classic memorised 'Band 9 list' word that makes examiners groan. Use precise collocations instead.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Memorised Band-9 Snake Oil</span></td>
+              <td><mark class="cliche-hit">conundrum</mark> </td>
+              <td><strong>dilemma / complex challenge / policy tension</strong></td>
+              <td>Telltale thesaurus-list noun that rarely fits the surrounding register.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Memorised Band-9 Snake Oil</span></td>
+              <td><mark class="cliche-hit">every coin has two sides</mark> </td>
+              <td><strong>While this approach carries clear merits, its drawbacks warrant scrutiny</strong></td>
+              <td>Toss this out immediately—examiners mark forty scripts before lunch and instantly penalise memorised idioms.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Memorised Band-9 Snake Oil</span></td>
+              <td><mark class="cliche-hit">In a nutshell</mark> </td>
+              <td><strong>In conclusion, / Ultimately, / On balance,</strong></td>
+              <td>Too conversational and clichéd for a formal C1/IELTS conclusion.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Memorised Band-9 Snake Oil</span></td>
+              <td><mark class="cliche-hit">Nowadays</mark> </td>
+              <td><strong>In contemporary society, / Increasingly, / In recent years,</strong></td>
+              <td>'Nowadays' feels slightly informal and repetitive in B2 scripts. Step up to 'Increasingly,' or 'In recent years,'.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Memorised Band-9 Snake Oil</span></td>
+              <td><mark class="cliche-hit">a hot topic</mark> </td>
+              <td><strong>a subject of intense debate / a pressing policy issue</strong></td>
+              <td>Colloquial template opener. Use formal academic nouns like &quot;a pressing policy question&quot;.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Memorised Band-9 Snake Oil</span></td>
+              <td><mark class="cliche-hit">broaden our horizons</mark> </td>
+              <td><strong>expand one’s perspective / cultivate cross-cultural awareness</strong></td>
+              <td>Stock IELTS coaching-school cliché. Specify what cognitive or social skill actually develops.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Grammar &amp; Uncountable Noun Trap</span></td>
+              <td><mark class="cliche-hit">informations</mark> </td>
+              <td><strong>information / data / pieces of information</strong></td>
+              <td>'Information' is strictly uncountable in English and NEVER takes a plural -s.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Grammar &amp; Uncountable Noun Trap</span></td>
+              <td><mark class="cliche-hit">researches</mark> </td>
+              <td><strong>research / empirical studies / bodies of research</strong></td>
+              <td>'Research' as an academic noun is uncountable; write 'research indicates' or 'recent studies show'.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Grammar &amp; Uncountable Noun Trap</span></td>
+              <td><mark class="cliche-hit">advices</mark> </td>
+              <td><strong>advice / guidance / recommendations</strong></td>
+              <td>'Advice' is an uncountable noun; use 'advice' or countable 'recommendations'.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Grammar &amp; Uncountable Noun Trap</span></td>
+              <td><mark class="cliche-hit">equipments</mark> </td>
+              <td><strong>equipment / infrastructure / specialist apparatus</strong></td>
+              <td>'Equipment' is strictly uncountable; drop the plural -s immediately.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Grammar &amp; Uncountable Noun Trap</span></td>
+              <td><mark class="cliche-hit">Despite of</mark> </td>
+              <td><strong>despite [noun] / in spite of [noun]</strong></td>
+              <td>Classic C1 preposition trap: write 'despite' (no 'of') OR 'in spite of', never 'despite of'.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Grammar &amp; Uncountable Noun Trap</span></td>
+              <td><mark class="cliche-hit">discuss about</mark> </td>
+              <td><strong>discuss [direct object] / examine / debate</strong></td>
+              <td>'Discuss' is transitive and takes a direct object without 'about' ('discuss the issue', never 'discuss about').</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Grammar &amp; Uncountable Noun Trap</span></td>
+              <td><mark class="cliche-hit">comprise of</mark> </td>
+              <td><strong>comprise / consist of / be composed of</strong></td>
+              <td>'Comprise' already means 'consist of'; writing 'comprise of' is a classic Cambridge Use of English error.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Grammar &amp; Uncountable Noun Trap</span></td>
+              <td><mark class="cliche-hit">shouldn't</mark> </td>
+              <td><strong>do not / cannot / will not / is not / does not / it is</strong></td>
+              <td>Contractions belong in Speaking, not formal C1/IELTS essays. Always write full uncontracted verb forms.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Personal Pronoun Drift</span></td>
+              <td><mark class="cliche-hit">I think</mark> </td>
+              <td><strong>It is widely argued that... / It appears evident that...</strong></td>
+              <td>Step back from conversational 'I think' to an objective C1 preparatory 'It' frame.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Grammar &amp; Uncountable Noun Trap</span></td>
+              <td><mark class="cliche-hit">On the one hand</mark> </td>
+              <td><strong>Pair with 'On the other hand,' in the next paragraph, or replace with 'Granted,'</strong></td>
+              <td>'On the one hand' is a correlative signpost—using it without a matching 'On the other hand' leaves your structural balance hanging.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Punctuation &amp; Clause Boundary Trap</span></td>
+              <td><mark class="cliche-hit">, however,</mark> </td>
+              <td><strong>; however,  OR  . However,</strong></td>
+              <td>Comma splice in Sentence S3: conjunctive adverbs like 'however' require a semicolon (;) or full stop (.) before them when linking two clauses.</td>
+            </tr>
+          
+            <tr>
+              <td><span class="pill-alert">Punctuation &amp; Clause Boundary Trap</span></td>
+              <td><mark class="cliche-hit">, therefore,</mark> </td>
+              <td><strong>; therefore,  OR  . Therefore,</strong></td>
+              <td>Comma splice in Sentence S7: conjunctive adverbs like 'therefore' require a semicolon (;) or full stop (.) before them when linking two clauses.</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </section>
+    
+
+    <section class="section-card">
+      <h2 class="section-title">6. Rewrite Practice (4 Sentences from Your Draft)</h2>
+      <p class="section-rubric">
+        Rewrite each sentence below using the C1 pattern shown, then click <strong>&#128065;&#65039; Reveal Cambridge Model</strong> to compare:
+      </p>
+      
+        <div class="workout-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+            <h3 style="color:var(--ink); font-size:1.02rem;">Workout 1 · Participial Frame &amp; Passive Reporting Shift</h3>
+            <span class="pill-miss">Sentence S1 &middot; Preposed Participle + Passive Reporting</span>
+          </div>
+          <div class="formula-bar">Pattern: Having + [Past Participle]..., [Subject] + is / are widely believed to + [Infinitive]</div>
+          <div class="draft-quote">"Nowadays, urban congestion is a hot topic that people discuss about in every major city, and I think every coin has two sides when governments consider road tolls."</div>
+          <p style="font-size:0.9rem; margin-bottom:0.55rem;">Open with a participial frame ('Having weighed the evidence,' or 'Given these pressures,') and shift the main clause into a Passive Reporting structure ('...is widely believed to...'):</p>
+          <input
+            type="text"
+            id="workout-input-0"
+            class="practice-input"
+            placeholder="Write your upgraded C1 sentence here..."
+            oninput="verifyWorkout(0, false)"
+          />
+          <div class="workout-actions">
+            <button type="button" class="check-btn" onclick="verifyWorkout(0, true)">
+              &#10003; Check Sentence
+            </button>
+            <button type="button" class="reveal-btn" onclick="const el=document.getElementById('model-0'); el.style.display = el.style.display==='block' ? 'none' : 'block';">
+              &#128065;&#65039; Reveal Cambridge Model
+            </button>
+          </div>
+          <div id="workout-feedback-0" class="workout-feedback"></div>
+          <div id="model-0" class="model-reveal">
+            <strong>Cambridge C1 Model:</strong> Having weighed the broader evidence, analysts widely consider this shift to determine how urban congestion is a hot topic that people discuss in every major city, and I think every coin has two sides when governments consider road tolls.
+          </div>
+        </div>
+      
+        <div class="workout-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+            <h3 style="color:var(--ink); font-size:1.02rem;">Workout 2 · The Spotlight Wh-Cleft Pivot</h3>
+            <span class="pill-miss">Sentence S3 &middot; Cleft Sentences (Wh- &amp; It-Clefts)</span>
+          </div>
+          <div class="formula-bar">Pattern: What + [Subject + Verb] + is / remains + [Core Factor / That-Clause]</div>
+          <div class="draft-quote">"On the one hand, recent researches and informations show that punitive congestion charges burden low-income commuters, however, many councils still rely on them."</div>
+          <p style="font-size:0.9rem; margin-bottom:0.55rem;">Spotlight the core mechanism of this sentence from your draft using a 'What... is...' cleft structure (or 'It is precisely... that...'):</p>
+          <input
+            type="text"
+            id="workout-input-1"
+            class="practice-input"
+            placeholder="Write your upgraded C1 sentence here..."
+            oninput="verifyWorkout(1, false)"
+          />
+          <div class="workout-actions">
+            <button type="button" class="check-btn" onclick="verifyWorkout(1, true)">
+              &#10003; Check Sentence
+            </button>
+            <button type="button" class="reveal-btn" onclick="const el=document.getElementById('model-1'); el.style.display = el.style.display==='block' ? 'none' : 'block';">
+              &#128065;&#65039; Reveal Cambridge Model
+            </button>
+          </div>
+          <div id="workout-feedback-1" class="workout-feedback"></div>
+          <div id="model-1" class="model-reveal">
+            <strong>Cambridge C1 Model:</strong> What warrants closer scrutiny is the extent to which recent empirical research and information show that punitive congestion charges burden low-income commuters; however, many councils still rely on them.
+          </div>
+        </div>
+      
+        <div class="workout-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+            <h3 style="color:var(--ink); font-size:1.02rem;">Workout 3 · Concessive Subordinator &amp; Preparatory 'It'</h3>
+            <span class="pill-miss">Sentence S9 &middot; Concessive Subordinator + Preparatory 'It'</span>
+          </div>
+          <div class="formula-bar">Pattern: Whilst / Although + [Concession Clause], it is widely acknowledged that + [Main Clause]</div>
+          <div class="draft-quote">"In a nutshell, solving this urban conundrum shouldn't comprise of punitive taxes alone."</div>
+          <p style="font-size:0.9rem; margin-bottom:0.55rem;">Recast this sentence from your draft using a concessive subordinator ('Whilst...' or 'Although...') paired with an impersonal Preparatory 'It' frame ('...it is widely acknowledged that...'):</p>
+          <input
+            type="text"
+            id="workout-input-2"
+            class="practice-input"
+            placeholder="Write your upgraded C1 sentence here..."
+            oninput="verifyWorkout(2, false)"
+          />
+          <div class="workout-actions">
+            <button type="button" class="check-btn" onclick="verifyWorkout(2, true)">
+              &#10003; Check Sentence
+            </button>
+            <button type="button" class="reveal-btn" onclick="const el=document.getElementById('model-2'); el.style.display = el.style.display==='block' ? 'none' : 'block';">
+              &#128065;&#65039; Reveal Cambridge Model
+            </button>
+          </div>
+          <div id="workout-feedback-2" class="workout-feedback"></div>
+          <div id="model-2" class="model-reveal">
+            <strong>Cambridge C1 Model:</strong> Whilst opinions on implementation vary, it is widely acknowledged that solving this urban policy challenge shouldn't comprise punitive taxes alone.
+          </div>
+        </div>
+      
+        <div class="workout-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+            <h3 style="color:var(--ink); font-size:1.02rem;">Workout 4 · Restrictive Inversion &amp; Resultative Participle</h3>
+            <span class="pill-miss">Sentence S10 &middot; Negative Inversion + Participle Clause</span>
+          </div>
+          <div class="formula-bar">Pattern: Rarely / Seldom / Not only + [Aux + Subject + Verb]..., thereby + [Present Participle -ing]</div>
+          <div class="draft-quote">"Ultimately, balanced transport policies give citizens a plethora of travel choices and broaden our horizons over the long term."</div>
+          <p style="font-size:0.9rem; margin-bottom:0.55rem;">Elevate this sentence from your draft using a Restrictive Inversion ('Rarely do...', 'Seldom has...', or 'Not only does...') paired with a trailing Resultative Participle Clause (', thereby fostering / enabling...'):</p>
+          <input
+            type="text"
+            id="workout-input-3"
+            class="practice-input"
+            placeholder="Write your upgraded C1 sentence here..."
+            oninput="verifyWorkout(3, false)"
+          />
+          <div class="workout-actions">
+            <button type="button" class="check-btn" onclick="verifyWorkout(3, true)">
+              &#10003; Check Sentence
+            </button>
+            <button type="button" class="reveal-btn" onclick="const el=document.getElementById('model-3'); el.style.display = el.style.display==='block' ? 'none' : 'block';">
+              &#128065;&#65039; Reveal Cambridge Model
+            </button>
+          </div>
+          <div id="workout-feedback-3" class="workout-feedback"></div>
+          <div id="model-3" class="model-reveal">
+            <strong>Cambridge C1 Model:</strong> Rarely do short-term fixes resolve the underlying issue when ultimately, balanced transport policies give citizens a numerous travel choices and broaden our horizons over the long term, thereby requiring sustained structural reform.
+          </div>
+        </div>
+      
+    </section>
+  </div>
+
+  <script>
+    const CADENCE_DATA = [{"label":"S1","wordCount":28,"text":"Nowadays, urban congestion is a hot topic that people discuss about in every major city, and I think every coin has two sides when governments consider road tolls.","diagnosis":"Balanced C1 academic sentence cadence (12–32 words)."},{"label":"S2","wordCount":16,"text":"Whilst charging motorists can raise municipal revenue, investing in modern rail infrastructure is far more sustainable.","diagnosis":"Balanced C1 academic sentence cadence (12–32 words)."},{"label":"S3","wordCount":23,"text":"On the one hand, recent researches and informations show that punitive congestion charges burden low-income commuters, however, many councils still rely on them.","diagnosis":"Comma Splice alert: ', however,' cannot join two independent clauses with a comma. Use a semicolon ('; however,') or start a new sentence."},{"label":"S4","wordCount":3,"text":"Traffic is bad.","diagnosis":"Only 3 words—feels abrupt and B1-level. Merge this into an adjacent sentence using a relative clause or ', thereby + -ing' participle clause."},{"label":"S5","wordCount":25,"text":"Despite of these financial pressures, it is widely argued that expanding affordable metro networks offers a cleaner alternative, thereby fostering social mobility and quieter neighbourhoods.","diagnosis":"Strong C1 rhythm (25 words) powered by Introductory / Preparatory 'It' + Cleft Sentences (Wh- & It-Clefts) + Resultative Participle Clauses."},{"label":"S6","wordCount":16,"text":"Furthermore, what makes this transition challenging is the initial capital required for new equipments and carriages.","diagnosis":"Strong C1 rhythm (16 words) powered by Cleft Sentences (Wh- & It-Clefts)."},{"label":"S7","wordCount":21,"text":"High-speed rail links are widely believed to reduce carbon emissions significantly, therefore, planners should follow expert advices rather than short-term politics.","diagnosis":"Comma Splice alert: ', therefore,' cannot join two independent clauses with a comma. Use a semicolon ('; therefore,') or start a new sentence."},{"label":"S8","wordCount":15,"text":"Not only does reliable public transit cut commuter stress, but it also strengthens regional commerce.","diagnosis":"Strong C1 rhythm (15 words) powered by Negative & Restrictive Inversions."},{"label":"S9","wordCount":13,"text":"In a nutshell, solving this urban conundrum shouldn't comprise of punitive taxes alone.","diagnosis":"Balanced C1 academic sentence cadence (12–32 words)."},{"label":"S10","wordCount":19,"text":"Ultimately, balanced transport policies give citizens a plethora of travel choices and broaden our horizons over the long term.","diagnosis":"Balanced C1 academic sentence cadence (12–32 words)."}];
+
+    const WORKOUT_SPECS = [{"pattern":"\\b(?:is|are|was|were|has\\s+been|have\\s+been)\\s+(?:widely\\s+|generally\\s+|often\\s+|increasingly\\s+)?(?:believed|thought|considered|said|expected|known|reported|claimed|projected|estimated|shown)\\s+to\\s+[a-z]+","hint":"Include a passive reporting verb frame such as 'is widely believed to + verb' or 'are expected to + verb'.","targetDevice":"Preposed Participle + Passive Reporting"},{"pattern":"(?:\\bWhat\\s+[a-zA-Z\\s,'-]{3,45}\\s+(?:is|was|remains)\\b|\\bIt\\s+(?:is|was)\\s+(?:precisely\\s+|primarily\\s+)?[a-zA-Z\\s,'-]{3,40}\\s+(?:that|who)\\b)","hint":"Begin with 'What warrants closer scrutiny is...' or 'What drives this outcome is that...'","targetDevice":"Cleft Sentences (Wh- & It-Clefts)"},{"pattern":"\\bIt\\s+(?:is|has\\s+been|remains|appears|seems)\\s+(?:widely\\s+|generally\\s+|often\\s+|increasingly\\s+)?(?:argued|acknowledged|recognised|recognized|clear|evident|undeniable|vital|essential|crucial|worth\\s+noting)\\s+(?:that|to)\\b","hint":"Use 'It is widely argued that...' or 'Whilst..., it is increasingly evident that...'","targetDevice":"Concessive Subordinator + Preparatory 'It'"},{"pattern":"(?:\\b(?:Not\\s+only\\s+(?:do|does|did|is|are|was|were|has|have|can|should|will)|Rarely\\s+(?:do|does|did)|Seldom\\s+(?:do|does|did))|,\\s*(?:thereby|thus|consequently)?\\s*[a-z]+ing\\b)","hint":"Use 'Rarely do/does...' or 'Not only does...' with inverted auxiliary, OR attach ', thereby + [verb]-ing' after a comma.","targetDevice":"Negative Inversion + Participle Clause"}];
+
+    function inspectSentence(idx) {
+      const item = CADENCE_DATA[idx];
+      if (!item) return;
+      document.querySelectorAll('.cadence-row').forEach((r, i) => {
+        r.classList.toggle('active', i === idx);
+      });
+      document.getElementById('inspector-title').textContent =
+        'Sentence ' + item.label + ' (' + item.wordCount + ' words)';
+      document.getElementById('inspector-quote').textContent = '"' + item.text + '"';
+      document.getElementById('inspector-diag').textContent = item.diagnosis;
+    }
+
+    function verifyWorkout(idx, showIfEmpty) {
+      const inputEl = document.getElementById('workout-input-' + idx);
+      const fbEl = document.getElementById('workout-feedback-' + idx);
+      const spec = WORKOUT_SPECS[idx];
+      if (!inputEl || !fbEl || !spec) return;
+
+      const val = inputEl.value.trim();
+      if (!val) {
+        if (showIfEmpty) {
+          fbEl.style.display = 'block';
+          fbEl.style.background = 'var(--amber-bg)';
+          fbEl.style.color = 'var(--amber-text)';
+          fbEl.textContent = 'Type your sentence above first. Hint: ' + spec.hint;
+        } else {
+          fbEl.style.display = 'none';
+        }
+        return;
+      }
+
+      const targetRx = new RegExp(spec.pattern, 'i');
+      const trapRx = /\b(informations|researches|advices|equipments|knowledges|despite\s+of|discuss\s+about|mention\s+about|comprise\s+of|plethora|nutshell|every\s+coin|don't|can't|won't|isn't|doesn't|it's)\b/i;
+      const commaSpliceRx = /,\s*(however|therefore|moreover|furthermore|consequently)\s*,/i;
+
+      const hasTarget = targetRx.test(val);
+      const trapMatch = val.match(trapRx);
+      const spliceMatch = val.match(commaSpliceRx);
+      const wordCount = (val.match(/\S+/g) || []).length;
+
+      fbEl.style.display = 'block';
+      if (trapMatch) {
+        fbEl.style.background = 'var(--crimson-bg)';
+        fbEl.style.color = 'var(--crimson-text)';
+        fbEl.textContent = '⚠ Watch out for "' + trapMatch[0] + '". Use full, uncontracted academic phrasing.';
+      } else if (spliceMatch) {
+        fbEl.style.background = 'var(--crimson-bg)';
+        fbEl.style.color = 'var(--crimson-text)';
+        fbEl.textContent = '⚠ Comma splice ("' + spliceMatch[0] + '"). Use a semicolon (;) before the linking word.';
+      } else if (hasTarget && wordCount >= 8) {
+        fbEl.style.background = 'var(--emerald-bg)';
+        fbEl.style.color = 'var(--emerald-text)';
+        fbEl.textContent = '✓ Spot on! Confirmed ' + spec.targetDevice + ' (' + wordCount + ' words).';
+      } else {
+        fbEl.style.background = 'var(--amber-bg)';
+        fbEl.style.color = 'var(--amber-text)';
+        fbEl.textContent = 'Tip: ' + spec.hint;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,3299 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Gaslight Inquisitor · 14 Linen Hall Street, Belfast (1894) | GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-obsidian: #0a0806;
+      --bg-mahogany: #140e0a;
+      --bg-panel: #1b130e;
+      --bg-parchment: #f2e6cf;
+      --bg-parchment-dark: #dfd0b2;
+      --brass-bright: #e5c158;
+      --brass-mid: #c59b27;
+      --brass-dark: #7d5f14;
+      --brass-border: rgba(212, 175, 55, 0.35);
+      --crimson-wax: #9e1b1b;
+      --crimson-glow: #ef4444;
+      --emerald-lamp: #10b981;
+      --emerald-deep: #064e3b;
+      --amber-gas: #f59e0b;
+      --text-ivory: #f5ebd6;
+      --text-muted: #b5a388;
+      --text-ink: #1e1610;
+      --shadow-heavy: 0 20px 50px rgba(0, 0, 0, 0.85);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-obsidian);
+      background-image:
+        radial-gradient(circle at 50% 15%, rgba(245, 158, 11, 0.08) 0%, transparent 55%),
+        radial-gradient(circle at 15% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 45%),
+        linear-gradient(180deg, #090705 0%, #120d09 50%, #080604 100%);
+      color: var(--text-ivory);
+      font-family: 'EB Garamond', Georgia, serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Rain Canvas & Gaslight Flicker Overlay */
+    #rainCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.42;
+    }
+
+    .gaslight-vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      background: radial-gradient(circle at 50% 40%, transparent 48%, rgba(5, 3, 2, 0.82) 100%);
+      animation: gasFlicker 6s infinite alternate ease-in-out;
+    }
+
+    @keyframes gasFlicker {
+      0%, 100% { opacity: 0.92; }
+      25% { opacity: 0.86; }
+      48% { opacity: 0.96; }
+      52% { opacity: 0.83; }
+      75% { opacity: 0.91; }
+    }
+
+    .lightning-flash {
+      position: fixed;
+      inset: 0;
+      background: rgba(235, 245, 255, 0.28);
+      pointer-events: none;
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.08s ease-out;
+    }
+
+    /* Top Victorian Brass Header Bar */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: linear-gradient(180deg, rgba(22, 16, 11, 0.97) 0%, rgba(14, 10, 7, 0.95) 100%);
+      border-bottom: 2px solid var(--brass-border);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.75);
+      padding: 0.65rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .brand-cluster {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .ric-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #2a1f14 0%, #0f0a06 100%);
+      border: 2px solid var(--brass-bright);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      color: var(--brass-bright);
+      font-size: 1.1rem;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+    }
+
+    .brand-titles h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.1em;
+      color: var(--brass-bright);
+      text-transform: uppercase;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+    }
+
+    .brand-titles p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .brass-pill {
+      background: linear-gradient(180deg, #2b1f14 0%, #17100a 100%);
+      border: 1px solid var(--brass-border);
+      color: var(--text-ivory);
+      padding: 0.42rem 0.85rem;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      transition: all 0.2s ease;
+    }
+
+    .brass-pill:hover {
+      border-color: var(--brass-bright);
+      color: var(--brass-bright);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.18);
+    }
+
+    .brass-pill.active {
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.22) 0%, rgba(6, 78, 59, 0.4) 100%);
+      border-color: var(--emerald-lamp);
+      color: #a7f3d0;
+    }
+
+    .brass-pill.warrant-ready {
+      background: linear-gradient(180deg, #7f1d1d 0%, #450a0a 100%);
+      border-color: #f87171;
+      color: #fecaca;
+      animation: pulseWarrant 1.8s infinite;
+    }
+
+    @keyframes pulseWarrant {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+      50% { box-shadow: 0 0 16px 4px rgba(239, 68, 68, 0.45); }
+    }
+
+    /* Main 3-Column Detective Desk Layout */
+    .inquisitor-workspace {
+      position: relative;
+      z-index: 10;
+      max-width: 1620px;
+      margin: 0 auto;
+      padding: 1.1rem 1.25rem 2.5rem;
+      display: grid;
+      grid-template-columns: 340px 1fr 390px;
+      gap: 1.15rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1280px) {
+      .inquisitor-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Shared Victorian Panel Frame */
+    .victorian-panel {
+      background: linear-gradient(180deg, rgba(29, 20, 14, 0.95) 0%, rgba(18, 12, 8, 0.97) 100%);
+      border: 1px solid var(--brass-border);
+      border-radius: 10px;
+      box-shadow: var(--shadow-heavy), inset 0 0 24px rgba(0, 0, 0, 0.65);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .victorian-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--brass-bright), transparent);
+      opacity: 0.6;
+    }
+
+    .panel-header {
+      padding: 0.75rem 1rem;
+      background: rgba(10, 7, 5, 0.65);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--brass-bright);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(212, 175, 55, 0.12);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: var(--brass-bright);
+    }
+
+    /* LEFT COLUMN: Crime Scene + Suspect Selector + Galvanometer */
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .crime-scene-card {
+      position: relative;
+      cursor: pointer;
+      group: true;
+    }
+
+    .crime-scene-img-wrap {
+      position: relative;
+      height: 175px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--brass-border);
+    }
+
+    .crime-scene-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.06) sepia(0.12);
+      transition: transform 0.5s ease;
+    }
+
+    .crime-scene-card:hover .crime-scene-img-wrap img {
+      transform: scale(1.04);
+    }
+
+    .crime-scene-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(10,7,5,0.15) 0%, rgba(10,7,5,0.88) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0.85rem;
+    }
+
+    .crime-scene-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem;
+      color: #6ee7b7;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.2rem;
+    }
+
+    .crime-scene-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.98rem;
+      color: var(--text-ivory);
+      font-weight: 700;
+    }
+
+    .crime-scene-sub {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+
+    /* Suspect Roster Cards */
+    .suspect-list {
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .suspect-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.65rem;
+      border-radius: 8px;
+      background: rgba(12, 8, 5, 0.65);
+      border: 1px solid rgba(212, 175, 55, 0.18);
+      cursor: pointer;
+      transition: all 0.22s ease;
+      text-align: left;
+      width: 100%;
+      color: var(--text-ivory);
+    }
+
+    .suspect-tab:hover {
+      border-color: rgba(212, 175, 55, 0.5);
+      background: rgba(34, 24, 16, 0.8);
+    }
+
+    .suspect-tab.active {
+      background: linear-gradient(90deg, rgba(212, 175, 55, 0.18) 0%, rgba(28, 19, 13, 0.9) 100%);
+      border-color: var(--brass-bright);
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.18);
+    }
+
+    .suspect-thumb {
+      width: 54px;
+      height: 54px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid var(--brass-mid);
+      flex-shrink: 0;
+    }
+
+    .suspect-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .suspect-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--brass-bright);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .suspect-role {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .suspect-crack-meter {
+      margin-top: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66rem;
+    }
+
+    .crack-pip {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+    }
+
+    .crack-pip.exposed {
+      background: var(--crimson-glow);
+      border-color: #fca5a5;
+      box-shadow: 0 0 8px var(--crimson-glow);
+    }
+
+    /* Galvanometer / Polygraph Cardiograph Widget */
+    .galvanometer-box {
+      padding: 0.85rem;
+      background: radial-gradient(circle at 50% 50%, #17120d 0%, #0b0806 100%);
+    }
+
+    .galv-canvas-wrap {
+      position: relative;
+      border: 2px solid #5c4512;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #070a08;
+      box-shadow: inset 0 0 22px rgba(0, 0, 0, 0.9);
+    }
+
+    #galvanometerCanvas {
+      display: block;
+      width: 100%;
+      height: 175px;
+    }
+
+    .galv-readouts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.65rem;
+    }
+
+    .galv-metric {
+      background: rgba(15, 11, 8, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      border-radius: 6px;
+      padding: 0.4rem 0.5rem;
+      text-align: center;
+    }
+
+    .galv-metric-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .galv-metric-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #6ee7b7;
+      margin-top: 0.1rem;
+    }
+
+    /* CENTER COLUMN: Live Interrogation Stage */
+    .center-stage {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .portrait-stage {
+      position: relative;
+      display: grid;
+      grid-template-columns: 270px 1fr;
+      background: linear-gradient(135deg, #1a120b 0%, #0e0906 100%);
+      border-bottom: 1px solid var(--brass-border);
+      min-height: 330px;
+    }
+
+    @media (max-width: 780px) {
+      .portrait-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .portrait-frame {
+      position: relative;
+      border-right: 1px solid var(--brass-border);
+      overflow: hidden;
+      background: #080604;
+    }
+
+    .portrait-frame img {
+      width: 100%;
+      height: 100%;
+      min-height: 310px;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.6s ease, filter 0.4s ease;
+    }
+
+    .portrait-frame.rattled img {
+      animation: portraitShake 0.45s cubic-bezier(.36,.07,.19,.97) both;
+      filter: contrast(1.2) saturate(1.25);
+    }
+
+    @keyframes portraitShake {
+      10%, 90% { transform: translate3d(-3px, 0, 0); }
+      20%, 80% { transform: translate3d(5px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-7px, 2px, 0); }
+      40%, 60% { transform: translate3d(7px, -2px, 0); }
+    }
+
+    .portrait-status-pill {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      background: rgba(10, 7, 5, 0.88);
+      border: 1px solid var(--brass-mid);
+      padding: 0.35rem 0.6rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+    }
+
+    /* Testimony Dossier Area */
+    .testimony-chamber {
+      padding: 1.25rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .suspect-header-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      padding-bottom: 0.75rem;
+    }
+
+    .suspect-full-title h2 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      color: var(--brass-bright);
+      letter-spacing: 0.05em;
+    }
+
+    .suspect-full-title p {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .statement-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .stmt-dot-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      border: 1px solid var(--brass-border);
+      background: rgba(20, 14, 9, 0.9);
+      color: var(--text-ivory);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .stmt-dot-btn.active {
+      background: var(--brass-mid);
+      color: #0a0705;
+      font-weight: 700;
+      border-color: var(--brass-bright);
+    }
+
+    .stmt-dot-btn.cracked {
+      background: #7f1d1d;
+      border-color: #f87171;
+      color: #fecaca;
+    }
+
+    /* Parchment Statement Box */
+    .statement-parchment {
+      margin: 1rem 0;
+      background: linear-gradient(135deg, #f3e8d2 0%, #e4d3b3 100%);
+      color: var(--text-ink);
+      border: 2px solid #8c6d32;
+      border-radius: 8px;
+      padding: 1.15rem 1.3rem;
+      box-shadow: inset 0 0 18px rgba(110, 75, 25, 0.25), 0 8px 20px rgba(0, 0, 0, 0.45);
+      position: relative;
+      min-height: 135px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stmt-meta-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: #5c4322;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.55rem;
+      border-bottom: 1px dashed rgba(92, 67, 34, 0.35);
+      padding-bottom: 0.35rem;
+    }
+
+    .stmt-quote {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.32rem;
+      line-height: 1.45;
+      font-weight: 600;
+      color: #1a1109;
+    }
+
+    .stmt-tell-box {
+      margin-top: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(92, 67, 34, 0.25);
+      font-size: 0.88rem;
+      color: #4a3519;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Contradiction Stamp Overlay */
+    .contradiction-stamp {
+      position: absolute;
+      top: 14px;
+      right: 18px;
+      border: 3px solid #991b1b;
+      color: #991b1b;
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: 0.14em;
+      padding: 0.25rem 0.65rem;
+      text-transform: uppercase;
+      transform: rotate(-8deg) scale(1);
+      background: rgba(254, 226, 226, 0.92);
+      box-shadow: 0 4px 12px rgba(153, 27, 27, 0.3);
+      pointer-events: none;
+      display: none;
+    }
+
+    .contradiction-stamp.visible {
+      display: block;
+      animation: stampSlam 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes stampSlam {
+      0% { transform: rotate(-18deg) scale(2.4); opacity: 0; }
+      100% { transform: rotate(-8deg) scale(1); opacity: 1; }
+    }
+
+    /* Confession Drawer inside Testimony */
+    .confession-reveal {
+      background: linear-gradient(135deg, rgba(127, 29, 29, 0.28) 0%, rgba(28, 12, 12, 0.92) 100%);
+      border: 1px solid #ef4444;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.85rem;
+      display: none;
+    }
+
+    .confession-reveal.visible {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .confession-reveal-header {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: #fca5a5;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .confession-reveal-text {
+      font-size: 1.02rem;
+      color: #fef2f2;
+      font-style: italic;
+      line-height: 1.45;
+    }
+
+    /* Statement Arrow Controls & Audio Replay */
+    .stmt-footer-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    /* Interrogation Stance & Live Microphone Deck */
+    .interrogation-deck {
+      padding: 1.1rem 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.95rem;
+    }
+
+    .stance-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.65rem;
+    }
+
+    @media (max-width: 900px) {
+      .stance-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stance-btn {
+      background: linear-gradient(180deg, #281c12 0%, #150e09 100%);
+      border: 1px solid var(--brass-border);
+      border-radius: 8px;
+      padding: 0.75rem 0.65rem;
+      color: var(--text-ivory);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .stance-btn:hover {
+      border-color: var(--brass-bright);
+      background: linear-gradient(180deg, #362618 0%, #1d140d 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+    }
+
+    .stance-btn.slam-btn {
+      background: linear-gradient(180deg, #5c1919 0%, #2e0b0b 100%);
+      border-color: rgba(248, 113, 113, 0.5);
+    }
+
+    .stance-btn.slam-btn:hover {
+      border-color: #fca5a5;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.35);
+    }
+
+    .stance-btn.mic-btn.listening {
+      background: linear-gradient(180deg, #065f46 0%, #022c22 100%);
+      border-color: #34d399;
+      box-shadow: 0 0 22px rgba(16, 185, 129, 0.5);
+      animation: pulseMic 1.1s infinite;
+    }
+
+    @keyframes pulseMic {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    .stance-icon {
+      font-size: 1.3rem;
+    }
+
+    .stance-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--brass-bright);
+      letter-spacing: 0.06em;
+    }
+
+    .stance-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem;
+      color: var(--text-muted);
+    }
+
+    /* Live Voice & C1 Rhetorical Input Strip */
+    .voice-bar {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      background: rgba(9, 6, 4, 0.8);
+      border: 1px solid var(--brass-border);
+      border-radius: 8px;
+      padding: 0.55rem 0.75rem;
+    }
+
+    .voice-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-ivory);
+      font-family: 'EB Garamond', serif;
+      font-size: 1.05rem;
+      outline: none;
+    }
+
+    .voice-input::placeholder {
+      color: rgba(181, 163, 136, 0.55);
+      font-style: italic;
+    }
+
+    /* Quick C1 Rhetorical Chips */
+    .c1-prompts-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .c1-chip {
+      background: rgba(212, 175, 55, 0.09);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      color: #e6d3a7;
+      padding: 0.3rem 0.65rem;
+      border-radius: 5px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .c1-chip:hover {
+      background: rgba(212, 175, 55, 0.22);
+      border-color: var(--brass-bright);
+      color: #fff;
+    }
+
+    /* Inspector's Transcript Log */
+    .transcript-box {
+      background: rgba(8, 6, 4, 0.88);
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      max-height: 185px;
+      overflow-y: auto;
+      font-size: 0.92rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .log-entry {
+      line-height: 1.4;
+      padding-bottom: 0.45rem;
+      border-bottom: 1px dashed rgba(212, 175, 55, 0.12);
+    }
+
+    .log-speaker {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-right: 0.4rem;
+    }
+
+    .log-speaker.inspector { color: var(--brass-bright); }
+    .log-speaker.suspect { color: #93c5fd; }
+    .log-speaker.system { color: #f87171; }
+
+    /* RIGHT COLUMN: Mahogany Desk Drawer (6 Physical Exhibits) + Master Timeline */
+    .right-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .exhibits-grid {
+      padding: 0.85rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.65rem;
+    }
+
+    .exhibit-card {
+      background: linear-gradient(135deg, rgba(31, 22, 15, 0.92) 0%, rgba(16, 11, 7, 0.96) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.24);
+      border-radius: 8px;
+      padding: 0.7rem 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .exhibit-card:hover {
+      border-color: var(--brass-bright);
+      transform: translateX(-2px);
+    }
+
+    .exhibit-card.selected {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(35, 24, 14, 0.95) 100%);
+      border-color: var(--brass-bright);
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.25);
+    }
+
+    .exhibit-card.used {
+      border-color: rgba(16, 185, 129, 0.45);
+    }
+
+    .exhibit-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: rgba(10, 7, 5, 0.8);
+      border: 1px solid var(--brass-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+
+    .exhibit-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .exhibit-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--brass-bright);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .exhibit-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--text-ivory);
+      margin: 0.1rem 0;
+    }
+
+    .exhibit-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.32;
+    }
+
+    .exhibit-actions {
+      display: flex;
+      gap: 0.4rem;
+      margin-top: 0.45rem;
+    }
+
+    .mini-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.64rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      background: rgba(12, 8, 5, 0.85);
+      color: var(--text-ivory);
+      cursor: pointer;
+    }
+
+    .mini-btn:hover {
+      border-color: var(--brass-bright);
+      color: var(--brass-bright);
+    }
+
+    .mini-btn.slam {
+      background: rgba(127, 29, 29, 0.6);
+      border-color: #f87171;
+      color: #fecaca;
+    }
+
+    /* Master Deductions Ledger */
+    .deduction-ledger {
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .ledger-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 0.38rem 0.55rem;
+      border-radius: 5px;
+      background: rgba(10, 7, 5, 0.6);
+      border: 1px solid rgba(212, 175, 55, 0.14);
+    }
+
+    .ledger-row.solved {
+      border-color: rgba(16, 185, 129, 0.45);
+      background: rgba(6, 78, 59, 0.22);
+      color: #a7f3d0;
+    }
+
+    /* Modals (Crime Scene Inspection, Magnifying Glass, Arrest Warrant) */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 3, 2, 0.86);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-dialog {
+      background: linear-gradient(180deg, #1d140d 0%, #0f0a06 100%);
+      border: 2px solid var(--brass-bright);
+      border-radius: 12px;
+      max-width: 880px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.95);
+      position: relative;
+    }
+
+    .modal-body {
+      padding: 1.4rem;
+    }
+
+    .hotspot-stage {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--brass-mid);
+    }
+
+    .hotspot-stage img {
+      width: 100%;
+      display: block;
+    }
+
+    .hotspot-pin {
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(212, 175, 55, 0.9);
+      border: 2px solid #fff;
+      color: #090604;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 16px rgba(212, 175, 55, 0.9);
+      animation: pulsePin 1.6s infinite;
+    }
+
+    @keyframes pulsePin {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.18); }
+    }
+
+    /* Warrant Form */
+    .warrant-parchment {
+      background: linear-gradient(135deg, #f5ead4 0%, #e2cfa9 100%);
+      color: #1c130b;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 2px solid #7c5c23;
+      margin-bottom: 1.2rem;
+    }
+
+    .warrant-select {
+      width: 100%;
+      padding: 0.55rem;
+      margin-top: 0.35rem;
+      border-radius: 6px;
+      border: 1px solid #7c5c23;
+      background: #fff9ed;
+      font-family: 'EB Garamond', serif;
+      font-size: 1rem;
+      color: #1c130b;
+      font-weight: 600;
+    }
+
+    .wax-seal-btn {
+      background: radial-gradient(circle, #b91c1c 0%, #7f1d1d 70%, #450a0a 100%);
+      border: 2px solid #fca5a5;
+      color: #fff;
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.12em;
+      padding: 0.85rem 1.8rem;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(185, 28, 28, 0.6);
+      transition: transform 0.2s ease;
+    }
+
+    .wax-seal-btn:hover {
+      transform: scale(1.04);
+    }
+
+    .timeline-step {
+      display: flex;
+      gap: 0.9rem;
+      padding: 0.75rem;
+      border-left: 3px solid var(--brass-bright);
+      background: rgba(20, 14, 9, 0.85);
+      margin-bottom: 0.6rem;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .timeline-time {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--brass-bright);
+      min-width: 82px;
+    }
+
+    /* ================= CASE FILE IV: THE WHITEHALL CIPHER & THE UNCHANGED KEYWORD ================= */
+    .cipher-dossier-section {
+      grid-column: 1 / -1;
+      margin-top: 0.45rem;
+    }
+
+    .cipher-dossier-body {
+      padding: 1.25rem 1.45rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .cipher-tabs-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .cipher-tab-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      padding: 0.4rem 0.78rem;
+      border-radius: 6px;
+      background: rgba(14, 10, 7, 0.9);
+      border: 1px solid var(--brass-border);
+      color: var(--text-ivory);
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+
+    .cipher-tab-btn:hover {
+      border-color: var(--brass-bright);
+      color: var(--brass-bright);
+    }
+
+    .cipher-tab-btn.active {
+      background: var(--brass-mid);
+      color: #090604;
+      font-weight: 700;
+      border-color: var(--brass-bright);
+    }
+
+    .cipher-tab-btn.solved {
+      background: rgba(6, 78, 59, 0.65);
+      border-color: #34d399;
+      color: #a7f3d0;
+    }
+
+    .cipher-grid-view {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+      gap: 1.1rem;
+    }
+
+    @media (max-width: 960px) {
+      .cipher-grid-view {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cipher-item-card {
+      background: linear-gradient(135deg, #f3e8d2 0%, #e3d1b0 100%);
+      color: var(--text-ink);
+      border: 2px solid #8c6d32;
+      border-radius: 9px;
+      padding: 1.1rem 1.25rem;
+      box-shadow: inset 0 0 18px rgba(110, 75, 25, 0.2), 0 8px 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .cipher-echo-del {
+      text-decoration: line-through;
+      text-decoration-color: #991b1b;
+      text-decoration-thickness: 2px;
+      opacity: 0.48;
+    }
+
+    .cipher-deficit-span {
+      background: rgba(153, 27, 27, 0.15);
+      border-bottom: 2px solid #991b1b;
+      color: #7f1d1d;
+      font-weight: 700;
+      padding: 0 0.25rem;
+      border-radius: 3px;
+    }
+
+    .cipher-step-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem;
+      font-size: 0.84rem;
+      background: rgba(28, 19, 11, 0.07);
+      border: 1px solid rgba(124, 92, 35, 0.35);
+      border-radius: 6px;
+      padding: 0.55rem 0.75rem;
+    }
+
+    .cipher-input-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cipher-text-input {
+      flex: 1;
+      min-width: 210px;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      border: 1.5px solid #7c5c23;
+      background: #fffdf8;
+      color: #1a1109;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.16rem;
+      font-weight: 700;
+    }
+
+    .cipher-status-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 0.24rem 0.58rem;
+      border-radius: 999px;
+      border: 1px solid rgba(124, 92, 35, 0.45);
+      background: #f8eed9;
+      color: #5c4322;
+    }
+
+    .cipher-status-pill.ok {
+      background: #d1fae5;
+      border-color: #10b981;
+      color: #065f46;
+    }
+
+    .cipher-status-pill.err {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+
+    .cipher-model-box {
+      display: none;
+      background: linear-gradient(135deg, #1b120c 0%, #0e0906 100%);
+      color: var(--text-ivory);
+      border: 1.5px solid var(--brass-bright);
+      border-radius: 7px;
+      padding: 0.75rem 0.95rem;
+      font-size: 0.9rem;
+    }
+
+    .cipher-model-box.open {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Procedural Rain Canvas & Lightning Flash -->
+  <canvas id="rainCanvas"></canvas>
+  <div class="gaslight-vignette"></div>
+  <div id="lightningFlash" class="lightning-flash"></div>
+
+  <!-- Top Victorian Brass Header -->
+  <header class="top-bar">
+    <div class="brand-cluster">
+      <div class="ric-badge" title="Royal Irish Constabulary · Detective Division">RIC</div>
+      <div class="brand-titles">
+        <h1>The Gaslight Inquisitor</h1>
+        <p>14 LINEN HALL STREET, BELFAST · 14 NOVEMBER 1894 · 11:42 PM</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <button class="brass-pill" id="btnBriefingAudio" onclick="playOpeningBriefing()">
+        <span>🔊</span> <span id="briefingBtnText">Play Inspector's Briefing</span>
+      </button>
+      <button class="brass-pill active" id="btnAtmosphere" onclick="toggleAtmosphere()">
+        <span>🌧️</span> <span id="atmosText">Belfast Rain &amp; Clock: ON</span>
+      </button>
+      <button class="brass-pill" onclick="openCrimeSceneModal()">
+        <span>🕯️</span> <span>Inspect Locked Study</span>
+      </button>
+      <button class="brass-pill" id="btnCaseFileIV" onclick="focusCaseFileIV()">
+        <span>🔐</span> <span>Case File IV: Whitehall Cipher (<span id="headerCipherCount">0</span>/8)</span>
+      </button>
+      <button class="brass-pill" id="btnOpenWarrant" onclick="openWarrantModal()">
+        <span>📜</span> <span>Arrest Warrant (<span id="headerCrackCount">0</span>/6)</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main 3-Column Detective Interrogation Workspace -->
+  <main class="inquisitor-workspace">
+
+    <!-- LEFT COLUMN: Crime Scene + Suspects + Live Galvanometer -->
+    <section class="left-column">
+
+      <!-- Crime Scene Preview Card -->
+      <div class="victorian-panel crime-scene-card" onclick="openCrimeSceneModal()">
+        <div class="crime-scene-img-wrap">
+          <img src="assets/inquisitor/crime_scene_study.png" alt="Lord Ravenscroft's Locked Study at 14 Linen Hall Street" />
+          <div class="crime-scene-overlay">
+            <div class="crime-scene-tag">🔍 Click to Inspect 6 Forensic Hotspots</div>
+            <div class="crime-scene-title">Lord Ravenscroft's Mahogany Study</div>
+            <div class="crime-scene-sub">Poisoned &amp; struck at 11:42 PM · Sash window latched</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suspect Selector Roster -->
+      <div class="victorian-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span>🕵️</span> Suspects Detained</div>
+          <span class="panel-badge" id="suspectsCrackedBadge">0 / 3 Cracked</span>
+        </div>
+        <div class="suspect-list" id="suspectRoster">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Live Brass Galvanometer & Cardiograph -->
+      <div class="victorian-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span>⚡</span> Brass Galvanometer &amp; Pulse</div>
+          <span class="panel-badge" id="galvStateBadge">STEADY BASELINE</span>
+        </div>
+        <div class="galvanometer-box">
+          <div class="galv-canvas-wrap">
+            <canvas id="galvanometerCanvas" width="320" height="175"></canvas>
+          </div>
+          <div class="galv-readouts">
+            <div class="galv-metric">
+              <div class="galv-metric-label">Pulse Rate</div>
+              <div class="galv-metric-val" id="metricBpm">72 BPM</div>
+            </div>
+            <div class="galv-metric">
+              <div class="galv-metric-label">Skin Conduct.</div>
+              <div class="galv-metric-val" id="metricGsr">14.2 µS</div>
+            </div>
+            <div class="galv-metric">
+              <div class="galv-metric-label">Deception</div>
+              <div class="galv-metric-val" id="metricDeception">12%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- CENTER COLUMN: Active Interrogation Chamber -->
+    <section class="center-stage">
+
+      <div class="victorian-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span>⚖️</span> Gaslight Interrogation Chamber</div>
+          <span class="panel-badge" id="activeEvidenceIndicator">Active Exhibit: Exhibit A (Pocket Watch)</span>
+        </div>
+
+        <div class="portrait-stage">
+          <!-- Suspect Portrait -->
+          <div class="portrait-frame" id="portraitFrame">
+            <img id="activeSuspectImg" src="assets/inquisitor/suspect_blackwood.png" alt="Active Suspect Portrait" />
+            <div class="portrait-status-pill">
+              <span id="suspectComposureLabel">COMPOSURE: GUARDED</span>
+              <span id="suspectAudioWave" style="color:var(--brass-bright);">● READY</span>
+            </div>
+          </div>
+
+          <!-- Testimony Dossier -->
+          <div class="testimony-chamber">
+            <div>
+              <div class="suspect-header-row">
+                <div class="suspect-full-title">
+                  <h2 id="activeSuspectName">Dr. Alistair Blackwood</h2>
+                  <p id="activeSuspectRole">Surgeon, Royal Victoria Infirmary · Family Physician</p>
+                </div>
+                <div class="statement-nav" id="statementDots">
+                  <!-- 1 2 3 4 buttons -->
+                </div>
+              </div>
+
+              <!-- Sworn Statement Parchment -->
+              <div class="statement-parchment" id="statementParchment">
+                <div class="contradiction-stamp" id="contradictionStamp">CONTRADICTION EXPOSED</div>
+                <div>
+                  <div class="stmt-meta-line">
+                    <span id="stmtIndexLabel">SWORN TESTIMONY · STATEMENT 1 OF 4</span>
+                    <span id="stmtTimeClaim">CLAIMED TIME: 8:30 PM – 9:30 PM</span>
+                  </div>
+                  <div class="stmt-quote" id="stmtQuoteText">
+                    “I departed the Royal Victoria Infirmary at eight thirty sharp and went straight to my lodgings on University Square. I never set foot near the dispensary tonight.”
+                  </div>
+                </div>
+                <div class="stmt-tell-box">
+                  <span id="stmtTellText">👁️ <em>Physical Tell:</em> Fingers tighten around the brass clasp of his leather medical bag.</span>
+                  <button class="mini-btn" onclick="speakCurrentStatement()">🔊 Hear Testimony (Neural TTS)</button>
+                </div>
+              </div>
+
+              <!-- Unlocks when contradiction is exposed -->
+              <div class="confession-reveal" id="confessionBox">
+                <div class="confession-reveal-header">
+                  <span>🔥 SWORN ALIBI SHATTERED · CONFESSION RECORDED</span>
+                  <button class="mini-btn" onclick="speakCurrentConfession()">🔊 Replay Confession</button>
+                </div>
+                <div class="confession-reveal-text" id="confessionText"></div>
+              </div>
+            </div>
+
+            <div class="stmt-footer-controls">
+              <button class="brass-pill" onclick="prevStatement()">◀ Previous Statement</button>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--text-muted);" id="stmtHintStatus">
+                Select an Exhibit on the right or use your Microphone to challenge this claim.
+              </span>
+              <button class="brass-pill" onclick="nextStatement()">Next Statement ▶</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interrogation Stances & Live Voice Recognition -->
+        <div class="interrogation-deck">
+          <div class="stance-grid">
+            <button class="stance-btn" onclick="pressHarder()">
+              <span class="stance-icon">🔍</span>
+              <span class="stance-title">Press Harder</span>
+              <span class="stance-sub">C1 Inquisitorial Probe</span>
+            </button>
+            <button class="stance-btn" onclick="crossExamineTimeline()">
+              <span class="stance-icon">🕰️</span>
+              <span class="stance-title">Cross-Examine Clock</span>
+              <span class="stance-sub">Verify 1894 Timeline</span>
+            </button>
+            <button class="stance-btn slam-btn" onclick="slamSelectedExhibit()">
+              <span class="stance-icon">⚡</span>
+              <span class="stance-title">Slam Evidence on Desk</span>
+              <span class="stance-sub" id="slamBtnSub">Present Exhibit A</span>
+            </button>
+            <button class="stance-btn mic-btn" id="btnMicInterrogate" onclick="toggleVoiceInterrogation()">
+              <span class="stance-icon">🎙️</span>
+              <span class="stance-title" id="micBtnTitle">Voice Interrogation</span>
+              <span class="stance-sub" id="micBtnSub">Click &amp; Speak Aloud</span>
+            </button>
+          </div>
+
+          <!-- Voice / Text Input Bar -->
+          <div class="voice-bar">
+            <span style="color:var(--brass-bright);font-family:'JetBrains Mono',monospace;font-size:0.75rem;">🎙️ INQUISITOR:</span>
+            <input
+              type="text"
+              id="inquisitorInput"
+              class="voice-input"
+              placeholder="Speak via microphone or type a C1 challenge (e.g. 'What about the dispensary vial signed at 9:15 PM?')..."
+              onkeydown="if(event.key==='Enter') submitInquisitorChallenge()"
+            />
+            <button class="brass-pill" onclick="submitInquisitorChallenge()">Challenge Suspect</button>
+          </div>
+
+          <!-- C1 Structural Question Bank (Instant 1-Click Spoken Challenges) -->
+          <div class="c1-prompts-row" id="c1PromptChips">
+            <!-- Populated per suspect -->
+          </div>
+
+          <!-- Live Interrogation Transcript Log -->
+          <div class="transcript-box" id="transcriptLog">
+            <div class="log-entry">
+              <span class="log-speaker system">[11:55 PM · BELFAST DETECTIVE BUREAU]</span>
+              <span>Lord Arthur Ravenscroft lies dead in his study. Three suspects wait under the gaslight. Expose all <strong>6 contradictions</strong> using the physical exhibits or your voice.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: Desk Drawer Exhibits + Master Deduction Ledger -->
+    <section class="right-column">
+
+      <!-- 6 Physical Evidence Exhibits -->
+      <div class="victorian-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span>🗄️</span> Mahogany Desk Drawer (6 Exhibits)</div>
+          <span class="panel-badge">Click to Arm / Magnify</span>
+        </div>
+        <div class="exhibits-grid" id="exhibitsContainer">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Master Contradictions & Deduction Ledger -->
+      <div class="victorian-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span>📓</span> Inspector's Contradiction Ledger</div>
+          <span class="panel-badge" id="ledgerProgressBadge">0 / 6 Exposed</span>
+        </div>
+        <div class="deduction-ledger" id="deductionLedger">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+    </section>
+
+    <!-- CASE FILE IV: THE WHITEHALL CIPHER & THE UNCHANGED KEYWORD (8-ITEM C1/C2 INTERROGATION DOSSIER) -->
+    <section class="victorian-panel cipher-dossier-section" id="caseFileIVSection">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>🔐</span> Case File IV: “The Whitehall Cipher &amp; The Unchanged Keyword” (8 C1/C2 Interrogation Proofs)
+        </div>
+        <div style="display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap;">
+          <span class="panel-badge" id="cipherDossierBadge">0 / 8 Ciphers Decoded</span>
+          <button class="brass-pill" onclick="strikeAllCipherEchoes()">✂️ Strike All Echoes</button>
+        </div>
+      </div>
+
+      <div class="cipher-dossier-body">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.75rem;">
+          <p style="font-size:0.98rem; color:var(--text-muted); line-height:1.45;">
+            <strong>Whitehall Crown Brief (1894):</strong> Reconstruct each sworn deposition using <strong>3 to 6 words</strong>, including the <strong>unchanged keyword</strong>. Use <em>✂️ Strike Out the Echoes</em> to isolate the semantic deficit before entering your formal C1/C2 structure.
+          </p>
+          <div class="cipher-tabs-row" id="cipherCategoryTabs">
+            <button class="cipher-tab-btn active" data-cat="all" onclick="filterWhitehallCipher('all')">All 8 Dossier Items</button>
+            <button class="cipher-tab-btn" data-cat="passive" onclick="filterWhitehallCipher('passive')">Passive Reporting Verbs (3)</button>
+            <button class="cipher-tab-btn" data-cat="inversion" onclick="filterWhitehallCipher('inversion')">Negative Inversions (3)</button>
+            <button class="cipher-tab-btn" data-cat="conditional" onclick="filterWhitehallCipher('conditional')">Inverted Conditionals (2)</button>
+          </div>
+        </div>
+
+        <div class="cipher-grid-view" id="whitehallCipherGrid">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL 1: Crime Scene Interactive Inspection (crime_scene_study.png) -->
+  <div class="modal-backdrop" id="crimeSceneModal" onclick="if(event.target===this) closeCrimeSceneModal()">
+    <div class="modal-dialog">
+      <div class="panel-header">
+        <div class="panel-title"><span>🕯️</span> Crime Scene Reconstruction · 14 Linen Hall Street Study (11:42 PM)</div>
+        <button class="brass-pill" onclick="closeCrimeSceneModal()">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="hotspot-stage">
+          <img src="assets/inquisitor/crime_scene_study.png" alt="Lord Ravenscroft's Locked Study" />
+          <button class="hotspot-pin" style="left: 36%; top: 76%;" onclick="inspectExhibit('A')" title="Exhibit A: Shattered Silver Pocket Watch">A</button>
+          <button class="hotspot-pin" style="left: 82%; top: 68%;" onclick="inspectExhibit('B')" title="Exhibit B: Lagan Towpath Bootprint">B</button>
+          <button class="hotspot-pin" style="left: 18%; top: 64%;" onclick="inspectExhibit('C')" title="Exhibit C: Half-Burned Liverpool Telegram">C</button>
+          <button class="hotspot-pin" style="left: 48%; top: 56%;" onclick="inspectExhibit('D')" title="Exhibit D: Tincture Vial of Chloral Hydrate">D</button>
+          <button class="hotspot-pin" style="left: 62%; top: 52%;" onclick="inspectExhibit('E')" title="Exhibit E: Forged Night-Watch Ledger">E</button>
+          <button class="hotspot-pin" style="left: 26%; top: 38%;" onclick="inspectExhibit('F')" title="Exhibit F: Snagged Emerald Velvet Thread">F</button>
+        </div>
+        <p style="margin-top:0.85rem;color:var(--text-muted);font-size:0.95rem;line-height:1.5;">
+          <strong>Forensic Summary:</strong> Lord Arthur Ravenscroft (64) was discovered on the crimson Persian rug at 11:45 PM. The crystal brandy decanter on the mahogany desk was laced with <em>chloral hydrate</em> and <em>belladonna</em>, while a violent final struggle at <strong>11:42 PM</strong> left a shattered silver pocket watch beside his body. Click any brass pin (<strong>A–F</strong>) to examine the physical exhibit under the magnifying glass.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Magnifying Glass Forensic Exhibit Inspector -->
+  <div class="modal-backdrop" id="exhibitModal" onclick="if(event.target===this) closeExhibitModal()">
+    <div class="modal-dialog" style="max-width: 600px;">
+      <div class="panel-header">
+        <div class="panel-title" id="modalExhibitHeader"><span>🔎</span> Forensic Magnifying Glass</div>
+        <button class="brass-pill" onclick="closeExhibitModal()">✕ Close</button>
+      </div>
+      <div class="modal-body" id="modalExhibitBody"></div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Royal Irish Constabulary Arrest Warrant & Timeline Reconstruction -->
+  <div class="modal-backdrop" id="warrantModal" onclick="if(event.target===this) closeWarrantModal()">
+    <div class="modal-dialog">
+      <div class="panel-header">
+        <div class="panel-title"><span>📜</span> Royal Irish Constabulary · Official Arrest Warrant (1894)</div>
+        <button class="brass-pill" onclick="closeWarrantModal()">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="warrant-parchment">
+          <div style="text-align:center;border-bottom:2px solid #7c5c23;padding-bottom:0.75rem;margin-bottom:1rem;">
+            <div style="font-family:'Cinzel',serif;font-weight:800;font-size:1.25rem;letter-spacing:0.1em;">COUNTY ANTRIM &amp; BOROUGH OF BELFAST ASSIZES</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:#5c4322;margin-top:0.2rem;">WARRANT OF INDICTMENT · 14 LINEN HALL STREET HOMICIDE</div>
+          </div>
+
+          <p style="font-size:1rem;margin-bottom:1rem;line-height:1.45;">
+            Every suspect committed a distinct offence under cover of the Belfast storm tonight. Assign the exact statutory charge to each individual before affixing the Crown Wax Seal:
+          </p>
+
+          <div style="display:grid;gap:0.9rem;">
+            <div>
+              <label style="font-family:'Cinzel',serif;font-weight:700;font-size:0.92rem;">1. Silas Corbin (Linen Hall Night-Watchman):</label>
+              <select id="chargeCorbin" class="warrant-select">
+                <option value="">— Select Statutory Charge —</option>
+                <option value="bribery">Accepting a Five-Sovereign Bribe &amp; Forging the 11:30 PM Watch Ledger</option>
+                <option value="murder">Wilful Murder by Chloral Hydrate &amp; Fatal Struggle at 11:42 PM</option>
+                <option value="burglary">Breaking the Bookshelf Safe to Burn the Testamentary Codicil</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-family:'Cinzel',serif;font-weight:700;font-size:0.92rem;">2. Lady Evelyn Ashford (Niece to His Lordship):</label>
+              <select id="chargeAshford" class="warrant-select">
+                <option value="">— Select Statutory Charge —</option>
+                <option value="bribery">Accepting a Five-Sovereign Bribe &amp; Forging the 11:30 PM Watch Ledger</option>
+                <option value="burglary">Unlawful Safe-Breaking &amp; Destruction of the Estate Codicil (11:35 PM)</option>
+                <option value="murder">Wilful Murder by Chloral Hydrate &amp; Fatal Struggle at 11:42 PM</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="font-family:'Cinzel',serif;font-weight:700;font-size:0.92rem;">3. Dr. Alistair Blackwood (Surgeon, Royal Victoria Infirmary):</label>
+              <select id="chargeBlackwood" class="warrant-select">
+                <option value="">— Select Statutory Charge —</option>
+                <option value="burglary">Unlawful Safe-Breaking &amp; Destruction of the Estate Codicil (11:35 PM)</option>
+                <option value="bribery">Accepting a Five-Sovereign Bribe &amp; Forging the 11:30 PM Watch Ledger</option>
+                <option value="murder">Wilful Murder by Poisoning (11:15 PM) &amp; Fatal Struggle (11:42 PM)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="text-align:center;margin-top:1.35rem;">
+            <button class="wax-seal-btn" onclick="executeArrestWarrant()">🔴 AFFIX CROWN WAX SEAL &amp; RECONSTRUCT THE NIGHT</button>
+          </div>
+        </div>
+
+        <!-- Animated Reconstruction Container -->
+        <div id="warrantResultContainer" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***********************************************************************
+     * 1. GAME DATA: 6 EXHIBITS & 3 SUSPECTS (14 LINEN HALL STREET, 1894)
+     ***********************************************************************/
+    const EXHIBITS = [
+      {
+        id: 'A',
+        icon: '⏱️',
+        name: 'Shattered Silver Pocket Watch',
+        shortDesc: 'Stopped at 11:42 PM on the Persian rug; engraved "A.B." inside casing.',
+        location: 'Crimson Persian Rug beside Lord Ravenscroft',
+        forensicDetail: 'A heavy sterling-silver hunter-case pocket watch with a snapped gold Albert chain link. The crystal face shattered upon impact, freezing the hands at 11:42 PM. Inside the rear dust-cover is the hallmark of Gibson & Co., Donegall Place, and the engraved initials "A.B.".',
+        c1Formula: 'What shattered upon the Persian rug at 11:42 PM was none other than your own engraved timepiece, Dr. Blackwood!'
+      },
+      {
+        id: 'B',
+        icon: '🥾',
+        name: 'Lagan Mud & Coal-Dust Bootprint',
+        shortDesc: 'Size 10 hobnailed work boot cast outside the study French doors.',
+        location: 'Flagstones outside the Study Sash & French Doors',
+        forensicDetail: 'Plaster impression of a size-10 iron-hobnailed dockyard boot coated in reddish Lagan towpath clay and anthracite coal dust—matching the exact sole pattern and coal residue on night-watchman Silas Corbin’s boots.',
+        c1Formula: 'Not only did you walk the Lagan towpath tonight, Corbin, but your size-ten hobnailed boots left coal dust right outside the study window!'
+      },
+      {
+        id: 'C',
+        icon: '🔥',
+        name: 'Half-Burned Liverpool Telegram',
+        shortDesc: 'Charred wire to Lady Ashford: "PASSAGE BOOKED... DESTROY THE CODICIL TONIGHT".',
+        location: 'Dredged from the Parlour Hearth Ashes',
+        forensicDetail: 'A scorched Post Office Telegraph form dispatched from Liverpool Landing Stage at 6:10 PM to Lady Evelyn Ashford: "CREDITORS REFUSE EXTENSION. PASSAGE BOOKED ON SS TITANIC TENDER. DESTROY THE NEW CODICIL TONIGHT OR ALL IS LOST."',
+        c1Formula: 'Had you no intention of fleeing Ireland, Your Ladyship, why was this charred telegram from Liverpool recovered from the hearth?'
+      },
+      {
+        id: 'D',
+        icon: '🧪',
+        name: 'Tincture Vial of Chloral Hydrate',
+        shortDesc: 'Dispensed from Royal Victoria Infirmary at 9:15 PM; traces of Belladonna.',
+        location: 'Mahogany Desk beside the Crystal Brandy Decanter',
+        forensicDetail: 'Amber apothecary phial containing residual chloral hydrate compounded with deadly nightshade (Atropa belladonna). Bears the dispensary stamp of the Royal Victoria Infirmary logged at 9:15 PM, counter-signed in the register by Dr. Alistair Blackwood.',
+        c1Formula: 'At no time did you go straight home at 8:30, Doctor—for this lethal phial of chloral hydrate bears your own dispensary signature at 9:15 PM!'
+      },
+      {
+        id: 'E',
+        icon: '📖',
+        name: 'Linen Hall Night-Watch Ledger',
+        shortDesc: '11:30 PM entry forged in damp iron-gall ink over a scraped erasure.',
+        location: 'Watchman’s Desk in the East Vestibule',
+        forensicDetail: 'Under oblique gaslight inspection, the 11:30 PM line ("East corridor bolted—all quiet") shows roughened vellum fibres where an earlier entry was scraped away with a penknife and overwritten in fresh, still-damp iron-gall ink.',
+        c1Formula: 'Scarcely had the clock struck 11:30 when you scraped out the watch ledger and forged this entry in fresh iron-gall ink!'
+      },
+      {
+        id: 'F',
+        icon: '🧵',
+        name: 'Snagged Emerald Velvet Thread',
+        shortDesc: 'Torn emerald silk-velvet fibre caught on the hidden bookshelf safe latch.',
+        location: 'Brass Latch of the Secret Wall-Safe behind the Bookshelf',
+        forensicDetail: 'A three-inch strand of dyed emerald-green silk velvet and Brussels lace caught on the sharp brass tumbler of Lord Ravenscroft’s hidden wall-safe. Matches the torn left cuff of Lady Evelyn Ashford’s evening gown.',
+        c1Formula: 'It was while forcing the secret bookshelf safe that your emerald velvet cuff snagged upon the brass latch, Lady Ashford!'
+      }
+    ];
+
+    const SUSPECTS = [
+      {
+        id: 'blackwood',
+        name: 'Dr. Alistair Blackwood',
+        role: 'Surgeon, Royal Victoria Infirmary · Family Physician',
+        portrait: 'assets/inquisitor/suspect_blackwood.png',
+        baseBpm: 76,
+        c1Chips: [
+          { label: '🧪 Challenge 9:15 PM Dispensary Vial (Inversion)', text: 'At no time did you go straight home at 8:30, Doctor—you signed the dispensary register for chloral hydrate at 9:15 PM!' },
+          { label: '⏱️ Challenge Shattered Watch "A.B." (Cleft)', text: 'What shattered on the Persian rug at 11:42 PM was your own silver pocket watch engraved with the initials A.B.!' },
+          { label: '🍷 Probe the Brandy Decanter (Modal Past)', text: 'You must have slipped the belladonna tincture into His Lordship’s brandy decanter at 11:15 PM!' }
+        ],
+        statements: [
+          {
+            num: 1,
+            timeClaim: '8:30 PM – 9:30 PM',
+            audioClip: 'blackwood_stmt_1',
+            text: '“I departed the Royal Victoria Infirmary at eight thirty sharp and went straight to my lodgings on University Square. I never set foot near the dispensary tonight.”',
+            tell: 'Fingers tighten convulsively around the brass clasp of his leather medical bag; pulse elevates to 96 BPM.',
+            isLie: true,
+            contradictsExhibit: 'D',
+            voiceKeywords: ['vial', 'tincture', 'dispensary', 'chloral', 'belladonna', 'poison', '9:15', 'nine fifteen', 'infirmary', 'phial', 'exhibit d'],
+            pressResponse: '“My surgical hours are exhausting, Inspector. Why would I linger in a cold hospital apothecary after eight thirty?”',
+            timelineNote: 'Royal Victoria Infirmary night porter recalls seeing a tall figure in a wool frock coat unlocking the dispensary cabinet at 9:15 PM.',
+            crackAudio: 'blackwood_crack_1',
+            crackText: '“Curse your eyes, Inspector! Very well—I signed the dispensary ledger at 9:15 PM for the chloral hydrate and belladonna! But I swear it was intended to sedate his neuralgia, not to kill him!”',
+            ledgerTitle: 'Blackwood procured the poison at 9:15 PM'
+          },
+          {
+            num: 2,
+            timeClaim: '10:45 PM – 11:10 PM',
+            audioClip: 'blackwood_stmt_2',
+            text: '“When I arrived at Linen Hall Street at ten forty-five, I merely shared a polite glass of port with Lord Ravenscroft in the drawing room. I never entered his private study.”',
+            tell: 'Adjusts his wire-rimmed spectacles calmly, though his gaze avoids the study doorway.',
+            isLie: false,
+            contradictsExhibit: null,
+            voiceKeywords: [],
+            pressResponse: '“The butler saw us in the drawing room at ten forty-five. Prove I stepped into the study before eleven forty-two if you can!”',
+            timelineNote: 'At 10:45 PM they were indeed in the drawing room—check his later statements for physical proof inside the study.'
+          },
+          {
+            num: 3,
+            timeClaim: '11:42 PM (Time of Death)',
+            audioClip: 'blackwood_stmt_3',
+            text: '“My silver pocket watch? I left it at the watchmaker’s on Donegall Place three days ago. Whatever shattered timepiece you found on the rug is certainly not mine.”',
+            tell: 'His right hand unconsciously covers the frayed waistcoat buttonhole where a watch chain once hung; pulse spikes to 108 BPM.',
+            isLie: true,
+            contradictsExhibit: 'A',
+            voiceKeywords: ['watch', 'timepiece', 'initials', 'a.b', 'engraved', '11:42', 'eleven forty-two', 'chain', 'rug', 'shattered', 'exhibit a'],
+            pressResponse: '“Half the gentlemen in Belfast carry silver hunter-case watches from Donegall Place! Have you examined the inner casing?”',
+            timelineNote: 'The shattered watch on the study rug stopped at 11:42 PM—the exact moment Corbin heard glass break inside.',
+            crackAudio: 'blackwood_crack_3',
+            crackText: '“My initials A.B. inside the casing... God help me! Yes! At 11:15 PM I slipped the tincture into his brandy decanter because he discovered I had embezzled £4,000 from the hospital endowment. When I returned at 11:42 PM to retrieve the poisoned glass, he was still conscious—he lunged at my lapel, tore my watch from its chain, and struck his temple as he fell!”',
+            ledgerTitle: 'Blackwood’s watch shattered in the 11:42 PM struggle'
+          },
+          {
+            num: 4,
+            timeClaim: 'Motive & Patronage',
+            audioClip: 'blackwood_stmt_4',
+            text: '“Lord Ravenscroft and I were lifelong colleagues. Why on earth would I harm the patron who funded my surgical wing?”',
+            tell: 'Abead of cold sweat trickles down his hollow cheek under the gaslight.',
+            isLie: false,
+            contradictsExhibit: null,
+            voiceKeywords: [],
+            pressResponse: '“Wait until you break his alibi regarding the dispensary vial (Statement 1) and the shattered pocket watch (Statement 3)!”',
+            timelineNote: 'Lord Ravenscroft had audited the Royal Victoria surgical wing accounts earlier that afternoon.'
+          }
+        ]
+      },
+      {
+        id: 'ashford',
+        name: 'Lady Evelyn Ashford',
+        role: 'Aristocratic Niece · Heiress Presumptive',
+        portrait: 'assets/inquisitor/suspect_ashford.png',
+        baseBpm: 74,
+        c1Chips: [
+          { label: '🔥 Challenge Liverpool Telegram (Inversion)', text: 'Had you no plans to leave Ireland, Lady Ashford, why was a half-burned telegram booking passage from Liverpool found in the grate?' },
+          { label: '🧵 Challenge Emerald Thread on Safe (Cleft)', text: 'It was your own emerald velvet cuff that snagged on the secret bookshelf safe latch at 11:35 PM!' },
+          { label: '📜 Probe the New Codicil', text: 'Little did you expect your uncle to draft a codicil disinheriting you tonight!' }
+        ],
+        statements: [
+          {
+            num: 1,
+            timeClaim: '6:15 PM – 10:30 PM',
+            audioClip: 'ashford_stmt_1',
+            text: '“I spent the entire evening reading by the parlour hearth. I had no pressing financial quarrel with my uncle, and certainly no plans to leave Ireland.”',
+            tell: 'Her chin lifts defiantly, but her eyes flick toward the charred ashes in the parlour grate; pulse climbs to 102 BPM.',
+            isLie: true,
+            contradictsExhibit: 'C',
+            voiceKeywords: ['telegram', 'liverpool', 'passage', 'titanic', 'codicil', 'burned', 'hearth', 'creditors', 'debt', 'will', 'exhibit c'],
+            pressResponse: '“A lady’s private correspondence is hardly the business of the Constabulary, Inspector. Unless you have salvaged something from the fire?”',
+            timelineNote: 'A telegraph boy delivered an urgent wire from Liverpool Dock to Lady Ashford at 6:40 PM.',
+            crackAudio: 'ashford_crack_1',
+            crackText: '“You dredged that telegram from the grate?! Fine! My creditors in London were closing in, and my uncle threatened to sign a new codicil tonight cutting me from the Ravenscroft estate! I booked passage from Liverpool, yes!”',
+            ledgerTitle: 'Lady Ashford plotted to destroy the new codicil'
+          },
+          {
+            num: 2,
+            timeClaim: 'Evening Attire',
+            audioClip: 'ashford_stmt_2',
+            text: '“I wore my grey silk shawl over my dress all evening, Inspector. I certainly never tore my cuff on any furniture in the east wing.”',
+            tell: 'She tucks her left wrist—where the emerald velvet lace is visibly frayed—beneath her velvet skirt.',
+            isLie: false,
+            contradictsExhibit: 'F',
+            voiceKeywords: ['thread', 'emerald', 'velvet', 'cuff', 'safe', 'latch', 'bookshelf', 'gown', 'exhibit f'],
+            pressResponse: '“Look closely at her left cuff, then examine Statement 3 about the secret bookshelf wall-safe!”',
+            timelineNote: 'She is wearing the emerald velvet gown right now—and its left cuff is torn.'
+          },
+          {
+            num: 3,
+            timeClaim: '11:30 PM – 11:38 PM',
+            audioClip: 'ashford_stmt_3',
+            text: '“Even if I had entered the study, I knew nothing of any hidden wall-safe behind the mahogany bookshelf, nor did I touch its brass latch tonight.”',
+            tell: 'Galvanic skin response jumps sharply; she conceals the torn emerald velvet cuff at her left wrist.',
+            isLie: true,
+            contradictsExhibit: 'F',
+            voiceKeywords: ['thread', 'emerald', 'velvet', 'cuff', 'safe', 'latch', 'bookshelf', 'gown', 'exhibit f'],
+            pressResponse: '“Someone forced that brass safe latch behind the bookshelf at 11:35 PM and left a strand of fabric behind...”',
+            timelineNote: 'Between 11:30 PM and 11:38 PM, the hidden bookshelf safe was opened and the draft codicil was removed.',
+            crackAudio: 'ashford_crack_2',
+            crackText: '“The emerald velvet thread on the safe latch... I admit it! I bribed Corbin five sovereigns to let me into the corridor at 11:30 PM. I opened the bookshelf safe to burn the new codicil—but when I stepped into the study at 11:35, Arthur was already slumped unconscious by the desk and his brandy reeked of belladonna!”',
+            ledgerTitle: 'Lady Ashford broke into the safe at 11:35 PM'
+          },
+          {
+            num: 4,
+            timeClaim: '11:00 PM Corridor Lock',
+            audioClip: 'ashford_stmt_4',
+            text: '“The front vestibule was bolted from within at ten o’clock. Nobody could have passed through the east corridor without the watchman’s key.”',
+            tell: 'Her pulse steadies—she is speaking the truth about the watchman holding the only key.',
+            isLie: false,
+            contradictsExhibit: null,
+            voiceKeywords: [],
+            pressResponse: '“Quite true, Your Ladyship—which means night-watchman Silas Corbin had to unlock that door at 11:30 PM!”',
+            timelineNote: 'This confirms Silas Corbin controlled access to the east wing corridor at 11:30 PM.'
+          }
+        ]
+      },
+      {
+        id: 'corbin',
+        name: 'Silas Corbin',
+        role: 'Linen Hall Night-Watchman · Former Dockhand',
+        portrait: 'assets/inquisitor/suspect_corbin.png',
+        baseBpm: 70,
+        c1Chips: [
+          { label: '📖 Challenge Forged 11:30 PM Ledger (Inversion)', text: 'Hardly had you taken Lady Ashford’s bribe when you scraped out the 11:30 PM watch ledger line and forged it in fresh ink!' },
+          { label: '🥾 Challenge Size-10 Bootprint in Mud (Cleft)', text: 'It was your own size-ten hobnailed boot that left coal dust and Lagan mud outside the study French doors!' },
+          { label: '🕯️ Demand What He Saw Through the Window', text: 'Tell the truth, Corbin—whom did you see through the sash window when the glass shattered at 11:42 PM?' }
+        ],
+        statements: [
+          {
+            num: 1,
+            timeClaim: '11:30 PM Watch Round',
+            audioClip: 'corbin_stmt_1',
+            text: '“I made my rounds strictly by the clock, Inspector. Have a look at my night-watch ledger—eleven thirty P.M., all doors bolted, nobody in or out of the east wing.”',
+            tell: 'Rubs his ink-stained thumb against his oilskin coat; pulse jumps to 99 BPM.',
+            isLie: true,
+            contradictsExhibit: 'E',
+            voiceKeywords: ['ledger', 'ink', 'forged', 'erased', 'scraped', '11:30', 'eleven thirty', 'bribe', 'sovereigns', 'exhibit e'],
+            pressResponse: '“An honest ledger doesn’t need a penknife to scrape the vellum, Corbin. Look at the 11:30 PM line!”',
+            timelineNote: 'Forensic inspection shows the 11:30 PM entry was erased with a blade and rewritten in wet iron-gall ink.',
+            crackAudio: 'corbin_crack_1',
+            crackText: '“All right, don’t haul me to Crumlin Road Gaol for murder! I scraped out the 11:30 PM line in the ledger and rewrote it in fresh iron-gall ink! Her Ladyship pressed five gold sovereigns into my palm to unlock the east corridor door!”',
+            ledgerTitle: 'Corbin forged the 11:30 PM ledger for a £5 bribe'
+          },
+          {
+            num: 2,
+            timeClaim: '11:35 PM – 11:45 PM',
+            audioClip: 'corbin_stmt_2',
+            text: '“I stayed under the dry portico at the front gate the whole night through. I never walked the Lagan towpath or went near the study French doors.”',
+            tell: 'Shifts his heavy size-10 hobnailed boots beneath the chair, flaking red Lagan clay and coal dust onto the floorboards.',
+            isLie: true,
+            contradictsExhibit: 'B',
+            voiceKeywords: ['boot', 'bootprint', 'mud', 'coal', 'towpath', 'lagan', 'size 10', 'size ten', 'hobnailed', 'french doors', 'window', 'exhibit b'],
+            pressResponse: '“If you stayed under the dry front portico all night, how did fresh Lagan towpath mud and coal dust get onto your boots?”',
+            timelineNote: 'A fresh size-10 hobnailed bootprint in Lagan mud & coal dust sits directly outside the study window.',
+            crackAudio: 'corbin_crack_2',
+            crackText: '“Those are my size-ten hobnailed boots in the towpath mud outside the French doors! At 11:42 PM I heard glass shatter inside the study. I crept up the Lagan path and peered through the sash window—and I saw Dr. Blackwood standing over His Lordship’s body, clutching his torn watch chain!”',
+            ledgerTitle: 'Corbin witnessed Blackwood over the body at 11:42 PM'
+          },
+          {
+            num: 3,
+            timeClaim: 'Financial Standing',
+            audioClip: 'corbin_stmt_3',
+            text: '“No one offered me a farthing tonight, sir. I am an honest Linen Hall watchman on twelve shillings a week.”',
+            tell: 'Five gold sovereigns clink faintly inside his waistcoat pocket.',
+            isLie: false,
+            contradictsExhibit: 'E',
+            voiceKeywords: ['ledger', 'bribe', 'sovereigns', 'ink', '11:30', 'exhibit e'],
+            pressResponse: '“Challenge his 11:30 PM Night-Watch Ledger entry (Statement 1) with Exhibit E to prove the bribe!”',
+            timelineNote: 'Once you expose the forged ledger in Statement 1, he confesses to taking Lady Ashford’s five sovereigns.'
+          },
+          {
+            num: 4,
+            timeClaim: '11:42 PM Commotion',
+            audioClip: 'corbin_stmt_4',
+            text: '“I heard no commotion from the study at eleven forty-two—only the wind howling off the Lagan and the rain against the glass.”',
+            tell: 'Glances nervously toward Dr. Blackwood’s dossier.',
+            isLie: false,
+            contradictsExhibit: 'B',
+            voiceKeywords: ['boot', 'bootprint', 'mud', 'window', 'french doors', 'exhibit b'],
+            pressResponse: '“Slam Exhibit B (the Lagan Mud Bootprint) on Statement 2 to force him to admit what he saw through the window at 11:42 PM!”',
+            timelineNote: 'His bootprints outside the sash window prove he heard the crash at 11:42 PM.'
+          }
+        ]
+      }
+    ];
+
+    /***********************************************************************
+     * 2. STATE MANAGEMENT
+     ***********************************************************************/
+    let currentSuspectIdx = 0;
+    let currentStmtIdx = 0;
+    let selectedExhibitId = 'A';
+    const exposedContradictions = new Set(); // Stores Exhibit IDs: 'A','B','C','D','E','F'
+    let activeAudio = null;
+
+    // Galvanometer state
+    let targetBpm = 74;
+    let currentBpm = 74;
+    let galvTension = 0.15; // 0.1 normal, 0.45 lie/evasive, 1.0 contradiction spike
+    let spikeTimer = 0;
+
+    /***********************************************************************
+     * 3. PROCEDURAL WEB AUDIO SOUNDSCAPE (Rain, Clock, Thunder, Stingers)
+     ***********************************************************************/
+    let audioCtx = null;
+    let atmosphereActive = false;
+    let rainGainNode = null;
+    let clockInterval = null;
+    let thunderInterval = null;
+
+    function ensureAudioCtx() {
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function startAtmosphereEngine() {
+      ensureAudioCtx();
+      if (atmosphereActive) return;
+      atmosphereActive = true;
+
+      // 1. Continuous Belfast Rain (Filtered Pink Noise)
+      const bufferSize = audioCtx.sampleRate * 3;
+      const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+        b0 = 0.99886 * b0 + white * 0.0555179;
+        b1 = 0.99332 * b1 + white * 0.0750759;
+        b2 = 0.96900 * b2 + white * 0.1538520;
+        b3 = 0.86650 * b3 + white * 0.3104856;
+        b4 = 0.55000 * b4 + white * 0.5329522;
+        b5 = -0.7616 * b5 - white * 0.0168980;
+        output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.025;
+        b6 = white * 0.115926;
+      }
+
+      const whiteNoise = audioCtx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1100;
+      filter.Q.value = 0.7;
+
+      rainGainNode = audioCtx.createGain();
+      rainGainNode.gain.value = 0.16;
+
+      whiteNoise.connect(filter);
+      filter.connect(rainGainNode);
+      rainGainNode.connect(audioCtx.destination);
+      whiteNoise.start(0);
+
+      // 2. Grandfather Clock Tick-Tock every second
+      let isTick = true;
+      clockInterval = setInterval(() => {
+        if (!atmosphereActive || !audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(isTick ? 820 : 640, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.025, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.045);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+        isTick = !isTick;
+      }, 1000);
+
+      // 3. Periodic Thunder Rolls
+      thunderInterval = setInterval(() => {
+        if (!atmosphereActive) return;
+        if (Math.random() < 0.45) triggerThunderRoll();
+      }, 18000);
+    }
+
+    function toggleAtmosphere() {
+      ensureAudioCtx();
+      const btn = document.getElementById('btnAtmosphere');
+      const txt = document.getElementById('atmosText');
+      if (!atmosphereActive) {
+        startAtmosphereEngine();
+        btn.classList.add('active');
+        txt.textContent = 'Belfast Rain & Clock: ON';
+      } else {
+        atmosphereActive = false;
+        if (rainGainNode) rainGainNode.gain.value = 0;
+        clearInterval(clockInterval);
+        clearInterval(thunderInterval);
+        btn.classList.remove('active');
+        txt.textContent = 'Belfast Rain & Clock: MUTED';
+      }
+    }
+
+    function triggerThunderRoll() {
+      ensureAudioCtx();
+      const flash = document.getElementById('lightningFlash');
+      flash.style.opacity = '1';
+      setTimeout(() => { flash.style.opacity = '0'; }, 90);
+      setTimeout(() => { flash.style.opacity = '0.5'; }, 160);
+      setTimeout(() => { flash.style.opacity = '0'; }, 260);
+
+      const dur = 2.6;
+      const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * dur, audioCtx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.9));
+      }
+      const src = audioCtx.createBufferSource();
+      src.buffer = buf;
+      const lp = audioCtx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 145;
+      const g = audioCtx.createGain();
+      g.gain.value = 0.45;
+      src.connect(lp);
+      lp.connect(g);
+      g.connect(audioCtx.destination);
+      src.start();
+    }
+
+    function playDeskSlamSound() {
+      ensureAudioCtx();
+      const osc = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(130, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(32, audioCtx.currentTime + 0.22);
+      g.gain.setValueAtTime(0.55, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.25);
+      osc.connect(g);
+      g.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.26);
+    }
+
+    function playContradictionStinger() {
+      ensureAudioCtx();
+      // Dramatic Victorian Cello/Brass Dissonant Chord + Brass Alarm Bell
+      const freqs = [110, 164.81, 233.08, 311.13, 880];
+      freqs.forEach((f, idx) => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = idx === 4 ? 'sine' : 'sawtooth';
+        osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+        g.gain.setValueAtTime(idx === 4 ? 0.25 : 0.14, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.0008, audioCtx.currentTime + 1.65);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.7);
+      });
+    }
+
+    /***********************************************************************
+     * 4. REAL PRE-SYNTHESIZED BRITISH NEURAL TTS + LAN /api/tts + WEB SPEECH
+     ***********************************************************************/
+    async function speakLine(text, pregenClipId = null) {
+      if (!atmosphereActive && !audioCtx) {
+        startAtmosphereEngine();
+      }
+      if (activeAudio) {
+        activeAudio.pause();
+        activeAudio = null;
+      }
+
+      const waveIndicator = document.getElementById('suspectAudioWave');
+      if (waveIndicator) {
+        waveIndicator.textContent = '🔊 SPEAKING...';
+        waveIndicator.style.color = '#34d399';
+      }
+
+      const resetIndicator = () => {
+        if (waveIndicator) {
+          waveIndicator.textContent = '● READY';
+          waveIndicator.style.color = 'var(--brass-bright)';
+        }
+      };
+
+      // 1. First try pre-synthesized Piper C++ British Neural MP3 in assets/inquisitor/audio/
+      if (pregenClipId) {
+        try {
+          const url = `assets/inquisitor/audio/${pregenClipId}.mp3`;
+          const audio = new Audio(url);
+          activeAudio = audio;
+          audio.onended = resetIndicator;
+          audio.onerror = () => fallbackLanOrWebSpeech(text, resetIndicator);
+          await audio.play();
+          return;
+        } catch (err) {
+          // Fall through to LAN /api/tts
+        }
+      }
+
+      await fallbackLanOrWebSpeech(text, resetIndicator);
+    }
+
+    async function fallbackLanOrWebSpeech(text, onDone) {
+      // 2. Try live LAN Command Center Neural TTS API (POST http://localhost:8080/api/tts)
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 2200);
+        const res = await fetch('http://localhost:8080/api/tts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text }),
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+        if (res.ok) {
+          const data = await res.json();
+          const audioUrl = data.relativeUrl || data.audioUrl || data.url;
+          if (audioUrl) {
+            const audio = new Audio(audioUrl.startsWith('http') ? audioUrl : `http://localhost:8080/${audioUrl.replace(/^\//, '')}`);
+            activeAudio = audio;
+            audio.onended = onDone;
+            await audio.play();
+            return;
+          }
+        }
+      } catch (_) {
+        // LAN server offline; complete cleanly without browser speechSynthesis
+      }
+      onDone();
+    }
+
+    function playOpeningBriefing() {
+      const text = "Fourteen Linen Hall Street, Belfast. Fourteen November, eighteen ninety-four. At eleven forty-two P.M., Lord Arthur Ravenscroft was discovered lifeless upon the Persian rug of his locked mahogany study—poisoned with chloral hydrate and belladonna, and struck during a violent struggle. Three individuals stood within the house tonight. Each harbours a lie. Watch the brass galvanometer closely, Inspector. Present the physical evidence, or use your voice to expose their contradictions.";
+      speakLine(text, 'briefing_opening');
+      appendLog('system', 'INSPECTOR BRIEFING', text);
+    }
+
+    function speakCurrentStatement() {
+      const suspect = SUSPECTS[currentSuspectIdx];
+      const stmt = suspect.statements[currentStmtIdx];
+      speakLine(stmt.text, stmt.audioClip);
+    }
+
+    function speakCurrentConfession() {
+      const suspect = SUSPECTS[currentSuspectIdx];
+      const stmt = suspect.statements[currentStmtIdx];
+      if (stmt.crackText) {
+        speakLine(stmt.crackText, stmt.crackAudio);
+      }
+    }
+
+    /***********************************************************************
+     * 5. UI RENDERING: SUSPECTS, STATEMENTS, EXHIBITS, LEDGER
+     ***********************************************************************/
+    function renderAll() {
+      renderSuspectRoster();
+      renderActiveSuspectAndStatement();
+      renderExhibitsDrawer();
+      renderDeductionLedger();
+    }
+
+    function renderSuspectRoster() {
+      const container = document.getElementById('suspectRoster');
+      let fullyCrackedCount = 0;
+
+      container.innerHTML = SUSPECTS.map((s, idx) => {
+        const lies = s.statements.filter(st => st.isLie);
+        const crackedLies = lies.filter(st => exposedContradictions.has(st.contradictsExhibit));
+        if (crackedLies.length === lies.length) fullyCrackedCount++;
+
+        const pipsHtml = lies.map(st => {
+          const isExp = exposedContradictions.has(st.contradictsExhibit);
+          return `<span class="crack-pip ${isExp ? 'exposed' : ''}" title="${isExp ? 'Contradiction Exposed' : 'Unexposed Alibi'}"></span>`;
+        }).join('');
+
+        return `
+          <button class="suspect-tab ${idx === currentSuspectIdx ? 'active' : ''}" onclick="selectSuspect(${idx})">
+            <img class="suspect-thumb" src="${s.portrait}" alt="${s.name}" />
+            <div class="suspect-meta">
+              <div class="suspect-name">${s.name}</div>
+              <div class="suspect-role">${s.role.split('·')[0]}</div>
+              <div class="suspect-crack-meter">
+                ${pipsHtml}
+                <span style="color:${crackedLies.length === lies.length ? '#fca5a5' : 'var(--text-muted)'}">
+                  ${crackedLies.length}/${lies.length} Alibis Cracked
+                </span>
+              </div>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      document.getElementById('suspectsCrackedBadge').textContent = `${fullyCrackedCount} / 3 Cracked`;
+    }
+
+    function renderActiveSuspectAndStatement() {
+      const suspect = SUSPECTS[currentSuspectIdx];
+      const stmt = suspect.statements[currentStmtIdx];
+      const isCracked = stmt.contradictsExhibit && exposedContradictions.has(stmt.contradictsExhibit);
+
+      document.getElementById('activeSuspectImg').src = suspect.portrait;
+      document.getElementById('activeSuspectName').textContent = suspect.name;
+      document.getElementById('activeSuspectRole').textContent = suspect.role;
+
+      // Composure label
+      const lies = suspect.statements.filter(s => s.isLie);
+      const crackedCount = lies.filter(s => exposedContradictions.has(s.contradictsExhibit)).length;
+      const compEl = document.getElementById('suspectComposureLabel');
+      if (crackedCount === 2) {
+        compEl.textContent = 'COMPOSURE: SHATTERED (CONFESSED)';
+        compEl.style.color = '#f87171';
+      } else if (crackedCount === 1) {
+        compEl.textContent = 'COMPOSURE: RATTLED & DEFENSIVE';
+        compEl.style.color = '#fbbf24';
+      } else {
+        compEl.textContent = 'COMPOSURE: GUARDED';
+        compEl.style.color = '#a7f3d0';
+      }
+
+      // Statement dots
+      const dotsContainer = document.getElementById('statementDots');
+      dotsContainer.innerHTML = suspect.statements.map((st, i) => {
+        const stCracked = st.isLie && exposedContradictions.has(st.contradictsExhibit);
+        return `<button class="stmt-dot-btn ${i === currentStmtIdx ? 'active' : ''} ${stCracked ? 'cracked' : ''}" onclick="selectStatement(${i})">${st.num}</button>`;
+      }).join('');
+
+      document.getElementById('stmtIndexLabel').textContent = `SWORN TESTIMONY · STATEMENT ${stmt.num} OF ${suspect.statements.length}`;
+      document.getElementById('stmtTimeClaim').textContent = `CLAIMED: ${stmt.timeClaim}`;
+      document.getElementById('stmtQuoteText').textContent = stmt.text;
+      document.getElementById('stmtTellText').innerHTML = `👁️ <em>Forensic Tell:</em> ${stmt.tell}`;
+
+      // Stamp & Confession visibility
+      const stamp = document.getElementById('contradictionStamp');
+      const confBox = document.getElementById('confessionBox');
+      const confText = document.getElementById('confessionText');
+      if (isCracked && stmt.crackText) {
+        stamp.classList.add('visible');
+        confBox.classList.add('visible');
+        confText.textContent = stmt.crackText;
+      } else {
+        stamp.classList.remove('visible');
+        confBox.classList.remove('visible');
+      }
+
+      // Update Galvanometer baseline for this statement
+      if (spikeTimer <= 0) {
+        if (isCracked) {
+          targetBpm = suspect.baseBpm + 38;
+          galvTension = 0.65;
+          updateGalvBadge('ALIBI SHATTERED', '#f87171');
+        } else if (stmt.isLie) {
+          targetBpm = suspect.baseBpm + 22;
+          galvTension = 0.42;
+          updateGalvBadge('ELEVATED TENSION', '#fbbf24');
+        } else {
+          targetBpm = suspect.baseBpm;
+          galvTension = 0.14;
+          updateGalvBadge('STEADY BASELINE', '#6ee7b7');
+        }
+      }
+
+      // Render C1 Rhetorical Chips
+      const chipsWrap = document.getElementById('c1PromptChips');
+      chipsWrap.innerHTML = `<span style="font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--brass-bright);">C1 RHETORICAL PROBES:</span>` +
+        suspect.c1Chips.map((chip, idx) =>
+          `<button class="c1-chip" onclick="useC1Probe(${idx})">${chip.label}</button>`
+        ).join('');
+    }
+
+    function renderExhibitsDrawer() {
+      const container = document.getElementById('exhibitsContainer');
+      const activeEx = EXHIBITS.find(e => e.id === selectedExhibitId);
+      document.getElementById('activeEvidenceIndicator').textContent = `Armed Exhibit: Exhibit ${activeEx.id} (${activeEx.name})`;
+      document.getElementById('slamBtnSub').textContent = `Slam Exhibit ${activeEx.id}`;
+
+      container.innerHTML = EXHIBITS.map(ex => {
+        const isSelected = ex.id === selectedExhibitId;
+        const isUsed = exposedContradictions.has(ex.id);
+        return `
+          <div class="exhibit-card ${isSelected ? 'selected' : ''} ${isUsed ? 'used' : ''}" onclick="armExhibit('${ex.id}')">
+            <div class="exhibit-icon-box">${ex.icon}</div>
+            <div class="exhibit-info">
+              <div class="exhibit-code">
+                <span>EXHIBIT ${ex.id}</span>
+                <span>${isUsed ? '✅ VERIFIED IN RECORD' : (isSelected ? '⚡ ARMED' : '')}</span>
+              </div>
+              <div class="exhibit-name">${ex.name}</div>
+              <div class="exhibit-desc">${ex.shortDesc}</div>
+              <div class="exhibit-actions">
+                <button class="mini-btn" onclick="event.stopPropagation(); inspectExhibit('${ex.id}')">🔎 Magnify</button>
+                <button class="mini-btn slam" onclick="event.stopPropagation(); armAndSlamExhibit('${ex.id}')">⚡ Slam on Desk</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDeductionLedger() {
+      const ledger = document.getElementById('deductionLedger');
+      const items = [
+        { ex: 'D', label: '9:15 PM · Blackwood signed out Chloral Hydrate & Belladonna' },
+        { ex: 'A', label: '11:42 PM · Blackwood’s "A.B." Watch shattered in the fatal struggle' },
+        { ex: 'C', label: '6:40 PM · Lady Ashford received Liverpool wire to destroy the codicil' },
+        { ex: 'F', label: '11:35 PM · Lady Ashford’s emerald cuff snagged on the safe latch' },
+        { ex: 'E', label: '11:30 PM · Silas Corbin took £5 bribe & forged the watch ledger' },
+        { ex: 'B', label: '11:42 PM · Corbin’s size-10 boots stood in Lagan mud outside window' }
+      ];
+
+      ledger.innerHTML = items.map(item => {
+        const solved = exposedContradictions.has(item.ex);
+        return `
+          <div class="ledger-row ${solved ? 'solved' : ''}">
+            <span>${solved ? '✅' : '🔒'} <strong>[Ex. ${item.ex}]</strong> ${ solved ? item.label : 'Contradiction unexposed — cross-examine suspect testimony' }</span>
+          </div>
+        `;
+      }).join('');
+
+      const count = exposedContradictions.size;
+      document.getElementById('ledgerProgressBadge').textContent = `${count} / 6 Exposed`;
+      document.getElementById('headerCrackCount').textContent = count;
+
+      const warrantBtn = document.getElementById('btnOpenWarrant');
+      if (count === 6) {
+        warrantBtn.classList.add('warrant-ready');
+      }
+    }
+
+    /***********************************************************************
+     * 6. INTERROGATION MECHANICS: SLAM EVIDENCE, VOICE, PRESS, TIMELINE
+     ***********************************************************************/
+    function selectSuspect(idx) {
+      currentSuspectIdx = idx;
+      currentStmtIdx = 0;
+      renderAll();
+      speakCurrentStatement();
+    }
+
+    function selectStatement(idx) {
+      currentStmtIdx = idx;
+      renderAll();
+      speakCurrentStatement();
+    }
+
+    function prevStatement() {
+      const s = SUSPECTS[currentSuspectIdx];
+      currentStmtIdx = (currentStmtIdx - 1 + s.statements.length) % s.statements.length;
+      renderAll();
+      speakCurrentStatement();
+    }
+
+    function nextStatement() {
+      const s = SUSPECTS[currentSuspectIdx];
+      currentStmtIdx = (currentStmtIdx + 1) % s.statements.length;
+      renderAll();
+      speakCurrentStatement();
+    }
+
+    function armExhibit(exId) {
+      selectedExhibitId = exId;
+      renderExhibitsDrawer();
+    }
+
+    function armAndSlamExhibit(exId) {
+      selectedExhibitId = exId;
+      renderExhibitsDrawer();
+      slamSelectedExhibit();
+    }
+
+    function slamSelectedExhibit() {
+      playDeskSlamSound();
+      const suspect = SUSPECTS[currentSuspectIdx];
+      let stmt = suspect.statements[currentStmtIdx];
+      const ex = EXHIBITS.find(e => e.id === selectedExhibitId);
+
+      appendLog('inspector', `INSPECTOR [SLAMS EXHIBIT ${ex.id}]`, ex.c1Formula);
+
+      // Check if this exhibit matches the current statement's contradiction
+      // Also smart-assist: if the player presents the right exhibit for this suspect on an adjacent statement, jump to the matching statement automatically!
+      if (stmt.contradictsExhibit !== ex.id) {
+        const matchingIdx = suspect.statements.findIndex(st => st.isLie && st.contradictsExhibit === ex.id);
+        if (matchingIdx !== -1) {
+          currentStmtIdx = matchingIdx;
+          stmt = suspect.statements[currentStmtIdx];
+        }
+      }
+
+      if (stmt.isLie && stmt.contradictsExhibit === ex.id) {
+        triggerContradictionSuccess(suspect, stmt, ex);
+      } else {
+        // Wrong exhibit for this suspect
+        targetBpm = suspect.baseBpm + 12;
+        galvTension = 0.32;
+        const dismissLine = `“Exhibit ${ex.id} (${ex.name}) has nothing whatsoever to do with my testimony here, Inspector.”`;
+        appendLog('suspect', suspect.name.toUpperCase(), dismissLine);
+        speakLine(dismissLine);
+      }
+    }
+
+    function triggerContradictionSuccess(suspect, stmt, ex) {
+      exposedContradictions.add(ex.id);
+      playContradictionStinger();
+
+      // Portrait shake
+      const frame = document.getElementById('portraitFrame');
+      frame.classList.remove('rattled');
+      void frame.offsetWidth;
+      frame.classList.add('rattled');
+
+      // Spike Galvanometer into crimson danger zone
+      spikeTimer = 190; // frames
+      targetBpm = 158;
+      galvTension = 1.0;
+      updateGalvBadge('🚨 CONTRADICTION SPIKE!', '#ef4444');
+
+      renderAll();
+      appendLog('system', `⚡ CONTRADICTION EXPOSED [EXHIBIT ${ex.id}]`, `${suspect.name}'s sworn alibi has collapsed!`);
+      appendLog('suspect', `${suspect.name.toUpperCase()} [CRACKED]`, stmt.crackText);
+      speakLine(stmt.crackText, stmt.crackAudio);
+    }
+
+    function pressHarder() {
+      const suspect = SUSPECTS[currentSuspectIdx];
+      const stmt = suspect.statements[currentStmtIdx];
+      targetBpm = Math.min(142, targetBpm + 16);
+      galvTension = Math.min(0.75, galvTension + 0.2);
+
+      const probe = `“Let us examine Statement ${stmt.num} more closely, ${suspect.name}. Are you prepared to swear to that under oath at the Belfast Assizes?”`;
+      appendLog('inspector', 'INSPECTOR [PRESS HARDER]', probe);
+      appendLog('suspect', suspect.name.toUpperCase(), stmt.pressResponse);
+      speakLine(stmt.pressResponse);
+    }
+
+    function crossExamineTimeline() {
+      const suspect = SUSPECTS[currentSuspectIdx];
+      const stmt = suspect.statements[currentStmtIdx];
+      appendLog('system', `🕰️ BELFAST CHRONOMETER CHECK (${stmt.timeClaim})`, stmt.timelineNote);
+      document.getElementById('stmtHintStatus').textContent = stmt.timelineNote;
+    }
+
+    function useC1Probe(chipIdx) {
+      const suspect = SUSPECTS[currentSuspectIdx];
+      const chip = suspect.c1Chips[chipIdx];
+      document.getElementById('inquisitorInput').value = chip.text;
+      submitInquisitorChallenge();
+    }
+
+    async function submitInquisitorChallenge() {
+      const inputEl = document.getElementById('inquisitorInput');
+      const query = inputEl.value.trim();
+      if (!query) return;
+      inputEl.value = '';
+
+      const suspect = SUSPECTS[currentSuspectIdx];
+      appendLog('inspector', 'INSPECTOR [VOICE CHALLENGE]', `“${query}”`);
+
+      const lower = query.toLowerCase();
+
+      // Check if the spoken/typed challenge matches ANY lie statement on the active suspect
+      for (let i = 0; i < suspect.statements.length; i++) {
+        const st = suspect.statements[i];
+        if (st.isLie && st.voiceKeywords.some(kw => lower.includes(kw))) {
+          currentStmtIdx = i;
+          const ex = EXHIBITS.find(e => e.id === st.contradictsExhibit);
+          selectedExhibitId = ex.id;
+          triggerContradictionSuccess(suspect, st, ex);
+          return;
+        }
+      }
+
+      // Check if local Ollama is available for dynamic Victorian in-character response, else fallback
+      const stmt = suspect.statements[currentStmtIdx];
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 2500);
+        const res = await fetch('http://localhost:11434/api/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'llama3.2:latest',
+            prompt: `You are ${suspect.name} (${suspect.role}) being interrogated in Belfast on 14 November 1894 for the murder of Lord Ravenscroft. Reply in 1 or 2 crisp Victorian sentences to the Inspector's question: "${query}". Stay defensive and atmospheric.`,
+            stream: false
+          }),
+          signal: controller.signal
+        });
+        clearTimeout(timeout);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.response) {
+            const cleanReply = data.response.trim();
+            appendLog('suspect', suspect.name.toUpperCase(), cleanReply);
+            speakLine(cleanReply);
+            return;
+          }
+        }
+      } catch (_) {
+        // Fallback to deterministic Victorian response
+      }
+
+      appendLog('suspect', suspect.name.toUpperCase(), stmt.pressResponse);
+      speakLine(stmt.pressResponse);
+    }
+
+    /***********************************************************************
+     * 7. LIVE MICROPHONE SPEECH RECOGNITION (`webkitSpeechRecognition`)
+     ***********************************************************************/
+    let recognition = null;
+    let isListening = false;
+
+    function toggleVoiceInterrogation() {
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const btn = document.getElementById('btnMicInterrogate');
+      const titleEl = document.getElementById('micBtnTitle');
+      const subEl = document.getElementById('micBtnSub');
+
+      if (!SpeechRec) {
+        appendLog('system', '🎙️ MICROPHONE NOTICE', 'Browser SpeechRecognition API is unavailable in this window. Use the C1 Rhetorical Probe chips or type in the challenge bar below.');
+        document.getElementById('inquisitorInput').focus();
+        return;
+      }
+
+      if (isListening && recognition) {
+        recognition.stop();
+        return;
+      }
+
+      recognition = new SpeechRec();
+      recognition.lang = 'en-GB';
+      recognition.interimResults = true;
+      recognition.continuous = false;
+
+      recognition.onstart = () => {
+        isListening = true;
+        btn.classList.add('listening');
+        titleEl.textContent = 'Listening Live...';
+        subEl.textContent = 'Speak Your Challenge';
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        document.getElementById('inquisitorInput').value = transcript;
+        if (event.results[event.results.length - 1].isFinal) {
+          submitInquisitorChallenge();
+        }
+      };
+
+      recognition.onerror = () => {
+        isListening = false;
+        btn.classList.remove('listening');
+        titleEl.textContent = 'Voice Interrogation';
+        subEl.textContent = 'Click & Speak Aloud';
+      };
+
+      recognition.onend = () => {
+        isListening = false;
+        btn.classList.remove('listening');
+        titleEl.textContent = 'Voice Interrogation';
+        subEl.textContent = 'Click & Speak Aloud';
+      };
+
+      recognition.start();
+    }
+
+    function appendLog(role, speakerLabel, text) {
+      const box = document.getElementById('transcriptLog');
+      const div = document.createElement('div');
+      div.className = 'log-entry';
+      div.innerHTML = `<span class="log-speaker ${role}">[${speakerLabel}]</span> <span>${text}</span>`;
+      box.prepend(div);
+    }
+
+    /***********************************************************************
+     * 8. REAL-TIME GALVANOMETER / POLYGRAPH CARDIOGRAPH CANVAS
+     ***********************************************************************/
+    const galvCanvas = document.getElementById('galvanometerCanvas');
+    const galvCtx = galvCanvas.getContext('2d');
+    const traceHistory = new Array(160).fill(0);
+    let tracePhase = 0;
+
+    function updateGalvBadge(label, colorHex) {
+      const badge = document.getElementById('galvStateBadge');
+      badge.textContent = label;
+      badge.style.color = colorHex;
+      badge.style.borderColor = colorHex;
+    }
+
+    function animateGalvanometer() {
+      const w = galvCanvas.width;
+      const h = galvCanvas.height;
+
+      if (spikeTimer > 0) {
+        spikeTimer--;
+        if (spikeTimer === 0) {
+          renderActiveSuspectAndStatement();
+        }
+      }
+
+      currentBpm += (targetBpm - currentBpm) * 0.08;
+      tracePhase += (currentBpm / 60) * 0.16;
+
+      // Simulate P-Q-R-S-T cardiograph + galvanic jitter
+      const cycle = tracePhase % 1;
+      let signal = 0;
+      if (cycle > 0.18 && cycle < 0.24) {
+        signal = 0.22; // P wave
+      } else if (cycle >= 0.28 && cycle < 0.31) {
+        signal = -0.35; // Q dip
+      } else if (cycle >= 0.31 && cycle < 0.36) {
+        signal = 1.0; // R spike
+      } else if (cycle >= 0.36 && cycle < 0.40) {
+        signal = -0.48; // S dip
+      } else if (cycle >= 0.48 && cycle < 0.58) {
+        signal = 0.32; // T wave
+      }
+
+      const jitter = (Math.random() - 0.5) * galvTension * 0.85;
+      const sample = (signal * (0.45 + galvTension * 0.55)) + jitter;
+
+      traceHistory.push(sample);
+      if (traceHistory.length > 160) traceHistory.shift();
+
+      // Draw dark Victorian graph grid
+      galvCtx.fillStyle = '#070a08';
+      galvCtx.fillRect(0, 0, w, h);
+
+      galvCtx.strokeStyle = 'rgba(212, 175, 55, 0.12)';
+      galvCtx.lineWidth = 1;
+      for (let x = 0; x < w; x += 24) {
+        galvCtx.beginPath();
+        galvCtx.moveTo(x, 0);
+        galvCtx.lineTo(x, h);
+        galvCtx.stroke();
+      }
+      for (let y = 0; y < h; y += 24) {
+        galvCtx.beginPath();
+        galvCtx.moveTo(0, y);
+        galvCtx.lineTo(w, y);
+        galvCtx.stroke();
+      }
+
+      // Trace color based on tension
+      let traceColor = '#10b981'; // Emerald steady
+      if (galvTension > 0.75) {
+        traceColor = '#ef4444'; // Crimson contradiction spike
+      } else if (galvTension > 0.3) {
+        traceColor = '#f59e0b'; // Amber deception flutter
+      }
+
+      // Draw ECG / Galvanometer waveform
+      galvCtx.save();
+      galvCtx.strokeStyle = traceColor;
+      galvCtx.lineWidth = 2.2;
+      galvCtx.shadowColor = traceColor;
+      galvCtx.shadowBlur = 10;
+      galvCtx.beginPath();
+      const midY = h * 0.54;
+      for (let i = 0; i < traceHistory.length; i++) {
+        const px = (i / (traceHistory.length - 1)) * (w - 45);
+        const py = midY - traceHistory[i] * (h * 0.38);
+        if (i === 0) galvCtx.moveTo(px, py);
+        else galvCtx.lineTo(px, py);
+      }
+      galvCtx.stroke();
+      galvCtx.restore();
+
+      // Draw Physical Brass Needle on the right side
+      const latestSample = traceHistory[traceHistory.length - 1] || 0;
+      const pivotX = w - 8;
+      const pivotY = midY;
+      const needleAngle = Math.max(-0.95, Math.min(0.95, latestSample * 0.85));
+      const tipX = pivotX - Math.cos(needleAngle) * 42;
+      const tipY = pivotY - Math.sin(needleAngle) * 42;
+
+      galvCtx.strokeStyle = '#e5c158';
+      galvCtx.lineWidth = 2.5;
+      galvCtx.beginPath();
+      galvCtx.moveTo(pivotX, pivotY);
+      galvCtx.lineTo(tipX, tipY);
+      galvCtx.stroke();
+
+      galvCtx.fillStyle = '#d4af37';
+      galvCtx.beginPath();
+      galvCtx.arc(pivotX, pivotY, 5, 0, Math.PI * 2);
+      galvCtx.fill();
+
+      // Update numeric metrics every few frames
+      if (Math.random() < 0.25) {
+        const bpmDisp = Math.round(currentBpm);
+        const gsrDisp = (11.5 + galvTension * 18.4 + Math.random() * 0.8).toFixed(1);
+        const decDisp = Math.min(99, Math.round(galvTension * 96));
+
+        const bpmEl = document.getElementById('metricBpm');
+        const gsrEl = document.getElementById('metricGsr');
+        const decEl = document.getElementById('metricDeception');
+
+        bpmEl.textContent = `${bpmDisp} BPM`;
+        gsrEl.textContent = `${gsrDisp} µS`;
+        decEl.textContent = `${decDisp}%`;
+
+        bpmEl.style.color = traceColor;
+        gsrEl.style.color = traceColor;
+        decEl.style.color = traceColor;
+      }
+
+      requestAnimationFrame(animateGalvanometer);
+    }
+
+    /***********************************************************************
+     * 9. AMBIENT RAIN CANVAS ANIMATION
+     ***********************************************************************/
+    const rainCanvas = document.getElementById('rainCanvas');
+    const rainCtx = rainCanvas.getContext('2d');
+    let raindrops = [];
+
+    function resizeRain() {
+      rainCanvas.width = window.innerWidth;
+      rainCanvas.height = window.innerHeight;
+      raindrops = Array.from({ length: 110 }, () => ({
+        x: Math.random() * rainCanvas.width,
+        y: Math.random() * rainCanvas.height,
+        len: 14 + Math.random() * 20,
+        speed: 9 + Math.random() * 8,
+        alpha: 0.12 + Math.random() * 0.22
+      }));
+    }
+
+    function animateRain() {
+      rainCtx.clearRect(0, 0, rainCanvas.width, rainCanvas.height);
+      rainCtx.strokeStyle = 'rgba(185, 210, 235, 0.28)';
+      rainCtx.lineWidth = 1;
+      for (const d of raindrops) {
+        rainCtx.beginPath();
+        rainCtx.moveTo(d.x, d.y);
+        rainCtx.lineTo(d.x - 3, d.y + d.len);
+        rainCtx.stroke();
+        d.y += d.speed;
+        d.x -= 1.2;
+        if (d.y > rainCanvas.height) {
+          d.y = -20;
+          d.x = Math.random() * rainCanvas.width;
+        }
+        if (d.x < 0) d.x = rainCanvas.width;
+      }
+      requestAnimationFrame(animateRain);
+    }
+
+    window.addEventListener('resize', resizeRain);
+
+    /***********************************************************************
+     * 10. MODALS: CRIME SCENE, MAGNIFYING GLASS, ARREST WARRANT
+     ***********************************************************************/
+    function openCrimeSceneModal() {
+      document.getElementById('crimeSceneModal').classList.add('open');
+    }
+
+    function closeCrimeSceneModal() {
+      document.getElementById('crimeSceneModal').classList.remove('open');
+    }
+
+    function inspectExhibit(exId) {
+      closeCrimeSceneModal();
+      selectedExhibitId = exId;
+      renderExhibitsDrawer();
+
+      const ex = EXHIBITS.find(e => e.id === exId);
+      document.getElementById('modalExhibitHeader').innerHTML = `<span>🔎</span> EXHIBIT ${ex.id} · ${ex.name}`;
+      document.getElementById('modalExhibitBody').innerHTML = `
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+          <div style="width:68px;height:68px;border-radius:12px;background:#0a0705;border:2px solid var(--brass-bright);display:flex;align-items:center;justify-content:center;font-size:2.2rem;">
+            ${ex.icon}
+          </div>
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.74rem;color:var(--brass-bright);">RECOVERY LOCATION: ${ex.location}</div>
+            <h3 style="font-family:'Cinzel',serif;font-size:1.25rem;color:var(--text-ivory);margin-top:0.2rem;">${ex.name}</h3>
+          </div>
+        </div>
+        <div style="background:rgba(12,8,5,0.85);border:1px solid var(--brass-border);padding:1rem;border-radius:8px;line-height:1.55;font-size:1.02rem;color:var(--text-ivory);margin-bottom:1rem;">
+          ${ex.forensicDetail}
+        </div>
+        <div style="background:rgba(212,175,55,0.1);border-left:3px solid var(--brass-bright);padding:0.85rem;border-radius:0 8px 8px 0;margin-bottom:1.1rem;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--brass-bright);margin-bottom:0.25rem;">C1 INQUISITORIAL FORMULATION:</div>
+          <div style="font-style:italic;font-size:1.02rem;color:#f5ebd6;">“${ex.c1Formula}”</div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:0.6rem;">
+          <button class="brass-pill" onclick="speakLine('${ex.c1Formula.replace(/'/g, "\\'")}')">🔊 Hear C1 Challenge</button>
+          <button class="brass-pill warrant-ready" onclick="closeExhibitModal(); armAndSlamExhibit('${ex.id}')">⚡ Slam Exhibit ${ex.id} on Desk Now</button>
+        </div>
+      `;
+      document.getElementById('exhibitModal').classList.add('open');
+    }
+
+    function closeExhibitModal() {
+      document.getElementById('exhibitModal').classList.remove('open');
+    }
+
+    function openWarrantModal() {
+      // Pre-fill if all 6 contradictions are exposed
+      if (exposedContradictions.size === 6) {
+        document.getElementById('chargeCorbin').value = 'bribery';
+        document.getElementById('chargeAshford').value = 'burglary';
+        document.getElementById('chargeBlackwood').value = 'murder';
+      }
+      document.getElementById('warrantModal').classList.add('open');
+    }
+
+    function closeWarrantModal() {
+      document.getElementById('warrantModal').classList.remove('open');
+    }
+
+    function executeArrestWarrant() {
+      const cCorbin = document.getElementById('chargeCorbin').value;
+      const cAshford = document.getElementById('chargeAshford').value;
+      const cBlackwood = document.getElementById('chargeBlackwood').value;
+      const container = document.getElementById('warrantResultContainer');
+      container.style.display = 'block';
+
+      if (cCorbin === 'bribery' && cAshford === 'burglary' && cBlackwood === 'murder') {
+        playContradictionStinger();
+        const reconSpeech = "Case closed, Inspector. The Royal Irish Constabulary warrant is sealed. At nine fifteen P.M., Doctor Alistair Blackwood procured chloral hydrate and belladonna from the Royal Victoria Infirmary. At eleven fifteen, he poisoned Lord Ravenscroft's brandy decanter. At eleven thirty, Silas Corbin accepted five sovereigns and forged the watch ledger so Lady Evelyn Ashford could break into the bookshelf safe and burn the codicil—snagging her emerald velvet cuff on the latch. And at eleven forty-two, when Blackwood returned to remove the evidence, the dying peer lunged, shattering Blackwood's engraved pocket watch at the exact instant of his death.";
+        speakLine(reconSpeech, 'warrant_reconstruction');
+
+        container.innerHTML = `
+          <div style="background:linear-gradient(135deg, rgba(6,78,59,0.38) 0%, rgba(12,18,15,0.95) 100%);border:2px solid #10b981;border-radius:10px;padding:1.3rem;">
+            <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.6rem;margin-bottom:1rem;">
+              <h3 style="font-family:'Cinzel',serif;color:#6ee7b7;font-size:1.2rem;">👑 CROWN WARRANT SEALED · FULL RECONSTRUCTION OF 14 NOVEMBER 1894</h3>
+              <button class="mini-btn" onclick="speakLine('Case closed, Inspector.', 'warrant_reconstruction')">🔊 Replay Neural TTS Reconstruction</button>
+            </div>
+            <div class="timeline-step">
+              <div class="timeline-time">06:40 PM</div>
+              <div><strong>Exhibit C (Liverpool Telegram):</strong> Lady Evelyn Ashford receives an urgent wire warning that her creditors have refused an extension and instructing her to destroy her uncle's new codicil tonight.</div>
+            </div>
+            <div class="timeline-step">
+              <div class="timeline-time">09:15 PM</div>
+              <div><strong>Exhibit D (Apothecary Vial):</strong> Facing ruin over £4,000 embezzled from the hospital surgical wing, Dr. Alistair Blackwood signs out a lethal tincture of chloral hydrate and belladonna from the Royal Victoria Infirmary.</div>
+            </div>
+            <div class="timeline-step">
+              <div class="timeline-time">11:15 PM</div>
+              <div><strong>The Poisoned Decanter:</strong> Slipping into the study before departing the drawing room, Dr. Blackwood laces Lord Ravenscroft's crystal brandy decanter.</div>
+            </div>
+            <div class="timeline-step">
+              <div class="timeline-time">11:30 PM</div>
+              <div><strong>Exhibit E (Forged Watch Ledger):</strong> Night-watchman Silas Corbin accepts five gold sovereigns from Lady Ashford to unlock the east wing corridor, scraping out the 11:30 PM ledger line and forging an "all quiet" entry.</div>
+            </div>
+            <div class="timeline-step">
+              <div class="timeline-time">11:35 PM</div>
+              <div><strong>Exhibit F (Emerald Velvet Thread):</strong> Lady Ashford forces the hidden bookshelf wall-safe to burn the new codicil, snagging her emerald velvet cuff on the brass latch while her uncle lies sedated in his chair.</div>
+            </div>
+            <div class="timeline-step">
+              <div class="timeline-time">11:42 PM</div>
+              <div><strong>Exhibits A &amp; B (The Fatal Struggle):</strong> Dr. Blackwood returns to retrieve the poisoned glass. Half-conscious, Lord Ravenscroft lunges at Blackwood, tearing his engraved "A.B." pocket watch from its chain as it shatters at 11:42 PM. Hearing the glass break, Silas Corbin creeps up the muddy Lagan towpath in his size-10 hobnailed boots and witnesses Blackwood standing over the body!</div>
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div style="background:rgba(127,29,29,0.35);border:1px solid #f87171;border-radius:8px;padding:1rem;color:#fecaca;">
+            <strong>⚠️ Crown Prosecutor's Objection:</strong> One or more statutory charges do not match the physical evidence in the Mahogany Desk Drawer. Review the 6 Exhibits (who took the five-sovereign bribe, who opened the bookshelf safe, and whose pocket watch shattered at 11:42 PM) and seal the warrant again!
+          </div>
+        `;
+      }
+    }
+
+    /***********************************************************************
+     * 11. CASE FILE IV: THE WHITEHALL CIPHER & THE UNCHANGED KEYWORD (8 ITEMS)
+     ***********************************************************************/
+    const WHITEHALL_CIPHER_DOSSIER = [
+      {
+        id: 1,
+        cat: 'passive',
+        typeLabel: 'Passive Reporting Verb',
+        s1Plain: "Crown prosecutors allege that Dr Blackwood falsified the dispensary register before nine o'clock.",
+        s1EchoHtml: `<span class="cipher-deficit-span">Crown prosecutors allege that</span> <span class="cipher-echo-del">Dr Blackwood</span> <span class="cipher-deficit-span">falsified</span> <span class="cipher-echo-del">the dispensary register before nine o'clock.</span>`,
+        deficit: 'allege that ... falsified (Present reporting of a prior past action)',
+        tenseHarmony: 'Present ("allege") + Past Simple ("falsified") → Present Passive ("is alleged") + Perfect Infinitive ("to have").',
+        voiceShift: 'Active Impersonal Reporting → Subject-Raised Passive Reporting.',
+        keyword: 'ALLEGED',
+        stemBefore: 'Dr Blackwood',
+        stemAfter: "falsified the dispensary register before nine o'clock.",
+        accepted: ['is alleged to have'],
+        mark1: 'is alleged',
+        mark2: 'to have',
+        note: 'Pair the present passive reporting verb ("is alleged") with the perfect infinitive ("to have + V3") whenever the reported crime occurred prior to the allegation.'
+      },
+      {
+        id: 2,
+        cat: 'passive',
+        typeLabel: 'Passive Reporting Verb',
+        s1Plain: 'People in Whitehall rumoured that the cipher clerk was conspiring with foreign creditors.',
+        s1EchoHtml: `<span class="cipher-deficit-span">People in Whitehall rumoured that</span> <span class="cipher-echo-del">the cipher clerk</span> <span class="cipher-deficit-span">was</span> <span class="cipher-echo-del">conspiring with foreign creditors.</span>`,
+        deficit: 'rumoured that ... was [conspiring] (Past reporting of a simultaneous ongoing action)',
+        tenseHarmony: 'Past Simple ("rumoured") + Past Continuous ("was conspiring") → Past Passive ("was rumoured") + Infinitive ("to be").',
+        voiceShift: 'Active Impersonal Rumour → Subject-Raised Passive Reporting.',
+        keyword: 'RUMOURED',
+        stemBefore: 'The cipher clerk',
+        stemAfter: 'conspiring with foreign creditors.',
+        accepted: ['was rumoured to be'],
+        mark1: 'was rumoured',
+        mark2: 'to be',
+        note: 'Because "conspiring" is already present after the gap, "was rumoured to be" completes the past passive continuous reporting frame in 4 words.'
+      },
+      {
+        id: 3,
+        cat: 'inversion',
+        typeLabel: 'Negative Inversion',
+        s1Plain: 'The witness never claimed that he had seen the carriage depart before midnight.',
+        s1EchoHtml: `<span class="cipher-deficit-span">The witness never claimed</span> <span class="cipher-echo-del">that he had seen the carriage depart before midnight.</span>`,
+        deficit: 'The witness never claimed (Past negative testimony)',
+        tenseHarmony: 'Past Simple ("never claimed") → Fronted Negative Phrase + Past Auxiliary ("did") + Subject ("the witness").',
+        voiceShift: 'Standard Active Declarative → Fronted Negative Adverbial Inversion.',
+        keyword: 'TIME',
+        stemBefore: '',
+        stemAfter: 'claim that he had seen the carriage depart before midnight.',
+        accepted: ['at no time did the witness'],
+        mark1: 'At no time',
+        mark2: 'did the witness',
+        note: 'Fronting "At no time" requires auxiliary inversion ("did the witness") before the bare infinitive "claim" already printed in the stem.'
+      },
+      {
+        id: 4,
+        cat: 'inversion',
+        typeLabel: 'Negative Inversion',
+        s1Plain: 'The constables were strictly forbidden to unseal the Whitehall dispatch box alone.',
+        s1EchoHtml: `<span class="cipher-echo-del">The constables</span> <span class="cipher-deficit-span">were strictly forbidden</span> <span class="cipher-echo-del">to unseal the Whitehall dispatch box alone.</span>`,
+        deficit: 'were strictly forbidden (Absolute past prohibition)',
+        tenseHarmony: 'Past Passive ("were forbidden to") → Fronted Negative Prepositional Phrase + Inverted Past Copula ("were").',
+        voiceShift: 'Passive Prohibition → Negative Adverbial Inversion ("Under no circumstances were").',
+        keyword: 'CIRCUMSTANCES',
+        stemBefore: '',
+        stemAfter: 'the constables to unseal the Whitehall dispatch box alone.',
+        accepted: ['under no circumstances were'],
+        mark1: 'Under no circumstances',
+        mark2: 'were',
+        note: 'With "be + to-infinitive" ("were the constables to unseal"), the verb "were" inverts directly ahead of the subject after "Under no circumstances".'
+      },
+      {
+        id: 5,
+        cat: 'conditional',
+        typeLabel: 'Inverted Conditional',
+        s1Plain: 'If the inspector had not noticed the damp iron-gall ink, the forgery would have succeeded.',
+        s1EchoHtml: `<span class="cipher-deficit-span">If the inspector had not noticed</span> <span class="cipher-echo-del">the damp iron-gall ink, the forgery would have succeeded.</span>`,
+        deficit: 'If the inspector had not noticed (Third conditional past counterfactual)',
+        tenseHarmony: 'Past Perfect ("if ... had not noticed") → Auxiliary-Fronted Past Perfect ("Had + S + not + V3").',
+        voiceShift: 'If-Conjunction Clause → Formal Inverted Third Conditional.',
+        keyword: 'HAD',
+        stemBefore: '',
+        stemAfter: 'the damp iron-gall ink, the forgery would have succeeded.',
+        accepted: ['had the inspector not noticed'],
+        mark1: 'Had the inspector',
+        mark2: 'not noticed',
+        note: 'Drop "if", bring "Had" to the front, and keep "not" uncontracted after the subject ("Had the inspector not noticed").'
+      },
+      {
+        id: 6,
+        cat: 'conditional',
+        typeLabel: 'Inverted Conditional',
+        s1Plain: 'Without the postmark on the charred envelope, we would never have traced the Liverpool wire.',
+        s1EchoHtml: `<span class="cipher-deficit-span">Without the postmark</span> <span class="cipher-echo-del">on the charred envelope, we would never have traced the Liverpool wire.</span>`,
+        deficit: 'Without the postmark (Counterfactual noun phrase condition)',
+        tenseHarmony: 'Prepositional Condition ("Without X") → Inverted Subjunctive ("Were it not for X").',
+        voiceShift: 'Prepositional Phrase → Formal Inverted Subjunctive Conditional.',
+        keyword: 'WERE',
+        stemBefore: '',
+        stemAfter: 'on the charred envelope, we would never have traced the Liverpool wire.',
+        accepted: ['were it not for the postmark'],
+        mark1: 'Were it not',
+        mark2: 'for the postmark',
+        note: '"Were it not for + noun phrase" is a high-value C2 structural alternative to "Without..." or "If it weren\'t for...".'
+      },
+      {
+        id: 7,
+        cat: 'inversion',
+        typeLabel: 'Negative Inversion',
+        s1Plain: 'Lady Ashford had no idea that a velvet thread had snagged on the brass tumbler.',
+        s1EchoHtml: `<span class="cipher-deficit-span">Lady Ashford had no idea</span> <span class="cipher-echo-del">that a velvet thread had snagged on the brass tumbler.</span>`,
+        deficit: 'Lady Ashford had no idea (Past unawareness)',
+        tenseHarmony: 'Past Simple ("had no idea") → Restrictive Adverb ("Little") + Past Auxiliary ("did") + Subject + "suspect".',
+        voiceShift: 'Declarative Clause → Fronted Restrictive Inversion ("Little did + S + V1").',
+        keyword: 'SUSPECT',
+        stemBefore: 'Little',
+        stemAfter: 'that a velvet thread had snagged on the brass tumbler.',
+        accepted: ['did lady ashford suspect'],
+        mark1: 'did Lady Ashford',
+        mark2: 'suspect',
+        note: 'After fronted "Little", invert the past auxiliary "did" ahead of the subject ("Lady Ashford") and keep the keyword "suspect" in its bare infinitive form.'
+      },
+      {
+        id: 8,
+        cat: 'passive',
+        typeLabel: 'Passive Reporting Verb',
+        s1Plain: 'Scotland Yard detectives believe that the accomplice escaped aboard the midnight steamer.',
+        s1EchoHtml: `<span class="cipher-deficit-span">Scotland Yard detectives believe that</span> <span class="cipher-echo-del">the accomplice</span> <span class="cipher-deficit-span">escaped</span> <span class="cipher-echo-del">aboard the midnight steamer.</span>`,
+        deficit: 'believe that ... escaped (Present belief about a completed past escape)',
+        tenseHarmony: 'Present ("believe") + Past Simple ("escaped") → Present Passive ("is believed") + Perfect Infinitive ("to have escaped").',
+        voiceShift: 'Active Impersonal Reporting → Subject-Raised Passive Reporting.',
+        keyword: 'BELIEVED',
+        stemBefore: 'The accomplice',
+        stemAfter: 'aboard the midnight steamer.',
+        accepted: ['is believed to have escaped'],
+        mark1: 'is believed to',
+        mark2: 'have escaped',
+        note: 'Use "is believed to have escaped" (5 words) to link a present-tense investigation with an earlier departure.'
+      }
+    ];
+
+    const whitehallState = {
+      filter: 'all',
+      echoesStruck: {},
+      inputs: {},
+      revealed: {},
+      solved: {},
+      feedback: {}
+    };
+
+    function focusCaseFileIV() {
+      const sec = document.getElementById('caseFileIVSection');
+      if (sec) {
+        try { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+      }
+    }
+
+    function filterWhitehallCipher(cat) {
+      whitehallState.filter = cat;
+      document.querySelectorAll('#cipherCategoryTabs .cipher-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-cat') === cat);
+      });
+      renderWhitehallCipher();
+    }
+
+    function strikeAllCipherEchoes() {
+      const allOn = WHITEHALL_CIPHER_DOSSIER.every(item => whitehallState.echoesStruck[item.id]);
+      WHITEHALL_CIPHER_DOSSIER.forEach(item => {
+        whitehallState.echoesStruck[item.id] = !allOn;
+      });
+      renderWhitehallCipher();
+    }
+
+    function toggleCipherItemEcho(id) {
+      whitehallState.echoesStruck[id] = !whitehallState.echoesStruck[id];
+      renderWhitehallCipher();
+    }
+
+    function toggleCipherItemModel(id) {
+      whitehallState.revealed[id] = !whitehallState.revealed[id];
+      renderWhitehallCipher();
+    }
+
+    function inspectCipherInput(rawVal, keyword) {
+      const clean = (rawVal || '').trim().replace(/\s+/g, ' ');
+      const words = clean ? clean.split(' ') : [];
+      const wc = words.length;
+      const kwRegex = new RegExp(`\\b${keyword}\\b`, 'i');
+      const hasKw = kwRegex.test(clean);
+      return { clean, wc, hasKw };
+    }
+
+    function updateCipherItemInput(id, val) {
+      whitehallState.inputs[id] = val;
+      const item = WHITEHALL_CIPHER_DOSSIER.find(x => x.id === id);
+      if (!item) return;
+      const info = inspectCipherInput(val, item.keyword);
+      const wcEl = document.getElementById(`cipher-wc-${id}`);
+      const kwEl = document.getElementById(`cipher-kw-${id}`);
+      const gapEl = document.getElementById(`cipher-gap-preview-${id}`);
+      if (gapEl) {
+        gapEl.textContent = info.clean ? `[ ${info.clean} ]` : '[ 3 to 6 words ]';
+      }
+      if (wcEl) {
+        wcEl.className = 'cipher-status-pill ' + (info.wc >= 3 && info.wc <= 6 ? 'ok' : (info.wc === 0 ? '' : 'err'));
+        wcEl.textContent = `📏 ${info.wc} / 3–6 words`;
+      }
+      if (kwEl) {
+        kwEl.className = 'cipher-status-pill ' + (info.hasKw ? 'ok' : (info.wc === 0 ? '' : 'err'));
+        kwEl.textContent = info.hasKw ? `✅ "${item.keyword}" Unchanged` : `🔒 Must Include "${item.keyword}"`;
+      }
+    }
+
+    function verifyCipherItem(id) {
+      const item = WHITEHALL_CIPHER_DOSSIER.find(x => x.id === id);
+      if (!item) return;
+      const raw = whitehallState.inputs[id] || '';
+      const info = inspectCipherInput(raw, item.keyword);
+
+      if (!info.hasKw) {
+        whitehallState.feedback[id] = { ok: false, text: `⚠️ Unchanged Keyword Guard: You must include "${item.keyword}" without altering its spelling or tense.` };
+        renderWhitehallCipher();
+        return;
+      }
+      if (info.wc < 3 || info.wc > 6) {
+        whitehallState.feedback[id] = { ok: false, text: `⚠️ Word Count Alert: Your phrase has ${info.wc} words (Cambridge rubric requires 3 to 6 words).` };
+        renderWhitehallCipher();
+        return;
+      }
+
+      const norm = info.clean.toLowerCase().replace(/[.?!]+$/, '');
+      if (item.accepted.includes(norm)) {
+        const firstSolve = !whitehallState.solved[id];
+        whitehallState.solved[id] = true;
+        whitehallState.revealed[id] = true;
+        whitehallState.feedback[id] = { ok: true, text: '✅ Cipher Verified (2/2 Marks · 1 mark // 1 mark).' };
+        if (firstSolve) {
+          playContradictionStinger();
+          appendLog('system', `🔐 WHITEHALL CIPHER #${id} DECODED`, `${item.stemBefore ? item.stemBefore + ' ' : ''}${item.mark1} ${item.mark2} ${item.stemAfter}`);
+        }
+      } else {
+        whitehallState.feedback[id] = { ok: false, text: '🔎 Not quite. Check Step 2 (Tense Harmony) & Step 3 (Voice Shift) or click Reveal Cambridge Model.' };
+      }
+      renderWhitehallCipher();
+    }
+
+    function renderWhitehallCipher() {
+      const grid = document.getElementById('whitehallCipherGrid');
+      const badge = document.getElementById('cipherDossierBadge');
+      const headerCnt = document.getElementById('headerCipherCount');
+      if (!grid) return;
+
+      const solvedTotal = Object.keys(whitehallState.solved).filter(k => whitehallState.solved[k]).length;
+      if (badge) badge.textContent = `${solvedTotal} / 8 Ciphers Decoded`;
+      if (headerCnt) headerCnt.textContent = String(solvedTotal);
+
+      const visibleItems = WHITEHALL_CIPHER_DOSSIER.filter(item =>
+        whitehallState.filter === 'all' || item.cat === whitehallState.filter
+      );
+
+      grid.innerHTML = visibleItems.map(item => {
+        const struck = Boolean(whitehallState.echoesStruck[item.id]);
+        const val = whitehallState.inputs[item.id] || '';
+        const rev = Boolean(whitehallState.revealed[item.id]);
+        const sol = Boolean(whitehallState.solved[item.id]);
+        const fb = whitehallState.feedback[item.id];
+        const info = inspectCipherInput(val, item.keyword);
+        const wcClass = info.wc >= 3 && info.wc <= 6 ? 'ok' : (info.wc === 0 ? '' : 'err');
+        const kwClass = info.hasKw ? 'ok' : (info.wc === 0 ? '' : 'err');
+
+        return `
+          <div class="cipher-item-card" id="cipher-card-${item.id}">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.5rem;">
+                <div>
+                  <span class="cipher-status-pill" style="background:#1c130b; color:#e5c158; border-color:#c59b27;">
+                    DOSSIER #${item.id} · ${item.typeLabel.toUpperCase()}
+                  </span>
+                  <span class="cipher-status-pill" style="background:#7f1d1d; color:#fef2f2; border-color:#f87171;">
+                    KEYWORD: ${item.keyword}
+                  </span>
+                </div>
+                <button class="mini-btn" style="background:${struck ? '#7f1d1d' : '#1c130b'}; color:#f5ebd6;" onclick="toggleCipherItemEcho(${item.id})">
+                  ✂️ ${struck ? 'Echoes Struck Out' : 'Strike Out the Echoes'}
+                </button>
+              </div>
+
+              <div style="background:rgba(255,255,255,0.55); border:1px solid rgba(124,92,35,0.4); border-radius:6px; padding:0.65rem 0.8rem; margin-bottom:0.55rem;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:#5c4322; text-transform:uppercase;">Sworn Deposition (Sentence 1):</div>
+                <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.22rem; font-weight:700; color:#1a1109; margin-top:0.15rem;">
+                  ${struck ? item.s1EchoHtml : item.s1Plain}
+                </div>
+                ${struck ? `<div style="font-size:0.78rem; color:#7f1d1d; font-weight:700; margin-top:0.3rem;">🎯 Isolated Deficit: ${item.deficit}</div>` : ''}
+              </div>
+
+              <div class="cipher-step-strip">
+                <div><strong>Step 2 (Tense Harmony):</strong><br/>${item.tenseHarmony}</div>
+                <div><strong>Step 3 (Voice Shift):</strong><br/>${item.voiceShift}</div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.2rem; font-weight:700; color:#1a1109; margin-bottom:0.45rem;">
+                ${item.stemBefore ? item.stemBefore + ' ' : ''}<span id="cipher-gap-preview-${item.id}" style="color:#7f1d1d; text-decoration:underline; font-weight:800;">${info.clean ? '[ ' + info.clean + ' ]' : '[ 3 to 6 words ]'}</span> ${item.stemAfter}
+              </div>
+
+              <div class="cipher-input-wrap">
+                <input
+                  type="text"
+                  class="cipher-text-input"
+                  value="${val.replace(/"/g, '&quot;')}"
+                  placeholder="Enter 3–6 words with ${item.keyword}..."
+                  oninput="updateCipherItemInput(${item.id}, this.value)"
+                  onkeydown="if(event.key==='Enter') verifyCipherItem(${item.id})"
+                />
+                <span id="cipher-wc-${item.id}" class="cipher-status-pill ${wcClass}">📏 ${info.wc} / 3–6 words</span>
+                <span id="cipher-kw-${item.id}" class="cipher-status-pill ${kwClass}">${info.hasKw ? '✅ "' + item.keyword + '" Unchanged' : '🔒 Must Include "' + item.keyword + '"'}</span>
+              </div>
+
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.45rem; margin-top:0.55rem;">
+                <div style="display:flex; gap:0.45rem; flex-wrap:wrap;">
+                  <button class="mini-btn slam" style="font-size:0.7rem; padding:0.32rem 0.68rem;" onclick="verifyCipherItem(${item.id})">✓ Verify Proof</button>
+                  <button class="mini-btn" style="font-size:0.7rem; padding:0.32rem 0.68rem; background:#1c130b; color:#e5c158;" onclick="toggleCipherItemModel(${item.id})">
+                    👁️ Reveal Cambridge Model
+                  </button>
+                </div>
+                ${fb ? `<span style="font-size:0.8rem; font-weight:700; color:${fb.ok ? '#065f46' : '#991b1b'};">${fb.text}</span>` : (sol ? '<span style="font-size:0.8rem; font-weight:700; color:#065f46;">✅ Decoded (2/2 Marks)</span>' : '')}
+              </div>
+
+              <div class="cipher-model-box ${rev ? 'open' : ''}" style="margin-top:0.55rem;">
+                <div style="font-family:'JetBrains Mono',monospace; font-size:0.66rem; color:var(--brass-bright); text-transform:uppercase; margin-bottom:0.25rem;">
+                  Official Cambridge C1/C2 Model Split (1 mark // 1 mark):
+                </div>
+                <div style="font-family:'Cormorant Garamond',Georgia,serif; font-size:1.22rem; font-weight:700; color:#f5ebd6; margin-bottom:0.25rem;">
+                  <span style="color:#6ee7b7;">${item.mark1}</span> <small style="color:#a7f3d0;">(1 mark)</small>
+                  <span style="color:var(--brass-bright); margin:0 0.35rem;">//</span>
+                  <span style="color:#fde68a;">${item.mark2}</span> <small style="color:#f5ebd6;">(1 mark)</small>
+                </div>
+                <div style="font-size:0.83rem; color:var(--text-muted); line-height:1.38;">
+                  <strong>Chief Inspector’s Note:</strong> ${item.note}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /***********************************************************************
+     * 12. INITIALIZE ENGINE ON LOAD
+     ***********************************************************************/
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeRain();
+      animateRain();
+      renderAll();
+      renderWhitehallCipher();
+      animateGalvanometer();
+    });
+  </script>
+</body>
+</html>

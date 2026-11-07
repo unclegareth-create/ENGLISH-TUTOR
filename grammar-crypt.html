@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Grammar Crypt: Audio Edition</title>
-    <meta name="description" content="Grammar Crypt with synthesized sound effects and a brooding soundtrack: drag grammar runes into the right order to build correct English questions.">
+    <meta name="description" content="Grammar Crypt with synthesized sound effects, Piper Neural TTS boss voices, and a 223-item B1–C2 question &amp; inversion pool across 25 floors.">
     <meta name="theme-color" content="#120a1f">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,7 +17,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
     <meta property="og:title" content="Grammar Crypt: Audio Edition">
-    <meta property="og:description" content="Drag grammar runes into order to survive 25 floors of English questions.">
+    <meta property="og:description" content="Drag grammar runes into order to survive 25 floors and 223 B1–C2 syntax challenges.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://garethenglish.com/grammar-crypt.html">
     <link rel="canonical" href="https://garethenglish.com/grammar-crypt.html">
@@ -87,35 +87,99 @@
         <main class="main-quest">
             <h1>Grammar Crypt!</h1>
             <div class="hud">
-                <div id="level-display">Floor: 1/25</div>
+                <button type="button" id="level-display" class="hud-floor-btn" aria-expanded="false" aria-controls="floor-drawer" title="Click to open Floor Selector &amp; Boss Rush">Floor: 1/25 ▾</button>
+                <span id="pool-count-badge" class="pool-count-badge" title="223 curated B1–C2 sentence challenges across 25 floors">📜 223-Item Pool</span>
                 <div id="rank-display">⚔️ Rank 1</div>
                 <div id="gold-counter" title="Gold">🪙 0</div>
                 <div id="xp-counter" title="Experience">🔮 0/100</div>
                 <div id="streak-display" title="Streak">🔥 0</div>
+                <span id="boss-rush-badge" class="boss-rush-badge hidden" role="status">⚔️ Boss Rush 1/5</span>
+                <span id="daily-seed-badge" class="daily-seed-badge hidden" role="status">🎲 Daily Seed 1/5</span>
+                <button type="button" id="daily-seed-hud-btn" class="hud-daily-btn" title="Start today's deterministic 5-question C1/C2 gauntlet">🎲 Daily Crypt Seed</button>
+                <button type="button" id="floor-drawer-toggle" class="hud-atlas-btn" aria-expanded="false" aria-controls="floor-drawer">🗺️ Floors &amp; Boss Rush</button>
                 <button type="button" id="audio-toggle" aria-pressed="true">🔊 Sound On</button>
                 <button type="button" id="pwa-install-btn" class="hidden" title="Install App to your device">📲 Install App</button>
             </div>
 
+            <!-- Interactive Floor Selector & Boss Rush Drawer -->
+            <section id="floor-drawer" class="floor-drawer hidden" aria-label="Floor Selector and Boss Rush">
+                <div class="floor-drawer-header">
+                    <div>
+                        <h2 class="floor-drawer-title">Crypt Atlas &amp; Boss Rush · 223-Item Pool</h2>
+                        <p class="floor-drawer-sub">Jump directly to any grammar floor (223 B1–C2 items across 25 floors), run the 5-Boss Gauntlet, or tackle today's Daily Crypt Seed.</p>
+                    </div>
+                    <div class="floor-drawer-controls">
+                        <button type="button" id="daily-seed-btn" class="btn-daily-seed">🎲 Daily Crypt Seed (5-Q C1/C2)</button>
+                        <button type="button" id="boss-rush-btn" class="btn-boss-rush">⚔️ Start 5-Boss Rush (Floors 5·10·15·20·25)</button>
+                        <button type="button" id="floor-drawer-close" class="btn-drawer-close" aria-label="Close floor selector">✕ Close</button>
+                    </div>
+                </div>
+                <div class="act-filter-bar" role="toolbar" aria-label="Jump by Act">
+                    <button type="button" class="act-pill" data-jump-floor="0">Act I · B1 Questions (1–5)</button>
+                    <button type="button" class="act-pill" data-jump-floor="5">Act II · B2 Perfect &amp; Passive (6–10)</button>
+                    <button type="button" class="act-pill" data-jump-floor="10">Act III · C1 Neg. Inversions (11–15)</button>
+                    <button type="button" class="act-pill" data-jump-floor="15">Act IV · C1/C2 Conditionals &amp; So/Such (16–20)</button>
+                    <button type="button" class="act-pill" data-jump-floor="20">Act V · C1/C2 Clefts &amp; Fronting (21–25)</button>
+                </div>
+                <div id="floor-grid" class="floor-grid" role="list"></div>
+            </section>
+
             <div class="panel">
-                                <div id="boss-arena" class="hidden">
+                <div id="boss-arena" class="hidden">
                     <div id="boss-avatar">👺</div>
                     <div id="boss-info">
                         <div id="boss-name">The Goblin of Gerunds</div>
                         <div id="boss-taunt">"You'll never untangle these participles!"</div>
                     </div>
+                    <button type="button" id="boss-voice-btn" class="btn-boss-voice" title="Replay Boss Voice Track">🔊 Boss Voice</button>
                 </div>
                 <h2 id="quest-title">L1: A Simple Inquiry</h2>
                 <div class="puzzle-board" id="board" aria-label="Sentence board"></div>
                 <div class="block-bank" id="bank" aria-label="Rune bank"></div>
                 <div class="status-panel" id="status" role="status" aria-live="polite">Summon the sentence!</div>
                 <div id="tip" class="tip" aria-live="polite"></div>
-                <p class="hint-line">Drag runes into the slots, or tap a rune to place it (tap a placed rune to take it back).</p>
+                <p class="hint-line">Drag or tap runes to place them · Keys: <kbd>1</kbd>–<kbd>9</kbd> place/return rune · <kbd>Backspace</kbd> undo last · <kbd>H</kbd> hint · <kbd>Enter</kbd> next floor.</p>
 
                 <div class="actions">
                     <button type="button" id="reset-btn" class="btn-reset">Reset</button>
-                    <button type="button" id="hint-btn" class="btn-hint">Hint 💡</button>
-                    <button type="button" id="next-btn" class="btn-next" disabled>Next Floor ➔</button>
+                    <button type="button" id="hint-btn" class="btn-hint" title="Shortcut: H">Hint 💡</button>
+                    <button type="button" id="blueprint-btn" class="btn-blueprint" aria-expanded="false" aria-controls="syntax-autopsy-card">👁️ Reveal Structural Blueprint</button>
+                    <button type="button" id="next-btn" class="btn-next" disabled title="Shortcut: Enter">Next Floor ➔</button>
                 </div>
+
+                <!-- Belfast Desk Syntax Autopsy Card -->
+                <section id="syntax-autopsy-card" class="autopsy-card hidden" aria-live="polite" aria-label="Belfast Desk Syntax Autopsy">
+                    <div class="autopsy-header">
+                        <div class="autopsy-title-wrap">
+                            <span class="autopsy-kicker">🖋️ Belfast Desk Syntax Autopsy</span>
+                            <h3 id="autopsy-floor-heading" class="autopsy-heading">Floor 1 · Wh- Questions in the Past</h3>
+                        </div>
+                        <span id="autopsy-cefr-badge" class="autopsy-cefr">B1</span>
+                    </div>
+
+                    <div class="autopsy-grid">
+                        <div class="autopsy-box autopsy-formula-box">
+                            <div class="autopsy-label">Structural Formation Blueprint</div>
+                            <div id="autopsy-formula" class="autopsy-formula-code">Wh-Word + did + Subject + Base Verb</div>
+                            <div id="autopsy-pos-chain" class="autopsy-pos-chain"></div>
+                        </div>
+
+                        <div class="autopsy-box autopsy-trap-box">
+                            <div class="autopsy-label">Why the Decoy Rune Was a Trap</div>
+                            <p id="autopsy-trap-text" class="autopsy-body-text"></p>
+                        </div>
+
+                        <div class="autopsy-box autopsy-exam-box">
+                            <div class="autopsy-label">Cambridge C1 Part 4 &amp; IELTS Writing Application</div>
+                            <p id="autopsy-exam-text" class="autopsy-body-text"></p>
+                        </div>
+                    </div>
+
+                    <div class="autopsy-model-bar">
+                        <button type="button" id="reveal-model-btn" class="btn-reveal-model">👁️ Reveal Cambridge Model</button>
+                        <div id="autopsy-model-output" class="autopsy-model-output hidden"></div>
+                    </div>
+                </section>
             </div>
         </main>
 

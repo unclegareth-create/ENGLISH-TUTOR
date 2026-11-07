@@ -332,7 +332,441 @@ body.boss-mode .panel { border-color: #7f1d1d; box-shadow: 10px 10px 0 #450a0a; 
 @keyframes pulse-boss { 0%, 100% { box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); } 50% { box-shadow: 0 0 35px rgba(220, 38, 38, 0.8); } }
 
 /* ---------- Additions ---------- */
+.hidden { display: none !important; }
 .puzzle-board.shake { animation: shake 0.4s; }
 .consent { display: block; margin: 0 0 20px; font-size: 16px; font-weight: 700; color: var(--muted); }
 .consent input { margin-right: 8px; transform: scale(1.3); }
 .tip { line-height: 1.4; max-width: 640px; margin-left: auto; margin-right: auto; }
+
+/* ---------- Keyboard Keycaps on Runes & Hint Line ---------- */
+.block { position: relative; }
+.block[data-key]::before {
+    content: attr(data-key);
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 5px;
+    border-radius: 5px;
+    background: #0f172a;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 900;
+    line-height: 16px;
+    text-align: center;
+    box-shadow: 0 2px 0 #000;
+    pointer-events: none;
+}
+.hint-line kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--gold);
+    background: #0f172a;
+    border: 2px solid #475569;
+    border-radius: 5px;
+    box-shadow: 0 2px 0 #000;
+    font-family: 'Nunito', system-ui, sans-serif;
+}
+
+/* ---------- HUD Floor & Boss Rush Controls ---------- */
+.hud-floor-btn {
+    background-color: #312e81;
+    color: var(--gold);
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    padding: 8px 14px;
+    margin: 0;
+    border: 3px solid var(--gold);
+    box-shadow: 0 4px 0 #000;
+    letter-spacing: 0.5px;
+}
+.hud-floor-btn:hover:not(:disabled) {
+    background-color: #4338ca;
+}
+.hud-atlas-btn {
+    background-color: #581c87;
+    color: #f3e8ff;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    padding: 8px 14px;
+    margin: 0;
+    border: 3px solid var(--ink);
+    box-shadow: 0 4px 0 #000;
+    letter-spacing: 0.5px;
+}
+.boss-rush-badge {
+    background: linear-gradient(90deg, #7f1d1d, #b91c1c);
+    color: #fef08a;
+    border: 3px solid #f87171;
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 0 #000;
+    box-shadow: 0 4px 0 #000;
+}
+.pool-count-badge {
+    background: #1e1b4b;
+    color: #e9d5ff;
+    border: 3px solid #a855f7;
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    text-shadow: 1px 1px 0 #000;
+    box-shadow: 0 4px 0 #000;
+}
+.daily-seed-badge {
+    background: linear-gradient(90deg, #0f766e, #0d9488);
+    color: #ccfbf1;
+    border: 3px solid #2dd4bf;
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-shadow: 1px 1px 0 #000;
+    box-shadow: 0 4px 0 #000;
+}
+.hud-daily-btn,
+.btn-daily-seed {
+    background: linear-gradient(135deg, #0f766e, #0d9488);
+    color: #fef08a;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    padding: 8px 14px;
+    margin: 0;
+    border: 3px solid #2dd4bf;
+    box-shadow: 0 4px 0 #000;
+    letter-spacing: 0.5px;
+}
+.hud-daily-btn:hover:not(:disabled),
+.btn-daily-seed:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0d9488, #14b8a6);
+}
+.hud-daily-btn.active,
+.btn-daily-seed.active {
+    background: #facc15;
+    color: #000;
+    border-color: #000;
+}
+.btn-boss-voice {
+    background: #991b1b;
+    color: #fef08a;
+    border: 3px solid #fca5a5;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    padding: 8px 14px;
+    margin: 0;
+    box-shadow: 0 4px 0 #000;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+.btn-boss-voice:hover:not(:disabled) {
+    background: #dc2626;
+}
+
+/* ---------- Floor Selector & Boss Rush Drawer ---------- */
+.floor-drawer {
+    background-color: #161336;
+    border: 5px solid var(--purple);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 22px;
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.85);
+    animation: popIn 0.22s ease-out;
+}
+.floor-drawer-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid rgba(168, 85, 247, 0.35);
+}
+.floor-drawer-title {
+    font-size: 28px;
+    color: var(--gold);
+    margin: 0 0 4px;
+}
+.floor-drawer-sub {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 700;
+}
+.floor-drawer-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+.btn-boss-rush {
+    background: linear-gradient(135deg, #991b1b, #dc2626);
+    border-color: #fca5a5;
+    color: #fef08a;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    padding: 9px 16px;
+    margin: 0;
+}
+.btn-boss-rush:hover:not(:disabled) {
+    background: linear-gradient(135deg, #b91c1c, #ef4444);
+}
+.btn-boss-rush.active {
+    background: #facc15;
+    color: #000;
+    border-color: #000;
+}
+.btn-drawer-close {
+    background-color: #334155;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    padding: 9px 14px;
+    margin: 0;
+}
+.act-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.act-pill {
+    background-color: #0f172a;
+    border: 2px solid #475569;
+    border-radius: 999px;
+    color: var(--text);
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.4px;
+    padding: 6px 12px;
+    margin: 0;
+    box-shadow: 0 3px 0 #000;
+}
+.act-pill:hover:not(:disabled) {
+    background-color: var(--purple-dark);
+    border-color: var(--gold);
+}
+.floor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+    gap: 10px;
+    max-height: 340px;
+    overflow-y: auto;
+    padding: 4px;
+}
+.floor-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    text-align: left;
+    background-color: #0f172a;
+    border: 3px solid #334155;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin: 0;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    color: var(--text);
+    box-shadow: 0 4px 0 #000;
+    cursor: pointer;
+}
+.floor-card:hover:not(:disabled) {
+    background-color: #1e293b;
+    border-color: var(--purple);
+}
+.floor-card.current {
+    border-color: var(--gold);
+    background-color: #312e81;
+}
+.floor-card.completed {
+    border-color: var(--green);
+}
+.floor-card.boss-floor {
+    border-color: #f87171;
+    background-image: linear-gradient(135deg, rgba(127, 29, 29, 0.45), rgba(15, 23, 42, 0.95));
+}
+.floor-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 5px;
+    font-weight: 900;
+    font-size: 12px;
+}
+.floor-card-num {
+    color: var(--gold);
+}
+.floor-card-cefr {
+    background: #1e1b4b;
+    border: 1px solid #6366f1;
+    color: #c7d2fe;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 11px;
+}
+.floor-card-title {
+    font-weight: 800;
+    font-size: 13px;
+    line-height: 1.25;
+    color: #f8fafc;
+}
+
+/* ---------- Belfast Desk Syntax Autopsy Card ---------- */
+.btn-blueprint {
+    background-color: #0f766e;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    padding: 12px 18px;
+}
+.btn-blueprint:hover:not(:disabled) {
+    background-color: #0d9488;
+}
+.autopsy-card {
+    margin-top: 24px;
+    background: #0f172a;
+    border: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 8px 0 #000;
+    text-align: left;
+    animation: popIn 0.25s ease-out;
+}
+.autopsy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid rgba(250, 204, 21, 0.3);
+}
+.autopsy-kicker {
+    display: block;
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    margin-bottom: 4px;
+}
+.autopsy-heading {
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #f8fafc;
+    letter-spacing: 0.5px;
+    text-shadow: none;
+    margin: 0;
+}
+.autopsy-cefr {
+    background: var(--purple-dark);
+    color: #fff;
+    font-weight: 900;
+    font-size: 14px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    border: 2px solid #000;
+}
+.autopsy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 14px;
+}
+.autopsy-box {
+    background: #1e293b;
+    border: 3px solid #334155;
+    border-radius: 8px;
+    padding: 14px;
+}
+.autopsy-formula-box { border-color: #38bdf8; }
+.autopsy-trap-box    { border-color: #f87171; }
+.autopsy-exam-box    { border-color: #a855f7; }
+.autopsy-label {
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+    margin-bottom: 6px;
+}
+.autopsy-formula-code {
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 14px;
+    font-weight: 800;
+    color: #fde047;
+    background: #090d16;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(250, 204, 21, 0.35);
+    line-height: 1.4;
+}
+.autopsy-pos-chain {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #cbd5e1;
+    line-height: 1.4;
+}
+.autopsy-body-text {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #e2e8f0;
+    line-height: 1.45;
+}
+.autopsy-model-bar {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 2px dashed #334155;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+.btn-reveal-model {
+    background-color: #1d4ed8;
+    font-family: 'Nunito', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    padding: 8px 16px;
+    margin: 0;
+}
+.btn-reveal-model:hover:not(:disabled) {
+    background-color: #2563eb;
+}
+.autopsy-model-output {
+    flex: 1;
+    min-width: 240px;
+    background: rgba(34, 197, 94, 0.14);
+    border: 2px solid var(--green);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #dcfce7;
+}

@@ -81,7 +81,25 @@
   <link rel="preload" href="assets/fonts/plus-jakarta-sans-500-latin.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="style.css">
   
-  <style>:focus-visible { outline: 3px solid #0284c7; outline-offset: 2px; }</style>
+  <style>
+    :focus-visible { outline: 3px solid #0284c7; outline-offset: 2px; }
+    .reveal-panel { display: none; }
+    .reveal-panel.open { display: block; animation: fadeIn 0.25s ease-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .diag-opt.correct {
+      background-color: #065f46 !important;
+      color: #ffffff !important;
+      border-color: #10b981 !important;
+    }
+    .diag-opt.wrong {
+      background-color: #881337 !important;
+      color: #ffffff !important;
+      border-color: #f43f5e !important;
+    }
+  </style>
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4576939732610828"
      crossorigin="anonymous"></script>
@@ -302,15 +320,306 @@
 
       </div>
 
-      <h2>How We Adapt the Plan to Your Profile</h2>
-      <p>In your initial 30-minute diagnostic session (£35), we sit down and find out exactly why your score is stuck. Over the years, I have found that almost every plateaued candidate falls into one of two camps:</p>
+      <h2>How I Adapt the Plan to Your Profile</h2>
+      <p>In your initial 30-minute diagnostic session (£35), I sit down with you to find out exactly why your score is stuck. Over the years, I have found that almost every plateaued candidate falls into one of two camps:</p>
       <ul>
         <li><strong>Profile A: The Fluent but Unstructured Candidate.</strong> They speak with natural speed, read complex material at work, and possess a rich vocabulary—yet their writing sits at 6.5. Why? Because they don't answer every part of the prompt, their paragraphs drift into storytelling, or they run out of time. The remedy here is discipline: rigorous paragraph architecture, prompt deconstruction, and strict timing habits.</li>
         <li><strong>Profile B: The Grammar-Conscious Candidate at the 6.0 Ceiling.</strong> They know the test format inside out, but their language is overly cautious and monotonous. Their writing relies on flat verb chains and basic <em>"If"</em> conditionals; their speaking is plagued by hesitant pauses while searching for "perfect" words. The remedy here is structural variety: cleft sentences, negative inversions, nominalisation, and learning to hedge naturally under exam pressure.</li>
       </ul>
 
+      <hr class="my-10 border-slate-200" />
+
+      <section id="band75-diagnostic-suite" class="not-prose my-10">
+        <div class="rounded-3xl border border-slate-200 bg-slate-50/80 p-6 sm:p-8 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-extrabold uppercase tracking-wider">Interactive Curriculum Tracker &amp; Diagnostic</span>
+            <span class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">Band 7.0 Baseline &rarr; Band 7.5 Safety Cushion</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-2">10-Week Band 7.5 Safety-Cushion Self-Assessment &amp; Diagnostic Quiz</h2>
+          <p class="text-sm text-slate-600 leading-relaxed mb-6">
+            Securing your university baseline (Band 7.0) comes down to eliminating unforced errors; building a stress-free <strong>Band 7.5 safety cushion</strong> comes down to mastering four high-yield pillars: <strong>Task 2 Depersonalisation</strong>, <strong>Task 1 Overview Precision</strong>, <strong>Speaking Part 2 3-Act Structuring</strong>, and <strong>C1 Grammatical Range</strong>. Track your 10-week module milestones below (saved automatically in your browser) and test your instincts across all 10 live diagnostic items.
+          </p>
+
+          <!-- 10-Week LocalStorage Module Tracker -->
+          <div class="rounded-2xl bg-white border border-slate-200 p-5 mb-8 shadow-xs">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <div>
+                <h3 class="text-base font-extrabold text-slate-900">10-Week Band 7.5 Safety-Cushion Module Checklist</h3>
+                <p class="text-xs text-slate-500">Tick each module as you master it—your progress is saved automatically in <code>localStorage</code>.</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span id="syl-module-count" class="px-3 py-1 rounded-lg bg-blue-50 text-blue-800 font-mono text-xs font-bold border border-blue-200">0 / 10 Modules Mastered</span>
+                <button type="button" id="syl-module-reset" class="text-xs font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer">Reset Checklist</button>
+              </div>
+            </div>
+            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mb-4 border border-slate-200">
+              <div id="syl-module-bar" class="h-full bg-gradient-to-r from-blue-600 to-emerald-500 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-2.5 text-xs" id="syl-module-grid">
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w1" />
+                <span><strong class="text-slate-900">Week 1 · Prompt Deconstruction &amp; 4-Min Intro:</strong> Zero misread compound prompts; balanced thesis right off the bat.</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w2" />
+                <span><strong class="text-slate-900">Week 2 · 100% Task 2 Depersonalisation:</strong> Preparatory <em>It</em> and passive reporting verbs replacing <em>"I think / In my opinion"</em>.</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w3" />
+                <span><strong class="text-slate-900">Week 3 · Speaking Part 2 1-Minute Note Secret:</strong> 4 single trigger keywords down the margin; zero full sentences written.</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w4" />
+                <span><strong class="text-slate-900">Week 4 · Speaking Part 2 3-Act Story Arc:</strong> Past Context (30s) &rarr; Sensory Snapshot (45s) &rarr; Reflection / 'So What?' (45s).</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w5" />
+                <span><strong class="text-slate-900">Week 5 · Task 1 Overview-First Discipline:</strong> Paragraph 2 overview with zero tabloid verbs (<em>skyrocket/plummet</em> tossed out).</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w6" />
+                <span><strong class="text-slate-900">Week 6 · C1 Cleft Sentences:</strong> Deploying <em>What + Clause + BE + Noun/Clause</em> to spotlight core arguments cleanly.</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w7" />
+                <span><strong class="text-slate-900">Week 7 · Negative Inversions &amp; Participles:</strong> <em>Not only + Auxiliary + Subject + Verb</em> and <em>, thereby + -ing</em> result clauses.</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w8" />
+                <span><strong class="text-slate-900">Week 8 · Speaking Part 3 A.R.E.A. Fluency:</strong> Assertion &rarr; Reason &rarr; Evidence &rarr; Alternative across unseen societal prompts.</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w9" />
+                <span><strong class="text-slate-900">Week 9 · Task 1 Preposition &amp; Process Precision:</strong> <em>Accounted for</em>, <em>peaked at</em>, and <em>Having been + past participle</em> chains.</span>
+              </label>
+              <label class="flex items-start gap-2.5 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                <input type="checkbox" class="syl-mod-cb mt-0.5 rounded text-blue-600 focus:ring-blue-500" data-mod="w10" />
+                <span><strong class="text-slate-900">Week 10 · Full Timed Cushion Verification:</strong> 40-min Task 2 (270–290 words) + 14-min Speaking Mock at Band 7.5 composure.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Diagnostic Score Bar -->
+          <div class="p-4 rounded-2xl bg-slate-900 text-white flex flex-wrap items-center justify-between gap-4 mb-6 border border-slate-800">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="px-3 py-1 rounded-lg bg-sky-500/20 border border-sky-400/30 text-sky-300 font-mono text-xs font-bold">DIAGNOSTIC SCORE</span>
+              <span id="syl-quiz-score" class="text-sm font-bold text-slate-100">0 / 10 Answered Correctly</span>
+              <span id="syl-quiz-band" class="text-xs font-semibold text-amber-300">Complete all 10 items to calibrate your current baseline</span>
+            </div>
+            <button type="button" id="syl-quiz-reset" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 border border-slate-700 transition cursor-pointer">
+              Reset 10-Item Quiz
+            </button>
+          </div>
+
+          <!-- 10 Live Diagnostic Items -->
+          <div class="space-y-5" id="syl-quiz-list">
+
+            <!-- Item 1: Task 2 Depersonalisation (Introductory It) -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="1" data-correct="b">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">1 · Task 2 Depersonalisation</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: It + BE + Adverb + Past Participle + that...</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">Upgrade this conversational Band 6.0 opener into an authoritative C1 depersonalised claim: <em>"Lots of people think that university education should be free for everyone."</em></p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) In my honest opinion, many people are thinking university must be free.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) It is widely argued that tertiary education should be publicly funded for all citizens.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) Every coin has two sides when we talk about paying for university.</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-1">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-1" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">Cambridge C1 Model: &ldquo;It is widely argued that tertiary education should be publicly funded for all citizens.&rdquo;</p>
+                <p><strong>Why it scores Band 7.5+:</strong> Introductory <em>It</em> + passive reporting (<em>It is widely argued that...</em>) strips out informal personal pronouns and establishes an objective academic tone right off the bat.</p>
+              </div>
+            </div>
+
+            <!-- Item 2: Task 2 Depersonalisation (Passive Reporting Verbs) -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="2" data-correct="c">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full">2 · Task 2 Passive Reporting</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: Subject + BE + believed/thought + to + Infinitive</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">Complete the C1 passive reporting sentence: <em>"Ultra-processed convenience foods ______ a primary driver of childhood obesity."</em></p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) are believing to be</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) is thought being</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) are widely believed to be</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-2">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-2" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">Cambridge C1 Model: &ldquo;Ultra-processed convenience foods are widely believed to be a primary driver of childhood obesity.&rdquo;</p>
+                <p><strong>Why it scores Band 7.5+:</strong> Subject-fronted passive reporting (<em>are believed to be / are thought to contribute to</em>) demonstrates effortless control of C1 academic hedging.</p>
+              </div>
+            </div>
+
+            <!-- Item 3: Task 1 Overview Precision (Tabloid Elimination) -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="3" data-correct="a">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">3 · Task 1 Overview Precision</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: Overall, while [Trend A], [Trend B] experienced a pronounced...</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">Which Paragraph 2 Overview sentence meets official Band 8.0 Academic register without tabloid exaggeration or raw data clutter?</p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) Overall, while coal consumption contracted steadily throughout the period, renewable output experienced a pronounced upward trajectory.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) Overall, coal plummeted like a stone from 48.2% to 11.4% while renewables skyrocketed dramatically.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) In conclusion, we can see many interesting fluctuations in the line graph above.</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-3">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-3" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">Cambridge C1 Model: &ldquo;Overall, while coal consumption contracted steadily throughout the period, renewable output experienced a pronounced upward trajectory.&rdquo;</p>
+                <p><strong>Why it scores Band 7.5+:</strong> An Overview belongs in Paragraph 2, synthesises macro trends using a contrastive <em>while</em> clause, avoids exact numbers (save those for Body 3 &amp; 4), and avoids sensationalist verbs like <em>skyrocketed</em>.</p>
+              </div>
+            </div>
+
+            <!-- Item 4: Task 1 Preposition & Data Precision -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="4" data-correct="b">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full">4 · Task 1 Preposition Precision</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: Noun + accounted for + [%] + of + Total Noun</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">Choose the grammatically accurate Task 1 sentence describing a jump from 20% in 2010 to 35% in 2020:</p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) Online retail rose by 35% in 2020, comprising of a third of sales.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) Online retail rose by 15 percentage points to reach 35% in 2020, accounting for just over a third of total sales.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) Online retail experienced an increase of 35% at 2020.</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-4">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-4" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">Cambridge C1 Model: &ldquo;Online retail rose by 15 percentage points to reach 35% in 2020, accounting for just over a third of total sales.&rdquo;</p>
+                <p><strong>Why it scores Band 7.5+:</strong> Distinguishes between <em>rose by [margin: 15%]</em> and <em>rose to [endpoint: 35%]</em>, and uses the participle clause <em>, accounting for...</em> accurately.</p>
+              </div>
+            </div>
+
+            <!-- Item 5: Speaking Part 2 (1-Minute Note Secret) -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="5" data-correct="c">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-0.5 rounded-full">5 · Speaking Part 2 Preparation</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: The 1-Minute Note Secret (4 Trigger Keywords)</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">When the examiner hands you the Part 2 Cue Card and gives you 60 seconds of preparation time, what is the highest-scoring way to use your notepad?</p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) Write out your first two full sentences word-for-word so you don't make a grammar mistake.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) Copy down a list of 10 obscure C2 idioms to force into your story.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) Write only 4 single trigger keywords down the margin—one per prompt angle—and never write full sentences.</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-5">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-5" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">Gareth's 1-Minute Note Secret: 4 Single Trigger Keywords Down the Margin.</p>
+                <p><strong>Why it scores Band 7.5+:</strong> Writing full sentences consumes 45 seconds and causes you to read aloud in a robotic monotone before crashing at the 20-second mark. Four single trigger nouns keep your eyes up, your intonation natural, and your mind focused on storytelling.</p>
+              </div>
+            </div>
+
+            <!-- Item 6: Speaking Part 2 (3-Act Story Arc) -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="6" data-correct="a">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-0.5 rounded-full">6 · Speaking Part 2 3-Act Structuring</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: Act 1 Context (30s) &rarr; Act 2 Scene (45s) &rarr; Act 3 Reflection (45s)</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">What happens if you treat the 4 bullet points on a Part 2 Cue Card like a literal interrogation checklist?</p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) You finish all four bullets in 38 seconds and stall; instead, use the 3-Act Story Arc (Past Context 30s &rarr; Sensory Snapshot 45s &rarr; Reflection/'So What?' 45s) until halted.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) You automatically get Band 8.0 for Task Achievement because you answered all 4 questions quickly.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) You should stop talking at 60 seconds and ask the examiner for the next question.</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-6">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-6" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">The Cambridge Anchor &amp; 3-Act Story Arc:</p>
+                <p><strong>Why it scores Band 7.5+:</strong> Bullet points are springboards, not a speed-run checklist. Moving from Act 1 (Past Perfect/Continuous context) to Act 2 (vivid sensory snapshot) to Act 3 (present perfect reflection &amp; broader comparison) naturally fills the full 2 minutes with rich tense variety.</p>
+              </div>
+            </div>
+
+            <!-- Item 7: C1 Grammatical Range (Wh- Cleft Sentence) -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="7" data-correct="b">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">7 · C1 Grammatical Range · Clefts</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: What + Clause + BE + Noun Phrase / Clause</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">Transform this flat sentence into a high-impact C1 <em>Wh-</em> Cleft: <em>"The sheer lack of affordable public transport really frustrates rural commuters."</em></p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) What rural commuters are frustrated is the lack of transport.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) What frustrates rural commuters most is the sheer lack of affordable public transport.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) That which is frustrating to commuters are the public transport.</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-7">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-7" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">Cambridge C1 Model: &ldquo;What frustrates rural commuters most is the sheer lack of affordable public transport.&rdquo;</p>
+                <p><strong>Why it scores Band 7.5+:</strong> A <em>What</em>-cleft (<code>What + Verb Phrase + is + Focused Noun Phrase</code>) acts like a spotlight on your topic sentence or concluding thought without sounding forced.</p>
+              </div>
+            </div>
+
+            <!-- Item 8: C1 Grammatical Range (Negative Inversion) -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="8" data-correct="c">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">8 · C1 Grammatical Range · Inversion</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: Not only + Auxiliary + Subject + Base Verb, but... also...</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">Select the grammatically flawless Negative Inversion for a Band 7.5+ Task 2 body paragraph:</p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) Not only congestion charges reduce inner-city traffic, but they also fund bus networks.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) Not only does congestion charges reduces inner-city traffic, but also funds buses.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) Not only do congestion charges reduce inner-city traffic, but they also generate vital revenue for public transit.</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-8">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-8" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">Cambridge C1 Model: &ldquo;Not only do congestion charges reduce inner-city traffic, but they also generate vital revenue for public transit.&rdquo;</p>
+                <p><strong>Why it scores Band 7.5+:</strong> Placing a negative adverbial (<em>Not only / Rarely / Seldom</em>) at the start of a sentence triggers question-word-order inversion (<code>do + plural subject + bare infinitive</code>). One well-placed inversion per essay is enough to catch the examiner's eye.</p>
+              </div>
+            </div>
+
+            <!-- Item 9: C1 Grammatical Range (Participle Result Clauses) -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="9" data-correct="a">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">9 · C1 Grammatical Range · Participle Clause</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: Main Clause + , thereby + Present Participle (-ing)</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">Replace the clunky <em>"and this makes..."</em> in this cause-and-effect chain: <em>"Municipal councils can pedestrianise historic town centres, ______ local footfall and reducing air pollution."</em></p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) thereby fostering</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) thereby foster</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) which fostering</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-9">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-9" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">Cambridge C1 Model: &ldquo;Municipal councils can pedestrianise historic town centres, thereby fostering local footfall and reducing air pollution.&rdquo;</p>
+                <p><strong>Why it scores Band 7.5+:</strong> A resultative participle clause (<code>, thereby + -ing</code>) fuses action and consequence into a single fluid C1 sentence without repeating subject pronouns.</p>
+              </div>
+            </div>
+
+            <!-- Item 10: Speaking Part 3 A.R.E.A. & Speculative Hedging -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" data-dq="10" data-correct="b">
+              <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-full">10 · Speaking Part 3 A.R.E.A. Hedging</span>
+                <span class="text-xs font-mono text-slate-500">Blueprint: Assertion (Hedged) &rarr; Reason &rarr; Evidence &rarr; Alternative</span>
+              </div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">Examiner asks: <em>"Will physical cash completely disappear in the next decade?"</em> Which opening Assertion sets up a Band 8.0 A.R.E.A. response?</p>
+              <div class="grid sm:grid-cols-3 gap-2 mb-3">
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="a">A) Yes, 100%. Yesterday my father paid with his phone at the supermarket.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="b">B) That is a tough one to generalise about, but on balance, while urban centres are already virtually cashless, I doubt physical notes will vanish entirely within ten years.</button>
+                <button type="button" class="diag-opt text-left p-3 rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-800 transition cursor-pointer" data-opt="c">C) That is a very interesting multi-faceted dilemma with many pros and cons.</button>
+              </div>
+              <p class="diag-fb text-xs font-semibold mb-3 hidden"></p>
+              <button type="button" class="reveal-btn inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer" data-target="syl-model-10">👁️ Reveal Cambridge Model</button>
+              <div id="syl-model-10" class="reveal-panel mt-3 pt-3 border-t border-slate-200 bg-slate-50 p-3.5 rounded-xl text-xs text-slate-700 space-y-1">
+                <p class="font-bold text-slate-900">Cambridge C1 Model: &ldquo;That is a tough one to generalise about, but on balance, while urban centres are already virtually cashless, I doubt physical notes will vanish entirely within ten years.&rdquo;</p>
+                <p><strong>Why it scores Band 7.5+:</strong> Buys thinking time naturally (<em>That's a tough one to generalise about</em>), avoids personal family stories, and sets up a nuanced demographic contrast ready for Reason and Evidence.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
       <h2>Next Steps</h2>
-      <p>If your test date is looming and you need a calm, structured plan to secure your target score, the best place to start is with an honest diagnostic across the desk—or by diving immediately into our self-paced 15-lesson C1/C2 curriculum and interactive practice lab.</p>
+      <p>If your test date is looming and you need a calm, structured plan to secure your target score, the best place to start is with an honest diagnostic across the desk—or by diving immediately into my self-paced 15-lesson C1/C2 curriculum and interactive practice lab.</p>
 
       <h2>Frequently Asked Questions: IELTS 7.0+ Preparation</h2>
       <div class="not-prose space-y-3 my-6">
@@ -393,6 +702,139 @@
     </div>
   </footer>
 
+  <script>
+    (function() {
+      var MOD_STORAGE_KEY = 'gareth_ielts75_modules_v1';
+      var QUIZ_STORAGE_KEY = 'gareth_ielts75_quiz_v1';
+
+      // 1. 10-Week Module Tracker (localStorage)
+      var modCbs = document.querySelectorAll('.syl-mod-cb');
+      var modCountEl = document.getElementById('syl-module-count');
+      var modBarEl = document.getElementById('syl-module-bar');
+      var modResetBtn = document.getElementById('syl-module-reset');
+      var savedMods = {};
+
+      try {
+        var rawMods = localStorage.getItem(MOD_STORAGE_KEY);
+        if (rawMods) savedMods = JSON.parse(rawMods) || {};
+      } catch (e) {}
+
+      function updateModuleUI() {
+        var total = modCbs.length || 10;
+        var done = 0;
+        modCbs.forEach(function(cb) {
+          var key = cb.getAttribute('data-mod');
+          cb.checked = !!savedMods[key];
+          if (cb.checked) done++;
+        });
+        if (modCountEl) modCountEl.textContent = done + ' / ' + total + ' Modules Mastered';
+        if (modBarEl) modBarEl.style.width = Math.round((done / total) * 100) + '%';
+      }
+
+      modCbs.forEach(function(cb) {
+        cb.addEventListener('change', function() {
+          var key = cb.getAttribute('data-mod');
+          savedMods[key] = cb.checked;
+          try { localStorage.setItem(MOD_STORAGE_KEY, JSON.stringify(savedMods)); } catch (e) {}
+          updateModuleUI();
+        });
+      });
+
+      if (modResetBtn) {
+        modResetBtn.addEventListener('click', function() {
+          savedMods = {};
+          try { localStorage.removeItem(MOD_STORAGE_KEY); } catch (e) {}
+          updateModuleUI();
+        });
+      }
+      updateModuleUI();
+
+      // 2. 10-Item Diagnostic Quiz with localStorage persistence
+      var quizScoreEl = document.getElementById('syl-quiz-score');
+      var quizBandEl = document.getElementById('syl-quiz-band');
+      var quizResetBtn = document.getElementById('syl-quiz-reset');
+      var quizState = {};
+
+      try {
+        var rawQuiz = localStorage.getItem(QUIZ_STORAGE_KEY);
+        if (rawQuiz) quizState = JSON.parse(rawQuiz) || {};
+      } catch (e) {}
+
+      function updateQuizSummary() {
+        var keys = Object.keys(quizState);
+        var correctCount = keys.filter(function(k) { return quizState[k] === true; }).length;
+        if (quizScoreEl) quizScoreEl.textContent = correctCount + ' / 10 Answered Correctly';
+        if (quizBandEl) {
+          if (keys.length === 0) {
+            quizBandEl.textContent = 'Complete all 10 items to calibrate your current baseline';
+          } else if (correctCount >= 9) {
+            quizBandEl.textContent = 'Band 7.5 Safety Cushion Confirmed — Ready for Timed Mock Polish';
+          } else if (correctCount >= 7) {
+            quizBandEl.textContent = 'Band 7.0 Baseline Confirmed — Focus on C1 Clefts & Inversions for Your 7.5 Cushion';
+          } else {
+            quizBandEl.textContent = 'Band 6.5 Territory — Prioritise Weeks 1–5 (Depersonalisation, Overview & 3-Act Arc)';
+          }
+        }
+      }
+
+      document.querySelectorAll('[data-dq]').forEach(function(card) {
+        var qId = card.getAttribute('data-dq');
+        var correct = card.getAttribute('data-correct');
+        var btns = card.querySelectorAll('.diag-opt');
+        var fb = card.querySelector('.diag-fb');
+
+        btns.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var opt = btn.getAttribute('data-opt');
+            btns.forEach(function(b) { b.classList.remove('correct', 'wrong'); });
+            fb.classList.remove('hidden', 'text-emerald-700', 'text-rose-700');
+
+            if (opt === correct) {
+              btn.classList.add('correct');
+              quizState[qId] = true;
+              fb.classList.add('text-emerald-700');
+              fb.textContent = '✓ Spot on! Click "Reveal Cambridge Model" below to inspect the Band 7.5+ blueprint.';
+            } else {
+              btn.classList.add('wrong');
+              quizState[qId] = false;
+              fb.classList.add('text-rose-700');
+              fb.textContent = '✗ Not quite — watch out for personal pronouns, tabloid verbs, or missing inversion auxiliaries. Try again!';
+            }
+            try { localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(quizState)); } catch (e) {}
+            updateQuizSummary();
+          });
+        });
+      });
+
+      if (quizResetBtn) {
+        quizResetBtn.addEventListener('click', function() {
+          quizState = {};
+          try { localStorage.removeItem(QUIZ_STORAGE_KEY); } catch (e) {}
+          document.querySelectorAll('.diag-opt').forEach(function(b) { b.classList.remove('correct', 'wrong'); });
+          document.querySelectorAll('.diag-fb').forEach(function(f) { f.classList.add('hidden'); f.textContent = ''; });
+          updateQuizSummary();
+        });
+      }
+      updateQuizSummary();
+
+      // 3. Reveal Cambridge Model Buttons
+      document.querySelectorAll('.reveal-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var targetId = btn.getAttribute('data-target');
+          var panel = document.getElementById(targetId);
+          if (!panel) return;
+          var isOpen = panel.classList.contains('open');
+          if (isOpen) {
+            panel.classList.remove('open');
+            btn.textContent = '👁️ Reveal Cambridge Model';
+          } else {
+            panel.classList.add('open');
+            btn.textContent = '🙈 Hide Cambridge Model';
+          }
+        });
+      });
+    })();
+  </script>
   <script src="analytics.js"></script>
   <!-- Sticky Bottom Quick Booking Bar -->
     <aside class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-700/80 px-4 py-3 shadow-2xl flex items-center justify-between gap-4 text-white" aria-label="IELTS Practice and Diagnostic Session">

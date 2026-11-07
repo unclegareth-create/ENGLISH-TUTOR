@@ -287,6 +287,52 @@
         <li><strong>Read them aloud each morning:</strong> Read those five sentences aloud once while the kettle boils. Within two weeks, you won't need to recall the grammar rule—your ear will do the policing. The moment <em>&ldquo;discuss about&rdquo;</em> tries to leave your tongue, it will sound as jarring as a wrong chord on a piano.</li>
       </ol>
 
+      <hr class="my-10 border-slate-200" />
+
+      <!-- ================= BELFAST DESK 15-ITEM INTERACTIVE RED-PEN FOSSILISED ERROR & PART 4 CLINIC ================= -->
+      <section id="belfast-red-pen-clinic" class="not-prose my-10" aria-labelledby="clinic-heading">
+        <div class="space-y-2 mb-6">
+          <span class="inline-block px-3 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-200 text-xs font-extrabold uppercase tracking-wider">
+            Interactive Workout · 15-Item Red-Pen &amp; Part 4 Clinic
+          </span>
+          <h2 id="clinic-heading" class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            The Belfast Desk 15-Item Interactive Red-Pen Fossilised Error &amp; Part 4 Clinic
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Put your ear to the test on the fifteen classic C1/C2 traps that land on my desk every week—covering <em>suggest + gerund/subjunctive</em>, <em>despite vs although</em>, <em>hardly... when</em>, <em>no sooner... than</em>, <em>prevent from + -ing</em>, <em>object to + -ing</em>, <em>it is high time + past simple</em>, <em>would rather + past simple</em>, and the uncountable noun blacklist (<em>advice, information, research, evidence</em>). Complete each corrected sentence using between <strong>3 and 6 words</strong>, including the unchanged key word.
+          </p>
+        </div>
+
+        <!-- Score Bar & Category Filters -->
+        <div class="my-6 p-4 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-slate-800 shadow-md">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 rounded-lg bg-rose-500/20 border border-rose-400/30 text-rose-300 font-mono text-xs font-bold">RED-PEN CLINIC</span>
+            <span id="clinic-score-text" class="text-sm font-bold text-slate-100">0 / 15 Traps Eliminated</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" data-clinic-filter="all" class="clinic-filter-btn px-3 py-1.5 rounded-lg bg-sky-500 text-slate-950 text-xs font-extrabold transition cursor-pointer">
+              All (15)
+            </button>
+            <button type="button" data-clinic-filter="verbs" class="clinic-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold transition cursor-pointer">
+              Verb Patterns &amp; Preps (6)
+            </button>
+            <button type="button" data-clinic-filter="inversions" class="clinic-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold transition cursor-pointer">
+              Inversions &amp; Subjunctives (5)
+            </button>
+            <button type="button" data-clinic-filter="nouns" class="clinic-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold transition cursor-pointer">
+              Uncountables &amp; Linkers (4)
+            </button>
+            <button type="button" id="clinic-reset-btn" class="px-3 py-1.5 rounded-lg bg-rose-950 hover:bg-rose-900 text-rose-200 border border-rose-700/50 text-xs font-bold transition cursor-pointer">
+              Reset All
+            </button>
+          </div>
+        </div>
+
+        <div id="clinic-items-container" class="space-y-5">
+          <!-- Populated dynamically by RedPenClinic -->
+        </div>
+      </section>
+
       <h2>Frequently Asked Questions: C1 &amp; C2 Grammar Accuracy</h2>
       <div class="not-prose space-y-3 my-6">
         <details class="group rounded-xl border border-slate-200 bg-slate-50 p-4" open>
@@ -356,6 +402,396 @@
   </footer>
 
   <script src="analytics.js"></script>
+  <script>
+    (function() {
+      var CLINIC_ITEMS = [
+        {
+          id: 1,
+          cat: 'verbs',
+          trapName: 'Trap 1 · Suggest + Subjunctive / Gerund',
+          formula: 'suggest + that + [Subject] + (should) + [Base Verb]  |  suggest + [V-ing]',
+          fossilError: '❌ He suggested me to apply for the senior fellowship in Dublin.',
+          keyword: 'SUGGESTED',
+          pre: 'He',
+          post: 'for the senior fellowship in Dublin.',
+          valid: ['suggested that i apply', 'suggested that i should apply', 'suggested i apply', 'suggested i should apply', 'suggested applying'],
+          modelSplit: 'suggested that I // apply',
+          modelClean: 'suggested that I apply',
+          note: 'Never use "suggest + object + to-infinitive". Use a that-clause with the base verb ("suggested that I apply") or a gerund ("suggested applying").'
+        },
+        {
+          id: 2,
+          cat: 'nouns',
+          trapName: 'Trap 2 · Despite vs In Spite Of vs Although',
+          formula: 'In spite of + [Noun Phrase / V-ing]  |  Despite + [Noun Phrase] (NO "of")',
+          fossilError: '❌ Despite of the heavy snow at Sprucefield, the morning train arrived on time.',
+          keyword: 'SPITE',
+          pre: 'In',
+          post: 'snow at Sprucefield, the morning train arrived on time.',
+          valid: ['spite of the heavy', 'spite of heavy'],
+          modelSplit: 'spite of // the heavy',
+          modelClean: 'spite of the heavy',
+          note: '"In spite of" is always three words; "Despite" is one word and never takes "of". Both are followed by a noun phrase or gerund, whereas "Although" requires a subject + verb clause.'
+        },
+        {
+          id: 3,
+          cat: 'inversions',
+          trapName: 'Trap 3 · Hardly / Scarcely ... when',
+          formula: 'Hardly + had + [Subject] + [Past Participle] + when + [Past Simple]',
+          fossilError: '❌ Hardly had the keynote speaker begun his address than the microphone failed.',
+          keyword: 'WHEN',
+          pre: 'Hardly had the keynote speaker',
+          post: 'the microphone failed.',
+          valid: ['begun his address when'],
+          modelSplit: 'begun his address // when',
+          modelClean: 'begun his address when',
+          note: '"Hardly" and "Scarcely" pair strictly with "when" (never "than"). Note the past perfect inversion ("had the speaker begun").'
+        },
+        {
+          id: 4,
+          cat: 'inversions',
+          trapName: 'Trap 4 · No sooner ... than',
+          formula: 'No sooner + had + [Subject] + [Past Participle] + than + [Past Simple]',
+          fossilError: '❌ No sooner had we signed the commercial lease when the landlord raised the service charge.',
+          keyword: 'THAN',
+          pre: 'No sooner',
+          post: 'the landlord raised the service charge.',
+          valid: ['had we signed the lease than'],
+          modelSplit: 'had we signed // the lease than',
+          modelClean: 'had we signed the lease than',
+          note: 'Because "sooner" is a comparative adverb, it pairs strictly with "than" (6 words: "had we signed the lease than").'
+        },
+        {
+          id: 5,
+          cat: 'verbs',
+          trapName: 'Trap 5 · Prevent + Object + from + -ing',
+          formula: 'prevent + [Object] + from + [Gerund (-ing)]',
+          fossilError: '❌ The Atlantic gale prevented the evening ferry to leave the harbour.',
+          keyword: 'FROM',
+          pre: 'The Atlantic gale',
+          post: 'the harbour.',
+          valid: ['prevented the ferry from leaving', 'stopped the ferry from leaving'],
+          modelSplit: 'prevented the ferry // from leaving',
+          modelClean: 'prevented the ferry from leaving',
+          note: 'Unlike "allow" or "force", verbs of prevention ("prevent, stop, deter, discourage") take "from + -ing", never a to-infinitive.'
+        },
+        {
+          id: 6,
+          cat: 'verbs',
+          trapName: 'Trap 6 · Object to / Have an objection to + -ing',
+          formula: 'object to + [Gerund (-ing)]  |  have no/an objection to + [Gerund (-ing)]',
+          fossilError: '❌ Several committee members objected to relocate the archive to the basement.',
+          keyword: 'OBJECTION',
+          pre: 'Several committee members',
+          post: 'the archive to the basement.',
+          valid: ['raised an objection to relocating', 'had an objection to relocating', 'voiced an objection to relocating'],
+          modelSplit: 'raised an objection // to relocating',
+          modelClean: 'raised an objection to relocating',
+          note: 'In "object to" and "objection to", the word "to" is a preposition and must be followed by a noun or gerund ("relocating").'
+        },
+        {
+          id: 7,
+          cat: 'inversions',
+          trapName: 'Trap 7 · It is high time + Past Subjunctive',
+          formula: 'It is (high / about) time + [Subject] + [Past Simple Verb]',
+          fossilError: '❌ It is high time that the council repairs the cobblestones on the bridge.',
+          keyword: 'HIGH',
+          pre: 'It',
+          post: 'the cobblestones on the bridge.',
+          valid: ['is high time the council repaired'],
+          modelSplit: 'is high time // the council repaired',
+          modelClean: 'is high time the council repaired',
+          note: 'After "It is high time + subject", English uses the past simple ("repaired") to express an overdue present action (6 words).'
+        },
+        {
+          id: 8,
+          cat: 'inversions',
+          trapName: 'Trap 8 · Would rather + Subject + Past Simple',
+          formula: '[Subject 1] + would rather + [Subject 2] + [Past Simple Verb]',
+          fossilError: '❌ I would rather you do not disclose these figures before Friday.',
+          keyword: 'RATHER',
+          pre: 'I',
+          post: 'these figures before Friday.',
+          valid: ['would rather you did not disclose', "would rather you didn't disclose"],
+          modelSplit: 'would rather you // did not disclose',
+          modelClean: 'would rather you did not disclose',
+          note: 'When "would rather" introduces a different subject ("you"), the verb shifts to the past simple ("did not disclose") for present/future preference.'
+        },
+        {
+          id: 9,
+          cat: 'nouns',
+          trapName: 'Trap 9 · Uncountable Noun: Advice',
+          formula: 'a piece of advice / some useful advice (NEVER "advices" or "an advice")',
+          fossilError: '❌ My mentor gave me several invaluable advices before the panel interview.',
+          keyword: 'ADVICE',
+          pre: 'My mentor gave me',
+          post: 'before the panel interview.',
+          valid: ['several invaluable pieces of advice', 'some invaluable pieces of advice', 'several pieces of invaluable advice', 'some very useful advice'],
+          modelSplit: 'several invaluable pieces // of advice',
+          modelClean: 'several invaluable pieces of advice',
+          note: '"Advice" is strictly uncountable. To make it countable, use the partitive "pieces of advice" (5 words).'
+        },
+        {
+          id: 10,
+          cat: 'nouns',
+          trapName: 'Trap 10 · Uncountable Nouns: Research & Information',
+          formula: 'a great deal of + [Uncountable Noun] + [Singular Verb]',
+          fossilError: '❌ Recent researches have provided many new informations about circadian rhythms.',
+          keyword: 'DEAL',
+          pre: 'A',
+          post: 'carried out into circadian rhythms.',
+          valid: ['great deal of research has been', 'good deal of research has been'],
+          modelSplit: 'great deal of // research has been',
+          modelClean: 'great deal of research has been',
+          note: '"Research" and "information" never take an "-s" and always take a singular verb ("has been"). (6 words).'
+        },
+        {
+          id: 11,
+          cat: 'nouns',
+          trapName: 'Trap 11 · Uncountable Noun: Evidence',
+          formula: 'there is no / little concrete evidence (NEVER "evidences")',
+          fossilError: '❌ There are not enough evidences to support the prosecutor’s claim.',
+          keyword: 'EVIDENCE',
+          pre: 'There',
+          post: 'support the prosecutor’s claim.',
+          valid: ['is not enough evidence to', 'is no concrete evidence to', 'is insufficient evidence to'],
+          modelSplit: 'is not enough // evidence to',
+          modelClean: 'is not enough evidence to',
+          note: '"Evidence" is uncountable and pairs with a singular verb ("There is not enough evidence to...").'
+        },
+        {
+          id: 12,
+          cat: 'verbs',
+          trapName: 'Trap 12 · Look forward to + Gerund (-ing)',
+          formula: 'look forward to + [Gerund (-ing)]',
+          fossilError: '❌ We look forward to welcome your delegation to Belfast next month.',
+          keyword: 'FORWARD',
+          pre: 'We',
+          post: 'your delegation to Belfast next month.',
+          valid: ['look forward to welcoming', 'are looking forward to welcoming'],
+          modelSplit: 'look forward // to welcoming',
+          modelClean: 'look forward to welcoming',
+          note: 'In "look forward to", the word "to" is a preposition, so the following verb must be a gerund ("welcoming").'
+        },
+        {
+          id: 13,
+          cat: 'verbs',
+          trapName: 'Trap 13 · Discuss (Transitive) vs Have a Discussion about',
+          formula: 'discuss + [Direct Object] (NO "about")  |  hold/have a discussion about + [Noun]',
+          fossilError: '❌ The committee discussed about the budget deficit for over two hours.',
+          keyword: 'DISCUSSION',
+          pre: 'The committee',
+          post: 'the budget deficit for over two hours.',
+          valid: ['had a discussion about', 'held a discussion about', 'had a lengthy discussion about'],
+          modelSplit: 'had a discussion // about',
+          modelClean: 'had a discussion about',
+          note: 'The verb "discuss" never takes "about", whereas the noun "discussion" takes "about" or "on" ("had a discussion about").'
+        },
+        {
+          id: 14,
+          cat: 'inversions',
+          trapName: 'Trap 14 · As far as [X] is concerned',
+          formula: 'As far as + [Noun Phrase] + is / was concerned',
+          fossilError: '❌ As far as the venue, everyone agreed that the acoustic hall was ideal.',
+          keyword: 'CONCERNED',
+          pre: 'As',
+          post: ', everyone agreed that the acoustic hall was ideal.',
+          valid: ['far as the venue was concerned', 'far as the venue is concerned'],
+          modelSplit: 'far as the venue // was concerned',
+          modelClean: 'far as the venue was concerned',
+          note: 'Never leave "As far as X" hanging without its verb phrase "is/was concerned" (6 words).'
+        },
+        {
+          id: 15,
+          cat: 'verbs',
+          trapName: 'Trap 15 · Depend on / Be dependent on (NEVER "of")',
+          formula: 'depend on / upon  |  be dependent on / upon',
+          fossilError: '❌ Whether the outdoor concert goes ahead depends of the weather forecast.',
+          keyword: 'DEPENDENT',
+          pre: 'Whether the outdoor concert goes ahead',
+          post: 'the weather forecast.',
+          valid: ['is dependent on', 'is dependent upon', 'is heavily dependent on'],
+          modelSplit: 'is dependent // on',
+          modelClean: 'is dependent on',
+          note: 'Both the verb "depend" and the adjective "dependent" take the preposition "on" or "upon", never "of".'
+        }
+      ];
+
+      var clinicSolved = {};
+      var currentCat = 'all';
+      var containerEl = document.getElementById('clinic-items-container');
+      var scoreEl = document.getElementById('clinic-score-text');
+
+      function updateClinicScore() {
+        var count = Object.keys(clinicSolved).filter(function(k) { return clinicSolved[k]; }).length;
+        if (scoreEl) {
+          scoreEl.textContent = count + ' / ' + CLINIC_ITEMS.length + ' Traps Eliminated';
+        }
+      }
+
+      function renderClinicItems() {
+        if (!containerEl) return;
+        var filtered = currentCat === 'all'
+          ? CLINIC_ITEMS
+          : CLINIC_ITEMS.filter(function(item) { return item.cat === currentCat; });
+
+        containerEl.innerHTML = filtered.map(function(item) {
+          return (
+            '<div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 sm:p-6 shadow-sm" id="clinic-card-' + item.id + '">' +
+              '<div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">' +
+                '<div class="flex items-center gap-2 flex-wrap">' +
+                  '<span class="text-xs font-mono font-extrabold px-2.5 py-1 rounded-md bg-slate-900 text-amber-300 border border-slate-700">KEY WORD: ' + item.keyword + '</span>' +
+                  '<span class="text-xs font-extrabold uppercase tracking-wider text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full">' + item.trapName + '</span>' +
+                '</div>' +
+                '<span id="clinic-count-' + item.id + '" class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-slate-200 text-slate-700">0 words (3–6 required)</span>' +
+              '</div>' +
+              '<div class="bg-slate-900 text-sky-300 font-mono text-xs p-3 rounded-xl mb-3 border border-slate-800">' +
+                '<strong>Blueprint:</strong> ' + item.formula +
+              '</div>' +
+              '<p class="text-xs sm:text-sm font-mono text-rose-700 bg-rose-50/80 border border-rose-200 p-3 rounded-xl mb-3">' + item.fossilError + '</p>' +
+              '<p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Red-Pen C1/C2 Correction (3–6 words including ' + item.keyword + '):</p>' +
+              '<div class="flex flex-wrap items-center gap-2 text-sm sm:text-base text-slate-900 font-semibold bg-white p-3.5 rounded-xl border border-slate-300 mb-3.5">' +
+                '<span>' + item.pre + '</span>' +
+                '<input type="text" id="clinic-input-' + item.id + '" data-clinic-id="' + item.id + '" placeholder="3–6 words incl. ' + item.keyword + '..." class="flex-1 min-w-[210px] px-3 py-1.5 rounded-lg border border-sky-400 bg-sky-50/40 font-mono text-sm text-slate-900 focus:outline-none focus:border-sky-600" />' +
+                '<span>' + item.post + '</span>' +
+              '</div>' +
+              '<div class="flex flex-wrap items-center gap-2">' +
+                '<button type="button" data-clinic-check="' + item.id + '" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold transition cursor-pointer">✓ Check Fix</button>' +
+                '<button type="button" data-clinic-reveal="' + item.id + '" class="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>' +
+              '</div>' +
+              '<div id="clinic-fb-' + item.id + '" class="hidden mt-3.5 p-4 rounded-xl border text-xs sm:text-sm leading-relaxed"></div>' +
+            '</div>'
+          );
+        }).join('');
+
+        containerEl.querySelectorAll('[data-clinic-id]').forEach(function(inp) {
+          inp.addEventListener('input', function() {
+            var id = parseInt(inp.getAttribute('data-clinic-id'), 10);
+            onClinicInput(id);
+          });
+        });
+
+        containerEl.querySelectorAll('[data-clinic-check]').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var id = parseInt(btn.getAttribute('data-clinic-check'), 10);
+            checkClinicItem(id);
+          });
+        });
+
+        containerEl.querySelectorAll('[data-clinic-reveal]').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var id = parseInt(btn.getAttribute('data-clinic-reveal'), 10);
+            revealClinicItem(id);
+          });
+        });
+      }
+
+      function onClinicInput(id) {
+        var item = CLINIC_ITEMS.find(function(i) { return i.id === id; });
+        var inp = document.getElementById('clinic-input-' + id);
+        var badge = document.getElementById('clinic-count-' + id);
+        if (!item || !inp || !badge) return;
+
+        var raw = inp.value.trim();
+        var words = raw ? raw.split(/\s+/) : [];
+        var count = words.length;
+        var upper = words.map(function(w) { return w.replace(/[^a-zA-Z']/g, '').toUpperCase(); });
+        var hasKw = upper.indexOf(item.keyword) !== -1;
+
+        if (count === 0) {
+          badge.className = 'text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-slate-200 text-slate-700';
+          badge.textContent = '0 words (3–6 required)';
+        } else if (!hasKw) {
+          badge.className = 'text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-rose-100 text-rose-800 border border-rose-300';
+          badge.textContent = count + 'w • Missing unchanged ' + item.keyword;
+        } else if (count >= 3 && count <= 6) {
+          badge.className = 'text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+          badge.textContent = count + ' words • ' + item.keyword + ' intact ✓';
+        } else {
+          badge.className = 'text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300';
+          badge.textContent = count + ' words (Must be 3–6 words)';
+        }
+      }
+
+      function checkClinicItem(id) {
+        var item = CLINIC_ITEMS.find(function(i) { return i.id === id; });
+        var inp = document.getElementById('clinic-input-' + id);
+        var fb = document.getElementById('clinic-fb-' + id);
+        if (!item || !inp || !fb) return;
+
+        var clean = inp.value.trim().toLowerCase().replace(/\s+/g, ' ');
+        var words = clean ? clean.split(' ') : [];
+        var upper = words.map(function(w) { return w.replace(/[^a-z']/g, '').toUpperCase(); });
+        var hasKw = upper.indexOf(item.keyword) !== -1;
+
+        fb.classList.remove('hidden');
+
+        if (!hasKw) {
+          fb.className = 'mt-3.5 p-4 rounded-xl border border-rose-300 bg-rose-50 text-rose-900 text-xs sm:text-sm leading-relaxed';
+          fb.innerHTML = '<strong>Keyword Guard:</strong> Keep <code class="font-mono font-bold">' + item.keyword + '</code> completely unchanged inside your 3–6 word answer.';
+          return;
+        }
+
+        if (words.length < 3 || words.length > 6) {
+          fb.className = 'mt-3.5 p-4 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 text-xs sm:text-sm leading-relaxed';
+          fb.innerHTML = '<strong>Word Count Guard:</strong> You wrote <strong>' + words.length + ' words</strong>. Cambridge Part 4 requires strictly between <strong>3 and 6 words</strong>.';
+          return;
+        }
+
+        if (item.valid.indexOf(clean) !== -1) {
+          clinicSolved[id] = true;
+          updateClinicScore();
+          fb.className = 'mt-3.5 p-4 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-xs sm:text-sm leading-relaxed';
+          fb.innerHTML = '<div class="font-extrabold text-emerald-800 mb-1">✓ Fossilised Trap Eliminated! (2 / 2 Marks)</div>' +
+            '<p class="font-mono text-xs sm:text-sm bg-white px-3 py-1 rounded-lg border border-emerald-200 inline-block mb-1.5"><strong>1 mark // 1 mark:</strong> ' + item.modelSplit + '</p>' +
+            '<p>' + item.note + '</p>';
+        } else {
+          fb.className = 'mt-3.5 p-4 rounded-xl border border-rose-300 bg-rose-50 text-rose-900 text-xs sm:text-sm leading-relaxed';
+          fb.innerHTML = '<strong>Not quite:</strong> Check the Blueprint formula above, or click <em>👁️ Reveal Cambridge Model</em> to see the exact 2-mark structure.';
+        }
+      }
+
+      function revealClinicItem(id) {
+        var item = CLINIC_ITEMS.find(function(i) { return i.id === id; });
+        var inp = document.getElementById('clinic-input-' + id);
+        var fb = document.getElementById('clinic-fb-' + id);
+        if (!item || !inp || !fb) return;
+
+        inp.value = item.modelClean;
+        onClinicInput(id);
+        clinicSolved[id] = true;
+        updateClinicScore();
+
+        fb.classList.remove('hidden');
+        fb.className = 'mt-3.5 p-4 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-950 text-xs sm:text-sm leading-relaxed';
+        fb.innerHTML = '<div class="font-extrabold text-emerald-800 mb-1">👁️ Cambridge C1/C2 Model Fix:</div>' +
+          '<p class="font-mono text-xs sm:text-sm bg-white px-3 py-1 rounded-lg border border-emerald-200 inline-block mb-1.5"><strong>1 mark // 1 mark:</strong> ' + item.modelSplit + '</p>' +
+          '<p>' + item.note + '</p>';
+      }
+
+      document.querySelectorAll('.clinic-filter-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          currentCat = btn.getAttribute('data-clinic-filter') || 'all';
+          document.querySelectorAll('.clinic-filter-btn').forEach(function(b) {
+            b.className = 'clinic-filter-btn px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold transition cursor-pointer';
+          });
+          btn.className = 'clinic-filter-btn px-3 py-1.5 rounded-lg bg-sky-500 text-slate-950 text-xs font-extrabold transition cursor-pointer';
+          renderClinicItems();
+        });
+      });
+
+      var resetBtn = document.getElementById('clinic-reset-btn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+          clinicSolved = {};
+          updateClinicScore();
+          renderClinicItems();
+        });
+      }
+
+      renderClinicItems();
+    })();
+  </script>
   <!-- Sticky Bottom Quick Booking Bar -->
       <aside class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-700/80 px-4 py-3 shadow-2xl flex items-center justify-between gap-4 text-white" aria-label="Course and Diagnostic Session">
     <div class="max-w-6xl mx-auto w-full flex flex-wrap items-center justify-between gap-3">

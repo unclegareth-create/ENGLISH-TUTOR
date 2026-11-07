@@ -384,6 +384,84 @@
       font-family: var(--font-code) !important;
       margin-bottom: 8px;
     }
+    /* Master Blueprint Annex (12 High-Frequency C1/C2 Schemas) */
+    .annex-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 18px;
+    }
+    .annex-filter-pill {
+      background: #061022;
+      border: 1px solid var(--vault-border);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 99px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .annex-filter-pill:hover {
+      border-color: var(--cyan);
+      color: #fff;
+    }
+    .annex-filter-pill.active {
+      background: rgba(56, 189, 248, 0.2);
+      border-color: var(--cyan-bright);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    }
+    .annex-schema-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .annex-schema-card {
+      background: #060f20;
+      border: 1px solid var(--vault-border);
+      border-left: 4px solid var(--cyan);
+      border-radius: 10px;
+      padding: 16px;
+      transition: border-color 0.18s ease;
+    }
+    .annex-schema-card:hover {
+      border-color: var(--gold-bright);
+    }
+    .annex-formula-bar {
+      background: #030812;
+      border: 1px solid rgba(56, 189, 248, 0.24);
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-family: var(--font-code) !important;
+      font-size: 0.8rem;
+      color: var(--cyan-bright);
+      margin: 8px 0 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .echo-strike-span {
+      text-decoration: line-through;
+      text-decoration-color: var(--rose);
+      text-decoration-thickness: 2px;
+      opacity: 0.42;
+    }
+    .echo-deficit-span {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--gold-bright);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--gold);
+    }
+    .kwt-badge-pill.invalid {
+      background: rgba(244, 63, 94, 0.18);
+      color: #fda4af;
+      border: 1px solid var(--rose);
+    }
   </style>
 </head>
 <body>
@@ -721,6 +799,38 @@
         <button type="button" class="btn-action-vault" style="background:#1e293b;" onclick="vaultApp.revealSimModel()">👁️ Reveal Model</button>
         <button type="button" class="btn-action-vault" onclick="vaultApp.nextSimCase()">Next Scenario &rarr;</button>
       </div>
+    </div>
+  </section>
+
+  <!-- Master Blueprint Annex: 12 High-Frequency C1/C2 Key Word Transformation Schemas -->
+  <section class="card-vault" id="master-blueprint-annex">
+    <div class="card-header-vault">
+      <div>
+        <h2>Master Blueprint Annex: 12 High-Frequency C1/C2 Key Word Transformation Schemas</h2>
+        <p style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">
+          Filter by syntactic family, strike out the echoes from Sentence 1, keep the keyword <strong>100% unchanged</strong>, and complete each transformation in <strong>3 to 6 words</strong>.
+        </p>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+        <span class="badge-vault" id="annex-progress-pill" style="border-color:var(--gold); color:var(--gold-bright);">0 / 12 Solved</span>
+        <button type="button" class="btn-action-vault" style="background:#1e293b; font-size:0.78rem; padding:6px 12px;" onclick="vaultApp.toggleAllAnnexEchoes()">✂️ Strike All Echoes</button>
+      </div>
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="annex-filter-bar" role="tablist" aria-label="Filter C1/C2 Transformation Schemas">
+      <button type="button" class="annex-filter-pill active" onclick="vaultApp.filterAnnex('All', this)">All Schemas (12)</button>
+      <button type="button" class="annex-filter-pill" onclick="vaultApp.filterAnnex('Inversions', this)">Inversions (2)</button>
+      <button type="button" class="annex-filter-pill" onclick="vaultApp.filterAnnex('Clefts', this)">Clefts (2)</button>
+      <button type="button" class="annex-filter-pill" onclick="vaultApp.filterAnnex('Passive Reporting', this)">Passive Reporting (2)</button>
+      <button type="button" class="annex-filter-pill" onclick="vaultApp.filterAnnex('Unreal Past', this)">Unreal Past (2)</button>
+      <button type="button" class="annex-filter-pill" onclick="vaultApp.filterAnnex('Conditionals', this)">Conditionals (2)</button>
+      <button type="button" class="annex-filter-pill" onclick="vaultApp.filterAnnex('Prepositional Nouns', this)">Prepositional Nouns (2)</button>
+    </div>
+
+    <!-- 12 Schema Cards Grid -->
+    <div class="annex-schema-grid" id="annex-schema-container">
+      <!-- Populated dynamically by vaultApp.renderAnnex() -->
     </div>
   </section>
 
@@ -1086,7 +1196,339 @@ const vaultApp = (() => {
     requestAnimationFrame(drawVaultCanvas);
   }
 
-  window.addEventListener('DOMContentLoaded', init);
+  // Master Blueprint Annex: 12 High-Frequency C1/C2 Schemas
+  const annexSchemas = [
+    {
+      id: 1,
+      cat: "Inversions",
+      title: "Negative Adverbial Inversion (At no time)",
+      formula: "At no time + did + Subject + bare infinitive",
+      keyword: "TIME",
+      s1Plain: "The treasurer never authorised an offshore wire transfer during the audit.",
+      s1Struck: "<span class='echo-strike-span'>The treasurer</span> <span class='echo-deficit-span'>never authorised</span> <span class='echo-strike-span'>an offshore wire transfer during the audit.</span>",
+      pre: "At",
+      post: "an offshore wire transfer during the audit.",
+      valid: ["no time did the treasurer authorise", "no time did the treasurer authorize"],
+      model: "no time did the treasurer authorise",
+      explanation: "Fronted negative time expression ('At no time') triggers auxiliary inversion ('did the treasurer authorise')."
+    },
+    {
+      id: 2,
+      cat: "Inversions",
+      title: "Correlative Past Perfect Inversion (No sooner... than)",
+      formula: "No sooner + had + Subject + V3 + than...",
+      keyword: "SOONER",
+      s1Plain: "Immediately after the vault doors locked, the silent alarm sounded.",
+      s1Struck: "<span class='echo-deficit-span'>Immediately after the vault doors locked</span>, <span class='echo-strike-span'>the silent alarm sounded.</span>",
+      pre: "No",
+      post: "than the silent alarm sounded.",
+      valid: ["sooner had the vault doors locked"],
+      model: "sooner had the vault doors locked",
+      explanation: "'No sooner' requires past perfect inversion ('had + subject + V3') paired with 'than'."
+    },
+    {
+      id: 3,
+      cat: "Clefts",
+      title: "Wh-Cleft Emphasis (What... BE + Noun/Clause)",
+      formula: "What + Subject + Verb + BE + focused element",
+      keyword: "WHAT",
+      s1Plain: "The sudden resignation of the chief auditor worried the shareholders most.",
+      s1Struck: "<span class='echo-strike-span'>The sudden resignation of the chief auditor</span> <span class='echo-deficit-span'>worried the shareholders most.</span>",
+      pre: "",
+      post: "the sudden resignation of the chief auditor.",
+      valid: ["what worried the shareholders most was"],
+      model: "What worried the shareholders most was",
+      explanation: "Wh-Cleft ('What worried the shareholders most + was') isolates the cause at the end of the sentence."
+    },
+    {
+      id: 4,
+      cat: "Clefts",
+      title: "Preparatory It-Cleft with 'Not until'",
+      formula: "It + was + not until + Clause/Time + that...",
+      keyword: "UNTIL",
+      s1Plain: "The board only discovered the discrepancy when the annual ledger closed.",
+      s1Struck: "<span class='echo-strike-span'>The board</span> <span class='echo-deficit-span'>only</span> <span class='echo-strike-span'>discovered the discrepancy</span> <span class='echo-deficit-span'>when</span> <span class='echo-strike-span'>the annual ledger closed.</span>",
+      pre: "It was",
+      post: "the board discovered the discrepancy.",
+      valid: ["not until the ledger closed that", "not until the annual ledger closed"],
+      model: "not until the ledger closed that",
+      explanation: "It-Cleft ('It was not until... that') delays the main action without using inversion."
+    },
+    {
+      id: 5,
+      cat: "Passive Reporting",
+      title: "Impersonal Passive with Perfect Infinitive",
+      formula: "Subject + BE + thought/believed + to have + V3",
+      keyword: "THOUGHT",
+      s1Plain: "Financial analysts think the conglomerate overpaid for the subsidiary last year.",
+      s1Struck: "<span class='echo-deficit-span'>Financial analysts think</span> <span class='echo-strike-span'>the conglomerate</span> <span class='echo-deficit-span'>overpaid</span> <span class='echo-strike-span'>for the subsidiary last year.</span>",
+      pre: "The conglomerate",
+      post: "for the subsidiary last year.",
+      valid: ["is thought to have overpaid"],
+      model: "is thought to have overpaid",
+      explanation: "Present reporting verb ('is thought') + perfect infinitive ('to have overpaid') for a prior event."
+    },
+    {
+      id: 6,
+      cat: "Passive Reporting",
+      title: "Preparatory 'It' Impersonal Reporting",
+      formula: "It + BE + rumoured/alleged + that + Clause",
+      keyword: "RUMOURED",
+      s1Plain: "People are saying that the central bank will raise interest rates next month.",
+      s1Struck: "<span class='echo-deficit-span'>People are saying</span> <span class='echo-strike-span'>that the central bank will raise interest rates next month.</span>",
+      pre: "It",
+      post: "the central bank will raise interest rates next month.",
+      valid: ["is rumoured that", "is widely rumoured that"],
+      model: "is widely rumoured that",
+      explanation: "Preparatory 'It' ('It is widely rumoured that') creates formal academic distance."
+    },
+    {
+      id: 7,
+      cat: "Unreal Past",
+      title: "Preference with 'Would rather' + Past Subjunctive",
+      formula: "Subject 1 + would rather + Subject 2 + Past Simple",
+      keyword: "RATHER",
+      s1Plain: "The compliance officer does not want us to discuss the merger in public.",
+      s1Struck: "<span class='echo-strike-span'>The compliance officer</span> <span class='echo-deficit-span'>does not want us to discuss</span> <span class='echo-strike-span'>the merger in public.</span>",
+      pre: "The compliance officer",
+      post: "the merger in public.",
+      valid: ["would rather we did not discuss", "would rather we didn't discuss"],
+      model: "would rather we did not discuss",
+      explanation: "When the subject changes after 'would rather', use the past simple ('did not discuss') for present/future reference."
+    },
+    {
+      id: 8,
+      cat: "Unreal Past",
+      title: "Urgency with 'It is high time' + Past Subjunctive",
+      formula: "It + is + high/about time + Subject + Past Simple",
+      keyword: "HIGH",
+      s1Plain: "The firm really ought to upgrade its encrypted payroll server now.",
+      s1Struck: "<span class='echo-strike-span'>The firm</span> <span class='echo-deficit-span'>really ought to upgrade</span> <span class='echo-strike-span'>its encrypted payroll server now.</span>",
+      pre: "It is",
+      post: "its encrypted payroll server.",
+      valid: ["high time the firm upgraded"],
+      model: "high time the firm upgraded",
+      explanation: "'It is high time + subject + past simple' expresses overdue action in the present."
+    },
+    {
+      id: 9,
+      cat: "Conditionals",
+      title: "Inverted Third Conditional (Had it not been for)",
+      formula: "Had it not been for + Noun Phrase, Subject + would have + V3",
+      keyword: "BEEN",
+      s1Plain: "Without the emergency loan, the partnership would have collapsed in March.",
+      s1Struck: "<span class='echo-deficit-span'>Without</span> <span class='echo-strike-span'>the emergency loan, the partnership would have collapsed in March.</span>",
+      pre: "Had",
+      post: "the emergency loan, the partnership would have collapsed in March.",
+      valid: ["it not been for"],
+      model: "it not been for",
+      explanation: "'Had it not been for + noun phrase' is the formal C1/C2 equivalent of 'If it hadn't been for'."
+    },
+    {
+      id: 10,
+      cat: "Conditionals",
+      title: "Formal Conditional Linker (On condition that)",
+      formula: "Main Clause + on (the) condition that + Present Simple",
+      keyword: "CONDITION",
+      s1Plain: "The bank will extend the overdraft only if the directors sign a personal guarantee.",
+      s1Struck: "<span class='echo-strike-span'>The bank will extend the overdraft</span> <span class='echo-deficit-span'>only if</span> <span class='echo-strike-span'>the directors sign a personal guarantee.</span>",
+      pre: "The bank will extend the overdraft",
+      post: "the directors sign a personal guarantee.",
+      valid: ["on condition that", "on the condition that"],
+      model: "on condition that",
+      explanation: "'On condition that' replaces 'only if' in formal financial and legal registers."
+    },
+    {
+      id: 11,
+      cat: "Prepositional Nouns",
+      title: "Negative Intention Frame (Have no intention of + V-ing)",
+      formula: "Subject + have + no + intention + of + Gerund (V-ing)",
+      keyword: "INTENTION",
+      s1Plain: "The trustees definitely will not liquidate the endowment fund this year.",
+      s1Struck: "<span class='echo-strike-span'>The trustees</span> <span class='echo-deficit-span'>definitely will not liquidate</span> <span class='echo-strike-span'>the endowment fund this year.</span>",
+      pre: "The trustees",
+      post: "the endowment fund this year.",
+      valid: ["have no intention of liquidating"],
+      model: "have no intention of liquidating",
+      explanation: "Noun 'intention' takes preposition 'of' + gerund ('liquidating')."
+    },
+    {
+      id: 12,
+      cat: "Prepositional Nouns",
+      title: "Concessive Prepositional Frame (In spite of + Noun/Gerund)",
+      formula: "In spite of + Noun Phrase / V-ing / the fact that",
+      keyword: "SPITE",
+      s1Plain: "Although the market fluctuated sharply, the bond yield remained steady.",
+      s1Struck: "<span class='echo-deficit-span'>Although the market fluctuated sharply</span>, <span class='echo-strike-span'>the bond yield remained steady.</span>",
+      pre: "In",
+      post: "in the market, the bond yield remained steady.",
+      valid: ["spite of sharp fluctuations", "spite of the sharp fluctuations"],
+      model: "spite of sharp fluctuations",
+      explanation: "Clause 'the market fluctuated sharply' nominalises to 'sharp fluctuations' after 'In spite of'."
+    }
+  ];
+
+  let activeAnnexCat = "All";
+  const annexEchoStruck = new Set();
+  const annexSolved = new Set();
+
+  function renderAnnex() {
+    const container = document.getElementById('annex-schema-container');
+    if (!container) return;
+    const list = activeAnnexCat === "All"
+      ? annexSchemas
+      : annexSchemas.filter(s => s.cat === activeAnnexCat);
+
+    container.innerHTML = list.map(s => {
+      const isStruck = annexEchoStruck.has(s.id);
+      return `
+        <div class="annex-schema-card" id="annex-card-${s.id}">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="badge-vault" style="font-size:0.7rem;">#${s.id} • ${s.cat}</span>
+              <strong style="color:#fff; font-size:0.95rem;">${s.title}</strong>
+            </div>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span class="badge-vault" style="background:#3b0764; border-color:#c084fc; color:#f3e8ff;">${s.keyword}</span>
+              <span class="kwt-badge-pill" id="annex-pill-${s.id}">0 WORDS (3–6 REQ)</span>
+            </div>
+          </div>
+
+          <div class="annex-formula-bar">
+            <span><strong>Formation Formula:</strong> ${s.formula}</span>
+            <button type="button" class="btn-action-vault" style="background:#1e293b; font-size:0.76rem; padding:4px 10px;" id="annex-echo-btn-${s.id}" onclick="vaultApp.toggleAnnexEcho(${s.id})">
+              ${isStruck ? '↩ Restore Sentence 1' : '✂️ Strike Out the Echoes'}
+            </button>
+          </div>
+
+          <p style="font-size:0.92rem; color:#e2e8f0; margin-bottom:10px;" id="annex-s1-${s.id}">
+            1. &ldquo;${isStruck ? s.s1Struck : s.s1Plain}&rdquo;
+          </p>
+
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            ${s.pre ? `<span style="font-size:0.92rem; font-weight:600;">${s.pre}</span>` : ''}
+            <input type="text" class="kwt-input-clean" id="annex-in-${s.id}" placeholder="3–6 words incl. ${s.keyword}..." oninput="vaultApp.trackAnnexWords(${s.id})" />
+            <span style="font-size:0.92rem; font-weight:600;">${s.post}</span>
+            <button type="button" class="btn-action-vault" onclick="vaultApp.checkAnnexItem(${s.id})">✓ Check</button>
+            <button type="button" class="btn-action-vault" style="background:#1e293b;" onclick="vaultApp.revealAnnexModel(${s.id})">👁️ Reveal Cambridge Model</button>
+          </div>
+
+          <div class="feedback-vault" id="annex-fb-${s.id}"></div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function filterAnnex(cat, btnEl) {
+    activeAnnexCat = cat;
+    document.querySelectorAll('.annex-filter-pill').forEach(b => b.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+    renderAnnex();
+  }
+
+  function toggleAnnexEcho(id, forceState) {
+    const s = annexSchemas.find(x => x.id === id);
+    if (!s) return;
+    const nextState = typeof forceState === 'boolean' ? forceState : !annexEchoStruck.has(id);
+    if (nextState) annexEchoStruck.add(id);
+    else annexEchoStruck.delete(id);
+
+    const s1El = document.getElementById(`annex-s1-${id}`);
+    const btnEl = document.getElementById(`annex-echo-btn-${id}`);
+    if (s1El) s1El.innerHTML = `1. &ldquo;${nextState ? s.s1Struck : s.s1Plain}&rdquo;`;
+    if (btnEl) btnEl.textContent = nextState ? '↩ Restore Sentence 1' : '✂️ Strike Out the Echoes';
+  }
+
+  function toggleAllAnnexEchoes() {
+    const allStruck = annexEchoStruck.size === annexSchemas.length;
+    annexSchemas.forEach(s => toggleAnnexEcho(s.id, !allStruck));
+  }
+
+  function trackAnnexWords(id) {
+    const s = annexSchemas.find(x => x.id === id);
+    const input = document.getElementById(`annex-in-${id}`);
+    const pill = document.getElementById(`annex-pill-${id}`);
+    if (!s || !input || !pill) return;
+
+    const raw = input.value.trim();
+    const words = raw ? raw.split(/\s+/) : [];
+    const count = words.length;
+    const hasKw = words.map(w => w.replace(/[^a-zA-Z']/g, '').toUpperCase()).includes(s.keyword);
+
+    pill.classList.remove('valid', 'invalid');
+    if (count === 0) {
+      pill.textContent = '0 WORDS (3–6 REQ)';
+    } else if (!hasKw) {
+      pill.classList.add('invalid');
+      pill.textContent = `${count}W • MISSING ${s.keyword}`;
+    } else if (count >= 3 && count <= 6) {
+      pill.classList.add('valid');
+      pill.textContent = `${count} WORDS • ${s.keyword} OK ✓`;
+    } else {
+      pill.classList.add('invalid');
+      pill.textContent = `${count} WORDS (3–6 REQ)`;
+    }
+  }
+
+  function updateAnnexProgress() {
+    const pill = document.getElementById('annex-progress-pill');
+    if (pill) pill.textContent = `${annexSolved.size} / 12 Solved`;
+  }
+
+  function checkAnnexItem(id) {
+    const s = annexSchemas.find(x => x.id === id);
+    const input = document.getElementById(`annex-in-${id}`);
+    const fb = document.getElementById(`annex-fb-${id}`);
+    if (!s || !input || !fb) return;
+
+    const val = input.value.trim().toLowerCase().replace(/\s+/g, ' ');
+    const words = val ? val.split(' ') : [];
+    const hasKw = words.map(w => w.replace(/[^a-z']/g, '').toUpperCase()).includes(s.keyword);
+
+    if (!hasKw) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-vault visible wrong';
+      fb.innerHTML = `<strong>⚠️ Keyword Guard:</strong> You must include the exact unchanged keyword <code>${s.keyword}</code>.`;
+      return;
+    }
+
+    if (words.length < 3 || words.length > 6) {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-vault visible wrong';
+      fb.innerHTML = `<strong>⚠️ Word Count Guard:</strong> Your phrase has ${words.length} words. Use between 3 and 6 words.`;
+      return;
+    }
+
+    if (s.valid.includes(val)) {
+      playTone([523, 659, 783]);
+      annexSolved.add(id);
+      updateAnnexProgress();
+      addScore(2, `annex_${id}`);
+      fb.className = 'feedback-vault visible correct';
+      fb.innerHTML = `<strong>✓ Spot on!</strong> <em>"${s.model}"</em> — ${s.explanation}`;
+    } else {
+      playTone([220, 160], 0.25, 'sawtooth');
+      fb.className = 'feedback-vault visible wrong';
+      fb.innerHTML = `<strong>⚠️ Check Pattern:</strong> Inspect the formation formula above or click <em>👁️ Reveal Cambridge Model</em>.`;
+    }
+  }
+
+  function revealAnnexModel(id) {
+    const s = annexSchemas.find(x => x.id === id);
+    const input = document.getElementById(`annex-in-${id}`);
+    const fb = document.getElementById(`annex-fb-${id}`);
+    if (!s || !input || !fb) return;
+
+    toggleAnnexEcho(id, true);
+    input.value = s.model;
+    trackAnnexWords(id);
+    annexSolved.add(id);
+    updateAnnexProgress();
+    fb.className = 'feedback-vault visible correct';
+    fb.innerHTML = `<strong>Cambridge Model:</strong> <code>${s.model}</code><br>${s.explanation}`;
+  }
+
+  window.addEventListener('DOMContentLoaded', () => { init(); renderAnnex(); });
 
   return {
     handleMC,
