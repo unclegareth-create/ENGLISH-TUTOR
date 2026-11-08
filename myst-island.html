@@ -392,6 +392,11 @@
       border-color: var(--crimson-clash);
       box-shadow: 0 0 12px rgba(248, 113, 113, 0.35);
     }
+    .socket-box.alternate-box {
+      border-style: solid;
+      border-color: #fbbf24;
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.38);
+    }
     .unlock-toast {
       position: fixed;
       top: 86px;
@@ -761,6 +766,11 @@
     }
 
     /* ================= CONCHIS'S MARBLE TABLET PART 4 DUEL (10 C1/C2 KWT) ================= */
+    .journal-tabs-bar[hidden],
+    .kwt-duel-section[hidden] {
+      display: none !important;
+    }
+
     .journal-tabs-bar {
       display: flex;
       gap: 0.45rem;
@@ -1577,6 +1587,16 @@
             Assemble all 25 syntactic keys across the 5 Altars of Phraxos:
           </p>
           <div class="discovery-list" id="journal-discovery-list"></div>
+
+          <div style="margin-top:0.85rem; padding-top:0.65rem; border-top:1px solid rgba(217,155,67,0.28);">
+            <h4 style="font-family:var(--font-serif); font-size:0.9rem; color:var(--brass-light); margin:0 0 0.28rem 0;">
+              📜 Verified Sentences Forged (<span id="journal-sentence-log-count">0</span>)
+            </h4>
+            <p style="font-size:0.72rem; color:#cbd5e1; margin:0 0 0.42rem 0;">
+              Every grammatically sound sentence you assemble on the altars (both canonical wonders and valid alternate combinations):
+            </p>
+            <div class="discovery-list" id="journal-sentence-log-list" style="max-height:165px;"></div>
+          </div>
         </div>
       </div>
 
@@ -1663,7 +1683,56 @@
     let solveStreak = 0;
     let toastTimer = null;
     let radarOpen = false;
-    const discovered = new Set();
+    // Progress is tracked separately per mode, so C1 unlocks never tick off A2–B1 ones.
+    const SAVE_KEY = 'phraxos-progress-v1';
+    const discoveredByMode = { c1: new Set(), a1: new Set() };
+    const sentenceLogByMode = { c1: [], a1: [] };
+    let discovered = discoveredByMode.c1;
+
+    function recordVerifiedSentence(altarId, sentence, kind) {
+      const list = sentenceLogByMode[levelMode];
+      if (!list) return;
+      if (list.some((entry) => entry.sentence === sentence)) return;
+      list.unshift({ altarId, sentence, kind });
+      if (list.length > 60) list.length = 60;
+      saveProgress();
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({
+          mode: levelMode,
+          c1: [...discoveredByMode.c1],
+          a1: [...discoveredByMode.a1],
+          logC1: sentenceLogByMode.c1,
+          logA1: sentenceLogByMode.a1
+        }));
+      } catch (e) { /* storage unavailable (private mode): play on without saving */ }
+    }
+
+    function loadProgress() {
+      try {
+        const data = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+        if (!data) return null;
+        ['c1', 'a1'].forEach((m) => {
+          (data[m] || []).forEach((k) => {
+            if (/^[0-4]_[0-4]$/.test(k)) discoveredByMode[m].add(k);
+          });
+        });
+        if (Array.isArray(data.logC1)) sentenceLogByMode.c1 = data.logC1.slice(0, 60);
+        if (Array.isArray(data.logA1)) sentenceLogByMode.a1 = data.logA1.slice(0, 60);
+        return data.mode === 'a1' ? 'a1' : 'c1';
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Replace a mesh's canvas texture and free the old one from GPU memory.
+    function swapMap(material, newMap) {
+      if (material.map && material.map !== newMap) material.map.dispose();
+      material.map = newMap;
+      material.needsUpdate = true;
+    }
 
     const altarState = [
       [null, null, null],
@@ -1786,6 +1855,11 @@
             { name: "The Obelisk of Hermes", msg: "🗿 [ LITTLE DID THE SCHOOLMASTER GUESS THE SCALE OF THE GODGAME ] — The bronze obelisk of Hermes rises and elevates your vantage over all Phraxos!" },
             { name: "The Glass Sea of Phraxos", msg: "🌊 [ ONLY WHEN THE CICADAS FELL SILENT DID THE AEGEAN FREEZE ] — Delayed main-clause inversion ('did the Aegean freeze')! The sea stills into turquoise glass!" }
           ],
+          alternates: [
+            [[0, 2, 0], "✓ Grammatically sound! 'Scarcely + had + V3 ... when' is well-formed C1 inversion. On this altar, 'HAD THE HARPSICHORD PLAYED' belongs to the 'NO SOONER ... THAN' inscription."],
+            [[2, 0, 2], "✓ Grammatically sound! 'No sooner + had + V3 ... than' is well-formed C1 inversion. On this altar, 'HAD I CROSSED THE PINES' belongs to the 'SCARCELY ... WHEN' inscription."],
+            [[1, 0, 3], "✓ Grammatically sound, though 'AT NO POINT' on this altar unlocks the passive spyglass inscription ('WAS THE SPYGLASS LEFT THERE BY CHANCE')."]
+          ],
           explainClash(i0, i1, i2) {
             if (i0 === 0 && i2 === 2) return "⚡ Cambridge Part 4 Trap: 'SCARCELY' pairs with 'WHEN...' ('WHEN BOURANI APPEARED'), whereas 'THAN' belongs strictly to 'NO SOONER'.";
             if (i0 === 2 && i2 === 0) return "⚡ Classic Cambridge Part 4 Trap: Comparative 'NO SOONER' must pair with 'THAN...' ('THAN THE MASQUE BEGAN'), never 'WHEN'.";
@@ -1822,6 +1896,10 @@
             { name: "Conchis’s Armillary Sphere", msg: "🧭 [ GLEAMING IN THE FIRELIGHT, THE BRASS ASTROLABE ALIGNED WITH THE STARS ] — Conchis’s giant 3-ring brass astrolabe awakens overhead!" },
             { name: "The Hermetic Canopy", msg: "🛡️ [ AT THE FOUR CORNERS STOOD THE BRONZE HERMS GUARDING THE VILLA ] — Locative inversion! Four boundary pillars rise and project a sky-canopy!" }
           ],
+          alternates: [
+            [[3, 2, 2], "✓ Grammatically sound! A stairway can gleam in the firelight without dangling. Here Conchis reserved 'GLEAMING IN THE FIRELIGHT,' for the polished brass astrolabe."],
+            [[2, 3, 3], "✓ Grammatically sound as a participle clause, though in Conchis’s estate the astrolabe is cast in brass and the stairway is carved from Pentelic marble."]
+          ],
           explainClash(i0, i1, i2) {
             if (i0 === 0 && i1 !== 0) return "⚡ Wh-Cleft Rule: 'WHAT CONCHIS HAD STAGED' functions as a singular subject and requires 'WAS A THEATRE' in Socket II.";
             if (i0 === 1 && i1 !== 1) return "⚡ It-Cleft Rule: 'IT WAS THE SCARLET RIBBON' requires the relative clause 'THAT BETRAYED...' in Socket II.";
@@ -1857,6 +1935,13 @@
             { name: "The Bronze of Artemision", msg: "🔱 [ IT IS RUMOURED THAT THE BRONZE POSEIDON WAS RAISED FROM THE SEA ] — Preparatory 'It' passive! The bronze dais and trident crown rise from the stage!" },
             { name: "The Hidden Belfry Gears", msg: "🔔 [ WITHOUT A HIDDEN HAND, THE BELFRY PENDULUM COULD NOT HAVE SWUNG ] — Negative modal deduction! The belfry’s bronze gears and pendulum swing into motion!" }
           ],
+          alternates: [
+            [[0, 2, 0], "✓ Grammatically sound! 'The ruined chapel arch must have survived the quake' is valid modal deduction; here 'MUST HAVE' belongs to the midnight caique."],
+            [[2, 0, 0], "✓ Grammatically sound! 'The midnight caique is believed to have survived the quake' is valid reporting passive; here 'IS BELIEVED TO' belongs to the chapel arch."],
+            [[2, 0, 1], "✓ Grammatically sound in syntax, though 'underlined' belongs semantically to the pamphlet passages."],
+            [[1, 2, 0], "✓ Grammatically sound! 'The pamphlet passages must have survived the quake' works syntactically; here 'THE PAMPHLET PASSAGES' pairs with plural 'ARE THOUGHT TO'."],
+            [[3, 4, 4], "✓ Grammatically sound! 'It is rumoured that the belfry pendulum could not have swung' is a valid finite clause; here 'THE BELFRY PENDULUM' pairs with 'WITHOUT A HIDDEN HAND,'."]
+          ],
           explainClash(i0, i1, i2) {
             if (i0 === 1 && i1 === 0) return "⚡ Subject-Verb Agreement: 'THE PAMPHLET PASSAGES' is plural — use 'ARE THOUGHT TO', not singular 'IS BELIEVED TO'.";
             if (i0 !== 1 && i1 === 1) return "⚡ Subject-Verb Agreement: Plural 'ARE THOUGHT TO' requires plural subject 'THE PAMPHLET PASSAGES'.";
@@ -1891,6 +1976,13 @@
             { name: "The Athens Schooner", msg: "⛵ [ HAD I QUESTIONED CONCHIS’S SCRIPT, THE SCHOONER WOULD HAVE SAILED ] — Inverted 3rd conditional! The white schooner docks at the western jetty!" },
             { name: "The Triad of Bourani Light", msg: "✨ [ BUT FOR THE TWIN BEACONS ON THE CLIFF, PHRAXOS WOULD REMAIN DIVIDED ] — 'But for' conditional! Twin beams of golden-cyan light unite all three headlands!" },
             { name: "The Grove of Eleutheria", msg: "🫒 [ IT IS HIGH TIME YOU STEPPED INTO THE GROVE OF ELEUTHERIA ] — Past subjunctive after 'It is high time'! Golden olive and cypress trees burst into bloom!" }
+          ],
+          alternates: [
+            [[0, 0, 3], "✓ Grammatically sound! 'Were you to drop the final mask, Phraxos would remain divided' is valid inverted 2nd conditional; here 'THE FINAL MASK,' unlocks the prism."],
+            [[0, 2, 0], "✓ Grammatically sound! 'Were you to drop Conchis’s script, the prism would shatter' is valid inverted 2nd conditional; here 'CONCHIS’S SCRIPT,' belongs to 'HAD I QUESTIONED'."],
+            [[0, 2, 3], "✓ Grammatically sound! Inverted 2nd conditional ('Were you to + V1 ... would + V1'); each clause here unlocks a separate wonder on the altar."],
+            [[3, 3, 0], "✓ Grammatically sound! 'But for the twin beacons on the cliff, the prism would shatter' is a valid 'But for + NP' 2nd conditional; here the twin beacons unite Phraxos."],
+            [[3, 3, 2], "✓ Grammatically sound! 'But for + noun phrase' works with 3rd-conditional 'would have + V3' as well; on this altar 'THE SCHOONER WOULD HAVE SAILED' pairs with 'HAD I QUESTIONED'."]
           ],
           explainClash(i0, i1, i2) {
             if (i0 === 1 && i2 !== 1) return "⚡ 1st Conditional Rule: 'SHOULD THE AEGEAN HAZE LIFT...' pairs with future 'WILL' ('SIX ISLES WILL APPEAR').";
@@ -1984,6 +2076,14 @@
             { name: "The Obelisk of Hermes", msg: "🗿 [ VERY FEW STRANGERS KNOW THE PATH THROUGH THE PINE WOODS ] — Your vantage rises and the bronze obelisk ascends above the terrace!" },
             { name: "The Glass Sea of Phraxos", msg: "❄️ [ EVERY CARVED TABLET HIDES A CLUE UPON THIS ALTAR ] — The rippling Aegean waves crystallise into translucent turquoise glass!" }
           ],
+          alternates: [
+            [[0, 0, 2], "✓ Grammatically sound! 'The white villa stands high in the sheltered cove' is good English; here the villa stands 'ABOVE THE AEGEAN SEA'."],
+            [[0, 4, 2], "✓ Grammatically sound! 'The white villa hides a clue in the sheltered cove' works grammatically; here 'HIDES A CLUE' belongs to 'EVERY CARVED TABLET'."],
+            [[1, 1, 2], "✓ Grammatically sound! 'Ten bronze torches are burning in the sheltered cove' is correct Present Continuous; here they burn 'BRIGHTLY IN THE DUSK'."],
+            [[1, 1, 4], "✓ Grammatically sound! 'Ten bronze torches are burning upon this altar' works grammatically; here 'UPON THIS ALTAR' pairs with 'EVERY CARVED TABLET'."],
+            [[2, 2, 1], "✓ Grammatically sound! 'There is not much wind in the dusk' is valid; on this altar the wind phrase ends with 'IN THE SHELTERED COVE'."],
+            [[2, 2, 3], "✓ Grammatically sound! 'There is not much wind through the pine woods' works; here 'THROUGH THE PINE WOODS' completes 'KNOW THE PATH'."]
+          ],
           explainClash(i0, i1, i2) {
             if ((i0 === 0 || i0 === 4) && i1 === 1) return "⚡ Singular vs. Plural: '" + this.col0[i0] + "' is singular, so it cannot take plural 'ARE BURNING'.";
             if (i0 === 1 && (i1 === 0 || i1 === 4)) return "⚡ Plural Agreement: 'TEN BRONZE TORCHES' is plural and cannot take singular verb '" + this.col1[i1] + "'.";
@@ -2018,6 +2118,11 @@
             { name: "Conchis’s Armillary Sphere", msg: "🧭 [ WE HAVE ALREADY FOUND A MESSAGE INSIDE THE GRAMOPHONE ] — A giant rotating brass Armillary Sphere awakens in the Aegean sky!" },
             { name: "The Hermetic Canopy", msg: "🛡️ [ HAVE YOU EVER WATCHED THE STARS THROUGH THIS ASTROLABE? ] — Bronze boundary pillars rise and project a cyan canopy overhead!" }
           ],
+          alternates: [
+            [[0, 2, 2], "✓ Grammatically sound! 'Maurice Conchis has not solved the riddle yet' is valid Present Perfect; here that verb belongs to 'THE YOUNG TEACHER'."],
+            [[2, 0, 0], "✓ Grammatically sound! 'The young teacher has lived on Phraxos since the war ended' works; in the story, it is Maurice Conchis who has lived here since the war."],
+            [[3, 4, 1], "✓ Grammatically sound! 'We have already watched the stars for three hours' is valid; here 'WATCHED THE STARS' pairs with 'HAVE YOU EVER ...?'."]
+          ],
           explainClash(i0, i1, i2) {
             if (i1 === 0 && i2 === 1) return "⚡ SINCE vs. FOR: 'THREE HOURS' is a duration (use 'FOR'), whereas 'SINCE' needs a starting point ('SINCE THE WAR ENDED').";
             if (i1 === 1 && i2 === 0) return "⚡ FOR vs. SINCE: 'THE WAR ENDED' is a point in time (use 'SINCE'), whereas 'FOR' needs a duration ('FOR THREE HOURS').";
@@ -2036,13 +2141,13 @@
           roles: ["1. Subject / Time Linker", "2. Past Verb Form", "3. Resolution"],
           pos: { x: 0.0, y: 2.75, z: -18.4, yaw: 0 },
           altarPos: { x: 0.0, y: 0.7, z: -25.2 },
-          col0: ["WHILE THE EARTH", "A WOODEN CAIQUE", "ISLANDERS USED TO", "THE BRONZE POSEIDON", "NOBODY HEARD"],
-          col1: ["WAS SHAKING,", "DROPPED ANCHOR", "CARVE POEMS", "WAS PULLED UP", "THE CHAPEL BELL"],
-          col2: ["THE OLD ARCH FELL", "WHEN THE MOON ROSE", "INTO THESE MARBLE STONES", "FROM THE DEEP SEA", "DURING THE STORM"],
+          col0: ["WHILE THE EARTH", "ISLANDERS USED TO", "A WOODEN CAIQUE", "THE BRONZE POSEIDON", "NOBODY HEARD"],
+          col1: ["WAS SHAKING,", "CARVE POEMS", "DROPPED ANCHOR", "WAS PULLED UP", "THE CHAPEL BELL"],
+          col2: ["THE OLD ARCH FELL", "INTO THESE MARBLE STONES", "WHEN THE MOON ROSE", "FROM THE DEEP SEA", "DURING THE STORM"],
           hints: [
             "💡 Hint: 'WHILE THE EARTH' introduces a background action in the Past Continuous ('WAS SHAKING,') interrupted by a Past Simple event ('THE OLD ARCH FELL').",
-            "💡 Hint: 'A WOODEN CAIQUE' is a Greek boat — pair it with 'DROPPED ANCHOR' and 'WHEN THE MOON ROSE'.",
             "💡 Hint: 'ISLANDERS USED TO' must be followed by a base infinitive verb ('CARVE POEMS') and where they carved them.",
+            "💡 Hint: 'A WOODEN CAIQUE' is a Greek boat — pair it with 'DROPPED ANCHOR' and 'WHEN THE MOON ROSE'.",
             "💡 Hint: 'THE BRONZE POSEIDON' takes the Past Simple Passive ('WAS PULLED UP') + 'FROM THE DEEP SEA'.",
             "💡 Hint: 'NOBODY HEARD' needs an object ('THE CHAPEL BELL') and 'DURING + noun' ('DURING THE STORM')."
           ],
@@ -2053,9 +2158,15 @@
             { name: "The Bronze of Artemision", msg: "🔱 [ THE BRONZE POSEIDON WAS PULLED UP FROM THE DEEP SEA ] — A bronze dais and rotating solar crown emerge from the stage!" },
             { name: "The Hidden Belfry Gears", msg: "🔔 [ NOBODY HEARD THE CHAPEL BELL DURING THE STORM ] — The cliffside belfry’s bronze gears and pendulum swing across time!" }
           ],
+          alternates: [
+            [[2, 2, 4], "✓ Grammatically sound! 'A wooden caique dropped anchor during the storm' is valid Past Simple; here the caique dropped anchor 'WHEN THE MOON ROSE'."],
+            [[4, 4, 2], "✓ Grammatically sound! 'Nobody heard the chapel bell when the moon rose' is valid; here the bell was unheard 'DURING THE STORM'."],
+            [[3, 3, 2], "✓ Grammatically sound! 'The bronze Poseidon was pulled up when the moon rose' works; here it was pulled up 'FROM THE DEEP SEA'."],
+            [[3, 3, 4], "✓ Grammatically sound! 'The bronze Poseidon was pulled up during the storm' works; here it was pulled up 'FROM THE DEEP SEA'."]
+          ],
           explainClash(i0, i1, i2) {
             if (i0 === 0 && i1 !== 0) return "⚡ Past Continuous Rule: 'WHILE THE EARTH' needs the continuous background verb 'WAS SHAKING,'.";
-            if (i0 === 2 && i1 !== 2) return "⚡ 'USED TO' Rule: 'ISLANDERS USED TO' must be followed by a base infinitive verb ('CARVE POEMS').";
+            if (i0 === 1 && i1 !== 1) return "⚡ 'USED TO' Rule: 'ISLANDERS USED TO' must be followed by a base infinitive verb ('CARVE POEMS').";
             if (i0 === 3 && i1 !== 3) return "⚡ Passive Voice: 'THE BRONZE POSEIDON' did not pull itself — use passive 'WAS PULLED UP' + 'FROM THE DEEP SEA'.";
             if (i0 === 4 && i1 !== 4) return "⚡ Transitive Verb: 'NOBODY HEARD' needs a sound object ('THE CHAPEL BELL') + 'DURING THE STORM'.";
             return "⚡ Check that all 3 tablets form a logical past-tense sentence.";
@@ -2087,6 +2198,10 @@
             { name: "The Triad of Bourani Light", msg: "✨ [ TWO BEAMS OF LIGHT ARE GOING TO CONNECT THE CLIFFS ] — Twin beams of golden-cyan light link all three headlands!" },
             { name: "The Grove of Eleutheria", msg: "🫒 [ WHEN CONCHIS SPEAKS, THE OLIVE GROVE WILL BLOOM IN GOLD ] — Golden olive and cypress trees bloom around the court!" }
           ],
+          alternates: [
+            [[4, 0, 0], "✓ Grammatically sound! 'When Conchis speaks, the prism will shine' is a valid 1st-conditional time clause (using 'THE OLIVE GROVE' in Socket II for the canonical wonder)."],
+            [[3, 1, 1], "✓ Grammatically sound! 'Two beams of light will appear as soon as the mist clears' works; here 'WILL APPEAR' belongs to 'SIX WHITE ISLANDS'."]
+          ],
           explainClash(i0, i1, i2) {
             if (i0 === 0 && i1 !== 0) return "⚡ Transitive Verb: 'IF YOU DROP' needs an object ('THE GOLDEN MASK,') before the main 'WILL' clause.";
             if (i0 === 2 && i2 !== 2) return "⚡ 'UNLESS' Meaning: 'UNLESS WE SAIL BEFORE MIDNIGHT,' means 'if we don't sail', so the result is 'WE WILL MISS THE TIDE'.";
@@ -2097,10 +2212,10 @@
         },
         {
           id: 4,
-          eraBanner: "🧭 The Parnassus Sanctuary: Comparisons, Conditionals & Purpose (A1–B1)",
-          title: "Act V — The Parnassus Sanctuary (Not Only, Because Of & So That A1–B1)",
+          eraBanner: "🧭 The Parnassus Sanctuary: Contrast, Conditions & Results (A2–B1)",
+          title: "Act V — The Parnassus Sanctuary (Not X but Y, Without, So…That & What-Clauses A2–B1)",
           formula: "[Comparison / Condition / Clause] + [Pivot] + [Result / Purpose]",
-          blueprint: "<strong>Act V — The Parnassus Sanctuary (A1–B1 Foundations):</strong> Master the 3 core sanctuary patterns: <code>It is not the mask but your belief...</code>, <code>Without Conchis’s key, the door would stay locked</code>, and <code>The rings turned, so the hidden vault opened</code>.",
+          blueprint: "<strong>Act V — The Parnassus Sanctuary (A2–B1 Foundations):</strong> Master the 3 core sanctuary patterns: <code>It is not the mask but your belief...</code>, <code>Without Conchis’s key, the door would stay locked</code>, and <code>The rings turned, so the hidden vault opened</code>.",
           roles: ["1. Opening Phrase", "2. Middle Pivot", "3. Clear Result"],
           pos: { x: 0.0, y: 2.75, z: -85.4, yaw: 0 },
           altarPos: { x: 0.0, y: 0.7, z: -92.2 },
@@ -2138,6 +2253,10 @@
             { name: "The Resultative Astrolabe Chain", msg: "⚙️ [ THE BRONZE RINGS TURNED, SO THE HIDDEN VAULT OPENED BEFORE US ] — All three marble altars synchronize in golden light!" },
             { name: "The Orrery of Delphic Resonance", msg: "🌌 [ THE ASTROLABE WAS SO BRIGHT THAT EVERY TRAVELLER STOPPED ] — Six vaulted starlight ribs arch above the sanctuary!" },
             { name: "The Crown of Eleutheria", msg: "👑 [ WHAT MATTERS MOST BENEATH THIS DOME IS YOUR CLEAR MIND ] — The Parnassus Astrolabe Sanctuary ascends in full splendour!" }
+          ],
+          alternates: [
+            [[1, 1, 2], "✓ Grammatically sound! 'Without Conchis’s key, the sanctuary door opened before us' works as a past sentence; here 'WITHOUT CONCHIS’S KEY,' pairs with conditional 'WOULD STAY LOCKED'."],
+            [[2, 2, 1], "✓ Grammatically sound! 'The bronze rings turned, so the hidden vault would stay locked' works as a purpose/result clause; here the vault 'OPENED BEFORE US'."]
           ],
           explainClash(i0, i1, i2) {
             if (i0 === 0 && (i1 !== 0 || i2 !== 0)) return "⚡ 'Not X but Y' Rule: 'IT IS NOT THE MASK' must pair with 'BUT YOUR OWN BELIEF' + 'THAT SETS YOU FREE'.";
@@ -3367,78 +3486,209 @@
     }
 
     // High-resolution procedural Ashlar Travertine, Craggy Cliff, Marble & Foliage PBR Texture Generator
-    function makeProceduralPBR(c1, c2, veining = false, flagstones = false, repeat = 4, normalStrength = 2.8) {
+    function makeProceduralPBR(typeOrColor, optOrColor2 = {}, veining = false, flagstones = false, repeat = 4, normalStrength = 2.0) {
+      let type = 'custom';
+      let c1 = '#dcc7a1';
+      let c2 = '#b89a6c';
+      let rep = 4;
+      let normStr = 1.6;
+
+      if (typeof typeOrColor === 'string' && !typeOrColor.startsWith('#')) {
+        type = typeOrColor.toLowerCase();
+      } else {
+        c1 = typeOrColor || '#dcc7a1';
+        c2 = typeof optOrColor2 === 'string' ? optOrColor2 : '#b89a6c';
+        rep = repeat;
+        normStr = normalStrength;
+        if (flagstones) type = 'flagstone';
+        else if (veining) type = 'limestone';
+      }
+
       const canvas = document.createElement('canvas');
       canvas.width = 512;
       canvas.height = 512;
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = c1;
-      ctx.fillRect(0, 0, 512, 512);
 
-      // Multi-scale mineral grain & Mediterranean stone mottling
-      for (let i = 0; i < 2200; i++) {
-        ctx.fillStyle = i % 3 === 0 ? c2 : (i % 3 === 1 ? '#ffffff' : '#1e160d');
-        ctx.globalAlpha = i % 3 === 0 ? 0.18 : 0.045;
-        const w = 4 + Math.random() * 28;
-        const h = 4 + Math.random() * 18;
-        ctx.fillRect(Math.random() * 512, Math.random() * 512, w, h);
-      }
+      if (type === 'cliff') {
+        // Authentic Hellenic Aegean Karst Limestone: warm honeyed stone with vertical water-carved erosion fissures
+        rep = 3;
+        normStr = 1.4;
+        const grad = ctx.createLinearGradient(0, 0, 0, 512);
+        grad.addColorStop(0, '#c8b69b');
+        grad.addColorStop(0.5, '#ba9f80');
+        grad.addColorStop(1, '#a68c6e');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 512, 512);
 
-      if (veining) {
-        for (let v = 0; v < 22; v++) {
-          ctx.strokeStyle = v % 2 === 0 ? c2 : 'rgba(65, 48, 30, 0.35)';
-          ctx.globalAlpha = 0.36;
-          ctx.lineWidth = 1.5 + (v % 3) * 1.4;
+        // Organic sedimentary rock mottles (3200 multi-scale patches)
+        for (let i = 0; i < 3200; i++) {
+          const mCol = i % 4 === 0 ? '#ede2d0' : (i % 4 === 1 ? '#dfcca8' : (i % 4 === 2 ? '#8f775c' : '#614e38'));
+          ctx.fillStyle = mCol;
+          ctx.globalAlpha = i % 4 === 0 ? 0.22 : 0.08;
+          const rx = Math.random() * 512;
+          const ry = Math.random() * 512;
+          const rw = 6 + Math.random() * 26;
+          const rh = 4 + Math.random() * 16;
           ctx.beginPath();
-          let py = (v / 22) * 512;
-          ctx.moveTo(0, py);
-          for (let px = 32; px <= 512; px += 32) {
-            py += (Math.random() - 0.5) * 28;
+          ctx.ellipse(rx, ry, rw * 0.5, rh * 0.5, Math.random() * 0.4 - 0.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Delicate VERTICAL water-carved karst drainage fissures (flowing downward, not horizontal stripes!)
+        for (let f = 0; f < 18; f++) {
+          ctx.strokeStyle = f % 2 === 0 ? 'rgba(74, 56, 38, 0.22)' : 'rgba(195, 150, 95, 0.18)';
+          ctx.globalAlpha = 0.45;
+          ctx.lineWidth = 1.2 + (f % 3) * 1.0;
+          ctx.beginPath();
+          let px = (f / 18) * 512 + (Math.random() - 0.5) * 16;
+          ctx.moveTo(px, 0);
+          for (let py = 16; py <= 512; py += 16) {
+            px += (Math.random() - 0.5) * 10;
             ctx.lineTo(px, py);
           }
           ctx.stroke();
         }
-      }
 
-      if (flagstones) {
-        // Warm sun-baked Aegean travertine ashlar blocks with individual slab tinting & chiseled mortar seams
+        // Warm ochre & terracotta mineral deposits along ledges
+        for (let o = 0; o < 14; o++) {
+          ctx.fillStyle = 'rgba(185, 125, 65, 0.12)';
+          ctx.globalAlpha = 0.5;
+          ctx.beginPath();
+          ctx.ellipse(Math.random() * 512, Math.random() * 512, 40 + Math.random() * 80, 8 + Math.random() * 16, 0.1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (type === 'flagstone') {
+        // Sun-drenched Aegean ashlar travertine flagstone paving with individual slab shifts
+        rep = 8;
+        normStr = 2.0;
+        ctx.fillStyle = '#d2c09c';
+        ctx.fillRect(0, 0, 512, 512);
+
+        // Fine travertine mineral stipples
+        for (let i = 0; i < 1800; i++) {
+          ctx.fillStyle = i % 2 === 0 ? '#faeedd' : '#8c7552';
+          ctx.globalAlpha = 0.06;
+          ctx.fillRect(Math.random() * 512, Math.random() * 512, 3 + Math.random() * 8, 2 + Math.random() * 6);
+        }
+
         const rows = 8;
         const rowH = 512 / rows;
-        const slabPalette = ['rgba(180,145,98,0.16)', 'rgba(235,218,188,0.16)', 'rgba(145,115,78,0.18)', 'rgba(210,182,138,0.14)'];
+        const slabTints = ['rgba(248, 238, 222, 0.38)', 'rgba(215, 195, 162, 0.32)', 'rgba(186, 160, 122, 0.25)', 'rgba(235, 218, 192, 0.3)'];
         for (let r = 0; r < rows; r++) {
           const y = r * rowH;
-          const offset = (r % 2) * 48;
+          const offset = (r % 2) * 52;
           let x = -offset;
           let b = 0;
           while (x < 512) {
-            const slabW = (b % 2 === 0) ? 96 : 64;
-            ctx.fillStyle = slabPalette[(r * 3 + b) % slabPalette.length];
+            const slabW = (b % 2 === 0) ? 96 : 68;
+            ctx.fillStyle = slabTints[(r * 3 + b) % slabTints.length];
             ctx.globalAlpha = 1.0;
             ctx.fillRect(x + 2, y + 2, slabW - 4, rowH - 4);
 
-            // Chiseled dark mortar groove
-            ctx.strokeStyle = 'rgba(58, 44, 28, 0.78)';
-            ctx.lineWidth = 3.5;
+            // Refined dark mortar joint
+            ctx.strokeStyle = 'rgba(68, 52, 34, 0.55)';
+            ctx.lineWidth = 2.2;
             ctx.strokeRect(x, y, slabW, rowH);
 
-            // Warm sunlit top/left bevel highlight on each stone slab
-            ctx.strokeStyle = 'rgba(255, 248, 230, 0.42)';
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(x + 2.5, y + 2.5, slabW - 5, rowH - 5);
+            // Sunlit top-left chamfer highlight
+            ctx.strokeStyle = 'rgba(255, 252, 244, 0.38)';
+            ctx.lineWidth = 1.2;
+            ctx.strokeRect(x + 2, y + 2, slabW - 4, rowH - 4);
             x += slabW;
             b++;
           }
         }
+      } else if (type === 'foliage') {
+        // Lush organic Mediterranean pine & cypress foliage stippling (Zero stripes!)
+        rep = 3;
+        normStr = 1.1;
+        const isCypress = (optOrColor2 && optOrColor2.style === 'cypress') || (c1 === '#234728');
+        ctx.fillStyle = isCypress ? '#182f1b' : '#28381d';
+        ctx.fillRect(0, 0, 512, 512);
+
+        const leafCols = isCypress
+          ? ['#1f3e23', '#2d5a32', '#417a47', '#5f9d65', '#88c28e']
+          : ['#354823', '#496331', '#5e7d40', '#7b9d55', '#9abf72'];
+
+        for (let i = 0; i < 5500; i++) {
+          ctx.fillStyle = leafCols[i % leafCols.length];
+          ctx.globalAlpha = 0.45;
+          const lx = Math.random() * 512;
+          const ly = Math.random() * 512;
+          const lr = 2 + Math.random() * 5;
+          ctx.beginPath();
+          ctx.arc(lx, ly, lr, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (type === 'bark') {
+        // Gnarled Mediterranean olive & pine trunk with VERTICAL fibrous grain
+        rep = 2;
+        normStr = 1.8;
+        ctx.fillStyle = '#443224';
+        ctx.fillRect(0, 0, 512, 512);
+
+        for (let i = 0; i < 40; i++) {
+          ctx.strokeStyle = i % 2 === 0 ? 'rgba(28, 18, 11, 0.42)' : 'rgba(98, 76, 54, 0.32)';
+          ctx.lineWidth = 1.5 + (i % 4) * 1.2;
+          ctx.beginPath();
+          let px = (i / 40) * 512 + (Math.random() - 0.5) * 8;
+          ctx.moveTo(px, 0);
+          for (let py = 20; py <= 512; py += 20) {
+            px += (Math.random() - 0.5) * 6;
+            ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        }
+      } else if (type === 'marble') {
+        // Pentelic Greek Marble with subtle translucent calcite veining
+        rep = 3;
+        normStr = 0.9;
+        ctx.fillStyle = '#f8f4ed';
+        ctx.fillRect(0, 0, 512, 512);
+
+        for (let i = 0; i < 1200; i++) {
+          ctx.fillStyle = i % 2 === 0 ? '#ffffff' : '#dcd2c4';
+          ctx.globalAlpha = 0.08;
+          ctx.fillRect(Math.random() * 512, Math.random() * 512, 6 + Math.random() * 18, 3 + Math.random() * 10);
+        }
+
+        // Faint golden-grey translucent calcite veins
+        for (let v = 0; v < 6; v++) {
+          ctx.strokeStyle = 'rgba(182, 165, 142, 0.16)';
+          ctx.lineWidth = 2.0 + Math.random() * 3.0;
+          ctx.beginPath();
+          let px = Math.random() * 512;
+          let py = 0;
+          ctx.moveTo(px, py);
+          while (py < 512) {
+            px += (Math.random() - 0.5) * 24;
+            py += 24;
+            ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+        }
+      } else {
+        // Default Honed Limestone / Travertine
+        rep = rep || 4;
+        normStr = normStr || 1.4;
+        ctx.fillStyle = c1;
+        ctx.fillRect(0, 0, 512, 512);
+        for (let i = 0; i < 2000; i++) {
+          ctx.fillStyle = i % 2 === 0 ? c2 : '#ffffff';
+          ctx.globalAlpha = 0.07;
+          ctx.fillRect(Math.random() * 512, Math.random() * 512, 4 + Math.random() * 16, 2 + Math.random() * 8);
+        }
       }
 
+      ctx.globalAlpha = 1.0;
       const map = new THREE.CanvasTexture(canvas);
       map.wrapS = THREE.RepeatWrapping;
       map.wrapT = THREE.RepeatWrapping;
-      map.repeat.set(repeat, repeat);
+      map.repeat.set(rep, rep);
       map.anisotropy = 4;
       map.encoding = THREE.sRGBEncoding;
 
-      const normalMap = makeNormalMapFromCanvas(canvas, normalStrength, repeat);
+      const normalMap = makeNormalMapFromCanvas(canvas, normStr, rep);
       return { map, normalMap };
     }
 
@@ -3449,42 +3699,59 @@
       canvas.height = 256;
       const ctx = canvas.getContext('2d');
 
+      // Rich antique slate and dark Pentelic stone gradient
       const grad = ctx.createLinearGradient(0, 0, 0, 256);
-      grad.addColorStop(0, '#121e2f');
-      grad.addColorStop(0.5, '#192a40');
-      grad.addColorStop(1, '#0d1726');
+      grad.addColorStop(0, '#0f172a');
+      grad.addColorStop(0.5, '#142033');
+      grad.addColorStop(1, '#090e18');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 512, 256);
 
-      // Recessed bronze & Greek key frame
-      ctx.strokeStyle = '#c88d32';
-      ctx.lineWidth = 8;
-      ctx.strokeRect(10, 10, 492, 236);
-      ctx.strokeStyle = 'rgba(253, 230, 138, 0.42)';
-      ctx.lineWidth = 2.5;
-      ctx.strokeRect(22, 22, 468, 212);
+      // Fine chiseled stone texture
+      for (let i = 0; i < 280; i++) {
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(255,248,220,0.035)' : 'rgba(0,0,0,0.18)';
+        ctx.fillRect(Math.random() * 512, Math.random() * 256, 8 + Math.random() * 24, 2 + Math.random() * 6);
+      }
 
-      // Corner rosette rivets
-      [[34, 34], [478, 34], [34, 222], [478, 222]].forEach(([cx, cy]) => {
-        ctx.fillStyle = '#e0a64b';
+      // Elegant antique bronze inlaid border with inner shadow
+      ctx.strokeStyle = '#936a28';
+      ctx.lineWidth = 3.5;
+      ctx.strokeRect(12, 12, 488, 232);
+      ctx.strokeStyle = 'rgba(217, 175, 90, 0.45)';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(18, 18, 476, 220);
+
+      // Classical corner studs
+      [[28, 28], [484, 28], [28, 228], [484, 228]].forEach(([cx, cy]) => {
+        ctx.fillStyle = '#b88934';
         ctx.beginPath();
-        ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+        ctx.arc(cx, cy, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.beginPath();
+        ctx.arc(cx - 1, cy - 1, 1.8, 0, Math.PI * 2);
         ctx.fill();
       });
 
       const numerals = ['SOCKET I', 'SOCKET II', 'SOCKET III'];
-      ctx.font = '700 22px Georgia, serif';
-      ctx.fillStyle = '#f3cd82';
+      ctx.font = '700 21px Georgia, serif';
+      ctx.fillStyle = '#d4af37';
       ctx.textAlign = 'center';
-      ctx.fillText(numerals[slotIndex] || 'ALTAR SOCKET', 256, 86);
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.85)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetY = 2;
+      ctx.fillText(numerals[slotIndex] || 'ALTAR SOCKET', 256, 82);
 
-      ctx.font = '700 26px system-ui, sans-serif';
-      ctx.fillStyle = 'rgba(226, 232, 240, 0.78)';
-      ctx.fillText(String(roleLabel || 'CLICK TABLET TO PLACE').toUpperCase(), 256, 138);
+      ctx.font = '700 24px system-ui, -apple-system, sans-serif';
+      ctx.fillStyle = 'rgba(241, 245, 249, 0.82)';
+      ctx.shadowOffsetY = 1;
+      ctx.fillText(String(roleLabel || 'CLICK TABLET TO PLACE').toUpperCase(), 256, 134);
 
-      ctx.font = 'italic 19px Georgia, serif';
-      ctx.fillStyle = 'rgba(253, 230, 138, 0.55)';
-      ctx.fillText('— Click a carved stone tablet below —', 256, 184);
+      ctx.font = 'italic 18px Georgia, serif';
+      ctx.fillStyle = 'rgba(217, 175, 90, 0.65)';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.fillText('— Click a carved stone tablet below —', 256, 182);
 
       const tex = new THREE.CanvasTexture(canvas);
       tex.anisotropy = 4;
@@ -3503,58 +3770,75 @@
         grad.addColorStop(0, '#0c4a6e');
         grad.addColorStop(1, '#082f49');
       } else if (isSocketed) {
-        grad.addColorStop(0, '#422c14');
-        grad.addColorStop(1, '#241709');
+        grad.addColorStop(0, '#2e1f10');
+        grad.addColorStop(0.5, '#1e1309');
+        grad.addColorStop(1, '#130b05');
       } else if (isAlreadyUnmasked) {
-        grad.addColorStop(0, '#14382c');
-        grad.addColorStop(0.5, '#0f2922');
-        grad.addColorStop(1, '#081c17');
+        grad.addColorStop(0, '#0d281f');
+        grad.addColorStop(0.5, '#091c16');
+        grad.addColorStop(1, '#05110d');
       } else {
-        grad.addColorStop(0, '#273549');
-        grad.addColorStop(0.5, '#1e293b');
-        grad.addColorStop(1, '#0f172a');
+        grad.addColorStop(0, '#1e293b');
+        grad.addColorStop(0.5, '#141d2b');
+        grad.addColorStop(1, '#0a0f18');
       }
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 512, 192);
 
       // Chiseled marble & slate grain
-      for (let i = 0; i < 180; i++) {
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(255,248,220,0.04)' : 'rgba(0,0,0,0.1)';
-        ctx.fillRect(Math.random() * 512, Math.random() * 192, 12 + Math.random() * 26, 3 + Math.random() * 8);
+      for (let i = 0; i < 220; i++) {
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(255,248,220,0.045)' : 'rgba(0,0,0,0.14)';
+        ctx.fillRect(Math.random() * 512, Math.random() * 192, 10 + Math.random() * 24, 2 + Math.random() * 6);
       }
 
-      // Bevelled gold-bronze or emerald-unmasked border
-      ctx.strokeStyle = isEnergized ? '#38bdf8' : (isAlreadyUnmasked ? '#34d399' : '#e0a64b');
-      ctx.lineWidth = 7;
-      ctx.strokeRect(7, 7, 498, 178);
-      ctx.strokeStyle = isEnergized ? 'rgba(186,230,253,0.6)' : (isAlreadyUnmasked ? 'rgba(110,231,183,0.55)' : 'rgba(254,243,199,0.5)');
-      ctx.lineWidth = 2;
-      ctx.strokeRect(17, 17, 478, 158);
+      // Refined classical bronze / emerald / azure inlay frame (slim, elegant 2.5px)
+      const frameColor = isEnergized ? '#38bdf8' : (isAlreadyUnmasked ? '#34d399' : '#b88934');
+      ctx.strokeStyle = frameColor;
+      ctx.lineWidth = 3.0;
+      ctx.strokeRect(9, 9, 494, 174);
+      ctx.strokeStyle = isEnergized ? 'rgba(186,230,253,0.45)' : (isAlreadyUnmasked ? 'rgba(110,231,183,0.4)' : 'rgba(254,243,199,0.35)');
+      ctx.lineWidth = 1.0;
+      ctx.strokeRect(15, 15, 482, 162);
+
+      // Subtle corner studs
+      [[20, 20], [492, 20], [20, 172], [492, 172]].forEach(([cx, cy]) => {
+        ctx.fillStyle = frameColor;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+        ctx.fill();
+      });
 
       if (roleLabel) {
-        ctx.font = '800 19px system-ui, sans-serif';
-        ctx.fillStyle = isEnergized ? '#7dd3fc' : (isAlreadyUnmasked ? '#6ee7b7' : '#fcd34d');
+        ctx.font = '800 17px system-ui, -apple-system, sans-serif';
+        ctx.fillStyle = isEnergized ? '#7dd3fc' : (isAlreadyUnmasked ? '#6ee7b7' : '#d4af37');
         ctx.textAlign = 'center';
         const headerStr = isAlreadyUnmasked && !isSocketed
           ? `${roleLabel.toUpperCase()}  •  ✓ UNMASKED`
           : roleLabel.toUpperCase();
-        ctx.fillText(headerStr, 256, 46);
+        ctx.fillText(headerStr, 256, 42);
       }
 
       const cleanText = String(wordText || '');
-      let fontSize = 42;
-      if (cleanText.length > 22) fontSize = 27;
-      else if (cleanText.length > 16) fontSize = 32;
-      else if (cleanText.length > 11) fontSize = 37;
+      let fontSize = 38;
+      if (cleanText.length > 22) fontSize = 26;
+      else if (cleanText.length > 16) fontSize = 30;
+      else if (cleanText.length > 11) fontSize = 34;
 
       ctx.font = `700 ${fontSize}px Georgia, serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
-      ctx.fillText(cleanText, 258, roleLabel ? 118 : 100);
-      ctx.fillStyle = isEnergized ? '#f0f9ff' : (isAlreadyUnmasked ? '#ecfdf5' : '#fffbeb');
-      ctx.fillText(cleanText, 256, roleLabel ? 115 : 97);
+      const textY = roleLabel ? 114 : 96;
+
+      // Inset chiseled stone engraving effect: top shadow + bottom highlight
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+      ctx.fillText(cleanText, 256, textY + 2);
+      ctx.fillStyle = 'rgba(255, 245, 220, 0.25)';
+      ctx.fillText(cleanText, 256, textY - 1);
+
+      // Lettering face
+      ctx.fillStyle = isEnergized ? '#f0f9ff' : (isAlreadyUnmasked ? '#ecfdf5' : '#f8fafc');
+      ctx.fillText(cleanText, 256, textY);
 
       const tex = new THREE.CanvasTexture(canvas);
       tex.anisotropy = 4;
@@ -3563,8 +3847,8 @@
       return tex;
     }
 
-    // Deterministically sculpt craggy Aegean limestone cliffs & mountains (replaces smooth grey balls!)
-    function buildCraggyRockGeometry(radius, detail = 3, seed = 1.0, flattenBottom = true) {
+    // Deterministically sculpt craggy Aegean limestone cliffs & mountains
+    function buildCraggyRockGeometry(radius, detail = 3, seed = 1.0, isSeaCliff = false) {
       const geo = new THREE.IcosahedronGeometry(radius, detail);
       const pos = geo.attributes.position;
       for (let i = 0; i < pos.count; i++) {
@@ -3576,18 +3860,25 @@
         const ny = vy / len;
         const nz = vz / len;
 
-        // Multi-octave rocky ridge & stratified cliff ledge displacement
-        const n1 = Math.sin(nx * 3.7 + seed) * Math.cos(nz * 3.3 - seed * 0.7) * 0.24;
-        const n2 = Math.abs(Math.cos(nx * 7.5 + ny * 5.2 + seed * 1.9)) * 0.16;
-        const strata = Math.sin(ny * 14.0 + seed) * 0.055;
-        const cragFactor = 1.0 + n1 - n2 + strata;
+        // Multi-frequency organic limestone karst fracturing & stratified weathered shelves
+        const ridge1 = Math.sin(nx * 3.8 + seed * 1.3) * Math.cos(nz * 3.4 - seed * 0.9) * 0.22;
+        const ridge2 = Math.cos(ny * 4.8 + nx * 2.8 + seed * 2.1) * 0.14;
+        const facetNoise = (Math.sin(nx * 7.5 + nz * 6.2) * 0.07 + Math.cos(ny * 8.0 + seed) * 0.05);
+        const cragFactor = 1.0 + ridge1 + ridge2 + facetNoise;
 
         vx *= cragFactor;
         vy *= cragFactor;
         vz *= cragFactor;
 
-        if (flattenBottom && vy < -radius * 0.25) {
-          vy = -radius * 0.25 + (vy + radius * 0.25) * 0.2;
+        // If this is a sea cliff / mountain, pull its base DOWN into a deep submerged sea-skirt
+        if (isSeaCliff) {
+          if (vy < 0.0) {
+            const depth = Math.abs(vy) / radius;
+            const flare = 1.0 + depth * 0.42;
+            vx *= flare;
+            vz *= flare;
+            vy = vy * 1.8 - radius * 0.55; // Root firmly into the ocean floor!
+          }
         }
         pos.setXYZ(i, vx, vy, vz);
       }
@@ -3641,7 +3932,7 @@
       const canvas = document.getElementById('webgl-canvas');
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       renderer.outputEncoding = THREE.sRGBEncoding;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 0.96;
@@ -3734,10 +4025,15 @@
               col = mix(col, cloudCol, cloudMask * 0.35 * (1.0 - uNightMix * 0.6));
             }
 
-            // Night Stars during Moonlit Masque
-            if (uNightMix > 0.2 && dir.y > 0.08) {
-              float starVal = pow(hash(floor(dir.xz * 260.0)), 22.0);
-              col += vec3(0.9, 0.95, 1.0) * starVal * uNightMix * smoothstep(0.08, 0.35, dir.y);
+            // Atmospheric Rayleigh & Golden Sunset Haze
+            float horizonGlow = pow(1.0 - h, 4.5);
+            col += horizonColor * horizonGlow * 0.26 * (1.0 - uNightMix * 0.7);
+
+            // Night Stars during Moonlit Masque (Spherical mapping - zero vertical streaks!)
+            if (uNightMix > 0.65 && dir.y > 0.08) {
+              vec2 starUv = vec2(atan(dir.z, dir.x), asin(clamp(dir.y, -1.0, 1.0)));
+              float starVal = pow(hash(floor(starUv * 160.0)), 36.0);
+              col += vec3(0.95, 0.98, 1.0) * starVal * smoothstep(0.65, 1.0, uNightMix) * smoothstep(0.12, 0.45, dir.y) * 2.2;
             }
 
             gl_FragColor = vec4(col, 1.0);
@@ -3750,96 +4046,96 @@
       scene.add(hemiLight);
 
       sunLight = new THREE.DirectionalLight(0xfdba74, 1.18);
-      sunLight.position.set(-32, 28, -26);
+      sunLight.position.set(-28, 32, -22);
       sunLight.castShadow = true;
-      sunLight.shadow.mapSize.width = 2048;
-      sunLight.shadow.mapSize.height = 2048;
+      sunLight.shadow.mapSize.width = 1024;
+      sunLight.shadow.mapSize.height = 1024;
       sunLight.shadow.camera.near = 2;
       sunLight.shadow.camera.far = 150;
       sunLight.shadow.camera.left = -46;
       sunLight.shadow.camera.right = 46;
       sunLight.shadow.camera.top = 75;
       sunLight.shadow.camera.bottom = -75;
-      sunLight.shadow.bias = -0.0005;
+      sunLight.shadow.bias = -0.0006;
       scene.add(sunLight);
 
       playerLight = new THREE.PointLight(0xff8c24, 0.72, 18);
       scene.add(playerLight);
 
       // Rich Self-Contained Procedural PBR + Sobel Normal Maps (100% file:// & HTTP compatible)
-      const travertinePBR = makeProceduralPBR('#dcc7a1', '#b89a6c', true, true, 5, 3.2);
+      const travertinePBR = makeProceduralPBR('flagstone');
       const matWhitewash = new THREE.MeshStandardMaterial({
         map: travertinePBR.map,
         normalMap: travertinePBR.normalMap,
-        normalScale: new THREE.Vector2(1.15, 1.15),
-        roughness: 0.46,
-        metalness: 0.06
+        normalScale: new THREE.Vector2(0.9, 0.9),
+        roughness: 0.55,
+        metalness: 0.04
       });
 
-      const marblePBR = makeProceduralPBR('#ebe1cf', '#cbb898', true, false, 3, 2.2);
+      const marblePBR = makeProceduralPBR('marble');
       const matColumnMarble = new THREE.MeshStandardMaterial({
         map: marblePBR.map,
         normalMap: marblePBR.normalMap,
-        normalScale: new THREE.Vector2(0.85, 0.85),
-        roughness: 0.36,
+        normalScale: new THREE.Vector2(0.6, 0.6),
+        roughness: 0.28,
         metalness: 0.08
       });
 
-      const limestonePBR = makeProceduralPBR('#c7b290', '#967d58', true, true, 4, 3.4);
+      const limestonePBR = makeProceduralPBR('limestone');
       const matLimestone = new THREE.MeshStandardMaterial({
         map: limestonePBR.map,
         normalMap: limestonePBR.normalMap,
-        normalScale: new THREE.Vector2(1.35, 1.35),
-        roughness: 0.68,
-        metalness: 0.05
+        normalScale: new THREE.Vector2(0.85, 0.85),
+        roughness: 0.62,
+        metalness: 0.04
       });
 
-      const earthPBR = makeProceduralPBR('#5a6e36', '#394a1f', true, false, 6, 3.5);
+      const earthPBR = makeProceduralPBR('#5a6e36', '#394a1f', false, false, 4, 1.4);
       const matPineEarth = new THREE.MeshStandardMaterial({
         map: earthPBR.map,
         normalMap: earthPBR.normalMap,
-        normalScale: new THREE.Vector2(1.4, 1.4),
+        normalScale: new THREE.Vector2(1.1, 1.1),
         roughness: 0.88,
         metalness: 0.02
       });
 
-      const cliffPBR = makeProceduralPBR('#a68b67', '#634d34', true, false, 4, 4.2);
+      const cliffPBR = makeProceduralPBR('cliff');
       const matCliff = new THREE.MeshStandardMaterial({
         map: cliffPBR.map,
         normalMap: cliffPBR.normalMap,
-        normalScale: new THREE.Vector2(1.85, 1.85),
-        roughness: 0.84,
-        metalness: 0.04
-      });
-
-      const terracottaPBR = makeProceduralPBR('#c25233', '#8c3119', true, true, 4, 3.0);
-      const matTerracotta = new THREE.MeshStandardMaterial({
-        map: terracottaPBR.map,
-        normalMap: terracottaPBR.normalMap,
-        normalScale: new THREE.Vector2(1.1, 1.1),
-        roughness: 0.52,
-        metalness: 0.08
-      });
-
-      const cypressPBR = makeProceduralPBR('#234728', '#122916', true, false, 3, 3.6);
-      const matCypress = new THREE.MeshStandardMaterial({
-        map: cypressPBR.map,
-        normalMap: cypressPBR.normalMap,
-        normalScale: new THREE.Vector2(1.4, 1.4),
-        roughness: 0.78,
-        metalness: 0.02
-      });
-
-      const olivePBR = makeProceduralPBR('#586e42', '#394a28', true, false, 3, 3.4);
-      const matOliveFoliage = new THREE.MeshStandardMaterial({
-        map: olivePBR.map,
-        normalMap: olivePBR.normalMap,
-        normalScale: new THREE.Vector2(1.3, 1.3),
-        roughness: 0.74,
+        normalScale: new THREE.Vector2(0.95, 0.95),
+        roughness: 0.82,
         metalness: 0.03
       });
 
-      const bougainvilleaPBR = makeProceduralPBR('#be185d', '#831843', false, false, 2, 3.0);
+      const terracottaPBR = makeProceduralPBR('terracotta');
+      const matTerracotta = new THREE.MeshStandardMaterial({
+        map: terracottaPBR.map,
+        normalMap: terracottaPBR.normalMap,
+        normalScale: new THREE.Vector2(0.8, 0.8),
+        roughness: 0.58,
+        metalness: 0.06
+      });
+
+      const cypressPBR = makeProceduralPBR('foliage', { style: 'cypress' });
+      const matCypress = new THREE.MeshStandardMaterial({
+        map: cypressPBR.map,
+        normalMap: cypressPBR.normalMap,
+        normalScale: new THREE.Vector2(0.8, 0.8),
+        roughness: 0.72,
+        metalness: 0.02
+      });
+
+      const olivePBR = makeProceduralPBR('foliage', { style: 'olive' });
+      const matOliveFoliage = new THREE.MeshStandardMaterial({
+        map: olivePBR.map,
+        normalMap: olivePBR.normalMap,
+        normalScale: new THREE.Vector2(0.8, 0.8),
+        roughness: 0.72,
+        metalness: 0.02
+      });
+
+      const bougainvilleaPBR = makeProceduralPBR('#be185d', '#831843', false, false, 2, 1.2);
       const matBougainvillea = new THREE.MeshStandardMaterial({
         map: bougainvilleaPBR.map,
         normalMap: bougainvilleaPBR.normalMap,
@@ -3847,12 +4143,12 @@
         metalness: 0.04
       });
 
-      const barkPBR = makeProceduralPBR('#5c4632', '#36271a', true, false, 3, 3.8);
+      const barkPBR = makeProceduralPBR('bark');
       const matOliveTrunk = new THREE.MeshStandardMaterial({
         map: barkPBR.map,
         normalMap: barkPBR.normalMap,
-        normalScale: new THREE.Vector2(1.5, 1.5),
-        roughness: 0.88,
+        normalScale: new THREE.Vector2(1.2, 1.2),
+        roughness: 0.86,
         metalness: 0.02
       });
 
@@ -3882,16 +4178,19 @@
         roughness: 0.15
       });
 
-      // Upgraded Aegean Sea Shader (Fresnel Sky Reflection + Sun Glitter Path + Island Shoreline Foam)
+      // Cinematic Aegean Sea Shader (Realistic Multi-Scale Swell, Sky Reflection, Golden Sun Glitter & Shoreline Shallows)
       waterUniforms = {
         uTime: { value: 0 },
         uFreeze: { value: 0.0 },
-        uSunDir: { value: new THREE.Vector3(-0.42, 0.58, -0.48).normalize() },
-        uDeepColor: { value: new THREE.Color(0x052e58) },
-        uShallowColor: { value: new THREE.Color(0x0ea5e9) },
-        uSunColor: { value: new THREE.Color(0xfff3c4) }
+        uSunDir: { value: new THREE.Vector3(-0.38, 0.28, -0.88).normalize() },
+        uDeepColor: { value: new THREE.Color(0x06182d) },
+        uShallowColor: { value: new THREE.Color(0x155e75) },
+        uSunColor: { value: new THREE.Color(0xfde68a) },
+        uSkyTop: { value: new THREE.Color(0x09152b) },
+        uSkyMid: { value: new THREE.Color(0x4c284e) },
+        uSkyHorizon: { value: new THREE.Color(0xf97316) }
       };
-      const waterGeo = new THREE.PlaneGeometry(420, 420, 128, 128);
+      const waterGeo = new THREE.PlaneGeometry(480, 480, 80, 80);
       waterGeo.rotateX(-Math.PI / 2);
       const waterMat = new THREE.ShaderMaterial({
         uniforms: waterUniforms,
@@ -3900,16 +4199,21 @@
           uniform float uFreeze;
           varying float vElev;
           varying vec3 vWorldPos;
+          varying vec2 vWaveCoords;
+
           void main() {
             vec3 pos = position;
-            float t = uTime * (1.0 - uFreeze * 0.92);
-            float w1 = sin(pos.x * 0.28 + t * 1.4) * cos(pos.z * 0.24 + t * 1.1) * 0.16;
-            float w2 = sin(pos.x * 0.75 - t * 1.8 + pos.z * 0.62) * 0.055;
-            float w3 = cos(pos.x * 1.4 + pos.z * 1.2 + t * 2.3) * 0.025;
-            pos.y += (w1 + w2 + w3) * (1.0 - uFreeze * 0.88);
-            vElev = w1 + w2 + w3;
+            float t = uTime * (1.0 - uFreeze * 0.95);
+            // Multi-harmonic Mediterranean sea swell
+            float w1 = sin(pos.x * 0.18 + pos.z * 0.12 + t * 1.25) * 0.18;
+            float w2 = cos(pos.x * 0.42 - pos.z * 0.35 + t * 1.7) * 0.08;
+            float w3 = sin(pos.x * 0.95 + pos.z * 0.82 + t * 2.5) * 0.035;
+            float totalWave = (w1 + w2 + w3) * (1.0 - uFreeze * 0.9);
+            pos.y += totalWave;
+            vElev = totalWave;
             vec4 wp = modelMatrix * vec4(pos, 1.0);
             vWorldPos = wp.xyz;
+            vWaveCoords = pos.xz;
             gl_Position = projectionMatrix * viewMatrix * wp;
           }
         `,
@@ -3920,45 +4224,73 @@
           uniform vec3 uDeepColor;
           uniform vec3 uShallowColor;
           uniform vec3 uSunColor;
+          uniform vec3 uSkyTop;
+          uniform vec3 uSkyMid;
+          uniform vec3 uSkyHorizon;
           varying float vElev;
           varying vec3 vWorldPos;
+          varying vec2 vWaveCoords;
 
           void main() {
-            // Distance to the 3 Phraxos headlands for turquoise shallows & white shoreline foam
+            // Distance to all 4 Phraxos headlands for crystal-clear coastal shallows
             float d1 = length(vWorldPos.xz - vec2(0.0, 8.5)) - 17.8;
             float d2 = length(vWorldPos.xz - vec2(0.0, -24.0)) - 16.2;
             float d3 = length(vWorldPos.xz - vec2(0.0, -58.0)) - 16.2;
-            float minDist = min(d1, min(d2, d3));
+            float d4 = length(vWorldPos.xz - vec2(0.0, -90.0)) - 15.5;
+            float minDist = min(min(d1, d2), min(d3, d4));
 
-            float shallowMask = 1.0 - smoothstep(0.0, 14.0, max(minDist, 0.0));
-            vec3 waterCol = mix(uDeepColor, uShallowColor, clamp(shallowMask * 0.72 + 0.28 + vElev * 1.8, 0.0, 1.0));
+            // High-detail wave normals via cross-wave gradient
+            float t = uTime * (1.0 - uFreeze * 0.95);
+            vec2 p = vWaveCoords;
+            float nx = sin(p.x * 0.35 + t * 1.4) * 0.14
+                     + sin(p.x * 0.85 - t * 2.1 + p.y * 0.5) * 0.08
+                     + cos(p.x * 2.2 + p.y * 1.8 + t * 3.4) * 0.04;
+            float nz = cos(p.y * 0.32 + t * 1.2) * 0.14
+                     + cos(p.y * 0.78 + t * 1.8 + p.x * 0.4) * 0.08
+                     + sin(p.y * 2.4 - p.x * 1.5 + t * 3.1) * 0.04;
+            vec3 normal = normalize(vec3(nx * (1.0 - uFreeze * 0.85), 1.0, nz * (1.0 - uFreeze * 0.85)));
 
-            // Shoreline surf foam ring lapping against the limestone cliffs
-            float shoreFoam = (1.0 - smoothstep(0.0, 2.2, abs(minDist - 0.6 + sin(uTime * 2.2 + vWorldPos.x * 0.5) * 0.35)));
-            float crestFoam = smoothstep(0.07, 0.21, vElev);
-            vec3 foamCol = vec3(0.93, 0.98, 1.0);
-            waterCol = mix(waterCol, foamCol, clamp(shoreFoam * 0.68 + crestFoam * 0.38, 0.0, 1.0));
-
-            // Specular Aegean sun-glitter path across the waves
+            // View direction & reflected sky ray
             vec3 viewDir = normalize(cameraPosition - vWorldPos);
-            vec3 normal = normalize(vec3(
-              cos(vWorldPos.x * 0.8 + uTime * 1.7) * 0.16,
-              1.0,
-              sin(vWorldPos.z * 0.8 + uTime * 1.4) * 0.16
-            ));
-            vec3 halfVec = normalize(uSunDir + viewDir);
-            float spec = pow(max(dot(normal, halfVec), 0.0), 72.0);
-            float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 3.2);
-            waterCol += uSunColor * spec * 1.35 * (1.0 - uFreeze * 0.5);
-            waterCol = mix(waterCol, uShallowColor * 1.25, fresnel * 0.28);
+            vec3 reflDir = reflect(-viewDir, normal);
+            float reflH = clamp(reflDir.y, 0.0, 1.0);
 
-            vec3 glassCol = vec3(0.72, 0.95, 0.99);
-            gl_FragColor = vec4(mix(waterCol, glassCol, uFreeze), 1.0);
+            // Reflected Aegean twilight / noon sky
+            vec3 reflSky = mix(uSkyHorizon, uSkyMid, smoothstep(0.0, 0.32, reflH));
+            reflSky = mix(reflSky, uSkyTop, smoothstep(0.32, 0.95, reflH));
+
+            // Turquoise shallows around island perimeter blending to deep Mediterranean blue
+            float shallowMask = 1.0 - smoothstep(0.0, 12.0, max(minDist, 0.0));
+            vec3 waterBody = mix(uDeepColor, uShallowColor, shallowMask * 0.75 + clamp(vElev * 0.8, -0.15, 0.35));
+
+            // Accurate physical Fresnel factor (water IOR 1.333)
+            float NdotV = max(dot(normal, viewDir), 0.0);
+            float fresnel = 0.04 + 0.96 * pow(1.0 - NdotV, 4.5);
+
+            vec3 waterCol = mix(waterBody, reflSky, clamp(fresnel * 0.92, 0.0, 1.0));
+
+            // Sun specular glint and elongated glitter trail
+            vec3 halfVec = normalize(uSunDir + viewDir);
+            float NdotH = max(dot(normal, halfVec), 0.0);
+            float spec = pow(NdotH, 110.0) * 1.8;
+            float sunGlitter = pow(max(dot(reflDir, uSunDir), 0.0), 38.0) * 0.85;
+            waterCol += uSunColor * (spec + sunGlitter) * (1.0 - uFreeze * 0.6);
+
+            // Gentle shoreline lapping foam
+            float shoreWave = sin(uTime * 2.0 + vWorldPos.x * 0.4 + vWorldPos.z * 0.3) * 0.35;
+            float shoreFoam = 1.0 - smoothstep(0.0, 1.8, abs(minDist - 0.4 + shoreWave));
+            float crestFoam = smoothstep(0.14, 0.26, vElev);
+            vec3 foamCol = vec3(0.94, 0.98, 1.0);
+            waterCol = mix(waterCol, foamCol, clamp(shoreFoam * 0.62 + crestFoam * 0.35, 0.0, 1.0) * (1.0 - uFreeze));
+
+            // Glass Sea Wonder (Freeze state)
+            vec3 glassCol = vec3(0.72, 0.94, 0.98);
+            gl_FragColor = vec4(mix(waterCol, glassCol, uFreeze * 0.78), 1.0);
           }
         `
       });
       const waterMesh = new THREE.Mesh(waterGeo, waterMat);
-      waterMesh.position.set(0, -0.35, -26);
+      waterMesh.position.set(0, -0.38, -26);
       scene.add(waterMesh);
 
       // Lathe-turned Classical Two-Handled Greek Terracotta Amphora
@@ -4006,14 +4338,14 @@
         for (let t = 0; t < 8; t++) {
           const frac = t / 7;
           const profile = Math.sin(frac * Math.PI * 0.88 + 0.18);
-          const r = (0.32 + profile * 0.52) * (h / 5.2);
-          const tuftGeo = buildCraggyRockGeometry(r, 2, t * 1.7 + x, false);
+          const r = (0.28 + profile * 0.46) * (h / 5.2);
+          const tuftGeo = buildCraggyRockGeometry(r, 3, t * 1.7 + x, false);
           const tuft = new THREE.Mesh(tuftGeo, matCypress);
-          tuft.scale.set(0.88, 1.45, 0.88);
+          tuft.scale.set(0.85, 1.42, 0.85);
           tuft.position.set(
-            Math.sin(t * 2.1) * 0.06,
+            Math.sin(t * 2.1) * 0.05,
             1.15 + frac * (h * 0.78),
-            Math.cos(t * 1.7) * 0.06
+            Math.cos(t * 1.7) * 0.05
           );
           cg.add(tuft);
         }
@@ -4045,25 +4377,33 @@
 
           // Sculpted umbrella pine / olive foliage canopy pads
           [
-            [0, 2.85, 0, 1.35],
-            [-0.85, 2.55, 0.38, 1.05],
-            [0.85, 2.65, -0.35, 1.08],
-            [0.18, 3.15, 0.45, 0.98],
-            [-0.35, 2.95, -0.52, 0.92]
+            [0, 2.85, 0, 1.42],
+            [-0.85, 2.55, 0.38, 1.12],
+            [0.85, 2.65, -0.35, 1.15],
+            [0.18, 3.15, 0.45, 1.02],
+            [-0.35, 2.95, -0.52, 0.98]
           ].forEach(([ox, oy, oz, orad], cIdx) => {
-            const crownGeo = buildCraggyRockGeometry(orad, 2, cIdx * 2.3 + z, false);
+            const crownGeo = buildCraggyRockGeometry(orad, 3, cIdx * 2.3 + z, false);
             const crown = new THREE.Mesh(crownGeo, matOliveFoliage);
-            crown.scale.set(1.38, 0.52, 1.28);
+            crown.scale.set(1.35, 0.85, 1.25);
             crown.position.set(ox, oy, oz);
             og.add(crown);
           });
 
-          // Flowering Bougainvillea bush at the base of the tree
-          const bougGeo = buildCraggyRockGeometry(0.55, 2, x + z, false);
-          const boug = new THREE.Mesh(bougGeo, matBougainvillea);
-          boug.scale.set(1.25, 0.72, 1.15);
-          boug.position.set(0.55, 0.42, 0.45);
-          og.add(boug);
+          // Natural Mediterranean shrub & flowering oleander cluster at the base
+          const shrubGeo = buildCraggyRockGeometry(0.48, 3, x + z, false);
+          const shrub = new THREE.Mesh(shrubGeo, matOliveFoliage);
+          shrub.scale.set(1.15, 0.65, 1.05);
+          shrub.position.set(0.42, 0.35, 0.38);
+          og.add(shrub);
+
+          // Small subtle flowering floral accents (delicate, not a giant pink boulder)
+          [-0.15, 0.22].forEach((fx, fi) => {
+            const flowerGeo = buildCraggyRockGeometry(0.18, 2, fi * 3.7, false);
+            const flower = new THREE.Mesh(flowerGeo, matBougainvillea);
+            flower.position.set(0.42 + fx, 0.58 + fi * 0.08, 0.38 + (fi === 0 ? 0.15 : -0.12));
+            og.add(flower);
+          });
 
           cg.add(og);
         }
@@ -4115,11 +4455,11 @@
         // Sculpted Craggy Coastal Limestone Outcrops around the waterline
         for (let i = 0; i < 16; i++) {
           const ang = (i / 16) * Math.PI * 2 + 0.22;
-          if (Math.abs(Math.sin(ang)) < 0.24) continue;
-          const rockGeo = buildCraggyRockGeometry(1.65 + (i % 3) * 0.65, 2, i * 3.1 + cz, true);
+          if (Math.abs(Math.sin(ang)) < 0.32) continue;
+          const rockGeo = buildCraggyRockGeometry(1.5 + (i % 3) * 0.5, 2, i * 3.1 + cz, false);
           const rock = new THREE.Mesh(rockGeo, matCliff);
-          rock.position.set(Math.sin(ang) * (radius + 1.55), -0.15, Math.cos(ang) * (radius + 1.55));
-          rock.scale.set(1.35, 0.82, 1.2);
+          rock.position.set(Math.sin(ang) * (radius + 2.4), -1.15, Math.cos(ang) * (radius + 2.4));
+          rock.scale.set(1.2, 0.55, 1.15);
           rock.rotation.y = i * 0.85;
           g.add(rock);
         }
@@ -4338,32 +4678,25 @@
       coveBoat.add(boatTrim);
       enableShadowsRecursive(coveBoat);
 
-      // Sculpted Craggy Cycladic Horizon Mountains & Limestone Sea-Stacks (No smooth balls!)
+      // Sculpted Craggy Cycladic Horizon Mountains & Limestone Sea-Stacks
       [
-        [-40, 16, 14], [42, 14, 16], [-44, -14, 18], [44, -16, 17],
-        [-40, -46, 15], [40, -48, 17], [0, -94, 24]
+        [-48, 14, 20], [52, 12, 20], [-52, -18, 22], [52, -20, 22],
+        [-50, -52, 20], [50, -54, 22], [-46, -92, 20], [46, -92, 20], [0, -148, 30]
       ].forEach(([x, z, s], idx) => {
         const cragGroup = new THREE.Group();
-        cragGroup.position.set(x, -1.6, z);
+        cragGroup.position.set(x, -4.0, z);
 
-        const mainGeo = buildCraggyRockGeometry(s * 0.68, 3, idx * 4.7 + 1.2, true);
+        const mainGeo = buildCraggyRockGeometry(s * 0.75, 3, idx * 4.7 + 1.2, true);
         const mainPeak = new THREE.Mesh(mainGeo, matCliff);
-        mainPeak.scale.set(1.45, 0.95, 1.2);
-        mainPeak.position.y = s * 0.34;
+        mainPeak.scale.set(1.35, 1.15, 1.25);
+        mainPeak.position.y = s * 0.10;
         cragGroup.add(mainPeak);
 
-        const subGeo = buildCraggyRockGeometry(s * 0.46, 3, idx * 7.3 + 2.5, true);
+        const subGeo = buildCraggyRockGeometry(s * 0.52, 3, idx * 7.3 + 2.5, true);
         const subPeak = new THREE.Mesh(subGeo, matCliff);
-        subPeak.scale.set(1.3, 0.78, 1.15);
-        subPeak.position.set(s * 0.48, s * 0.18, s * 0.25);
+        subPeak.scale.set(1.2, 0.95, 1.15);
+        subPeak.position.set(s * 0.36, -0.6, s * 0.22);
         cragGroup.add(subPeak);
-
-        // Crown the island crags with Mediterranean scrub & pine clusters
-        const scrubGeo = buildCraggyRockGeometry(s * 0.28, 2, idx * 3.1, false);
-        const scrub = new THREE.Mesh(scrubGeo, matOliveFoliage);
-        scrub.scale.set(1.6, 0.38, 1.3);
-        scrub.position.set(0, s * 0.72, 0);
-        cragGroup.add(scrub);
 
         enableShadowsRecursive(cragGroup, false, true);
         scene.add(cragGroup);
@@ -4688,8 +5021,9 @@
               vUv = uv;
               vec3 pos = position;
               float h = clamp(uv.y, 0.0, 1.0);
-              float swayX = sin(uTime * 5.8 + h * 4.2 + uSeed) * 0.14 * h * h;
-              float swayZ = cos(uTime * 4.9 + h * 3.8 + uSeed * 1.7) * 0.12 * h * h;
+              // Fluid organic flame sway & upward curling lick
+              float swayX = sin(uTime * 4.6 + h * 3.8 + uSeed) * 0.09 * h * h;
+              float swayZ = cos(uTime * 3.9 + h * 3.2 + uSeed * 1.5) * 0.08 * h * h;
               pos.x += swayX;
               pos.z += swayZ;
               gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -4714,47 +5048,61 @@
             void main() {
               vec2 uv = vUv;
               float dx = abs(uv.x - 0.5) * 2.0;
-              float taper = mix(0.85, 0.08, pow(uv.y, 0.85));
-              float n1 = noise(vec2(uv.x * 4.5 + uSeed, uv.y * 5.5 - uTime * 4.6));
-              float n2 = noise(vec2(uv.x * 9.0 - uSeed, uv.y * 10.0 - uTime * 7.8));
-              float turb = (n1 * 0.65 + n2 * 0.35) * 0.48 * uv.y;
 
-              float shape = 1.0 - smoothstep(taper * 0.35, taper, dx + turb - 0.16);
-              float vertFade = smoothstep(0.0, 0.12, uv.y) * (1.0 - smoothstep(0.55, 0.98, uv.y));
-              float intensity = clamp(shape * vertFade * 1.45, 0.0, 1.0);
-              if (intensity < 0.02) discard;
+              // Natural teardrop flame profile: bulbous in lower third, graceful tapering spear at tip
+              float taper = sin(clamp(uv.y * 3.14159, 0.0, 3.14159));
+              float width = mix(0.18, 0.52, sqrt(clamp(uv.y * 2.4, 0.0, 1.0))) * (1.0 - pow(uv.y, 1.45) * 0.94);
 
-              vec3 coreCol = vec3(1.0, 0.98, 0.86);
-              vec3 midCol  = vec3(1.0, 0.68, 0.14);
-              vec3 tipCol  = vec3(0.92, 0.22, 0.04);
-              vec3 col = mix(tipCol, midCol, smoothstep(0.15, 0.58, intensity));
-              col = mix(col, coreCol, smoothstep(0.62, 0.95, intensity * (1.0 - uv.y * 0.45)));
+              // Turbulent upward fire licks
+              float n1 = noise(vec2(uv.x * 5.2 + uSeed, uv.y * 6.8 - uTime * 5.8));
+              float n2 = noise(vec2(uv.x * 10.5 - uSeed * 1.6, uv.y * 13.5 - uTime * 9.2));
+              float turb = (n1 * 0.62 + n2 * 0.38 - 0.5) * 0.35 * uv.y;
 
-              gl_FragColor = vec4(col * intensity, intensity * 0.92);
+              float dist = dx + turb;
+              float shape = 1.0 - smoothstep(width * 0.45, width * 1.25, dist);
+              float vertFade = smoothstep(0.02, 0.16, uv.y) * (1.0 - smoothstep(0.65, 0.98, uv.y));
+              float alpha = clamp(shape * vertFade, 0.0, 1.0);
+              if (alpha < 0.015) discard;
+
+              // Fire thermal gradient:
+              // Incandescent white-yellow core -> golden amber mantle -> fiery orange-red tips & blue coal base
+              vec3 blueBase = vec3(0.35, 0.65, 1.0);
+              vec3 coreCol  = vec3(1.0, 0.97, 0.88);
+              vec3 amberCol = vec3(1.0, 0.65, 0.12);
+              vec3 flameRed = vec3(0.92, 0.24, 0.04);
+
+              float heat = alpha * (1.0 - uv.y * 0.52);
+              vec3 col = mix(flameRed, amberCol, smoothstep(0.16, 0.52, heat));
+              col = mix(col, coreCol, smoothstep(0.55, 0.90, heat));
+              if (uv.y < 0.14) {
+                col = mix(blueBase, col, smoothstep(0.02, 0.14, uv.y));
+              }
+
+              gl_FragColor = vec4(col * alpha * 1.05, alpha * 0.78);
             }
           `
         });
       }
 
       const brazierCoords = [
-        // Flanking Altar 1 (West Terrace) — right in front of the player!
-        { x: -8.3, z: 9.3, hasLight: true, intensity: 2.65 },
-        { x: -2.6, z: 9.3, hasLight: true, intensity: 2.65 },
+        // Flanking Altar 1 (West Terrace) — framing the altar elegantly without blocking the view
+        { x: -9.2, z: 8.8, hasLight: true, intensity: 2.45 },
+        { x: -1.8, z: 8.8, hasLight: true, intensity: 2.45 },
         // Flanking Altar 2 (East Colonnade)
-        { x:  2.6, z: 9.3, hasLight: true, intensity: 2.55 },
-        { x:  8.3, z: 9.3, hasLight: true, intensity: 2.55 },
+        { x:  1.8, z: 8.8, hasLight: true, intensity: 2.35 },
+        { x:  9.2, z: 8.8, hasLight: true, intensity: 2.35 },
         // Flanking Villa Bourani Grand Portico Entrance Steps
         { x: -3.6, z: 15.6, hasLight: false, intensity: 2.0 },
         { x:  3.6, z: 15.6, hasLight: false, intensity: 2.0 },
         // Flanking Altar 3 (The 1943 Cove Amphitheatre)
-        { x: -3.5, z: -22.5, hasLight: true, intensity: 2.55 },
+        { x: -3.5, z: -22.5, hasLight: true, intensity: 2.35 },
         { x:  3.5, z: -22.5, hasLight: false, intensity: 2.0 },
         // Flanking Altar 4 (The Trial Court)
-        { x: -3.5, z: -56.5, hasLight: true, intensity: 2.55 },
+        { x: -3.5, z: -56.5, hasLight: true, intensity: 2.35 },
         { x:  3.5, z: -56.5, hasLight: false, intensity: 2.0 },
         // Flanking Altar 5 (The Parnassus Subterranean Astrolabe Sanctuary)
-        { x: -3.5, z: -89.5, hasLight: true, intensity: 2.65 },
-        { x:  3.5, z: -89.5, hasLight: false, intensity: 2.1 }
+        { x: -3.5, z: -89.5, hasLight: true, intensity: 2.45 },
+        { x:  3.5, z: -89.5, hasLight: false, intensity: 2.0 }
       ];
 
       brazierCoords.forEach((b, idx) => {
@@ -4796,17 +5144,19 @@
         coals.position.y = 1.62;
         bg.add(coals);
 
-        // Volumetric GLSL Crossed Flame Planes + Central Flame Cone
+        enableShadowsRecursive(bg, true, true);
+
+        // Fluid Volumetric Crossed Flame Planes (No Shadow Clipping, Sits Directly in Coals)
         const flameMat = createFlameShaderMaterial(idx * 2.17);
-        const flamePlaneGeo = new THREE.PlaneGeometry(1.15, 1.75, 8, 16);
-        [0, Math.PI / 3, (2 * Math.PI) / 3].forEach((rotY) => {
+        const flamePlaneGeo = new THREE.PlaneGeometry(0.72, 1.30, 8, 16);
+        [0, Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 4].forEach((rotY) => {
           const fp = new THREE.Mesh(flamePlaneGeo, flameMat);
-          fp.position.y = 2.42;
+          fp.position.y = 2.18;
           fp.rotation.y = rotY;
+          fp.castShadow = false;
+          fp.receiveShadow = false;
           bg.add(fp);
         });
-
-        enableShadowsRecursive(bg, true, true);
 
         if (b.hasLight) {
           const fLight = new THREE.PointLight(0xff7718, b.intensity, 22, 1.45);
@@ -5732,6 +6082,9 @@
           }
         }
       });
+
+      // Synchronize world lighting, sky gradient, Aegean sea shader, fog, and sun vectors to active lighting mode
+      applyLightingMode(lightingMode, true);
     }
 
     function onResize() {
@@ -5745,10 +6098,11 @@
     // ==========================================================================
     // 3. AEGEAN TIME-OF-DAY LIGHTING DIAL (NOON / PINE DUSK / MOONLIT MASQUE)
     // ==========================================================================
-    function cycleLighting() {
-      lightingMode = (lightingMode + 1) % 3;
+    function applyLightingMode(mode, silent = false) {
+      lightingMode = mode;
       const lbl = document.getElementById('lighting-label');
       const introLbl = document.getElementById('intro-lighting-label');
+      if (!skyMat || !scene || !waterUniforms || !hemiLight || !sunLight) return;
 
       if (lightingMode === 0) {
         // Blinding Aegean Noon
@@ -5764,6 +6118,11 @@
         sunLight.color.setHex(0xffe6b3);
         waterUniforms.uDeepColor.value.setHex(0x052e58);
         waterUniforms.uShallowColor.value.setHex(0x0ea5e9);
+        waterUniforms.uSunColor.value.setHex(0xfffbeb);
+        waterUniforms.uSkyTop.value.setHex(0x0a3d7a);
+        waterUniforms.uSkyMid.value.setHex(0x3b95d4);
+        waterUniforms.uSkyHorizon.value.setHex(0xfef3c7);
+        waterUniforms.uSunDir.value.set(-0.35, 0.75, -0.55).normalize();
       } else if (lightingMode === 1) {
         // Firelit Bourani Dusk
         if (lbl) lbl.textContent = '🔥 Light: Firelit Dusk';
@@ -5776,9 +6135,14 @@
         hemiLight.intensity = 0.58;
         sunLight.intensity = 1.18;
         sunLight.color.setHex(0xfdba74);
-        waterUniforms.uDeepColor.value.setHex(0x091e36);
-        waterUniforms.uShallowColor.value.setHex(0x1d4e68);
-        playHarpsichordArpeggio([293.66, 349.23, 440.0, 587.33]);
+        waterUniforms.uDeepColor.value.setHex(0x06182d);
+        waterUniforms.uShallowColor.value.setHex(0x155e75);
+        waterUniforms.uSunColor.value.setHex(0xfde68a);
+        waterUniforms.uSkyTop.value.setHex(0x09152b);
+        waterUniforms.uSkyMid.value.setHex(0x4c284e);
+        waterUniforms.uSkyHorizon.value.setHex(0xf97316);
+        waterUniforms.uSunDir.value.set(-0.38, 0.28, -0.88).normalize();
+        if (!silent) playHarpsichordArpeggio([293.66, 349.23, 440.0, 587.33]);
       } else {
         // Moonlit Torch Masque
         if (lbl) lbl.textContent = '🌙 Light: Moonlit Masque';
@@ -5793,8 +6157,17 @@
         sunLight.color.setHex(0x93c5fd);
         waterUniforms.uDeepColor.value.setHex(0x020814);
         waterUniforms.uShallowColor.value.setHex(0x0c2d48);
-        playChord([220.0, 329.63, 493.88], 0.55);
+        waterUniforms.uSunColor.value.setHex(0xbfdbfe);
+        waterUniforms.uSkyTop.value.setHex(0x030712);
+        waterUniforms.uSkyMid.value.setHex(0x0f172a);
+        waterUniforms.uSkyHorizon.value.setHex(0x1e293b);
+        waterUniforms.uSunDir.value.set(-0.25, 0.45, -0.85).normalize();
+        if (!silent) playChord([220.0, 329.63, 493.88], 0.55);
       }
+    }
+
+    function cycleLighting() {
+      applyLightingMode((lightingMode + 1) % 3, false);
     }
 
     function enterIsland() {
@@ -5869,8 +6242,7 @@
             if (mesh && mesh.material) {
               mesh.userData.itemIdx = itemIdx;
               const isSolved = discovered.has(`${a}_${itemIdx}`);
-              mesh.material.map = makeStoneTabletTexture(cols[c][itemIdx], def.roles[c], false, false, isSolved);
-              mesh.material.needsUpdate = true;
+              swapMap(mesh.material, makeStoneTabletTexture(cols[c][itemIdx], def.roles[c], false, false, isSolved));
             }
           }
         }
@@ -5890,6 +6262,8 @@
     function setLevelMode(mode) {
       if (mode !== 'c1' && mode !== 'a1') return;
       levelMode = mode;
+      discovered = discoveredByMode[mode];
+      activeWonder.fill(-1);
       shuffleAllRacks();
       document.getElementById('mode-toggle-label').textContent =
         levelMode === 'c1' ? '🎓 Mode: C1/C2 & IELTS' : '🌱 Mode: A1–B1 Foundations';
@@ -5906,6 +6280,8 @@
       setActiveAltarUI(currentAltarId);
       updateProgressHUD();
       renderJournalContent();
+      applyWorldWonders();
+      saveProgress();
       playChord([392.0, 523.25], 0.35);
     }
 
@@ -5926,6 +6302,8 @@
 
     function setActiveAltarUI(altarId) {
       currentAltarId = altarId;
+      hintTargetIdx = -1;
+      hintTier = 0;
       for (let i = 0; i < 5; i++) {
         const btn = document.getElementById(`nav-altar-${i}`);
         if (btn) btn.classList.toggle('active', i === altarId);
@@ -5980,35 +6358,63 @@
       renderSocketsAndRack();
     }
 
+    let hintTargetIdx = -1;
+    let hintTier = 0; // 0 = structural nudge, 1 = Socket I locked, 2 = full Socratic rule
+
     function giveHint() {
       const def = getAltarDef(currentAltarId);
       // Pick the first unsolved wonder on this altar (or cycle if all 5 are solved)
-      let targetIdx = -1;
+      let firstUnsolved = -1;
       for (let w = 0; w < 5; w++) {
         if (!discovered.has(`${currentAltarId}_${w}`)) {
-          targetIdx = w;
+          firstUnsolved = w;
           break;
         }
       }
-      if (targetIdx === -1) {
-        targetIdx = (activeWonder[currentAltarId] + 1) % 5;
+      if (firstUnsolved === -1) {
+        firstUnsolved = (activeWonder[currentAltarId] + 1) % 5;
       }
 
-      // Socket ONLY Column 0 (leaving Sockets II and III for the player to deduce!)
-      altarState[currentAltarId] = [targetIdx, null, null];
-      selectedSlotIdx = 1;
-      activeWonder[currentAltarId] = -1;
-      applyWorldWonders();
-      playStoneSlide();
-      renderSocketsAndRack();
+      if (hintTargetIdx !== firstUnsolved) {
+        hintTargetIdx = firstUnsolved;
+        hintTier = 0;
+      } else {
+        hintTier = (hintTier + 1) % 3;
+      }
 
+      const targetIdx = hintTargetIdx;
       const strip = document.getElementById('effect-strip');
       const textEl = document.getElementById('effect-text');
-      strip.className = 'effect-strip interactive';
-      const hintText = (def.hints && def.hints[targetIdx])
-        ? def.hints[targetIdx]
-        : `💡 Conchis’s Hint: Start with "${def.col0[targetIdx]}" in Socket I, then match its grammatical partner in Socket II and III.`;
-      textEl.textContent = hintText;
+      strip.className = 'effect-strip clue interactive';
+
+      if (hintTier === 0) {
+        // Tier 1: Structural blueprint nudge only (no sockets placed yet)
+        playChord([330.0, 440.0], 0.28);
+        textEl.textContent = `💡 Hint (1/3 · Blueprint): Target wonder "${def.wonders[targetIdx].name}" follows ${def.formula}. Click 💡 Hint again to lock Socket I.`;
+      } else if (hintTier === 1) {
+        // Tier 2: Lock Socket I and highlight the opening trigger
+        altarState[currentAltarId] = [targetIdx, null, null];
+        selectedSlotIdx = 1;
+        activeWonder[currentAltarId] = -1;
+        applyWorldWonders();
+        playStoneSlide();
+        renderSocketsAndRack();
+        textEl.textContent = `💡 Hint (2/3 · Opening Stone): Socket I locked to "${def.col0[targetIdx]}". Now choose its grammatical partner in Socket II (${def.roles[1]}), or click 💡 Hint once more for the full rule.`;
+      } else {
+        // Tier 3: Keep Socket I locked and reveal the full Socratic grammar note
+        if (altarState[currentAltarId][0] !== targetIdx) {
+          altarState[currentAltarId] = [targetIdx, null, null];
+          selectedSlotIdx = 1;
+          activeWonder[currentAltarId] = -1;
+          applyWorldWonders();
+          renderSocketsAndRack();
+        }
+        playStoneSlide();
+        const hintText = (def.hints && def.hints[targetIdx])
+          ? def.hints[targetIdx]
+          : `💡 Conchis’s Hint: Start with "${def.col0[targetIdx]}" in Socket I, then match its grammatical partner in Socket II and III.`;
+        textEl.textContent = `${hintText.replace(/^💡 Hint:\s*/, '💡 Hint (3/3 · Full Rule): ')}`;
+      }
     }
 
     function shuffleCurrentAltar() {
@@ -6149,8 +6555,7 @@
           const tMesh = tabletMeshes3D[currentAltarId][s];
           tMesh.visible = (val !== null);
           if (val !== null && tMesh.material) {
-            tMesh.material.map = makeStoneTabletTexture(cols[s][val], def.roles[s], true, isEnergized, false);
-            tMesh.material.needsUpdate = true;
+            swapMap(tMesh.material, makeStoneTabletTexture(cols[s][val], def.roles[s], true, isEnergized, false));
           }
         }
       }
@@ -6188,7 +6593,7 @@
       }
     }
 
-    function triggerSolveSpectacle(altarId) {
+    function triggerSolveSpectacle(altarId, isFullAct = false) {
       const altarCoords = [
         { x: -5.5, z: 9.2 },
         { x: 5.5, z: 9.2 },
@@ -6201,13 +6606,13 @@
         wonderGroups.solveFXGroup.position.set(pos.x, 0.45, pos.z);
         wonderGroups.solveFXGroup.visible = true;
       }
-      wonderGroups.solveTimer = 4.2;
-      wonderGroups.cameraRevealTimer = 2.4;
+      wonderGroups.solveTimer = isFullAct ? 6.4 : 4.2;
+      wonderGroups.cameraRevealTimer = isFullAct ? 3.8 : 2.4;
 
       // Play a triumphant two-tier Greek Kithara & Harmonic Chime Fanfare
       playHarpsichordArpeggio([293.66, 369.99, 440.0, 587.33, 739.99, 880.0, 1174.66]);
       setTimeout(() => {
-        playChord([440.0, 554.37, 659.25, 880.0], 2.2);
+        playChord([440.0, 554.37, 659.25, 880.0], isFullAct ? 3.0 : 2.2);
       }, 260);
     }
 
@@ -6221,7 +6626,10 @@
       if (socketsRow) socketsRow.classList.remove('clash-shake');
       for (let s = 0; s < 3; s++) {
         const b = document.getElementById(`socket-ui-${s}`);
-        if (b) b.classList.remove('clash-box');
+        if (b) {
+          b.classList.remove('clash-box');
+          b.classList.remove('alternate-box');
+        }
       }
 
       if (i0 === null || i1 === null || i2 === null) {
@@ -6247,6 +6655,9 @@
         const discKey = `${altarId}_${solvedIdx}`;
         const wasNew = !discovered.has(discKey);
         discovered.add(discKey);
+        hintTargetIdx = -1;
+        hintTier = 0;
+        if (wasNew) saveProgress();
         updateProgressHUD();
         refreshAll3DRackTextures();
 
@@ -6282,9 +6693,28 @@
 
         strip.className = 'effect-strip solved interactive';
         textEl.textContent = wonder.msg;
-        triggerSolveSpectacle(altarId);
+        recordVerifiedSentence(altarId, `${w0} ${w1} ${w2}.`, 'wonder');
+        triggerSolveSpectacle(altarId, wasNew && altarCount === 5);
         applyWorldWonders();
         renderSocketsAndRack();
+        return;
+      }
+
+      const altEntry = (def.alternates || []).find(
+        ([t]) => t[0] === i0 && t[1] === i1 && t[2] === i2
+      );
+      if (altEntry) {
+        activeWonder[altarId] = -1;
+        applyWorldWonders();
+        strip.className = 'effect-strip clue interactive';
+        textEl.textContent = altEntry[1];
+        recordVerifiedSentence(altarId, `${w0} ${w1} ${w2}.`, 'alternate');
+        playChord([330.0, 440.0], 0.4, 'sine');
+        renderSocketsAndRack();
+        for (let s = 0; s < 3; s++) {
+          const b = document.getElementById(`socket-ui-${s}`);
+          if (b) b.classList.add('alternate-box');
+        }
       } else {
         activeWonder[altarId] = -1;
         applyWorldWonders();
@@ -6300,10 +6730,15 @@
           void socketsRow.offsetWidth;
           socketsRow.classList.add('clash-shake');
         }
-        for (let s = 0; s < 3; s++) {
+        // Highlight only the clashing socket(s) relative to the opening trigger (Socket I)
+        const faultSlots = [];
+        if (i1 !== i0) faultSlots.push(1);
+        if (i2 !== i0) faultSlots.push(2);
+        const targetSlots = faultSlots.length > 0 ? faultSlots : [0, 1, 2];
+        targetSlots.forEach((s) => {
           const b = document.getElementById(`socket-ui-${s}`);
           if (b) b.classList.add('clash-box');
-        }
+        });
       }
     }
 
@@ -6314,13 +6749,15 @@
       playerLight.intensity = 0.65;
       if (waterUniforms) waterUniforms.uFreeze.value = 0.0;
 
-      // Act I (West Terrace — 5 Wonders)
+      const hasW = (a, w) => activeWonder[a] === w || discovered.has(`${a}_${w}`);
+
+      // Act I (West Terrace — 5 Wonders: Visuals accumulate, Physics follow active sentence)
       const w0 = activeWonder[0];
-      if (wonderGroups.solarBeacon) wonderGroups.solarBeacon.visible = (w0 === 0);
-      if (wonderGroups.floatingStones) wonderGroups.floatingStones.visible = (w0 === 1);
-      if (wonderGroups.hermesGateways) wonderGroups.hermesGateways.visible = (w0 === 2);
-      wonderGroups.obeliskTargetY = (w0 === 3) ? 5.2 : 0.4;
-      if (wonderGroups.crystallineFrost) wonderGroups.crystallineFrost.visible = (w0 === 4);
+      if (wonderGroups.solarBeacon) wonderGroups.solarBeacon.visible = hasW(0, 0);
+      if (wonderGroups.floatingStones) wonderGroups.floatingStones.visible = hasW(0, 1);
+      if (wonderGroups.hermesGateways) wonderGroups.hermesGateways.visible = hasW(0, 2);
+      wonderGroups.obeliskTargetY = hasW(0, 3) ? 5.2 : 0.4;
+      if (wonderGroups.crystallineFrost) wonderGroups.crystallineFrost.visible = hasW(0, 4);
 
       if (w0 === 0) {
         playerLight.intensity = 2.8;
@@ -6334,39 +6771,36 @@
         waterUniforms.uFreeze.value = 1.0;
       }
 
-      // Act II (East Colonnade — 5 Wonders)
-      const w1 = activeWonder[1];
-      if (wonderGroups.hearthLanterns) wonderGroups.hearthLanterns.visible = (w1 === 0);
-      if (wonderGroups.energyArch) wonderGroups.energyArch.visible = (w1 === 1);
-      wonderGroups.stairsTargetY = (w1 === 2) ? 0.0 : -6.5;
-      if (wonderGroups.astrolabeGroup) wonderGroups.astrolabeGroup.visible = (w1 === 3);
-      if (wonderGroups.aegisDome) wonderGroups.aegisDome.visible = (w1 === 4);
+      // Act II (East Colonnade — 5 Cumulative Wonders)
+      if (wonderGroups.hearthLanterns) wonderGroups.hearthLanterns.visible = hasW(1, 0);
+      if (wonderGroups.energyArch) wonderGroups.energyArch.visible = hasW(1, 1);
+      wonderGroups.stairsTargetY = hasW(1, 2) ? 0.0 : -6.5;
+      if (wonderGroups.astrolabeGroup) wonderGroups.astrolabeGroup.visible = hasW(1, 3);
+      if (wonderGroups.aegisDome) wonderGroups.aegisDome.visible = hasW(1, 4);
 
-      // Act III (1943 Cove Amphitheatre — 5 Wonders)
-      const w2 = activeWonder[2];
-      wonderGroups.archTargetY = (w2 === 0) ? 3.5 : 0.0;
-      if (wonderGroups.runicStelae) wonderGroups.runicStelae.visible = (w2 === 1);
-      if (wonderGroups.windShip) wonderGroups.windShip.visible = (w2 === 2);
-      if (wonderGroups.sovereignDais) wonderGroups.sovereignDais.visible = (w2 === 3);
-      wonderGroups.clockworkActive = (w2 === 4);
+      // Act III (1943 Cove Amphitheatre — 5 Cumulative Wonders)
+      wonderGroups.archTargetY = hasW(2, 0) ? 3.5 : 0.0;
+      if (wonderGroups.runicStelae) wonderGroups.runicStelae.visible = hasW(2, 1);
+      if (wonderGroups.windShip) wonderGroups.windShip.visible = hasW(2, 2);
+      if (wonderGroups.sovereignDais) wonderGroups.sovereignDais.visible = hasW(2, 3);
+      wonderGroups.clockworkActive = hasW(2, 4);
       if (wonderGroups.clockChimeRings) {
-        wonderGroups.clockChimeRings.forEach((cr) => { cr.visible = (w2 === 4); });
+        wonderGroups.clockChimeRings.forEach((cr) => { cr.visible = hasW(2, 4); });
       }
 
-      // Act IV (The Trial Court — 5 Wonders)
-      const w3 = activeWonder[3];
-      if (wonderGroups.timePrismGroup) wonderGroups.timePrismGroup.visible = (w3 === 0);
-      if (wonderGroups.skyIslands) wonderGroups.skyIslands.visible = (w3 === 1);
-      if (wonderGroups.skyArk) wonderGroups.skyArk.visible = (w3 === 2);
-      if (wonderGroups.triadBeams) wonderGroups.triadBeams.visible = (w3 === 3);
-      if (wonderGroups.goldenGrove) wonderGroups.goldenGrove.visible = (w3 === 4);
+      // Act IV (The Trial Court — 5 Cumulative Wonders)
+      if (wonderGroups.timePrismGroup) wonderGroups.timePrismGroup.visible = hasW(3, 0);
+      if (wonderGroups.skyIslands) wonderGroups.skyIslands.visible = hasW(3, 1);
+      if (wonderGroups.skyArk) wonderGroups.skyArk.visible = hasW(3, 2);
+      if (wonderGroups.triadBeams) wonderGroups.triadBeams.visible = hasW(3, 3);
+      if (wonderGroups.goldenGrove) wonderGroups.goldenGrove.visible = hasW(3, 4);
 
-      // Act V (The Parnassus Subterranean Astrolabe Sanctuary — 5 Wonders)
-      const w4 = activeWonder[4];
+      // Act V (The Parnassus Subterranean Astrolabe Sanctuary — Cumulative Awakening)
+      const w4Any = hasW(4, 0) || hasW(4, 1) || hasW(4, 2) || hasW(4, 3) || hasW(4, 4);
       if (wonderGroups.parnassusSanctuaryGroup) {
-        wonderGroups.parnassusSanctuaryGroup.visible = (w4 !== -1);
+        wonderGroups.parnassusSanctuaryGroup.visible = w4Any;
       }
-      if (w4 !== -1) {
+      if (activeWonder[4] !== -1) {
         playerLight.intensity = 2.6;
       }
     }
@@ -6425,6 +6859,426 @@
         });
       });
       listContainer.innerHTML = itemsHtml.join('');
+
+      const logCountEl = document.getElementById('journal-sentence-log-count');
+      const logListEl = document.getElementById('journal-sentence-log-list');
+      const logEntries = sentenceLogByMode[levelMode] || [];
+      if (logCountEl) logCountEl.textContent = String(logEntries.length);
+      if (logListEl) {
+        if (logEntries.length === 0) {
+          logListEl.innerHTML = `<div class="discovery-item" style="color:#94a3b8; font-style:italic;">No sentences forged in this mode yet — step up to an altar to begin.</div>`;
+        } else {
+          logListEl.innerHTML = logEntries.map((entry) => {
+            const isWonder = entry.kind === 'wonder';
+            const badge = isWonder
+              ? `<span style="font-size:0.64rem; font-weight:800; color:#6ee7b7; background:rgba(6,78,59,0.65); border:1px solid rgba(52,211,153,0.6); border-radius:999px; padding:0.1rem 0.45rem; white-space:nowrap;">✨ Wonder · Act ${entry.altarId + 1}</span>`
+              : `<span style="font-size:0.64rem; font-weight:800; color:#fde68a; background:rgba(120,53,15,0.65); border:1px solid rgba(251,191,36,0.6); border-radius:999px; padding:0.1rem 0.45rem; white-space:nowrap;">✓ Valid Alternate · Act ${entry.altarId + 1}</span>`;
+            return `
+              <div class="discovery-item ${isWonder ? 'unlocked' : ''}">
+                <span style="font-size:0.73rem; color:#f8fafc;">“${entry.sentence}”</span>
+                ${badge}
+              </div>
+            `;
+          }).join('');
+        }
+      }
+    }
+
+    // ==========================================================================
+    // 5B. CONCHIS'S MARBLE TABLET PART 4 DUEL (10 C1/C2 KEY WORD TRANSFORMATIONS)
+    // ==========================================================================
+    const KWT_DUEL_ITEMS = [
+      {
+        id: 0,
+        act: "Act I · Negative Inversion",
+        s1Html: `<span class="kwt-deficit">Immediately after</span> <span class="kwt-echo">the harpsichord played</span>, <span class="kwt-echo">the masque began</span>.`,
+        tense: "Past Perfect + Past Simple",
+        voice: "Negative Inversion (No sooner ... than)",
+        keyWord: "SOONER",
+        leadIn: "No",
+        tail: "the masque began.",
+        fullAnswers: ["sooner had the harpsichord played than"],
+        halfPattern: /^sooner\s+had\s+the\s+harpsichord\b|\bplayed\s+than$/i,
+        model: "sooner had the harpsichord played than",
+        note: "Comparative 'No sooner' inverts the past perfect ('had + subject + V3') and pairs with 'than' (never 'when')."
+      },
+      {
+        id: 1,
+        act: "Act I · Delayed Inversion",
+        s1Html: `<span class="kwt-echo">The Aegean</span> <span class="kwt-deficit">froze</span> <span class="kwt-deficit">only after</span> <span class="kwt-echo">the cicadas fell silent</span>.`,
+        tense: "Past Simple ('did + bare infinitive')",
+        voice: "Delayed Main-Clause Inversion",
+        keyWord: "WHEN",
+        leadIn: "Only",
+        tail: "the Aegean freeze.",
+        fullAnswers: ["when the cicadas fell silent did"],
+        halfPattern: /^when\s+the\s+cicadas\s+fell\s+silent\b|\bsilent\s+did$/i,
+        model: "when the cicadas fell silent did",
+        note: "After fronted 'Only when', the time clause stays in normal word order and the main clause inverts ('did the Aegean freeze')."
+      },
+      {
+        id: 2,
+        act: "Act I · Restrictive Adverbial",
+        s1Html: `<span class="kwt-echo">The schoolmaster</span> <span class="kwt-deficit">had no idea about</span> <span class="kwt-echo">the scale of the Godgame</span>.`,
+        tense: "Past Simple ('did + subject + V1')",
+        voice: "Negative Inversion ('Little did...')",
+        keyWord: "DID",
+        leadIn: "Little",
+        tail: "the scale of the Godgame.",
+        fullAnswers: [
+          "did the schoolmaster guess",
+          "did the schoolmaster know about",
+          "did the schoolmaster suspect",
+          "did the schoolmaster realise",
+          "did the schoolmaster realize"
+        ],
+        halfPattern: /^did\s+the\s+schoolmaster\b/i,
+        model: "did the schoolmaster guess",
+        note: "Fronted restrictive 'Little' triggers auxiliary inversion ('did + subject + bare infinitive')."
+      },
+      {
+        id: 3,
+        act: "Act II · It-Cleft Focus",
+        s1Html: `<span class="kwt-echo">The twin sister</span> <span class="kwt-deficit">was betrayed by</span> <span class="kwt-echo">the scarlet ribbon</span>.`,
+        tense: "Past Simple",
+        voice: "Passive → Active It-Cleft",
+        keyWord: "THAT",
+        leadIn: "It was",
+        tail: "the twin sister.",
+        fullAnswers: [
+          "the scarlet ribbon that betrayed",
+          "the scarlet ribbon that gave away"
+        ],
+        halfPattern: /^the\s+scarlet\s+ribbon\s+that\b|\bthat\s+betrayed$/i,
+        model: "the scarlet ribbon that betrayed",
+        note: "An It-cleft ('It was + focus NP + that + active verb') isolates the agent for dramatic emphasis."
+      },
+      {
+        id: 4,
+        act: "Act III · Passive Reporting (Singular)",
+        s1Html: `<span class="kwt-deficit">Islanders believe that</span> <span class="kwt-echo">the ruined chapel arch</span> <span class="kwt-deficit">survived</span> <span class="kwt-echo">the quake</span>.`,
+        tense: "Present Reporting + Past Event",
+        voice: "Impersonal Passive + Perfect Infinitive",
+        keyWord: "BELIEVED",
+        leadIn: "The ruined chapel arch",
+        tail: "the quake.",
+        fullAnswers: ["is believed to have survived"],
+        halfPattern: /^is\s+believed\s+to\b|\bto\s+have\s+survived$/i,
+        model: "is believed to have survived",
+        note: "When the reported action happened before the present belief, pair 'is believed to' with the perfect infinitive ('have + V3')."
+      },
+      {
+        id: 5,
+        act: "Act III · Passive Reporting (Plural)",
+        s1Html: `<span class="kwt-deficit">Scholars think that</span> <span class="kwt-deficit">someone underlined</span> <span class="kwt-echo">the pamphlet passages</span> <span class="kwt-echo">then</span>.`,
+        tense: "Present Reporting + Past Passive Event",
+        voice: "Passive Perfect Infinitive ('to have been + V3')",
+        keyWord: "THOUGHT",
+        leadIn: "The pamphlet passages",
+        tail: "underlined then.",
+        fullAnswers: ["are thought to have been"],
+        halfPattern: /^are\s+thought\s+to\b|\bto\s+have\s+been$/i,
+        model: "are thought to have been",
+        note: "Plural subject + passive prior event requires 'are thought to have been + past participle'."
+      },
+      {
+        id: 6,
+        act: "Act IV · Inverted 2nd Conditional",
+        s1Html: `<span class="kwt-deficit">If you dropped</span> <span class="kwt-echo">the final mask</span>, <span class="kwt-echo">the prism would shatter</span>.`,
+        tense: "2nd Conditional (Hypothetical Present/Future)",
+        voice: "Inverted 'Were + subject + to + V1'",
+        keyWord: "TO",
+        leadIn: "Were",
+        tail: "the final mask, the prism would shatter.",
+        fullAnswers: ["you to drop"],
+        halfPattern: /^you\s+to\b|\bto\s+drop$/i,
+        model: "you to drop",
+        note: "In formal C1/C2 conditionals, 'If you dropped...' inverts to 'Were you to drop...'."
+      },
+      {
+        id: 7,
+        act: "Act IV · Past Subjunctive",
+        s1Html: `<span class="kwt-deficit">You really ought to step</span> <span class="kwt-echo">into the Grove of Eleutheria</span> <span class="kwt-deficit">now</span>.`,
+        tense: "Present Urgency → Past Subjunctive",
+        voice: "'It is high time + subject + past simple'",
+        keyWord: "TIME",
+        leadIn: "It is",
+        tail: "into the Grove of Eleutheria.",
+        fullAnswers: ["high time you stepped", "about time you stepped", "time you stepped"],
+        halfPattern: /\btime\s+you\b|\byou\s+stepped$/i,
+        model: "high time you stepped",
+        note: "'It is high time' takes a past subjunctive verb ('stepped') to express a present action that is overdue."
+      },
+      {
+        id: 8,
+        act: "Act V · C2 Contrastive Cleft",
+        s1Html: `<span class="kwt-echo">Your belief</span> <span class="kwt-echo">binds you</span> <span class="kwt-deficit">far more than</span> <span class="kwt-echo">the mask itself</span>.`,
+        tense: "Present Simple",
+        voice: "Contrastive Cleft ('not so much X as Y')",
+        keyWord: "MUCH",
+        leadIn: "It is not",
+        tail: "your belief that binds you.",
+        fullAnswers: ["so much the mask itself as"],
+        halfPattern: /^so\s+much\b|\bitself\s+as$/i,
+        model: "so much the mask itself as",
+        note: "'It is not so much [X] as [Y] that + verb' sets up a clean C2 contrast between the prop and the true cause."
+      },
+      {
+        id: 9,
+        act: "Act V · Inverted Counterfactual",
+        s1Html: `<span class="kwt-deficit">Without</span> <span class="kwt-echo">Conchis’s subterranean key, the sanctuary would have stayed sealed</span>.`,
+        tense: "3rd Conditional (Past Counterfactual)",
+        voice: "Inverted 'Had it not been for + NP'",
+        keyWord: "BEEN",
+        leadIn: "Had",
+        tail: "Conchis’s subterranean key, the sanctuary would have stayed sealed.",
+        fullAnswers: ["it not been for"],
+        halfPattern: /^it\s+not\s+been\b|\bbeen\s+for$/i,
+        model: "it not been for",
+        note: "'Had it not been for + noun phrase' replaces 'If it had not been for' or 'Without' in formal C1/C2 counterfactuals."
+      }
+    ];
+
+    const kwtState = {
+      tab: 'all',
+      allEchoesStruck: false,
+      echoStruck: {},
+      answers: {},
+      scores: {},
+      revealed: {}
+    };
+
+    function loadKwtProgress() {
+      try {
+        const raw = JSON.parse(localStorage.getItem('phraxos-kwt-v1') || 'null');
+        if (!raw || typeof raw !== 'object') return;
+        if (raw.answers && typeof raw.answers === 'object') {
+          Object.assign(kwtState.answers, raw.answers);
+        }
+      } catch (e) { /* ignore storage errors */ }
+    }
+
+    function saveKwtProgress() {
+      try {
+        localStorage.setItem('phraxos-kwt-v1', JSON.stringify({ answers: kwtState.answers }));
+      } catch (e) { /* ignore storage errors */ }
+    }
+
+    function evaluateKwtItem(item, rawInput) {
+      const cleaned = String(rawInput || '')
+        .trim()
+        .replace(/[.,;!?]+$/g, '')
+        .replace(/\s+/g, ' ');
+      if (!cleaned) {
+        return { words: 0, hasKey: false, marks: 0, status: 'empty', msg: 'Type 3 to 6 words including the unchanged KEY WORD.' };
+      }
+      const words = cleaned.split(' ').length;
+      const keyRegex = new RegExp(`\\b${item.keyWord}\\b`, 'i');
+      const hasKey = keyRegex.test(cleaned);
+      const lower = cleaned.toLowerCase();
+
+      if (!hasKey) {
+        return {
+          words,
+          hasKey: false,
+          marks: 0,
+          status: 'bad',
+          msg: `⚡ Include the exact key word "${item.keyWord}" without changing its form.`
+        };
+      }
+      if (words < 3 || words > 6) {
+        return {
+          words,
+          hasKey: true,
+          marks: 0,
+          status: 'warn',
+          msg: `⚡ Word count is ${words} (${words < 3 ? 'too short' : 'too long'}). Cambridge Part 4 requires 3 to 6 words.`
+        };
+      }
+      if (item.fullAnswers.includes(lower)) {
+        return {
+          words,
+          hasKey: true,
+          marks: 2,
+          status: 'full',
+          msg: `✓ 2/2 Marks! "${item.leadIn} ${cleaned} ${item.tail}" — ${item.note}`
+        };
+      }
+      if (item.halfPattern && item.halfPattern.test(cleaned)) {
+        return {
+          words,
+          hasKey: true,
+          marks: 1,
+          status: 'half',
+          msg: `◐ 1/2 Mark —Half of the C1 frame is in place. Check tense/agreement across the other half of the gap.`
+        };
+      }
+      return {
+        words,
+        hasKey: true,
+        marks: 0,
+        status: 'warn',
+        msg: `⚡ Key word & length are valid, but the syntactic frame doesn’t match "${item.voice}" yet.`
+      };
+    }
+
+    function updateKwtScoreBadge() {
+      let totalMarks = 0;
+      let fullCount = 0;
+      KWT_DUEL_ITEMS.forEach((item) => {
+        const m = kwtState.scores[item.id] || 0;
+        totalMarks += m;
+        if (m === 2) fullCount++;
+      });
+      const badge = document.getElementById('kwt-duel-score-badge');
+      if (badge) {
+        badge.textContent = `🏆 Score: ${totalMarks} / 20 Marks (${fullCount} / 10 Tablets)`;
+      }
+    }
+
+    function updateKwtCardUI(id, playSound = false) {
+      const item = KWT_DUEL_ITEMS[id];
+      if (!item) return;
+      const inputEl = document.getElementById(`kwt-input-${id}`);
+      const cardEl = document.getElementById(`kwt-card-${id}`);
+      const wcBadge = document.getElementById(`kwt-wc-${id}`);
+      const kwBadge = document.getElementById(`kwt-kw-${id}`);
+      const marksBadge = document.getElementById(`kwt-marks-${id}`);
+      const fbEl = document.getElementById(`kwt-fb-${id}`);
+      if (!inputEl || !cardEl) return;
+
+      const prevMarks = kwtState.scores[id] || 0;
+      const res = evaluateKwtItem(item, inputEl.value);
+      kwtState.answers[id] = inputEl.value;
+      kwtState.scores[id] = res.marks;
+      saveKwtProgress();
+
+      cardEl.classList.toggle('solved-full', res.marks === 2);
+      cardEl.classList.toggle('solved-half', res.marks === 1);
+
+      if (wcBadge) {
+        wcBadge.textContent = `Words: ${res.words} / 3–6`;
+        wcBadge.className = 'kwt-guard-badge ' + (res.words === 0 ? '' : (res.words >= 3 && res.words <= 6 ? 'ok' : 'bad'));
+      }
+      if (kwBadge) {
+        kwBadge.textContent = res.hasKey ? `✓ KEY: ${item.keyWord}` : `KEY: ${item.keyWord}`;
+        kwBadge.className = 'kwt-guard-badge ' + (res.words === 0 ? '' : (res.hasKey ? 'ok' : 'bad'));
+      }
+      if (marksBadge) {
+        marksBadge.textContent = `${res.marks} / 2 Marks`;
+        marksBadge.className = 'kwt-guard-badge ' + (res.marks === 2 ? 'ok' : (res.marks === 1 ? 'warn' : ''));
+      }
+      if (fbEl) {
+        fbEl.textContent = res.msg;
+        fbEl.style.color = res.marks === 2 ? '#6ee7b7' : (res.marks === 1 ? '#fde68a' : (res.status === 'bad' ? '#fca5a5' : '#cbd5e1'));
+      }
+
+      updateKwtScoreBadge();
+      if (playSound && res.marks > prevMarks) {
+        playChord(res.marks === 2 ? [440.0, 554.37, 659.25] : [330.0, 440.0], 0.35);
+      }
+    }
+
+    function renderKwtDuelGrid() {
+      const grid = document.getElementById('kwt-duel-grid');
+      if (!grid) return;
+      grid.innerHTML = KWT_DUEL_ITEMS.map((item) => {
+        const struck = !!(kwtState.allEchoesStruck || kwtState.echoStruck[item.id]);
+        const savedAns = (kwtState.answers[item.id] || '').replace(/"/g, '&quot;');
+        const isRev = !!kwtState.revealed[item.id];
+        return `
+          <div class="kwt-tablet-card ${struck ? 'echo-struck' : ''}" id="kwt-card-${item.id}">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:0.4rem;">
+              <span style="font-size:0.7rem; font-weight:800; color:#fcd34d; letter-spacing:0.04em;">🪨 Tablet ${item.id + 1} &bull; ${item.act}</span>
+              <span class="kwt-guard-badge" id="kwt-marks-${item.id}">0 / 2 Marks</span>
+            </div>
+            <div class="kwt-s1-box">${item.s1Html}</div>
+            <div class="kwt-meta-pills">
+              <span class="kwt-meta-pill">⏳ ${item.tense}</span>
+              <span class="kwt-meta-pill">🔄 ${item.voice}</span>
+              <button type="button" class="kwt-meta-pill" style="cursor:pointer;" onclick="IsleGame.toggleKwtCardEcho(${item.id})">
+                ✂️ Strike Echoes
+              </button>
+            </div>
+            <div class="kwt-s2-frame">
+              ${item.leadIn} <strong style="color:#38bdf8; text-decoration:underline;">[ 3–6 words · ${item.keyWord} ]</strong> ${item.tail}
+            </div>
+            <div class="kwt-input-row">
+              <input type="text" class="kwt-input" id="kwt-input-${item.id}" value="${savedAns}"
+                placeholder="Type 3–6 words using ${item.keyWord}..."
+                aria-label="Tablet ${item.id + 1} Key Word Transformation using ${item.keyWord}"
+                oninput="IsleGame.onKwtInput(${item.id})" />
+              <button type="button" class="reveal-cambridge-btn" style="margin-top:0; white-space:nowrap;" id="kwt-rev-btn-${item.id}" onclick="IsleGame.toggleKwtModel(${item.id})">
+                ${isRev ? '🙈 Hide Model' : '👁️ Reveal Cambridge Model'}
+              </button>
+            </div>
+            <div class="kwt-guards-row">
+              <span class="kwt-guard-badge" id="kwt-wc-${item.id}">Words: 0 / 3–6</span>
+              <span class="kwt-guard-badge" id="kwt-kw-${item.id}">KEY: ${item.keyWord}</span>
+            </div>
+            <div class="kwt-feedback-line" id="kwt-fb-${item.id}"></div>
+            <div class="cambridge-model-reveal ${isRev ? 'visible' : ''}" id="kwt-model-box-${item.id}">
+              <strong>✓ Cambridge Model:</strong> “${item.leadIn} <span style="color:#fde68a; text-decoration:underline;">${item.model}</span> ${item.tail}”
+              <div style="font-size:0.72rem; color:#cbd5e1; margin-top:0.18rem;">${item.note}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      KWT_DUEL_ITEMS.forEach((item) => updateKwtCardUI(item.id, false));
+    }
+
+    function onKwtInput(id) {
+      updateKwtCardUI(id, true);
+    }
+
+    function toggleKwtCardEcho(id) {
+      kwtState.echoStruck[id] = !kwtState.echoStruck[id];
+      const card = document.getElementById(`kwt-card-${id}`);
+      if (card) {
+        card.classList.toggle('echo-struck', !!(kwtState.allEchoesStruck || kwtState.echoStruck[id]));
+      }
+    }
+
+    function toggleAllKwtEchoes() {
+      kwtState.allEchoesStruck = !kwtState.allEchoesStruck;
+      const btn = document.getElementById('kwt-master-echo-btn');
+      if (btn) {
+        btn.innerHTML = kwtState.allEchoesStruck
+          ? '<span>👁️ Restore Full Sentences</span>'
+          : '<span>✂️ Step 1: Strike Out All Echoes</span>';
+      }
+      KWT_DUEL_ITEMS.forEach((item) => {
+        const card = document.getElementById(`kwt-card-${item.id}`);
+        if (card) {
+          card.classList.toggle('echo-struck', !!(kwtState.allEchoesStruck || kwtState.echoStruck[item.id]));
+        }
+      });
+    }
+
+    function toggleKwtModel(id) {
+      kwtState.revealed[id] = !kwtState.revealed[id];
+      const box = document.getElementById(`kwt-model-box-${id}`);
+      const btn = document.getElementById(`kwt-rev-btn-${id}`);
+      if (box) box.classList.toggle('visible', kwtState.revealed[id]);
+      if (btn) btn.textContent = kwtState.revealed[id] ? '🙈 Hide Model' : '👁️ Reveal Cambridge Model';
+      playChord(kwtState.revealed[id] ? [440.0, 554.37, 659.25] : [330.0, 440.0], 0.35);
+    }
+
+    function switchJournalTab(tab) {
+      if (tab !== 'all' && tab !== 'estate' && tab !== 'kwt') return;
+      kwtState.tab = tab;
+      ['all', 'estate', 'kwt'].forEach((t) => {
+        const btn = document.getElementById(`journal-tab-btn-${t}`);
+        if (btn) {
+          btn.classList.toggle('active', t === tab);
+          btn.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+        }
+      });
+      const estatePane = document.getElementById('journal-estate-pane');
+      const kwtPane = document.getElementById('journal-kwt-duel');
+      if (estatePane) estatePane.style.display = (tab === 'kwt') ? 'none' : '';
+      if (kwtPane) kwtPane.classList.toggle('hidden-tab', tab === 'estate');
     }
 
     function toggleJournal(show) {
@@ -6432,6 +7286,7 @@
       const modal = document.getElementById('journal-modal');
       if (show) {
         renderJournalContent();
+        renderKwtDuelGrid();
         modal.classList.remove('hidden');
       } else {
         modal.classList.add('hidden');
@@ -6587,6 +7442,11 @@
         player.z - cosY * cosP * 10.0
       );
       playerLight.position.set(player.x, player.y + 0.6, player.z);
+      if (sunLight) {
+        sunLight.target.position.set(player.x * 0.4, 0, player.z);
+        sunLight.target.updateMatrixWorld();
+        sunLight.position.set(player.x * 0.4 - 30, 30, player.z - 24);
+      }
 
       // Animate Altar Solve Spectacle FX (Skyward Pillar, Expanding Shockwave Rings & Rune Vortex)
       if (wonderGroups.solveTimer > 0 && wonderGroups.solveFXGroup) {
@@ -6783,9 +7643,18 @@
     window.addEventListener('DOMContentLoaded', () => {
       drawIntroHeroCanvas(0);
       init3D();
+      const savedMode = loadProgress();
+      loadKwtProgress();
+      if (savedMode === 'a1') {
+        setLevelMode('a1');
+      } else {
+        refreshAll3DRackTextures();
+        applyWorldWonders();
+      }
       setActiveAltarUI(0);
       updateProgressHUD();
       renderJournalContent();
+      renderKwtDuelGrid();
       requestAnimationFrame(animate);
     });
 
@@ -6803,6 +7672,11 @@
       toggleLevelMode,
       setLevelMode,
       toggleJournal,
+      switchJournalTab,
+      toggleAllKwtEchoes,
+      toggleKwtCardEcho,
+      onKwtInput,
+      toggleKwtModel,
       toggleRadar,
       toggleCambridgeModel,
       toggleAudio,
