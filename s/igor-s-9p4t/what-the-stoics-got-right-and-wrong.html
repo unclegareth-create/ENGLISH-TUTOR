@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="paper">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>What the Stoics Got Right. And Wrong. · Igor Slinko | GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="paper"] {
+      --bg-base: #f5f3ef;
+      --surface-card: #ffffff;
+      --surface-subtle: #faf8f5;
+      --surface-highlight: #fef3c7;
+      --ink-950: #0c1222;
+      --ink-800: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --border-hairline: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --accent: #b45309;
+      --accent-soft: #fef3c7;
+      --navy: #1d4ed8;
+      --navy-dark: #0f2557;
+      --navy-soft: #eff6ff;
+      --emerald: #059669;
+      --emerald-soft: #ecfdf5;
+      --rose: #e11d48;
+      --rose-soft: #fff1f2;
+      --shadow-card: 0 8px 24px -4px rgba(12, 18, 34, 0.06);
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #090d16;
+      --surface-card: #111827;
+      --surface-subtle: #182235;
+      --surface-highlight: #3b2a10;
+      --ink-950: #f8fafc;
+      --ink-800: #e2e8f0;
+      --ink-700: #cbd5e1;
+      --ink-500: #94a3b8;
+      --border-hairline: #1e293b;
+      --border-strong: #334155;
+      --accent: #fbbf24;
+      --accent-soft: rgba(251, 191, 36, 0.14);
+      --navy: #60a5fa;
+      --navy-dark: #93c5fd;
+      --navy-soft: rgba(59, 130, 246, 0.15);
+      --emerald: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.15);
+      --rose: #fb7185;
+      --rose-soft: rgba(225, 29, 72, 0.15);
+      --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      padding-bottom: 5rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .top-bar {
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 0.85rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .top-bar-inner {
+      max-width: 1020px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+    }
+    .brand {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 1.02rem;
+      color: var(--ink-950);
+      text-decoration: none;
+    }
+    .brand span {
+      color: var(--navy);
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+    .top-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .btn-top {
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-700);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-top:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 2rem auto 0;
+      padding: 0 1.25rem;
+    }
+
+    .hero-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-top: 4px solid var(--accent);
+      border-radius: 14px;
+      padding: 2.2rem 2.4rem;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 2rem;
+    }
+    .hero-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+      display: inline-block;
+    }
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      line-height: 1.2;
+      margin-bottom: 0.6rem;
+    }
+    .hero-sub {
+      color: var(--ink-500);
+      font-size: 1rem;
+      max-width: 720px;
+    }
+
+    .section-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 2rem 2.2rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow-card);
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .stage-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      background: var(--navy-soft);
+      color: var(--navy);
+      letter-spacing: 0.05em;
+    }
+
+    /* True/False Workout */
+    .fact-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .fact-item {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 1.1rem 1.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .fact-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .fact-text {
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--ink-950);
+      flex: 1;
+    }
+    .fact-btn-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .btn-tf {
+      padding: 0.35rem 0.85rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--ink-700);
+      transition: all 0.15s ease;
+    }
+    .btn-tf:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+    .fact-verdict {
+      display: none;
+      font-size: 0.88rem;
+      color: var(--ink-700);
+      padding: 0.65rem 0.85rem;
+      border-radius: 6px;
+      background: var(--surface-card);
+      border-left: 3px solid var(--navy);
+      line-height: 1.5;
+    }
+
+    /* Video Section */
+    .video-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 768px) {
+      .video-grid { grid-template-columns: 1fr; }
+    }
+    .video-card-poster {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-hairline);
+      background: #000;
+    }
+    .video-card-poster img {
+      width: 100%;
+      height: auto;
+      display: block;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+    }
+    .video-card-poster:hover img {
+      opacity: 1;
+    }
+    .play-btn-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(225, 29, 72, 0.9);
+      color: #fff;
+      padding: 0.8rem 1.4rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .play-btn-overlay:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+      background: #e11d48;
+    }
+
+    .questions-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .q-item {
+      background: var(--surface-subtle);
+      border-left: 3px solid var(--accent);
+      padding: 0.85rem 1.1rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.92rem;
+      color: var(--ink-800);
+      line-height: 1.5;
+    }
+    .q-num {
+      font-weight: 800;
+      color: var(--accent);
+      margin-right: 0.35rem;
+    }
+
+    /* Grammar Blueprint */
+    .formula-box {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-left: 4px solid var(--navy);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .formula-head {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+    }
+    .formula-code {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink-950);
+      background: var(--surface-card);
+      padding: 0.5rem 0.85rem;
+      border-radius: 6px;
+      display: inline-block;
+      border: 1px solid var(--border-hairline);
+      margin-bottom: 0.75rem;
+    }
+    .formula-notes {
+      font-size: 0.88rem;
+      color: var(--ink-700);
+      line-height: 1.55;
+    }
+
+    .drills-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .drill-item {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    .drill-prompt {
+      font-size: 0.95rem;
+      color: var(--ink-950);
+      margin-bottom: 0.6rem;
+      line-height: 1.55;
+    }
+    .drill-gap {
+      font-weight: 700;
+      color: var(--navy);
+      text-decoration: underline;
+      text-decoration-style: dotted;
+      padding: 0 4px;
+    }
+    .btn-reveal {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.35rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--navy);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-reveal:hover {
+      background: var(--navy-soft);
+    }
+    .drill-model {
+      display: none;
+      margin-top: 0.6rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald);
+      color: var(--ink-950);
+      font-size: 0.88rem;
+      font-family: var(--font-sans);
+    }
+
+    /* Cards Grid */
+    .cards-deck-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+    .prompt-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .prompt-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+    .card-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+    }
+    .card-visual-icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.6rem;
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      margin-bottom: 0.5rem;
+    }
+    .card-desc {
+      font-size: 0.85rem;
+      color: var(--ink-700);
+      line-height: 1.5;
+      margin-bottom: 0.85rem;
+    }
+    .card-prompt-q {
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--navy);
+      background: var(--surface-card);
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      border-left: 2px solid var(--navy);
+    }
+
+    /* Reading */
+    .reading-passage {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 1.4rem 1.6rem;
+      font-size: 0.98rem;
+      line-height: 1.75;
+      color: var(--ink-800);
+      margin-bottom: 1.5rem;
+    }
+    .reading-passage p {
+      margin-bottom: 1rem;
+    }
+    .reading-passage p:last-child {
+      margin-bottom: 0;
+    }
+    .reading-highlight {
+      background: var(--surface-highlight);
+      padding: 0 4px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    /* Word Cloud */
+    .word-cloud-box {
+      background: var(--surface-subtle);
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 12px;
+      padding: 1.8rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.85rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .wc-tag {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      color: var(--ink-950);
+      transition: color 0.15s, transform 0.15s;
+      cursor: default;
+    }
+    .wc-tag:hover {
+      color: var(--navy);
+      transform: scale(1.08);
+    }
+    .wc-huge { font-size: 2.1rem; color: #881337; }
+    .wc-large { font-size: 1.6rem; color: #1e3a8a; }
+    .wc-mid { font-size: 1.25rem; color: #047857; }
+    .wc-sm { font-size: 1rem; color: #b45309; }
+    .wc-xs { font-size: 0.82rem; color: #475569; }
+
+    /* Scratchpad */
+    .scratchpad-area {
+      width: 100%;
+      height: 120px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-950);
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      padding: 0.75rem;
+      line-height: 1.5;
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <a href="index.html" class="brand">&larr; <span>Igor Slinko &bull; Student Portal</span></a>
+      <div class="top-actions">
+        <button class="btn-top" onclick="toggleTheme()">🌓 Theme</button>
+        <button class="btn-top" onclick="window.print()">🖨️ Print / Save</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    <header class="hero-card">
+      <span class="hero-tag">&#9889; C1/C2 Discussion & Grammar Workshop</span>
+      <!-- STUDENT-PIXEL-BADGE-START -->
+<div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:rgba(15,23,42,0.12); border:1px solid rgba(148,163,184,0.32); margin-bottom:10px; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; font-size:0.78rem; font-weight:700; line-height:1.2;">
+  <img src="avatar.svg" alt="Igor Slinko (Preply)" style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid rgba(255,255,255,0.28); flex-shrink:0;" />
+  <span>Igor Slinko (Preply) &bull; JetBrains (Cyprus) &bull; Conversation &amp; Error Clinic</span>
+</div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+<h1 class="hero-title">What the Stoics Got Right. And Wrong.</h1>
+      <p class="hero-sub">Massimo Pigliucci's TED-Ed Inquiry, Modern Psychological Critiques, and Relative Clauses of Proportion (<em>some of which</em> / <em>many of which</em>).</p>
+    </header>
+
+    <!-- Stage 01: Warm-Up Propositions -->
+    <section class="section-card">
+      <div class="section-header">
+        <h2 class="section-title"><span>🏛️</span> Warm-Up: Stoic Propositions</h2>
+        <span class="stage-badge">Stage 01 &bull; Active Voice</span>
+      </div>
+      <p style="font-size:0.92rem; color:var(--ink-500); margin-bottom:1.25rem;">Examine each proposition below. Are they authentic Stoic principles, or modern caricatures?</p>
+      
+      <ul class="fact-list">
+        <li class="fact-item">
+          <div class="fact-row">
+            <span class="fact-text">1. The Stoics believed that the practice of virtue is enough to achieve a well-lived life.</span>
+            <div class="fact-btn-group">
+              <button class="btn-tf" onclick="checkFact(this, 'true', 1)">True</button>
+              <button class="btn-tf" onclick="checkFact(this, 'false', 1)">False</button>
+            </div>
+          </div>
+          <div class="fact-verdict" id="verdict-1">
+            <strong>True:</strong> To the ancient Stoics, virtue (wisdom, courage, justice, and temperance) was the sole intrinsic good and sufficient for <em>eudaimonia</em> (human flourishing).
+          </div>
+        </li>
+
+        <li class="fact-item">
+          <div class="fact-row">
+            <span class="fact-text">2. Stoics are emotionless.</span>
+            <div class="fact-btn-group">
+              <button class="btn-tf" onclick="checkFact(this, 'true', 2)">True</button>
+              <button class="btn-tf" onclick="checkFact(this, 'false', 2)">False</button>
+            </div>
+          </div>
+          <div class="fact-verdict" id="verdict-2">
+            <strong>False (The "Lower-Case stoic" Myth):</strong> Ancient Stoics sought freedom from destructive passions (<em>pathe</em> such as wrath, panic, and despair), not emotional obliteration. They actively cultivated positive states like joy (<em>chara</em>) and tranquility (<em>ataraxia</em>).
+          </div>
+        </li>
+
+        <li class="fact-item">
+          <div class="fact-row">
+            <span class="fact-text">3. Stoicism is pessimistic.</span>
+            <div class="fact-btn-group">
+              <button class="btn-tf" onclick="checkFact(this, 'true', 3)">True</button>
+              <button class="btn-tf" onclick="checkFact(this, 'false', 3)">False</button>
+            </div>
+          </div>
+          <div class="fact-verdict" id="verdict-3">
+            <strong>False:</strong> Techniques like <em>praemeditatio malorum</em> (premeditating adversity) are psychological inoculations against surprise, not defeatist surrender.
+          </div>
+        </li>
+
+        <li class="fact-item">
+          <div class="fact-row">
+            <span class="fact-text">4. The Stoics emphasized ethics as the main focus of human knowledge.</span>
+            <div class="fact-btn-group">
+              <button class="btn-tf" onclick="checkFact(this, 'true', 4)">True</button>
+              <button class="btn-tf" onclick="checkFact(this, 'false', 4)">False</button>
+            </div>
+          </div>
+          <div class="fact-verdict" id="verdict-4">
+            <strong>True:</strong> While Stoics divided philosophy into Logic, Physics, and Ethics (the fertile garden), Logic was the protective fence, Physics was the fertile soil, and practical Ethics was the nourishing fruit.
+          </div>
+        </li>
+
+        <li class="fact-item">
+          <div class="fact-row">
+            <span class="fact-text">5. The Stoics proposed that knowledge can be attained through the use of reason.</span>
+            <div class="fact-btn-group">
+              <button class="btn-tf" onclick="checkFact(this, 'true', 5)">True</button>
+              <button class="btn-tf" onclick="checkFact(this, 'false', 5)">False</button>
+            </div>
+          </div>
+          <div class="fact-verdict" id="verdict-5">
+            <strong>True:</strong> The Stoic <em>logos</em> held that the universe is rational and that human beings align with nature by exercising disciplined, rational assent over irrational impulse.
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Stage 02: Video & Inquiry -->
+    <section class="section-card">
+      <div class="section-header">
+        <h2 class="section-title"><span>📺</span> Video & Thematic Inquiry: Massimo Pigliucci</h2>
+        <span class="stage-badge">Stage 02 &bull; TED-Ed</span>
+      </div>
+
+      <div class="video-grid">
+        <div class="video-card-poster">
+          <img src="stoicism-pigliucci.jpg" alt="The Philosophy of Stoicism - Massimo Pigliucci" onerror="this.src='https://i.ytimg.com/vi/R9OCA6UFE-0/hqdefault.jpg'" />
+          <a href="https://www.youtube.com/watch?v=R9OCA6UFE-0" target="_blank" rel="noopener noreferrer" class="play-btn-overlay">
+            <span>&#9654;</span> Launch TED-Ed Video (05:27)
+          </a>
+        </div>
+
+        <div>
+          <h3 style="font-size:1.05rem; font-weight:700; color:var(--ink-950); margin-bottom:0.75rem;">Debate Challenges</h3>
+          <ul class="questions-list">
+            <li class="q-item"><span class="q-num">Q1</span> What do you think about Stoicism? Does it have a genuine place in contemporary high-tech society, or is it an outdated coping mechanism?</li>
+            <li class="q-item"><span class="q-num">Q2</span> What are the potential psychological limitations of a strictly Stoic mindset when navigating high-friction team environments?</li>
+            <li class="q-item"><span class="q-num">Q3</span> Would you consider yourself "Stoic" under pressure in engineering or crisis scenarios? Where do you draw the line?</li>
+            <li class="q-item"><span class="q-num">Q4</span> How would you describe your attitude towards philosophy in general—indispensable framework or academic indulgence?</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 03: Grammar Blueprint -->
+    <section class="section-card">
+      <div class="section-header">
+        <h2 class="section-title"><span>📐</span> C1 Grammar Blueprint: Relative Clauses of Proportion</h2>
+        <span class="stage-badge">Stage 03 &bull; Structural Mastery</span>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-head">Structural Blueprint</div>
+        <div class="formula-code">[Main Clause], + [quantifier] of which + [Predicate Verb Clause]</div>
+        <p class="formula-notes">
+          <strong>Key Rule:</strong> <em>Some of which</em> and <em>many of which</em> introduce <strong>non-defining relative clauses</strong> modifying a subset of a previously mentioned plural noun or collective entity.
+          <br />&bull; <strong>Mandatory Punctuation:</strong> Always preceded by a comma. Writing a semicolon or full stop without a subject creates a sentence fragment; omitting the comma produces a run-on.
+          <br />&bull; <strong>Subsets vs Majorities:</strong> Use <em>some of which</em> for limited subsets, and <em>many of which</em> for larger, statistically significant proportions.
+        </p>
+      </div>
+
+      <div class="drills-wrap">
+        <div class="drill-item">
+          <div class="drill-prompt">
+            1. Stoicism encompasses a few fundamental principles, <span class="drill-gap">___________________</span> include controlling one's reactions and focusing on personal virtue.
+          </div>
+          <button class="btn-reveal" onclick="toggleReveal('drill-1')">👁️ Reveal Cambridge Model</button>
+          <div class="drill-model" id="drill-1">
+            <strong>Model:</strong> <code>some of which</code> &mdash; refers to a focused selection of the fundamental principles.
+          </div>
+        </div>
+
+        <div class="drill-item">
+          <div class="drill-prompt">
+            2. There are numerous modern interpretations of Stoicism, <span class="drill-gap">___________________</span> emphasize its relevance in contemporary self-help and therapy.
+          </div>
+          <button class="btn-reveal" onclick="toggleReveal('drill-2')">👁️ Reveal Cambridge Model</button>
+          <div class="drill-model" id="drill-2">
+            <strong>Model:</strong> <code>many of which</code> &mdash; emphasizes that a large proportion of modern accounts stress practical therapy and self-help.
+          </div>
+        </div>
+
+        <div class="drill-item">
+          <div class="drill-prompt">
+            3. The Stoic philosophers wrote a limited number of texts, <span class="drill-gap">___________________</span> have been integral in shaping modern philosophical thought.
+          </div>
+          <button class="btn-reveal" onclick="toggleReveal('drill-3')">👁️ Reveal Cambridge Model</button>
+          <div class="drill-model" id="drill-3">
+            <strong>Model:</strong> <code>some of which</code> &mdash; reflects the preserved survival of a small, selective fraction of the corpus (e.g. Epictetus, Seneca, Marcus Aurelius).
+          </div>
+        </div>
+
+        <div class="drill-item">
+          <div class="drill-prompt">
+            4. Among the teachings of Stoicism, there are a select few concepts, <span class="drill-gap">___________________</span> specifically deal with the nature of happiness and suffering.
+          </div>
+          <button class="btn-reveal" onclick="toggleReveal('drill-4')">👁️ Reveal Cambridge Model</button>
+          <div class="drill-model" id="drill-4">
+            <strong>Model:</strong> <code>some of which</code> &mdash; aligns with "a select few concepts".
+          </div>
+        </div>
+
+        <div class="drill-item">
+          <div class="drill-prompt">
+            5. Stoic philosophy has inspired a wide range of modern practices and philosophies, <span class="drill-gap">___________________</span> focus on mindfulness and emotional intelligence.
+          </div>
+          <button class="btn-reveal" onclick="toggleReveal('drill-5')">👁️ Reveal Cambridge Model</button>
+          <div class="drill-model" id="drill-5">
+            <strong>Model:</strong> <code>many of which</code> &mdash; highlights that a broad proportion of contemporary offshoots (e.g. CBT, REBT, mindfulness) draw from Stoic roots.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 04: Visual Prompts (Pick a Card) -->
+    <section class="section-card">
+      <div class="section-header">
+        <h2 class="section-title"><span>🃏</span> Pick a Card: Metaphorical Visual Stimuli</h2>
+        <span class="stage-badge">Stage 04 &bull; Image-Driven Debate</span>
+      </div>
+      <p style="font-size:0.92rem; color:var(--ink-500); margin-bottom:1.25rem;">Select an image below and deconstruct its philosophical and psychological implications.</p>
+
+      <div class="cards-deck-grid">
+        <div class="prompt-card">
+          <div>
+            <div class="card-badge">Card 1</div>
+            <div class="card-visual-icon">⚖️</div>
+            <h3 class="card-title">Heart vs. Brain Balance</h3>
+            <p class="card-desc">A walking silhouette carries a balance scale suspended from a shoulder yoke, weighing a living anatomical heart against a exposed brain.</p>
+          </div>
+          <div class="card-prompt-q">"Is complete rational mastery over primal affect a psychological asset or an unsustainable illusion?"</div>
+        </div>
+
+        <div class="prompt-card">
+          <div>
+            <div class="card-badge">Card 2</div>
+            <div class="card-visual-icon">⚙️</div>
+            <h3 class="card-title">The Mechanised Mind &amp; Mortality</h3>
+            <p class="card-desc">An intricate profile of a skull fused with gears, clockwork, and an embryonic figure nestled in the temple, puffing pipe smoke that turns into butterflies.</p>
+          </div>
+          <div class="card-prompt-q">"How does the contemplation of mortality (memento mori) alter how an engineer views systemic failure?"</div>
+        </div>
+
+        <div class="prompt-card">
+          <div>
+            <div class="card-badge">Card 3</div>
+            <div class="card-visual-icon">📖</div>
+            <h3 class="card-title">The Scholar's Radiant Inquiry</h3>
+            <p class="card-desc">A classical bearded sage with spectacles closely studies an ancient leather tome, from whose pages a glowing question mark radiates ethereal light.</p>
+          </div>
+          <div class="card-prompt-q">"Does deeper inquiry lead to tranquility, or does it inevitably intensify existential doubt?"</div>
+        </div>
+
+        <div class="prompt-card">
+          <div>
+            <div class="card-badge">Card 4</div>
+            <div class="card-visual-icon">📑</div>
+            <h3 class="card-title">Cognitive Overload</h3>
+            <p class="card-desc">The interior of a human head constructed entirely of thousands of overlapping bureaucratic paper notes, while a solitary tiny person stands inside looking upward.</p>
+          </div>
+          <div class="card-prompt-q">"How can Stoic compartmentalisation defend the modern mind against chronic administrative noise?"</div>
+        </div>
+
+        <div class="prompt-card">
+          <div>
+            <div class="card-badge">Card 5</div>
+            <div class="card-visual-icon">🌱</div>
+            <h3 class="card-title">The Fertile Idea</h3>
+            <p class="card-desc">Inside a quiet silhouette, a glowing electric lightbulb takes root in neural soil, sprouting vibrant green leaves and living branches.</p>
+          </div>
+          <div class="card-prompt-q">"What distinguishes an idea that remains purely intellectual from one that genuinely takes root in character?"</div>
+        </div>
+
+        <div class="prompt-card">
+          <div>
+            <div class="card-badge">Card 6</div>
+            <div class="card-visual-icon">🏖️</div>
+            <h3 class="card-title">The Ancient &amp; The Fleeting</h3>
+            <p class="card-desc">A towering classical Greek philosopher carved from stone sits on a seaside pedestal, observing a young boy absorbed in building a delicate sandcastle.</p>
+          </div>
+          <div class="card-prompt-q">"Are our modern technological architectures fundamentally different from sandcastles by the tide?"</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stage 05: Reading & Critical Debate -->
+    <section class="section-card">
+      <div class="section-header">
+        <h2 class="section-title"><span>📖</span> Critical Reading: What the Stoics Got Wrong</h2>
+        <span class="stage-badge">Stage 05 &bull; Analytical Text</span>
+      </div>
+
+      <div class="reading-passage">
+        <p>Stoicism, an ancient philosophy that has seen a remarkable resurgence in recent years, has faced various criticisms, <span class="reading-highlight">some of which</span> challenge its relevance and application in the contemporary world. Critics point out that Stoicism's emphasis on emotional control can lead to the suppression of healthy emotional expression, a concern that many mental health professionals share. This aspect of Stoicism, which encourages individuals to maintain an unyielding calm in the face of adversity, raises difficult questions regarding the potential neglect of emotional well-being and visceral self-awareness.</p>
+
+        <p>Moreover, the Stoic ideal of self-sufficiency is frequently criticized as being out of touch with the realities of modern life, where individuals often find strength, meaning, and psychological growth through their relationships and communities. This dimension of Stoic doctrine, which many interpret as a call for radical emotional and practical independence, seems to overlook the immense benefits of mutual vulnerability, collective support, and structural interdependence that characterise contemporary society.</p>
+
+        <p>Additionally, Stoicism's insistence on accepting things as they are—perceived by many as a refined form of passive resignation—remains a major point of contention. Critics argue that this principle might discourage individuals from actively confronting injustices or striving for aggressive societal transformation. A philosophy that teaches acceptance of one's given circumstances is often seen as fundamentally at odds with the dynamic nature of 21st-century progress, where institutional reform and boundary-pushing are non-negotiable goals.</p>
+
+        <p>Furthermore, Stoicism's approach to desire and ambition continues to spark debate. While classical Stoics advocate for a life liberated from irrational desires and agitating ambitions, modern observers point out that this can easily precipitate a deficit of motivation and an inability to harness the positive, transformative power of ambition—the very force propelling scientific, artistic, and technological breakthroughs.</p>
+      </div>
+
+      <h3 style="font-size:1.05rem; font-weight:700; color:var(--ink-950); margin-bottom:0.75rem;">C1/C2 Deconstruction Questions</h3>
+      <ul class="questions-list">
+        <li class="q-item"><span class="q-num">1</span> How does the Stoic dichotomy of control align or clash with modern psychological theories on trauma and emotional expression?</li>
+        <li class="q-item"><span class="q-num">2</span> Considering how distributed and interdependent modern systems are, how feasible is the Stoic ideal of the self-sufficient sage?</li>
+        <li class="q-item"><span class="q-num">3</span> At what point does "accepting what is beyond your control" deteriorate into passive complicity with systemic injustice?</li>
+        <li class="q-item"><span class="q-num">4</span> Can high ambition and relentless drive coexist with Stoic equanimity, or is tension between them inevitable?</li>
+        <li class="q-item"><span class="q-num">5</span> If you were to adapt Stoic principles for modern AI researchers and systems architects, what would you discard first?</li>
+      </ul>
+    </section>
+
+    <!-- Stage 06: Lexical Word Cloud & Live Scratchpad -->
+    <section class="section-card">
+      <div class="section-header">
+        <h2 class="section-title"><span>☁️</span> Lexical Cloud & Live Error Clinic</h2>
+        <span class="stage-badge">Stage 06 &bull; Active Lexis</span>
+      </div>
+
+      <div class="word-cloud-box">
+        <span class="wc-tag wc-huge">forbearance</span>
+        <span class="wc-tag wc-large">equanimity</span>
+        <span class="wc-tag wc-mid">perseverance</span>
+        <span class="wc-tag wc-huge">fortitude</span>
+        <span class="wc-tag wc-sm">composure</span>
+        <span class="wc-tag wc-mid">self-control</span>
+        <span class="wc-tag wc-large">patience</span>
+        <span class="wc-tag wc-sm">restraint</span>
+        <span class="wc-tag wc-huge">endurance</span>
+        <span class="wc-tag wc-mid">calmness</span>
+        <span class="wc-tag wc-xs">tolerance</span>
+        <span class="wc-tag wc-sm">persistence</span>
+        <span class="wc-tag wc-mid">diligence</span>
+        <span class="wc-tag wc-xs">serenity</span>
+      </div>
+
+      <div>
+        <label for="live-scratchpad" style="font-size:0.85rem; font-weight:700; color:var(--ink-700); margin-bottom:0.4rem; display:block;">
+          ✍️ Live Session Notes &amp; Error Correction Scratchpad
+        </label>
+        <textarea id="live-scratchpad" class="scratchpad-area" placeholder="Type real-time vocabulary upgrades, collocations, or error corrections during the session..."></textarea>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'dark' ? 'paper' : 'dark');
+    }
+
+    function checkFact(btn, choice, id) {
+      const item = btn.closest('.fact-item');
+      item.querySelectorAll('.btn-tf').forEach(b => b.style.opacity = '0.5');
+      btn.style.opacity = '1';
+      btn.style.background = 'var(--navy)';
+      btn.style.color = '#fff';
+      const verdict = document.getElementById('verdict-' + id);
+      if (verdict) verdict.style.display = 'block';
+    }
+
+    function toggleReveal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+      }
+    }
+  </script>
+</body>
+</html>
