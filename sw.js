@@ -5,11 +5,13 @@
    ========================================================== */
 'use strict';
 
-const CACHE_NAME = 'grammar-crypt-v4';
+const CACHE_NAME = 'grammar-crypt-v5';
 const PRECACHE_ASSETS = [
     './grammar-crypt.html',
     './crypt.css',
+    './crypt-levels.js',
     './crypt.js',
+    './course-bridge.js',
     './audio.js',
     './wasm-webgl-engine.js',
     './manifest.json',
@@ -19,7 +21,7 @@ const PRECACHE_ASSETS = [
     './assets/vendor/confetti.browser.min.js'
 ];
 
-const CRYPT_ASSET_PATTERN = /\/(grammar-crypt(-3d)?\.html|crypt\.(css|js)|audio\.js|wasm-webgl-engine\.js|arcade_physics\.wasm|manifest\.json|icon-(192|512)(-maskable)?\.png|confetti\.browser\.min\.js)$/;
+const CRYPT_ASSET_PATTERN = /\/(grammar-crypt(-3d)?\.html|crypt\.(css|js)|crypt-levels\.js|course-bridge\.js|audio\.js|wasm-webgl-engine\.js|arcade_physics\.wasm|manifest\.json|icon-(192|512)(-maskable)?\.png|confetti\.browser\.min\.js)$/;
 
 self.addEventListener('install', (event) => {
     event.waitUntil(

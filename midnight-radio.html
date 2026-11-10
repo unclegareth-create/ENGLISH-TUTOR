@@ -1266,7 +1266,20 @@
     </div>
   </section>
 
-  <script src="assets/radio/audio/radio-audio-bundle.js"></script>
+  <script>
+    // Only load the 12.2 MB Base64 offline audio bundle on local file:// protocol;
+    // over http:// and https://, station MP3s are fetched on demand via Web Audio.
+    window.__radioBundlePromise = (window.location.protocol === 'file:')
+      ? new Promise(function (resolve) {
+          var s = document.createElement('script');
+          s.src = 'assets/radio/audio/radio-audio-bundle.js';
+          s.async = true;
+          s.onload = resolve;
+          s.onerror = resolve;
+          document.head.appendChild(s);
+        })
+      : Promise.resolve();
+  </script>
   <script>
     // =========================================================================
     // 1. STATION REGISTRY (8 REAL PIPER NEURAL TTS BROADCASTS + CITIES)
@@ -1645,13 +1658,20 @@
       tapeShaper.connect(dubReturnGain);
       dubReturnGain.connect(masterGain);
 
-      // Decode & start all 8 Trilingual Broadcasts from file://-safe Base64 bundle
+      // Prepare gain buses for all stations; decode audio on demand when tuned
       STATIONS.forEach(st => {
         const stGain = audioCtx.createGain();
         stGain.gain.value = 0.0;
         stGain.connect(voiceFilterNode);
-        stationAudios[st.id] = { buffer: null, sourceNode: null, gainNode: stGain, rate: 1.0 };
-        decodeStationBuffer(st);
+        stationAudios[st.id] = {
+          station: st,
+          buffer: null,
+          loadingPromise: null,
+          failed: false,
+          sourceNode: null,
+          gainNode: stGain,
+          rate: 1.0
+        };
       });
 
       // 6. Generative Midnight Lo-Fi Synth Bus (also routed through King Tubby HPF)
@@ -1672,21 +1692,42 @@
       return bytes.buffer;
     }
 
-    async function decodeStationBuffer(st) {
-      try {
-        let ab = null;
-        if (window.GARETH_RADIO_B64 && window.GARETH_RADIO_B64[st.audioUrl]) {
-          ab = base64ToArrayBuffer(window.GARETH_RADIO_B64[st.audioUrl]);
-        } else {
-          const resp = await fetch(st.audioUrl);
-          ab = await resp.arrayBuffer();
+    function decodeStationBuffer(st) {
+      const bundle = stationAudios[st.id];
+      if (!bundle || !audioCtx) return Promise.resolve(null);
+      if (bundle.buffer) return Promise.resolve(bundle.buffer);
+      if (bundle.loadingPromise) return bundle.loadingPromise;
+      if (bundle.failed) return Promise.resolve(null);
+
+      bundle.loadingPromise = (async () => {
+        try {
+          if (window.__radioBundlePromise) {
+            await window.__radioBundlePromise;
+          }
+          let ab = null;
+          if (window.GARETH_RADIO_B64 && window.GARETH_RADIO_B64[st.audioUrl]) {
+            ab = base64ToArrayBuffer(window.GARETH_RADIO_B64[st.audioUrl]);
+          } else {
+            const resp = await fetch(st.audioUrl);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status} for ${st.audioUrl}`);
+            ab = await resp.arrayBuffer();
+          }
+          const audioBuf = await audioCtx.decodeAudioData(ab);
+          bundle.buffer = audioBuf;
+          bundle.loadingPromise = null;
+          if (isPowered) {
+            startStationSource(st.id, 0);
+            updateRadioDsp();
+          }
+          return audioBuf;
+        } catch (err) {
+          bundle.loadingPromise = null;
+          bundle.failed = true;
+          console.warn('Station audio unavailable (ambient DSP stays online):', st.id, err);
+          return null;
         }
-        const audioBuf = await audioCtx.decodeAudioData(ab);
-        stationAudios[st.id].buffer = audioBuf;
-        if (isPowered) startStationSource(st.id, 0);
-      } catch (err) {
-        console.warn('Station decode error:', st.id, err);
-      }
+      })();
+      return bundle.loadingPromise;
     }
 
     function startStationSource(stId, offsetSec) {
@@ -1718,7 +1759,11 @@
         btn.classList.add('power-on');
         led.classList.add('on');
         label.textContent = 'VALVES WARM · RECEIVER ONLINE';
-        STATIONS.forEach(st => startStationSource(st.id, 0));
+        STATIONS.forEach(st => {
+          if (stationAudios[st.id] && stationAudios[st.id].buffer) {
+            startStationSource(st.id, 0);
+          }
+        });
         updateMixer();
         updateRadioDsp();
       } else {
@@ -1829,6 +1874,11 @@
         if (!bundle) return;
         const d = Math.abs(currentFreq - st.freq);
         if (d < captureRadius) {
+          if (!bundle.buffer && !bundle.loadingPromise && !bundle.failed) {
+            decodeStationBuffer(st);
+          } else if (bundle.buffer && !bundle.sourceNode) {
+            startStationSource(st.id, 0);
+          }
           const clarity = Math.pow(Math.max(0, 1 - d / captureRadius), 1.8);
           bundle.gainNode.gain.setTargetAtTime(clarity * userVoiceSetting * 1.15, now, 0.04);
 
@@ -1869,7 +1919,15 @@
       if (!isPowered) togglePower();
       currentFreq = st.freq;
       selectScene(st.sceneIdx);
-      startStationSource(st.id, 0);
+      const bundle = stationAudios[st.id];
+      if (bundle) {
+        bundle.failed = false;
+        if (bundle.buffer) {
+          startStationSource(st.id, 0);
+        } else {
+          decodeStationBuffer(st);
+        }
+      }
       updateRadioDsp();
     }
 
@@ -1922,7 +1980,13 @@
       if (!isPowered) togglePower();
       const nearest = findNearestStation(currentFreq);
       if (nearest && stationAudios[nearest.station.id]) {
-        startStationSource(nearest.station.id, 0);
+        const bundle = stationAudios[nearest.station.id];
+        bundle.failed = false;
+        if (bundle.buffer) {
+          startStationSource(nearest.station.id, 0);
+        } else {
+          decodeStationBuffer(nearest.station);
+        }
         updateRadioDsp();
       }
     }
