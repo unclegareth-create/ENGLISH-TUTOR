@@ -23,9 +23,13 @@
 
     // UK ICO Children's Code (Age-Appropriate Design Code) Guard:
     // Never load external analytics or store attribution trails on Young Learners pages (ages 6-12)
-    // or unlisted private student portals (/s/).
+    // or underage student portals (Vitaly 14yo, Igor S. 17yo).
     const currentPath = (window.location.pathname || '').toLowerCase();
-    if (currentPath.includes('professor-west-study') || /(^|\/)s\//.test(currentPath)) {
+    if (
+        currentPath.includes('professor-west-study') ||
+        currentPath.includes('vitaly') ||
+        currentPath.includes('igor-6m3c')
+    ) {
         window.trackFunnelEvent = function () {};
         window.showDiagnosticGate = function () {};
         return;
