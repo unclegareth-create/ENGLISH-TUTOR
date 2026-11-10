@@ -1,0 +1,26 @@
+# ==============================================================================
+# OFFICIAL OEIS NEW SEQUENCE SUBMISSION #3
+# Submit at: https://oeis.org/Submit.html
+# ==============================================================================
+
+%I AXXXXXX
+%S AXXXXXX 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 16, 16
+%N AXXXXXX Minimum F_2-corank of the reduced shifted Smith GCD matrix Q_n^(k) over all integer shifts k >= 0; equivalently, max(0, floor(n/2) - 2 - pi_{3,4}^*(n-1)), where pi_{3,4}^*(m) is the number of odd prime powers p^r <= m with p == 3 (mod 4).
+%C AXXXXXX For the additively shifted GCD matrix G_n^(k) = [gcd(k+i, k+j)]_{1<=i,j<=n}, 2^(n-2) divides det(G_n^(k)) for all n >= 2 and all k >= 0. Whether v_2(det(G_n^(k))) can attain n - 2 is governed by the F_2-corank a(n) of the (n-2) X (n-2) quadratic form Q_n^(k) = B_n^T ((G_n^(k) - v_1 v_1^T - v_2 v_2^T)/2) B_n mod 2 on the parity-difference lattice B_n = span(e_i - e_{i-2} : 3 <= i <= n).
+%C AXXXXXX For 2 <= n <= 13, a(n) = 0 (and min_{k>=0} v_2(det(G_n^(k))) = n - 2). At n = 14, a phase transition occurs where a(14) = 1 because the dimension floor(n/2) - 2 = 5 of the mod-4 even difference subspace first exceeds the number pi_{3,4}^*(13) = |{3, 7, 9, 11}| = 4 of odd prime powers p^r <= n - 1 with p == 3 (mod 4).
+%F AXXXXXX a(n) = max(0, floor(n/2) - 2 - Sum_{p prime, p == 3 (mod 4)} floor(log_p(n - 1))).
+%e AXXXXXX For n = 12 and 13, floor(n/2) - 2 = 4 and the odd prime powers p^r <= n - 1 with p == 3 (mod 4) are {3, 7, 9, 11} (count 4), so a(12) = a(13) = 0 (achieved at k = 340 and k = 548).
+%e AXXXXXX For n = 14, floor(14/2) - 2 = 5 while 13 == 1 (mod 4) does not contribute, leaving {3, 7, 9, 11} (count 4), so a(14) = 5 - 4 = 1.
+%o AXXXXXX (Python)
+%o AXXXXXX from sympy import factorint
+%o AXXXXXX def a(n):
+%o AXXXXXX     c = 0
+%o AXXXXXX     for d in range(3, n):
+%o AXXXXXX         f = factorint(d)
+%o AXXXXXX         if len(f) == 1 and next(iter(f)) % 4 == 3:
+%o AXXXXXX             c += 1
+%o AXXXXXX     return max(0, n // 2 - 2 - c)
+%Y AXXXXXX Cf. A001088, A091317, A003627 (primes 3 mod 4).
+%K AXXXXXX nonn
+%O AXXXXXX 2,15
+%A AXXXXXX Gareth Montgomery, Oct 23 2026

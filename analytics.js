@@ -21,14 +21,15 @@
         return;
     }
 
-    // UK ICO Children's Code (Age-Appropriate Design Code) Guard:
-    // Never load external analytics or store attribution trails on Young Learners pages (ages 6-12)
-    // or underage student portals (Vitaly 14yo, Igor S. 17yo).
+    // UK ICO Children's Code (Age-Appropriate Design Code) & Private Portal Guard:
+    // Never load external analytics or store attribution trails on Young Learners pages (ages 6-12),
+    // private 1-to-1 student portals (/s/*), or pages explicitly opting out via meta tag.
     const currentPath = (window.location.pathname || '').toLowerCase();
+    const metaOptOut = document.querySelector('meta[name="gm-no-analytics"][content="1"]');
     if (
+        metaOptOut ||
         currentPath.includes('professor-west-study') ||
-        currentPath.includes('vitaly') ||
-        currentPath.includes('igor-6m3c')
+        /(^|\/)s(\/|$)/.test(currentPath)
     ) {
         window.trackFunnelEvent = function () {};
         window.showDiagnosticGate = function () {};

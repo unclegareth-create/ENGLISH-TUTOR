@@ -2578,58 +2578,6 @@ const DarkAcademiaAtmosphere = (() => {
     }
   }
 
-  function hasHighQualityBritishVoice() {
-    if (!('speechSynthesis' in window)) return false;
-    try {
-      const voices = window.speechSynthesis.getVoices() || [];
-      return voices.some((v) => {
-        const name = (v.name || '').toLowerCase();
-        const lang = (v.lang || '').toLowerCase();
-        const isBritish = /^en[-_](gb|uk)/.test(lang) || name.includes('united kingdom') || name.includes('uk');
-        return isBritish && (
-          name.includes('natural') ||
-          name.includes('neural') ||
-          name.includes('online') ||
-          name.includes('google') ||
-          name.includes('serena') ||
-          name.includes('daniel') ||
-          name.includes('oliver') ||
-          name.includes('ryan') ||
-          name.includes('sonia')
-        );
-      });
-    } catch (e) {
-      return false;
-    }
-  }
-
-  function selectBestBritishVoice() {
-    if (!('speechSynthesis' in window)) return null;
-    try {
-      const voices = window.speechSynthesis.getVoices() || [];
-      if (!voices.length) return null;
-      const gbVoices = voices.filter((v) => /^en[-_](GB|UK)/i.test(v.lang || '') || /Great Britain|United Kingdom|UK/i.test(v.name || ''));
-      const pool = gbVoices.length ? gbVoices : voices.filter((v) => /^en/i.test(v.lang || ''));
-      if (!pool.length) return null;
-
-      const scoreVoice = (v) => {
-        const name = (v.name || '').toLowerCase();
-        let s = 0;
-        if (name.includes('natural') || name.includes('neural')) s += 120;
-        if (name.includes('online')) s += 80;
-        if (name.includes('ryan') || name.includes('thomas') || name.includes('sonia') || name.includes('libby')) s += 60;
-        if (name.includes('google uk english') || name.includes('google english')) s += 50;
-        if (name.includes('daniel') || name.includes('oliver') || name.includes('serena') || name.includes('arthur')) s += 40;
-        if (name.includes('hazel') || name.includes('desktop') || name.includes('david') || name.includes('zira')) s -= 80;
-        return s;
-      };
-
-      return [...pool].sort((a, b) => scoreVoice(b) - scoreVoice(a))[0] || null;
-    } catch (e) {
-      return null;
-    }
-  }
-
   function syncVoiceHUD(isSpeaking) {
     const btn = document.getElementById('da-hud-voice-stop');
     if (!btn) return;
@@ -2664,9 +2612,6 @@ const DarkAcademiaAtmosphere = (() => {
         voiceAudioEl.ontimeupdate = null;
         voiceAudioEl.pause();
         voiceAudioEl.currentTime = 0;
-      }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
       }
     } catch (e) {}
     setMusicDucking(false);
@@ -2736,51 +2681,13 @@ const DarkAcademiaAtmosphere = (() => {
       }
     };
 
-    const speakFallback = (force = false) => {
-      lastFallbackContext = { fallbackText, btnEl, waveformEl, clausesNodeList };
-
-      // High-standard filter: Do not automatically foist robotic SAPI desktop voices on the student
-      const hasQualityVoice = hasHighQualityBritishVoice();
-      if (!hasQualityVoice && !force) {
-        stopNarration();
-        if (btnEl) {
-          const lbl = btnEl.querySelector('.da-reader-btn-label');
-          if (lbl) lbl.textContent = '🎙️ Studio British Audio in Production';
-        }
-        // Surface helpful, dignified explanation with opt-in control
-        const parentBar = (waveformEl && waveformEl.closest('.da-audio-reader-bar')) || (btnEl && btnEl.closest('.da-audio-reader-bar'));
-        if (parentBar && !parentBar.querySelector('.da-synth-quality-notice')) {
-          const notice = document.createElement('div');
-          notice.className = 'da-synth-quality-notice';
-          notice.style.cssText = 'width:100%; margin-top:0.6rem; font-size:0.78rem; color:#fde68a; background:rgba(245,158,11,0.12); border-left:3px solid #f59e0b; padding:0.5rem 0.8rem; border-radius:4px; display:flex; align-items:center; justify-content:space-between; gap:0.6rem; flex-wrap:wrap;';
-          notice.innerHTML = `
-            <span>🎙️ <strong>Studio British Reading in Production:</strong> Metallic computer speech has been paused to maintain Cambridge pronunciation standards.</span>
-            <button type="button" class="da-hud-pill" style="font-size:0.74rem; padding:0.25rem 0.65rem; cursor:pointer;" onclick="DarkAcademiaAtmosphere.speakFallbackExplicit()">
-              ▶ Play System Voice (Experimental)
-            </button>
-          `;
-          parentBar.appendChild(notice);
-        }
-        return;
+    const speakFallback = () => {
+      // Strictly never fall back to robotic OS/browser TTS voices; complete cleanly if offline.
+      stopNarration();
+      if (btnEl) {
+        const lbl = btnEl.querySelector('.da-reader-btn-label');
+        if (lbl) lbl.textContent = '🎙️ British Neural Audio Offline';
       }
-
-      startFallbackClauseTimer();
-      if ('speechSynthesis' in window && fallbackText) {
-        try {
-          window.speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(fallbackText);
-          utter.lang = 'en-GB';
-          const bestVoice = selectBestBritishVoice();
-          if (bestVoice) utter.voice = bestVoice;
-          utter.rate = 0.94;
-          utter.onend = () => stopNarration();
-          utter.onerror = () => stopNarration();
-          window.speechSynthesis.speak(utter);
-          syncVoiceHUD(true);
-          return;
-        } catch (e) {}
-      }
-      setTimeout(() => stopNarration(), 4000);
     };
 
     if (mp3Src && typeof Audio !== 'undefined') {
@@ -2800,44 +2707,19 @@ const DarkAcademiaAtmosphere = (() => {
           });
         };
         voiceAudioEl.onended = () => stopNarration();
-        voiceAudioEl.onerror = () => speakFallback(false);
+        voiceAudioEl.onerror = () => speakFallback();
         const p = voiceAudioEl.play();
         if (p && typeof p.catch === 'function') {
-          p.catch(() => speakFallback(false));
+          p.catch(() => speakFallback());
         }
         return;
       } catch (e) {}
     }
-    speakFallback(false);
+    speakFallback();
   }
 
   function speakFallbackExplicit() {
-    if (lastFallbackContext) {
-      const { fallbackText, btnEl, waveformEl, clausesNodeList } = lastFallbackContext;
-      if (btnEl) {
-        btnEl.classList.add('speaking');
-        const lbl = btnEl.querySelector('.da-reader-btn-label');
-        if (lbl) lbl.textContent = '⏹ Stop Reading';
-      }
-      if (waveformEl) waveformEl.classList.add('active');
-      setMusicDucking(true);
-      syncVoiceHUD(true);
-
-      if ('speechSynthesis' in window && fallbackText) {
-        try {
-          window.speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(fallbackText);
-          utter.lang = 'en-GB';
-          const bestVoice = selectBestBritishVoice();
-          if (bestVoice) utter.voice = bestVoice;
-          utter.rate = 0.94;
-          utter.onend = () => stopNarration();
-          utter.onerror = () => stopNarration();
-          window.speechSynthesis.speak(utter);
-          return;
-        } catch (e) {}
-      }
-    }
+    stopNarration();
   }
 
   const VOCAB_SPRITE_SRC = 'assets/audio/da_vocab_lexicon.mp3?v=2';
@@ -3090,23 +2972,7 @@ const DarkAcademiaAtmosphere = (() => {
       } catch (e) {}
     }
 
-    try {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'en-GB';
-        const bestVoice = selectBestBritishVoice();
-        if (bestVoice) utter.voice = bestVoice;
-        utter.rate = 0.92;
-        utter.onend = () => stopNarration();
-        utter.onerror = () => stopNarration();
-        window.speechSynthesis.speak(utter);
-      } else {
-        stopNarration();
-      }
-    } catch (e) {
-      stopNarration();
-    }
+    stopNarration();
   }
 
   /* ==============================================================

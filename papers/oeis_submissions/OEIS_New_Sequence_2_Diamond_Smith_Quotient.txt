@@ -1,0 +1,30 @@
+# ==============================================================================
+# OFFICIAL OEIS NEW SEQUENCE SUBMISSION #2
+# Submit at: https://oeis.org/Submit.html
+# ==============================================================================
+
+%I AXXXXXX
+%S AXXXXXX 2, 7, 14, 48, 96, 336, 672, 2296, 4592, 16072, 32144, 110208, 220416, 771456, 1542912, 5268480, 10536960, 36879360, 73758720, 252887040, 505774080, 1770209280
+%N AXXXXXX Quotient of the determinant of the n X n arithmetic diamond matrix [gcd(i+j, |i-j|)]_{1<=i,j<=n} by H. J. S. Smith's GCD determinant Product_{k=1..n} phi(k) (A001088).
+%C AXXXXXX By the 2-adic resonance identity gcd(i+j, |i-j|) = gcd(i,j)*(1 + [v_2(i) == v_2(j)]), all odd Euler totient factors cancel identically in the ratio det[gcd(i+j, |i-j|)] / det[gcd(i,j)], leaving a pure dyadic product over the odd integers m <= n of the normalized Kac-Murdock-Szego (KMS) Toeplitz determinants A020727(floor(log_2(n/m))).
+%C AXXXXXX For every odd n = 2k+1, a(2k+1) = 2 * a(2k).
+%F AXXXXXX a(n) = Product_{m=1..n, m odd} A020727(floor(log_2(n/m))).
+%F AXXXXXX a(n) = a(n-1) * A020727(v) / A020727(v-1) for n >= 2 with v = A007814(n) >= 1, and a(n) = 2 * a(n-1) for odd n >= 3.
+%e AXXXXXX For n = 4, the odd integers m <= 4 are m = 1 (with floor(log_2(4/1)) = 2) and m = 3 (with floor(log_2(4/3)) = 0), so a(4) = A020727(2) * A020727(0) = 24 * 2 = 48.
+%o AXXXXXX (Python)
+%o AXXXXXX def A020727(v):
+%o AXXXXXX     a, b = 2, 7
+%o AXXXXXX     for _ in range(v): a, b = b, 4*b - 2*a
+%o AXXXXXX     return a
+%o AXXXXXX def a(n):
+%o AXXXXXX     ans = 1
+%o AXXXXXX     for m in range(1, n + 1, 2):
+%o AXXXXXX         ans *= A020727((n // m).bit_length() - 1)
+%o AXXXXXX     return ans
+%o AXXXXXX (PARI)
+%o AXXXXXX delta(v) = if(v==0, 2, if(v==1, 7, 4*delta(v-1) - 2*delta(v-2)));
+%o AXXXXXX a(n) = prod(k=1, (n+1)\2, delta(logint(n\(2*k-1), 2)));
+%Y AXXXXXX Cf. A001088, A020727, A000129, A001333, A007814.
+%K AXXXXXX nonn,easy
+%O AXXXXXX 1,1
+%A AXXXXXX Gareth Montgomery, Oct 23 2026

@@ -1,0 +1,74 @@
+\documentclass[12pt,reqno]{article}
+\usepackage{amsmath,amssymb,amsthm,booktabs,hyperref}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\title{\textbf{The Dyadic Kac--Murdock--Szeg\H{o} Spectrum of Arithmetic Diamond Matrices and the $n=14$ Phase Transition in Shifted Smith Determinants}}
+\author{Gareth Montgomery\\
+\small Sprucefield Research \& GarethEnglish, Lisburn, Northern Ireland, UK\\
+\small \texttt{gareth@garethenglish.com}}
+\date{October 23, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+In 1875, H.\ J.\ S.\ Smith proved that $\det[\gcd(i,j)]_{1\le i,j\le n} = \prod_{k=1}^n \phi(k)$. We resolve two deformations of Smith's determinant that break factor-closure by coupling multiplicative divisibility with additive operations. First, for the arithmetic diamond matrix $A_n = [\gcd(i+j, |i-j|)]_{1\le i,j\le n}$, we prove that odd-divisor Möbius congruence reduces $A_n$ to a direct sum of dyadic Kac--Murdock--Szeg\H{o} (KMS) Toeplitz blocks at the critical coupling $\rho = 1/\sqrt{2}$. Consequently, $\det(A_n)$ is governed in closed form by the Pisot sequence $P(2,7)$ (OEIS \href{https://oeis.org/A020727}{A020727}), equivalently the interleaved Pell (A000129) and companion Pell (A001333) numbers. Second, for the additively shifted Smith matrix $G_n^{(k)} = [\gcd(k+i, k+j)]_{1\le i,j\le n}$, we prove that $2^{n-2} \mid \det G_n^{(k)}$ universally for all $n\ge 2$ and $k\in\mathbb{Z}$, and explain why the empirical equality $\min_{k\ge 0} v_2(\det G_n^{(k)}) = n-2$ holds for $2\le n\le 13$ before failing for the first time at $n=14$ via a prime-power bottleneck modulo $4$.
+\end{abstract}
+
+\section{Introduction and Main Results}
+
+Let $G_n = [\gcd(i,j)]_{1\le i,j\le n}$ denote H.\ J.\ S.\ Smith's greatest common divisor matrix~\cite{Smith1875}, whose determinant is $\det(G_n) = \prod_{k=1}^n \phi(k)$ (OEIS \href{https://oeis.org/A001088}{A001088}). Smith's factorization $G_n = D_n \operatorname{diag}(\phi(1),\dots,\phi(n)) D_n^T$ relies on the factor-closure of $\{1,2,\dots,n\}$.
+
+In this paper, we establish exact determinantal and $2$-adic laws for two natural additive deformations of $G_n$:
+\begin{enumerate}
+    \item The \emph{Arithmetic Diamond Matrix} $A_n := [\gcd(i+j, |i-j|)]_{1\le i,j\le n}$ and its $(s,\lambda;p)$-generalization $A_n^{(s,\lambda;p)} := [\gcd(i,j)^s(1+(\lambda-1)\delta_{v_p(i),v_p(j)})]_{1\le i,j\le n}$.
+    \item The \emph{Additively Shifted Smith Matrix} $G_n^{(k)} := [\gcd(k+i, k+j)]_{1\le i,j\le n}$ over $k\in\mathbb{Z}_{\ge 0}$.
+\end{enumerate}
+
+\section{The Arithmetic Diamond Matrix and KMS Reduction}
+
+\begin{lemma}[2-Adic Resonance Identity]\label{lem:resonance}
+For all $i,j \in \mathbb{Z}_{\ge 1}$,
+\begin{equation}
+\gcd(i+j, \, |i-j|) = \gcd(i,j)\big(1 + \delta_{v_2(i), v_2(j)}\big),
+\end{equation}
+where $v_2(m)$ denotes the $2$-adic valuation of $m$.
+\end{lemma}
+\begin{proof}
+Write $i = dx$ and $j = dy$ with $d = \gcd(i,j)$ and $\gcd(x,y)=1$. Since $(x+y)+(x-y)=2x$ and $(x+y)-(x-y)=2y$, $\gcd(x+y,|x-y|)$ divides $\gcd(2x,2y)=2$. Because $\gcd(x,y)=1$, $x$ and $y$ cannot both be even. Thus $x+y$ is even if and only if both $x$ and $y$ are odd, which is equivalent to $v_2(i)=v_2(j)$.
+\end{proof}
+
+\begin{theorem}[Master Formula for the Arithmetic Diamond Determinant]\label{thm:diamond}
+Let $P_k$ (A000129) and $Q_k$ (A001333) denote the Pell and companion Pell numbers, and define $\mathcal{W}_k = P_k$ for even $k$ and $\mathcal{W}_k = Q_k$ for odd $k$. Then for every $n \ge 1$,
+\begin{equation}
+\det\big[\gcd(i+j, \, |i-j|)\big]_{1\le i,j\le n} = \left(\prod_{k=1}^n \phi(k)\right) \prod_{\substack{m=1 \\ m\text{ odd}}}^{n} \Delta_{V_m}, \qquad V_m := \lfloor \log_2(n/m)\rfloor,
+\end{equation}
+where $\Delta_V = 2^{\lfloor V/2\rfloor}\mathcal{W}_{V+2}$ is the Pisot sequence $P(2,7)$ (A020727: $2, 7, 24, 82, 280, 956, \dots$) satisfying $\Delta_V = 4\Delta_{V-1} - 2\Delta_{V-2}$ for $V\ge 2$.
+\end{theorem}
+\begin{proof}
+By Lemma~\ref{lem:resonance}, writing $i = 2^a u$ and $j = 2^b w$ with $u,w$ odd gives $A_n(2^a u, 2^b w) = D(a,b)\gcd(u,w)$ where $D(a,b) = 2^{\min(a,b)}(1+\delta_{a,b})$. Expanding $\gcd(u,w) = \sum_{m\mid \gcd(u,w)} \phi(m)$ over odd divisors $m \le n$, unit lower-triangular congruence reduces $A_n$ to $\bigoplus_{m\text{ odd}} \phi(m) D_{V_m}$. Factoring $S_V = \operatorname{diag}(1, 2^{1/2}, \dots, 2^{V/2})$ from both sides of $D_V$ yields $D_V = S_V(I_{V+1} + K_V(2^{-1/2}))S_V$, where $K_V(\rho) = [\rho^{|a-b|}]_{0\le a,b\le V}$ is the Kac--Murdock--Szeg\H{o} Toeplitz matrix~\cite{KMS1953}. Using the tridiagonal inverse of $K_V(\rho)$, $\Delta_V = 2^{-V(V-1)/2}\det(D_V)$ equals the determinant of the $(V+1)\times(V+1)$ tridiagonal matrix with corner diagonals $3$, interior diagonals $4$, and off-diagonal square $2$, yielding $\Delta_V = 4\Delta_{V-1}-2\Delta_{V-2}$ with $\Delta_0=2, \Delta_1=7$.
+\end{proof}
+
+\section{Shifted Smith Matrices and the $n=14$ Phase Transition}
+
+\begin{theorem}[Universal $2^{n-2}$ Divisibility and the $3\bmod 4$ Prime-Power Bottleneck]\label{thm:shifted}
+For every $n \ge 2$ and $k \in \mathbb{Z}$, let $G_n^{(k)} = [\gcd(k+i, k+j)]_{1\le i,j\le n}$ and $\pi_{3,4}^*(n-1) := \#\{p^r \le n-1 : p\text{ prime}, \, p \equiv 3 \pmod 4, \, r\ge 1\}$. Then
+\begin{equation}
+v_2\big(\det G_n^{(k)}\big) \ge (n - 2) + \max\Big(0, \, \lfloor n/2\rfloor - 2 - \pi_{3,4}^*(n-1)\Big).
+\end{equation}
+In particular, $\min_{k\ge 0} v_2(\det G_n^{(k)}) = n - 2$ holds for $2 \le n \le 13$, and fails for the first time at $n = 14$ where $\lfloor 14/2\rfloor - 2 = 5 > 4 = |\{3, 7, 9, 11\}| = \pi_{3,4}^*(13)$.
+\end{theorem}
+\begin{proof}
+Writing $G_n^{(k)} = \sum_{d\ge 1} \phi(d)\mathbf{v}_d\mathbf{v}_d^T$ where $(\mathbf{v}_d)_i = \mathbf{1}_{d\mid (k+i)}$, since $\phi(1)=\phi(2)=1$ and $2\mid\phi(d)$ for all $d\ge 3$, the parity-difference basis $B_n = [\mathbf{e}_i - \mathbf{e}_{i-2}]_{3\le i\le n}$ annihilates $\mathbf{v}_1$ and $\mathbf{v}_2$ over $\mathbb{Z}$. Thus $\det G_n^{(k)} = 2^{n-2}\det(B_n^T H_n^{(k)} B_n)$ where $H_n^{(k)} = (G_n^{(k)} - \mathbf{v}_1\mathbf{v}_1^T - \mathbf{v}_2\mathbf{v}_2^T)/2$. On the even index set $E = \{i : 2\mid(k+i)\}$, $H_n^{(k)}(i,j) = \gcd((k+i)/2, (k+j)/2) - 1 \equiv v_4(i)v_4(j) \pmod 2$, which has rank $1$ over $\mathbb{F}_2$. Thus the subspace $W_{\text{even}} = B_{\text{even}} \cap \ker(\mathbf{v}_4^T)$ of dimension $|E|-2 \ge \lfloor n/2\rfloor - 2$ has zero self-pairing modulo $2$, and couples to the odd indices $O$ solely via odd divisors $d \le n-1$ with $\phi(d) \equiv 2 \pmod 4$, namely prime powers $q = p^r \le n-1$ with $p \equiv 3 \pmod 4$. By rank-nullity, $Q_n^{(k)} = B_n^T H_n^{(k)} B_n \bmod 2$ has corank at least $\max(0, \lfloor n/2\rfloor - 2 - \pi_{3,4}^*(n-1))$.
+\end{proof}
+
+\begin{thebibliography}{9}
+\bibitem{Smith1875} H.~J.~S.~Smith, On the value of a certain arithmetical determinant, \emph{Proc.\ London Math.\ Soc.} \textbf{7} (1875), 208--212.
+\bibitem{KMS1953} M.~Kac, W.~L.~Murdock, and G.~Szeg\H{o}, On the eigenvalues of certain Hermitian forms, \emph{J.\ Rational Mech.\ Anal.} \textbf{2} (1953), 767--800.
+\end{thebibliography}
+
+\end{document}

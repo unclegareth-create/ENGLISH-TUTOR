@@ -1,0 +1,156 @@
+# OEIS Deformed & p-Adic Arithmetic Diamond Spectra Package
+# Author: Gareth Montgomery (Sprucefield Research, Lisburn, Northern Ireland)
+# Date: October 31, 2026
+
+========================================================================
+1. THEOREM A: THE DEFORMED ARITHMETIC DIAMOND PENCIL A_n^(r)(lambda)
+========================================================================
+Definition:
+For any integer power r >= 1 and deformation parameter lambda in C, define the n X n Deformed Arithmetic Diamond Matrix pencil:
+  A_n^(r)(lambda) = [ gcd(i, j)^r * (1 + lambda * delta_{v_2(i), v_2(j)}) ]_{1 <= i,j <= n},
+where v_2(k) denotes the 2-adic valuation of k and delta_{a,b} is the Kronecker delta.
+
+Specializations of the Pencil:
+  * lambda = 0: H. J. S. Smith's power GCD matrix [gcd(i,j)^r] (1875), with determinant Product_{k=1..n} J_r(k).
+  * lambda = 1: Power Arithmetic Diamond Matrix [gcd(i^r + j^r, |i^r - j^r|)].
+  * lambda = -1: Hollow Dyadic GCD Matrix [gcd(i,j)^r * (1 - delta_{v_2(i), v_2(j)})], where entries sharing the same 2-adic valuation vanish.
+  * lambda = -1/2: Half-Resonance GCD Matrix [gcd(i,j)^r * (1 - (1/2)*delta_{v_2(i), v_2(j)})], and (via reciprocal duality q -> 1/q) the Dual LCM Arithmetic Diamond Matrix L_n^(r) = [i^r * j^r / gcd(i^r + j^r, |i^r - j^r|)].
+  * lambda = -2: Alternating Sign-Resonance Diamond Matrix [gcd(i,j)^r * (-1)^{delta_{v_2(i), v_2(j)}}], where entries with v_2(i) = v_2(j) flip sign.
+
+Master Determinant Factorization (Theorem A):
+For all n >= 1, r >= 1, and lambda in C:
+  det A_n^(r)(lambda)
+    = Product_{m=1..n, m odd} J_r(m)^(V_m + 1) * 2^(r * V_m * (V_m - 1) / 2) * Delta_{V_m}^(r)(lambda)
+    = (Product_{k=1..n} J_r(k)) * Product_{m=1..n, m odd} ( Delta_{V_m}^(r)(lambda) / (2^r - 1)^(V_m) ),
+where J_r(m) = m^r * Product_{p | m} (1 - p^(-r)) is Jordan's totient function, V_m = floor(log_2(n/m)), and
+  Delta_V^(r)(lambda) = 2^(-r * V * (V - 1) / 2) * det[ 2^(r * min(a,b)) * (1 + lambda * delta_{a,b}) ]_{0 <= a,b <= V}.
+
+Exact 3-Term Linear Recurrence & Universal Cassini Identity (with q = 2^r):
+For all V >= 2:
+  Delta_V^(r)(lambda) = ( (q + 1)*lambda + q - 1 ) * Delta_{V-1}^(r)(lambda) - q * lambda^2 * Delta_{V-2}^(r)(lambda),
+with initial conditions:
+  Delta_0^(r)(lambda) = 1 + lambda,
+  Delta_1^(r)(lambda) = q * (1 + lambda)^2 - 1.
+Ordinary Generating Function:
+  Sum_{V >= 0} Delta_V^(r)(lambda) * x^V = ( 1 + lambda - (q - 1)*(lambda^2 - 1)*x ) / ( 1 - ((q + 1)*lambda + q - 1)*x + q * lambda^2 * x^2 ).
+Universal Cassini Identity (independent of q - 1 cancellation!):
+  (Delta_V^(r)(lambda))^2 - Delta_{V+1}^(r)(lambda) * Delta_{V-1}^(r)(lambda) = lambda^(2*V) * q^(V - 1)   for all V >= 1.
+
+========================================================================
+2. THEOREM B: UNIVERSAL p-ADIC VALUATION RESONANCE MATRIX A_{n,p}^(r)(lambda)
+========================================================================
+Definition:
+For any prime p >= 2, integer power r >= 1, and deformation parameter lambda in C, define:
+  A_{n,p}^(r)(lambda) = [ gcd(i, j)^r * (1 + lambda * delta_{v_p(i), v_p(j)}) ]_{1 <= i,j <= n}.
+
+Master p-Adic Determinant Factorization (Theorem B):
+Grouping {1, ..., n} by p-free part m (with p not dividing m) and p-adic valuation v_p(k) in {0, ..., V_{p,m}} where V_{p,m} = floor(log_p(n/m)), unit lower-triangular p-coprime Jordan totient congruence reduces A_{n,p}^(r)(lambda) to a direct sum of p-adic Kac-Murdock-Szego (KMS) Toeplitz blocks at coupling rho_{p,r} = p^(-r/2). With q = p^r:
+  det A_{n,p}^(r)(lambda)
+    = Product_{m=1..n, p \nmid m} J_r(m)^(V_{p,m} + 1) * p^(r * V_{p,m} * (V_{p,m} - 1) / 2) * Delta_{V_{p,m}}^(p,r)(lambda)
+    = (Product_{k=1..n} J_r(k)) * Product_{m=1..n, p \nmid m} ( Delta_{V_{p,m}}^(p,r)(lambda) / (p^r - 1)^(V_{p,m}) ),
+where Delta_V^(p,r)(lambda) = Delta_V(p^r, lambda) satisfies the exact same universal 3-term recurrence and Cassini identity with q = p^r:
+  Delta_0^(p,r)(lambda) = 1 + lambda,
+  Delta_1^(p,r)(lambda) = p^r * (1 + lambda)^2 - 1,
+  Delta_V^(p,r)(lambda) = ( (p^r + 1)*lambda + p^r - 1 ) * Delta_{V-1}^(p,r)(lambda) - p^r * lambda^2 * Delta_{V-2}^(p,r)(lambda),
+  (Delta_V^(p,r)(lambda))^2 - Delta_{V+1}^(p,r)(lambda) * Delta_{V-1}^(p,r)(lambda) = lambda^(2*V) * p^(r*(V - 1)).
+
+Universal Pisot T-Sequence Theorem (lambda = 1, Arbitrary q = p^r >= 2):
+At lambda = 1, Delta_0(q, 1) = 2, Delta_1(q, 1) = 4*q - 1, and Delta_V(q, 1) = (2*q)*Delta_{V-1}(q, 1) - q*Delta_{V-2}(q, 1).
+By the universal Cassini identity, (Delta_V(q, 1))^2 - Delta_{V+1}(q, 1)*Delta_{V-1}(q, 1) = q^(V-1). Since 0 < q^(V-1) < Delta_{V-1}(q, 1) for all V >= 1 and q >= 2, we have:
+  Delta_{V+1}(q, 1) = ceil( Delta_V(q, 1)^2 / Delta_{V-1}(q, 1) ) - 1,
+proving that for EVERY prime power q = p^r >= 2, Delta_V^(p,r)(1) is the exact Pisot T-sequence T(2, 4*p^r - 1)!
+Furthermore, in terms of Chebyshev polynomials of the second kind U_V(x):
+  Delta_V(q, 1) = q^((V - 1)/2) * U_{V+1}( sqrt(q) ).
+
+Table of p-Adic Pisot Diamond Sequences Delta_V^(p,r)(1) = T(2, 4*q - 1):
+  * q = 2  (p=2, r=1): [2, 7, 24, 82, 280, 956, 3264, 11144, 38048] -> OEIS A020727 / A003480
+  * q = 3  (p=3, r=1): [2, 11, 60, 327, 1782, 9711, 52920, 288387]  -> Pisot T(2, 11), rec: 6*a(n-1) - 3*a(n-2)
+  * q = 4  (p=2, r=2): [2, 15, 112, 836, 6240, 46576, 347648]       -> OEIS A022026 (Pisot T(2, 15))
+  * q = 5  (p=5, r=1): [2, 19, 180, 1705, 16150, 152975, 1449000]   -> Pisot T(2, 19), rec: 10*a(n-1) - 5*a(n-2)
+  * q = 7  (p=7, r=1): [2, 27, 364, 4907, 66150, 891751, 12021464]  -> Pisot T(2, 27), rec: 14*a(n-1) - 7*a(n-2)
+  * q = 16 (p=2, r=4): [2, 63, 1984, 62480, 1967616, 61964032]      -> OEIS A234279 (Spanning forests of benzenoid chain!)
+
+========================================================================
+3. REMARKABLE SPECIAL CASES & NEW OEIS DETERMINANT IDENTITIES
+========================================================================
+
+A. THE HOLLOW VALUATION-RESONANCE MATRIX (lambda = -1) & GAUSSIAN LUCAS SEQUENCES:
+When lambda = -1, the diagonal of every KMS block vanishes: 1 + lambda*delta_{a,b} = 1 - delta_{a,b}.
+The recurrence becomes:
+  Delta_0(q, -1) = 0,   Delta_1(q, -1) = -1,   Delta_V(q, -1) = -2 * Delta_{V-1}(q, -1) - q * Delta_{V-2}(q, -1).
+In exact closed form, this is the negative Lucas U-sequence U_V(-2, q) (or signed U_V(2, q) = Im((1 + i*sqrt(q-1))^V)/sqrt(q-1)):
+  Delta_V(q, -1) = (-1)^V * Im( (1 + i * sqrt(q - 1))^V ) / sqrt(q - 1).
+Global Singularity Theorem for Hollow Valuation-Resonance GCD Matrices:
+  Because V_{p,m} = 0 whenever n/p < m <= n (with p \nmid m), and Delta_0(q, -1) = 0, the n X n Hollow p-adic GCD Matrix A_{n,p}^(r)(-1) has a 1 X 1 zero block [0] whenever there exists a p-coprime integer m in (n/p, n].
+  * For p >= 3, m = n (if p \nmid n) or m = n - 1 (if p | n and n >= 2) always lies in (n/p, n], so det A_{n,p}^(r)(-1) = 0 for ALL n >= 1!
+  * For p = 2, the interval (n/2, n] contains an odd integer for every n != 2. At n = 2, m = 1 is the unique odd integer <= 2 and V_{2,1} = 1, giving det A_2^(r)(-1) = -1. Thus det A_n^(r)(-1) = -delta_{n,2} for all n >= 1 and r >= 1!
+
+OEIS Sequences Unified by the Hollow KMS Block Determinant Delta_V(q, -1):
+  * q = 2 (p=2, r=1): [0, -1, 2, -2, 0, 4, -8, 8, 0, -16] -> OEIS A009545 (Im((1+i)^n), e.g.f. sin(x)*exp(x)) & A099087
+  * q = 3 (p=3, r=1): [0, -1, 2, -1, -4, 11, -10, -13, 56] -> OEIS A088137 (Generalized Gaussian Fibonacci integers, Lucas U(2,3))
+  * q = 4 (p=2, r=2): [0, -1, 2, 0, -8, 16, 0, -64, 128]   -> OEIS A088138 (Generalized Gaussian Fibonacci integers, Lucas U(2,4))
+  * q = 5 (p=5, r=1): [0, -1, 2, 1, -12, 19, 22, -139]     -> OEIS A045873 (Im((1+2i)^n)/2, Lucas U(2,5))
+  * q = 6 (q=6):      [0, -1, 2, 2, -16, 20, 56, -232]     -> OEIS A088139 (Lucas U(2,6))
+  * q = 8 (p=2, r=3): [0, -1, 2, 4, -24, 16, 160, -448]    -> OEIS A098656 (Expansion of x*(1-4x)/((1-2x)*(1-8x^2)))
+
+B. THE DUAL LCM ARITHMETIC DIAMOND MATRIX (lambda = -1/2):
+1) Direct Half-Resonance GCD Matrix A_{n,p}^(r)(-1/2) = [gcd(i,j)^r * (1 - (1/2)*delta_{v_p(i), v_p(j)})]:
+   Scaling by 2^(V+1) yields the integer sequence B_V(q) = 2^(V+1) * Delta_V(q, -1/2) satisfying:
+     B_0(q) = 1,   B_1(q) = q - 4,   B_V(q) = (q - 3) * B_{V-1}(q) - q * B_{V-2}(q),
+     (B_V(q))^2 - B_{V+1}(q) * B_{V-1}(q) = 4 * q^(V - 1).
+   OEIS Matches for B_V(q) = 2^(V+1) * Delta_V(q, -1/2):
+     * q = 2 (p=2, r=1): [1, -2, 0, 4, -4, -4, 12, -4, -20, 28]  -> OEIS A078050 (G.f. (1-x)/(1+x+2x^2))
+     * q = 3 (p=3, r=1): [1, -1, -3, 3, 9, -9, -27, 27, 81, -81] -> OEIS A108411 (Signed powers of 3 repeated: 3^floor(V/2))
+     * q = 4 (p=2, r=2): [1, 0, -4, -4, 12, 28, -20, -132, 92]   -> Notice B_1(4) = 0, so det A_n^(2)(-1/2) = 0 whenever any odd m <= n has V_m = 1 (i.e. whenever floor(n/2) >= ceil(n/4), which holds for all n >= 2 except n = 4, 5)!
+     * q = 5 (p=5, r=1): [1, 1, -3, -11, -7, 41, 117, 29, -527]  -> OEIS A006495 (Re((1 + 2i)^V))
+
+2) Dual LCM-Coupled Arithmetic Diamond Matrix L_n^(r) = [ i^r * j^r / gcd(i^r + j^r, |i^r - j^r|) ]_{1 <= i,j <= n}:
+   Since i^r * j^r / gcd(i^r + j^r, |i^r - j^r|) = (i^r * j^r / gcd(i,j)^r) * (1 - (1/2)*delta_{v_2(i), v_2(j)}),
+   factoring out i^r from row i and j^r from column j reduces L_n^(r) to the reciprocal-coupled matrix [gcd(i,j)^(-r) * (1 - (1/2)*delta_{v_2(i), v_2(j)})].
+   Applying odd-divisor Moebius congruence with g_r(m) = m^(-r) * Product_{p | m} (1 - p^r) gives the exact closed-form theorem:
+     det L_n^(r) = (n!)^(2*r) * Product_{m=1..n, m odd} g_r(m)^(V_m + 1) * ( (-1)^(V_m) * N_{V_m}^(r) / ( 2^(V_m + 1) * 2^(r * V_m * (V_m + 1) / 2) ) ),
+   where the Dual LCM Diamond Polynomials N_V^(r) = N_V(2^r) (with q = 2^r) satisfy:
+     N_0(q) = 1,   N_1(q) = 4*q - 1,   N_V(q) = (3*q - 1) * N_{V-1}(q) - q * N_{V-2}(q)   for V >= 2,
+   with exact Cassini identity:
+     (N_V(q))^2 - N_{V+1}(q) * N_{V-1}(q) = 4 * q^(V + 1)   for all V >= 1.
+   Exact values of det L_n^(1) for n = 1..9:
+     n=1: 1/2, n=2: -7/2, n=3: 21/2, n=4: -99, n=5: 990, n=6: 41580, n=7: -873180, n=8: 15981840, n=9: -143836560.
+
+C. ALTERNATING SIGN-RESONANCE DIAMOND MATRIX (lambda = -2) & FURTHER OEIS CONNECTIONS:
+When lambda = -2, entries with v_p(i) = v_p(j) equal -gcd(i,j)^r while entries with v_p(i) != v_p(j) equal +gcd(i,j)^r.
+The recurrence is:
+  Delta_0(q, -2) = -1,   Delta_1(q, -2) = q - 1,   Delta_V(q, -2) = -(q + 3) * Delta_{V-1}(q, -2) - 4*q * Delta_{V-2}(q, -2),
+with Cassini identity:
+  (Delta_V(q, -2))^2 - Delta_{V+1}(q, -2) * Delta_{V-1}(q, -2) = 4^V * q^(V - 1).
+OEIS Matches for Delta_V(q, lambda) at Other Special Couplings:
+  * q = 4, lambda = -2: [-1, 3, -5, -13, 171, -989, 4187, -13485] -> OEIS A087170 (G.f. -(1 + 4x)/(1 + 7x + 16x^2), permanents of tridiagonal matrices)
+  * q = 5, lambda = -2: [-1, 4, -12, 16, 112, -1216, 7488, -35584] -> OEIS A370191 (Numerators of Re(1/(1 + i/2)^V))
+  * q = 2, lambda = 1/2 (scaled by 2^(V+1)): [3, 14, 64, 292, 1332, 6076, 27716] -> OEIS A060801 (INVERT transform of odd numbers)
+  * q = 4, lambda = -1/3 (scaled by 3^(V+1)): [2, 7, 20, 52, 128, 304, 704] -> OEIS A066373 ((3V + 4)*2^(V-1), degenerate double root at x = 1/2!)
+  * q = 5, lambda = -1/3 (scaled by 3^(V+1)): [2, 11, 56, 281, 1406, 7031, 35156] -> OEIS A198769 ((9*5^V - 1)/4)
+  * q = 6, lambda = -1/3 (scaled by 3^(V+1)): [2, 15, 108, 774, 5544, 39708, 284400] -> OEIS A154635 (5D Soddy sphere bend ratios!)
+
+========================================================================
+4. READY-TO-PASTE OEIS FORMULA SUBMISSIONS
+========================================================================
+
+--- Target 1: OEIS A234279 (Number of spanning forests of a benzenoid chain of length n) ---
+FORMULA:
+a(n) = 2^(-2*n*(n-1)) * det[ 16^min(i,j) * (1 + delta_{i,j}) ]_{0 <= i,j <= n}, where delta_{i,j} is the Kronecker delta. - _Gareth Montgomery_, Oct 31 2026
+a(n)^2 - a(n+1)*a(n-1) = 16^(n-1) for all n >= 1, proving that a(n) is the Pisot T-sequence T(2, 63). - _Gareth Montgomery_, Oct 31 2026
+COMMENT:
+Governs the 4th-power arithmetic diamond determinant: det[gcd(i^4 + j^4, |i^4 - j^4|)]_{1 <= i,j <= n} = (Product_{k=1..n} J_4(k)) * Product_{m=1..n, m odd} (a(floor(log_2(n/m))) / 15^floor(log_2(n/m))), where J_4(k) is Jordan's totient function (A059377). - _Gareth Montgomery_, Oct 31 2026
+
+--- Target 2: OEIS A009545 (Expansion of e.g.f. sin(x)*exp(x)) ---
+FORMULA:
+a(n) = -2^(-n*(n-1)/2) * det[ 2^min(i,j) * (1 - delta_{i,j}) ]_{0 <= i,j <= n} for all n >= 0, where delta_{i,j} is the Kronecker delta (the hollow dyadic Kac-Murdock-Szego determinant). - _Gareth Montgomery_, Oct 31 2026
+
+--- Target 3: OEIS A078050 (Expansion of (1-x)/(1+x+2*x^2)) ---
+FORMULA:
+a(n) = 2^(n+1 - n*(n-1)/2) * det[ 2^min(i,j) * (1 - (1/2)*delta_{i,j}) ]_{0 <= i,j <= n} for all n >= 0, where delta_{i,j} is the Kronecker delta. - _Gareth Montgomery_, Oct 31 2026
+a(n)^2 - a(n+1)*a(n-1) = 2^(n+1) for all n >= 1. - _Gareth Montgomery_, Oct 31 2026
+
+--- Target 4: OEIS A087170 (Expansion of (1 + 4*x)/(1 + 7*x + 16*x^2)) ---
+FORMULA:
+a(n) = -2^(-n*(n-1)) * det[ 4^min(i,j) * (1 - 2*delta_{i,j}) ]_{0 <= i,j <= n} for all n >= 0, where delta_{i,j} is the Kronecker delta. - _Gareth Montgomery_, Oct 31 2026
+a(n)^2 - a(n+1)*a(n-1) = 4^(2*n-1) for all n >= 1. - _Gareth Montgomery_, Oct 31 2026

@@ -9,6 +9,7 @@
     {
       id: 'boardroom-inversion',
       num: '01',
+      audioSrc: 'assets/audio/tts/prosody-01-boardroom-inversion.mp3',
       context: 'Executive Boardroom • Negative Inversion',
       limpB1: 'I think we should delay the launch because it’s too risky.',
       targetKeys: ['UNDER NO CIRCUMSTANCES', 'ILL-ADVISED'],
@@ -40,6 +41,7 @@
     {
       id: 'ielts-part3-hedging',
       num: '02',
+      audioSrc: 'assets/audio/tts/prosody-02-ielts-part3-hedging.mp3',
       context: 'IELTS Part 3 Hedging • Impersonal Passive Reporting',
       limpB1: 'Everyone knows that social media makes teenagers less focused.',
       targetKeys: ['WIDELY BELIEVED TO', 'ATTENTION SPAN'],
@@ -69,6 +71,7 @@
     {
       id: 'cleft-emphasis',
       num: '03',
+      audioSrc: 'assets/audio/tts/prosody-03-cleft-emphasis.mp3',
       context: 'Cleft Emphasis • Structural Contrast Pivot',
       limpB1: 'The main problem isn’t the budget, it’s the lack of clear leadership.',
       targetKeys: ['WHAT UNDERMINES'],
@@ -98,6 +101,7 @@
     {
       id: 'participle-consequence',
       num: '04',
+      audioSrc: 'assets/audio/tts/prosody-04-participle-consequence.mp3',
       context: 'Participle Consequence • Resultative -ing Clause',
       limpB1: 'The central bank raised interest rates, and this slowed down local investment.',
       targetKeys: ['THEREBY CURBING'],
@@ -127,6 +131,7 @@
     {
       id: 'diplomatic-pushback',
       num: '05',
+      audioSrc: 'assets/audio/tts/prosody-05-diplomatic-pushback.mp3',
       context: 'Diplomatic Pushback • Executive Register Upgrade',
       limpB1: 'I disagree with your timeline because we don’t have enough staff.',
       targetKeys: ['REALISTICALLY FEASIBLE'],
@@ -354,7 +359,7 @@
               <div class="flex flex-wrap items-center gap-2.5">
                 <button type="button" id="prosody-hear-model-btn" class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition cursor-pointer">
                   <i class="fa-solid fa-volume-high" aria-hidden="true"></i>
-                  <span id="prosody-hear-model-label">🔊 Listen to clip (synthetic voice)</span>
+                  <span id="prosody-hear-model-label">🔊 Listen to British neural model</span>
                 </button>
                 <button type="button" id="prosody-reveal-model-btn" class="px-3.5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-xs transition cursor-pointer">
                   👁️ Show answer
@@ -858,10 +863,10 @@
         const modelDur = 5800;
         const progress = Math.min(1, elapsed / modelDur);
         drawCanvasFrame(progress);
-        if (elapsed >= modelDur) {
+        if (elapsed >= modelDur && !modelAudioEl) {
           isSpeakingModel = false;
           const lbl = document.getElementById('prosody-hear-model-label');
-          if (lbl) lbl.textContent = '🔊 Listen to clip (synthetic voice)';
+          if (lbl) lbl.textContent = '🔊 Listen to British neural model';
           updateStatus('Clip finished • Your turn', 'sky');
           drawCanvasFrame(0);
           return;
@@ -1013,13 +1018,14 @@
     }
     if (isSpeakingModel) {
       isSpeakingModel = false;
-      if ('speechSynthesis' in window) {
+      if (modelAudioEl) {
         try {
-          window.speechSynthesis.cancel();
+          modelAudioEl.pause();
+          modelAudioEl.currentTime = 0;
         } catch (e) {}
       }
       const lbl = document.getElementById('prosody-hear-model-label');
-      if (lbl) lbl.textContent = '🔊 Listen to clip (synthetic voice)';
+      if (lbl) lbl.textContent = '🔊 Listen to British neural model';
     }
     if (rafId) {
       cancelAnimationFrame(rafId);
@@ -1030,6 +1036,8 @@
       timerIntervalId = null;
     }
   }
+
+  let modelAudioEl = null;
 
   function playModelCadence() {
     if (isSpeakingModel) {
@@ -1045,29 +1053,35 @@
 
     const lbl = document.getElementById('prosody-hear-model-label');
     if (lbl) lbl.textContent = '⏹ Stop clip';
-    updateStatus('Playing model clip (synthetic voice)...', 'amber');
+    updateStatus('Playing British neural model...', 'amber');
 
-    if ('speechSynthesis' in window && typeof window.SpeechSynthesisUtterance === 'function') {
+    if (drill.audioSrc && typeof Audio !== 'undefined') {
       try {
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(drill.modelC2);
-        utter.lang = 'en-GB';
-        utter.rate = 0.94;
-        utter.pitch = 0.96;
-
-        const voices = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
-        const gbVoice =
-          voices.find((v) => /en-GB/i.test(v.lang) && /Daniel|Arthur|George|Oliver|Google UK English Male/i.test(v.name)) ||
-          voices.find((v) => /en-GB/i.test(v.lang));
-        if (gbVoice) utter.voice = gbVoice;
-
-        utter.onend = () => {
+        if (!modelAudioEl) {
+          modelAudioEl = new Audio();
+          modelAudioEl.preload = 'auto';
+        }
+        modelAudioEl.src = drill.audioSrc;
+        modelAudioEl.volume = 1.0;
+        modelAudioEl.onended = () => {
           isSpeakingModel = false;
-          if (lbl) lbl.textContent = '🔊 Listen to clip (synthetic voice)';
+          if (lbl) lbl.textContent = '🔊 Listen to British neural model';
           updateStatus('Clip finished • Your turn', 'sky');
           drawCanvasFrame(0);
         };
-        window.speechSynthesis.speak(utter);
+        modelAudioEl.onerror = () => {
+          isSpeakingModel = false;
+          if (lbl) lbl.textContent = '🔊 Listen to British neural model';
+          updateStatus('Ready • 8-second practice window', 'sky');
+          drawCanvasFrame(0);
+        };
+        const p = modelAudioEl.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(() => {
+            isSpeakingModel = false;
+            if (lbl) lbl.textContent = '🔊 Listen to British neural model';
+          });
+        }
       } catch (e) {}
     }
 

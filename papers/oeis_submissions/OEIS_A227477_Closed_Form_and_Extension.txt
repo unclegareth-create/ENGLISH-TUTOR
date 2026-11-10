@@ -1,0 +1,39 @@
+================================================================================
+OEIS CONTRIBUTION PACKAGE: A227477 (Resolves [hard,more] from July 2013)
+Target URL: https://oeis.org/edit?seq=A227477
+Sequence Name: Exponent of the group of Lipschitz quaternions in a reduced system modulo n.
+Author of Contribution: Gareth Montgomery
+================================================================================
+
+1. UPDATED DATA FIELD (n = 1..55, replacing 10-term list 1, 2, 24, 4, 120, 24, 336, 8, 72, 120)
+--------------------------------------------------------------------------------
+1, 2, 24, 4, 120, 24, 336, 8, 72, 120, 1320, 24, 2184, 336, 120, 16, 4896, 72, 6840, 120, 336, 1320, 12144, 24, 600, 2184, 216, 336, 24360, 120, 29760, 32, 1320, 4896, 1680, 72, 50616, 6840, 2184, 120, 68880, 336, 79464, 1320, 360, 12144, 103776, 48, 2352, 600, 4896, 2184, 148824, 216, 1320
+
+2. FORMULA FIELD (Paste into FORMULA)
+--------------------------------------------------------------------------------
+For n = 2^e_0 * Product_{i=1..r} p_i^e_i with odd primes p_i and e_i >= 1, a(n) = lcm(2^e_0, lcm_{1 <= i <= r} p_i^e_i * (p_i^2 - 1)). - _Gareth Montgomery_, Oct 29 2026
+In particular, a(2^e) = 2^e for all e >= 0, and a(p^e) = p^e * (p^2 - 1) for every odd prime p and e >= 1. - _Gareth Montgomery_, Oct 29 2026
+
+3. COMMENT / PROOF FIELD (Paste into COMMENTS)
+--------------------------------------------------------------------------------
+Proof of the closed-form formula: By the Chinese Remainder Theorem, the unit group H(Z/nZ)^* of Lipschitz quaternions modulo n decomposes as the direct product of H(Z/p^e Z)^* over the prime-power factors p^e || n, so a(n) is the least common multiple of a(p^e).
+(i) For an odd prime p, -1 is a sum of two squares in F_p, so H(F_p) is isomorphic to the matrix ring M_2(F_p) and H(F_p)^* =~ GL_2(F_p), which has exponent p*(p^2 - 1) (attained by the product of a p-unipotent element [1,1;0,1] and a Singer cycle of order p^2 - 1). Since the kernel 1 + p*M_2(Z/p^e Z) has exponent p^(e-1) and a p-unipotent Jordan block lifted to Z/p^e Z has order p^e, the exponent of GL_2(Z/p^e Z) is p^e * (p^2 - 1).
+(ii) For p = 2, H(F_2) is a commutative local ring of order 16 whose unit group H(F_2)^* =~ (Z/2Z)^3 has exponent 2. More generally, every unit q = a + b*i + c*j + d*k in H(Z/2^e Z)^* has odd norm N(q) = a^2 + b^2 + c^2 + d^2, so exactly one or three of (a,b,c,d) are odd. Consequently q^2 = (a^2 - b^2 - c^2 - d^2) + 2a(b*i + c*j + d*k) == 1 (mod 2) in the 1-coordinate and 0 (mod 2) in the i,j,k-coordinates, so q^2 in 1 + 2*H(Z/2^e Z). By standard 2-adic filtration induction, (1 + 2*H(Z/2^e Z))^(2^(e-1)) = {1}, whereas (1 + 2*i) has multiplicative order 2^(e-1) for e >= 2 and i has order 4, giving a(2^e) = 2^e for all e >= 0. - _Gareth Montgomery_, Oct 29 2026
+
+4. PROGRAMS (Paste into MATHEMATICA / PARI / PYTHON)
+--------------------------------------------------------------------------------
+(Mathematica)
+a[1] = 1; a[n_] := Apply[LCM, Map[If[#[[1]] == 2, 2^#[[2]], #[[1]]^#[[2]]*(#[[1]]^2 - 1)] &, FactorInteger[n]]]; Array[a, 55] (* _Gareth Montgomery_, Oct 29 2026 *)
+
+(PARI)
+a(n) = { my(f = factor(n), res = 1); for(i = 1, #f~, my(p = f[i,1], e = f[i,2]); res = lcm(res, if(p == 2, 2^e, p^e * (p^2 - 1)))); res; } \\ _Gareth Montgomery_, Oct 29 2026
+
+(Python)
+from math import lcm
+from sympy import factorint
+def A227477(n):
+    return lcm(*(2**e if p == 2 else p**e * (p**2 - 1) for p, e in factorint(n).items())) # _Gareth Montgomery_, Oct 29 2026
+
+5. KEYWORD UPDATE
+--------------------------------------------------------------------------------
+Remove "hard,more" -> "nonn,easy"

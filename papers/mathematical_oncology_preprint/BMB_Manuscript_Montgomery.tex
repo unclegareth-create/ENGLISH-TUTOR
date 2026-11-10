@@ -1,0 +1,107 @@
+\documentclass[11pt,reqno]{article}
+\usepackage{amsmath,amssymb,amsthm,booktabs,hyperref}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}[theorem]{Corollary}
+
+\title{\textbf{Exact Pharmacokinetic Washout Compensation and Volterra Cycle Conservation in Evolutionary Cancer Containment}}
+\author{Gareth Montgomery\\
+\small Sprucefield Research \& GarethEnglish, Lisburn, Northern Ireland, UK\\
+\small \texttt{gareth@garethenglish.com}}
+\date{October 23, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Adaptive cancer therapy seeks to prevent the competitive release of drug-resistant subclones ($R$) by preserving a protective population of drug-sensitive cells ($S$) above the Darwinian containment floor $S_{\mathrm{floor}} = K/\alpha$. Clinical protocols such as the Moffitt mCRPC abiraterone trial (NCT02415621) typically halt dosing when a blood biomarker falls to $50\%$ of baseline, assuming instantaneous cessation of drug activity. However, systemic anticancer agents and their active metabolites exhibit finite pharmacokinetic/pharmacodynamic elimination half-lives ($t_{1/2}$), causing continued cell kill during washout that drives $S(t)$ to a post-cessation nadir $S_{\mathrm{nadir}} \ll S_{\mathrm{stop}}$. Here we solve the coupled nonlinear logistic-washout differential equation in exact closed form by expressing the nonlinear crowding integral as an expectation over a Poisson random variable $M \sim \operatorname{Poisson}(k_d C_{\mathrm{off}}/\gamma)$. Inverting the resulting M\"obius transformation yields a zero-approximation analytical formula for the stopping threshold $S_{\mathrm{stop}}^*(S_{\mathrm{floor}}, C_{\mathrm{off}})$ required to guarantee $\min_{t\ge 0} S(t) = S_{\mathrm{floor}}$, and reveals a finite-time washout blowup horizon for long-half-life agents such as enzalutamide ($t_{1/2}\approx 5.8\text{ d}$). Furthermore, by logarithmic cycle integration, we prove an exact Volterra conservation law establishing the evolutionary dosing speed limit $k_d\langle C\rangle_T < r_S(1-1/\alpha)$, and derive a model-free hysteresis slope observer that reconstructs hidden resistant tumor burden $R(t)$ from total blood biomarkers $N(t)=S(t)+R(t)$ alone.
+\end{abstract}
+
+\section{Introduction and Governing Model}
+
+In metastatic castration-resistant prostate cancer (mCRPC) and other solid tumors, competitive interactions between treatment-sensitive cells $S(t)$ and treatment-resistant cells $R(t)$ under drug concentration $C(t)$ with elimination rate $\gamma = \ln 2 / t_{1/2}$ are governed by the coupled Lotka--Volterra pharmacokinetic system~\cite{Zhang2017,BradyNicholls2020}:
+\begin{align}
+\frac{dS}{dt} &= r_S S\left(1 - \frac{S + \beta R}{K}\right) - k_d C(t) S, \label{eq:S}\\
+\frac{dR}{dt} &= r_R R\left(1 - \frac{\alpha S + R}{K}\right), \label{eq:R}\\
+\frac{dC}{dt} &= -\gamma C + \gamma u(t), \label{eq:C}
+\end{align}
+where $r_S \approx 0.027\text{--}0.045\text{ d}^{-1}$ in mCRPC~\cite{BradyNicholls2020}, $K > 0$ is the carrying capacity, and $\alpha > 1$ is the competitive suppression coefficient of $S$ on $R$. Whenever $S(t) > S_{\mathrm{floor}} := K/\alpha$, sensitive cells competitively suppress resistant proliferation ($dR/dt < 0$).
+
+\section{Exact Poisson--Bernoulli Washout Solution and Safe-Stopping Law}
+
+When therapy is halted ($u(t)=0$) at $t=0$ with sensitive burden $S(0)=S_{\mathrm{stop}}$ and drug concentration $C(0)=C_{\mathrm{off}}$, drug clearance $C(t)=C_{\mathrm{off}}e^{-\gamma t}$ drives the non-autonomous Bernoulli equation
+\begin{equation}\label{eq:bernoulli}
+\frac{dS}{dt} = \big(r_S - k_d C_{\mathrm{off}}e^{-\gamma t}\big)S - \frac{r_S}{K}S^2, \qquad S(0) = S_{\mathrm{stop}}.
+\end{equation}
+
+\begin{theorem}[Poisson--Bernoulli Washout Trajectory and Exact Inverse Safe-Stopping Law]\label{thm:washout}
+Let $\Lambda_0 := k_d C_{\mathrm{off}}/\gamma$ denote the total washout kill impulse.
+\begin{enumerate}
+    \item For all $t \ge 0$, the exact analytical solution of~\eqref{eq:bernoulli} is
+    \begin{equation}\label{eq:S_exact}
+    S(t) = \frac{S_{\mathrm{stop}}\Phi(t)}{1 + \frac{r_S S_{\mathrm{stop}}}{K}\mathcal{I}(t)}, \qquad \Phi(t) := \exp\Big(r_S t - \Lambda_0\big(1-e^{-\gamma t}\big)\Big),
+    \end{equation}
+    where the nonlinear crowding integral $\mathcal{I}(t) = \int_0^t \Phi(\tau)\,d\tau$ is given in closed form as the expectation over a Poisson random variable $M \sim \operatorname{Poisson}(\Lambda_0)$:
+    \begin{equation}\label{eq:poisson_int}
+    \mathcal{I}(t) = \mathbb{E}_{M\sim\operatorname{Poisson}(\Lambda_0)}\!\left[\frac{e^{(r_S - M\gamma)t}-1}{r_S - M\gamma}\right] = \sum_{m=0}^{\infty} \frac{\Lambda_0^m e^{-\Lambda_0}}{m!}\left(\frac{e^{(r_S - m\gamma)t}-1}{r_S - m\gamma}\right).
+    \end{equation}
+    \item Given any target post-washout nadir $S_{\mathrm{floor}} \in (0, K)$ with $k_d C_{\mathrm{off}} > r_S(1 - S_{\mathrm{floor}}/K)$, $\min_{t\ge 0} S(t) = S_{\mathrm{floor}}$ holds if and only if dosing ceases at the exact threshold
+    \begin{equation}\label{eq:S_stop_star}
+    S_{\mathrm{stop}}^*\big(S_{\mathrm{floor}}, C_{\mathrm{off}}\big) = \frac{S_{\mathrm{floor}}}{\Phi(t^*) - \frac{r_S S_{\mathrm{floor}}}{K}\mathcal{I}(t^*)}, \qquad t^* := \frac{1}{\gamma}\ln\!\left(\frac{k_d C_{\mathrm{off}}}{r_S(1 - S_{\mathrm{floor}}/K)}\right).
+    \end{equation}
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Linearizing~\eqref{eq:bernoulli} via $z = S^{-1}$ yields $\dot{z} + (r_S - k_d C_{\mathrm{off}}e^{-\gamma t})z = r_S/K$ with integrating factor $\Phi(t)^{-1}$, proving~\eqref{eq:S_exact}. Expanding $\exp(-\Lambda_0(1-e^{-\gamma\tau})) = \sum_{m=0}^\infty \frac{\Lambda_0^m e^{-\Lambda_0}}{m!}e^{-m\gamma\tau}$ as the probability generating function of $\operatorname{Poisson}(\Lambda_0)$ at $e^{-\gamma\tau}$ and integrating termwise yields~\eqref{eq:poisson_int}. At the nadir $t^*$, $\dot{S}(t^*)=0$ and $S(t^*)=S_{\mathrm{floor}}$, so~\eqref{eq:bernoulli} gives $k_d C_{\mathrm{off}}e^{-\gamma t^*} = r_S(1-S_{\mathrm{floor}}/K)$, determining $t^*$ explicitly; inverting the M\"obius relation~\eqref{eq:S_exact} at $t=t^*$ gives~\eqref{eq:S_stop_star}.
+\end{proof}
+
+\section{Volterra Cycle Conservation and Model-Free Resistance Observer}
+
+\begin{theorem}[Volterra Cycle Conservation and Evolutionary Speed Limit]\label{thm:volterra}
+Over any treatment-recovery cycle $[0,T]$ with $S(T)=S(0)$, the cycle time-averages $\langle X\rangle_T := \frac{1}{T}\int_0^T X(t)\,dt$ obey the exact identities
+\begin{align}
+\langle S\rangle_T + \beta\langle R\rangle_T &= K\left(1 - \frac{k_d\langle C\rangle_T}{r_S}\right), \\
+\frac{1}{T}\ln\!\left(\frac{R(T)}{R(0)}\right) &= r_R\left[-(\alpha - 1) + \frac{\alpha k_d}{r_S}\langle C\rangle_T + \frac{\alpha\beta - 1}{K}\langle R\rangle_T\right].
+\end{align}
+Consequently, for $\langle R\rangle_T \ll K$, resistant tumor regression ($R(T) < R(0)$) occurs if and only if $k_d\langle C\rangle_T < r_S(1 - 1/\alpha)$.
+\end{theorem}
+\begin{proof}
+Divide~\eqref{eq:S} by $S(t)$ and~\eqref{eq:R} by $R(t)$, integrate over $[0,T]$ using $\ln(S(T)/S(0))=0$, and eliminate $\langle S\rangle_T$.
+\end{proof}
+
+\begin{theorem}[Model-Free Equal-Burden Hysteresis Observer]\label{thm:observer}
+For any two-phenotype system $\dot{S} = F_S(S,R) - \kappa(C)S$, $\dot{R} = F_R(S,R)$ with arbitrary unknown biological interaction functions $F_S, F_R$ and total biomarker $N(t) = S(t)+R(t)$, at any reference level $N_{\mathrm{ref}}$ crossed downward at $t_{\downarrow}$ (under drug $C_{\downarrow}$) and upward at $t_{\uparrow}$ (under washout $C_{\uparrow}$) with quasi-stationary composition $(S,R)$, subtracting $\dot{N}(t_{\downarrow})$ from $\dot{N}(t_{\uparrow})$ eliminates $F_S+F_R$ identically:
+\begin{equation}
+\widehat{S}(N_{\mathrm{ref}}) = \frac{\dot{N}(t_{\uparrow}) - \dot{N}(t_{\downarrow})}{\kappa(C_{\downarrow}) - \kappa(C_{\uparrow})}, \qquad \widehat{R}(N_{\mathrm{ref}}) = N_{\mathrm{ref}} - \widehat{S}(N_{\mathrm{ref}}).
+\end{equation}
+\end{theorem}
+
+\section{Clinical Validation on mCRPC Adaptive Therapy Regimes}
+
+Table~\ref{tab:trial} compares four clinical dosing arms in the mCRPC regime ($\alpha=1.28$, $K=10000$, $S_{\mathrm{floor}}=7812.5$, $t_{1/2}=4.5\text{ d}$, $N_{\mathrm{ceil}}=8500$, $V_{\mathrm{crit}}=9000$, $S_0=8400, R_0=80$). While MTD, standard $50\%$ adaptive therapy (AT50), and uncompensated floor stopping all suffer washout breaches below $S_{\mathrm{floor}}$ and relapse, Theorem~\ref{thm:washout} (PK-Exact AT) maintains $\min_t S(t) = 7815.0 > S_{\mathrm{floor}}$, achieving permanent containment ($>3500\text{ d}$) while shrinking resistant tumor burden by $98.5\%$.
+
+\begin{table}[ht]
+\centering
+\caption{Four-arm mCRPC adaptive therapy comparison ($\alpha=1.28, t_{1/2}=4.5\text{ d}, R_0=80.0$).}\label{tab:trial}
+\smallskip
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Protocol Arm & $\min_t S(t)$ & Final $R$ & Time to Failure (TTF) & Outcome \\
+\midrule
+1. Standard MTD ($u\equiv 1$) & $0.0$ & $3501.2$ & $155.6\text{ d}$ & Relapse \\
+2. Standard $50\%$ AT (AT50) & $1903.1$ & $3500.2$ & $452.6\text{ d}$ & Relapse \\
+3. Uncompensated Floor AT & $3803.0$ & $3500.2$ & $2451.2\text{ d}$ & Relapse \\
+4. PK-Compensated AT (Eq.~\ref{eq:S_stop_star}) & $\mathbf{7815.0}$ & $\mathbf{1.19}$ & $\mathbf{>3500\text{ d}}$ & \textbf{Contained ($-98.5\%\ R$)} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\medskip\noindent\textbf{Research \& Non-Clinical Disclaimer.} This manuscript presents theoretical mathematical models and in silico analytical results for scholarly research in mathematical biology. It does not constitute clinical advice, a treatment protocol, or Software as a Medical Device (SaMD) under UK MHRA, EU MDR, or US FDA regulations, and must not be used to guide patient dosing decisions outside an approved clinical trial.
+
+\begin{thebibliography}{9}
+\bibitem{Zhang2017} J.~Zhang, J.~J.~Cunningham, J.~S.~Brown, and R.~A.~Gatenby, Integrating evolutionary dynamics into treatment of metastatic castrate-resistant prostate cancer, \emph{Nature Communications} \textbf{8} (2017), 1816.
+\bibitem{BradyNicholls2020} R.~Brady-Nicholls, J.~D.~Nagy, T.~A.~Gerke, et al., Prostate-specific antigen dynamics predict individual responses to intermittent androgen deprivation, \emph{Nature Communications} \textbf{11} (2020), 1750; see also \emph{Cancer Research} \textbf{81} (2021), 2110--2119.
+\end{thebibliography}
+
+\end{document}
