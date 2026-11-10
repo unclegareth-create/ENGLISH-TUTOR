@@ -5,7 +5,7 @@
    ========================================================== */
 'use strict';
 
-const CACHE_NAME = 'grammar-crypt-v3';
+const CACHE_NAME = 'grammar-crypt-v4';
 const PRECACHE_ASSETS = [
     './grammar-crypt.html',
     './crypt.css',

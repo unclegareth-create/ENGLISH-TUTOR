@@ -640,7 +640,7 @@ const LabObservatory = (() => {
     if (prosodyLoaded) return;
     prosodyLoaded = true;
     const s = document.createElement('script');
-    s.src = 'prosody-lab.js';
+    s.src = 'prosody-lab.js?v=2';
     s.defer = true;
     document.body.appendChild(s);
   }

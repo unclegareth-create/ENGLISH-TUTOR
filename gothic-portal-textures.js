@@ -1,4 +1,4 @@
-﻿/**
+/**
  * CORS-Safe Embedded Gothic Fine Art & Procedural Library Textures
  * Ensures 100% WebGL texture rendering on both local file:// and https://garethenglish.com
  */

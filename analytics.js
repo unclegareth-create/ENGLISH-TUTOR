@@ -40,6 +40,7 @@
     const GA4_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || ''; // <-- Optional GA4 ID (e.g. 'G-XXXXXXXXXX')
     const LAST_FREE_TOOL_KEY = 'gm_last_free_tool';
     const AI_REFERRER_KEY = 'gm_ai_referrer';
+    const AI_LANDING_KEY = 'gm_ai_landing_page';
 
     // Optional Google Analytics 4 (GA4) Bootstrap with UK/EU Cookieless Consent Mode v2
     if (GA4_MEASUREMENT_ID && /^G-[A-Z0-9]+$/i.test(GA4_MEASUREMENT_ID) && typeof window.gtag !== 'function') {
@@ -69,14 +70,19 @@
         try {
             const params = new URLSearchParams(window.location.search);
             const utmSource = (params.get('utm_source') || params.get('ref') || '').toLowerCase();
+            const utmMedium = (params.get('utm_medium') || '').toLowerCase();
             const ref = (document.referrer || '').toLowerCase();
+            const landingSlug = ((window.location.pathname || '').split('/').pop() || 'index.html').split(/[?#]/)[0] || 'index.html';
 
             const aiMatchers = [
                 { id: 'chatgpt', re: /chatgpt\.com|chat\.openai\.com|openai/ },
                 { id: 'perplexity', re: /perplexity\.ai|perplexity/ },
                 { id: 'claude', re: /claude\.ai|anthropic/ },
-                { id: 'gemini', re: /gemini\.google\.com|bard\.google\.com/ },
+                { id: 'gemini', re: /gemini\.google\.com|bard\.google\.com|notebooklm\.google\.com|google_ai|ai_overview/ },
                 { id: 'copilot', re: /copilot\.microsoft\.com|bing\.com\/chat/ },
+                { id: 'meta_ai', re: /meta\.ai/ },
+                { id: 'poe', re: /poe\.com/ },
+                { id: 'kagi', re: /kagi\.com/ },
                 { id: 'you_ai', re: /you\.com/ },
                 { id: 'phind', re: /phind\.com/ },
                 { id: 'mistral', re: /chat\.mistral\.ai/ },
@@ -84,13 +90,26 @@
                 { id: 'grok', re: /grok\.com|x\.ai/ }
             ];
 
+            let matchedId = '';
             for (const m of aiMatchers) {
                 if (m.re.test(utmSource) || m.re.test(ref)) {
-                    const existing = sessionStorage.getItem(AI_REFERRER_KEY);
-                    try { localStorage.setItem(AI_REFERRER_KEY, m.id); } catch (_) {}
-                    try { sessionStorage.setItem(AI_REFERRER_KEY, m.id); } catch (_) {}
-                    return { source: m.id, isNewSessionHit: existing !== m.id, rawRef: ref || utmSource };
+                    matchedId = m.id;
+                    break;
                 }
+            }
+            if (!matchedId && /^(ai|llm|ai_referral|generative_ai)$/.test(utmMedium)) {
+                matchedId = (utmSource || 'ai_search').replace(/[^a-z0-9_-]/g, '').slice(0, 32) || 'ai_search';
+            }
+
+            if (matchedId) {
+                const existing = sessionStorage.getItem(AI_REFERRER_KEY);
+                try { localStorage.setItem(AI_REFERRER_KEY, matchedId); } catch (_) {}
+                try { sessionStorage.setItem(AI_REFERRER_KEY, matchedId); } catch (_) {}
+                if (existing !== matchedId) {
+                    try { localStorage.setItem(AI_LANDING_KEY, landingSlug); } catch (_) {}
+                    try { sessionStorage.setItem(AI_LANDING_KEY, landingSlug); } catch (_) {}
+                }
+                return { source: matchedId, isNewSessionHit: existing !== matchedId, rawRef: ref || utmSource };
             }
         } catch (_) {}
         return null;
@@ -99,6 +118,14 @@
     const getAiSource = () => {
         try {
             return sessionStorage.getItem(AI_REFERRER_KEY) || localStorage.getItem(AI_REFERRER_KEY) || '';
+        } catch (_) {
+            return '';
+        }
+    };
+
+    const getAiLandingPage = () => {
+        try {
+            return sessionStorage.getItem(AI_LANDING_KEY) || localStorage.getItem(AI_LANDING_KEY) || '';
         } catch (_) {
             return '';
         }
@@ -172,6 +199,7 @@
         // Attach AI referral & attribution trail into contact/booking forms automatically
         const enrichFormsWithAttribution = () => {
             const aiSrc = getAiSource();
+            const aiLanding = getAiLandingPage();
             const lastTool = getLastFreeTool();
             const forms = document.querySelectorAll('#contact-form, #lead-form');
             forms.forEach((form) => {
@@ -180,6 +208,13 @@
                     inp.type = 'hidden';
                     inp.name = 'ai_referrer';
                     inp.value = aiSrc;
+                    form.appendChild(inp);
+                }
+                if (aiLanding && !form.querySelector('input[name="ai_landing_page"]')) {
+                    const inp = document.createElement('input');
+                    inp.type = 'hidden';
+                    inp.name = 'ai_landing_page';
+                    inp.value = aiLanding;
                     form.appendChild(inp);
                 }
                 if (lastTool && !form.querySelector('input[name="last_free_tool"]')) {

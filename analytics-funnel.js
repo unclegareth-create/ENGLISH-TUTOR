@@ -5,7 +5,27 @@
 (function () {
   'use strict';
 
+  if (!window.location.protocol.startsWith('http')) {
+    window.trackFunnelEvent = function () {};
+    window.showDiagnosticGate = function () {};
+    return;
+  }
+
+  const currentPath = (window.location.pathname || '').toLowerCase();
+  const metaOptOut = document.querySelector('meta[name="gm-no-analytics"][content="1"]');
+  if (
+    metaOptOut ||
+    currentPath.includes('professor-west-study') ||
+    /(^|\/)s(\/|$)/.test(currentPath)
+  ) {
+    window.trackFunnelEvent = function () {};
+    window.showDiagnosticGate = function () {};
+    return;
+  }
+
   const FUNNEL_KEY = 'gm_attribution_trail';
+  const LAST_FREE_TOOL_KEY = 'gm_last_free_tool';
+  const AI_REFERRER_KEY = 'gm_ai_referrer';
 
   function getTrail() {
     try {
@@ -15,11 +35,31 @@
     }
   }
 
+  function getLastFreeTool() {
+    try {
+      return localStorage.getItem(LAST_FREE_TOOL_KEY) || 'direct';
+    } catch (e) {
+      return 'direct';
+    }
+  }
+
+  function getAiReferrer() {
+    try {
+      return sessionStorage.getItem(AI_REFERRER_KEY) || localStorage.getItem(AI_REFERRER_KEY) || '';
+    } catch (e) {
+      return '';
+    }
+  }
+
   window.trackFunnelEvent = function (eventName, params) {
     params = params || {};
+    const lastFreeTool = getLastFreeTool();
+    const aiReferrer = getAiReferrer();
     const payload = {
       event: eventName,
       path: window.location.pathname,
+      last_free_tool: lastFreeTool,
+      ...(aiReferrer ? { ai_referrer: aiReferrer } : {}),
       timestamp: new Date().toISOString(),
       ...params
     };
@@ -34,20 +74,25 @@
 
     // 2. Forward to GA4 if present
     if (typeof window.gtag === 'function') {
-      window.gtag('event', eventName, params);
+      window.gtag('event', eventName, {
+        last_free_tool: lastFreeTool,
+        ...(aiReferrer ? { ai_referrer: aiReferrer } : {}),
+        ...params
+      });
     }
 
     // 3. Forward custom tags to Microsoft Clarity if present
     if (typeof window.clarity === 'function') {
       window.clarity('set', 'last_funnel_step', eventName);
       if (params.tier) window.clarity('set', 'selected_tier', params.tier);
+      if (aiReferrer) window.clarity('set', 'ai_referrer', aiReferrer);
     }
 
     // 4. Forward to GoatCounter if present
     if (window.goatcounter && typeof window.goatcounter.count === 'function') {
       try {
         window.goatcounter.count({
-          path: eventName + (params.tier ? '/' + params.tier : ''),
+          path: eventName + (params.tier ? '/' + params.tier : '') + (lastFreeTool ? '/from=' + lastFreeTool : '') + (aiReferrer ? '/ai=' + aiReferrer : ''),
           title: 'Funnel Event: ' + eventName,
           event: true
         });
@@ -98,31 +143,31 @@
     if (existing) existing.remove();
 
     const modalHtml = `
-      <div id="gm-diag-overlay" role="dialog" aria-modal="true" aria-label="Clinical Telemetry" style="position:fixed;inset:0;background:rgba(10,15,28,0.88);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;">
+      <div id="gm-diag-overlay" role="dialog" aria-modal="true" aria-label="Practice Score Summary" style="position:fixed;inset:0;background:rgba(10,15,28,0.88);backdrop-filter:blur(6px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;">
         <div style="background:#111827;border:1px solid #374151;border-radius:16px;max-width:540px;width:100%;max-height:92vh;overflow-y:auto;padding:26px;color:#f9fafb;box-shadow:0 25px 50px -12px rgba(0,0,0,0.7);box-sizing:border-box;">
           
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <span style="background:#1e3a8a;color:#93c5fd;font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:0.05em;">
-              Clinical Telemetry &bull; ${gameName}
+              Practice Score &bull; ${gameName}
             </span>
             <button id="gm-diag-close" type="button" aria-label="Close" style="background:none;border:none;color:#9ca3af;font-size:24px;line-height:1;cursor:pointer;padding:4px;">&times;</button>
           </div>
 
           <h3 style="font-size:22px;font-weight:800;margin:0 0 6px 0;color:#ffffff;line-height:1.2;">
-            Your Reflex Score: ${score}/${maxScore} (${pct}%)
+            Your Score: ${score}/${maxScore} (${pct}%)
           </h3>
           <p style="margin:0 0 14px 0;font-size:14px;color:#d1d5db;">
-            Estimated Execution Band: <strong style="color:#fbbf24;">${cefrEstimate}</strong>${dossierCode ? ` &bull; <code style="color:#93c5fd;font-size:12px;">${dossierCode}</code>` : ''}
+            Estimated Level: <strong style="color:#fbbf24;">${cefrEstimate}</strong>${dossierCode ? ` &bull; <code style="color:#93c5fd;font-size:12px;">${dossierCode}</code>` : ''}
           </p>
 
           <div style="background:#1f2937;border-left:4px solid #f59e0b;padding:13px;border-radius:8px;margin-bottom:16px;font-size:13.5px;line-height:1.5;">
-            <strong style="color:#fcd34d;display:block;margin-bottom:4px;">⚠️ Diagnosed Bottleneck: ${diagnosedWeakness} (${diagnosedAccuracy}% Accuracy)</strong>
+            <strong style="color:#fcd34d;display:block;margin-bottom:4px;">Focus Area: ${diagnosedWeakness} (${diagnosedAccuracy}% Accuracy)</strong>
             <span style="color:#e5e7eb;">${examImpact}</span>
           </div>
 
           <div style="background:#162032;border:1px solid #26354d;border-radius:10px;padding:12px;margin-bottom:16px;">
             <div style="font-size:12px;font-weight:700;color:#f8fafc;margin-bottom:6px;">
-              📩 Save Diagnostic Score &amp; Unlock C1/C2 Cheat Sheet
+              📩 Save Score &amp; Unlock C1/C2 Cheat Sheet
             </div>
             <form id="gm-gate-email-form" style="display:flex;gap:6px;">
               <input type="email" id="gm-gate-email-input" required placeholder="Enter your email to save report..." style="flex:1;background:#0b0f19;border:1px solid #374151;color:#ffffff;padding:8px 10px;border-radius:7px;font-size:13px;" />
@@ -131,19 +176,19 @@
               </button>
             </form>
             <div id="gm-gate-email-confirm" style="display:none;font-size:12px;color:#34d399;margin-top:6px;">
-              ✓ Saved to your Candidate Dossier! <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Cheat Sheet &rarr;</a>
+              ✓ Saved to your Lab Dossier! <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Cheat Sheet &rarr;</a>
             </div>
           </div>
 
           <p style="font-size:13.5px;color:#d1d5db;margin-bottom:14px;line-height:1.5;">
-            Your Lab Dossier shows a <strong style="color:#fbbf24;">${diagnosedAccuracy}%</strong> accuracy rate on <strong style="color:#ffffff;">${diagnosedWeakness}</strong>. Book your £35 30-Min Live Diagnostic and I will spend 30 minutes fixing the exact weak points your gameplay just exposed:
+            Your practice score shows <strong style="color:#fbbf24;">${diagnosedAccuracy}%</strong> accuracy on <strong style="color:#ffffff;">${diagnosedWeakness}</strong>. Book a £35 30-minute starter session and I will work through the exact patterns this round highlighted:
           </p>
 
           <div style="display:grid;gap:10px;">
             <a href="${bookingHref}" 
                onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'trial_35', pct: ${pct}, dossierCode: '${dossierCode}' })"
                style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:14px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 4px 6px -1px rgba(37,99,235,0.4);">
-              Book a 30-Min Live Diagnostic with Gareth (£35) &rarr;
+              Book a 30-Min Starter Session with Gareth (£35) &rarr;
             </a>
             <button id="gm-gate-recall-btn" type="button"
                style="display:block;width:100%;text-align:center;background:rgba(212,175,55,0.14);border:1px solid #d4af37;color:#fde68a;font-weight:700;padding:11px;border-radius:10px;font-size:13.5px;cursor:pointer;">

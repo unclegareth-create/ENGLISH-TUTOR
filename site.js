@@ -747,10 +747,23 @@
     })(window, "https://app.cal.com/embed/embed.js", "init");
 
     Cal("init", { origin: "https://cal.com" });
+    var calConfig = { layout: "month_view" };
+    try {
+      var aiRef = sessionStorage.getItem('gm_ai_referrer') || localStorage.getItem('gm_ai_referrer') || '';
+      var lastTool = localStorage.getItem('gm_last_free_tool') || '';
+      if (aiRef) {
+        calConfig.utm_source = aiRef;
+        calConfig.utm_medium = 'ai_referral';
+      }
+      if (lastTool) {
+        calConfig.utm_content = lastTool;
+      }
+    } catch (_) {}
     Cal("inline", {
       elementOrSelector: "#my-cal-inline",
       calLink: "gareth-montgomery-jgaefz/30min",
-      layout: "month_view"
+      layout: "month_view",
+      config: calConfig
     });
     Cal("ui", {
       styles: { branding: { brandColor: "#0284c7" } },
