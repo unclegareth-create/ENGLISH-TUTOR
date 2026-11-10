@@ -1395,13 +1395,13 @@
           </div>
         </div>
       </article>
-      <article class="res-card visual-card" data-vs-cat="decks" data-vs-search="what the stoics got right and wrong what-the-stoics-got-right-and-wrong.html interactive deck">
+      <article class="res-card visual-card" data-vs-cat="decks" data-vs-search="what the stoics got right and wrong what-the-stoics-got-right-and-wrong.html c1 philosophy & debate">
         <div class="visual-art art-indigo">
-          <img class="card-photo" src="../../assets/cards/photo-1526374965328-7f61d4dc18c5.webp" alt="What The Stoics Got Right And Wrong" loading="lazy" onerror="this.style.display='none'" />
-          <span class="art-badge">INTERACTIVE DECK</span>
-          <span class="art-star">★ STUDIO DECK</span>
+          <img class="card-photo" src="../../assets/cards/stoicism-pigliucci.jpg" alt="What The Stoics Got Right And Wrong" loading="lazy" onerror="this.style.display='none'" />
+          <span class="art-badge">C1 PHILOSOPHY & DEBATE</span>
+          <span class="art-star">★ ACTIVE DECK</span>
           <span class="art-avatar-chip"><img src="avatar.svg" alt="" style="width:18px; height:18px; border-radius:4px; image-rendering:pixelated;" /> Igor</span>
-          <span class="art-topic-icon">📘</span>
+          <span class="art-topic-icon">🏛️</span>
         </div>
         <div class="visual-body">
           <div>
@@ -1607,7 +1607,7 @@
           <thead>
             <tr style="background:var(--surface-subtle); font-size:0.74rem; text-transform:uppercase; color:var(--ink-500); letter-spacing:0.04em; border-bottom:2px solid var(--border-strong);">
               <th style="padding:10px 10px; text-align:left; width:36px;">#</th>
-              <th style="padding:10px 12px; text-align:left; width:28%;">Original Sentence (Spot the Issue)</th>
+              <th style="padding:10px 12px; text-align:left; width:28%;">Original Sentence (Error vs. C1 Style Upgrade)</th>
               <th style="padding:10px 12px; text-align:left; width:20%;">Rule &amp; Clue</th>
               <th style="padding:10px 12px; text-align:left;">Your Repair &amp; Personal Example</th>
               <th style="padding:10px 12px; text-align:left; width:22%;">Cambridge Model</th>
@@ -1619,6 +1619,9 @@
     </div>
 
     
+
+
+
 
 
 
@@ -1857,7 +1860,7 @@
 
     <div class="portfolio-box">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-        <span class="badge-pill badge-emerald">Current Task: Binance / Lazarus Heist Vocabulary & Error Corrections (180–220 words)</span>
+        <span class="badge-pill badge-emerald">Current Task: Stoicism, Cyprus Idioms & Live Scratchpad Recall (180–220 words)</span>
         <div class="word-counter-pill">
           <span>Words:</span>
           <strong id="live-word-count">0</strong>
@@ -2163,41 +2166,49 @@
 
     const DEFAULT_ROWS_igor = [
       {
+        type: "error",
         err: "It's all go here on Cyprus this week!",
         clue: "Preposition (country vs physical island): use 'in Cyprus' for living/working in the country.",
         model: "It's all go here in Cyprus this week!"
       },
       {
+        type: "error",
         err: "I really can't tolerate when people interrupt during a code review.",
         clue: "Preparatory Object 'It': 'tolerate / hate / appreciate + it + when + [clause]'.",
         model: "I really can't tolerate it when people interrupt during a code review."
       },
       {
+        type: "style",
         err: "After the shipwreck, Zeno had no way to get home in Athens and went into a bookshop.",
         clue: "C1 Narrative Lexis: 'was left stranded' + 'wandered into a bookshop'.",
         model: "After the shipwreck, Zeno was left stranded in Athens and wandered into a bookshop."
       },
       {
+        type: "style",
         err: "He became very interested in the Stoic texts, and some of them dealt with happiness.",
         clue: "C1 Lexis + Relative Clause of Proportion: 'became intrigued by' + ', some of which...'",
         model: "He became intrigued by the Stoic texts, some of which dealt with the nature of happiness."
       },
       {
+        type: "style",
         err: "The results of the new model were a bit disappointing compared to the hype.",
         clue: "Natural C1 Adjective: Replace 'a bit disappointing' with 'rather underwhelming'.",
         model: "The results of the new model were rather underwhelming compared to the hype."
       },
       {
+        type: "style",
         err: "The team found themselves in a very awkward and difficult situation before the release.",
         clue: "C1 Noun Upgrade: Replace 'awkward and difficult situation' with 'a difficult predicament'.",
         model: "The team found themselves in a difficult predicament right before the release."
       },
       {
+        type: "style",
         err: "In everyday language, people use the word 'stoic' to mean someone with zero feelings.",
         clue: "C1 Adverb: Start with 'Colloquially, ...' + 'emotionless'.",
         model: "Colloquially, people use the word 'stoic' to mean someone who is completely emotionless."
       },
       {
+        type: "error",
         err: "Marcus Aurelius wrote about fair laws and human treatment of prisoners.",
         clue: "Word Family Precision: 'just' (morally fair) and 'humane' (compassionate, with an -e).",
         model: "Marcus Aurelius wrote about just laws and the humane treatment of prisoners."
@@ -2221,15 +2232,24 @@
         tr.style.borderBottom = '1px solid var(--border-hairline)';
         const val = savedAnswers[i] || '';
         const isCustom = i >= DEFAULT_ROWS_igor.length;
+        const isStyle = r.type === 'style';
+        const rowBadge = isStyle
+          ? '<span class="badge-pill badge-amber" style="font-size:0.62rem; margin-bottom:4px;">Style, not an error &bull; C1 Upgrade</span><br/>'
+          : '<span class="badge-pill badge-rose" style="font-size:0.62rem; margin-bottom:4px;">Grammar / Lexical Error</span><br/>';
+        const textColor = isStyle ? 'var(--ink-950)' : 'var(--rose)';
+        const promptHint = isStyle
+          ? '1. Upgrade the sentence above...\n2. Write one example from your own work/life...'
+          : '1. Fix the sentence above...\n2. Write one example from your own work/life...';
         tr.innerHTML =
           '<td style="padding:12px 10px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); vertical-align:top;">' + (i + 1) + '</td>' +
           '<td style="padding:12px 12px; color:var(--ink-950); vertical-align:top; line-height:1.45;">' +
-            '<span style="color:var(--rose); font-weight:600;">&ldquo;' + r.err + '&rdquo;</span>' +
+            rowBadge +
+            '<span style="color:' + textColor + '; font-weight:600;">&ldquo;' + r.err + '&rdquo;</span>' +
             (isCustom ? ' <button onclick="removeRepairRow_igor(' + (i - DEFAULT_ROWS_igor.length) + ')" style="border:none;background:none;color:var(--ink-400);cursor:pointer;font-size:0.75rem;" title="Remove custom row">&times;</button>' : '') +
           '</td>' +
           '<td style="padding:12px 12px; color:var(--ink-700); font-size:0.82rem; vertical-align:top; line-height:1.45;">' + r.clue + '</td>' +
           '<td style="padding:12px 12px; vertical-align:top;">' +
-            '<textarea class="form-textarea" rows="2" style="font-size:0.85rem; padding:8px 10px;" placeholder="1. Fix the sentence above...\n2. Write one example from your own work/life..." oninput="saveRepairAnswer_igor(' + i + ', this.value)">' + val.replace(/</g, '&lt;') + '</textarea>' +
+            '<textarea class="form-textarea" rows="2" style="font-size:0.85rem; padding:8px 10px;" placeholder="' + promptHint + '" oninput="saveRepairAnswer_igor(' + i + ', this.value)">' + val.replace(/</g, '&lt;') + '</textarea>' +
           '</td>' +
           '<td style="padding:12px 12px; vertical-align:top;">' +
             '<button class="btn-nav" style="font-size:0.76rem; padding:5px 10px; margin-bottom:6px;" onclick="toggleReveal(\'igor-mod-' + i + '\')">&#128065;&#65039; Reveal Model</button>' +
