@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Cotswolds: Picturesque Preservation, Vernacular Architecture & Spoken Nuance &bull; Noemi</title>
+  <style>
+    :root {
+      --desk-bg: #f4f6f9;
+      --paper-bg: #ffffff;
+      --navy-950: #0a192f;
+      --navy-900: #0f2557;
+      --navy-800: #16377d;
+      --navy-700: #1d4ed8;
+      --navy-50: #f0f6ff;
+      --honey-900: #78350f;
+      --honey-700: #b45309;
+      --honey-600: #d97706;
+      --honey-50: #fffbeb;
+      --honey-border: #fde68a;
+      --ink-900: #0f172a;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --border: #cbd5e1;
+      --border-light: #e2e8f0;
+      --emerald-bg: #ecfdf5;
+      --emerald-border: #10b981;
+      --emerald-text: #065f46;
+      --amber-bg: #fffbeb;
+      --amber-border: #f59e0b;
+      --amber-text: #92400e;
+      --purple-bg: #f5f3ff;
+      --purple-border: #8b5cf6;
+      --purple-text: #5b21b6;
+      --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      --font-serif: 'Georgia', 'Cambria', serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-sans); }
+    body {
+      background: var(--desk-bg);
+      color: var(--ink-900);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* TOP HUD */
+    .top-hud {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(15,37,87,0.05);
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .hud-left { display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap; }
+    .hub-back {
+      color: var(--navy-800);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--navy-50);
+      border: 1px solid var(--border-light);
+      transition: all 0.15s;
+    }
+    .hub-back:hover { border-color: var(--navy-700); transform: translateX(-2px); }
+    .hud-badge {
+      background: var(--honey-700);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+    }
+    .hud-title { font-size: 0.95rem; font-weight: 700; color: var(--navy-900); }
+    .hud-title span { color: var(--honey-700); font-weight: 600; }
+
+    .hud-right { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .slide-counter { font-size: 0.85rem; font-weight: 700; color: var(--ink-700); }
+
+    /* TIMER WIDGET */
+    .timer-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--emerald-bg);
+      border: 1px solid var(--emerald-border);
+      padding: 0.3rem 0.75rem;
+      border-radius: 8px;
+    }
+    .timer-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--emerald-text); }
+    .timer-digits { font-family: 'Consolas', monospace; font-size: 1.15rem; font-weight: 800; color: var(--emerald-text); min-width: 55px; text-align: center; }
+    .timer-btn {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--ink-700);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.22rem 0.55rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .timer-btn:hover { border-color: var(--navy-800); color: var(--navy-800); }
+
+    /* STAGE & SLIDES */
+    .slide-stage {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem 1.2rem;
+      max-width: 1180px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .slide-viewport {
+      width: 100%;
+      min-height: 620px;
+      background: var(--paper-bg);
+      border: 1px solid #d8e0ea;
+      border-radius: 14px;
+      padding: 2.2rem 2.5rem;
+      box-shadow: 0 12px 32px rgba(15,37,87,0.06);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .slide { display: none; flex-direction: column; }
+    .slide.active { display: flex; animation: fadeIn 0.22s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .slide-tag {
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--honey-700);
+      margin-bottom: 0.3rem;
+    }
+    .slide-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--navy-900);
+      margin-bottom: 0.4rem;
+      line-height: 1.25;
+      font-family: var(--font-serif);
+    }
+    .slide-desc {
+      font-size: 0.92rem;
+      color: var(--ink-700);
+      margin-bottom: 1.1rem;
+      line-height: 1.55;
+    }
+
+    /* GRIDS & CARDS */
+    .grid-2col { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.4rem; margin-bottom: 1rem; }
+    .grid-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1rem; }
+    .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 860px) {
+      .grid-2col, .grid-equal, .grid-3col { grid-template-columns: 1fr; }
+      .slide-viewport { padding: 1.5rem 1.4rem; }
+    }
+
+    .visual-box {
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      position: relative;
+      background: #f1f5f9;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .visual-box img {
+      width: 100%;
+      height: 100%;
+      min-height: 250px;
+      max-height: 380px;
+      object-fit: cover;
+      display: block;
+    }
+    .visual-caption {
+      background: rgba(15, 23, 42, 0.85);
+      color: #fff;
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      backdrop-filter: blur(4px);
+    }
+
+    .mini-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 0.8rem;
+    }
+    .mini-card.honey {
+      border-color: var(--honey-border);
+      background: var(--honey-50);
+    }
+    .mini-card.navy {
+      border-color: #bfdbfe;
+      background: var(--navy-50);
+    }
+    .card-title-sm {
+      font-size: 0.88rem;
+      font-weight: 800;
+      margin-bottom: 0.4rem;
+      color: var(--navy-900);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-body { font-size: 0.85rem; color: var(--ink-900); line-height: 1.6; }
+    .card-body ul { margin-left: 1.2rem; }
+    .card-body li { margin-bottom: 0.35rem; }
+
+    /* FORMULA & BLUEPRINT */
+    .formula-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--honey-700);
+      border-radius: 8px;
+      padding: 0.75rem 1.1rem;
+      margin-bottom: 0.9rem;
+    }
+    .formula-badge {
+      background: var(--honey-700);
+      color: #fff;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 4px;
+    }
+    .formula-text {
+      font-family: 'Consolas', monospace;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--navy-900);
+    }
+
+    /* INTERACTIVE DRILL BOX */
+    .practice-box {
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1.15rem;
+      margin-bottom: 0.75rem;
+    }
+    .practice-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.4rem;
+    }
+    .practice-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--honey-700);
+      letter-spacing: 0.05em;
+    }
+    .practice-prompt {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--ink-900);
+      padding-left: 0.7rem;
+      border-left: 3px solid var(--honey-700);
+      margin-bottom: 0.35rem;
+    }
+    .practice-hint { font-size: 0.81rem; color: var(--ink-700); }
+    .reveal-btn {
+      background: #fff;
+      border: 1.5px solid var(--honey-700);
+      color: var(--honey-700);
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .reveal-btn:hover { background: var(--honey-50); border-color: var(--honey-900); color: var(--honey-900); }
+    .practice-solution {
+      display: none;
+      margin-top: 0.6rem;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .box-after {
+      background: var(--emerald-bg);
+      border-left: 3px solid var(--emerald-border);
+      padding: 0.65rem 0.95rem;
+      border-radius: 6px;
+      font-size: 0.84rem;
+      color: var(--emerald-text);
+      line-height: 1.55;
+    }
+
+    /* FOOTER NAV */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-light);
+      padding-top: 1.2rem;
+      margin-top: 1.2rem;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+    }
+    .btn-nav {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      color: var(--ink-700);
+      padding: 0.5rem 1.1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-nav:hover:not(:disabled) {
+      border-color: var(--navy-800);
+      color: var(--navy-800);
+      background: var(--navy-50);
+    }
+    .btn-nav.primary {
+      background: var(--navy-800);
+      border-color: var(--navy-800);
+      color: #fff;
+    }
+    .btn-nav.primary:hover:not(:disabled) {
+      background: var(--navy-900);
+    }
+    .btn-nav:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .dots-strip { display: flex; gap: 6px; align-items: center; }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dot.active {
+      width: 26px;
+      border-radius: 6px;
+      background: var(--honey-700);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HUD -->
+  <header class="top-hud">
+    <div class="hud-left">
+      <a href="index.html" class="hub-back">&larr; Noemi's Portal</a>
+      <span class="hud-badge">C1 Spoken Studio</span>
+      <div class="hud-title">The Cotswolds: <span>Vernacular Architecture, Preservation & Spoken Nuance</span></div>
+    </div>
+    <div class="hud-right">
+      <div class="timer-box">
+        <span class="timer-label" id="timer-label">Prep Time</span>
+        <span class="timer-digits" id="timer-display">01:00</span>
+        <button class="timer-btn" onclick="setTimer(60, 'Prep Time')">1m</button>
+        <button class="timer-btn" onclick="setTimer(120, 'Speaking')">2m</button>
+        <button class="timer-btn" id="timer-play-btn" onclick="toggleTimer()">&#9654; Start</button>
+      </div>
+      <span class="slide-counter" id="slide-num">Slide 1 of 8</span>
+    </div>
+  </header>
+
+  <!-- STAGE VIEWPORT -->
+  <main class="slide-stage">
+    <div class="slide-viewport">
+
+      <!-- SLIDE 1: SETTING THE SCENE -->
+      <section class="slide active" id="slide-1">
+        <div>
+          <div class="slide-tag">Part 1 &bull; Active Voice First &bull; Setting the Scene</div>
+          <!-- STUDENT-PIXEL-BADGE-START -->
+<div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:rgba(15,23,42,0.12); border:1px solid rgba(148,163,184,0.32); margin-bottom:10px; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; font-size:0.78rem; font-weight:700; line-height:1.2;">
+  <img src="avatar.svg" alt="Noemi" style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid rgba(255,255,255,0.28); flex-shrink:0;" />
+  <span>Noemi &bull; Conversational Fluency & Idioms</span>
+</div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+<h1 class="slide-title">The Pastoral Myth vs. The Living Countryside</h1>
+          <p class="slide-desc">Opening discussion exploring the archetypes, geographic identity, and romantic allure of the English countryside.</p>
+
+          <div class="grid-2col">
+            <div class="visual-box">
+              <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1000&q=80" alt="Rolling hills and pasture in the English countryside" loading="lazy" />
+              <div class="visual-caption">The rolling "wolds" (open high ground) &bull; Designated an Area of Outstanding Natural Beauty (AONB) spanning 800 square miles.</div>
+            </div>
+
+            <div>
+              <div class="mini-card honey">
+                <div class="card-title-sm">&#127897;&#65039; Active Speaking Warm-Up (2 Minutes)</div>
+                <div class="card-body">
+                  <ul>
+                    <li>When you picture the quintessential English countryside, what visual archetypes immediately come to mind?</li>
+                    <li>Have you ever visited a rural region (in Italy, the UK, or elsewhere) that felt as though it belonged in an oil painting?</li>
+                    <li>What is the difference between an idyllic postcard view and the everyday reality of living there?</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="formula-box">
+                <span class="formula-badge">Spoken Transition Blueprint</span>
+                <div class="formula-text">At first glance, it appears [adjective], yet beneath the surface...</div>
+              </div>
+
+              <div class="mini-card">
+                <div class="card-title-sm">&#128269; Key Geographic &amp; Historical Context</div>
+                <div class="card-body" style="font-size:0.82rem; color:var(--ink-700);">
+                  The name Cotswolds derives from Old English <em>Cod's-wald</em> (open hills with sheep enclosures). Its legendary wealth sprang from medieval wool exports, leaving magnificent 15th-century "wool churches" and honey-stone manor houses.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 2: ARCHITECTURAL ANATOMY -->
+      <section class="slide" id="slide-2">
+        <div>
+          <div class="slide-tag">Part 2 &bull; Architectural Lexis &bull; Curatorial Eye</div>
+          <h2 class="slide-title">The Anatomy of Oolitic Limestone</h2>
+          <p class="slide-desc">Examining how geological materials, masonry techniques, and vernacular craft define regional identity.</p>
+
+          <div class="grid-2col">
+            <div class="visual-box">
+              <img src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1000&q=80" alt="Traditional Cotswold stone cottage with steep gables and mullioned windows" loading="lazy" />
+              <div class="visual-caption">Honey-hued oolitic limestone cottage with graduated stone-slate roof tiles and dormer gables.</div>
+            </div>
+
+            <div>
+              <div class="mini-card">
+                <div class="card-title-sm">&#127963;&#65039; Essential Architectural Lexis</div>
+                <div class="card-body">
+                  <ul>
+                    <li><strong>Oolitic Limestone:</strong> A sedimentary Jurassic rock formed from tiny calcium carbonate spheres ("egg-stone"), varying from rich warm honey in the north to pale silvery cream in the south.</li>
+                    <li><strong>Vernacular Architecture:</strong> Design governed by local tradition and materials rather than grand academic blueprint.</li>
+                    <li><strong>Dry-Stone Walling:</strong> Field boundaries constructed entirely without mortar, relying on gravity, friction, and skilled interlocking.</li>
+                    <li><strong>Mullioned Windows:</strong> Vertical stone dividers separating panes, topped with stone drip-mouldings (hood moulds) to shed rainwater.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="mini-card navy">
+                <div class="card-title-sm">&#127912; The Curatorial Comparison Challenge</div>
+                <div class="card-body">
+                  <p>In Italy, how does rural vernacular stone (such as Tuscan <em>pietra serena</em>, Umbrian limestone hill towns, or Roman <em>travertino</em>) compare in color temperature and emotional resonance to English honey limestone?</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 3: ARLINGTON ROW, BIBURY -->
+      <section class="slide" id="slide-3">
+        <div>
+          <div class="slide-tag">Part 3 &bull; Village Spotlight 1 &bull; Arlington Row, Bibury</div>
+          <h2 class="slide-title">The "Chocolate-Box" Paradox</h2>
+          <p class="slide-desc">William Morris proclaimed Bibury "the most beautiful village in England". How do we talk about postcard-perfect preservation?</p>
+
+          <div class="grid-2col">
+            <div class="visual-box">
+              <img src="https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?auto=format&fit=crop&w=1000&q=80" alt="Arlington Row in Bibury" loading="lazy" />
+              <div class="visual-caption">Arlington Row, Bibury &bull; Built in 1380 as a monastic wool store, converted into weavers' cottages in the 17th century.</div>
+            </div>
+
+            <div>
+              <div class="mini-card honey">
+                <div class="card-title-sm">&#128172; Targeted Idioms &amp; Natural Nuance</div>
+                <div class="card-body">
+                  <ul>
+                    <li><strong>Chocolate-box scenery:</strong> (Idiomatic phrase) Pretty and quaint in a conventional, idealized, almost artificial way.</li>
+                    <li><strong>Off the beaten track:</strong> Away from populated areas and regular tourist routes.</li>
+                    <li><strong>A double-edged sword:</strong> Something that brings advantages alongside clear drawbacks (e.g. tourism sustaining heritage while overwhelming local roads).</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Interactive Practice Drill -->
+              <div class="practice-box">
+                <div class="practice-top">
+                  <span class="practice-tag">Spoken Upgrade Drill</span>
+                  <button class="reveal-btn" onclick="toggleReveal(this)">&#128065; Reveal Model &amp; Nuance</button>
+                </div>
+                <div class="practice-prompt">"The cottages look very nice like on a postcard, but maybe there are too many tourists."</div>
+                <div class="practice-hint">Upgrade this observation using <em>chocolate-box</em> and <em>double-edged sword</em>.</div>
+                <div class="practice-solution">
+                  <div class="box-after">
+                    <strong>Cambridge Model:</strong> "While the cottages offer quintessential <strong>chocolate-box scenery</strong>, the sheer influx of visitors makes global recognition something of a <strong>double-edged sword</strong> for local residents."
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 4: CASTLE COMBE -->
+      <section class="slide" id="slide-4">
+        <div>
+          <div class="slide-tag">Part 4 &bull; Village Spotlight 2 &bull; Castle Combe</div>
+          <h2 class="slide-title">Frozen in Time: The Conservation Bubble</h2>
+          <p class="slide-desc">Regularly voted the prettiest village in England, Castle Combe has banned all overhead telephone lines and modern street furniture.</p>
+
+          <div class="grid-2col">
+            <div class="visual-box">
+              <img src="https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1000&q=80" alt="Castle Combe bridge and village street" loading="lazy" />
+              <div class="visual-caption">Castle Combe &bull; Strict conservation covenants ensure no modern cables, TV antennae, or outward architectural alterations exist.</div>
+            </div>
+
+            <div>
+              <div class="mini-card">
+                <div class="card-title-sm">&#127917; Cinematic Preservation &amp; Lexis</div>
+                <div class="card-body">
+                  <ul>
+                    <li><strong>Frozen in time / A time warp:</strong> Stepping into a place where nothing appears to have changed for centuries.</li>
+                    <li><strong>Listed building status:</strong> Official legal protection preventing owners from altering windows, masonry, or roofs without council consent.</li>
+                    <li><strong>Take something at face value:</strong> Accepting what you see without questioning the complex logistics behind it.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="practice-box">
+                <div class="practice-top">
+                  <span class="practice-tag">Spoken Upgrade Drill</span>
+                  <button class="reveal-btn" onclick="toggleReveal(this)">&#128065; Reveal Model &amp; Nuance</button>
+                </div>
+                <div class="practice-prompt">"When you walk down the road, you feel you are in the 16th century."</div>
+                <div class="practice-hint">Upgrade with <em>time warp</em> or <em>frozen in time</em> + participle clause.</div>
+                <div class="practice-solution">
+                  <div class="box-after">
+                    <strong>Cambridge Model:</strong> "Walking down the main street feels remarkably like stepping into a <strong>time warp</strong>, with the entire village appearing completely <strong>frozen in time</strong>."
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 5: BOURTON-ON-THE-WATER -->
+      <section class="slide" id="slide-5">
+        <div>
+          <div class="slide-tag">Part 5 &bull; Village Spotlight 3 &bull; Bourton-on-the-Water</div>
+          <h2 class="slide-title">The "Venice of the Cotswolds"</h2>
+          <p class="slide-desc">Examining river architecture, tea-room culture, and the critical distinction between "quaint" and "twee".</p>
+
+          <div class="grid-2col">
+            <div class="visual-box">
+              <img src="https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?auto=format&fit=crop&w=1000&q=80" alt="Bourton on the water style stone footbridge and river" loading="lazy" />
+              <div class="visual-caption">The River Windrush running through the heart of Bourton-on-the-Water beneath low 18th-century arched footbridges.</div>
+            </div>
+
+            <div>
+              <div class="mini-card honey">
+                <div class="card-title-sm">&#129488; Lexical Nuance: Quaint vs. Twee</div>
+                <div class="card-body">
+                  <ul>
+                    <li><strong>Quaint:</strong> (Positive) Charmingly antique, unusual, and visually appealing in an authentic way.</li>
+                    <li><strong>Twee / Kitschy:</strong> (Negative/Critical) Excessively or affectedly quaint, sentimental, or tailored artificially for tourist consumption.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="mini-card">
+                <div class="card-title-sm">&#9749; Everyday Spoken Idioms</div>
+                <div class="card-body">
+                  <ul>
+                    <li><strong>Watch the world go by:</strong> Sitting comfortably in a public space, observing people pass without rushing.</li>
+                    <li><strong>Pay through the nose:</strong> Paying an exorbitant or unreasonable amount of money (e.g. for cream tea in a peak summer honey-pot).</li>
+                    <li><strong>A drop in the ocean:</strong> An insignificant amount compared to what is needed or spent.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 6: SECOND HOMES & GENTRIFICATION -->
+      <section class="slide" id="slide-6">
+        <div>
+          <div class="slide-tag">Part 6 &bull; The Modern Dilemma &bull; Society &amp; Economy</div>
+          <h2 class="slide-title">Second Homes, Daylesford &amp; The "Chipping Norton Set"</h2>
+          <p class="slide-desc">Beyond the thatched roofs: the friction between London wealth, organic farm shops, and local housing realities.</p>
+
+          <div class="grid-equal">
+            <div class="mini-card navy">
+              <div class="card-title-sm">&#128101; The Socioeconomic Reality</div>
+              <div class="card-body">
+                <p>Over the past twenty years, the northern Cotswolds (around Chipping Norton, Kingham, and Stow-on-the-Wold) has become the country retreat of choice for politicians, media executives, and celebrities.</p>
+                <ul style="margin-top:0.6rem;">
+                  <li><strong>Gentrification of the Countryside:</strong> Traditional blacksmiths and village grocers replaced by luxury homeware boutiques and gourmet gastro-pubs.</li>
+                  <li><strong>The Housing Deficit:</strong> Young locals and farm workers being <strong>priced out of the market</strong> as cottages become weekend retreats or holiday lets.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="mini-card honey">
+              <div class="card-title-sm">&#128161; Everyday Idioms of Perspective</div>
+              <div class="card-body">
+                <ul>
+                  <li><strong>The grass is always greener (on the other side):</strong> Assuming life in the countryside would be simpler and stress-free compared to the city.</li>
+                  <li><strong>Not all it's cracked up to be:</strong> Not as wonderful or satisfying as its reputation suggests.</li>
+                  <li><strong>Down to earth:</strong> Practical, unpretentious, and realistic (in contrast to high-society country retreats).</li>
+                  <li><strong>A far cry from:</strong> Completely different from (e.g. <em>"Today's Cotswolds is a far cry from its rural working-class roots."</em>).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="practice-box">
+            <div class="practice-top">
+              <span class="practice-tag">Spoken Nuance Drill</span>
+              <button class="reveal-btn" onclick="toggleReveal(this)">&#128065; Reveal Model &amp; Nuance</button>
+            </div>
+            <div class="practice-prompt">"People think living in the countryside is always peaceful, but it has problems too."</div>
+            <div class="practice-hint">Reframe using <em>not all it's cracked up to be</em> or <em>the grass is always greener</em>.</div>
+            <div class="practice-solution">
+              <div class="box-after">
+                <strong>Cambridge Model:</strong> "People often assume that rural life is pure tranquility, but once you encounter the lack of public transport and high living costs, you realise it is <strong>not always all it's cracked up to be</strong>."
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 7: INTERACTIVE IDIOMS WORKOUT -->
+      <section class="slide" id="slide-7">
+        <div>
+          <div class="slide-tag">Part 7 &bull; Interactive Workout &bull; Everyday Nuance Bank</div>
+          <h2 class="slide-title">6-Point Conversational Nuance Gym</h2>
+          <p class="slide-desc">High-frequency natural idioms you can deploy in conversation, travel discussions, and opinion debates.</p>
+
+          <div class="grid-equal">
+            <!-- Item 1 -->
+            <div class="practice-box">
+              <div class="practice-top">
+                <span class="practice-tag">1. Contrast of Environment</span>
+                <button class="reveal-btn" onclick="toggleReveal(this)">&#128065; Reveal Model</button>
+              </div>
+              <div class="practice-prompt">"The quiet lanes here are completely different from central Rome."</div>
+              <div class="practice-hint">Use idiom: <strong>a far cry from</strong></div>
+              <div class="practice-solution">
+                <div class="box-after">
+                  <strong>Natural Model:</strong> "The tranquil silence of these stone lanes is <strong>a far cry from</strong> the bustling energy of central Rome."
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="practice-box">
+              <div class="practice-top">
+                <span class="practice-tag">2. Frequency / Rare Events</span>
+                <button class="reveal-btn" onclick="toggleReveal(this)">&#128065; Reveal Model</button>
+              </div>
+              <div class="practice-prompt">"I only visit rural villages very rarely during the winter."</div>
+              <div class="practice-hint">Use idiom: <strong>once in a blue moon</strong></div>
+              <div class="practice-solution">
+                <div class="box-after">
+                  <strong>Natural Model:</strong> "I love the countryside in summer, but during the depths of winter, I only head out there <strong>once in a blue moon</strong>."
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="practice-box">
+              <div class="practice-top">
+                <span class="practice-tag">3. Skepticism of Hype</span>
+                <button class="reveal-btn" onclick="toggleReveal(this)">&#128065; Reveal Model</button>
+              </div>
+              <div class="practice-prompt">"You shouldn't believe everything travel influencers say about the best spot."</div>
+              <div class="practice-hint">Use idiom: <strong>take with a pinch of salt</strong></div>
+              <div class="practice-solution">
+                <div class="box-after">
+                  <strong>Natural Model:</strong> "You have to <strong>take online travel recommendations with a pinch of salt</strong>, as many are heavily sponsored."
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="practice-box">
+              <div class="practice-top">
+                <span class="practice-tag">4. Seclusion &amp; Remoteness</span>
+                <button class="reveal-btn" onclick="toggleReveal(this)">&#128065; Reveal Model</button>
+              </div>
+              <div class="practice-prompt">"The farm cottage was situated far away from any town or shops."</div>
+              <div class="practice-hint">Use idiom: <strong>in the middle of nowhere / out in the sticks</strong></div>
+              <div class="practice-solution">
+                <div class="box-after">
+                  <strong>Natural Model:</strong> "The cottage was literally <strong>out in the sticks</strong>, which meant total peace but zero phone signal."
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="practice-box">
+              <div class="practice-top">
+                <span class="practice-tag">5. Personal Affection</span>
+                <button class="reveal-btn" onclick="toggleReveal(this)">&#128065; Reveal Model</button>
+              </div>
+              <div class="practice-prompt">"I have always really liked historical stone architecture."</div>
+              <div class="practice-hint">Use idiom: <strong>have a soft spot for</strong></div>
+              <div class="practice-solution">
+                <div class="box-after">
+                  <strong>Natural Model:</strong> "I've always <strong>had a soft spot for</strong> aged stone architecture; there is something deeply grounding about it."
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 6 -->
+            <div class="practice-box">
+              <div class="practice-top">
+                <span class="practice-tag">6. Ideal Balance</span>
+                <button class="reveal-btn" onclick="toggleReveal(this)">&#128065; Reveal Model</button>
+              </div>
+              <div class="practice-prompt">"Living on the edge of a village gives you nature and easy transport."</div>
+              <div class="practice-hint">Use idiom: <strong>the best of both worlds</strong></div>
+              <div class="practice-solution">
+                <div class="box-after">
+                  <strong>Natural Model:</strong> "By living just outside the village, you enjoy <strong>the best of both worlds</strong>: rural quiet coupled with easy access to amenities."
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SLIDE 8: THE CURATORIAL ITINERARY CHALLENGE -->
+      <section class="slide" id="slide-8">
+        <div>
+          <div class="slide-tag">Part 8 &bull; Spoken Production &bull; Curatorial Synthesis</div>
+          <h2 class="slide-title">The 48-Hour Curatorial Itinerary</h2>
+          <p class="slide-desc">Synthesising architectural lexis, cultural critique, and conversational flair.</p>
+
+          <div class="grid-2col">
+            <div class="visual-box">
+              <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1000&q=80" alt="Historic manor house and English garden" loading="lazy" />
+              <div class="visual-caption">Curating an authentic cultural journey &bull; Balancing heritage, vernacular craft, and living community.</div>
+            </div>
+
+            <div>
+              <div class="mini-card honey">
+                <div class="card-title-sm">&#127912; Your Curatorial Brief</div>
+                <div class="card-body">
+                  <p>An Italian art collector and architect is visiting England for the first time and has <strong>48 hours</strong> to experience the Cotswolds.</p>
+                  <p style="margin-top:0.5rem; font-weight:700; color:var(--navy-900);">Design a 3-stop itinerary addressing:</p>
+                  <ol style="margin-top:0.4rem; margin-left:1.2rem;">
+                    <li><strong>Stop 1 (Stone &amp; Heritage):</strong> A classic architectural landmark or village.</li>
+                    <li><strong>Stop 2 (Atmosphere &amp; Culture):</strong> An off-the-beaten-track walk or historic church/manor.</li>
+                    <li><strong>Stop 3 (Contemporary Food &amp; Society):</strong> A local farm shop, pub, or cultural space.</li>
+                  </ol>
+                </div>
+              </div>
+
+              <div class="formula-box">
+                <span class="formula-badge">Spoken Delivery Checklist</span>
+                <div class="formula-text" style="font-size:0.83rem;">
+                  &bull; Use at least 2 architectural descriptors (e.g. <em>vernacular</em>, <em>honey-hued limestone</em>)<br/>
+                  &bull; Deploy at least 2 conversational idioms (e.g. <em>far cry from</em>, <em>double-edged sword</em>, <em>best of both worlds</em>)<br/>
+                  &bull; Contrast <em>quaint</em> vs. <em>chocolate-box hype</em>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER CONTROLS -->
+      <footer class="slide-footer">
+        <button class="btn-nav" id="btn-prev" onclick="changeSlide(-1)" disabled>&larr; Previous</button>
+        <div class="dots-strip" id="dots-container"></div>
+        <button class="btn-nav primary" id="btn-next" onclick="changeSlide(1)">Next &rarr;</button>
+      </footer>
+
+    </div>
+  </main>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 8;
+
+    function initDots() {
+      const container = document.getElementById('dots-container');
+      container.innerHTML = '';
+      for (let i = 1; i <= totalSlides; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'dot' + (i === 1 ? ' active' : '');
+        dot.onclick = () => goToSlide(i);
+        container.appendChild(dot);
+      }
+    }
+
+    function showSlide(num) {
+      if (num < 1 || num > totalSlides) return;
+      currentSlide = num;
+      document.querySelectorAll('.slide').forEach((s, idx) => {
+        s.classList.toggle('active', idx + 1 === num);
+      });
+      document.querySelectorAll('.dot').forEach((d, idx) => {
+        d.classList.toggle('active', idx + 1 === num);
+      });
+      document.getElementById('slide-num').textContent = `Slide ${num} of ${totalSlides}`;
+      document.getElementById('btn-prev').disabled = (num === 1);
+      const nextBtn = document.getElementById('btn-next');
+      if (num === totalSlides) {
+        nextBtn.textContent = 'Finish Deck \u2714';
+        nextBtn.onclick = () => window.location.href = 'index.html';
+      } else {
+        nextBtn.innerHTML = 'Next &rarr;';
+        nextBtn.onclick = () => changeSlide(1);
+      }
+    }
+
+    function changeSlide(direction) {
+      showSlide(currentSlide + direction);
+    }
+
+    function goToSlide(num) {
+      showSlide(num);
+    }
+
+    // Keyboard arrow navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        if (currentSlide < totalSlides) changeSlide(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        if (currentSlide > 1) changeSlide(-1);
+      }
+    });
+
+    // Reveal Button Toggle
+    function toggleReveal(btn) {
+      const parent = btn.closest('.practice-box');
+      if (!parent) return;
+      const solution = parent.querySelector('.practice-solution');
+      if (!solution) return;
+      const isVisible = solution.style.display === 'block';
+      solution.style.display = isVisible ? 'none' : 'block';
+      btn.innerHTML = isVisible ? '&#128065; Reveal Model &amp; Nuance' : '&#10006; Hide Model';
+    }
+
+    // Timer Logic
+    let timerDuration = 60;
+    let timerRemaining = 60;
+    let timerInterval = null;
+    let timerRunning = false;
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function setTimer(sec, label) {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerDuration = sec;
+      timerRemaining = sec;
+      document.getElementById('timer-label').textContent = label;
+      document.getElementById('timer-display').textContent = formatTime(sec);
+      document.getElementById('timer-play-btn').innerHTML = '&#9654; Start';
+    }
+
+    function toggleTimer() {
+      const playBtn = document.getElementById('timer-play-btn');
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        playBtn.innerHTML = '&#9654; Resume';
+      } else {
+        timerRunning = true;
+        playBtn.innerHTML = '&#10074;&#10074; Pause';
+        timerInterval = setInterval(() => {
+          if (timerRemaining > 0) {
+            timerRemaining--;
+            document.getElementById('timer-display').textContent = formatTime(timerRemaining);
+          } else {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            playBtn.innerHTML = '&#8634; Reset';
+            alert('Timer finished!');
+          }
+        }, 1000);
+      }
+    }
+
+    initDots();
+    showSlide(1);
+  </script>
+  <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
+  <script src="../../analytics.js" defer></script>
+</body>
+</html>
