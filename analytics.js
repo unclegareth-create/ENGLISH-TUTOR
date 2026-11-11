@@ -21,20 +21,23 @@
         return;
     }
 
-    // UK ICO Children's Code (Age-Appropriate Design Code) & Private Portal Guard:
-    // Never load external analytics or store attribution trails on Young Learners pages (ages 6-12),
-    // private 1-to-1 student portals (/s/*), or pages explicitly opting out via meta tag.
+    // UK ICO Children's Code & Young Learner / Minor Opt-Out Guard:
+    // Never load analytics or store attribution trails on Young Learners pages (ages 6-12),
+    // minor student portals (Vitaly, Igor S.), or pages explicitly opting out via meta tag.
     const currentPath = (window.location.pathname || '').toLowerCase();
     const metaOptOut = document.querySelector('meta[name="gm-no-analytics"][content="1"]');
+    const isMinorPortal = currentPath.includes('vitaly') || currentPath.includes('igor-6m3c');
     if (
         metaOptOut ||
         currentPath.includes('professor-west-study') ||
-        /(^|\/)s(\/|$)/.test(currentPath)
+        isMinorPortal
     ) {
         window.trackFunnelEvent = function () {};
         window.showDiagnosticGate = function () {};
         return;
     }
+
+    const isStudentPortal = /(^|\/)s(\/|$)/.test(currentPath);
 
     const GOATCOUNTER_CODE = 'garethenglish';   // <-- Registered GoatCounter site code
     const GA4_MEASUREMENT_ID = window.GA_MEASUREMENT_ID || ''; // <-- Optional GA4 ID (e.g. 'G-XXXXXXXXXX')
@@ -42,8 +45,8 @@
     const AI_REFERRER_KEY = 'gm_ai_referrer';
     const AI_LANDING_KEY = 'gm_ai_landing_page';
 
-    // Optional Google Analytics 4 (GA4) Bootstrap with UK/EU Cookieless Consent Mode v2
-    if (GA4_MEASUREMENT_ID && /^G-[A-Z0-9]+$/i.test(GA4_MEASUREMENT_ID) && typeof window.gtag !== 'function') {
+    // Optional Google Analytics 4 (GA4) Bootstrap with UK/EU Cookieless Consent Mode v2 (Public marketing pages only)
+    if (!isStudentPortal && GA4_MEASUREMENT_ID && /^G-[A-Z0-9]+$/i.test(GA4_MEASUREMENT_ID) && typeof window.gtag !== 'function') {
         window.dataLayer = window.dataLayer || [];
         window.gtag = function () { window.dataLayer.push(arguments); };
         window.gtag('consent', 'default', {
@@ -131,7 +134,7 @@
         }
     };
 
-    const detectedAi = detectAiSource();
+    const detectedAi = isStudentPortal ? null : detectAiSource();
 
     const RESEARCH_ARTICLE_RE = /(^|\/)(c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.html/i;
     const FREE_GAME_RE = /(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch|abyssal-bathysphere|darjeeling-signal-box|midnight-study-desk|blueprint-vault|chronicle-88|myst-island|operation-nobody|midnight-radio|belfast-tape-lab)\.html/i;
@@ -154,15 +157,17 @@
         } catch (e) {}
     };
 
-    // Auto-record if the visitor lands directly on a free game, exam lab, free Gothic lesson, research article, or study guide
+    // Auto-record if the visitor lands directly on a free game, exam lab, free Gothic lesson, research article, or study guide (Public site only)
     const currentSlug = (currentPath.split('/').pop() || '').split(/[?#]/)[0];
-    const isResearchLanding = RESEARCH_ARTICLE_RE.test(currentPath);
+    const isResearchLanding = !isStudentPortal && RESEARCH_ARTICLE_RE.test(currentPath);
     if (
-        isResearchLanding ||
-        FREE_GAME_RE.test(currentPath) ||
-        EXAM_LAB_RE.test(currentPath) ||
-        FREE_GOTHIC_RE.test(currentPath) ||
-        STUDY_GUIDE_RE.test(currentPath)
+        !isStudentPortal && (
+            isResearchLanding ||
+            FREE_GAME_RE.test(currentPath) ||
+            EXAM_LAB_RE.test(currentPath) ||
+            FREE_GOTHIC_RE.test(currentPath) ||
+            STUDY_GUIDE_RE.test(currentPath)
+        )
     ) {
         setLastFreeTool(currentSlug);
     }
@@ -254,10 +259,12 @@
                 }
             });
         };
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', enrichFormsWithAttribution);
-        } else {
-            enrichFormsWithAttribution();
+        if (!isStudentPortal) {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', enrichFormsWithAttribution);
+            } else {
+                enrichFormsWithAttribution();
+            }
         }
 
         const label = (el) => (el.textContent || el.getAttribute('aria-label') || '')
@@ -404,6 +411,7 @@
         };
 
         window.showDiagnosticGate = function (opts) {
+            if (isStudentPortal) return;
             opts = opts || {};
             const esc = (str) => String(str || '').replace(/[&<>"']/g, (c) => ({
                 '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
