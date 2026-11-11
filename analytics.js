@@ -23,10 +23,10 @@
 
     // UK ICO Children's Code & Young Learner / Minor Opt-Out Guard:
     // Never load analytics or store attribution trails on Young Learners pages (ages 6-12),
-    // minor student portals (Vitaly, Igor S.), or pages explicitly opting out via meta tag.
+    // minor student portals (Vitaly), or pages explicitly opting out via meta tag.
     const currentPath = (window.location.pathname || '').toLowerCase();
     const metaOptOut = document.querySelector('meta[name="gm-no-analytics"][content="1"]');
-    const isMinorPortal = currentPath.includes('vitaly') || currentPath.includes('igor-6m3c');
+    const isMinorPortal = currentPath.includes('vitaly');
     if (
         metaOptOut ||
         currentPath.includes('professor-west-study') ||
