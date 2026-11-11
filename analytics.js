@@ -133,10 +133,11 @@
 
     const detectedAi = detectAiSource();
 
+    const RESEARCH_ARTICLE_RE = /(^|\/)(c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.html/i;
     const FREE_GAME_RE = /(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch|abyssal-bathysphere|darjeeling-signal-box|midnight-study-desk|blueprint-vault|chronicle-88|myst-island|operation-nobody|midnight-radio|belfast-tape-lab)\.html/i;
-    const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
+    const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
     const FREE_GOTHIC_RE = /(^|\/)(dracula-unit[123]-[a-z-]+|frankenstein-unit[123]-[a-z-]+|jekyll-unit[123]-[a-z-]+|baskerville-unit[123]-[a-z-]+|alice-unit1[345]-[a-z-]+|the-gothic-canon-c1-c2-compendium|dark-academia-world)\.html/i;
-    const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses|key-word-transformations|word-formation|ielts-c1-structural-shifts|ielts-speaking-part-3|business-english-meetings)\.(html|pdf)/i;
+    const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses|key-word-transformations|word-formation|ielts-c1-structural-shifts|ielts-speaking-part-3|business-english-meetings|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.(html|pdf)/i;
 
     const getLastFreeTool = () => {
         try {
@@ -153,9 +154,11 @@
         } catch (e) {}
     };
 
-    // Auto-record if the visitor lands directly on a free game, exam lab, free Gothic lesson, or study guide
+    // Auto-record if the visitor lands directly on a free game, exam lab, free Gothic lesson, research article, or study guide
     const currentSlug = (currentPath.split('/').pop() || '').split(/[?#]/)[0];
+    const isResearchLanding = RESEARCH_ARTICLE_RE.test(currentPath);
     if (
+        isResearchLanding ||
         FREE_GAME_RE.test(currentPath) ||
         EXAM_LAB_RE.test(currentPath) ||
         FREE_GOTHIC_RE.test(currentPath) ||
@@ -163,6 +166,8 @@
     ) {
         setLastFreeTool(currentSlug);
     }
+
+    let enqueueGoatCounter = null;
 
     if (GOATCOUNTER_CODE) {
         // Load the GoatCounter counter script (cookieless, privacy-friendly).
@@ -174,15 +179,22 @@
 
         // Events clicked before the counter script has loaded are queued, then sent.
         const queue = [];
-        const send = (name) => {
+        const send = (name, customTitle) => {
             const gc = window.goatcounter;
             if (gc && typeof gc.count === 'function') {
-                gc.count({ path: name, title: name, event: true });
+                gc.count({ path: name, title: customTitle || name, event: true });
             } else {
-                queue.push(name);
+                queue.push([name, customTitle || name]);
             }
         };
-        s.addEventListener('load', () => { while (queue.length) send(queue.shift()); });
+        enqueueGoatCounter = send;
+        window.__gmEnqueueGoatCounter = send;
+        s.addEventListener('load', () => {
+            while (queue.length) {
+                const item = queue.shift();
+                send(item[0], item[1]);
+            }
+        });
 
         // Fire LLM / AI Referral Telemetry when a visitor lands from ChatGPT, Perplexity, Claude, Gemini, Copilot, etc.
         if (detectedAi && detectedAi.isNewSessionHit) {
@@ -191,7 +203,23 @@
             if (typeof window.gtag === 'function') {
                 window.gtag('event', 'ai_referral_landing', {
                     ai_source: detectedAi.source,
-                    landing_page: landingPage
+                    landing_page: landingPage,
+                    is_research_article: isResearchLanding
+                });
+            }
+        }
+
+        // Fire Classroom Research Series view telemetry on direct/internal landing
+        if (isResearchLanding && !window.__gmResearchViewTracked) {
+            window.__gmResearchViewTracked = true;
+            const researchSlug = currentSlug.replace(/\.html$/i, '');
+            send(`article: ${currentSlug}`, `Research Article: ${researchSlug}`);
+            if (typeof window.gtag === 'function') {
+                const aiSrc = getAiSource();
+                window.gtag('event', 'research_article_view', {
+                    article: researchSlug,
+                    landing_page: currentSlug,
+                    ...(aiSrc ? { ai_source: aiSrc } : {})
                 });
             }
         }
@@ -261,6 +289,18 @@
             } else if (href.includes('#prosody-lab')) {
                 setLastFreeTool('prosody-lab');
                 send('study-guide: prosody-lab');
+            } else if (RESEARCH_ARTICLE_RE.test(href)) {
+                const targetPage = page(href);
+                const slug = targetPage.replace(/\.html$/i, '');
+                setLastFreeTool(targetPage);
+                send(`article: ${targetPage}`, `Research Article Click: ${slug}`);
+                if (typeof window.gtag === 'function') {
+                    window.gtag('event', 'research_article_view', {
+                        article: slug,
+                        target_page: targetPage,
+                        from_page: currentSlug || 'index.html'
+                    });
+                }
             } else if (EXAM_LAB_RE.test(href)) {
                 setLastFreeTool(page(href));
                 send(`exam-lab: ${page(href)}`);
@@ -303,6 +343,12 @@
 
         window.trackFunnelEvent = function (eventName, params) {
             params = params || {};
+            if (eventName === 'research_tool_used' && !params.article && isResearchLanding) {
+                params = { article: currentSlug.replace(/\.html$/i, ''), ...params };
+            }
+            if (params.article || eventName === 'research_tool_used') {
+                setLastFreeTool(params.article || currentSlug);
+            }
             const lastFreeTool = getLastFreeTool();
             const aiReferrer = getAiSource();
             const payload = {
@@ -331,13 +377,23 @@
             if (typeof window.clarity === 'function') {
                 window.clarity('set', 'last_funnel_step', eventName);
                 if (params.tier) window.clarity('set', 'selected_tier', params.tier);
+                if (params.tool) window.clarity('set', 'research_tool', params.tool);
                 if (aiReferrer) window.clarity('set', 'ai_referrer', aiReferrer);
             }
-            if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+            const detailSegment = params.tier
+                ? '/' + params.tier
+                : (params.article || params.tool ? '/' + [params.article, params.tool].filter(Boolean).join('/') : '');
+            const gcPath = eventName + detailSegment + (lastFreeTool ? '/from=' + lastFreeTool : '') + (aiReferrer ? '/ai=' + aiReferrer : '');
+            const gcTitle = 'Funnel Event: ' + eventName + (params.tool ? ' (' + params.tool + ')' : '');
+            if (typeof enqueueGoatCounter === 'function') {
+                try {
+                    enqueueGoatCounter(gcPath, gcTitle);
+                } catch (e) {}
+            } else if (window.goatcounter && typeof window.goatcounter.count === 'function') {
                 try {
                     window.goatcounter.count({
-                        path: eventName + (params.tier ? '/' + params.tier : '') + (lastFreeTool ? '/from=' + lastFreeTool : '') + (aiReferrer ? '/ai=' + aiReferrer : ''),
-                        title: 'Funnel Event: ' + eventName,
+                        path: gcPath,
+                        title: gcTitle,
                         event: true
                     });
                 } catch (e) {}
@@ -465,16 +521,19 @@
             document.addEventListener('keydown', keyHandler);
         };
 
-        document.addEventListener('click', function (e) {
-            const target = e.target.closest('[data-track]');
-            if (!target) return;
-            const eventName = target.getAttribute('data-track');
-            const tier = target.getAttribute('data-tier') || null;
-            window.trackFunnelEvent(eventName, {
-                tier: tier,
-                cta_text: (target.innerText || '').trim().slice(0, 50)
+        if (!window.__gmDataTrackBound) {
+            window.__gmDataTrackBound = true;
+            document.addEventListener('click', function (e) {
+                const target = e.target.closest('[data-track]');
+                if (!target) return;
+                const eventName = target.getAttribute('data-track');
+                const tier = target.getAttribute('data-tier') || null;
+                window.trackFunnelEvent(eventName, {
+                    tier: tier,
+                    cta_text: (target.innerText || '').trim().slice(0, 50)
+                });
             });
-        });
+        }
     }
 
     // Load Teacher Classroom & White-Label Studio Runtime only when relevant

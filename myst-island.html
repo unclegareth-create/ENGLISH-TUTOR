@@ -1243,6 +1243,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/css/phraxos-immersion.css" />
 </head>
 <body>
 
@@ -1411,6 +1412,9 @@
           <button type="button" class="hud-btn" id="radar-toggle-btn" onclick="IsleGame.toggleRadar()" title="Toggle Interactive Aegean Island Mini-Map &amp; Fast-Travel Radar [Key: M]">
             <span id="radar-toggle-label">🧭 Island Radar</span>
           </button>
+          <button type="button" class="hud-btn" id="gfx-quality-btn" onclick="IsleGame.cycleQualityMode()" title="Toggle Visual Quality & 60fps Performance [Key: G]">
+            <span id="gfx-quality-label">⚡ GFX: 60fps</span>
+          </button>
           <button type="button" class="hud-btn light-btn" id="lighting-btn" onclick="IsleGame.cycleLighting()" title="Cycle Aegean Time of Day (Noon / Firelit Dusk / Moonlit Masque) [Key: L]">
             <span id="lighting-label">🔥 Light: Firelit Dusk</span>
           </button>
@@ -1515,6 +1519,9 @@
             The Bourani Dossier: Unmasking the Godgame
           </h1>
         </div>
+        <button type="button" class="hud-btn" onclick="IsleGame.resetGameProgress()" style="border-color:rgba(239,68,68,0.5); color:#fca5a5; background:rgba(69,10,10,0.6);" title="Reset all unmasked mysteries, KWT duel scores, and contraption states">
+          <span>🔄 Reset Game Progress</span>
+        </button>
         <button type="button" class="cta-primary" onclick="IsleGame.toggleJournal(false)">
           <span>Step onto the Terrace &rarr;</span>
         </button>
@@ -1670,6 +1677,12 @@
     </div>
   </div>
 
+  <script src="assets/js/myst/phraxos-nav-physics.js"></script>
+  <script src="assets/js/myst/phraxos-machinery.js"></script>
+  <script src="assets/js/myst/phraxos-atmosphere.js"></script>
+  <script src="assets/js/myst/phraxos-narrative.js"></script>
+  <script src="assets/js/myst/phraxos-graphics-pipeline.js"></script>
+  <script src="assets/js/myst/phraxos-wonders-remaster.js"></script>
   <script>
   // ============================================================================
   // PHRAXOS: THE BOURANI GODGAME — Three.js WebGL & Aegean Audio Engine
@@ -3036,14 +3049,18 @@
       document.getElementById('audio-toggle-label').textContent = audioEnabled
         ? '🪕 Greek Harp & Surf: ON'
         : '🔇 Greek Harp & Surf: OFF';
+      if (window.PhraxosAtmosphere) {
+        window.PhraxosAtmosphere.onAudioToggle(audioEnabled, phraxosCtx);
+      }
     }
 
     // ==========================================================================
     // 2. THREE.JS 3D PHRAXOS WORLD, FIRELIGHT BRAZIERS, PBR & CURIOSITIES
     // ==========================================================================
-    let scene, camera, renderer, raycaster;
+    let scene, camera, renderer, raycaster, canvasEl = null;
     let skyMat, waterUniforms, hemiLight, sunLight, playerLight, dustParticles;
     let emberParticles = null;
+    let coveBoatRef = null;
     let emberData = [];
     const fireLights = [];
     const flameUniformList = [];
@@ -3428,6 +3445,60 @@
       parnassusCrown: null
     };
 
+    function showBanner(text, kind = 'clue') {
+      const strip = document.getElementById('effect-strip');
+      const textEl = document.getElementById('effect-text');
+      if (!strip || !textEl) return;
+      const safeKind = (kind === 'solved' || kind === 'clash' || kind === 'clue') ? kind : 'clue';
+      strip.className = `effect-strip ${safeKind} interactive`;
+      textEl.textContent = text;
+    }
+
+    const phraxosCtx = {
+      get THREE() { return window.THREE; },
+      get scene() { return scene; },
+      get camera() { return camera; },
+      get renderer() { return renderer; },
+      get raycaster() { return raycaster; },
+      get canvas() { return canvasEl || document.getElementById('webgl-canvas'); },
+      get skyMat() { return skyMat; },
+      get waterUniforms() { return waterUniforms; },
+      get hemiLight() { return hemiLight; },
+      get sunLight() { return sunLight; },
+      get playerLight() { return playerLight; },
+      get dustParticles() { return dustParticles; },
+      get emberParticles() { return emberParticles; },
+      get coveBoat() { return coveBoatRef; },
+      interactables,
+      tabletMeshes3D,
+      rackMeshes3D,
+      player,
+      keys,
+      wonderGroups,
+      getActiveWonder: () => activeWonder,
+      getLightingMode: () => lightingMode,
+      cycleLighting,
+      cycleQualityMode,
+      getLevelMode: () => levelMode,
+      getCurrentAltarId: () => currentAltarId,
+      getDiscoveredSet: () => discovered,
+      getDiscoveredByMode: () => discoveredByMode,
+      getAudioState: () => ({ audioCtx, audioEnabled, isConchisSpeaking, cicadaGain }),
+      ensureAudio: () => { initAudio(); return audioCtx; },
+      teleportToAltar,
+      setActiveAltarUI,
+      showBanner,
+      showUnlockToast,
+      playChord,
+      playHarpsichordArpeggio,
+      inIntro: () => inIntroScreen,
+      onMachineSolved: () => {
+        if (window.PhraxosNarrative) {
+          window.PhraxosNarrative.onProgressUpdate(phraxosCtx);
+        }
+      }
+    };
+
     // Convert a grayscale/color canvas into a real tangent-space Sobel Normal Map (100% file:// safe)
     function makeNormalMapFromCanvas(srcCanvas, strength = 2.6, repeat = 4) {
       const w = srcCanvas.width;
@@ -3505,8 +3576,7 @@
       }
 
       const canvas = document.createElement('canvas');
-      canvas.width = 512;
-      canvas.height = 512;
+      canvas.width = 256; canvas.height = 256;
       const ctx = canvas.getContext('2d');
 
       if (type === 'cliff') {
@@ -3930,6 +4000,7 @@
 
     function init3D() {
       const canvas = document.getElementById('webgl-canvas');
+      canvasEl = canvas;
       renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
@@ -4004,6 +4075,23 @@
             return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
                        mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
           }
+          float starPointLayer(vec3 dir, float scale, float threshold, float radius, float phaseSeed) {
+            vec3 p = dir * scale;
+            vec3 cell = floor(p);
+            vec3 local = fract(p);
+            float h = fract(sin(dot(cell, vec3(127.1, 311.7, 74.7))) * 43758.5453123);
+            if (h < threshold) return 0.0;
+            vec3 jitter = vec3(
+              fract(sin(dot(cell, vec3(269.5, 183.3, 246.1))) * 43758.5453123),
+              fract(sin(dot(cell, vec3(113.5, 271.9, 124.6))) * 43758.5453123),
+              fract(sin(dot(cell, vec3(419.2, 371.9, 198.3))) * 43758.5453123)
+            );
+            vec3 center = vec3(0.24) + jitter * 0.52;
+            float d = length(local - center);
+            float core = 1.0 - smoothstep(0.0, radius, d);
+            float twinkle = 0.84 + 0.16 * sin(uTime * (1.3 + fract(h * 13.7) * 2.1) + h * 62.8 + phaseSeed);
+            return core * core * twinkle;
+          }
 
           void main() {
             vec3 dir = normalize(vWorldPos);
@@ -4029,11 +4117,15 @@
             float horizonGlow = pow(1.0 - h, 4.5);
             col += horizonColor * horizonGlow * 0.26 * (1.0 - uNightMix * 0.7);
 
-            // Night Stars during Moonlit Masque (Spherical mapping - zero vertical streaks!)
-            if (uNightMix > 0.65 && dir.y > 0.08) {
-              vec2 starUv = vec2(atan(dir.z, dir.x), asin(clamp(dir.y, -1.0, 1.0)));
-              float starVal = pow(hash(floor(starUv * 160.0)), 36.0);
-              col += vec3(0.95, 0.98, 1.0) * starVal * smoothstep(0.65, 1.0, uNightMix) * smoothstep(0.12, 0.45, dir.y) * 2.2;
+            // Night Stars during Moonlit Masque (Round soft 3D jittered point stars, strictly below bloom threshold)
+            if (uNightMix > 0.55 && dir.y > 0.08) {
+              float nightFade = smoothstep(0.55, 1.0, uNightMix) * smoothstep(0.08, 0.34, dir.y);
+              float sBright = starPointLayer(dir, 96.0, 0.966, 0.155, 0.0);
+              float sFaint  = starPointLayer(dir, 168.0, 0.974, 0.185, 3.1);
+              float tintMix = fract(sin(dot(floor(dir * 96.0), vec3(53.7, 91.3, 37.9))) * 43758.5453);
+              vec3 starTint = mix(vec3(0.84, 0.91, 1.0), vec3(1.0, 0.94, 0.84), tintMix);
+              vec3 starAdd = starTint * (sBright * 0.68 + sFaint * 0.36) * nightFade;
+              col = min(col + starAdd, vec3(0.84));
             }
 
             gl_FragColor = vec4(col, 1.0);
@@ -4135,12 +4227,12 @@
         metalness: 0.02
       });
 
-      const bougainvilleaPBR = makeProceduralPBR('#be185d', '#831843', false, false, 2, 1.2);
+      const bougainvilleaPBR = makeProceduralPBR('#881337', '#4c0519', false, false, 3, 1.3);
       const matBougainvillea = new THREE.MeshStandardMaterial({
         map: bougainvilleaPBR.map,
         normalMap: bougainvilleaPBR.normalMap,
-        roughness: 0.62,
-        metalness: 0.04
+        roughness: 0.78,
+        metalness: 0.02
       });
 
       const barkPBR = makeProceduralPBR('bark');
@@ -4418,21 +4510,73 @@
         g.position.set(cx, 0, cz);
         scene.add(g);
 
-        // Multi-tiered craggy limestone cliff base
-        const cliffLower = new THREE.Mesh(new THREE.CylinderGeometry(radius + 2.6, radius + 4.4, 2.2, 36), matCliff);
+        const hasSouthStrait = cz < 0;
+        const hasNorthStrait = cz > -80;
+
+        // Tuck outer earth & cliff skirts inward across the 3 causeway sea-straits so turquoise sea flows cleanly under viaduct arches
+        function tuckStraitSkirtGeometry(geo, tuckedRadius) {
+          const pos = geo.attributes.position;
+          for (let i = 0; i < pos.count; i++) {
+            const vx = pos.getX(i);
+            const vz = pos.getZ(i);
+            const r = Math.hypot(vx, vz);
+            if (r < 0.01) continue;
+            const cosA = vz / r;
+            let tuck = 0;
+            if (hasSouthStrait && cosA > 0.44) {
+              const t = Math.min(1, (cosA - 0.44) / 0.38);
+              tuck = Math.max(tuck, t * t * (3 - 2 * t));
+            }
+            if (hasNorthStrait && cosA < -0.44) {
+              const t = Math.min(1, (-cosA - 0.44) / 0.38);
+              tuck = Math.max(tuck, t * t * (3 - 2 * t));
+            }
+            if (tuck > 0 && r > tuckedRadius) {
+              const nr = r + (tuckedRadius - r) * tuck;
+              const scale = nr / r;
+              pos.setX(i, vx * scale);
+              pos.setZ(i, vz * scale);
+            }
+          }
+          geo.computeVertexNormals();
+          return geo;
+        }
+
+        // Sheer carved limestone sea-cliff plunging straight beneath the waves under the stylobate rim
+        const seaWall = new THREE.Mesh(
+          new THREE.CylinderGeometry(radius - 1.04, radius - 0.90, 2.0, 56),
+          matCliff
+        );
+        seaWall.position.y = -0.62;
+        g.add(seaWall);
+
+        // Multi-tiered craggy limestone cliff base (flares on East/West coasts, recessed across sea straits)
+        const cliffLowerGeo = tuckStraitSkirtGeometry(
+          new THREE.CylinderGeometry(radius + 2.6, radius + 4.4, 2.2, 64, 2),
+          radius - 1.12
+        );
+        const cliffLower = new THREE.Mesh(cliffLowerGeo, matCliff);
         cliffLower.position.y = -0.95;
         g.add(cliffLower);
 
-        const earth = new THREE.Mesh(new THREE.CylinderGeometry(radius + 0.7, radius + 1.4, 0.58, 36), matPineEarth);
+        const earthGeo = tuckStraitSkirtGeometry(
+          new THREE.CylinderGeometry(radius + 0.7, radius + 1.4, 0.58, 64, 1),
+          radius - 1.12
+        );
+        const earth = new THREE.Mesh(earthGeo, matPineEarth);
         earth.position.y = 0.05;
         g.add(earth);
 
         // Stepped marble stylobate terrace
-        const stepOuter = new THREE.Mesh(new THREE.CylinderGeometry(radius - 0.5, radius - 0.2, 0.18, 44), matLimestone);
+        const stepOuterGeo = tuckStraitSkirtGeometry(
+          new THREE.CylinderGeometry(radius - 0.5, radius - 0.2, 0.18, 56, 1),
+          radius - 1.06
+        );
+        const stepOuter = new THREE.Mesh(stepOuterGeo, matLimestone);
         stepOuter.position.y = 0.26;
         g.add(stepOuter);
 
-        const terrace = new THREE.Mesh(new THREE.CylinderGeometry(radius - 1.0, radius - 0.8, 0.26, 44), matWhitewash);
+        const terrace = new THREE.Mesh(new THREE.CylinderGeometry(radius - 1.0, radius - 0.8, 0.26, 56), matWhitewash);
         terrace.position.y = 0.36;
         g.add(terrace);
 
@@ -4452,10 +4596,11 @@
           g.add(coping);
         }
 
-        // Sculpted Craggy Coastal Limestone Outcrops around the waterline
+        // Sculpted Craggy Coastal Limestone Outcrops around the waterline (kept clear of sea-strait viaduct arches)
         for (let i = 0; i < 16; i++) {
           const ang = (i / 16) * Math.PI * 2 + 0.22;
           if (Math.abs(Math.sin(ang)) < 0.32) continue;
+          if ((hasSouthStrait && Math.cos(ang) > 0.56) || (hasNorthStrait && Math.cos(ang) < -0.56)) continue;
           const rockGeo = buildCraggyRockGeometry(1.5 + (i % 3) * 0.5, 2, i * 3.1 + cz, false);
           const rock = new THREE.Mesh(rockGeo, matCliff);
           rock.position.set(Math.sin(ang) * (radius + 2.4), -1.15, Math.cos(ang) * (radius + 2.4));
@@ -4588,12 +4733,77 @@
       balconyDeck.position.set(0, 3.6, -2.2);
       villa.add(balconyDeck);
 
-      // Flowering Bougainvillea vines draping the Villa Portico
+      // Classical Stone Balcony Balustrade + Rooted Terracotta Planters with Trailing Bougainvillea Vines
+      const balRailTop = new THREE.Mesh(new THREE.BoxGeometry(13.4, 0.08, 0.20), matLimestone);
+      balRailTop.position.set(0, 4.20, -2.68);
+      villa.add(balRailTop);
+      const balRailBot = new THREE.Mesh(new THREE.BoxGeometry(13.4, 0.06, 0.18), matLimestone);
+      balRailBot.position.set(0, 3.77, -2.68);
+      villa.add(balRailBot);
+      const balusterGeo = new THREE.CylinderGeometry(0.034, 0.044, 0.38, 10);
+      for (let bx = -6.0; bx <= 6.01; bx += 0.60) {
+        const isPier = Math.abs((Math.abs(bx) - 1.2) % 2.4) < 0.08 || Math.abs(Math.abs(bx) - 1.2) < 0.08;
+        if (isPier) {
+          const pier = new THREE.Mesh(new THREE.BoxGeometry(0.20, 0.50, 0.22), matLimestone);
+          pier.position.set(bx, 3.99, -2.68);
+          villa.add(pier);
+        } else {
+          const bal = new THREE.Mesh(balusterGeo, matColumnMarble);
+          bal.position.set(bx, 3.99, -2.68);
+          villa.add(bal);
+        }
+      }
+
+      const leafClusterGeo = buildCraggyRockGeometry(0.14, 2, 1.3, false);
+      const blossomClusterGeo = new THREE.IcosahedronGeometry(0.068, 1);
       [-4.8, -2.4, 2.4, 4.8].forEach((bx, bIdx) => {
-        const vine = new THREE.Mesh(buildCraggyRockGeometry(0.62, 2, bIdx * 1.9, false), matBougainvillea);
-        vine.scale.set(1.35, 0.65, 0.85);
-        vine.position.set(bx, 3.55, -2.65);
-        villa.add(vine);
+        // Terracotta balcony planter box resting directly on balconyDeck behind the stone balustrade
+        const trough = new THREE.Mesh(new THREE.BoxGeometry(1.04, 0.24, 0.28), matTerracotta);
+        trough.position.set(bx, 3.86, -2.44);
+        villa.add(trough);
+        const troughRim = new THREE.Mesh(new THREE.BoxGeometry(1.12, 0.045, 0.33), matTerracotta);
+        troughRim.position.set(bx, 3.99, -2.44);
+        villa.add(troughRim);
+
+        // Woody climbing stem rooted in a ground-level terracotta amphora beside the portico column
+        const colSideX = bx < 0 ? bx + 1.08 : bx - 1.08;
+        spawnAmphora(villa, colSideX, 0.54, -2.42, 0.62);
+        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.038, 2.95, 8), matOliveTrunk);
+        stem.position.set(colSideX + (bx < 0 ? -0.08 : 0.08), 2.38, -2.40);
+        stem.rotation.z = (bx < 0 ? 0.09 : -0.09);
+        villa.add(stem);
+
+        // Lush dark-green Mediterranean leaf foliage spilling naturally from the planter over the rail
+        [
+          [-0.34, 4.08, -2.46, 1.15],
+          [-0.12, 4.14, -2.54, 1.25],
+          [ 0.14, 4.12, -2.52, 1.20],
+          [ 0.36, 4.07, -2.46, 1.10],
+          [-0.04, 3.96, -2.72, 0.95],
+          [ 0.20, 3.84, -2.75, 0.82]
+        ].forEach(([ox, oy, oz, sc], lIdx) => {
+          const leaf = new THREE.Mesh(leafClusterGeo, lIdx % 2 === 0 ? matCypress : matOliveFoliage);
+          leaf.scale.set(sc * 1.15, sc * 0.78, sc * 0.95);
+          leaf.position.set(bx + ox, oy, oz);
+          leaf.rotation.set(lIdx * 0.4, bIdx + lIdx * 0.9, 0.2);
+          villa.add(leaf);
+        });
+
+        // Delicate, small crimson bougainvillea floral accents nestled inside the green leaves
+        [
+          [-0.28, 4.16, -2.56],
+          [-0.06, 4.21, -2.62],
+          [ 0.18, 4.18, -2.58],
+          [ 0.34, 4.13, -2.54],
+          [-0.02, 3.98, -2.79],
+          [ 0.19, 3.85, -2.81]
+        ].forEach(([fx, fy, fz], fIdx) => {
+          const bloom = new THREE.Mesh(blossomClusterGeo, matBougainvillea);
+          bloom.scale.set(1.15, 0.82, 0.95);
+          bloom.position.set(bx + fx, fy, fz);
+          bloom.rotation.set(fIdx * 0.7, bIdx * 1.3 + fIdx, 0.3);
+          villa.add(bloom);
+        });
       });
 
       // 5 Upper-Storey Shuttered Aegean Windows + 3 Ground-Floor Firelit French Doors
@@ -4664,19 +4874,22 @@
       terraceArmillary.add(armCore);
       enableShadowsRecursive(terraceArmillary);
 
-      // Moored Greek Wooden Caique Fishing Boat in the Turquoise Cove Below
-      const coveBoat = new THREE.Group();
-      coveBoat.position.set(8.5, -0.22, -6.5);
-      coveBoat.rotation.y = -0.45;
-      scene.add(coveBoat);
-      const boatHull = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.55, 3.8, 12), matTerracotta);
-      boatHull.rotation.z = Math.PI / 2;
-      boatHull.scale.set(0.55, 1.0, 0.85);
-      coveBoat.add(boatHull);
-      const boatTrim = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.14, 1.35), matColumnMarble);
-      boatTrim.position.y = 0.36;
-      coveBoat.add(boatTrim);
-      enableShadowsRecursive(coveBoat);
+      // Moored Greek Wooden Caique Fishing Boat in the Turquoise Cove Below (legacy fallback when PhraxosGraphics is absent)
+      if (!window.PhraxosGraphics) {
+        const coveBoat = new THREE.Group();
+        coveBoatRef = coveBoat;
+        coveBoat.position.set(8.5, -0.22, -6.5);
+        coveBoat.rotation.y = -0.45;
+        scene.add(coveBoat);
+        const boatHull = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.55, 3.8, 12), matTerracotta);
+        boatHull.rotation.z = Math.PI / 2;
+        boatHull.scale.set(0.55, 1.0, 0.85);
+        coveBoat.add(boatHull);
+        const boatTrim = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.14, 1.35), matColumnMarble);
+        boatTrim.position.y = 0.36;
+        coveBoat.add(boatTrim);
+        enableShadowsRecursive(coveBoat);
+      }
 
       // Sculpted Craggy Cycladic Horizon Mountains & Limestone Sea-Stacks
       [
@@ -5236,7 +5449,8 @@
         opacity: 0.86
       });
 
-      // 0) ALTAR SOLVE SPECTACLE FX (Skyward Pillar of Light, Shockwave Rings & Rune Vortex)
+      if (!window.PhraxosWonders) {
+      // 0) ALTAR SOLVE SPECTACLE FX (Legacy fallback when PhraxosWonders is absent)
       wonderGroups.solveFXGroup = new THREE.Group();
       wonderGroups.solveFXGroup.visible = false;
       scene.add(wonderGroups.solveFXGroup);
@@ -5940,11 +6154,23 @@
       );
       sanctuarySkyBeam.position.y = 14.0;
       wonderGroups.parnassusSanctuaryGroup.add(sanctuarySkyBeam);
+      }
 
       // Input Listeners
       window.addEventListener('resize', onResize);
       window.addEventListener('keydown', (e) => {
+        const tag = e.target && e.target.tagName ? e.target.tagName.toUpperCase() : '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) {
+          return;
+        }
         keys[e.code] = true;
+        if (
+          e.code === 'KeyW' || e.code === 'KeyA' || e.code === 'KeyS' || e.code === 'KeyD' ||
+          e.code === 'ArrowUp' || e.code === 'ArrowDown' || e.code === 'ArrowLeft' || e.code === 'ArrowRight' ||
+          e.code === 'Space'
+        ) {
+          if (window.PhraxosNav) window.PhraxosNav.cancelWaypoint();
+        }
         if (e.code === 'Digit1') teleportToAltar(0);
         if (e.code === 'Digit2') teleportToAltar(1);
         if (e.code === 'Digit3') teleportToAltar(2);
@@ -5952,6 +6178,7 @@
         if (e.code === 'Digit5') teleportToAltar(4);
         if (e.code === 'KeyM') toggleRadar();
         if (e.code === 'KeyL') cycleLighting();
+        if (e.code === 'KeyG') cycleQualityMode();
         if (e.code === 'KeyJ') {
           const modal = document.getElementById('journal-modal');
           toggleJournal(modal.classList.contains('hidden'));
@@ -5960,8 +6187,10 @@
       });
       window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
+      let mouseMovedDist = 0;
       canvas.addEventListener('mousedown', (e) => {
         isDraggingLook = true;
+        mouseMovedDist = 0;
         prevMouse.x = e.clientX;
         prevMouse.y = e.clientY;
       });
@@ -5969,13 +6198,22 @@
         if (isDraggingLook) {
           const dx = e.clientX - prevMouse.x;
           const dy = e.clientY - prevMouse.y;
+          mouseMovedDist += Math.hypot(dx, dy);
           prevMouse.x = e.clientX;
           prevMouse.y = e.clientY;
           player.yaw -= dx * 0.0032;
           player.pitch = Math.max(-1.1, Math.min(1.1, player.pitch - dy * 0.0028));
           return;
         }
-        // Hover raycast to highlight 3D Stone Tablets, Sockets & Curiosities
+        const promptEl = document.getElementById('reticle-prompt');
+        const nowMs = performance.now();
+        if (nowMs - (canvas._lastHoverRaycast || 0) < 55) return;
+        canvas._lastHoverRaycast = nowMs;
+        if (inIntroScreen || e.target !== canvas) {
+          if (promptEl) promptEl.classList.remove('show');
+          return;
+        }
+        // Hover raycast to highlight 3D Stone Tablets, Sockets, Curiosities, Machinery, Stela & Waypoint Medallions
         const rect = canvas.getBoundingClientRect();
         const mouse = new THREE.Vector2(
           ((e.clientX - rect.left) / rect.width) * 2 - 1,
@@ -5983,12 +6221,28 @@
         );
         raycaster.setFromCamera(mouse, camera);
         const hits = raycaster.intersectObjects(interactables, false);
-        const promptEl = document.getElementById('reticle-prompt');
-        if (hits.length > 0 && hits[0].object.visible) {
-          const data = hits[0].object.userData;
+        const visibleHit = hits.find((h) => h.object && h.object.visible);
+        if (visibleHit) {
+          const data = visibleHit.object.userData;
           canvas.style.cursor = 'pointer';
           if (promptEl && data) {
-            if (data.interactType === 'rack_tablet') {
+            if (data.interactType === 'machinery' && window.PhraxosMachinery) {
+              const label = window.PhraxosMachinery.getHoverLabel(data, phraxosCtx);
+              if (label) {
+                promptEl.textContent = label;
+                promptEl.classList.add('show');
+              } else {
+                promptEl.classList.remove('show');
+              }
+            } else if (data.interactType === 'narrative_stela' && window.PhraxosNarrative) {
+              const label = window.PhraxosNarrative.getHoverLabel(data, phraxosCtx);
+              if (label) {
+                promptEl.textContent = label;
+                promptEl.classList.add('show');
+              } else {
+                promptEl.classList.remove('show');
+              }
+            } else if (data.interactType === 'rack_tablet') {
               const def = getAltarDef(data.altarId);
               const cols = [def.col0, def.col1, def.col2];
               promptEl.textContent = `🪨 Click to place: "${cols[data.colIdx][data.itemIdx]}"`;
@@ -6004,8 +6258,17 @@
             }
           }
         } else {
-          canvas.style.cursor = 'grab';
-          if (promptEl) promptEl.classList.remove('show');
+          const navHover = window.PhraxosNav ? window.PhraxosNav.onGroundHover(raycaster, phraxosCtx) : null;
+          if (navHover && navHover.isScenicNode && navHover.label) {
+            canvas.style.cursor = 'pointer';
+            if (promptEl) {
+              promptEl.textContent = navHover.label;
+              promptEl.classList.add('show');
+            }
+          } else {
+            canvas.style.cursor = (navHover && navHover.hit) ? 'crosshair' : 'grab';
+            if (promptEl) promptEl.classList.remove('show');
+          }
         }
       });
       window.addEventListener('mouseup', () => { isDraggingLook = false; });
@@ -6035,7 +6298,11 @@
       document.querySelectorAll('.dpad-btn').forEach((btn) => {
         const code = btn.getAttribute('data-key');
         if (!code) return;
-        const press = (ev) => { ev.preventDefault(); keys[code] = true; };
+        const press = (ev) => {
+          ev.preventDefault();
+          if (window.PhraxosNav) window.PhraxosNav.cancelWaypoint();
+          keys[code] = true;
+        };
         const release = () => { keys[code] = false; };
         btn.addEventListener('touchstart', press, { passive: false });
         btn.addEventListener('touchend', release);
@@ -6045,12 +6312,19 @@
         btn.addEventListener('mouseleave', release);
       });
 
-      // Click / Tap in 3D to pick up a 3D Stone Tablet on the Rack, inspect a Curiosity, or select a Socket
+      // Click / Tap in 3D to interact with Stones, Curiosities, Machinery, Stela, Sockets, or Ground Waypoints
       canvas.addEventListener('click', (e) => {
+        if (mouseMovedDist > 6) {
+          mouseMovedDist = 0;
+          return;
+        }
+        mouseMovedDist = 0;
         if (touchMovedDist > 12) {
           touchMovedDist = 0;
           return;
         }
+        touchMovedDist = 0;
+        if (inIntroScreen) return;
         const rect = canvas.getBoundingClientRect();
         const mouse = new THREE.Vector2(
           ((e.clientX - rect.left) / rect.width) * 2 - 1,
@@ -6058,9 +6332,18 @@
         );
         raycaster.setFromCamera(mouse, camera);
         const hits = raycaster.intersectObjects(interactables, false);
-        if (hits.length > 0) {
-          const data = hits[0].object.userData;
+        const visibleHit = hits.find((h) => h.object && h.object.visible);
+        if (visibleHit) {
+          const data = visibleHit.object.userData;
           if (!data) return;
+          if (data.interactType === 'machinery' && window.PhraxosMachinery) {
+            window.PhraxosMachinery.handleInteract(data, visibleHit, phraxosCtx);
+            return;
+          }
+          if (data.interactType === 'narrative_stela' && window.PhraxosNarrative) {
+            window.PhraxosNarrative.handleInteract(data, visibleHit, phraxosCtx);
+            return;
+          }
           if (data.interactType === 'curiosity') {
             triggerCuriosity(data.curiosityId);
             return;
@@ -6079,7 +6362,11 @@
             if (typeof data.slotIdx === 'number') {
               selectSlot(data.slotIdx);
             }
+            return;
           }
+        }
+        if (window.PhraxosNav) {
+          window.PhraxosNav.onGroundClick(raycaster, phraxosCtx);
         }
       });
 
@@ -6093,6 +6380,9 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      if (window.PhraxosGraphics) {
+        window.PhraxosGraphics.onResize(phraxosCtx);
+      }
     }
 
     // ==========================================================================
@@ -6163,6 +6453,25 @@
         waterUniforms.uSkyHorizon.value.setHex(0x1e293b);
         waterUniforms.uSunDir.value.set(-0.25, 0.45, -0.85).normalize();
         if (!silent) playChord([220.0, 329.63, 493.88], 0.55);
+      }
+      if (window.PhraxosAtmosphere) {
+        window.PhraxosAtmosphere.onLightingChange(lightingMode, phraxosCtx);
+      }
+      if (window.PhraxosGraphics) {
+        window.PhraxosGraphics.onLightingChange(lightingMode, phraxosCtx);
+      }
+    }
+
+    
+    function cycleQualityMode() {
+      if (window.PhraxosGraphics && window.PhraxosGraphics.cycleQualityMode) {
+        const mode = window.PhraxosGraphics.cycleQualityMode(phraxosCtx);
+        const lbl = document.getElementById('gfx-quality-label');
+        if (lbl) {
+          if (mode === 'lite') lbl.textContent = '🪶 GFX: Lite';
+          else if (mode === 'ultra') lbl.textContent = '✨ GFX: Ultra';
+          else lbl.textContent = '⚡ GFX: 60fps';
+        }
       }
     }
 
@@ -6279,9 +6588,15 @@
       refreshAll3DRackTextures();
       setActiveAltarUI(currentAltarId);
       updateProgressHUD();
+      if (window.PhraxosGraphics && window.PhraxosGraphics.finalizeStaticBatching) {
+        window.PhraxosGraphics.finalizeStaticBatching(phraxosCtx);
+      }
       renderJournalContent();
       applyWorldWonders();
       saveProgress();
+      if (window.PhraxosNarrative) {
+        window.PhraxosNarrative.onProgressUpdate(phraxosCtx);
+      }
       playChord([392.0, 523.25], 0.35);
     }
 
@@ -6292,8 +6607,15 @@
     function teleportToAltar(altarId) {
       const def = getAltarDef(altarId);
       if (!def) return;
+      if (window.PhraxosNav) {
+        window.PhraxosNav.cancelWaypoint();
+      }
       player.x = def.pos.x;
       player.z = def.pos.z;
+      const groundH = window.PhraxosNav ? window.PhraxosNav.getGroundHeight(player.x, player.z) : 0.48;
+      player.y = (player.targetEyeHeight || 2.75) + (groundH - 0.48);
+      player.vy = 0;
+      player.onGround = true;
       player.yaw = def.pos.yaw;
       player.pitch = -0.11;
       setActiveAltarUI(altarId);
@@ -6348,6 +6670,77 @@
 
       renderSocketsAndRack();
       evaluateAltar(currentAltarId);
+    }
+
+    
+    function resetGameProgress() {
+      const confirmReset = window.confirm(
+        "Are you sure you want to reset all game progress?\n\n" +
+        "This will clear all 25 unmasked island mysteries, your Bourani Rank, KWT duel scores, " +
+        "and mechanical contraption locks. The island will return to its initial unawakened state."
+      );
+      if (!confirmReset) return;
+
+      try {
+        localStorage.removeItem('phraxos-progress-v1');
+        localStorage.removeItem('phraxos-kwt-v1');
+        localStorage.removeItem('phraxos-machinery-v1');
+        localStorage.removeItem('phraxos-eleutheria-v1');
+      } catch (e) {
+        // localStorage unavailable
+      }
+
+      // Reset in-memory sets and logs
+      discoveredByMode.c1.clear();
+      discoveredByMode.a1.clear();
+      sentenceLogByMode.c1 = [];
+      sentenceLogByMode.a1 = [];
+      discovered = discoveredByMode[levelMode];
+
+      // Clear all altar states
+      for (let a = 0; a < 5; a++) {
+        altarState[a] = [null, null, null];
+        activeWonder[a] = -1;
+      }
+      selectedSlotIdx = 0;
+      solveStreak = 0;
+      hintTargetIdx = -1;
+      hintTier = 0;
+
+      // Reset KWT duel state
+      if (typeof kwtState !== 'undefined') {
+        kwtState.answers = {};
+        renderKwtDuelGrid();
+        updateKwtScoreBadge();
+      }
+
+      // Re-shuffle racks
+      shuffleAllRacks();
+      refreshAll3DRackTextures();
+      renderSocketsAndRack();
+      updateProgressHUD();
+      renderJournalContent();
+
+      // Reset world wonders & narrative
+      applyWorldWonders();
+      if (window.PhraxosWonders && window.PhraxosWonders.init) {
+        window.PhraxosWonders.init(phraxosCtx);
+      }
+      if (window.PhraxosNarrative && window.PhraxosNarrative.onProgressUpdate) {
+        window.PhraxosNarrative.onProgressUpdate(phraxosCtx);
+      }
+      if (window.PhraxosMachinery && window.PhraxosMachinery.init) {
+        window.PhraxosMachinery.init(phraxosCtx);
+      }
+
+      // Close journal & teleport back to starting terrace
+      toggleJournal(false);
+      teleportToAltar(0);
+      showUnlockToast(
+        '<div style="font-size:0.7rem; color:#fca5a5; text-transform:uppercase; letter-spacing:0.12em; font-weight:800;">🔄 Godgame Reset</div>' +
+        '<div style="font-size:0.95rem; font-weight:800; color:#fff; margin:0.12rem 0;">All island progress has been reset.</div>' +
+        '<div style="font-size:0.75rem; color:#fde68a;">The Godgame begins anew at the Bourani Terrace.</div>'
+      );
     }
 
     function clearCurrentAltar() {
@@ -6511,6 +6904,9 @@
       if (countEl) countEl.textContent = `${discovered.size}/25`;
       const rankEl = document.getElementById('rank-badge');
       if (rankEl) rankEl.textContent = getBouraniRank(discovered.size);
+      if (window.PhraxosNarrative) {
+        window.PhraxosNarrative.onProgressUpdate(phraxosCtx);
+      }
     }
 
     function toggleRadar(force) {
@@ -6593,21 +6989,25 @@
       }
     }
 
-    function triggerSolveSpectacle(altarId, isFullAct = false) {
-      const altarCoords = [
-        { x: -5.5, z: 9.2 },
-        { x: 5.5, z: 9.2 },
-        { x: 0.0, z: -20.5 },
-        { x: 0.0, z: -53.5 },
-        { x: 0.0, z: -86.5 }
-      ];
-      const pos = altarCoords[altarId] || altarCoords[0];
-      if (wonderGroups.solveFXGroup) {
-        wonderGroups.solveFXGroup.position.set(pos.x, 0.45, pos.z);
-        wonderGroups.solveFXGroup.visible = true;
+    function triggerSolveSpectacle(altarId, isFullAct = false, solvedIdx = 0) {
+      if (window.PhraxosWonders) {
+        window.PhraxosWonders.triggerSolve(altarId, solvedIdx, isFullAct, phraxosCtx);
+      } else {
+        const altarCoords = [
+          { x: -5.5, z: 9.2 },
+          { x: 5.5, z: 9.2 },
+          { x: 0.0, z: -20.5 },
+          { x: 0.0, z: -53.5 },
+          { x: 0.0, z: -86.5 }
+        ];
+        const pos = altarCoords[altarId] || altarCoords[0];
+        if (wonderGroups.solveFXGroup) {
+          wonderGroups.solveFXGroup.position.set(pos.x, 0.45, pos.z);
+          wonderGroups.solveFXGroup.visible = true;
+        }
+        wonderGroups.solveTimer = isFullAct ? 6.4 : 4.2;
+        wonderGroups.cameraRevealTimer = isFullAct ? 3.8 : 2.4;
       }
-      wonderGroups.solveTimer = isFullAct ? 6.4 : 4.2;
-      wonderGroups.cameraRevealTimer = isFullAct ? 3.8 : 2.4;
 
       // Play a triumphant two-tier Greek Kithara & Harmonic Chime Fanfare
       playHarpsichordArpeggio([293.66, 369.99, 440.0, 587.33, 739.99, 880.0, 1174.66]);
@@ -6694,9 +7094,12 @@
         strip.className = 'effect-strip solved interactive';
         textEl.textContent = wonder.msg;
         recordVerifiedSentence(altarId, `${w0} ${w1} ${w2}.`, 'wonder');
-        triggerSolveSpectacle(altarId, wasNew && altarCount === 5);
-        applyWorldWonders();
         renderSocketsAndRack();
+        triggerSolveSpectacle(altarId, wasNew && altarCount === 5, solvedIdx);
+        applyWorldWonders();
+        if (window.PhraxosNarrative) {
+          window.PhraxosNarrative.onProgressUpdate(phraxosCtx);
+        }
         return;
       }
 
@@ -6743,6 +7146,10 @@
     }
 
     function applyWorldWonders() {
+      if (window.PhraxosWonders) {
+        window.PhraxosWonders.applyWorldWonders(activeWonder, discovered, phraxosCtx);
+        return;
+      }
       player.speedMultiplier = 1.0;
       player.gravityMultiplier = 1.0;
       player.targetEyeHeight = 2.75;
@@ -7300,6 +7707,12 @@
 
     function animate(now) {
       requestAnimationFrame(animate);
+      const journalEl = document.getElementById("journal-modal");
+      const stelaEl = document.getElementById("eleutheria-stela-modal");
+      if ((journalEl && !journalEl.classList.contains("hidden")) || (stelaEl && !stelaEl.classList.contains("hidden"))) {
+        lastTime = now;
+        return;
+      }
       const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
@@ -7351,13 +7764,34 @@
         m.rotation.y += dt * 0.65;
       });
 
-      // Gently rotate the brass Armillary rings on the terrace
-      wonderGroups.astrolabeRings.forEach((r, idx) => {
-        r.rotation.y += dt * (0.35 + idx * 0.18);
-        r.rotation.x += dt * (0.22 - idx * 0.08);
-      });
+      // Gently rotate the brass Armillary rings on the terrace (legacy fallback when PhraxosWonders is absent)
+      if (!window.PhraxosWonders) {
+        wonderGroups.astrolabeRings.forEach((r, idx) => {
+          r.rotation.y += dt * (0.35 + idx * 0.18);
+          r.rotation.x += dt * (0.22 - idx * 0.08);
+        });
+      }
+
+      if (window.PhraxosMachinery) {
+        window.PhraxosMachinery.update(dt, now, phraxosCtx);
+      }
+      if (window.PhraxosAtmosphere) {
+        window.PhraxosAtmosphere.update(dt, now, phraxosCtx);
+      }
+      if (window.PhraxosNarrative) {
+        window.PhraxosNarrative.update(dt, now, phraxosCtx);
+      }
+      if (window.PhraxosWonders) {
+        window.PhraxosWonders.update(dt, now, phraxosCtx);
+      }
+      if (window.PhraxosGraphics) {
+        window.PhraxosGraphics.update(dt, now, phraxosCtx);
+      }
 
       if (inIntroScreen) {
+        if (window.PhraxosNav) {
+          window.PhraxosNav.update(dt, now, phraxosCtx);
+        }
         // Animate the 2D Intro Hero Painting + Glide 3D Camera across the front of the Firelit Bourani Terrace
         drawIntroHeroCanvas(now);
         const panAngle = now * 0.00022;
@@ -7368,7 +7802,11 @@
         camera.up.set(0, 1, 0);
         camera.lookAt(0, 2.55, 13.5);
         playerLight.position.set(0, 4.8, 10.5);
-        renderer.render(scene, camera);
+        if (window.PhraxosGraphics) {
+          window.PhraxosGraphics.render(phraxosCtx, dt, now);
+        } else {
+          renderer.render(scene, camera);
+        }
         return;
       }
 
@@ -7379,17 +7817,27 @@
       if (keys['KeyD'] || keys['ArrowRight']) moveRight += 1;
       if (keys['KeyA'] || keys['ArrowLeft']) moveRight -= 1;
 
-      const speed = 6.5 * player.speedMultiplier;
-      const sinY = Math.sin(player.yaw);
-      const cosY = Math.cos(player.yaw);
-
-      player.x += (-sinY * moveForward + cosY * moveRight) * speed * dt;
-      player.z += (-cosY * moveForward - sinY * moveRight) * speed * dt;
-
-      player.x = Math.max(-15.5, Math.min(15.5, player.x));
-      player.z = Math.max(-104.0, Math.min(22.0, player.z));
+      const prevX = player.x;
+      const prevZ = player.z;
+      if (moveForward !== 0 || moveRight !== 0) {
+        if (window.PhraxosNav) window.PhraxosNav.cancelWaypoint();
+        const speed = 6.5 * player.speedMultiplier;
+        const sinMoveY = Math.sin(player.yaw);
+        const cosMoveY = Math.cos(player.yaw);
+        const nextX = player.x + (-sinMoveY * moveForward + cosMoveY * moveRight) * speed * dt;
+        const nextZ = player.z + (-cosMoveY * moveForward - sinMoveY * moveRight) * speed * dt;
+        if (window.PhraxosNav) {
+          const clamped = window.PhraxosNav.clampPosition(nextX, nextZ, prevX, prevZ);
+          player.x = clamped.x;
+          player.z = clamped.z;
+        } else {
+          player.x = Math.max(-15.5, Math.min(15.5, nextX));
+          player.z = Math.max(-104.0, Math.min(22.0, nextZ));
+        }
+      }
 
       if (keys['Space'] && player.onGround) {
+        if (window.PhraxosNav) window.PhraxosNav.cancelWaypoint();
         player.vy = 6.8;
         player.onGround = false;
         playChord([220.0, 330.0], 0.15);
@@ -7397,13 +7845,23 @@
       if (!player.onGround) {
         player.vy -= 15.0 * player.gravityMultiplier * dt;
         player.y += player.vy * dt;
-        if (player.y <= player.targetEyeHeight) {
-          player.y = player.targetEyeHeight;
-          player.vy = 0;
-          player.onGround = true;
+        if (!window.PhraxosNav) {
+          const fallbackEye = player.targetEyeHeight;
+          if (player.y <= fallbackEye) {
+            player.y = fallbackEye;
+            player.vy = 0;
+            player.onGround = true;
+          }
         }
-      } else {
+      } else if (!window.PhraxosNav) {
         player.y += (player.targetEyeHeight - player.y) * 5.0 * dt;
+      }
+
+      if (window.PhraxosNav) {
+        const navState = window.PhraxosNav.update(dt, now, phraxosCtx);
+        if (navState && navState.stepTriggered && window.PhraxosAtmosphere) {
+          window.PhraxosAtmosphere.triggerFootstep(navState.surfaceType, phraxosCtx);
+        }
       }
 
       if (player.z < -75.0 && currentAltarId !== 4) {
@@ -7425,14 +7883,16 @@
         blipEl.setAttribute('cy', by.toFixed(1));
       }
 
-      // Smoothly lift camera gaze toward the newly awakened 3D Wonder when a clue is solved
-      if (wonderGroups.cameraRevealTimer > 0) {
+      // Smoothly lift camera gaze toward the newly awakened 3D Wonder when a clue is solved (legacy fallback)
+      if (!window.PhraxosWonders && wonderGroups.cameraRevealTimer > 0) {
         wonderGroups.cameraRevealTimer = Math.max(0, wonderGroups.cameraRevealTimer - dt);
         if (!isDraggingLook) {
           player.pitch += (0.065 - player.pitch) * 3.8 * dt;
         }
       }
 
+      const sinY = Math.sin(player.yaw);
+      const cosY = Math.cos(player.yaw);
       camera.position.set(player.x, player.y, player.z);
       camera.up.set(0, 1, 0);
       const cosP = Math.cos(player.pitch);
@@ -7442,14 +7902,15 @@
         player.z - cosY * cosP * 10.0
       );
       playerLight.position.set(player.x, player.y + 0.6, player.z);
-      if (sunLight) {
+      if (sunLight && !window.PhraxosGraphics) {
         sunLight.target.position.set(player.x * 0.4, 0, player.z);
         sunLight.target.updateMatrixWorld();
         sunLight.position.set(player.x * 0.4 - 30, 30, player.z - 24);
       }
 
-      // Animate Altar Solve Spectacle FX (Skyward Pillar, Expanding Shockwave Rings & Rune Vortex)
-      if (wonderGroups.solveTimer > 0 && wonderGroups.solveFXGroup) {
+      if (!window.PhraxosWonders) {
+        // Animate Altar Solve Spectacle FX (legacy fallback when PhraxosWonders is absent)
+        if (wonderGroups.solveTimer > 0 && wonderGroups.solveFXGroup) {
         wonderGroups.solveTimer = Math.max(0, wonderGroups.solveTimer - dt);
         const prog = 1.0 - (wonderGroups.solveTimer / 4.2);
         const fade = wonderGroups.solveTimer < 1.2 ? (wonderGroups.solveTimer / 1.2) : 1.0;
@@ -7636,8 +8097,13 @@
           wonderGroups.parnassusCrown.rotation.z += dt * 0.45;
         }
       }
+      }
 
-      renderer.render(scene, camera);
+      if (window.PhraxosGraphics) {
+        window.PhraxosGraphics.render(phraxosCtx, dt, now);
+      } else {
+        renderer.render(scene, camera);
+      }
     }
 
     window.addEventListener('DOMContentLoaded', () => {
@@ -7645,6 +8111,25 @@
       init3D();
       const savedMode = loadProgress();
       loadKwtProgress();
+      if (window.PhraxosWonders) {
+        window.PhraxosWonders.init(phraxosCtx);
+      }
+      if (window.PhraxosNav) {
+        window.PhraxosNav.init(phraxosCtx);
+      }
+      if (window.PhraxosMachinery) {
+        window.PhraxosMachinery.init(phraxosCtx);
+      }
+      if (window.PhraxosAtmosphere) {
+        window.PhraxosAtmosphere.init(phraxosCtx);
+      }
+      if (window.PhraxosNarrative) {
+        window.PhraxosNarrative.init(phraxosCtx);
+      }
+      if (window.PhraxosGraphics) {
+        window.PhraxosGraphics.init(phraxosCtx);
+        window.PhraxosGraphics.onLightingChange(lightingMode, phraxosCtx);
+      }
       if (savedMode === 'a1') {
         setLevelMode('a1');
       } else {
@@ -7666,6 +8151,7 @@
       teleportToAltar,
       selectSlot,
       clearCurrentAltar,
+      resetGameProgress,
       giveHint,
       shuffleCurrentAltar,
       toggleRackDrawer,
@@ -7682,7 +8168,9 @@
       toggleAudio,
       cycleLighting,
       inspectCuriosity,
-      triggerCuriosity
+      triggerCuriosity,
+      getPhraxosCtx: () => phraxosCtx,
+      toggleImmersionMode: (force) => window.PhraxosNarrative && window.PhraxosNarrative.toggleImmersionMode(force)
     };
   })();
   </script>

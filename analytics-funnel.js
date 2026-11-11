@@ -27,6 +27,10 @@
   const LAST_FREE_TOOL_KEY = 'gm_last_free_tool';
   const AI_REFERRER_KEY = 'gm_ai_referrer';
 
+  const RESEARCH_ARTICLE_RE = /(^|\/)(c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.html/i;
+  const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
+  const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses|key-word-transformations|word-formation|ielts-c1-structural-shifts|ielts-speaking-part-3|business-english-meetings|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.(html|pdf)/i;
+
   function getTrail() {
     try {
       return JSON.parse(localStorage.getItem(FUNNEL_KEY) || '[]');
@@ -43,6 +47,13 @@
     }
   }
 
+  function setLastFreeTool(toolSlug) {
+    if (!toolSlug) return;
+    try {
+      localStorage.setItem(LAST_FREE_TOOL_KEY, String(toolSlug).replace(/\.(html|pdf)$/i, ''));
+    } catch (e) {}
+  }
+
   function getAiReferrer() {
     try {
       return sessionStorage.getItem(AI_REFERRER_KEY) || localStorage.getItem(AI_REFERRER_KEY) || '';
@@ -51,8 +62,36 @@
     }
   }
 
+  const currentSlug = (currentPath.split('/').pop() || '').split(/[?#]/)[0];
+  if (RESEARCH_ARTICLE_RE.test(currentPath) || EXAM_LAB_RE.test(currentPath) || STUDY_GUIDE_RE.test(currentPath)) {
+    setLastFreeTool(currentSlug);
+  }
+  if (RESEARCH_ARTICLE_RE.test(currentPath) && !window.__gmResearchViewTracked) {
+    window.__gmResearchViewTracked = true;
+    const researchSlug = currentSlug.replace(/\.html$/i, '');
+    if (typeof window.__gmEnqueueGoatCounter === 'function') {
+      try { window.__gmEnqueueGoatCounter('article: ' + currentSlug, 'Research Article: ' + researchSlug); } catch (e) {}
+    } else if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+      try { window.goatcounter.count({ path: 'article: ' + currentSlug, title: 'Research Article: ' + researchSlug, event: true }); } catch (e) {}
+    }
+    if (typeof window.gtag === 'function') {
+      const aiSrc = getAiReferrer();
+      window.gtag('event', 'research_article_view', {
+        article: researchSlug,
+        landing_page: currentSlug,
+        ...(aiSrc ? { ai_source: aiSrc } : {})
+      });
+    }
+  }
+
   window.trackFunnelEvent = function (eventName, params) {
     params = params || {};
+    if (eventName === 'research_tool_used' && !params.article && RESEARCH_ARTICLE_RE.test(currentPath)) {
+      params = { article: currentSlug.replace(/\.html$/i, ''), ...params };
+    }
+    if (params.article || eventName === 'research_tool_used') {
+      setLastFreeTool(params.article || currentSlug);
+    }
     const lastFreeTool = getLastFreeTool();
     const aiReferrer = getAiReferrer();
     const payload = {
@@ -85,15 +124,25 @@
     if (typeof window.clarity === 'function') {
       window.clarity('set', 'last_funnel_step', eventName);
       if (params.tier) window.clarity('set', 'selected_tier', params.tier);
+      if (params.tool) window.clarity('set', 'research_tool', params.tool);
       if (aiReferrer) window.clarity('set', 'ai_referrer', aiReferrer);
     }
 
-    // 4. Forward to GoatCounter if present
-    if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+    // 4. Forward to GoatCounter if present (or via analytics.js queue)
+    const detailSegment = params.tier
+      ? '/' + params.tier
+      : (params.article || params.tool ? '/' + [params.article, params.tool].filter(Boolean).join('/') : '');
+    const gcPath = eventName + detailSegment + (lastFreeTool ? '/from=' + lastFreeTool : '') + (aiReferrer ? '/ai=' + aiReferrer : '');
+    const gcTitle = 'Funnel Event: ' + eventName + (params.tool ? ' (' + params.tool + ')' : '');
+    if (typeof window.__gmEnqueueGoatCounter === 'function') {
+      try {
+        window.__gmEnqueueGoatCounter(gcPath, gcTitle);
+      } catch (e) {}
+    } else if (window.goatcounter && typeof window.goatcounter.count === 'function') {
       try {
         window.goatcounter.count({
-          path: eventName + (params.tier ? '/' + params.tier : '') + (lastFreeTool ? '/from=' + lastFreeTool : '') + (aiReferrer ? '/ai=' + aiReferrer : ''),
-          title: 'Funnel Event: ' + eventName,
+          path: gcPath,
+          title: gcTitle,
           event: true
         });
       } catch (e) {}
@@ -279,17 +328,20 @@
   };
 
   // Auto-bind all elements with [data-track] attributes
-  document.addEventListener('click', function (e) {
-    const target = e.target.closest('[data-track]');
-    if (!target) return;
+  if (!window.__gmDataTrackBound) {
+    window.__gmDataTrackBound = true;
+    document.addEventListener('click', function (e) {
+      const target = e.target.closest('[data-track]');
+      if (!target) return;
 
-    const eventName = target.getAttribute('data-track');
-    const tier = target.getAttribute('data-tier') || null;
-    window.trackFunnelEvent(eventName, {
-      tier: tier,
-      cta_text: (target.innerText || '').trim().slice(0, 50)
+      const eventName = target.getAttribute('data-track');
+      const tier = target.getAttribute('data-tier') || null;
+      window.trackFunnelEvent(eventName, {
+        tier: tier,
+        cta_text: (target.innerText || '').trim().slice(0, 50)
+      });
     });
-  });
+  }
 
   // Load Teacher Classroom & White-Label Studio Runtime only when relevant
   const needsTeacherRuntime = () => {
