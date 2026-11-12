@@ -626,6 +626,11 @@
           display: none !important;
         }
       }
+      @media (max-width: 767px) {
+        body:has(#sticky-mobile-cta) #gm-dossier-pill {
+          bottom: 84px;
+        }
+      }
       @media (max-width: 600px) {
         #gm-dossier-pill {
           left: 10px;
