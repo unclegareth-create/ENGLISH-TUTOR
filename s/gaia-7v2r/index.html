@@ -1178,6 +1178,7 @@
       </a>
 
       <div class="nav-actions">
+        <button type="button" class="btn-nav primary teacher-only" onclick="openShareModal()">&#128279; Share Portal with Gaia</button>
         <button class="btn-nav" onclick="toggleTheme()" title="Switch Light/Dark Mode">&#127767; Theme</button>
         <a class="btn-nav primary" href="gaia-c2-speaking-mastery.html" target="_blank" style="background:#b45309; border-color:#b45309;">
           &#128640; Launch Speaking Mastery Deck
@@ -1310,8 +1311,7 @@
       });
     </script>
 <!-- VISUAL-STUDIO-DOCK-END -->
-
-    <!-- Official CPE Result Card -->
+<!-- Official CPE Result Card -->
     <section class="featured-deck-card" style="border-top-color:#059669; margin-bottom:20px; background:linear-gradient(135deg, rgba(16,185,129,0.10), rgba(59,130,246,0.06)); border-left:4px solid #059669;">
       <div style="width:100%;">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:10px;">
@@ -1986,6 +1986,65 @@
     </section>
 <!-- STUDENT-RECENT-WORK-END -->
   </main>
+
+  <!-- Teacher-Only Share Modal -->
+  <div id="share-modal" class="teacher-only" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(15,23,42,0.72); backdrop-filter:blur(6px); align-items:center; justify-content:center; padding:20px;">
+    <div style="background:var(--surface-card); color:var(--ink-800); border:1px solid var(--border-strong); border-radius:18px; max-width:560px; width:100%; padding:24px; box-shadow:0 24px 50px rgba(0,0,0,0.45);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-family:var(--font-display); font-size:1.25rem; color:var(--ink-950); margin:0;">&#128279; Share Portal with Gaia &amp; Roberta</h3>
+        <button type="button" onclick="closeShareModal()" style="background:none; border:none; font-size:1.5rem; color:var(--ink-500); cursor:pointer; line-height:1;">&times;</button>
+      </div>
+      <p style="font-size:0.88rem; color:var(--ink-700); margin-bottom:14px;">
+        Copy the live portal link or the ready-to-send message for Preply, WhatsApp, or email:
+      </p>
+      <div style="margin-bottom:12px;">
+        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--ink-500); margin-bottom:4px;">Direct Portal URL</label>
+        <input type="text" id="share-link-input" readonly value="https://garethenglish.com/s/gaia-7v2r/" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--border-strong); background:var(--surface-subtle); color:var(--ink-950); font-family:var(--font-mono); font-size:0.84rem;" />
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:0.75rem; font-weight:700; text-transform:uppercase; color:var(--ink-500); margin-bottom:4px;">Prepared Message (Email / Preply / WhatsApp)</label>
+        <textarea id="share-message-text" rows="6" readonly style="width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border-strong); background:var(--surface-subtle); color:var(--ink-800); font-family:var(--font-sans); font-size:0.85rem; line-height:1.5; resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn-nav" id="btn-copy-share-link" onclick="copyShareLink()">&#128203; Copy Link Only</button>
+        <button type="button" class="btn-nav" onclick="emailGaiaPortal()">&#9993;&#65039; Open Email</button>
+        <button type="button" class="btn-nav primary" id="btn-copy-share-msg" onclick="copyShareMessage()">&#128640; Copy Full Message</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    function openShareModal() {
+      var curUrl = 'https://garethenglish.com/s/gaia-7v2r/';
+      document.getElementById('share-link-input').value = curUrl;
+      document.getElementById('share-message-text').value =
+        "Hi Gaia and Roberta,\n\nCongratulations again on the CPE Grade B (219) — especially those 230/230 scores in Reading and Use of English!\n\nHere is the link to your updated portal, which brings together your official result, all of our C2 decks and writing mark-ups, the full 2022–2026 lesson archive, and your Politecnico di Milano C2 bridge:\n\n" + curUrl + "\n\nIf you have a moment to share a short 2–3 sentence testimonial about our lessons together for GarethEnglish.com, I'd really appreciate it.\n\nBest wishes,\nGareth";
+      document.getElementById('share-modal').style.display = 'flex';
+    }
+    function closeShareModal() {
+      document.getElementById('share-modal').style.display = 'none';
+    }
+    function copyShareLink() {
+      var link = document.getElementById('share-link-input').value;
+      navigator.clipboard.writeText(link).then(function() {
+        var btn = document.getElementById('btn-copy-share-link');
+        btn.textContent = '\u2713 Link Copied';
+        setTimeout(function() { btn.innerHTML = '&#128203; Copy Link Only'; }, 1600);
+      });
+    }
+    function copyShareMessage() {
+      var msg = document.getElementById('share-message-text').value;
+      navigator.clipboard.writeText(msg).then(function() {
+        var btn = document.getElementById('btn-copy-share-msg');
+        btn.textContent = '\u2713 Message Copied';
+        setTimeout(function() { btn.innerHTML = '&#128640; Copy Full Message'; }, 1600);
+      });
+    }
+    function emailGaiaPortal() {
+      var subj = encodeURIComponent("Gaia's Cambridge C2 Portal & 2022-2026 Archive");
+      var body = encodeURIComponent(document.getElementById('share-message-text').value);
+      window.location.href = 'mailto:?subject=' + subj + '&body=' + body;
+    }
+  </script>
 
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>

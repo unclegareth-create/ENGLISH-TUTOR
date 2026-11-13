@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="paper">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Igor S. · The Satirical Arcade (Physical Computing, Automata & Social Critique) | GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="paper"] {
+      --bg-base: #f5f3ef;
+      --surface-card: #ffffff;
+      --surface-subtle: #faf8f5;
+      --surface-highlight: #fef3c7;
+      --ink-950: #0c1222;
+      --ink-800: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --border-hairline: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --accent: #b45309;
+      --accent-soft: #fef3c7;
+      --navy: #1d4ed8;
+      --navy-dark: #0f2557;
+      --navy-soft: #eff6ff;
+      --emerald: #059669;
+      --emerald-soft: #ecfdf5;
+      --rose: #e11d48;
+      --rose-soft: #fff1f2;
+      --shadow-card: 0 8px 24px -4px rgba(12, 18, 34, 0.06);
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #090d16;
+      --surface-card: #111827;
+      --surface-subtle: #182235;
+      --surface-highlight: #3b2a10;
+      --ink-950: #f8fafc;
+      --ink-800: #e2e8f0;
+      --ink-700: #cbd5e1;
+      --ink-500: #94a3b8;
+      --border-hairline: #1e293b;
+      --border-strong: #334155;
+      --accent: #fbbf24;
+      --accent-soft: rgba(251, 191, 36, 0.14);
+      --navy: #60a5fa;
+      --navy-dark: #93c5fd;
+      --navy-soft: rgba(59, 130, 246, 0.15);
+      --emerald: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.15);
+      --rose: #fb7185;
+      --rose-soft: rgba(225, 29, 72, 0.15);
+      --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      padding-bottom: 5rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .top-bar {
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 0.35rem 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+    .top-bar-inner {
+      max-width: 1020px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 0.65rem;
+      min-height: 34px;
+    }
+    .brand {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--ink-950);
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .brand span {
+      color: var(--navy);
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-left: 0.3rem;
+      font-family: var(--font-sans);
+    }
+    .nav-pills {
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      align-items: center;
+      padding: 1px 0;
+      flex-shrink: 1;
+      min-width: 0;
+    }
+    .nav-pills::-webkit-scrollbar {
+      display: none;
+    }
+    .nav-pill {
+      text-decoration: none;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--ink-700);
+      padding: 0.22rem 0.55rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-pill:hover {
+      background: var(--surface-subtle);
+      border-color: var(--border-hairline);
+      color: var(--ink-950);
+    }
+    .nav-pill.active {
+      background: var(--navy-soft);
+      color: var(--navy);
+      border-color: var(--navy);
+    }
+
+    .theme-toggle-btn {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-800);
+      padding: 0.22rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .brand span { display: none; }
+      .top-bar { padding: 0.3rem 0.65rem; }
+    }
+
+    .container {
+      max-width: 1020px;
+      margin: 2rem auto 0;
+      padding: 0 1.5rem;
+    }
+
+    .hero-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 2.2rem 2.2rem 2rem;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--navy));
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      margin-bottom: 0.9rem;
+    }
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: 2.1rem;
+      line-height: 1.22;
+      color: var(--ink-950);
+      margin-bottom: 0.8rem;
+    }
+    .hero-sub {
+      font-size: 1.02rem;
+      color: var(--ink-700);
+      max-width: 820px;
+      line-height: 1.55;
+    }
+    .hero-meta {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      margin-top: 1.2rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid var(--border-hairline);
+      font-size: 0.84rem;
+      color: var(--ink-500);
+    }
+    .hero-meta strong {
+      color: var(--ink-800);
+    }
+
+    .task-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 1.8rem;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 1.75rem;
+    }
+    .task-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border-hairline);
+      padding-bottom: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+    .task-num {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .task-title {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      color: var(--ink-950);
+      margin-top: 0.2rem;
+    }
+    .task-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: var(--surface-subtle);
+      color: var(--ink-500);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .prompt-box {
+      background: var(--surface-subtle);
+      border-left: 3px solid var(--accent);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+      color: var(--ink-800);
+    }
+
+    .video-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #000;
+      margin: 1.25rem 0;
+    }
+    .video-wrapper iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    .questions-list {
+      list-style: none;
+      margin: 1rem 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .questions-list li {
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      font-size: 0.95rem;
+      color: var(--ink-800);
+    }
+    .q-marker {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid rgba(180, 83, 9, 0.2);
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+    }
+
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .vocab-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 1rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .vocab-term {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .vocab-def {
+      font-size: 0.86rem;
+      color: var(--ink-700);
+      line-height: 1.45;
+    }
+    .vocab-eg {
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--ink-500);
+      border-top: 1px dashed var(--border-hairline);
+      padding-top: 0.4rem;
+      margin-top: 0.2rem;
+    }
+
+    .machines-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.88rem;
+    }
+    .machines-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      background: var(--surface-subtle);
+      border-bottom: 2px solid var(--border-strong);
+      color: var(--ink-950);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .machines-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border-hairline);
+      vertical-align: top;
+      color: var(--ink-700);
+    }
+    .machines-table tr:hover td {
+      background: var(--surface-subtle);
+    }
+
+    .kwt-row {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .kwt-orig {
+      font-size: 0.92rem;
+      color: var(--ink-800);
+      margin-bottom: 0.5rem;
+    }
+    .kwt-kw {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    .kwt-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.4rem;
+    }
+    .kwt-input {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      padding: 0.4rem 0.65rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-950);
+      flex: 1;
+      min-width: 250px;
+    }
+    .kwt-input:focus {
+      outline: none;
+      border-color: var(--navy);
+    }
+
+    .btn-action {
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .btn-action:hover {
+      background: var(--navy-dark);
+    }
+    .btn-reveal {
+      background: var(--surface-subtle);
+      color: var(--ink-700);
+      border: 1px solid var(--border-strong);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-reveal:hover {
+      background: var(--surface-card);
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+
+    .answer-key {
+      display: none;
+      background: var(--emerald-soft);
+      border-left: 3px solid var(--emerald);
+      padding: 0.65rem 0.9rem;
+      border-radius: 0 6px 6px 0;
+      margin-top: 0.65rem;
+      font-size: 0.86rem;
+      color: var(--emerald);
+      font-family: var(--font-mono);
+    }
+    .answer-key.open {
+      display: block;
+    }
+
+    .masked-clue {
+      background: var(--ink-800);
+      color: transparent;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    .masked-clue::after {
+      content: "👁️ Unmask";
+      color: #fff;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+    }
+    .masked-clue.unmasked {
+      background: var(--surface-highlight);
+      color: var(--ink-950);
+    }
+    .masked-clue.unmasked::after {
+      content: "";
+    }
+
+    .machine-cue {
+      color: var(--ink-500);
+      font-size: 0.82rem;
+      font-style: italic;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: var(--surface-subtle);
+      border: 1px dashed var(--border-strong);
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .machine-cue:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+      background: var(--navy-soft);
+    }
+    .machine-ans {
+      display: none;
+      color: var(--ink-800);
+      line-height: 1.5;
+    }
+    .machine-ans.open {
+      display: block;
+      animation: fadeInAns 0.2s ease;
+    }
+    @keyframes fadeInAns {
+      from { opacity: 0; transform: translateY(-2px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stage 02: Lexical Matching Activity */
+    .matching-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 28px;
+      margin: 1.25rem 0;
+    }
+    @media (max-width: 720px) {
+      .matching-grid { grid-template-columns: 1fr; gap: 14px; }
+    }
+    .match-col {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .match-left {
+      background: var(--surface-subtle);
+      color: var(--ink-950);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+    .match-left:hover {
+      border-color: var(--navy);
+      transform: translateX(2px);
+    }
+    .match-left.active-pick {
+      outline: 2px solid var(--navy);
+      background: var(--navy-soft);
+      border-color: var(--navy);
+      color: var(--navy);
+      transform: translateX(4px);
+    }
+    .match-right {
+      background: var(--surface-card);
+      color: var(--ink-800);
+      border: 1.5px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.86rem;
+      line-height: 1.45;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+      min-height: 48px;
+    }
+    .match-right:hover {
+      border-color: var(--border-strong);
+      background: var(--surface-subtle);
+    }
+    .match-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--navy-soft);
+      color: var(--navy);
+      border: 1px solid rgba(29, 78, 216, 0.25);
+      flex-shrink: 0;
+    }
+    .match-right .match-badge {
+      background: var(--navy);
+      color: #ffffff;
+      border: none;
+    }
+    .match-right.correct {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      color: var(--emerald);
+      font-weight: 600;
+    }
+    .match-right.correct .match-badge {
+      background: var(--emerald);
+      color: #ffffff;
+    }
+    .match-right.incorrect {
+      background: var(--rose-soft);
+      border-color: var(--rose);
+      color: var(--rose);
+    }
+    .match-right.incorrect .match-badge {
+      background: var(--rose);
+      color: #ffffff;
+    }
+    .match-action-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      margin: 1.25rem 0 1rem;
+    }
+    .score-pill {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--emerald);
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald);
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Navigation -->
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <a href="index.html" class="brand">GarethEnglish <span>· Igor S. Portal</span></a>
+      <div class="nav-pills">
+        <a href="index.html" class="nav-pill">← Portal Home</a>
+        <a href="#warmup" class="nav-pill">Warm-Up</a>
+        <a href="#vocab" class="nav-pill">Vocabulary</a>
+        <a href="#video" class="nav-pill">Video & Tasks</a>
+        <a href="#discussion" class="nav-pill">Architecture Debate</a>
+        <a href="#creation" class="nav-pill">Automaton Sprint</a>
+        <a href="#workout" class="nav-pill">Conditionals</a>
+      </div>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">🌓 Dark Mode</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+      <div class="hero-badge">ESL Brains Curiosity · Systems & Satire (C1)</div>
+      <!-- STUDENT-PIXEL-BADGE-START -->
+<div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:rgba(15,23,42,0.12); border:1px solid rgba(148,163,184,0.32); margin-bottom:10px; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; font-size:0.78rem; font-weight:700; line-height:1.2;">
+  <img src="avatar.svg" alt="Igor S." style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid rgba(255,255,255,0.28); flex-shrink:0;" />
+  <span>Igor S. &bull; C1/C2 Conversation & Grammar</span>
+</div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+<h1 class="hero-title">The Satirical Arcade: Physical Computing, Automata & The Charm of Imperfection</h1>
+      <p class="hero-sub">
+        Exploring Tim Hunkin’s legendary mechanical arcade machines at Southwold Pier and London’s Novelty Automation. What happens when an engineer abandons screens, microcontrollers, and cloud backends to build satirical state machines out of scrap metal, bicycle chains, and pure mechanical timing?
+      </p>
+      <div class="hero-meta">
+        <div><strong>Student:</strong> Igor S.</div>
+        <div><strong>Focus:</strong> Analogue vs Digital, Physical State Machines, British Satire, Inverted Conditionals & Modal Past</div>
+        <div><strong>Source Video:</strong> Tom Scott featuring Tim Hunkin (04:12)</div>
+      </div>
+    </div>
+
+    <!-- TASK 1: WARM-UP -->
+    <section class="task-card" id="warmup">
+      <div class="task-header">
+        <div>
+          <div class="task-num">Stage 01 // Warm-Up Discussion</div>
+          <h2 class="task-title">The Analogue Reality Check</h2>
+        </div>
+        <span class="task-badge">Conversational Framing</span>
+      </div>
+
+      <p style="font-size:0.95rem; color:var(--ink-700); margin-bottom:1rem;">
+        As software engineers, we spend our lives building intangible, frictionless abstractions: APIs, cloud services, and virtualised runtimes. Before watching the video, discuss these four reality-check prompts:
+      </p>
+
+      <ul class="questions-list">
+        <li>
+          <span class="q-marker">01</span>
+          <div>
+            <strong>Tactile Feedback vs. Glass:</strong> When was the last time you used a device with purely mechanical feedback (e.g. heavy rotary switches, clacking relays, a mechanical typewriter)? How does physical resistance alter how deliberate your actions feel?
+          </div>
+        </li>
+        <li>
+          <span class="q-marker">02</span>
+          <div>
+            <strong>Friction vs. Frictionlessness:</strong> Silicon Valley has spent two decades obsessing over "removing all friction" from digital life. Can an interface be <em>too</em> frictionless? What do we lose when every human transaction becomes an effortless thumb tap?
+          </div>
+        </li>
+        <li>
+          <span class="q-marker">03</span>
+          <div>
+            <strong>The Catharsis of Breaking Things:</strong> When code fails, you get an obscure stack trace or a 500 error. Why is physical destruction or physical comedy (e.g. dropping a heavy steel ball onto a caricature of an oligarch) so much more emotionally satisfying than digital feedback?
+          </div>
+        </li>
+        <li>
+          <span class="q-marker">04</span>
+          <div>
+            <strong>The Seaside Tradition:</strong> British seaside piers have hosted bizarre, eccentric amusements since the Victorian era (what Brits call "end-of-the-pier novelty"). Why do places by the sea seem to breed such peculiar eccentricities?
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- TASK 2: VOCABULARY -->
+    <section class="task-card" id="vocab">
+      <div class="task-header">
+        <div>
+          <div class="task-num">Stage 02 // C1 Lexical Toolkit</div>
+          <h2 class="task-title">Mechanics, Satire & Scrap: 8 Essential Expressions</h2>
+        </div>
+        <span class="task-badge">Interactive Matching (1–8)</span>
+      </div>
+
+      <p style="font-size:0.95rem; color:var(--ink-700); margin-bottom:1rem;">
+        These authentic idioms and engineering collocations appear throughout the video and discussions of Tim Hunkin’s automata. Test your intuition: <strong>click an expression on the left (1–8)</strong>, then <strong>click its matching definition on the right</strong>.
+      </p>
+
+      <div class="matching-grid">
+        <div class="match-col" id="match-vocab-left">
+          <div class="match-left" data-left="1" onclick="selectVocabLeft(1)"><span class="match-badge">1</span><span>cobbled together (from scrap)</span></div>
+          <div class="match-left" data-left="2" onclick="selectVocabLeft(2)"><span class="match-badge">2</span><span>a mechanical contraption</span></div>
+          <div class="match-left" data-left="3" onclick="selectVocabLeft(3)"><span class="match-badge">3</span><span>take the mickey (out of someone)</span></div>
+          <div class="match-left" data-left="4" onclick="selectVocabLeft(4)"><span class="match-badge">4</span><span>tongue-in-cheek</span></div>
+          <div class="match-left" data-left="5" onclick="selectVocabLeft(5)"><span class="match-badge">5</span><span>visceral satisfaction</span></div>
+          <div class="match-left" data-left="6" onclick="selectVocabLeft(6)"><span class="match-badge">6</span><span>a Heath Robinson machine</span></div>
+          <div class="match-left" data-left="7" onclick="selectVocabLeft(7)"><span class="match-badge">7</span><span>planned obsolescence</span></div>
+          <div class="match-left" data-left="8" onclick="selectVocabLeft(8)"><span class="match-badge">8</span><span>finite-state automaton</span></div>
+        </div>
+
+        <div class="match-col" id="match-vocab-right">
+          <div class="match-right" data-ans="3" onclick="selectVocabRight(this)"><span class="match-badge" style="display:none;"></span><span>To gently or sharply mock, tease, lampoon, or satirise someone's pretensions.</span></div>
+          <div class="match-right" data-ans="6" onclick="selectVocabRight(this)"><span class="match-badge" style="display:none;"></span><span>An absurdly complex, over-engineered contraption built to perform an otherwise trivial task.</span></div>
+          <div class="match-right" data-ans="1" onclick="selectVocabRight(this)"><span class="match-badge" style="display:none;"></span><span>Assembled quickly, roughly, or ingeniously using whatever salvaged materials happen to be lying around.</span></div>
+          <div class="match-right" data-ans="8" onclick="selectVocabRight(this)"><span class="match-badge" style="display:none;"></span><span>A deterministic system with discrete operational states governed by explicit inputs or mechanical cams.</span></div>
+          <div class="match-right" data-ans="2" onclick="selectVocabRight(this)"><span class="match-badge" style="display:none;"></span><span>A machine or gadget that appears delightfully intricate, eccentric, or slightly improvised rather than sleekly mass-produced.</span></div>
+          <div class="match-right" data-ans="5" onclick="selectVocabRight(this)"><span class="match-badge" style="display:none;"></span><span>A deep, physical, almost primal feeling of gratification (e.g. hearing heavy metal clang against wood).</span></div>
+          <div class="match-right" data-ans="4" onclick="selectVocabRight(this)"><span class="match-badge" style="display:none;"></span><span>Humorous, ironic, or subversive; intended to be playful rather than solemn or po-faced.</span></div>
+          <div class="match-right" data-ans="7" onclick="selectVocabRight(this)"><span class="match-badge" style="display:none;"></span><span>The deliberate policy of designing products with a limited lifespan so consumers are forced to buy replacements.</span></div>
+        </div>
+      </div>
+
+      <div class="match-action-bar">
+        <button type="button" class="btn-action" onclick="checkVocabMatches()">Check Matching</button>
+        <button type="button" class="btn-reveal" onclick="revealVocabMatches()">👁️ Reveal All Matches</button>
+        <button type="button" class="btn-reveal" style="background:transparent; border-color:var(--border-hairline);" onclick="resetVocabMatches()">Reset</button>
+        <span class="score-pill" id="vocab-score-pill"></span>
+      </div>
+
+      <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-hairline);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;">
+          <h4 style="font-family: var(--font-serif); font-size: 1.05rem; color: var(--ink-950);">
+            📖 Deep-Dive Examples &amp; Collocations
+          </h4>
+          <button type="button" class="btn-reveal" style="font-size: 0.78rem; padding: 0.25rem 0.65rem;" onclick="toggleVocabCards(this)">
+            👁️ View Full Example Cards
+          </button>
+        </div>
+        <div class="vocab-grid" id="vocab-cards-grid" style="display: none;">
+          <div class="vocab-card">
+            <span class="vocab-term">cobbled together (from scrap)</span>
+            <p class="vocab-def">Assembled quickly, roughly, or ingeniously using whatever salvaged materials happen to be lying around.</p>
+            <span class="vocab-eg">"His early arcade machines were cobbled together from discarded washing machine motors and bicycle sprockets."</span>
+          </div>
+
+          <div class="vocab-card">
+            <span class="vocab-term">a mechanical contraption</span>
+            <p class="vocab-def">A machine or gadget that appears delightfully intricate, eccentric, or slightly improvised rather than sleekly mass-produced.</p>
+            <span class="vocab-eg">"Visitors queue up not for video games, but to crank an eccentric mechanical contraption."</span>
+          </div>
+
+          <div class="vocab-card">
+            <span class="vocab-term">take the mickey (out of someone)</span>
+            <p class="vocab-def">A core British idiom meaning to gently or sharply mock, tease, lampoon, or satirise someone's pretensions.</p>
+            <span class="vocab-eg">"The machine unapologetically takes the mickey out of private bankers and corporate tax evaders."</span>
+          </div>
+
+          <div class="vocab-card">
+            <span class="vocab-term">tongue-in-cheek</span>
+            <p class="vocab-def">Humorous, ironic, or subversive; intended to be playful rather than solemn or po-faced.</p>
+            <span class="vocab-eg">"His 'Auto-Frisk' machine offers a thoroughly tongue-in-cheek critique of airport surveillance culture."</span>
+          </div>
+
+          <div class="vocab-card">
+            <span class="vocab-term">visceral satisfaction</span>
+            <p class="vocab-def">A deep, physical, almost primal feeling of gratification (e.g. hearing heavy metal clang against wood).</p>
+            <span class="vocab-eg">"Tapping an iPad screen simply cannot match the visceral satisfaction of dropping a heavy steel ball."</span>
+          </div>
+
+          <div class="vocab-card">
+            <span class="vocab-term">a Heath Robinson machine</span>
+            <p class="vocab-def">The British equivalent of a Rube Goldberg machine: an absurdly complex contraption built to perform an otherwise trivial task.</p>
+            <span class="vocab-eg">"The holiday simulator is a glorious Heath Robinson setup involving hair-dryers and swinging teabags."</span>
+          </div>
+
+          <div class="vocab-card">
+            <span class="vocab-term">planned obsolescence</span>
+            <p class="vocab-def">The deliberate policy of designing products with a limited lifespan so consumers are forced to buy replacements.</p>
+            <span class="vocab-eg">"Unlike modern electronics cursed with planned obsolescence, mechanical cams can be repaired indefinitely."</span>
+          </div>
+
+          <div class="vocab-card">
+            <span class="vocab-term">finite-state automaton</span>
+            <p class="vocab-def">A system with discrete operational states governed by explicit inputs; here, mechanical cams and relays forming physical state machines.</p>
+            <span class="vocab-eg">"Before microcontrollers existed, these physical automata executed pure deterministic state loops."</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TASK 3 & 4: VIDEO OBSERVATION -->
+    <section class="task-card" id="video">
+      <div class="task-header">
+        <div>
+          <div class="task-num">Stage 03 // Video Observation & Analysis</div>
+          <h2 class="task-title">Tom Scott at The Under the Pier Show (Southwold)</h2>
+        </div>
+        <span class="task-badge">Video: 04:12</span>
+      </div>
+
+      <!-- Video Player Stage & Reliable Launcher -->
+      <div style="background:var(--surface-subtle); border:1px solid var(--border-strong); border-radius:12px; overflow:hidden; margin:1.25rem 0;">
+        <a href="https://youtu.be/drrUvxtT6lU" target="_blank" rel="noopener noreferrer" style="display:block; position:relative; aspect-ratio:16/9; background:#000; overflow:hidden; text-decoration:none;" title="Click to watch on YouTube (04:12)">
+          <img src="satirical-arcade.jpg" alt="In this arcade, you drop metal balls on rich people" style="width:100%; height:100%; object-fit:cover; display:block; opacity:0.9; transition:transform 0.25s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" />
+          <div style="position:absolute; inset:0; background:radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.65) 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.75rem;">
+            <div style="width:68px; height:48px; background:#dc2626; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 8px 24px rgba(220,38,38,0.5);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#ffffff"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            <span style="color:#ffffff; font-weight:700; font-size:0.9rem; letter-spacing:0.03em; text-shadow:0 2px 6px rgba(0,0,0,0.8); background:rgba(0,0,0,0.6); padding:4px 12px; border-radius:999px;">
+              ▶ Click to Watch on YouTube (04:12)
+            </span>
+          </div>
+        </a>
+
+        <!-- Video Metadata & Timestamp Bar -->
+        <div style="padding:1rem 1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; border-top:1px solid var(--border-hairline);">
+          <div>
+            <div style="font-size:0.76rem; font-family:var(--font-mono); text-transform:uppercase; font-weight:700; color:var(--navy);">
+              Tom Scott &bull; The Under the Pier Show (Southwold)
+            </div>
+            <div style="font-weight:700; color:var(--ink-950); font-size:0.98rem; margin-top:2px;">
+              "In this arcade, you drop metal balls on rich people."
+            </div>
+            <div style="font-size:0.82rem; color:var(--ink-500); margin-top:3px;">
+              Part 1: <strong>00:00&ndash;01:45</strong> (Origins &amp; Machines) &bull; Part 2: <strong>01:45&ndash;04:12</strong> (Breakdowns &amp; Philosophy)
+            </div>
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <a href="https://youtu.be/drrUvxtT6lU" target="_blank" rel="noopener noreferrer" style="background:#dc2626; color:#ffffff; text-decoration:none; font-weight:700; font-size:0.84rem; padding:0.55rem 1.1rem; border-radius:8px; display:inline-flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(220,38,38,0.25);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              Watch Video on YouTube &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="prompt-box">
+        <strong>Observation Focus (00:00 – 01:45):</strong> Watch the first half. Pay close attention to what Tim Hunkin says about the difference between making physical automata versus writing computer games.
+      </div>
+
+      <ul class="questions-list">
+        <li>
+          <span class="q-marker">A</span>
+          <div>
+            <strong>The Origin Story:</strong> How did Tim Hunkin begin building these machines, and what was his primary reason for putting them on a seaside pier rather than inside an art gallery?
+          </div>
+        </li>
+        <li>
+          <span class="q-marker">B</span>
+          <div>
+            <strong>The Machines & Their Satirical Punchlines:</strong> Fill in the missing mechanisms and satirical targets below:
+          </div>
+        </li>
+      </ul>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+        <span style="font-size: 0.84rem; color: var(--ink-500);">
+          Click any row's <strong>👁️ Reveal</strong> or dashed box to verify answers:
+        </span>
+        <button type="button" class="btn-reveal" id="btn-toggle-all-machines" onclick="toggleAllMachines(this)" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+          👁️ Reveal All Machines
+        </button>
+      </div>
+
+      <table class="machines-table">
+        <thead>
+          <tr>
+            <th>Machine Name</th>
+            <th>The Physical Mechanism</th>
+            <th>What It Lampoons / Satirises</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="mach-row-1">
+            <td style="min-width: 150px;">
+              <strong>Revolution</strong>
+              <div style="margin-top: 0.4rem;">
+                <button type="button" class="btn-reveal mach-row-btn" onclick="toggleMachineRow(1, this)" style="font-size: 0.74rem; padding: 0.25rem 0.55rem;">👁️ Reveal</button>
+              </div>
+            </td>
+            <td>
+              <div class="machine-cue" id="mach-cue-1-mech" onclick="toggleMachineRow(1)">
+                <span>👁️</span> Reveal mechanism
+              </div>
+              <div class="machine-ans" id="mach-ans-1-mech">
+                A player steers heavy steel ball bearings down tracks using hand-cranked levers.
+              </div>
+            </td>
+            <td>
+              <div class="machine-cue" id="mach-cue-1-sat" onclick="toggleMachineRow(1)">
+                <span>👁️</span> Reveal satirical target
+              </div>
+              <div class="machine-ans" id="mach-ans-1-sat">
+                Corporate tycoons, offshore tax havens, private equity bankers, and gated golf courses.
+              </div>
+            </td>
+          </tr>
+          <tr id="mach-row-2">
+            <td style="min-width: 150px;">
+              <strong>The Chiropodist</strong>
+              <div style="margin-top: 0.4rem;">
+                <button type="button" class="btn-reveal mach-row-btn" onclick="toggleMachineRow(2, this)" style="font-size: 0.74rem; padding: 0.25rem 0.55rem;">👁️ Reveal</button>
+              </div>
+            </td>
+            <td>
+              <div class="machine-cue" id="mach-cue-2-mech" onclick="toggleMachineRow(2)">
+                <span>👁️</span> Reveal mechanism
+              </div>
+              <div class="machine-ans" id="mach-ans-2-mech">
+                Motorised mechanical claws and tickling brushes that inspect the player's toes through a booth.
+              </div>
+            </td>
+            <td>
+              <div class="machine-cue" id="mach-cue-2-sat" onclick="toggleMachineRow(2)">
+                <span>👁️</span> Reveal satirical target
+              </div>
+              <div class="machine-ans" id="mach-ans-2-sat">
+                Medical bureaucracy, intimate NHS physical inspections, and personal boundaries.
+              </div>
+            </td>
+          </tr>
+          <tr id="mach-row-3">
+            <td style="min-width: 150px;">
+              <strong>Auto-Frisk</strong>
+              <div style="margin-top: 0.4rem;">
+                <button type="button" class="btn-reveal mach-row-btn" onclick="toggleMachineRow(3, this)" style="font-size: 0.74rem; padding: 0.25rem 0.55rem;">👁️ Reveal</button>
+              </div>
+            </td>
+            <td>
+              <div class="machine-cue" id="mach-cue-3-mech" onclick="toggleMachineRow(3)">
+                <span>👁️</span> Reveal mechanism
+              </div>
+              <div class="machine-ans" id="mach-ans-3-mech">
+                Pneumatic rubber-gloved arms that pat down your jacket while a mechanical scanner beeps.
+              </div>
+            </td>
+            <td>
+              <div class="machine-cue" id="mach-cue-3-sat" onclick="toggleMachineRow(3)">
+                <span>👁️</span> Reveal satirical target
+              </div>
+              <div class="machine-ans" id="mach-ans-3-sat">
+                Overzealous airport border security, biometric panic, and loss of personal dignity.
+              </div>
+            </td>
+          </tr>
+          <tr id="mach-row-4">
+            <td style="min-width: 150px;">
+              <strong>The Microbreak</strong>
+              <div style="margin-top: 0.4rem;">
+                <button type="button" class="btn-reveal mach-row-btn" onclick="toggleMachineRow(4, this)" style="font-size: 0.74rem; padding: 0.25rem 0.55rem;">👁️ Reveal</button>
+              </div>
+            </td>
+            <td>
+              <div class="machine-cue" id="mach-cue-4-mech" onclick="toggleMachineRow(4)">
+                <span>👁️</span> Reveal mechanism
+              </div>
+              <div class="machine-ans" id="mach-ans-4-mech">
+                An armchair that blasts you with wind, squirts seaside scent, swings a teabag, and screeches seagulls.
+              </div>
+            </td>
+            <td>
+              <div class="machine-cue" id="mach-cue-4-sat" onclick="toggleMachineRow(4)">
+                <span>👁️</span> Reveal satirical target
+              </div>
+              <div class="machine-ans" id="mach-ans-4-sat">
+                The absurdity of the 180-second "stress relief" vacation in an overworked modern economy.
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="prompt-box">
+        <strong>Observation Focus (01:45 – End):</strong> Listen to Hunkin explain why physical breakdowns (a ball getting stuck or a motor humming) actually enhance the player's enjoyment rather than ruining it.
+      </div>
+
+      <ul class="questions-list">
+        <li>
+          <span class="q-marker">C</span>
+          <div>
+            <strong>The Joy of Mechanical Failure:</strong> Why do players laugh when a physical machine jams, but throw their phone across the room when an app crashes?
+          </div>
+        </li>
+      </ul>
+
+      <div style="margin: 0.85rem 0 0 2.25rem;">
+        <div class="kwt-input-wrap">
+          <input type="text" class="kwt-input" id="c-input" placeholder="Type your thoughts or key takeaway here...">
+          <button type="button" class="btn-reveal" onclick="toggleAnswer('c-ans', this)">👁️ Reveal Model Answer</button>
+        </div>
+        <div class="answer-key" id="c-ans" style="font-family: var(--font-sans); color: var(--ink-800); line-height: 1.55;">
+          <div style="margin-bottom: 0.4rem; font-weight: 700; color: var(--navy); font-size: 0.92rem;">
+            Model Analysis &bull; Visible Causality vs. The Digital Black Box:
+          </div>
+          <ul style="margin-left: 1.25rem; display: flex; flex-direction: column; gap: 0.45rem; font-size: 0.88rem;">
+            <li>
+              <strong>Visible, Human-Scale Causality:</strong> When a mechanical camshaft, belt, or ball bearing sticks, the failure is physical, transparent, and tangible. The player can see the gears strain or the ball jam—it feels like live physical comedy or theatrical slapstick rather than hostility.
+            </li>
+            <li>
+              <strong>The Opaque Digital Black Box:</strong> When an app or phone crashes, the failure is silent, arbitrary, and invisible. The user is locked out with zero physical intuition and an unhelpful error message, creating acute powerlessness and rage.
+            </li>
+            <li>
+              <strong>The Burden of Perfection:</strong> Software promises frictionless, godlike efficiency; when it breaks, that contract is violated. By contrast, handcrafted automata constructed from scrap celebrate eccentricity and physical vulnerability—so an unexpected breakdown actually invites the player into the human story of the machine.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- TASK 5: ARCHITECTURE DEBATE -->
+    <section class="task-card" id="discussion">
+      <div class="task-header">
+        <div>
+          <div class="task-num">Stage 04 // Systems Architecture Debate</div>
+          <h2 class="task-title">The Software Engineer Meets Physical Computing</h2>
+        </div>
+        <span class="task-badge">JetBrains Deep-Dive</span>
+      </div>
+
+      <p style="font-size:0.95rem; color:var(--ink-700); margin-bottom:1.2rem;">
+        Four provocative questions exploring the boundary between legacy software systems (like IDE compilers and cloud runtimes) and physical mechanical state machines:
+      </p>
+
+      <ul class="questions-list">
+        <li>
+          <span class="q-marker">01</span>
+          <div>
+            <strong>Deterministic State Machines: Cams vs. Microservices:</strong>  
+            Tim Hunkin’s machines use rotating camshafts, mechanical relays, and microswitches to sequence actions without a single line of code. In software architecture, we build distributed event-driven systems that frequently fail due to timing races or network partitions. In what ways are mechanical camshafts more robust than microservices—and in what ways are they worse?
+          </div>
+        </li>
+        <li>
+          <span class="q-marker">02</span>
+          <div>
+            <strong>Debugging: Grease vs. Stack Traces:</strong>  
+            When Tim Hunkin debugs an arcade machine, he listens for a squeak, smells a hot motor, or watches a lever catch on a splinter of plywood. When you debug legacy code at JetBrains, you inspect memory dumps, thread pools, and bytecode. Which form of debugging feels more rewarding—and why?
+          </div>
+        </li>
+        <li>
+          <span class="q-marker">03</span>
+          <div>
+            <strong>The Ephemerality of Software:</strong>  
+            Almost every app, framework, and JavaScript build tool written 15 years ago is dead or completely unrunnable today. Yet Hunkin’s mechanical machines have been running in salty seaside air for over 35 years. Why is modern software so hostile to long-term preservation?
+          </div>
+        </li>
+        <li>
+          <span class="q-marker">04</span>
+          <div>
+            <strong>Satire as Engineering Therapy:</strong>  
+            Hunkin uses his engineering skills to take the mickey out of powerful institutions (banks, border police, wellness gurus). If software engineers used code to build subversive, satirical tools rather than productivity boosters, what might that look like?
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- TASK 6: CREATIVE AUTOMATON SPRINT -->
+    <section class="task-card" id="creation">
+      <div class="task-header">
+        <div>
+          <div class="task-num">Stage 05 // Creative Speaking Challenge</div>
+          <h2 class="task-title">Sprint: Design a JetBrains Satirical Automaton</h2>
+        </div>
+        <span class="task-badge">2-Minute Pitch</span>
+      </div>
+
+      <div class="prompt-box">
+        <strong>The Brief:</strong> Tim Hunkin invites you to build a coin-operated mechanical arcade machine for his London arcade (<em>Novelty Automation</em>), lampooning a modern software engineering nuisance.  
+        <strong>Rule:</strong> Zero microchips, zero screens, zero Wi-Fi. It must operate purely on levers, pulleys, cams, counterweights, and clacking relays.
+      </div>
+
+      <div style="background:var(--surface-subtle); border:1px solid var(--border-hairline); border-radius:10px; padding:1.25rem; margin:1rem 0;">
+        <h4 style="font-family:var(--font-serif); font-size:1.05rem; color:var(--ink-950); margin-bottom:0.6rem;">Choose One Engineering Plague to Lampoon:</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:0.65rem; font-size:0.86rem;">
+          <div style="padding:0.6rem 0.8rem; background:var(--surface-card); border-radius:6px; border:1px solid var(--border-hairline);">
+            <strong>1. The Pull Request Tribunal:</strong> Senior reviewers rejecting code over variable naming.
+          </div>
+          <div style="padding:0.6rem 0.8rem; background:var(--surface-card); border-radius:6px; border:1px solid var(--border-hairline);">
+            <strong>2. The Standup Escalator:</strong> A meeting that was supposed to take 5 minutes stretching to an hour.
+          </div>
+          <div style="padding:0.6rem 0.8rem; background:var(--surface-card); border-radius:6px; border:1px solid var(--border-hairline);">
+            <strong>3. The AI Hype Machine:</strong> A massive physical contraption that consumes huge power just to print "Hello World".
+          </div>
+          <div style="padding:0.6rem 0.8rem; background:var(--surface-card); border-radius:6px; border:1px solid var(--border-hairline);">
+            <strong>4. The Legacy Spaghetti Excavator:</strong> Pulling one wire that causes an entire ceiling to collapse.
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:0.92rem; color:var(--ink-800); line-height:1.6;">
+        <strong>Deliver your 2-minute pitch covering:</strong>
+        <ol style="margin-left:1.5rem; margin-top:0.4rem;">
+          <li>What the player sees when they insert their £1 coin.</li>
+          <li>The physical, mechanical sequence of events (the cams, levers, springs, or ball drops).</li>
+          <li>The punchline: what the machine physically outputs or does to the player at the end.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- TASK 7: GRAMMAR WORKOUT (CONDITIONALS & MODAL PAST) -->
+    <section class="task-card" id="workout">
+      <div class="task-header">
+        <div>
+          <div class="task-num">Stage 06 // Linguistic Precision</div>
+          <h2 class="task-title">C1 Focus: Inverted Conditionals & Modal Past Deduction</h2>
+        </div>
+        <span class="task-badge">Language Workout</span>
+      </div>
+
+      <p style="font-size:0.92rem; color:var(--ink-700); margin-bottom:1.25rem;">
+        Upgrade the sentences below using Igor's target structures: inverted conditionals (<em>Had + subject + past participle...</em>, <em>Were + subject + to...</em>) and past modal deductions (<em>must have</em>, <em>could hardly have foreseen</em>).
+      </p>
+
+      <!-- Drill 1 -->
+      <div class="kwt-row">
+        <div class="kwt-orig">
+          <strong>1.</strong> If Tim Hunkin had used modern digital screens, his machines would have become obsolete within five years.
+        </div>
+        <div class="kwt-kw">HAD</div>
+        <p style="font-size:0.88rem; color:var(--ink-700); margin-bottom:0.4rem;">
+          Rewrite using an <strong>inverted 3rd conditional</strong> without "if":
+        </p>
+        <div class="kwt-input-wrap">
+          <input type="text" class="kwt-input" id="drill1-input" placeholder="Had Tim Hunkin used...">
+          <button class="btn-reveal" onclick="toggleAnswer('drill1-ans')">👁️ Reveal Model</button>
+        </div>
+        <div class="answer-key" id="drill1-ans">
+          Had Tim Hunkin used modern digital screens, his machines would have become obsolete within five years.
+        </div>
+      </div>
+
+      <!-- Drill 2 -->
+      <div class="kwt-row">
+        <div class="kwt-orig">
+          <strong>2.</strong> It is almost certain that he spent decades scavenging scrap metal yards across Suffolk.
+        </div>
+        <div class="kwt-kw">MUST</div>
+        <p style="font-size:0.88rem; color:var(--ink-700); margin-bottom:0.4rem;">
+          Rewrite using a <strong>modal past deduction of certainty</strong>:
+        </p>
+        <div class="kwt-input-wrap">
+          <input type="text" class="kwt-input" id="drill2-input" placeholder="He must have...">
+          <button class="btn-reveal" onclick="toggleAnswer('drill2-ans')">👁️ Reveal Model</button>
+        </div>
+        <div class="answer-key" id="drill2-ans">
+          He must have spent decades scavenging scrap metal yards across Suffolk to accumulate such a vast inventory of parts.
+        </div>
+      </div>
+
+      <!-- Drill 3 -->
+      <div class="kwt-row">
+        <div class="kwt-orig">
+          <strong>3.</strong> If software developers were to introduce physical friction into digital workflows, user addiction might drop significantly.
+        </div>
+        <div class="kwt-kw">WERE</div>
+        <p style="font-size:0.88rem; color:var(--ink-700); margin-bottom:0.4rem;">
+          Rewrite using an <strong>inverted 2nd conditional</strong> without "if":
+        </p>
+        <div class="kwt-input-wrap">
+          <input type="text" class="kwt-input" id="drill3-input" placeholder="Were software developers to...">
+          <button class="btn-reveal" onclick="toggleAnswer('drill3-ans')">👁️ Reveal Model</button>
+        </div>
+        <div class="answer-key" id="drill3-ans">
+          Were software developers to introduce physical friction into digital workflows, user addiction might drop significantly.
+        </div>
+      </div>
+
+      <!-- Drill 4 -->
+      <div class="kwt-row">
+        <div class="kwt-orig">
+          <strong>4.</strong> It is impossible that Victorian arcade builders anticipated that their novelty contraptions would outlive 21st-century software.
+        </div>
+        <div class="kwt-kw">COULD</div>
+        <p style="font-size:0.88rem; color:var(--ink-700); margin-bottom:0.4rem;">
+          Rewrite using <strong>could hardly have + past participle</strong>:
+        </p>
+        <div class="kwt-input-wrap">
+          <input type="text" class="kwt-input" id="drill4-input" placeholder="Victorian arcade builders could hardly have...">
+          <button class="btn-reveal" onclick="toggleAnswer('drill4-ans')">👁️ Reveal Model</button>
+        </div>
+        <div class="answer-key" id="drill4-ans">
+          Victorian arcade builders could hardly have foreseen that their novelty contraptions would outlive 21st-century software.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const target = current === 'dark' ? 'paper' : 'dark';
+      document.documentElement.setAttribute('data-theme', target);
+      document.getElementById('themeBtn').innerText = target === 'dark' ? '☀️ Paper Mode' : '🌓 Dark Mode';
+    }
+
+    function toggleAnswer(id, btn) {
+      const el = document.getElementById(id);
+      if (el) {
+        const isOpen = el.classList.toggle('open');
+        if (btn) {
+          btn.innerHTML = isOpen ? '✕ Hide Answer' : '👁️ Reveal Model Answer';
+        }
+      }
+    }
+
+    function toggleMachineRow(num, btn) {
+      const mechCue = document.getElementById('mach-cue-' + num + '-mech');
+      const mechAns = document.getElementById('mach-ans-' + num + '-mech');
+      const satCue = document.getElementById('mach-cue-' + num + '-sat');
+      const satAns = document.getElementById('mach-ans-' + num + '-sat');
+      const rowBtn = btn || document.querySelector('#mach-row-' + num + ' .mach-row-btn');
+
+      const isOpening = !mechAns.classList.contains('open');
+
+      if (isOpening) {
+        mechAns.classList.add('open');
+        satAns.classList.add('open');
+        if (mechCue) mechCue.style.display = 'none';
+        if (satCue) satCue.style.display = 'none';
+        if (rowBtn) rowBtn.innerHTML = '✕ Hide';
+      } else {
+        mechAns.classList.remove('open');
+        satAns.classList.remove('open');
+        if (mechCue) mechCue.style.display = 'inline-flex';
+        if (satCue) satCue.style.display = 'inline-flex';
+        if (rowBtn) rowBtn.innerHTML = '👁️ Reveal';
+      }
+      updateAllMachinesBtn();
+    }
+
+    function toggleAllMachines(btn) {
+      const allAnswers = document.querySelectorAll('.machine-ans');
+      const anyClosed = Array.from(allAnswers).some(el => !el.classList.contains('open'));
+
+      for (let i = 1; i <= 4; i++) {
+        const mechCue = document.getElementById('mach-cue-' + i + '-mech');
+        const mechAns = document.getElementById('mach-ans-' + i + '-mech');
+        const satCue = document.getElementById('mach-cue-' + i + '-sat');
+        const satAns = document.getElementById('mach-ans-' + i + '-sat');
+        const rowBtn = document.querySelector('#mach-row-' + i + ' .mach-row-btn');
+
+        if (anyClosed) {
+          mechAns.classList.add('open');
+          satAns.classList.add('open');
+          if (mechCue) mechCue.style.display = 'none';
+          if (satCue) satCue.style.display = 'none';
+          if (rowBtn) rowBtn.innerHTML = '✕ Hide';
+        } else {
+          mechAns.classList.remove('open');
+          satAns.classList.remove('open');
+          if (mechCue) mechCue.style.display = 'inline-flex';
+          if (satCue) satCue.style.display = 'inline-flex';
+          if (rowBtn) rowBtn.innerHTML = '👁️ Reveal';
+        }
+      }
+      updateAllMachinesBtn(btn);
+    }
+
+    function updateAllMachinesBtn(btn) {
+      const masterBtn = btn || document.getElementById('btn-toggle-all-machines');
+      if (!masterBtn) return;
+      const allAnswers = document.querySelectorAll('.machine-ans');
+      const allOpen = Array.from(allAnswers).every(el => el.classList.contains('open'));
+      masterBtn.innerHTML = allOpen ? '✕ Hide All Machines' : '👁️ Reveal All Machines';
+    }
+
+    function toggleMask(el) {
+      el.classList.toggle('unmasked');
+    }
+
+    // Stage 02: Vocab Matching Activity
+    let activeVocabLeftNum = null;
+
+    function selectVocabLeft(num) {
+      activeVocabLeftNum = num;
+      document.querySelectorAll('#match-vocab-left .match-left').forEach(el => {
+        el.classList.toggle('active-pick', Number(el.dataset.left) === num);
+      });
+    }
+
+    function selectVocabRight(rightEl) {
+      if (!activeVocabLeftNum) {
+        rightEl.dataset.userPick = '';
+        rightEl.classList.remove('correct', 'incorrect');
+        const badge = rightEl.querySelector('.match-badge');
+        if (badge) {
+          badge.style.display = 'none';
+          badge.textContent = '';
+        }
+        return;
+      }
+      document.querySelectorAll('#match-vocab-right .match-right').forEach(el => {
+        if (Number(el.dataset.userPick) === activeVocabLeftNum) {
+          el.dataset.userPick = '';
+          el.classList.remove('correct', 'incorrect');
+          const b = el.querySelector('.match-badge');
+          if (b) {
+            b.style.display = 'none';
+            b.textContent = '';
+          }
+        }
+      });
+      rightEl.dataset.userPick = String(activeVocabLeftNum);
+      rightEl.classList.remove('correct', 'incorrect');
+      const badge = rightEl.querySelector('.match-badge');
+      if (badge) {
+        badge.textContent = String(activeVocabLeftNum);
+        badge.style.display = 'inline-flex';
+      }
+      activeVocabLeftNum = null;
+      document.querySelectorAll('#match-vocab-left .match-left').forEach(el => el.classList.remove('active-pick'));
+    }
+
+    function checkVocabMatches() {
+      let correct = 0;
+      const items = document.querySelectorAll('#match-vocab-right .match-right');
+      items.forEach(el => {
+        el.classList.remove('correct', 'incorrect');
+        if (el.dataset.userPick && el.dataset.userPick === el.dataset.ans) {
+          el.classList.add('correct');
+          correct++;
+        } else if (el.dataset.userPick) {
+          el.classList.add('incorrect');
+        }
+      });
+      const pill = document.getElementById('vocab-score-pill');
+      if (pill) {
+        pill.textContent = 'Matched: ' + correct + ' / ' + items.length;
+        pill.style.display = 'inline-block';
+      }
+    }
+
+    function revealVocabMatches() {
+      const items = document.querySelectorAll('#match-vocab-right .match-right');
+      items.forEach(el => {
+        el.dataset.userPick = el.dataset.ans;
+        el.classList.remove('incorrect');
+        el.classList.add('correct');
+        const badge = el.querySelector('.match-badge');
+        if (badge) {
+          badge.textContent = el.dataset.ans;
+          badge.style.display = 'inline-flex';
+        }
+      });
+      document.querySelectorAll('#match-vocab-left .match-left').forEach(el => el.classList.remove('active-pick'));
+      activeVocabLeftNum = null;
+      const pill = document.getElementById('vocab-score-pill');
+      if (pill) {
+        pill.textContent = 'Matched: ' + items.length + ' / ' + items.length;
+        pill.style.display = 'inline-block';
+      }
+    }
+
+    function resetVocabMatches() {
+      activeVocabLeftNum = null;
+      document.querySelectorAll('#match-vocab-left .match-left').forEach(el => el.classList.remove('active-pick'));
+      document.querySelectorAll('#match-vocab-right .match-right').forEach(el => {
+        el.dataset.userPick = '';
+        el.classList.remove('correct', 'incorrect');
+        const badge = el.querySelector('.match-badge');
+        if (badge) {
+          badge.textContent = '';
+          badge.style.display = 'none';
+        }
+      });
+      const pill = document.getElementById('vocab-score-pill');
+      if (pill) pill.style.display = 'none';
+    }
+
+    function toggleVocabCards(btn) {
+      const grid = document.getElementById('vocab-cards-grid');
+      if (!grid) return;
+      const isHidden = grid.style.display === 'none' || getComputedStyle(grid).display === 'none';
+      grid.style.display = isHidden ? 'grid' : 'none';
+      if (btn) {
+        btn.innerHTML = isHidden ? '✕ Hide Cards &amp; Examples' : '👁️ View Full Example Cards';
+      }
+    }
+  </script>
+  <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
+  <script src="../../analytics.js" defer></script>
+</body>
+</html>
