@@ -204,6 +204,20 @@
     } catch (_) {}
   }
 
+  function escapeHtml(str) {
+    return String(str || '').replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function hasRealActivity() {
+    return Boolean(
+      (state.gamesCompleted || 0) > 0 ||
+      (state.drillsCompleted || 0) > 0 ||
+      Object.keys(state.skills || {}).some((k) => Boolean(state.skills[k] && state.skills[k].lastUpdated))
+    );
+  }
+
   function resolveCategory(input) {
     if (!input) return 'inversion';
     const norm = String(input).toLowerCase().trim();
@@ -432,14 +446,16 @@
 
   function rewriteBookingLinks() {
     try {
+      if (!hasRealActivity()) return;
+
       const summary = getSummary();
       const code = summary.code;
       localStorage.setItem(SUMMARY_KEY, JSON.stringify(summary));
 
-      const links = document.querySelectorAll('a[href*="#contact"], a[href*="#book-diagnostic"]');
+      const links = document.querySelectorAll('a[href*="#contact"], a[href*="#book-diagnostic"], a[href*="#cal-booking-box"], a[href*="#enquiry-card"]');
       links.forEach((link) => {
         const rawHref = link.getAttribute('href') || '';
-        if (!rawHref) return;
+        if (!rawHref || /^(mailto:|tel:|https?:\/\/(?!garethenglish\.com))/i.test(rawHref)) return;
         const hashIdx = rawHref.indexOf('#');
         const base = hashIdx >= 0 ? rawHref.slice(0, hashIdx) : rawHref;
         const hash = hashIdx >= 0 ? rawHref.slice(hashIdx) : '#contact';
@@ -452,10 +468,10 @@
         link.setAttribute('href', `${targetPath}?${params.toString()}${hash}`);
       });
 
-      // Pre-populate booking message textarea if present and empty
+      // Pre-populate booking message textarea on standalone pages if present and empty
       const params = new URLSearchParams(window.location.search);
       const urlDossier = params.get('dossier');
-      if (urlDossier || window.location.hash === '#contact' || window.location.hash === '#book-diagnostic') {
+      if (!document.getElementById('dossier-booking-banner') && (urlDossier || window.location.hash === '#contact' || window.location.hash === '#book-diagnostic')) {
         const msgField = document.querySelector('#contact textarea, form textarea[name*="message" i], #diagnostic-notes');
         if (msgField && !msgField.value.trim()) {
           msgField.value = `[Lab code: ${summary.code} | ${summary.cefrShort} | Focus area: ${summary.weakestSkill} (${summary.weakestAccuracy}%)]\nHi Gareth, I'd like to book a 30-minute starter session to work on my ${summary.weakestShort} and C1/C2 exam readiness.`;
@@ -772,26 +788,38 @@
         <div style="font-size:12px;font-weight:700;color:#f8fafc;margin-bottom:6px;">
           📩 Save CEFR Diagnostic Report &amp; Unlock C1/C2 Study Pack
         </div>
-        <form id="gm-dossier-email-form" style="display:flex;gap:6px;">
-          <input type="email" id="gm-dossier-email-input" required placeholder="Enter your email address..." value="${state.savedEmail || ''}" style="flex:1;background:#0f1624;border:1px solid #334155;color:#f8fafc;padding:8px 10px;border-radius:7px;font-size:12.5px;" />
+        <form id="gm-dossier-email-form" action="https://formspree.io/f/mvkgrwvj" method="POST" style="display:flex;gap:6px;">
+          <input type="email" id="gm-dossier-email-input" name="email" required placeholder="Enter your email address..." value="${escapeHtml(state.savedEmail || '')}" style="flex:1;background:#0f1624;border:1px solid #334155;color:#f8fafc;padding:8px 10px;border-radius:7px;font-size:12.5px;" />
           <button type="submit" style="background:#2563eb;color:#ffffff;border:none;padding:8px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">
             Save &amp; Unlock
           </button>
         </form>
-        <div id="gm-dossier-email-status" style="font-size:11.5px;color:#34d399;margin-top:6px;display:${state.savedEmail ? 'block' : 'none'};">
-          ✓ Diagnostic linked to ${state.savedEmail}. <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Inversion Intensive Pack &rarr;</a>
+        <div id="gm-dossier-email-status" role="status" style="font-size:11.5px;color:#34d399;margin-top:6px;line-height:1.45;display:${state.savedEmail ? 'block' : 'none'};">
+          ✓ Diagnostic linked to <strong>${escapeHtml(state.savedEmail)}</strong>. <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Inversion Intensive Pack &rarr;</a>
         </div>
       </div>
 
       <div style="background:rgba(37,99,235,0.12);border:1px solid rgba(59,130,246,0.4);border-radius:12px;padding:14px;">
         <p style="margin:0 0 10px 0;font-size:12.5px;line-height:1.5;color:#e2e8f0;">
-          Your Lab results show a <strong style="color:#fbbf24;">${summary.weakestAccuracy}%</strong> accuracy rate on <strong style="color:#ffffff;">${summary.weakestSkill}</strong>. Book your £35 30-minute starter session and I will spend 30 minutes working on the exact areas your practice highlighted.
+          Your Lab results show a <strong style="color:#fbbf24;">${summary.weakestAccuracy}%</strong> accuracy rate on <strong style="color:#ffffff;">${escapeHtml(summary.weakestSkill)}</strong>. Book your £35 30-minute starter session or send an essay for 48-hour written feedback (£29):
         </p>
-        <a href="index.html?dossier=${ encodeURIComponent(summary.code) }#contact"
-           id="gm-dossier-book-cta"
-           style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:11px 14px;border-radius:9px;text-decoration:none;font-size:13.5px;">
-          Book a 30-minute starter session (£35) &rarr;
-        </a>
+        <div style="display:grid;gap:8px;">
+          <a href="index.html?offer=live_diagnostic_35&amp;dossier=${encodeURIComponent(summary.code)}#cal-booking-box"
+             id="gm-dossier-book-cta"
+             style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:11px 14px;border-radius:9px;text-decoration:none;font-size:13.5px;">
+            Book a 30-minute starter session (&pound;35) &rarr;
+          </a>
+          <a href="index.html?offer=async_essay_audit_29&amp;dossier=${encodeURIComponent(summary.code)}#enquiry-card"
+             id="gm-dossier-audit-cta"
+             style="display:block;text-align:center;background:#1e293b;border:1px solid #10b981;color:#a7f3d0;font-weight:700;padding:10px 14px;border-radius:9px;text-decoration:none;font-size:13px;">
+            Get 48h Written Essay Feedback (&pound;29) &rarr;
+          </a>
+          <a href="index.html?tier=waitlist_free&amp;dossier=${encodeURIComponent(summary.code)}#enquiry-card"
+             id="gm-dossier-free-cta"
+             style="display:block;text-align:center;color:#93c5fd;font-weight:600;padding:4px 8px;text-decoration:underline;font-size:12px;">
+            Or send 1 short paragraph for a free 24h red-pen note &rarr;
+          </a>
+        </div>
       </div>
     `;
 
@@ -852,36 +880,100 @@
 
     const emailForm = document.getElementById('gm-dossier-email-form');
     if (emailForm) {
-      emailForm.onsubmit = (e) => {
+      emailForm.onsubmit = async (e) => {
         e.preventDefault();
+        if (emailForm.dataset.submitting === 'true') return;
         const input = document.getElementById('gm-dossier-email-input');
+        const submitBtn = emailForm.querySelector('button[type="submit"]');
+        const statusEl = document.getElementById('gm-dossier-email-status');
         const email = input ? input.value.trim() : '';
         if (!email) return;
-        state.savedEmail = email;
-        saveState();
-        window.trackFunnelEvent?.('dossier_email_saved', {
-          code: summary.code,
-          cefrBand: summary.cefrBand,
-          weakestSkill: summary.weakestSkill
-        });
-        const statusEl = document.getElementById('gm-dossier-email-status');
-        if (statusEl) {
-          statusEl.style.display = 'block';
-          statusEl.innerHTML = `✓ Diagnostic saved for <strong>${email}</strong>. <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Access C1/C2 Inversion Intensive Pack &rarr;</a>`;
+
+        emailForm.dataset.submitting = 'true';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Saving...';
+        }
+
+        let lastFreeTool = 'direct';
+        let aiReferrer = '';
+        try {
+          lastFreeTool = localStorage.getItem('gm_last_free_tool') || 'direct';
+          aiReferrer = sessionStorage.getItem('gm_ai_referrer') || localStorage.getItem('gm_ai_referrer') || '';
+        } catch (_) {}
+
+        const formData = typeof FormData === 'function' ? new FormData() : null;
+        if (formData) {
+          formData.append('email', email);
+          formData.append('_subject', `Candidate Dossier Saved: ${summary.code} (${summary.cefrShort})`);
+          formData.append('form_source', 'candidate_dossier_drawer');
+          formData.append('dossier_code', summary.code);
+          formData.append('cefr_band', summary.cefrBand);
+          formData.append('overall_accuracy', `${summary.overallAccuracy}%`);
+          formData.append('weakest_skill', `${summary.weakestSkill} (${summary.weakestAccuracy}%)`);
+          formData.append('strongest_skill', `${summary.strongestSkill} (${summary.strongestAccuracy}%)`);
+          formData.append('games_completed', String(summary.gamesCompleted || 0));
+          formData.append('drills_completed', String(summary.drillsCompleted || 0));
+          formData.append('last_free_tool', lastFreeTool);
+          if (aiReferrer) formData.append('ai_referrer', aiReferrer);
+          formData.append('page_path', window.location.pathname || '');
+        }
+
+        try {
+          if (typeof window.fetch !== 'function') throw new Error('Fetch unavailable');
+          const response = await window.fetch('https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            headers: { Accept: 'application/json' },
+            body: formData
+          });
+          if (!response || !response.ok) {
+            throw new Error('Could not send dossier');
+          }
+
+          state.savedEmail = email;
+          saveState();
+          window.trackFunnelEvent?.('dossier_email_saved', {
+            code: summary.code,
+            cefrBand: summary.cefrBand,
+            weakestSkill: summary.weakestSkill
+          });
+          if (statusEl) {
+            statusEl.style.color = '#34d399';
+            statusEl.style.display = 'block';
+            statusEl.innerHTML = `✓ Diagnostic sent &amp; saved for <strong>${escapeHtml(email)}</strong>. <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Access C1/C2 Inversion Intensive Pack &rarr;</a>`;
+          }
+        } catch (_) {
+          if (statusEl) {
+            const mailSubject = encodeURIComponent(`Candidate Dossier ${summary.code} (${summary.cefrShort})`);
+            statusEl.style.color = '#fca5a5';
+            statusEl.style.display = 'block';
+            statusEl.innerHTML = `Could not send automatically — your email is still in the box above. Please try again, email <a href="mailto:gareth@garethenglish.com?subject=${mailSubject}" style="color:#fca5a5;text-decoration:underline;">gareth@garethenglish.com</a>, or <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">open the C1/C2 Inversion Pack &rarr;</a>`;
+          }
+        } finally {
+          delete emailForm.dataset.submitting;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save & Unlock';
+          }
         }
       };
     }
 
-    const bookCta = document.getElementById('gm-dossier-book-cta');
-    if (bookCta) {
-      bookCta.onclick = () => {
+    const bindDossierCta = (id, target) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.onclick = () => {
         window.trackFunnelEvent?.('dossier_cta_clicked', {
           code: summary.code,
+          target,
           weakestSkill: summary.weakestSkill,
           weakestAccuracy: summary.weakestAccuracy
         });
       };
-    }
+    };
+    bindDossierCta('gm-dossier-book-cta', 'trial_35');
+    bindDossierCta('gm-dossier-audit-cta', 'async_audit_29');
+    bindDossierCta('gm-dossier-free-cta', 'waitlist_free');
   }
 
   function openDrawer() {

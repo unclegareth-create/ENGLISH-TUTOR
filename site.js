@@ -75,6 +75,7 @@
         '#gothic-course': '#resources',
         '#exam-lab': '#resources',
         '#interactive-tools': '#resources',
+        '#cal-booking': '#cal-booking-box',
         '#cal-embed': '#contact',
         '#booking': '#contact'
     };
@@ -255,7 +256,9 @@
 
     const applyPackagePrefill = (pkg, tierKey) => {
         const goalInput = document.getElementById('goal');
+        const goalLabel = document.getElementById('goal-label');
         const messageInput = document.getElementById('message');
+        const messageLabel = document.getElementById('message-label');
         const subjectInput = document.querySelector('#contact-form input[name="_subject"]');
         const nameInput = document.getElementById('name');
         const formTitle = document.getElementById('enquiry-form-title');
@@ -279,7 +282,10 @@
         }
 
         const isAudit = pkg.includes('Audit') || pkg.includes('Async') || pkg.toLowerCase().includes('essay feedback');
-        const isWaitlist = tierKey === 'waitlist_free' || pkg.toLowerCase().includes('waitlist');
+        const isWaitlist = tierKey === 'waitlist_free' ||
+            pkg.toLowerCase().includes('waitlist') ||
+            pkg.toLowerCase().includes('free 1-paragraph') ||
+            pkg.toLowerCase().includes('general enquiry');
         let resolvedTier = tierKey;
         if (!resolvedTier) {
             if (isWaitlist) resolvedTier = 'waitlist_free';
@@ -290,6 +296,21 @@
             else if (pkg.includes('Single')) resolvedTier = 'single_85';
         }
         const stripeUrl = (resolvedTier && STRIPE_PAYMENT_LINKS[resolvedTier]) || '';
+
+        if (goalLabel) {
+            goalLabel.textContent = isWaitlist
+                ? 'Topic or Target Exam'
+                : isAudit
+                    ? 'Selected Service'
+                    : 'Selected Package or Learning Goal';
+        }
+        if (messageLabel) {
+            messageLabel.textContent = isWaitlist
+                ? 'Your Question or 1 Short Paragraph (Up to 150 Words, Optional)'
+                : isAudit
+                    ? 'Exam Type, Essay Focus & Payment Preference (Stripe / Wise / PayPal)'
+                    : 'Preferred Days/Times, Exam Goal & Payment Preference (Stripe / Wise / PayPal)';
+        }
 
         if (goalInput) {
             goalInput.value = isWaitlist ? pkg : 'Selected Package: ' + pkg;
@@ -318,7 +339,7 @@
             pkgNameEl.textContent = pkg;
             if (pkgNextStepEl) {
                 if (isWaitlist) {
-                    pkgNextStepEl.textContent = 'No payment required today. Tell me your target exam or goal below — and paste one short paragraph of your writing (up to 120 words) if you would like a quick free note from me.';
+                    pkgNextStepEl.textContent = 'No payment required today. Tell me your target exam or goal below \u2014 and paste one short paragraph of your writing (up to 150 words) if you would like a quick free note from me.';
                 } else if (resolvedTier === 'sprint_10_650') {
                     pkgNextStepEl.textContent = 'Click "Pay Full Pack (£650) via Stripe" to check out now, or submit the form below to claim your £35 starter-session credit (£615 remaining balance), confirm weekly lesson times, or request Wise/PayPal.';
                 } else if (resolvedTier === 'pack_12_780') {
@@ -359,7 +380,7 @@
         }
         if (messageInput) {
             messageInput.placeholder = isWaitlist
-                ? 'Tell me your target exam or goal and time zone — and paste one short paragraph of your writing (up to 120 words) if you would like a quick free note from me...'
+                ? 'Tell me your target exam or goal and time zone \u2014 and paste one short paragraph of your writing (up to 150 words) if you would like a quick free note from me...'
                 : isAudit
                     ? 'Tell me which exam (IELTS, C1, C2) or professional writing task you are submitting (let me know if you prefer Stripe, Wise, or PayPal)...'
                     : 'Let me know your target exam or goal, your time zone, preferred days/times, and if you prefer Stripe, Wise, or PayPal...';
@@ -374,7 +395,9 @@
 
     const applyBillingSupportPrefill = () => {
         const goalInput = document.getElementById('goal');
+        const goalLabel = document.getElementById('goal-label');
         const messageInput = document.getElementById('message');
+        const messageLabel = document.getElementById('message-label');
         const subjectInput = document.querySelector('#contact-form input[name="_subject"]');
         const nameInput = document.getElementById('name');
         const formTitle = document.getElementById('enquiry-form-title');
@@ -387,6 +410,8 @@
 
         if (pkgBanner) pkgBanner.classList.add('hidden');
         if (formBadge) formBadge.classList.add('hidden');
+        if (goalLabel) goalLabel.textContent = 'Support Request';
+        if (messageLabel) messageLabel.textContent = 'Order Email & Support Details';
 
         const selectEl = enquiryCard.querySelector('select');
         if (selectEl) {
@@ -438,13 +463,23 @@
 
     const urlSupport = (urlParams.get('support') || '').toLowerCase();
     const urlPkg = urlParams.get('package');
-    const urlOffer = urlParams.get('offer');
+    const urlOffer = (urlParams.get('offer') || '').toLowerCase();
+    const urlTier = (urlParams.get('tier') || '').toLowerCase();
     if (urlSupport === 'billing' || urlSupport === 'refund' || urlSupport === 'access') {
         applyBillingSupportPrefill();
     } else if (urlPkg) {
         applyPackagePrefill(urlPkg, urlParams.get('tier') || '');
-    } else if (urlOffer === 'async_essay_audit_29') {
+    } else if (urlOffer === 'free_paragraph_look' || urlTier === 'waitlist_free') {
+        applyPackagePrefill('General Enquiry / Free 1-Paragraph Writing Look', 'waitlist_free');
+    } else if (urlOffer === 'async_essay_audit_29' || urlTier === 'audit_async_29') {
         applyPackagePrefill('Written essay feedback (\u00a329)', 'audit_async_29');
+    } else if (urlOffer === 'live_diagnostic_35' || urlTier === 'starter_session_35') {
+        setTimeout(() => {
+            const calTarget = document.getElementById('cal-booking-box') || document.getElementById('contact');
+            if (calTarget && window.location.hash !== '#enquiry-card') {
+                calTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 200);
     }
 
     document.querySelectorAll('a[href*="support=billing"], a[href*="support=refund"], a[href*="support=access"]').forEach(link => {
@@ -462,7 +497,9 @@
     if (clearPackageBtn) {
         clearPackageBtn.addEventListener('click', () => {
             const goalInput = document.getElementById('goal');
+            const goalLabel = document.getElementById('goal-label');
             const messageInput = document.getElementById('message');
+            const messageLabel = document.getElementById('message-label');
             const subjectInput = document.querySelector('#contact-form input[name="_subject"]');
             const formTitle = document.getElementById('enquiry-form-title');
             const formSubtitle = document.getElementById('enquiry-form-subtitle');
@@ -476,9 +513,11 @@
                 goalInput.value = '';
                 goalInput.classList.remove('ring-2', 'ring-emerald-400', 'border-emerald-400', 'ring-sky-400', 'border-sky-400');
             }
+            if (goalLabel) goalLabel.textContent = 'What can I help you with?';
+            if (messageLabel) messageLabel.textContent = 'Your Question, Target Exam, or Short Writing Paragraph';
             if (subjectInput) subjectInput.value = 'New Student Enquiry (Website)';
-            if (formTitle) formTitle.textContent = 'Ask a Question or Reserve a Lesson Pack';
-            if (formSubtitle) formSubtitle.textContent = 'Select a lesson pack above or let me know your goals below. You can pay via Stripe Payment Link, Wise or PayPal.';
+            if (formTitle) formTitle.textContent = 'Ask a Question, Send 1 Paragraph, or Reserve a Pack';
+            if (formSubtitle) formSubtitle.textContent = 'Leave a quick question below \u2014 or paste one short paragraph (up to 150 words) for a free look. If you already have a pack in mind, let me know your preferred days and times.';
             if (formBadge) {
                 formBadge.className = 'hidden items-center gap-1.5 px-3.5 py-1 rounded-full text-sm font-bold bg-white text-emerald-800 border border-emerald-200 mb-2';
             }
@@ -490,7 +529,7 @@
                 enquiryCard.classList.add('border-slate-200');
             }
             if (messageInput) {
-                messageInput.placeholder = 'Tell me a bit about your current level, goals, and time zone...';
+                messageInput.placeholder = 'Ask your question, share your target exam and time zone \u2014 or paste up to 150 words from an essay if you would like a quick free look...';
             }
         });
     }
@@ -505,6 +544,84 @@
             }
         });
     });
+
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+            if (contactForm.dataset.submitting === 'true') {
+                e.preventDefault();
+                return;
+            }
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('contact-submit-btn');
+            const formStatus = document.getElementById('form-status');
+            const successBanner = document.getElementById('form-success-banner');
+            const goalInput = document.getElementById('goal');
+            const pkgBanner = document.getElementById('selected-package-banner');
+            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : 'Send Message &rarr;';
+
+            contactForm.dataset.submitting = 'true';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+            }
+            if (formStatus) {
+                formStatus.textContent = '';
+                formStatus.className = 'text-center text-sm font-semibold';
+            }
+
+            try {
+                const response = await fetch(contactForm.action || 'https://formspree.io/f/mvkgrwvj', {
+                    method: 'POST',
+                    body: new FormData(contactForm),
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    let errorMessage = 'Something stopped the form from sending.';
+                    try {
+                        const payload = await response.json();
+                        if (payload && Array.isArray(payload.errors) && payload.errors.length) {
+                            errorMessage = payload.errors.map(err => err.message).filter(Boolean).join(' ');
+                        }
+                    } catch (_) {}
+                    throw new Error(errorMessage);
+                }
+
+                const submittedGoal = (goalInput && goalInput.value.trim()) || 'general_enquiry';
+                if (typeof window.trackFunnelEvent === 'function') {
+                    window.trackFunnelEvent('contact_enquiry_succeeded', { goal: submittedGoal });
+                }
+                contactForm.reset();
+                if (goalInput) {
+                    goalInput.classList.remove('ring-2', 'ring-emerald-400', 'border-emerald-400', 'ring-sky-400', 'border-sky-400');
+                }
+                if (pkgBanner) pkgBanner.classList.add('hidden');
+                if (successBanner) {
+                    successBanner.classList.remove('hidden');
+                    setTimeout(() => {
+                        successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                } else if (formStatus) {
+                    formStatus.textContent = 'Thank you. Your message has been sent \u2014 I will reply within 24 hours.';
+                    formStatus.className = 'mt-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold';
+                }
+            } catch (err) {
+                if (formStatus) {
+                    formStatus.className = 'mt-3 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
+                    formStatus.innerHTML = 'Your message was not sent yet \u2014 your text above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Website%20Enquiry" class="underline font-bold">gareth@garethenglish.com</a>.';
+                }
+            } finally {
+                delete contactForm.dataset.submitting;
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnHtml;
+                }
+            }
+        });
+    }
 })();
 
 /* === INTERACTIVE WRITING MARKUP SUITE ===
@@ -519,7 +636,7 @@
       beforeMeta: 'Everyday Phrasing',
       beforeHtml: '&ldquo;Universities should focus more on practical skills instead of just theory, because this will help graduates find jobs much faster after they leave.&rdquo;',
       beforeNote: 'Relies on repetitive causal links (\u2018because this will help\u2019) and flat clause rhythm.',
-      afterLabel: 'How we\u2019d improve it',
+      afterLabel: 'How I\u2019d improve it',
       afterMeta: 'C1 / Band 8.0 Standard',
       afterHtml: '&ldquo;<span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">Rather than prioritising abstract theory</span>, universities ought to <span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">anchor their curricula in practical training</span>, <span class="bg-emerald-50 text-emerald-950 font-bold px-1 rounded">thereby equipping graduates</span> to navigate an increasingly competitive job market.&rdquo;',
       tags: ['Fronted Contrast', 'Participle Clause', 'Precise Collocation']
@@ -530,7 +647,7 @@
       beforeMeta: 'Keyword: INTENTION',
       beforeHtml: '<span class="line-through text-slate-400">Sarah</span> <strong class="text-rose-700 not-italic">refused to apologise</strong> <span class="line-through text-slate-400">for the mistake she had made.</span><br><span class="text-sm font-mono text-slate-500 not-italic mt-1.5 block">Gap: Sarah ________________________ for the mistake she had made.</span>',
       beforeNote: 'Cross out the repeated words first: only \u201crefused to apologise\u201d (Past Simple) needs to be rewritten.',
-      afterLabel: 'How we\u2019d improve it',
+      afterLabel: 'How I\u2019d improve it',
       afterMeta: '2/2 Marks \u2022 5 Words',
       afterHtml: 'Sarah <span class="bg-emerald-50 text-emerald-950 font-bold px-1.5 py-0.5 rounded border border-emerald-200 not-italic">had no INTENTION of apologising</span> for the mistake she had made.',
       tags: ['Repeated Words Crossed Out', 'Keyword Unchanged', 'Past Simple Harmony']
@@ -770,6 +887,21 @@
       hideEventTypeDetails: false,
       layout: "month_view"
     });
+    Cal("on", {
+      action: "bookingSuccessful",
+      callback: function(e) {
+        try {
+          if (typeof window.trackFunnelEvent === 'function') {
+            window.trackFunnelEvent('cal_booking_successful', {
+              eventType: '30min_starter_35',
+              detail: (e && e.detail && e.detail.data && e.detail.data.eventType && e.detail.data.eventType.slug) || '30min'
+            });
+          } else if (typeof window.__gmEnqueueGoatCounter === 'function') {
+            window.__gmEnqueueGoatCounter('booking: cal_booking_successful (30min)', 'Cal.com Booking Successful');
+          }
+        } catch (_) {}
+      }
+    });
 
     const checkState = function() {
       const mountedEmbed = calEl.querySelector('iframe, cal-inline');
@@ -792,6 +924,15 @@
     mutationObserver.observe(calEl, { childList: true, subtree: true, characterData: true });
   }
 
+  try {
+    var calUrlParams = new URLSearchParams(window.location.search);
+    var calOffer = (calUrlParams.get('offer') || '').toLowerCase();
+    var calTier = (calUrlParams.get('tier') || '').toLowerCase();
+    if (calOffer === 'live_diagnostic_35' || calTier === 'starter_session_35') {
+      initCalEmbed();
+    }
+  } catch (_) {}
+
   if ('IntersectionObserver' in window) {
     const viewportObserver = new IntersectionObserver(function(entries) {
       if (entries[0].isIntersecting) {
@@ -804,7 +945,7 @@
     initCalEmbed();
   }
 
-  document.querySelectorAll('a[href="#contact"], a[href="#booking"], a[href="#cal-embed"], a[href="#book-diagnostic"]').forEach(function(link) {
+  document.querySelectorAll('a[href="#contact"], a[href="#cal-booking-box"], a[href="#booking"], a[href="#cal-embed"], a[href="#book-diagnostic"]').forEach(function(link) {
     link.addEventListener('mouseenter', initCalEmbed, { once: true });
     link.addEventListener('click', initCalEmbed, { once: true });
   });

@@ -5,6 +5,7 @@ const LabObservatory = (() => {
   'use strict';
 
   const SFX_STORAGE_KEY = 'gm_lab_sfx';
+  const SYLLABUS_UNLOCK_KEY = 'gm_syllabus_unlocked_v1';
   // Default sound effects to OFF unless the user previously enabled them
   let sfxOn = false;
   try {
@@ -18,32 +19,17 @@ const LabObservatory = (() => {
 
   const HOLODECK_WORLDS = [
     {
-      badge: 'C1/C2 Gothic Course • 15 lessons (5 free)',
-      title: 'Dark Academia: C1/C2 English Through Classic Gothic & Victorian Stories',
-      desc: 'Three lessons each from Dracula, Frankenstein, Jekyll & Hyde, Baskervilles, and Alice in Wonderland, with British narration and 15 practice questions per lesson (including 5 Part 4 transformations).',
-      img: 'assets/gothic/dracula_carpathian.webp',
-      alt: 'Caspar David Friedrich — Abbey in the Oakwood (1809–1810), illustrating Dracula Lesson 1',
-      url: 'dark-academia-index.html',
-      quizTag: 'Quick one: C1 inversion',
-      prompt: '“_______ had Jonathan Harker crossed the bridge than the wolves began to howl.”',
+      badge: 'Cambridge B2–C2 & IELTS 7.0–8.5 • Free Modules',
+      title: 'C1 Part 4 Deconstructor, Syntax Workbench & IELTS Task 2',
+      desc: 'Practise the 4-Step Part 4 elimination method, upgrade B2 sentences to natural C1 syntax, and build timed exam paragraphs.',
+      img: 'assets/arcade/boardroom_pitch.svg',
+      alt: 'Interactive Exam Lab screen showing C1/C2 sentence upgrading and live Band 8.0+ essay feedback',
+      url: '#exam-lab',
+      quizTag: 'Quick one: C1 passive reporting',
+      prompt: 'Rewrite without “People”: “People widely believe that urban green spaces reduce stress.” → “Urban green spaces _______ reduce stress.”',
       options: [
-        { text: 'A) No sooner', correct: true, explain: 'Spot on! “No sooner + had + subject + past participle ... than” is a high-scoring C1/C2 negative inversion.' },
-        { text: 'B) Hardly when', correct: false, explain: 'Close—remember “Hardly/Scarcely” pairs with “when”, whereas “than” requires “No sooner”!' },
-        { text: 'C) Not only', correct: false, explain: '“Not only” pairs with “but also”. For immediate sequence with “than”, use “No sooner”.' }
-      ]
-    },
-    {
-      badge: 'Teens (B1–B2) • Retro detective game',
-      title: 'Chronicle ’88: A retro detective game for teens',
-      desc: 'Question suspects, spot whose alibi doesn’t add up, and use B1–B2 grammar to crack the case across three short episodes.',
-      img: 'assets/arcade/c88_neon_alibi.svg',
-      alt: 'Chronicle 88 Episode 1: Neon Alibi 1989 detective interrogation scene with Inspector Deck',
-      url: 'chronicle-88.html',
-      quizTag: 'Quick one: B2 narrative tenses',
-      prompt: 'Which suspect was ALREADY out of the room when the 23:15 alarm went off?',
-      options: [
-        { text: 'A) “When the alarm went off, I left the vault.”', correct: false, explain: 'Past Simple (“I left”) means they left AFTER the alarm sounded—caught red-handed!' },
-        { text: 'B) “When the alarm went off, I had already left the vault.”', correct: true, explain: 'Alibi confirmed! Past Perfect (“had already left”) proves the action was complete BEFORE the 23:15 alarm.' }
+        { text: 'A) are widely believed to', correct: true, explain: 'Spot on! Subject + passive reporting verb (“are widely believed”) + to-infinitive is a classic Band 8.0+ / C1 academic structure.' },
+        { text: 'B) widely believe to', correct: false, explain: 'Careful—“spaces” are the receiver of the belief, so you need the passive voice: “are widely believed to”.' }
       ]
     },
     {
@@ -61,17 +47,32 @@ const LabObservatory = (() => {
       ]
     },
     {
-      badge: 'Cambridge B2–C2 & IELTS 7.0–8.5 • Free Modules',
-      title: 'Timed C1 Essay Builder & IELTS Task 2 Masterclass',
-      desc: 'Build Band 8.0+ and C1/C2 essay paragraphs against the clock and test 50 Part 4 transformation patterns.',
-      img: 'assets/arcade/boardroom_pitch.svg',
-      alt: 'Interactive Exam Lab screen showing C1/C2 syntactic upgrading and live Band 8.0+ scoring telemetry',
-      url: '#exam-lab',
-      quizTag: 'Quick one: C1 passive reporting',
-      prompt: 'Rewrite without “People”: “People widely believe that urban green spaces reduce stress.” → “Urban green spaces _______ reduce stress.”',
+      badge: 'Teens (B1–B2) • Retro detective game',
+      title: 'Chronicle ’88: A retro detective game for teens',
+      desc: 'Question suspects, spot whose alibi doesn’t add up, and use B1–B2 grammar to crack the case across three short episodes.',
+      img: 'assets/arcade/c88_neon_alibi.svg',
+      alt: 'Chronicle 88 Episode 1: Neon Alibi 1989 detective interrogation scene with Inspector Deck',
+      url: 'chronicle-88.html',
+      quizTag: 'Quick one: B2 narrative tenses',
+      prompt: 'Which suspect was ALREADY out of the room when the 23:15 alarm went off?',
       options: [
-        { text: 'A) are widely believed to', correct: true, explain: 'Spot on! Subject + passive reporting verb (“are widely believed”) + to-infinitive is a classic Band 8.0+ / C1 academic structure.' },
-        { text: 'B) widely believe to', correct: false, explain: 'Careful—“spaces” are the receiver of the belief, so you need the passive voice: “are widely believed to”.' }
+        { text: 'A) “When the alarm went off, I left the vault.”', correct: false, explain: 'Past Simple (“I left”) means they left AFTER the alarm sounded—caught red-handed!' },
+        { text: 'B) “When the alarm went off, I had already left the vault.”', correct: true, explain: 'Alibi confirmed! Past Perfect (“had already left”) proves the action was complete BEFORE the 23:15 alarm.' }
+      ]
+    },
+    {
+      badge: 'C1/C2 Gothic Course • 15 lessons (5 free)',
+      title: 'Dark Academia: C1/C2 English Through Classic Gothic & Victorian Stories',
+      desc: 'Three lessons each from Dracula, Frankenstein, Jekyll & Hyde, Baskervilles, and Alice in Wonderland, with British narration and 15 practice questions per lesson (including 5 Part 4 transformations).',
+      img: 'assets/gothic/dracula_carpathian.webp',
+      alt: 'Caspar David Friedrich — Abbey in the Oakwood (1809–1810), illustrating Dracula Lesson 1',
+      url: 'dark-academia-index.html',
+      quizTag: 'Quick one: C1 inversion',
+      prompt: '“_______ had Jonathan Harker crossed the bridge than the wolves began to howl.”',
+      options: [
+        { text: 'A) No sooner', correct: true, explain: 'Spot on! “No sooner + had + subject + past participle ... than” is a high-scoring C1/C2 negative inversion.' },
+        { text: 'B) Hardly when', correct: false, explain: 'Close—remember “Hardly/Scarcely” pairs with “when”, whereas “than” requires “No sooner”!' },
+        { text: 'C) Not only', correct: false, explain: '“Not only” pairs with “but also”. For immediate sequence with “than”, use “No sooner”.' }
       ]
     }
   ];
@@ -651,10 +652,129 @@ const LabObservatory = (() => {
     '#resources': '#study-guides'
   };
 
+  function revealUnlockedStudyPack(scrollToBanner = false) {
+    try {
+      localStorage.setItem(SYLLABUS_UNLOCK_KEY, 'true');
+    } catch (e) {}
+    const subBanner = document.getElementById('subscribed-success-banner');
+    const leadGrid = document.getElementById('lead-form-grid');
+    const leadForm = document.getElementById('lead-form');
+    const cheatSheetSec = document.getElementById('cheat-sheet');
+    if (subBanner) {
+      subBanner.classList.remove('hidden');
+    }
+    if (leadGrid) {
+      leadGrid.classList.add('hidden');
+    } else if (leadForm) {
+      leadForm.classList.add('hidden');
+    }
+    if (scrollToBanner && cheatSheetSec) {
+      setTimeout(() => {
+        cheatSheetSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 150);
+    }
+  }
+
+  function initLeadFormUnlock() {
+    let isSubscribedParam = false;
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      isSubscribedParam = searchParams.get('subscribed') === 'true';
+    } catch (e) {}
+
+    let hasStoredUnlock = false;
+    try {
+      hasStoredUnlock = localStorage.getItem(SYLLABUS_UNLOCK_KEY) === 'true';
+    } catch (e) {}
+
+    if (isSubscribedParam) {
+      revealUnlockedStudyPack(true);
+    } else if (hasStoredUnlock) {
+      revealUnlockedStudyPack(false);
+    }
+
+    const leadForm = document.getElementById('lead-form');
+    if (!leadForm) return;
+
+    leadForm.addEventListener('submit', async (e) => {
+      if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+      if (leadForm.dataset.submitting === 'true') {
+        e.preventDefault();
+        return;
+      }
+      e.preventDefault();
+
+      const emailInput = leadForm.querySelector('input[name="email"]');
+      const submitBtn = document.getElementById('lead-submit-btn') || leadForm.querySelector('button[type="submit"]');
+      const statusEl = document.getElementById('lead-form-status');
+      const emailVal = emailInput ? emailInput.value.trim() : '';
+
+      if (!emailVal || !emailVal.includes('@')) {
+        if (statusEl) {
+          statusEl.className = 'mt-3 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
+          statusEl.textContent = 'Please enter a valid email address first.';
+        }
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
+      const originalBtnHtml = submitBtn ? submitBtn.innerHTML : 'Unlock PDF &amp; Study Pack &rarr;';
+      leadForm.dataset.submitting = 'true';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Unlocking...';
+      }
+      if (statusEl) {
+        statusEl.textContent = '';
+        statusEl.className = 'text-sm font-semibold';
+      }
+
+      try {
+        const response = await fetch(leadForm.action || 'https://formspree.io/f/mvkgrwvj', {
+          method: 'POST',
+          body: new FormData(leadForm),
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (!response.ok) {
+          let errorMessage = 'Could not unlock the pack right now.';
+          try {
+            const payload = await response.json();
+            if (payload && Array.isArray(payload.errors) && payload.errors.length) {
+              errorMessage = payload.errors.map((err) => err.message).filter(Boolean).join(' ');
+            }
+          } catch (_) {}
+          throw new Error(errorMessage);
+        }
+
+        if (window.CandidateDossier && typeof window.CandidateDossier.saveEmail === 'function') {
+          window.CandidateDossier.saveEmail(emailVal);
+        }
+        if (typeof window.trackFunnelEvent === 'function') {
+          window.trackFunnelEvent('lab_lead_form_succeeded', { source: 'lab_cheat_sheet' });
+        }
+        leadForm.reset();
+        revealUnlockedStudyPack(false);
+      } catch (err) {
+        if (statusEl) {
+          statusEl.className = 'mt-3 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
+          statusEl.innerHTML = 'Could not unlock the pack right now \u2014 your email above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=C1%2FC2%20Study%20Pack%20%26%20Syllabus%20PDF" class="underline font-bold">gareth@garethenglish.com</a> and I will send the PDF straight back.';
+        }
+      } finally {
+        delete leadForm.dataset.submitting;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHtml;
+        }
+      }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     syncSFXButtons();
     setHolodeck(0);
     initHeroParticles();
+    initLeadFormUnlock();
 
     // Roving tabindex & arrow-key navigation for Hero Holodeck tabs (ARIA role="tablist")
     const tablist = document.querySelector('.holodeck-tabs[role="tablist"]');
@@ -744,21 +864,9 @@ const LabObservatory = (() => {
       }
     }
 
-    // Show confirmation banner when redirected back from FormSubmit (?subscribed=true) or pre-filter wing (?wing=teens)
+    // Pre-filter wing (?wing=teens) and handle post-Stripe course unlocks
     try {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('subscribed') === 'true') {
-        const subBanner = document.getElementById('subscribed-success-banner');
-        const cheatSheetSec = document.getElementById('cheat-sheet');
-        if (subBanner) {
-          subBanner.classList.remove('hidden');
-        }
-        if (cheatSheetSec) {
-          setTimeout(() => {
-            cheatSheetSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }, 150);
-        }
-      }
       const initialWing = params.get('wing');
       if (initialWing && ['all', 'adults', 'teens', 'kids'].includes(initialWing)) {
         filterWing(initialWing);

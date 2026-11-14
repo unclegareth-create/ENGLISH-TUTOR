@@ -28,7 +28,7 @@
   const AI_REFERRER_KEY = 'gm_ai_referrer';
 
   const RESEARCH_ARTICLE_RE = /(^|\/)(c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.html/i;
-  const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
+  const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|c1-part4-deconstructor|ielts-c1-syntax-workbench|speaking-part2-arc-trainer|academy|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
   const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses|key-word-transformations|word-formation|ielts-c1-structural-shifts|ielts-speaking-part-3|business-english-meetings|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.(html|pdf)/i;
 
   function getTrail() {
@@ -160,33 +160,47 @@
    */
   window.showDiagnosticGate = function (opts) {
     opts = opts || {};
-    const gameName = opts.gameName || 'Interactive Skill Test';
+    const esc = (str) => String(str || '').replace(/[&<>"']/g, (c) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+
+    const rawGameName = String(opts.gameName || 'Interactive Skill Test');
     const score = typeof opts.score === 'number' ? opts.score : 0;
     const maxScore = typeof opts.maxScore === 'number' ? opts.maxScore : 10;
-    const weakArea = opts.weakArea || 'C1/C2 Linguistic Precision under Time Pressure';
-    const examImpact = opts.examImpact || 'In Cambridge C1/C2 and IELTS examinations, hesitation and syntax friction reduce your Lexical Resource & Grammar scores by up to a full band.';
+    const rawWeakArea = String(opts.weakArea || 'C1/C2 Linguistic Precision under Time Pressure');
+    const rawExamImpact = String(opts.examImpact || 'In Cambridge C1/C2 and IELTS examinations, hesitation and syntax friction reduce your Lexical Resource & Grammar scores by up to a full band.');
     const onReplay = typeof opts.onReplay === 'function' ? opts.onReplay : null;
 
     // Feed score into Unified Candidate Dossier if loaded
     const dossierSummary = window.CandidateDossier?.recordGameCompletion({
-      gameName,
+      gameName: rawGameName,
       score,
       maxScore,
-      weakArea,
+      weakArea: rawWeakArea,
       category: opts.category
     });
 
     const pct = Math.max(0, Math.min(100, Math.round((score / (maxScore || 1)) * 100)));
     const cefrEstimate = dossierSummary?.cefrBand || (pct >= 85 ? 'C1 Advanced / C2 Ready' : pct >= 65 ? 'B2 Upper-Intermediate (Borderline C1)' : 'B1/B2 Transition');
-    const diagnosedWeakness = dossierSummary?.weakestSkill || weakArea;
+    const rawDiagnosedWeakness = String(dossierSummary?.weakestSkill || rawWeakArea);
     const diagnosedAccuracy = typeof dossierSummary?.weakestAccuracy === 'number' ? dossierSummary.weakestAccuracy : pct;
-    const dossierCode = dossierSummary?.code || '';
-    const bookingHref = dossierCode
-      ? `index.html?dossier=${encodeURIComponent(dossierCode)}#contact`
-      : 'index.html#contact';
+    const dossierCode = String(dossierSummary?.code || '');
+    const savedEmail = String(window.CandidateDossier?.getState?.()?.savedEmail || '');
+
+    const dossierParam = dossierCode ? `&dossier=${encodeURIComponent(dossierCode)}` : '';
+    const trialHref = `index.html?offer=live_diagnostic_35${dossierParam}#cal-booking-box`;
+    const auditHref = `index.html?offer=async_essay_audit_29${dossierParam}#enquiry-card`;
+    const freeHref = `index.html?tier=waitlist_free${dossierParam}#enquiry-card`;
+
+    const gameName = esc(rawGameName);
+    const cefrEstimateEsc = esc(cefrEstimate);
+    const diagnosedWeakness = esc(rawDiagnosedWeakness);
+    const examImpact = esc(rawExamImpact);
+    const dossierCodeEsc = esc(dossierCode);
+    const savedEmailEsc = esc(savedEmail);
 
     // Fire telemetry event
-    window.trackFunnelEvent('diagnostic_gate_shown', { gameName, score, maxScore, pct, cefrEstimate, dossierCode });
+    window.trackFunnelEvent('diagnostic_gate_shown', { gameName: rawGameName, score, maxScore, pct, cefrEstimate, dossierCode });
 
     const existing = document.getElementById('gm-diag-overlay');
     if (existing) existing.remove();
@@ -206,7 +220,7 @@
             Your Score: ${score}/${maxScore} (${pct}%)
           </h3>
           <p style="margin:0 0 14px 0;font-size:14px;color:#d1d5db;">
-            Estimated Level: <strong style="color:#fbbf24;">${cefrEstimate}</strong>${dossierCode ? ` &bull; <code style="color:#93c5fd;font-size:12px;">${dossierCode}</code>` : ''}
+            Estimated Level: <strong style="color:#fbbf24;">${cefrEstimateEsc}</strong>${dossierCodeEsc ? ` &bull; <code style="color:#93c5fd;font-size:12px;">${dossierCodeEsc}</code>` : ''}
           </p>
 
           <div style="background:#1f2937;border-left:4px solid #f59e0b;padding:13px;border-radius:8px;margin-bottom:16px;font-size:13.5px;line-height:1.5;">
@@ -218,39 +232,45 @@
             <div style="font-size:12px;font-weight:700;color:#f8fafc;margin-bottom:6px;">
               📩 Save Score &amp; Unlock C1/C2 Cheat Sheet
             </div>
-            <form id="gm-gate-email-form" style="display:flex;gap:6px;">
-              <input type="email" id="gm-gate-email-input" required placeholder="Enter your email to save report..." style="flex:1;background:#0b0f19;border:1px solid #374151;color:#ffffff;padding:8px 10px;border-radius:7px;font-size:13px;" />
+            <form id="gm-gate-email-form" action="https://formspree.io/f/mvkgrwvj" method="POST" style="display:flex;gap:6px;">
+              <input type="email" id="gm-gate-email-input" name="email" required value="${savedEmailEsc}" placeholder="Enter your email to save report..." style="flex:1;background:#0b0f19;border:1px solid #374151;color:#ffffff;padding:8px 10px;border-radius:7px;font-size:13px;" />
               <button type="submit" style="background:#d4af37;color:#0b0f19;border:none;padding:8px 12px;border-radius:7px;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;">
                 Save &amp; Unlock
               </button>
             </form>
-            <div id="gm-gate-email-confirm" style="display:none;font-size:12px;color:#34d399;margin-top:6px;">
+            <div id="gm-gate-email-confirm" role="status" style="display:none;font-size:12px;color:#34d399;margin-top:6px;line-height:1.45;">
               ✓ Saved to your Lab Dossier! <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Cheat Sheet &rarr;</a>
             </div>
+            <div id="gm-gate-email-error" role="alert" style="display:none;font-size:12px;color:#fca5a5;margin-top:6px;line-height:1.45;"></div>
           </div>
 
           <p style="font-size:13.5px;color:#d1d5db;margin-bottom:14px;line-height:1.5;">
-            Your practice score shows <strong style="color:#fbbf24;">${diagnosedAccuracy}%</strong> accuracy on <strong style="color:#ffffff;">${diagnosedWeakness}</strong>. Book a £35 30-minute starter session and I will work through the exact patterns this round highlighted:
+            Your practice score shows <strong style="color:#fbbf24;">${diagnosedAccuracy}%</strong> accuracy on <strong style="color:#ffffff;">${diagnosedWeakness}</strong>. Work through these exact patterns in a live session or get written essay feedback:
           </p>
 
           <div style="display:grid;gap:10px;">
-            <a href="${bookingHref}" 
-               onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'trial_35', pct: ${pct}, dossierCode: '${dossierCode}' })"
+            <a href="${trialHref}"
+               data-gate-cta="trial_35"
                style="display:block;text-align:center;background:#2563eb;color:#ffffff;font-weight:700;padding:14px;border-radius:10px;text-decoration:none;font-size:15px;box-shadow:0 4px 6px -1px rgba(37,99,235,0.4);">
-              Book a 30-Min Starter Session with Gareth (£35) &rarr;
+              Book a 30-Min Starter Session with Gareth (&pound;35) &rarr;
+            </a>
+            <a href="${auditHref}"
+               data-gate-cta="async_audit_29"
+               style="display:block;text-align:center;background:#1f2937;border:1px solid #10b981;color:#a7f3d0;font-weight:700;padding:12px;border-radius:10px;text-decoration:none;font-size:14px;">
+              Get 48h Written Essay Feedback (&pound;29) &rarr;
             </a>
             <button id="gm-gate-recall-btn" type="button"
                style="display:block;width:100%;text-align:center;background:rgba(212,175,55,0.14);border:1px solid #d4af37;color:#fde68a;font-weight:700;padding:11px;border-radius:10px;font-size:13.5px;cursor:pointer;">
               ⚡ Run 90s Mistake Recall Drill (Ebbinghaus Vault)
             </button>
-            <a href="ielts-7-syllabus.html" 
-               onclick="window.trackFunnelEvent?.('game_cta_clicked', { gameName: '${gameName}', target: 'view_syllabus', pct: ${pct} })"
-               style="display:block;text-align:center;background:#1f2937;border:1px solid #4b5563;color:#e5e7eb;font-weight:600;padding:11px;border-radius:10px;text-decoration:none;font-size:13.5px;">
-              See My 6-Week Intensive Syllabus &amp; Sample Markup
+            <a href="${freeHref}"
+               data-gate-cta="waitlist_free"
+               style="display:block;text-align:center;color:#93c5fd;font-weight:600;padding:6px 10px;text-decoration:underline;font-size:13px;">
+              Or send 1 short paragraph for a free 24h red-pen note &rarr;
             </a>
           </div>
 
-          <button id="gm-diag-replay" type="button" style="margin-top:14px;width:100%;background:none;border:none;color:#9ca3af;font-size:13px;cursor:pointer;text-decoration:underline;">
+          <button id="gm-diag-replay" type="button" style="margin-top:12px;width:100%;background:none;border:none;color:#9ca3af;font-size:13px;cursor:pointer;text-decoration:underline;">
             Play again to beat ${score}/${maxScore}
           </button>
         </div>
@@ -299,28 +319,103 @@
     }
     if (replayBtn) {
       replayBtn.onclick = () => {
-        window.trackFunnelEvent('game_replay_clicked', { gameName, score });
+        window.trackFunnelEvent('game_replay_clicked', { gameName: rawGameName, score });
         cleanup();
         if (onReplay) onReplay();
       };
     }
     if (recallBtn) {
       recallBtn.onclick = () => {
-        window.trackFunnelEvent('gate_recall_drill_clicked', { gameName, score, dossierCode });
+        window.trackFunnelEvent('gate_recall_drill_clicked', { gameName: rawGameName, score, dossierCode });
         cleanup();
-        window.CandidateDossier?.openRecallDrill();
+        if (window.CandidateDossier && typeof window.CandidateDossier.openRecallDrill === 'function') {
+          window.CandidateDossier.openRecallDrill();
+        } else {
+          window.location.href = 'cpe-inversion.html';
+        }
       };
     }
+    if (overlay) {
+      overlay.querySelectorAll('[data-gate-cta]').forEach((el) => {
+        el.addEventListener('click', () => {
+          window.trackFunnelEvent?.('game_cta_clicked', {
+            gameName: rawGameName,
+            target: el.getAttribute('data-gate-cta'),
+            pct,
+            dossierCode
+          });
+        });
+      });
+    }
     if (emailForm) {
-      emailForm.onsubmit = (e) => {
+      emailForm.onsubmit = async (e) => {
         e.preventDefault();
+        if (emailForm.dataset.submitting === 'true') return;
         const input = document.getElementById('gm-gate-email-input');
+        const submitBtn = emailForm.querySelector('button[type="submit"]');
+        const confirmEl = document.getElementById('gm-gate-email-confirm');
+        const errorEl = document.getElementById('gm-gate-email-error');
         const email = input ? input.value.trim() : '';
         if (!email) return;
-        window.CandidateDossier?.saveEmail(email);
-        window.trackFunnelEvent('gate_email_captured', { gameName, pct, dossierCode });
-        const confirmEl = document.getElementById('gm-gate-email-confirm');
-        if (confirmEl) confirmEl.style.display = 'block';
+
+        emailForm.dataset.submitting = 'true';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Saving...';
+        }
+        if (errorEl) {
+          errorEl.style.display = 'none';
+          errorEl.textContent = '';
+        }
+
+        const aiReferrer = getAiReferrer();
+        const formData = typeof FormData === 'function' ? new FormData() : null;
+        if (formData) {
+          formData.append('email', email);
+          formData.append('_subject', `Diagnostic Gate Report & Cheat Sheet: ${rawGameName} (${pct}%)`);
+          formData.append('form_source', 'diagnostic_gate');
+          formData.append('game_name', rawGameName);
+          formData.append('score', `${score}/${maxScore} (${pct}%)`);
+          formData.append('cefr_estimate', cefrEstimate);
+          formData.append('focus_area', `${rawDiagnosedWeakness} (${diagnosedAccuracy}%)`);
+          if (dossierCode) formData.append('dossier_code', dossierCode);
+          formData.append('last_free_tool', getLastFreeTool());
+          if (aiReferrer) formData.append('ai_referrer', aiReferrer);
+          formData.append('page_path', window.location.pathname || '');
+        }
+
+        try {
+          if (typeof window.fetch !== 'function') throw new Error('Fetch unavailable');
+          const response = await window.fetch('https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            headers: { Accept: 'application/json' },
+            body: formData
+          });
+          if (!response || !response.ok) {
+            throw new Error('Could not send report');
+          }
+
+          window.CandidateDossier?.saveEmail?.(email);
+          window.trackFunnelEvent('gate_email_captured', { gameName: rawGameName, pct, dossierCode });
+
+          if (confirmEl) {
+            confirmEl.style.display = 'block';
+            confirmEl.innerHTML = `✓ Sent &amp; saved to your Lab Dossier (<strong>${esc(email)}</strong>)! <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">Open C1/C2 Cheat Sheet &rarr;</a>`;
+          }
+        } catch (_) {
+          if (confirmEl) confirmEl.style.display = 'none';
+          if (errorEl) {
+            const mailSubject = encodeURIComponent(`Diagnostic Report & Cheat Sheet (${rawGameName})`);
+            errorEl.style.display = 'block';
+            errorEl.innerHTML = `Your email could not be sent automatically — it is still in the box above. Please try again, email <a href="mailto:gareth@garethenglish.com?subject=${mailSubject}" style="color:#fca5a5;text-decoration:underline;">gareth@garethenglish.com</a>, or <a href="cpe-inversion.html" style="color:#fbbf24;text-decoration:underline;">open the C1/C2 Cheat Sheet anyway &rarr;</a>`;
+          }
+        } finally {
+          delete emailForm.dataset.submitting;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save & Unlock';
+          }
+        }
       };
     }
 

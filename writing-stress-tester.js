@@ -386,7 +386,7 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
         cadenceCode: 'short',
         cadenceLabel: 'Too Few Sentences',
         cadenceBadgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
-        cadenceAdvice: 'Write at least 3–4 full sentences so we can calculate your syntactic cadence and standard deviation.'
+        cadenceAdvice: 'Write at least 3–4 full sentences so I can calculate your sentence rhythm and standard deviation.'
       };
     }
 
@@ -669,54 +669,58 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
     return escapeHtml(segment).replace(/\n\s*\n/g, '<br><br>').replace(/\n/g, '<br>');
   }
 
+  function isSamplePresetText(rawText) {
+    const trimmed = String(rawText || '').trim();
+    if (!trimmed) return false;
+    return Object.keys(SAMPLE_PRESETS).some((k) => SAMPLE_PRESETS[k].text.trim() === trimmed);
+  }
+
   // Persist scan to localStorage and CandidateDossier
   function persistScanResult(result, triggerSource) {
-    const payload = {
-      timestamp: new Date().toISOString(),
-      trigger: triggerSource || 'manual',
-      ceilingScore: result.ceilingScore,
-      cefrLevel: result.cefrCode,
-      ieltsBand: result.ieltsBand,
-      wordCount: result.wordCount,
-      sentenceCount: result.sentenceCount,
-      meanSentenceLength: result.meanLength,
-      stdDevSentenceLength: result.stdDev,
-      cadenceDiagnosis: result.cadenceLabel,
-      amberCount: result.amberMatches.length,
-      clicheCount: result.clicheCount,
-      weakWordCount: result.weakWordCount,
-      emeraldCount: result.emeraldMatches.length,
-      c1CategoriesHit: result.c1CategoriesHit,
-      missingCategories: result.missingCategories,
-      ceilingReasons: result.ceilingReasons,
-      draftText: result.rawText
-    };
+    if (!result || result.wordCount === 0) return;
 
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    } catch (err) {
-      // Ignore storage quota errors in private browsing
+    const isSample = isSamplePresetText(result.rawText);
+    const isExplicitTrigger = triggerSource === 'manual_scan' || triggerSource === 'conversion_cta_click';
+
+    if (!isSample || isExplicitTrigger) {
+      const payload = {
+        timestamp: new Date().toISOString(),
+        trigger: triggerSource || 'manual',
+        ceilingScore: result.ceilingScore,
+        cefrLevel: result.cefrCode,
+        ieltsBand: result.ieltsBand,
+        wordCount: result.wordCount,
+        sentenceCount: result.sentenceCount,
+        meanSentenceLength: result.meanLength,
+        stdDevSentenceLength: result.stdDev,
+        cadenceDiagnosis: result.cadenceLabel,
+        amberCount: result.amberMatches.length,
+        clicheCount: result.clicheCount,
+        weakWordCount: result.weakWordCount,
+        emeraldCount: result.emeraldMatches.length,
+        c1CategoriesHit: result.c1CategoriesHit,
+        missingCategories: result.missingCategories,
+        ceilingReasons: result.ceilingReasons,
+        draftText: isSample ? '' : result.rawText
+      };
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (err) {
+        // Ignore storage quota errors in private browsing
+      }
     }
 
-    // Feed into CandidateDossier if present and triggered by user interaction
-    if (triggerSource && triggerSource !== 'init') {
+    // Feed into CandidateDossier and funnel telemetry only on explicit user actions
+    if (isExplicitTrigger) {
       try {
-        if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
-          window.CandidateDossier.recordAttempt({
-            toolId: 'writing-stress-tester',
-            toolName: 'Essay Syntax Stress-Tester',
-            category: 'C1 Writing Syntax & Register',
+        if (window.CandidateDossier && typeof window.CandidateDossier.recordGameCompletion === 'function') {
+          window.CandidateDossier.recordGameCompletion({
+            gameName: 'Essay Syntax Stress-Tester',
             score: result.c1CategoriesHit,
             maxScore: 5,
-            ceilingScore: result.ceilingScore,
-            cefrLevel: result.cefrCode,
-            ieltsBand: result.ieltsBand,
-            amberFlags: result.amberMatches.length,
-            emeraldMarkers: result.emeraldMatches.length,
-            stdDev: result.stdDev,
-            cadence: result.cadenceLabel,
-            weaknesses: result.missingCategories,
-            summary: `Ceiling ${result.ceilingScore} (${result.emeraldMatches.length} C1 pivots, ${result.amberMatches.length} B1/B2 flags, σ=${result.stdDev})`
+            weakArea: (result.missingCategories && result.missingCategories[0]) || 'C1 Writing Syntax & Register',
+            category: 'C1 Writing Syntax & Register'
           });
         }
       } catch (err) {
@@ -724,12 +728,14 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
       }
 
       try {
-        if (window.AnalyticsFunnel && typeof window.AnalyticsFunnel.track === 'function') {
-          window.AnalyticsFunnel.track('essay_stress_test_run', {
+        if (typeof window.trackFunnelEvent === 'function') {
+          window.trackFunnelEvent('essay_stress_test_run', {
             ceilingScore: result.ceilingScore,
+            cefrLevel: result.cefrCode,
             amberCount: result.amberMatches.length,
             emeraldCount: result.emeraldMatches.length,
-            stdDev: result.stdDev
+            stdDev: result.stdDev,
+            trigger: triggerSource
           });
         }
       } catch (err) {
@@ -786,9 +792,6 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
     let currentText = SAMPLE_PRESETS.trap.text;
     let currentResult = scanEssay(currentText);
     let activeSpanIndex = currentResult.acceptedSpans.length > 0 ? currentResult.acceptedSpans[0].spanIndex : null;
-
-    // Persist initial default state so booking link always has context
-    persistScanResult(currentResult, 'init');
 
     root.innerHTML = `
       <div class="bg-white rounded-3xl shadow-xl border border-slate-200/90 overflow-hidden">
@@ -1043,13 +1046,13 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
             <div class="max-w-2xl space-y-2.5">
               <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
                 <i class="fa-solid fa-user-check" aria-hidden="true"></i>
-                <span>Next Step: Human Examiner Line-by-Line Rebuild</span>
+                <span>Next Step: Real Examiner Red-Pen Feedback</span>
               </div>
               <h4 class="text-xl sm:text-2xl font-black tracking-tight text-white">
-                Bring This Exact Draft to a 30-Minute Live Diagnostic (£35)
+                Want My Real Red Pen on This Exact Draft?
               </h4>
               <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Automated scanners can spot your syntax patterns, but they can't fix your argument logic or natural collocations. Bring this exact draft to a 30-Minute Live Diagnostic (£35) — I will mark it up beforehand and we will rebuild your weakest paragraphs live on screen.
+                Automated scanners can spot surface patterns, but they cannot judge your argument logic or natural collocations. Send me this draft for a 48-hour written Google Doc mark-up (£29), or bring it to a 30-minute live Zoom diagnostic (£35) where I mark it beforehand and rebuild your weakest paragraphs with you live.
               </p>
               <p id="gm-conversion-copy-feedback" class="text-xs text-emerald-400 font-semibold hidden">
                 <i class="fa-solid fa-circle-check mr-1" aria-hidden="true"></i>
@@ -1057,16 +1060,33 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
               </p>
             </div>
 
-            <div class="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-3 shrink-0">
+            <div class="flex flex-col items-stretch lg:items-end gap-2.5 shrink-0">
               <a
-                href="index.html?source=essay_scanner#contact"
-                id="gm-send-draft-book-btn"
-                class="inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl font-black text-sm sm:text-base bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg transition text-center"
+                href="index.html?source=essay_scanner&amp;offer=async_essay_audit_29#enquiry-card"
+                id="gm-send-draft-audit-btn"
+                data-scanner-cta="async_audit_29"
+                class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl font-black text-sm sm:text-base bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg transition text-center"
               >
-                <span>Send This Draft + Book £35 Live Diagnostic &amp; Markup &rarr;</span>
+                <span>Get 48h Written Essay Feedback (£29) &rarr;</span>
               </a>
-              <span class="text-[11px] text-slate-400 text-center lg:text-right">
-                Auto-copies your draft + diagnostic report &bull; £35 credited toward any 10- or 12-lesson pack
+              <a
+                href="index.html?source=essay_scanner&amp;offer=live_diagnostic_35#cal-booking-box"
+                id="gm-send-draft-book-btn"
+                data-scanner-cta="live_diagnostic_35"
+                class="inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-2xl font-bold text-xs sm:text-sm bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 shadow-md transition text-center"
+              >
+                <span>Book 30-Min Live Diagnostic (£35) &rarr;</span>
+              </a>
+              <a
+                href="index.html?source=essay_scanner&amp;tier=waitlist_free#enquiry-card"
+                id="gm-send-draft-free-btn"
+                data-scanner-cta="waitlist_free"
+                class="text-xs font-semibold text-slate-300 hover:text-emerald-300 underline text-center pt-1 transition"
+              >
+                Or send 1 short paragraph for a free 24h red-pen note &rarr;
+              </a>
+              <span class="text-[11px] text-slate-400 text-center">
+                Auto-attaches your typed draft &amp; scan &bull; £35 credited toward any 10- or 12-lesson pack
               </span>
             </div>
           </div>
@@ -1097,7 +1117,7 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
     const rhythmMean = root.querySelector('#gm-rhythm-mean');
     const rhythmSigma = root.querySelector('#gm-rhythm-sigma');
     const sparklineBars = root.querySelector('#gm-sparkline-bars');
-    const sendDraftBookBtn = root.querySelector('#gm-send-draft-book-btn');
+    const scannerCtaBtns = root.querySelectorAll('[data-scanner-cta]');
     const copyFeedbackEl = root.querySelector('#gm-conversion-copy-feedback');
 
     textarea.value = currentText;
@@ -1310,7 +1330,6 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
           textarea.value = currentText;
           currentResult = scanEssay(currentText);
           activeSpanIndex = currentResult.acceptedSpans.length > 0 ? currentResult.acceptedSpans[0].spanIndex : null;
-          persistScanResult(currentResult, `preset_${presetKey}`);
           renderAll();
         }
       }
@@ -1364,34 +1383,54 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
       textarea.focus();
     });
 
-    // Conversion Hook CTA: Copy draft & diagnostic summary to clipboard + localStorage, then navigate
-    sendDraftBookBtn.addEventListener('click', (e) => {
-      currentText = textarea.value || currentText;
-      currentResult = scanEssay(currentText);
-      persistScanResult(currentResult, 'conversion_cta_click');
+    // Conversion Hook CTAs: Copy student draft & diagnostic summary to clipboard + localStorage, then navigate
+    scannerCtaBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        currentText = textarea.value || currentText;
+        currentResult = scanEssay(currentText);
+        const target = btn.getAttribute('data-scanner-cta') || 'unknown';
+        const isSample = isSamplePresetText(currentText);
 
-      const clipboardSummary = [
-        `=== GARETH MONTGOMERY ESSAY DIAGNOSTIC REPORT ===`,
-        `Estimated Structural Ceiling: ${currentResult.ceilingScore}`,
-        `Word Count: ${currentResult.wordCount} words (${currentResult.sentenceCount} sentences)`,
-        `Sentence Rhythm: Mean ${currentResult.meanLength}w | Std Dev σ = ${currentResult.stdDev} (${currentResult.cadenceLabel})`,
-        `Amber Flags (Clichés / B1 Crutches): ${currentResult.amberMatches.length}`,
-        `Emerald C1/C2 Structural Pivots: ${currentResult.emeraldMatches.length} (${currentResult.c1CategoriesHit}/5 pillars)`,
-        ``,
-        `--- STUDENT DRAFT ---`,
-        currentResult.rawText.trim()
-      ].join('\n');
+        if (currentResult.wordCount > 0) {
+          persistScanResult(currentResult, 'conversion_cta_click');
+        }
+        try {
+          if (typeof window.trackFunnelEvent === 'function') {
+            window.trackFunnelEvent('essay_scanner_cta_clicked', {
+              target,
+              ceilingScore: currentResult.ceilingScore,
+              wordCount: currentResult.wordCount
+            });
+          }
+        } catch (_) {}
 
-      if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
-        e.preventDefault();
-        const targetHref = sendDraftBookBtn.getAttribute('href') || 'index.html?source=essay_scanner#contact';
-        navigator.clipboard.writeText(clipboardSummary).catch(() => {}).finally(() => {
-          if (copyFeedbackEl) copyFeedbackEl.classList.remove('hidden');
-          setTimeout(() => {
-            window.location.href = targetHref;
-          }, 220);
-        });
-      }
+        if (isSample || currentResult.wordCount === 0) {
+          return;
+        }
+
+        const clipboardSummary = [
+          '=== GARETH MONTGOMERY ESSAY DIAGNOSTIC REPORT ===',
+          `Estimated Structural Ceiling: ${currentResult.ceilingScore}`,
+          `Word Count: ${currentResult.wordCount} words (${currentResult.sentenceCount} sentences)`,
+          `Sentence Rhythm: Mean ${currentResult.meanLength}w | Std Dev σ = ${currentResult.stdDev} (${currentResult.cadenceLabel})`,
+          `Amber Flags (Clichés / B1 Crutches): ${currentResult.amberMatches.length}`,
+          `Emerald C1/C2 Structural Pivots: ${currentResult.emeraldMatches.length} (${currentResult.c1CategoriesHit}/5 pillars)`,
+          '',
+          '--- STUDENT DRAFT ---',
+          currentResult.rawText.trim()
+        ].join('\n');
+
+        if (!e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0 && navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          e.preventDefault();
+          const targetHref = btn.getAttribute('href') || 'index.html?source=essay_scanner#contact';
+          navigator.clipboard.writeText(clipboardSummary).catch(() => {}).finally(() => {
+            if (copyFeedbackEl) copyFeedbackEl.classList.remove('hidden');
+            setTimeout(() => {
+              window.location.href = targetHref;
+            }, 180);
+          });
+        }
+      });
     });
 
     renderAll();
@@ -1406,7 +1445,6 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
           textarea.value = currentText;
           currentResult = scanEssay(currentText);
           activeSpanIndex = currentResult.acceptedSpans.length > 0 ? currentResult.acceptedSpans[0].spanIndex : null;
-          persistScanResult(currentResult, `api_preset_${presetKey}`);
           renderAll();
         }
       }
