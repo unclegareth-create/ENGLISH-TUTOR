@@ -30,6 +30,7 @@
   const RESEARCH_ARTICLE_RE = /(^|\/)(c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.html/i;
   const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|c1-part4-deconstructor|ielts-c1-syntax-workbench|speaking-part2-arc-trainer|academy|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
   const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses|key-word-transformations|word-formation|ielts-c1-structural-shifts|ielts-speaking-part-3|business-english-meetings|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.(html|pdf)/i;
+  const FREE_GAME_RE = /(^|\/)(grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-verbs|word-factory|boardroom-pitch|chronicle-88|abyssal-bathysphere|gareth_english_arcade_observatory|c1_arcade_showcase)\.html/i;
 
   function getTrail() {
     try {
@@ -63,7 +64,7 @@
   }
 
   const currentSlug = (currentPath.split('/').pop() || '').split(/[?#]/)[0];
-  if (RESEARCH_ARTICLE_RE.test(currentPath) || EXAM_LAB_RE.test(currentPath) || STUDY_GUIDE_RE.test(currentPath)) {
+  if (RESEARCH_ARTICLE_RE.test(currentPath) || EXAM_LAB_RE.test(currentPath) || STUDY_GUIDE_RE.test(currentPath) || FREE_GAME_RE.test(currentPath)) {
     setLastFreeTool(currentSlug);
   }
   if (RESEARCH_ARTICLE_RE.test(currentPath) && !window.__gmResearchViewTracked) {

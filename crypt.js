@@ -1,28 +1,40 @@
 /* ==========================================================
-   Grammar Crypt – shared game logic (fantasy.html + sounds.html)
-
-   Optional audio: if audio.js is loaded it exposes window.GCAudio
-   with a play(name) method. Without it, every sound call is a no-op.
+   Grammar Crypt – 2D game logic, URL router, Daily Seed & Autopsy
    ========================================================== */
 (() => {
     'use strict';
 
-    // EDIT THESE: shown to players after they submit the lead form
-    const DISCOUNT_CODE = 'CRYPT50';
-    const BOOKING_URL = '';   // e.g. your booking page; leave empty to hide
+    const L = window.CRYPT_LEVELS;
+    if (!L) { console.error('crypt-levels.js must be loaded before crypt.js'); return; }
+
+    const lootTable = L.loot;
+    const milestonePrizes = L.milestones;   // keys are zero-based floor indexes (4 = Floor 5)
+    const bosses = L.bosses;
+    const levels = L.floors;
+
+    const XP_PER_RANK = 100;
+    const lastLevel = levels.length - 1;
+    const BOSS_FLOORS = [4, 9, 14, 19, 24];
+    const ACT_START_FLOORS = { 1: 0, 2: 5, 3: 10, 4: 15, 5: 20 };
+    const TIER_START_FLOORS = { b1: 0, b2: 5, c1: 10, c2: 20 };
+    const DAILY_SHARE_URL = 'https://garethenglish.com/grammar-crypt.html?mode=daily';
+    const TIER_BAR_DISMISS_KEY = 'gc_tier_bar_dismissed';
 
     const vibrate = (pattern) => {
         try { if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(pattern); } catch (_) {}
     };
 
     const isSoundEnabled = () => {
+        if (window.GCAudio && typeof window.GCAudio.isSfxEnabled === 'function') {
+            return window.GCAudio.isSfxEnabled();
+        }
         const audioBtn = document.getElementById('audio-toggle');
-        return audioBtn ? audioBtn.getAttribute('aria-pressed') === 'true' : false;
+        return audioBtn ? audioBtn.getAttribute('aria-pressed') === 'true' : true;
     };
 
     const sfx = (name, arg) => {
         if (!isSoundEnabled()) return;
-        try { if (window.GCAudio) window.GCAudio.play(name, arg); } catch (_) { /* audio is optional */ }
+        try { if (window.GCAudio && typeof window.GCAudio.play === 'function') window.GCAudio.play(name, arg); } catch (_) {}
         if (name === 'grab' || name === 'drop') vibrate(15);
         else if (name === 'success') vibrate([30, 40, 60]);
         else if (name === 'error') vibrate([50, 50, 50]);
@@ -30,62 +42,63 @@
         else if (name === 'boss') vibrate([60, 50, 60, 50, 100]);
     };
 
-    /* ---------------- DATA (shared with the 3D crypt: crypt-levels.js) ---------------- */
-
-    const L = window.CRYPT_LEVELS;
-    if (!L) { console.error('crypt-levels.js must be loaded before crypt.js'); return; }
-    const lootTable = L.loot;
-    const milestonePrizes = L.milestones;   // keys are zero-based floor indexes (4 = Floor 5)
-    const bosses = L.bosses;
-    const levels = L.floors;                // each floor: { title, cefr, boss, pool: [item...] }
-
-    /* ---------------- STATE (persisted, one versioned key shared with 3D) ---------------- */
-
-    const XP_PER_RANK = 100;
-    const lastLevel = levels.length - 1;
-    const BOSS_FLOORS = [4, 9, 14, 19, 24];
-
-    let state = L.store.fresh();
-    let item = null;             // the pool sentence currently on the board
-    let locked = false;          // true once the current floor is solved
-    let targetedZone = null;     // tap-to-place: slot chosen by the player
-    let draggedBlock = null;
-    let lootTimer = null;
-    let hintsUsed = 0;
-    let levelMistakes = 0;
-    let hintLevel = -1;       // hints/mistakes persist across Reset on the same floor (no free-hint farming)
-    let bossRushActive = false;
-    let bossRushStep = 0;
-    let dailySeedActive = false;
-    let dailySeedStep = 0;
-    let dailyGauntletData = null;
-    let bossAudio = null;
-
-    function stopBossVoice() {
-        if (bossAudio) {
-            try { bossAudio.pause(); bossAudio.currentTime = 0; } catch (_) {}
-            bossAudio = null;
-        }
-    }
-
-    function playBossVoice(floorIdx, force) {
+    function trackCryptEvent(eventName, params) {
         if (inSelfTest) return;
-        const boss = bosses[floorIdx];
-        if (!boss || !boss.audio) return;
-        if (!force && !isSoundEnabled()) return;
-        stopBossVoice();
         try {
-            bossAudio = new Audio(boss.audio);
-            bossAudio.volume = 0.85;
-            const p = bossAudio.play();
-            if (p && typeof p.catch === 'function') p.catch(() => {});
+            if (typeof window.trackFunnelEvent === 'function') {
+                window.trackFunnelEvent(eventName, params || {});
+            }
         } catch (_) {}
     }
 
-    const tips = L.TIPS;
+    function ensureStateShape(s) {
+        const base = L.store.fresh(s);
+        const out = Object.assign({}, base, s || {});
+        if (!Array.isArray(out.completed)) out.completed = [];
+        if (!Array.isArray(out.inventory)) out.inventory = [];
+        if (!Array.isArray(out.relics)) out.relics = [];
+        if (!Array.isArray(out.solvedIds)) out.solvedIds = [];
+        if (!out.floorStars || typeof out.floorStars !== 'object' || Array.isArray(out.floorStars)) out.floorStars = {};
+        out.dailyStreak = Math.max(parseInt(out.dailyStreak, 10) || 0, 0);
+        out.lastDailyDate = typeof out.lastDailyDate === 'string' ? out.lastDailyDate : '';
+        out.lastDailyGrid = typeof out.lastDailyGrid === 'string' ? out.lastDailyGrid : '';
+        out.streakShields = Math.min(Math.max(parseInt(out.streakShields, 10) || 0, 0), 3);
+        return out;
+    }
 
-    function loadState() { state = L.store.load(); }
-    function saveState() { L.store.save(state); }
+    /* ---------------- STATE ---------------- */
+
+    let state = ensureStateShape(L.store.fresh());
+    let campaignLevel = null;    // preserved when Daily Seed or Boss Rush is active
+    let item = null;
+    let locked = false;
+    let targetedZone = null;
+    let draggedBlock = null;
+    let hintsUsed = 0;
+    let levelMistakes = 0;
+    let hintLevel = -1;
+    let bossRushActive = false;
+    let bossRushStep = 0;
+    let bossRushResults = [];
+    let dailySeedActive = false;
+    let dailySeedStep = 0;
+    let dailyGauntletData = null;
+    let dailyStepResults = [];
+    let dailyStepHadNearMiss = false;
+    let pendingRecapMode = null;
+    let activeRecapMode = null;
+    let firstMoveFired = false;
+    let inSelfTest = false;
+
+    let bossAudio = null;
+    let milestoneTimer = null;
+    let lootTimer = null;
+    let hintGlowTimer = null;
+    const floatTimers = new Set();
+
+    let modalReturnFocus = null;
+    let drawerReturnFocus = null;
+    let recapReturnFocus = null;
 
     /* ---------------- DOM ---------------- */
 
@@ -95,29 +108,139 @@
     const statusEl = $('status');
     const tipEl = $('tip');
     const nextBtn = $('next-btn');
+    const undoBtn = $('undo-btn');
     const hintBtn = $('hint-btn');
     const blueprintBtn = $('blueprint-btn');
     const autopsyCard = $('syntax-autopsy-card');
     const floorDrawer = $('floor-drawer');
     const modal = $('prize-modal');
-    let modalReturnFocus = null;
+    const recapModal = $('recap-modal');
+    const tierJumpBar = $('tier-jump-bar');
+
+    /* ---------------- CLEAN SCREENSHARE GUARD ---------------- */
+
+    function isCleanMode() {
+        try {
+            if (localStorage.getItem('gm_teacher_clean_screenshare') === 'true') return true;
+        } catch (_) {}
+        try {
+            if (new URLSearchParams(location.search).get('wl') === '1') return true;
+        } catch (_) {}
+        return !!(document.body && document.body.classList.contains('gm-clean-screenshare'));
+    }
+
+    function syncCleanModeUI() {
+        const clean = isCleanMode();
+        if (clean && document.body && !document.body.classList.contains('gm-clean-screenshare')) {
+            document.body.classList.add('gm-clean-screenshare');
+        }
+        const deskStrip = $('belfast-desk-strip');
+        if (deskStrip) deskStrip.classList.toggle('hidden', clean);
+        const storyLink = $('autopsy-story-link');
+        if (storyLink && clean) storyLink.classList.add('hidden');
+    }
+
+    /* ---------------- VOICE & TIMERS ---------------- */
+
+    function setBossVoiceBtnState(playing) {
+        const btn = $('boss-voice-btn');
+        if (!btn) return;
+        btn.textContent = playing ? '⏹ Stop Voice' : '🔊 Boss Voice';
+        btn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+    }
+
+    function stopBossVoice() {
+        if (bossAudio) {
+            try { bossAudio.pause(); bossAudio.currentTime = 0; } catch (_) {}
+            bossAudio = null;
+        }
+        setBossVoiceBtnState(false);
+    }
+
+    function playBossVoice(floorIdx, force) {
+        if (inSelfTest) return;
+        const boss = bosses[floorIdx];
+        if (!boss || !boss.audio) return;
+        if (!force && !isSoundEnabled()) return;
+        stopBossVoice();
+        try {
+            const audio = new Audio(boss.audio);
+            audio.volume = 0.85;
+            bossAudio = audio;
+            setBossVoiceBtnState(true);
+            audio.addEventListener('ended', () => {
+                if (bossAudio === audio) {
+                    bossAudio = null;
+                    setBossVoiceBtnState(false);
+                }
+            });
+            audio.addEventListener('error', () => {
+                if (bossAudio === audio) {
+                    bossAudio = null;
+                    setBossVoiceBtnState(false);
+                }
+            });
+            const p = audio.play();
+            if (p && typeof p.catch === 'function') {
+                p.catch(() => {
+                    if (bossAudio === audio) {
+                        bossAudio = null;
+                        setBossVoiceBtnState(false);
+                    }
+                });
+            }
+        } catch (_) {
+            bossAudio = null;
+            setBossVoiceBtnState(false);
+        }
+    }
+
+    function clearTransientTimers() {
+        if (milestoneTimer) { clearTimeout(milestoneTimer); milestoneTimer = null; }
+        if (lootTimer) { clearTimeout(lootTimer); lootTimer = null; }
+        if (hintGlowTimer) { clearTimeout(hintGlowTimer); hintGlowTimer = null; }
+        floatTimers.forEach(t => clearTimeout(t));
+        floatTimers.clear();
+        const popup = $('loot-announcement');
+        if (popup) popup.classList.remove('show');
+        document.querySelectorAll('.floating-text').forEach(el => el.remove());
+    }
+
+    function loadState() {
+        state = ensureStateShape(L.store.load());
+    }
+
+    function saveState() {
+        if (inSelfTest) return;
+        const toSave = ((dailySeedActive || bossRushActive) && campaignLevel !== null)
+            ? { ...state, level: campaignLevel }
+            : state;
+        L.store.save(toSave);
+    }
 
     function setStatus(text, kind) {
+        if (!statusEl) return;
         statusEl.textContent = text;
         statusEl.className = 'status-panel' + (kind ? ' ' + kind : '');
     }
 
-    function shuffle(list) {
-        const a = list.slice();
-        for (let i = a.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [a[i], a[j]] = [a[j], a[i]];
-        }
-        return a;
-    }
-
     const zones = () => Array.from(board.querySelectorAll('.drop-zone'));
     const blockIn = (zone) => zone.querySelector('.block');
+
+    function previousDaySeed(seedStr) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(String(seedStr || ''))) return '';
+        const [y, m, d] = seedStr.split('-').map(Number);
+        const dt = new Date(Date.UTC(y, m - 1, d));
+        dt.setUTCDate(dt.getUTCDate() - 1);
+        return dt.toISOString().slice(0, 10);
+    }
+
+    function tierForFloor(floorIdx) {
+        if (floorIdx < 5) return 'b1';
+        if (floorIdx < 10) return 'b2';
+        if (floorIdx < 20) return 'c1';
+        return 'c2';
+    }
 
     function refreshHud() {
         const isOpen = floorDrawer && !floorDrawer.classList.contains('hidden');
@@ -125,16 +248,32 @@
             $('level-display').textContent = `Floor: ${state.level + 1}/${levels.length} ${isOpen ? '▴' : '▾'}`;
             $('level-display').setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         }
-        if ($('floor-drawer-toggle')) {
-            $('floor-drawer-toggle').setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        if ($('progress-pill')) {
+            $('progress-pill').setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         }
         if ($('rank-display')) {
-            const prefix = state.playerName ? `${state.playerName} - ` : '';
-            $('rank-display').textContent  = `⚔️ ${prefix}Rank ${Math.floor(state.xp / XP_PER_RANK) + 1}`;
+            const prefix = state.playerName ? `${state.playerName} · ` : '';
+            $('rank-display').textContent = `⚔️ ${prefix}Rank ${Math.floor(state.xp / XP_PER_RANK) + 1}`;
         }
-        if ($('gold-counter')) $('gold-counter').textContent  = `🪙 ${state.gold}`;
-        if ($('xp-counter')) $('xp-counter').textContent    = `🔮 ${state.xp % XP_PER_RANK}/${XP_PER_RANK}`;
-        if ($('streak-display')) $('streak-display').textContent = `🔥 ${state.streak}`;
+        if ($('gold-counter')) $('gold-counter').textContent = `🪙 ${state.gold}`;
+        if ($('xp-counter')) $('xp-counter').textContent = `🔮 ${state.xp % XP_PER_RANK}/${XP_PER_RANK}`;
+
+        const shields = state.streakShields || 0;
+        if ($('streak-display')) {
+            $('streak-display').textContent = shields > 0 ? `🔥 ${state.streak} 🛡️${shields}` : `🔥 ${state.streak}`;
+            $('streak-display').title = shields > 0
+                ? `Streak: ${state.streak} (${shields} Streak Shield${shields > 1 ? 's' : ''} active)`
+                : 'Streak';
+        }
+
+        const shieldBtn = $('buy-shield-btn');
+        if (shieldBtn) {
+            shieldBtn.textContent = shields >= 3
+                ? '🛡️ Streak Shields Full (3/3)'
+                : `🛡️ Buy Streak Shield (50 🪙) · ${shields}/3`;
+            shieldBtn.disabled = shields >= 3 || state.gold < 50;
+        }
+
         if ($('boss-rush-badge')) {
             if (bossRushActive) {
                 $('boss-rush-badge').classList.remove('hidden');
@@ -150,7 +289,8 @@
                 : '⚔️ Start 5-Boss Rush (Floors 5·10·15·20·25)';
         }
         if ($('pool-count-badge')) {
-            $('pool-count-badge').textContent = `📜 ${L.totalItems || 223}-Item Pool`;
+            const total = L.totalItems || levels.reduce((sum, fl) => sum + fl.pool.length, 0);
+            $('pool-count-badge').textContent = `📜 ${total} Challenges`;
         }
         if ($('daily-seed-badge')) {
             if (dailySeedActive && dailyGauntletData) {
@@ -161,11 +301,10 @@
             }
         }
         if ($('daily-seed-hud-btn')) {
-            const seedLabel = typeof L.getTodaySeed === 'function' ? L.getTodaySeed() : '';
             $('daily-seed-hud-btn').classList.toggle('active', dailySeedActive);
             $('daily-seed-hud-btn').textContent = dailySeedActive
-                ? `⏹️ Exit Daily Seed (${dailySeedStep + 1}/5)`
-                : `🎲 Daily Crypt Seed (${seedLabel})`;
+                ? `⏹️ Exit Daily (${dailySeedStep + 1}/5)`
+                : '🎲 Daily Seed';
         }
         if ($('daily-seed-btn')) {
             const seedLabel = typeof L.getTodaySeed === 'function' ? L.getTodaySeed() : '';
@@ -174,14 +313,24 @@
                 ? `⏹️ Exit Daily Crypt Seed (${dailySeedStep + 1}/5)`
                 : `🎲 Daily Crypt Seed · ${seedLabel} (5-Q C1/C2)`;
         }
+
+        if (tierJumpBar) {
+            const activeTier = tierForFloor(state.level);
+            tierJumpBar.querySelectorAll('.tier-pill[data-jump-tier]').forEach(btn => {
+                btn.classList.toggle('active', !dailySeedActive && !bossRushActive && btn.dataset.jumpTier === activeTier);
+            });
+            const dailyPill = tierJumpBar.querySelector('.tier-pill[data-jump-mode="daily"]');
+            if (dailyPill) dailyPill.classList.toggle('active', dailySeedActive);
+        }
     }
 
-    /* ---------------- FLOOR SELECTOR & BOSS RUSH DRAWER ---------------- */
+    /* ---------------- FLOOR SELECTOR & MODE SWITCHING ---------------- */
 
     function renderFloorDrawer() {
         const grid = $('floor-grid');
         if (!grid) return;
         grid.textContent = '';
+        const solvedSet = new Set(state.solvedIds || []);
         levels.forEach((fl, idx) => {
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -209,27 +358,78 @@
             title.className = 'floor-card-title';
             title.textContent = fl.title;
 
-            btn.append(top, title);
-            btn.addEventListener('click', () => jumpToFloor(idx));
+            const meta = document.createElement('div');
+            meta.className = 'floor-card-meta';
+            const starsCount = Math.min(3, Math.max(0, Number((state.floorStars && state.floorStars[idx]) || 0)));
+            const starsEl = document.createElement('span');
+            starsEl.className = 'floor-card-stars';
+            starsEl.textContent = '★'.repeat(starsCount) + '☆'.repeat(3 - starsCount);
+            starsEl.setAttribute('aria-label', `${starsCount} out of 3 stars`);
+
+            const solvedInPool = fl.pool.filter(p => solvedSet.has(p.id)).length;
+            const progEl = document.createElement('span');
+            progEl.className = 'floor-card-progress';
+            progEl.textContent = `${solvedInPool}/${fl.pool.length}`;
+            meta.append(starsEl, progEl);
+
+            btn.append(top, title, meta);
+            btn.addEventListener('click', () => {
+                trackCryptEvent('crypt_drawer_jump', { tool: `floor_${idx + 1}` });
+                jumpToFloor(idx);
+            });
             grid.appendChild(btn);
         });
     }
 
     function toggleFloorDrawer(forceOpen) {
         if (!floorDrawer) return;
-        const willOpen = typeof forceOpen === 'boolean' ? forceOpen : floorDrawer.classList.contains('hidden');
+        const wasOpen = !floorDrawer.classList.contains('hidden');
+        const willOpen = typeof forceOpen === 'boolean' ? forceOpen : !wasOpen;
+        if (willOpen && !wasOpen) {
+            drawerReturnFocus = document.activeElement;
+        }
         floorDrawer.classList.toggle('hidden', !willOpen);
-        if (willOpen) renderFloorDrawer();
+        if (willOpen) {
+            if ($('drawer-player-name')) $('drawer-player-name').value = state.playerName || '';
+            renderFloorDrawer();
+        } else if (wasOpen && drawerReturnFocus && document.contains(drawerReturnFocus) && floorDrawer.contains(document.activeElement)) {
+            drawerReturnFocus.focus();
+        } else if (!willOpen && wasOpen && drawerReturnFocus && document.contains(drawerReturnFocus) && document.activeElement === document.body) {
+            drawerReturnFocus.focus();
+        }
         refreshHud();
     }
 
-    function jumpToFloor(floorIdx, keepBossRush) {
+    function exitSpecialModeAndRestoreCampaign() {
+        bossRushActive = false;
+        bossRushStep = 0;
+        bossRushResults = [];
+        dailySeedActive = false;
+        dailySeedStep = 0;
+        dailyGauntletData = null;
+        dailyStepResults = [];
+        pendingRecapMode = null;
+        if (campaignLevel !== null) {
+            state.level = campaignLevel;
+            campaignLevel = null;
+        }
+        item = null;
+        saveState();
+        initLevel();
+    }
+
+    function jumpToFloor(floorIdx, keepSpecialMode) {
         if (floorIdx < 0 || floorIdx > lastLevel) return;
-        if (!keepBossRush) {
+        clearTransientTimers();
+        if (!keepSpecialMode) {
             bossRushActive = false;
+            bossRushStep = 0;
+            bossRushResults = [];
             dailySeedActive = false;
             dailySeedStep = 0;
             dailyGauntletData = null;
+            dailyStepResults = [];
+            campaignLevel = null;
         }
         state.level = floorIdx;
         item = null;
@@ -239,39 +439,46 @@
         sfx('grab');
     }
 
-    function toggleBossRush() {
-        if (bossRushActive) {
-            bossRushActive = false;
-            bossRushStep = 0;
-            refreshHud();
-            setStatus('Exited Boss Rush mode.', '');
-            return;
-        }
+    function startBossRush(silent) {
+        clearTransientTimers();
+        if (campaignLevel === null) campaignLevel = state.level;
         dailySeedActive = false;
         dailySeedStep = 0;
         dailyGauntletData = null;
+        dailyStepResults = [];
         bossRushActive = true;
         bossRushStep = 0;
-        jumpToFloor(BOSS_FLOORS[0], true);
+        bossRushResults = [];
+        state.level = BOSS_FLOORS[0];
+        item = null;
+        saveState();
+        toggleFloorDrawer(false);
+        initLevel();
         setStatus('⚔️ 5-Boss Rush engaged! Defeat all 5 Crypt Guardians (Floors 5, 10, 15, 20, 25).', '');
-        sfx('boss');
+        trackCryptEvent('crypt_mode_started', { tool: 'boss_rush' });
+        if (!silent) sfx('boss');
     }
 
-    function toggleDailySeed() {
-        if (dailySeedActive) {
-            dailySeedActive = false;
-            dailySeedStep = 0;
-            dailyGauntletData = null;
-            refreshHud();
-            setStatus('Exited Daily Crypt Seed mode.', '');
+    function toggleBossRush() {
+        if (bossRushActive) {
+            exitSpecialModeAndRestoreCampaign();
+            setStatus('Exited Boss Rush — returned to your campaign floor.', '');
             return;
         }
+        startBossRush(false);
+    }
+
+    function startDailySeed(silent) {
         if (typeof L.dailyGauntlet !== 'function') return;
+        clearTransientTimers();
+        if (campaignLevel === null) campaignLevel = state.level;
         bossRushActive = false;
         bossRushStep = 0;
+        bossRushResults = [];
         dailyGauntletData = L.dailyGauntlet();
         dailySeedActive = true;
         dailySeedStep = 0;
+        dailyStepResults = [];
         const firstStep = dailyGauntletData.steps[0];
         state.level = firstStep.floorIdx;
         item = firstStep.item;
@@ -279,7 +486,17 @@
         toggleFloorDrawer(false);
         initLevel(true);
         setStatus(`🎲 Daily Crypt Seed (${dailyGauntletData.seed}): 5-Question C1/C2 Gauntlet engaged!`, '');
-        sfx('epic');
+        trackCryptEvent('crypt_mode_started', { tool: 'daily_seed', seed: dailyGauntletData.seed });
+        if (!silent) sfx('epic');
+    }
+
+    function toggleDailySeed() {
+        if (dailySeedActive) {
+            exitSpecialModeAndRestoreCampaign();
+            setStatus('Exited Daily Crypt Seed — returned to your campaign floor.', '');
+            return;
+        }
+        startDailySeed(false);
     }
 
     /* ---------------- BELFAST DESK SYNTAX AUTOPSY CARD ---------------- */
@@ -287,7 +504,7 @@
     function updateAutopsyCard(floorIdx, currentItem, solvedAnswer, revealFull) {
         if (!autopsyCard || !currentItem) return;
         const info = typeof L.autopsy === 'function'
-            ? L.autopsy(floorIdx, currentItem)
+            ? L.autopsy(floorIdx, currentItem, solvedAnswer || null)
             : {
                 floor: floorIdx + 1,
                 title: levels[floorIdx].title,
@@ -297,7 +514,9 @@
                 formula: levels[floorIdx].formula || '',
                 posChain: '',
                 decoyDiagnosis: currentItem.explain,
-                examTip: levels[floorIdx].examTip || ''
+                examTip: levels[floorIdx].examTip || '',
+                bridge: currentItem.bridge || levels[floorIdx].bridge || null,
+                darkAcademiaBridge: null
             };
 
         if ($('autopsy-floor-heading')) {
@@ -310,10 +529,14 @@
             $('autopsy-formula').textContent = info.formula;
         }
         if ($('autopsy-pos-chain')) {
-            $('autopsy-pos-chain').textContent = revealFull ? `Token Map: ${info.posChain}` : 'Solve the floor or click "Reveal Cambridge Model" below to inspect the token-by-token map.';
+            $('autopsy-pos-chain').textContent = (locked || revealFull)
+                ? `Token Map: ${info.posChain}`
+                : 'Solve the sentence first to inspect the token-by-token map.';
         }
         if ($('autopsy-trap-text')) {
-            $('autopsy-trap-text').textContent = info.decoyDiagnosis;
+            $('autopsy-trap-text').textContent = locked
+                ? info.decoyDiagnosis
+                : 'Solve the sentence first to unlock the decoy diagnosis.';
         }
         if ($('autopsy-exam-text')) {
             $('autopsy-exam-text').textContent = info.examTip;
@@ -322,16 +545,71 @@
         const modelOut = $('autopsy-model-output');
         const revealBtn = $('reveal-model-btn');
         const primarySentence = solvedAnswer ? L.formatSentence(solvedAnswer) : info.modelSentence;
-        const altNote = info.altSentences && info.altSentences.length > 0
-            ? ` (Also accepted: "${info.altSentences[0]}")`
+        const allAlternatives = (info.altSentences || []).filter(s => s !== primarySentence);
+        const altNote = allAlternatives.length > 0
+            ? ` (Also accepted: ${allAlternatives.map(s => `"${s}"`).join(' · ')})`
             : '';
 
+        const showModel = Boolean(locked || revealFull);
         if (modelOut) {
-            modelOut.textContent = `✔ Cambridge Model: "${primarySentence}" — ${currentItem.explain}${altNote}`;
-            modelOut.classList.toggle('hidden', !revealFull);
+            modelOut.textContent = showModel
+                ? `✔ Cambridge Model: "${primarySentence}" — ${currentItem.explain}${altNote}`
+                : '';
+            modelOut.classList.toggle('hidden', !showModel);
         }
+
+        const isBossFloor = !!bosses[floorIdx];
         if (revealBtn) {
-            revealBtn.classList.toggle('hidden', !!revealFull);
+            if (!locked && isBossFloor) {
+                revealBtn.disabled = true;
+                revealBtn.textContent = '🔒 Model Locked on Boss Floors';
+                revealBtn.classList.remove('hidden');
+            } else {
+                revealBtn.disabled = false;
+                revealBtn.textContent = '👁️ Reveal Cambridge Model';
+                revealBtn.classList.toggle('hidden', showModel);
+            }
+        }
+
+        // Cambridge C1 Part 4 micro-drill bridge (post-solve only)
+        const bridgeBox = $('autopsy-bridge-box');
+        if (bridgeBox) {
+            if (locked && info.bridge) {
+                const b = info.bridge;
+                bridgeBox.classList.remove('hidden');
+                const promptEl = bridgeBox.querySelector('.bridge-prompt');
+                const kwEl = bridgeBox.querySelector('.bridge-keyword-badge');
+                const frameEl = bridgeBox.querySelector('.bridge-frame');
+                const revealBridgeBtn = $('btn-reveal-bridge');
+                const ansEl = bridgeBox.querySelector('.bridge-answer-reveal');
+                if (promptEl) promptEl.textContent = b.prompt || '';
+                if (kwEl) kwEl.textContent = b.keyword ? `KEY WORD: ${b.keyword}` : '';
+                if (frameEl) frameEl.textContent = `${b.frameBefore || ''} ________ ${b.frameAfter || ''}`.trim();
+                if (ansEl) {
+                    ansEl.textContent = `✔ ${b.answer || ''}${b.note ? ` — ${b.note}` : ''}`;
+                    ansEl.classList.add('hidden');
+                }
+                if (revealBridgeBtn) {
+                    revealBridgeBtn.classList.remove('hidden');
+                    revealBridgeBtn.disabled = false;
+                }
+            } else {
+                bridgeBox.classList.add('hidden');
+            }
+        }
+
+        // Free Gothic Story Lesson link (post-solve & hidden in clean screenshare mode)
+        const storyLink = $('autopsy-story-link');
+        if (storyLink) {
+            if (locked && info.darkAcademiaBridge && info.darkAcademiaBridge.href && !isCleanMode()) {
+                storyLink.href = info.darkAcademiaBridge.href;
+                storyLink.textContent = `📖 ${info.darkAcademiaBridge.title} →`;
+                storyLink.classList.remove('hidden');
+            } else {
+                storyLink.href = '#';
+                storyLink.textContent = '';
+                storyLink.classList.add('hidden');
+            }
         }
     }
 
@@ -345,15 +623,21 @@
         }
         if (willOpen) {
             updateAutopsyCard(state.level, item, locked ? item.answers[0] : null, locked || !!revealFull);
+            if (!inSelfTest && typeof forceOpen !== 'boolean') {
+                trackCryptEvent('crypt_autopsy_opened', { tool: `floor_${state.level + 1}`, solved: locked ? 'yes' : 'no' });
+            }
         }
     }
 
     /* ---------------- LEVEL SETUP ---------------- */
 
     function initLevel(keepItem) {
+        clearTransientTimers();
         const level = levels[state.level];
         locked = false;
-        
+        pendingRecapMode = null;
+        dailyStepHadNearMiss = false;
+
         const boss = bosses[state.level];
         if (boss) {
             document.body.classList.add('boss-mode');
@@ -362,7 +646,7 @@
             $('boss-avatar').style.filter = 'drop-shadow(2px 4px 0 #000)';
             $('boss-name').textContent = boss.name;
             $('boss-taunt').textContent = `"${boss.taunt}"`;
-            if (hintBtn) hintBtn.style.display = 'none'; // No hints in boss fights!
+            if (hintBtn) hintBtn.style.display = 'none';
             playBossVoice(state.level, false);
         } else {
             document.body.classList.remove('boss-mode');
@@ -370,14 +654,16 @@
             if (hintBtn) hintBtn.style.display = 'inline-block';
             stopBossVoice();
         }
+
         targetedZone = null;
         if (hintLevel !== state.level) { hintsUsed = 0; levelMistakes = 0; hintLevel = state.level; }
-        // A fresh sentence from the floor's pool (Reset or Daily Seed keeps the target one).
+
         if (dailySeedActive && dailyGauntletData && dailyGauntletData.steps[dailySeedStep]) {
             item = dailyGauntletData.steps[dailySeedStep].item;
         } else if (!keepItem || !item || !level.pool.includes(item)) {
             item = L.pickItem(state.level, item && item.id);
         }
+
         if (tipEl) tipEl.textContent = '';
         refreshHud();
         $('quest-title').textContent = (dailySeedActive && dailyGauntletData)
@@ -393,7 +679,8 @@
 
         item.slots.forEach((slot, i) => {
             const zone = document.createElement('div');
-            zone.className = 'drop-zone';
+            const extraCls = slot.pos === 'any' ? ` ${(L.CSS && L.CSS.any) ? L.CSS.any : 'any-slot'}` : '';
+            zone.className = 'drop-zone' + extraCls;
             zone.dataset.pos = slot.pos;
             zone.setAttribute('role', 'group');
             zone.setAttribute('aria-label', `Slot ${i + 1}: ${slot.label}`);
@@ -404,29 +691,44 @@
             board.appendChild(zone);
         });
 
-        // Shuffled copy that never starts in an accepted order.
+        const isCoarsePointer = Boolean(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
         L.shuffledRunes(item).forEach((r, i) => {
             const block = document.createElement('div');
             block.className = `block ${L.CSS[r.pos] || ''}`;
             block.id = `rune-${i}`;
-            block.draggable = true;
+            block.draggable = !isCoarsePointer;
             block.tabIndex = 0;
             block.setAttribute('role', 'button');
             block.dataset.pos = r.pos;
             block.dataset.text = r.text;
-            if (i < 9) block.dataset.key = String(i + 1);
-            else if (i === 9) block.dataset.key = '0';
             block.textContent = r.text;
             bank.appendChild(block);
         });
+
         refreshZones();
         if (floorDrawer && !floorDrawer.classList.contains('hidden')) renderFloorDrawer();
     }
 
+    const BANK_SHORTCUT_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+
     function refreshZones() {
-        zones().forEach(z => {
-            z.classList.toggle('filled', !!blockIn(z));
+        const currentZones = zones();
+        let anyPlaced = false;
+        currentZones.forEach(z => {
+            const hasBlock = !!blockIn(z);
+            if (hasBlock) anyPlaced = true;
+            z.classList.toggle('filled', hasBlock);
             z.classList.remove('wrong');
+        });
+        if (undoBtn) undoBtn.disabled = locked || !anyPlaced;
+
+        board.querySelectorAll('.block').forEach(b => b.removeAttribute('data-key'));
+        Array.from(bank.querySelectorAll('.block')).forEach((b, idx) => {
+            if (!locked && idx < BANK_SHORTCUT_KEYS.length) {
+                b.dataset.key = BANK_SHORTCUT_KEYS[idx];
+            } else {
+                b.removeAttribute('data-key');
+            }
         });
     }
 
@@ -438,35 +740,50 @@
 
     const boardTexts = () => zones().map(z => (blockIn(z) ? blockIn(z).dataset.text : null));
 
+    function getTipText(floorIdx, it, pos) {
+        if (!pos) return '';
+        if (typeof L.tipFor === 'function') return L.tipFor(floorIdx, it, pos) || '';
+        return (L.TIPS && L.TIPS[pos]) || '';
+    }
+
     function useHint() {
         if (locked) return;
         const slots = zones();
         const cost = hintsUsed === 0 ? 0 : 5;
-        if (state.gold < cost) { 
-            setStatus('Not enough gold for another hint (5 🪙).', 'error'); 
-            return; 
+        if (state.gold < cost) {
+            setStatus('Not enough gold for another hint (5 🪙).', 'error');
+            return;
         }
-        
-        // Closest accepted ordering to what is on the board: first slot that deviates from it.
+
         const texts = boardTexts();
         const c = L.closest(item, texts);
         const firstWrongIndex = c.prefix;
         if (firstWrongIndex >= c.answer.length) return;
-        
+
         const expectedText = c.answer[firstWrongIndex];
-        const block = Array.from(document.querySelectorAll('.block')).find(b => b.dataset.text === expectedText && !slots[firstWrongIndex].contains(b));
-        if (block) { 
-            block.classList.add('hint'); 
-            setTimeout(() => block.classList.remove('hint'), 2600); 
+        const block = Array.from(bank.querySelectorAll('.block')).find(b => b.dataset.text === expectedText)
+            || Array.from(board.querySelectorAll('.block')).find(b => b.dataset.text === expectedText && !slots[firstWrongIndex].contains(b));
+        if (block) {
+            block.classList.add('hint');
+            if (hintGlowTimer) clearTimeout(hintGlowTimer);
+            hintGlowTimer = setTimeout(() => {
+                block.classList.remove('hint');
+                hintGlowTimer = null;
+            }, 2600);
         }
-        
-        state.gold -= cost; 
-        hintsUsed++; 
-        refreshHud(); 
+
+        state.gold -= cost;
+        hintsUsed++;
+        refreshHud();
         saveState();
-        
+
+        const slotInfo = item.slots && item.slots[firstWrongIndex];
+        const expectedPos = (slotInfo && slotInfo.pos && slotInfo.pos !== 'any')
+            ? slotInfo.pos
+            : ((item.posOf && item.posOf[expectedText]) || 'any');
         setStatus(`Rune ${firstWrongIndex + 1} is glowing!` + (cost ? ' (-5 🪙)' : ' (first hint is free)'), '');
-        if (tipEl) tipEl.textContent = (L.TIPS[item.posOf[expectedText]] || '') + ' ' + item.explain;
+        if (tipEl) tipEl.textContent = getTipText(state.level, item, expectedPos);
+        trackCryptEvent('crypt_hint_used', { tool: `floor_${state.level + 1}` });
         sfx('grab');
     }
 
@@ -478,11 +795,26 @@
     }
 
     function afterMove() {
+        if (!inSelfTest && !firstMoveFired) {
+            firstMoveFired = true;
+            trackCryptEvent('crypt_first_move', { tool: `act_${Math.floor(state.level / 5) + 1}` });
+        }
         refreshZones();
         validateBoard();
     }
 
-    // Click / tap / keyboard: bank -> first free (or chosen) slot; placed -> back to bank.
+    function undoLastRune() {
+        if (locked) return false;
+        const occupiedZones = zones().filter(z => !!blockIn(z));
+        if (occupiedZones.length === 0) return false;
+        const lastBlock = blockIn(occupiedZones[occupiedZones.length - 1]);
+        if (!lastBlock) return false;
+        place(lastBlock, bank);
+        setTarget(null);
+        afterMove();
+        return true;
+    }
+
     function activateBlock(block) {
         if (locked) return;
         const zone = block.closest('.drop-zone');
@@ -498,7 +830,9 @@
     }
 
     function clearActive(except) {
-        document.querySelectorAll('.drop-zone.active, .block-bank.active').forEach(el => { if (el !== except) el.classList.remove('active'); });
+        document.querySelectorAll('.drop-zone.active, .block-bank.active').forEach(el => {
+            if (el !== except) el.classList.remove('active');
+        });
     }
 
     function dropOn(container) {
@@ -507,7 +841,7 @@
         if (container.classList.contains('drop-zone')) {
             const occupant = blockIn(container);
             if (occupant === dragged) return;
-            if (occupant) place(occupant, dragged.parentElement);   // swap with the dragged rune's origin
+            if (occupant) place(occupant, dragged.parentElement);
             place(dragged, container);
         } else {
             place(dragged, bank);
@@ -528,7 +862,11 @@
 
         playArea.addEventListener('keydown', (e) => {
             const block = e.target.closest && e.target.closest('.block');
-            if (block && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); activateBlock(block); }
+            if (block && !locked && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                e.stopPropagation();
+                activateBlock(block);
+            }
         });
 
         playArea.addEventListener('dragstart', (e) => {
@@ -565,15 +903,38 @@
             clearActive();
         });
 
-        // Mobile Touch Drag & Drop
+        // Mobile Touch Drag & Drop (threshold > 10px, clean touchcancel separation)
         let touchDragEl = null;
         let touchStartX = 0;
         let touchStartY = 0;
         let isTouchDragging = false;
+        let touchScrollSuppressed = false;
         let touchClone = null;
 
+        const clearTouchDragVisuals = () => {
+            if (touchClone) {
+                touchClone.remove();
+                touchClone = null;
+            }
+            if (touchDragEl) {
+                touchDragEl.classList.remove('dragging');
+            }
+            clearActive();
+        };
+
+        const cancelTouchDrag = () => {
+            clearTouchDragVisuals();
+            draggedBlock = null;
+            touchDragEl = null;
+            isTouchDragging = false;
+            touchScrollSuppressed = false;
+        };
+
         playArea.addEventListener('touchstart', (e) => {
-            if (locked) return;
+            if (locked || (e.touches && e.touches.length > 1)) {
+                cancelTouchDrag();
+                return;
+            }
             const block = e.target.closest('.block');
             if (!block) return;
             const t = e.touches[0];
@@ -581,33 +942,46 @@
             touchStartX = t.clientX;
             touchStartY = t.clientY;
             isTouchDragging = false;
+            touchScrollSuppressed = false;
         }, { passive: true });
 
         playArea.addEventListener('touchmove', (e) => {
-            if (!touchDragEl || locked) return;
+            if (!touchDragEl || locked || touchScrollSuppressed) return;
             const t = e.touches[0];
             const dx = t.clientX - touchStartX;
             const dy = t.clientY - touchStartY;
+            const dist = Math.hypot(dx, dy);
 
-            if (!isTouchDragging && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+            if (!isTouchDragging) {
+                if (dist <= 10) return;
+                if (!e.cancelable) {
+                    touchScrollSuppressed = true;
+                    touchDragEl = null;
+                    return;
+                }
                 isTouchDragging = true;
                 draggedBlock = touchDragEl;
                 touchDragEl.classList.add('dragging');
                 sfx('grab');
 
                 touchClone = touchDragEl.cloneNode(true);
+                touchClone.removeAttribute('id');
                 touchClone.classList.add('touch-drag-proxy');
                 touchClone.style.position = 'fixed';
                 touchClone.style.pointerEvents = 'none';
                 touchClone.style.zIndex = '9999';
-                touchClone.style.opacity = '0.9';
-                touchClone.style.transform = 'translate(-50%, -50%) scale(1.08)';
+                touchClone.style.opacity = '0.92';
+                touchClone.style.transform = 'translate(-50%, -115%) scale(1.06)';
                 touchClone.style.boxShadow = '0 12px 24px rgba(0,0,0,0.6)';
                 document.body.appendChild(touchClone);
             }
 
             if (isTouchDragging) {
-                if (e.cancelable) e.preventDefault();
+                if (!e.cancelable) {
+                    cancelTouchDrag();
+                    return;
+                }
+                e.preventDefault();
                 if (touchClone) {
                     touchClone.style.left = t.clientX + 'px';
                     touchClone.style.top = t.clientY + 'px';
@@ -619,49 +993,45 @@
             }
         }, { passive: false });
 
-        const endTouchDrag = (e) => {
-            if (touchClone) {
-                touchClone.remove();
-                touchClone = null;
-            }
-            if (touchDragEl) {
-                touchDragEl.classList.remove('dragging');
-            }
-            if (isTouchDragging) {
+        playArea.addEventListener('touchend', (e) => {
+            const wasDragging = isTouchDragging;
+            const block = touchDragEl;
+            let container = null;
+            if (wasDragging) {
                 const t = e.changedTouches ? e.changedTouches[0] : null;
                 if (t) {
                     const elem = document.elementFromPoint(t.clientX, t.clientY);
-                    const container = elem ? elem.closest('.drop-zone, .block-bank') : null;
-                    if (container) {
-                        dropOn(container);
-                    }
+                    container = elem ? elem.closest('.drop-zone, .block-bank') : null;
                 }
-                clearActive();
-                draggedBlock = null;
-                touchDragEl = null;
-                isTouchDragging = false;
-            } else {
-                touchDragEl = null;
             }
-        };
+            clearTouchDragVisuals();
+            touchDragEl = null;
+            isTouchDragging = false;
+            touchScrollSuppressed = false;
+            if (wasDragging && container && block) {
+                draggedBlock = block;
+                dropOn(container);
+            }
+            draggedBlock = null;
+        }, { passive: true });
 
-        playArea.addEventListener('touchend', endTouchDrag, { passive: true });
-        playArea.addEventListener('touchcancel', endTouchDrag, { passive: true });
+        playArea.addEventListener('touchcancel', cancelTouchDrag, { passive: true });
     }
 
     /* ---------------- VALIDATION ---------------- */
 
-    let inSelfTest = false;
-
     function getCryptCategory(floorIdx, it) {
-        if (it && it.tokens) {
-            if (it.tokens.some(t => t.pos === 'cleft' || t.pos === 'rel')) return 'cleft_clauses';
-            if (it.tokens.some(t => t.pos === 'neg')) return 'inversion';
+        const tokens = (it && Array.isArray(it.tokens)) ? it.tokens : [];
+        if (floorIdx >= 0 && floorIdx <= 4) {
+            return tokens.some(t => t.pos === 'part') ? 'phrasal_verbs' : 'prosody_cadence';
         }
-        if (floorIdx >= 20 && floorIdx <= 23) return 'cleft_clauses';
-        if (floorIdx === 8 || floorIdx === 9) return 'register_shift';
-        if (floorIdx === 5 || floorIdx === 6 || floorIdx === 7) return 'nominalisation';
-        return 'inversion';
+        if (floorIdx >= 5 && floorIdx <= 9) return 'register_shift';
+        if (floorIdx >= 10 && floorIdx <= 19) return 'inversion';
+        if (floorIdx >= 20 && floorIdx <= 22) return 'cleft_clauses';
+        if (floorIdx === 23) return 'nominalisation';
+        if (tokens.some(t => t.pos === 'cleft' || t.pos === 'rel')) return 'cleft_clauses';
+        if (tokens.some(t => t.pos === 'neg') || (tokens[0] && tokens[0].pos === 'aux')) return 'inversion';
+        return 'register_shift';
     }
 
     function validateBoard() {
@@ -671,13 +1041,12 @@
             return;
         }
 
-        // Any accepted ordering wins; near-misses are grammatical but not this floor's structure.
         const currentTexts = boardTexts();
         const r = L.check(item, currentTexts);
         const questionText = levels[state.level] ? `${levels[state.level].title} (${levels[state.level].cefr})` : 'Grammar Crypt';
         const correctAns = L.formatSentence(r.answer || item.answers[0]);
         const chosenAns = L.formatSentence(currentTexts);
-        const ruleExplanation = r.msg || item.explain || (L.TIPS[r.expectedPos] || '');
+        const ruleExplanation = r.msg || item.explain || getTipText(state.level, item, r.expectedPos);
 
         if (r.result === 'correct') {
             if (!inSelfTest) {
@@ -693,6 +1062,7 @@
             }
             solveLevel(r.answer);
         } else if (r.result === 'near') {
+            if (dailySeedActive) dailyStepHadNearMiss = true;
             setStatus('Almost!', '');
             if (tipEl) tipEl.textContent = r.msg;
             sfx('grab');
@@ -708,24 +1078,36 @@
                     explanation: ruleExplanation
                 });
             }
-            state.streak = 0;
+
+            let shieldMsg = '';
+            if (state.streak > 0 && (state.streakShields || 0) > 0) {
+                state.streakShields -= 1;
+                shieldMsg = `🛡️ Streak Shield protected your ${state.streak}-streak! `;
+            } else {
+                state.streak = 0;
+            }
+            levelMistakes++;
             refreshHud();
             saveState();
-            levelMistakes++;
+
             const firstWrongIndex = r.firstWrong;
-            slots[firstWrongIndex].classList.add('wrong');   // only the first error: no solving by elimination
-            
-            setStatus(r.isDecoy ? `Rune ${firstWrongIndex + 1} is a decoy: it does not belong in this sentence.` : `Rune ${firstWrongIndex + 1} is not right yet.`, 'error');
-            if (tipEl) tipEl.textContent = r.msg || L.TIPS[r.expectedPos] || '';
-            
-            board.classList.remove('shake'); 
-            void board.offsetWidth; 
+            if (slots[firstWrongIndex]) slots[firstWrongIndex].classList.add('wrong');
+
+            const baseMsg = r.isDecoy
+                ? `Rune ${firstWrongIndex + 1} is a decoy: it does not belong in this sentence.`
+                : `Rune ${firstWrongIndex + 1} is not right yet.`;
+            setStatus(shieldMsg + baseMsg, 'error');
+            if (tipEl) tipEl.textContent = r.msg || getTipText(state.level, item, r.expectedPos);
+
+            board.classList.remove('shake');
+            void board.offsetWidth;
             board.classList.add('shake');
             sfx('error');
         }
     }
 
-        function showFloatingText(text, color, element) {
+    function showFloatingText(text, color, element) {
+        if (inSelfTest || !element) return;
         const floater = document.createElement('div');
         floater.className = 'floating-text';
         floater.textContent = text;
@@ -734,39 +1116,65 @@
         floater.style.left = (rect.left + rect.width / 2 - 30 + window.scrollX) + 'px';
         floater.style.top = (rect.top - 20 + window.scrollY) + 'px';
         document.body.appendChild(floater);
-        setTimeout(() => floater.remove(), 1000);
+        const t = setTimeout(() => {
+            floatTimers.delete(t);
+            floater.remove();
+        }, 1000);
+        floatTimers.add(t);
     }
 
     function solveLevel(answer) {
         locked = true;
         const solvedFloorIdx = state.level;
+        const solvedOrder = answer || item.answers[0];
         board.querySelectorAll('.block').forEach(b => { b.classList.add('correct'); b.draggable = false; });
         bank.querySelectorAll('.block').forEach(b => { b.draggable = false; b.tabIndex = -1; });
+        refreshZones();
 
         const isLast = solvedFloorIdx === lastLevel;
         const firstClear = !state.completed.includes(solvedFloorIdx);
+        const stars = (levelMistakes === 0 && hintsUsed === 0)
+            ? 3
+            : ((levelMistakes <= 1 && hintsUsed <= 1) ? 2 : 1);
+
+        if (!Array.isArray(state.solvedIds)) state.solvedIds = [];
+        if (item && item.id && !state.solvedIds.includes(item.id)) {
+            state.solvedIds.push(item.id);
+        }
+        if (!state.floorStars || typeof state.floorStars !== 'object') state.floorStars = {};
+        if (stars > Number(state.floorStars[solvedFloorIdx] || 0)) {
+            state.floorStars[solvedFloorIdx] = stars;
+        }
 
         if (firstClear) {
             state.completed.push(solvedFloorIdx);
             state.streak++;
-            if (levelMistakes === 0) state.perfect++;
+            if (levelMistakes === 0 && hintsUsed === 0) state.perfect++;
             const goldEarned = 15 + Math.min(state.streak - 1, 5) * 3;
             state.gold += goldEarned;
             state.xp += 20;
-            
+
             const boss = bosses[solvedFloorIdx];
             if (boss) {
-                state.gold += 50; // Boss clear bonus
+                state.gold += 50;
                 $('boss-taunt').textContent = '"Impossible! My syntax is broken!"';
                 $('boss-avatar').style.filter = 'grayscale(100%) blur(3px)';
                 showFloatingText('+50 🪙 BOSS BONUS', '#facc15', $('gold-counter'));
-                setTimeout(() => showFloatingText('+20 🔮', '#a855f7', $('xp-counter')), 600);
+                const xpT = setTimeout(() => {
+                    floatTimers.delete(xpT);
+                    showFloatingText('+20 🔮', '#a855f7', $('xp-counter'));
+                }, 600);
+                floatTimers.add(xpT);
             } else {
                 showFloatingText('+' + goldEarned + ' 🪙', '#facc15', $('gold-counter'));
-                setTimeout(() => showFloatingText('+20 🔮', '#a855f7', $('xp-counter')), 300);
+                const xpT = setTimeout(() => {
+                    floatTimers.delete(xpT);
+                    showFloatingText('+20 🔮', '#a855f7', $('xp-counter'));
+                }, 300);
+                floatTimers.add(xpT);
             }
-            
-            if (window.confetti) {
+
+            if (!inSelfTest && window.confetti) {
                 confetti({
                     particleCount: 100,
                     spread: 80,
@@ -777,28 +1185,87 @@
             }
         }
 
+        const stepEmoji = levelMistakes >= 2
+            ? '🟥'
+            : ((levelMistakes === 0 && hintsUsed === 0 && !dailyStepHadNearMiss) ? '🟩' : '🟨');
+
+        if (dailySeedActive && dailyGauntletData) {
+            dailyStepResults[dailySeedStep] = {
+                step: dailySeedStep + 1,
+                floorIdx: solvedFloorIdx,
+                cefr: levels[solvedFloorIdx].cefr,
+                title: levels[solvedFloorIdx].title,
+                sentence: L.formatSentence(solvedOrder),
+                explain: item.explain,
+                emoji: stepEmoji,
+                mistakes: levelMistakes,
+                hints: hintsUsed
+            };
+        }
+        if (bossRushActive) {
+            bossRushResults[bossRushStep] = {
+                step: bossRushStep + 1,
+                floorIdx: solvedFloorIdx,
+                cefr: levels[solvedFloorIdx].cefr,
+                title: levels[solvedFloorIdx].title,
+                sentence: L.formatSentence(solvedOrder),
+                explain: item.explain,
+                emoji: stepEmoji,
+                mistakes: levelMistakes,
+                hints: hintsUsed
+            };
+        }
+
         const isBossRushFinal = bossRushActive && bossRushStep >= BOSS_FLOORS.length - 1;
         const isDailyFinal = dailySeedActive && dailyGauntletData && dailySeedStep >= dailyGauntletData.steps.length - 1;
+
         if (isDailyFinal) {
-            state.gold += 100;
-            setStatus(`🎲 Daily Crypt Seed (${dailyGauntletData.seed}) Conquered! All 5 C1/C2 Runes Mastered! (+100 🪙)`, 'success');
+            const seed = dailyGauntletData.seed;
+            const grid = dailyStepResults.map(s => s ? s.emoji : '🟩').join('');
+            const cleanCount = dailyStepResults.filter(s => s && s.emoji === '🟩').length;
+            const firstDailyToday = state.lastDailyDate !== seed;
+            if (firstDailyToday) {
+                state.dailyStreak = state.lastDailyDate === previousDaySeed(seed)
+                    ? (state.dailyStreak || 0) + 1
+                    : 1;
+                state.lastDailyDate = seed;
+                state.gold += 100;
+                setStatus(`🎲 Daily Crypt Seed (${seed}) Conquered! All 5 C1/C2 Runes Mastered! (+100 🪙)`, 'success');
+            } else {
+                setStatus(`🎲 Daily Crypt Seed (${seed}) Complete! (Today's +100 🪙 bonus already claimed)`, 'success');
+            }
+            state.lastDailyGrid = grid;
+            pendingRecapMode = 'daily';
+            trackCryptEvent('crypt_mode_completed', { tool: 'daily_seed', score: cleanCount, grid });
         } else if (isBossRushFinal) {
+            const cleanCount = bossRushResults.filter(s => s && s.emoji === '🟩').length;
             state.gold += 100;
             setStatus('🏆 5-Boss Rush Conquered! All 5 Crypt Guardians Defeated! (+100 🪙)', 'success');
+            pendingRecapMode = 'boss';
+            trackCryptEvent('crypt_mode_completed', { tool: 'boss_rush', score: cleanCount });
         } else {
+            pendingRecapMode = (isLast && !dailySeedActive && !bossRushActive) ? 'campaign' : null;
             setStatus(isLast ? 'The Crypt is Conquered!' : (firstClear ? 'The incantation is complete!' : 'The incantation is complete! (Rewards already claimed)'), 'success');
         }
-        if (tipEl) tipEl.textContent = '✔ "' + L.formatSentence(answer || item.answers[0]) + '" ' + item.explain;
+
+        if (tipEl) tipEl.textContent = '✔ "' + L.formatSentence(solvedOrder) + '" ' + item.explain;
         sfx('success', state.streak);
 
-        // Reveal the Belfast Desk Syntax Autopsy Card automatically upon solving
+        trackCryptEvent('crypt_floor_solved', {
+            tool: `act_${Math.floor(solvedFloorIdx / 5) + 1}`,
+            floor: solvedFloorIdx + 1,
+            cefr: levels[solvedFloorIdx].cefr,
+            stars
+        });
+
+        // Reveal Belfast Desk Syntax Autopsy Card post-solve
         if (autopsyCard && !inSelfTest) {
             autopsyCard.classList.remove('hidden');
             if (blueprintBtn) {
                 blueprintBtn.setAttribute('aria-expanded', 'true');
                 blueprintBtn.textContent = '🙈 Hide Structural Blueprint';
             }
-            updateAutopsyCard(solvedFloorIdx, item, answer || item.answers[0], true);
+            updateAutopsyCard(solvedFloorIdx, item, solvedOrder, true);
         }
 
         nextBtn.disabled = false;
@@ -808,80 +1275,115 @@
             nextBtn.textContent = 'Finish Daily Seed ✔';
         } else if (bossRushActive && !isBossRushFinal) {
             nextBtn.textContent = `Next Boss (${bossRushStep + 2}/${BOSS_FLOORS.length}) ➔`;
+        } else if (isBossRushFinal) {
+            nextBtn.textContent = 'Finish Boss Rush 🏆';
+        } else if (isLast) {
+            nextBtn.textContent = 'Finish Crypt 🏆';
         } else {
-            nextBtn.textContent = (isLast || isBossRushFinal) ? 'Restart Crypt ↺' : 'Next Floor ➔';
+            nextBtn.textContent = 'Next Floor ➔';
         }
 
         if (firstClear) {
             const loot = rollLoot();
             state.inventory.push(loot.name);
             announceLoot(loot);
+            checkMilestone(solvedFloorIdx);
             updateInventoryUI();
-            checkMilestone();
         }
 
         if (!bossRushActive && !dailySeedActive) {
-            state.level = isLast ? state.level : state.level + 1;   // progress is saved as "next floor"
+            state.level = isLast ? state.level : state.level + 1;
         }
         saveState();
         refreshHud();
+        if (floorDrawer && !floorDrawer.classList.contains('hidden')) renderFloorDrawer();
     }
 
-    /* ---------------- LOOT ---------------- */
+    /* ---------------- LOOT & RELICS ---------------- */
 
     function rollLoot() {
         const total = lootTable.reduce((sum, l) => sum + l.chance, 0);
         let roll = Math.random() * total;
-        for (const item of lootTable) {
-            roll -= item.chance;
-            if (roll < 0) return item;
+        for (const entry of lootTable) {
+            roll -= entry.chance;
+            if (roll < 0) return entry;
         }
         return lootTable[0];
     }
 
-    function announceLoot(item) {
+    function announceLoot(lootItem) {
+        if (inSelfTest) return;
         const popup = $('loot-announcement');
+        if (!popup) return;
         popup.textContent = '';
         const wrap = document.createElement('span');
         wrap.append('Uncovered: ');
         const name = document.createElement('span');
-        name.style.color = item.color;
-        name.textContent = item.name;
+        name.style.color = lootItem.color;
+        name.textContent = lootItem.name;
         wrap.append(name, '!');
         popup.appendChild(wrap);
 
-        clearTimeout(lootTimer);
+        if (lootTimer) clearTimeout(lootTimer);
         lootTimer = setTimeout(() => {
             sfx('loot');
             popup.classList.add('show');
-            lootTimer = setTimeout(() => popup.classList.remove('show'), 2200);
-        }, 600);   // slight delay after the success chime
+            lootTimer = setTimeout(() => {
+                popup.classList.remove('show');
+                lootTimer = null;
+            }, 2200);
+        }, 600);
     }
 
     function updateInventoryUI() {
         const list = $('inventory-list');
+        if (!list) return;
         list.textContent = '';
-        if (state.inventory.length === 0) {
+        const relics = Array.isArray(state.relics) ? state.relics : [];
+        const inventory = Array.isArray(state.inventory) ? state.inventory : [];
+
+        if (relics.length === 0 && inventory.length === 0) {
             const note = document.createElement('p');
             note.className = 'empty-note';
             note.textContent = 'No relics yet. Solve a floor to uncover one.';
             list.appendChild(note);
             return;
         }
-        state.inventory.slice().reverse().forEach((itemName) => {
-            const item = lootTable.find(l => l.name === itemName);
-            if (!item) return;
+
+        const milestoneList = Object.values(milestonePrizes || {});
+        relics.slice().reverse().forEach((relicName) => {
+            const prize = milestoneList.find(m => m.name === relicName);
+            const row = document.createElement('div');
+            row.className = 'loot-item boss-relic';
+            const icon = document.createElement('span');
+            icon.className = 'loot-icon relic-emoji-icon';
+            icon.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;font-size:20px;background:#1e1b4b;';
+            icon.textContent = prize ? prize.emoji : '🏆';
+            icon.setAttribute('aria-hidden', 'true');
+            const text = document.createElement('span');
+            text.textContent = relicName;
+            const rarity = document.createElement('span');
+            rarity.className = 'loot-rarity';
+            rarity.textContent = 'Boss Relic';
+            text.appendChild(rarity);
+            row.append(icon, text);
+            list.appendChild(row);
+        });
+
+        inventory.slice().reverse().forEach((itemName) => {
+            const entry = lootTable.find(l => l.name === itemName);
+            if (!entry) return;
             const row = document.createElement('div');
             row.className = 'loot-item';
             const icon = document.createElement('span');
             icon.className = 'loot-icon';
-            icon.style.backgroundColor = item.color;
+            icon.style.backgroundColor = entry.color;
             icon.setAttribute('aria-hidden', 'true');
             const text = document.createElement('span');
-            text.textContent = item.name;
+            text.textContent = entry.name;
             const rarity = document.createElement('span');
             rarity.className = 'loot-rarity';
-            rarity.textContent = item.rarity;
+            rarity.textContent = entry.rarity;
             text.appendChild(rarity);
             row.append(icon, text);
             list.appendChild(row);
@@ -890,13 +1392,20 @@
 
     /* ---------------- MILESTONES ---------------- */
 
-    function checkMilestone() {
-        const prize = milestonePrizes[state.level];
+    function checkMilestone(solvedFloorIdx) {
+        if (inSelfTest) return;
+        const prize = milestonePrizes[solvedFloorIdx];
         if (!prize) return;
+        if (!Array.isArray(state.relics)) state.relics = [];
+        if (!state.relics.includes(prize.name)) {
+            state.relics.push(prize.name);
+        }
         $('prize-emoji').textContent = prize.emoji;
         $('prize-name').textContent = prize.name;
         $('prize-description').textContent = prize.desc;
-        setTimeout(() => {
+        if (milestoneTimer) clearTimeout(milestoneTimer);
+        milestoneTimer = setTimeout(() => {
+            milestoneTimer = null;
             modalReturnFocus = document.activeElement;
             modal.classList.add('open');
             $('claim-btn').focus();
@@ -909,34 +1418,191 @@
         if (modalReturnFocus && document.contains(modalReturnFocus)) modalReturnFocus.focus();
     }
 
+    /* ---------------- UNIFIED RECAP MODAL ---------------- */
+
+    function getRecapStats(mode) {
+        if (mode === 'daily') {
+            const steps = dailyStepResults.filter(Boolean);
+            const cleanCount = steps.filter(s => s.emoji === '🟩').length;
+            return {
+                score: cleanCount,
+                maxScore: 5,
+                grid: steps.map(s => s.emoji).join(''),
+                steps,
+                seed: (dailyGauntletData && dailyGauntletData.seed) || state.lastDailyDate || L.getTodaySeed?.() || ''
+            };
+        }
+        if (mode === 'boss') {
+            const steps = bossRushResults.filter(Boolean);
+            const cleanCount = steps.filter(s => s.emoji === '🟩').length;
+            return { score: cleanCount, maxScore: BOSS_FLOORS.length, steps };
+        }
+        const totalItems = L.totalItems || levels.reduce((sum, fl) => sum + fl.pool.length, 0);
+        const cleared = state.completed.length;
+        const cleanScore = Math.min(levels.length, state.perfect || cleared);
+        return { score: cleanScore, maxScore: levels.length, cleared, totalItems, steps: [] };
+    }
+
+    function buildRecapStepRow(badgeText, sentence, explain) {
+        const row = document.createElement('div');
+        row.className = 'recap-step-row';
+        const badge = document.createElement('span');
+        badge.className = 'recap-step-badge';
+        badge.style.flex = 'none';
+        badge.textContent = badgeText;
+        const body = document.createElement('div');
+        body.style.cssText = 'display:flex;flex-direction:column;gap:2px;min-width:0;flex:1;';
+        const sent = document.createElement('strong');
+        sent.className = 'recap-step-sentence';
+        sent.textContent = sentence;
+        const note = document.createElement('span');
+        note.className = 'recap-step-note';
+        note.style.cssText = 'color:#cbd5e1;font-size:12px;font-weight:500;';
+        note.textContent = explain;
+        body.append(sent, note);
+        row.append(badge, body);
+        return row;
+    }
+
+    function openRecapModal(mode) {
+        if (!recapModal) return;
+        activeRecapMode = mode;
+        recapReturnFocus = document.activeElement;
+
+        const heading = $('recap-heading');
+        const summary = $('recap-summary');
+        const listEl = $('recap-step-list');
+        const copyBtn = $('btn-copy-daily');
+        const stats = getRecapStats(mode);
+
+        if (listEl) listEl.textContent = '';
+
+        if (mode === 'daily') {
+            if (heading) heading.textContent = `🎲 Daily Crypt Seed (${stats.seed})`;
+            if (summary) summary.textContent = `${stats.score}/5 Clean · ${stats.grid} · Daily Streak: 🔥 ${state.dailyStreak || 1}`;
+            if (copyBtn) {
+                copyBtn.classList.remove('hidden');
+                copyBtn.textContent = '📋 Copy Daily Result';
+            }
+            stats.steps.forEach((st) => {
+                if (listEl) listEl.appendChild(buildRecapStepRow(`${st.emoji} ${st.cefr} · F${st.floorIdx + 1}`, st.sentence, st.explain));
+            });
+        } else if (mode === 'boss') {
+            if (heading) heading.textContent = '🏆 5-Boss Rush Complete!';
+            if (summary) summary.textContent = `All 5 Crypt Guardians defeated · ${stats.score}/5 Clean · Gold: 🪙 ${state.gold}`;
+            if (copyBtn) copyBtn.classList.add('hidden');
+            stats.steps.forEach((st) => {
+                if (listEl) listEl.appendChild(buildRecapStepRow(`${st.emoji} Boss F${st.floorIdx + 1} (${st.cefr})`, st.sentence, st.explain));
+            });
+        } else {
+            if (heading) heading.textContent = '👑 Crypt Floor 25 Conquered!';
+            if (summary) summary.textContent = `Floors cleared: ${stats.cleared}/${levels.length} · Challenges solved: ${(state.solvedIds || []).length}/${stats.totalItems} · Flawless clears: ${state.perfect}`;
+            if (copyBtn) copyBtn.classList.add('hidden');
+            if (item && listEl) {
+                listEl.appendChild(buildRecapStepRow(`👑 Final Floor 25 (${levels[lastLevel].cefr})`, L.formatSentence(item.answers[0]), item.explain));
+            }
+        }
+
+        recapModal.classList.add('open');
+        const firstFocus = (copyBtn && !copyBtn.classList.contains('hidden')) ? copyBtn : ($('btn-open-diagnostic') || $('btn-close-recap'));
+        if (firstFocus) firstFocus.focus();
+    }
+
+    function closeRecapModal(restoreFocusAndMode = true) {
+        if (!recapModal) return;
+        const closedMode = activeRecapMode;
+        recapModal.classList.remove('open');
+        activeRecapMode = null;
+
+        if (restoreFocusAndMode) {
+            if (closedMode === 'daily' || closedMode === 'boss') {
+                exitSpecialModeAndRestoreCampaign();
+            }
+            if (recapReturnFocus && document.contains(recapReturnFocus)) {
+                try { recapReturnFocus.focus(); } catch (_) {}
+            }
+        }
+    }
+
+    function copyDailyResult() {
+        const stats = getRecapStats('daily');
+        const streakVal = state.dailyStreak || 1;
+        const shareText = `Grammar Crypt · ${stats.seed} · ${stats.score}/5 Clean\n${stats.grid || '🟩🟩🟩🟩🟩'} 🔥 Streak: ${streakVal}\n${DAILY_SHARE_URL}`;
+        const copyBtn = $('btn-copy-daily');
+        const markCopied = () => {
+            if (copyBtn) {
+                copyBtn.textContent = '✓ Copied! Paste in chat';
+                setTimeout(() => {
+                    if (copyBtn) copyBtn.textContent = '📋 Copy Daily Result';
+                }, 2200);
+            }
+            trackCryptEvent('crypt_daily_shared', { tool: 'daily_seed', seed: stats.seed });
+            sfx('loot');
+        };
+
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            navigator.clipboard.writeText(shareText).then(markCopied).catch(() => fallbackCopyText(shareText, markCopied));
+        } else {
+            fallbackCopyText(shareText, markCopied);
+        }
+    }
+
+    function fallbackCopyText(text, onDone) {
+        try {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            if (onDone) onDone();
+        } catch (_) {}
+    }
+
+    function openDiagnosticFromRecap() {
+        const mode = activeRecapMode || 'campaign';
+        const stats = getRecapStats(mode);
+        closeRecapModal(false);
+
+        if (mode === 'daily' || mode === 'boss') {
+            exitSpecialModeAndRestoreCampaign();
+            stopBossVoice();
+        }
+
+        if (location.protocol.startsWith('http') && typeof window.showDiagnosticGate === 'function') {
+            window.showDiagnosticGate({
+                gameName: mode === 'daily' ? 'Grammar Crypt (Daily Seed)' : (mode === 'boss' ? 'Grammar Crypt (Boss Rush)' : 'Grammar Crypt'),
+                score: stats.score,
+                maxScore: stats.maxScore,
+                category: 'inversion',
+                weakArea: 'C1/C2 Inverted Syntax & Question Word Order',
+                examImpact: 'In Cambridge C1/C2 Use of English and IELTS Writing Task 2, word-order and inversion slips cost marks in the top grammatical bands.',
+                onReplay: () => {
+                    if (mode === 'daily') startDailySeed(false);
+                    else if (mode === 'boss') startBossRush(false);
+                    else jumpToFloor(0);
+                }
+            });
+        } else {
+            window.location.href = 'index.html?offer=live_diagnostic_35#cal-booking-box';
+        }
+    }
+
     /* ---------------- NAVIGATION ---------------- */
 
     function resetBoard() {
-        if (locked) return;      // a solved floor stays solved; use Next Floor
+        if (locked) return;
         initLevel(true);
-    }
-
-    function restartCrypt() {
-        bossRushActive = false;
-        bossRushStep = 0;
-        dailySeedActive = false;
-        dailySeedStep = 0;
-        dailyGauntletData = null;
-        state = L.store.fresh(state);
-        saveState();
-        updateInventoryUI();
-        initLevel();
     }
 
     function nextLevel() {
         if (!locked) return;
-        if (nextBtn.textContent.startsWith('Restart')) {
-            bossRushActive = false;
-            bossRushStep = 0;
-            dailySeedActive = false;
-            dailySeedStep = 0;
-            dailyGauntletData = null;
-            if (state.leadSent) restartCrypt(); else showLeadModal();
+        clearTransientTimers();
+        if (pendingRecapMode) {
+            openRecapModal(pendingRecapMode);
             return;
         }
         if (dailySeedActive && dailyGauntletData) {
@@ -949,11 +1615,7 @@
                 initLevel(true);
                 return;
             }
-            dailySeedActive = false;
-            dailySeedStep = 0;
-            dailyGauntletData = null;
-            item = null;
-            initLevel();
+            openRecapModal('daily');
             return;
         }
         if (bossRushActive) {
@@ -965,92 +1627,217 @@
                 initLevel();
                 return;
             }
-            bossRushActive = false;
-            bossRushStep = 0;
+            openRecapModal('boss');
+            return;
         }
         initLevel();
     }
 
-    function showLeadModal() {
-        const leadModal = $('lead-modal');
-        if (!leadModal) { restartCrypt(); return; }
-        $('lead-name').value = state.playerName;
-        $('lead-email').value = state.playerEmail;
-        $('lead-score').value = `${state.playerName} - Flawless floors: ${state.perfect}/${levels.length}, Gold: ${state.gold}`;
-        const h = $('lead-heading');
-        const p = leadModal.querySelector('p');
-        h.style.color = 'var(--gold)';
-        if (state.perfect >= 20) {
-            h.textContent = 'Your Syntax is Flawless!';
-            p.textContent = "You're ready for C1 Advanced or IELTS 8.0. Add your email to claim your Grammar Crypt Certificate and a 50% discount on a trial lesson to polish your speaking.";
-        } else if (state.perfect >= 12) {
-            h.textContent = 'You Survived!';
-            p.textContent = 'Solid grammar, with a few cracks in the armor. Add your email for your score breakdown and 50% off a trial lesson to fix those gaps.';
-        } else {
-            h.textContent = 'The Crypt is Conquered!';
-            p.textContent = 'You made it through. Some floors took a few tries, which is how grammar sticks. Add your email for targeted practice tips and 50% off a trial lesson.';
-        }
-        leadModal.classList.add('open');
-        $('lead-email').focus();
+    /* ---------------- GOLD SHIELD PURCHASE ---------------- */
 
-        if (typeof window.showDiagnosticGate === 'function') {
-            setTimeout(() => {
-                window.showDiagnosticGate({
-                    gameName: 'Grammar Crypt',
-                    score: state.perfect || state.completed.length || 18,
-                    maxScore: levels.length || 25,
-                    weakArea: 'C1/C2 Inverted Syntax & Complex Question Architecture',
-                    examImpact: 'In Cambridge C1/C2 Use of English and IELTS Writing Task 2, inverted syntax errors prevent you from scoring in the top grammatical band.',
-                    onReplay: () => {
-                        leadModal.classList.remove('open');
-                        restartCrypt();
-                    }
-                });
-            }, 800);
+    function buyStreakShield() {
+        const shields = state.streakShields || 0;
+        if (shields >= 3) {
+            setStatus('Streak Shields are already at the maximum (3/3).', '');
+            return;
+        }
+        if (state.gold < 50) {
+            setStatus('You need 50 🪙 to forge a Streak Shield.', 'error');
+            return;
+        }
+        state.gold -= 50;
+        state.streakShields = shields + 1;
+        saveState();
+        refreshHud();
+        sfx('loot');
+        setStatus(`🛡️ Streak Shield forged! (${state.streakShields}/3 active)`, 'success');
+    }
+
+    /* ---------------- URL DEEP-LINK ROUTER ---------------- */
+
+    function applyUrlRoute() {
+        const params = new URLSearchParams(location.search);
+        if (params.get('success') === 'true') {
+            state.leadSent = true;
+            saveState();
+            history.replaceState(null, '', location.pathname);
         }
 
-        const form = $('lead-form');
-        if (!form.dataset.bound) {
-            form.dataset.bound = 'true';
-            form.addEventListener('submit', () => {
-                state.playerEmail = $('lead-email').value.trim();
-                saveState();
-                form.querySelector('[name="_next"]').value = location.href.split('?')[0] + '?success=true';
-            });
-            $('btn-skip-lead').addEventListener('click', () => {
-                leadModal.classList.remove('open');
-                restartCrypt();
-            });
+        const mode = (params.get('mode') || '').toLowerCase();
+        if (mode === 'daily') {
+            startDailySeed(true);
+            trackCryptEvent('crypt_entry', { entry: 'daily', tier: 'c1', tool: 'daily_seed' });
+            return true;
         }
+        if (mode === 'boss') {
+            startBossRush(true);
+            trackCryptEvent('crypt_entry', { entry: 'boss', tier: 'c1', tool: 'boss_rush' });
+            return true;
+        }
+
+        let targetFloor = null;
+        let entryLabel = 'direct';
+        if (params.has('floor')) {
+            const f = parseInt(params.get('floor'), 10);
+            if (!Number.isNaN(f) && f >= 1 && f <= levels.length) {
+                targetFloor = f - 1;
+                entryLabel = `floor_${f}`;
+            }
+        } else if (params.has('act')) {
+            const a = parseInt(params.get('act'), 10);
+            if (Object.prototype.hasOwnProperty.call(ACT_START_FLOORS, a)) {
+                targetFloor = ACT_START_FLOORS[a];
+                entryLabel = `act_${a}`;
+            }
+        } else if (params.has('tier')) {
+            const t = (params.get('tier') || '').toLowerCase();
+            if (Object.prototype.hasOwnProperty.call(TIER_START_FLOORS, t)) {
+                targetFloor = TIER_START_FLOORS[t];
+                entryLabel = `tier_${t}`;
+            }
+        }
+
+        if (targetFloor !== null) {
+            state.level = targetFloor;
+            saveState();
+        }
+        trackCryptEvent('crypt_entry', {
+            entry: entryLabel,
+            tier: tierForFloor(state.level),
+            tool: `floor_${state.level + 1}`
+        });
+        return false;
     }
 
     /* ---------------- ?selftest=1 (2D) ---------------- */
+
     function runSelfTest() {
         const out = document.createElement('pre');
         out.id = 'selftest';
         const res = L.dataTests();
         let pass = res.pass;
         const lines = ['GRAMMAR CRYPT 2D SELFTEST'].concat(res.lines);
-        // Board integration: every floor renders one zone per token, and solving with answers[last] locks the board.
         const saved = JSON.stringify(state);
+        const savedCampaign = campaignLevel;
+        let testedItems = 0;
+
         inSelfTest = true;
+        clearTransientTimers();
+
         try {
             levels.forEach((fl, f) => {
-                state.level = f; item = null; initLevel();
-                if (zones().length !== item.tokens.length) { pass = false; lines.push(`FAIL floor ${f + 1}: ${zones().length} zones for ${item.tokens.length} tokens`); }
-                const target = item.answers[item.answers.length - 1];
-                const blocks = Array.from(bank.querySelectorAll('.block'));
-                zones().forEach((z, i) => { const b = blocks.find(x => x.dataset.text === target[i] && !x.closest('.drop-zone')); if (b) z.appendChild(b); });
-                const before = state.completed.length;
-                validateBoard();
-                if (!locked) { pass = false; lines.push(`FAIL floor ${f + 1} (${item.id}) alt answer not accepted by the 2D board`); }
-                state.completed = state.completed.slice(0, before);
+                fl.pool.forEach((poolItem) => {
+                    testedItems++;
+                    state.level = f;
+                    item = poolItem;
+                    initLevel(true);
+
+                    if (zones().length !== poolItem.tokens.length) {
+                        pass = false;
+                        lines.push(`FAIL ${poolItem.id} (floor ${f + 1}): ${zones().length} zones for ${poolItem.tokens.length} tokens`);
+                    }
+
+                    const target = poolItem.answers[poolItem.answers.length - 1];
+                    const blocks = Array.from(bank.querySelectorAll('.block'));
+                    zones().forEach((z, i) => {
+                        const b = blocks.find(x => x.dataset.text === target[i] && !x.closest('.drop-zone'));
+                        if (b) z.appendChild(b);
+                    });
+                    validateBoard();
+                    if (!locked) {
+                        pass = false;
+                        lines.push(`FAIL ${poolItem.id} (floor ${f + 1}): alt answer not accepted by the 2D board`);
+                    }
+                    if (typeof L.autopsy === 'function') {
+                        const au = L.autopsy(f, poolItem, target);
+                        if (!au || !au.modelSentence || !au.posChain) {
+                            pass = false;
+                            lines.push(`FAIL ${poolItem.id}: autopsy() incomplete`);
+                        }
+                    }
+                });
             });
-            lines.push('(2D) all 25 floors render and accept an alternative ordering on the live board');
-        } catch (e) { pass = false; lines.push('FAIL 2D board: ' + e.message); }
+
+            // Verify dynamic 1-0 keycaps on a >10 rune sentence, Undo, and non-spoiler useHint
+            const longFloorIdx = levels.findIndex(fl => fl.pool.some(p => (p.tokens.length + p.decoys.length) > 10));
+            if (longFloorIdx >= 0) {
+                const longItem = levels[longFloorIdx].pool.find(p => (p.tokens.length + p.decoys.length) > 10);
+                state.level = longFloorIdx;
+                item = longItem;
+                initLevel(true);
+                const keyedBefore = bank.querySelectorAll('.block[data-key]').length;
+                if (keyedBefore !== 10) {
+                    pass = false;
+                    lines.push(`FAIL dynamic keycaps: expected 10 keyed bank runes on ${longItem.id}, got ${keyedBefore}`);
+                }
+                const firstBankBlock = bank.querySelector('.block');
+                if (firstBankBlock) activateBlock(firstBankBlock);
+                const keyedAfterPlace = bank.querySelectorAll('.block[data-key]').length;
+                if (keyedAfterPlace !== Math.min(10, bank.querySelectorAll('.block').length)) {
+                    pass = false;
+                    lines.push(`FAIL dynamic keycaps after move: got ${keyedAfterPlace}`);
+                }
+                if (!undoLastRune()) {
+                    pass = false;
+                    lines.push('FAIL undoLastRune() did not return placed rune to bank');
+                }
+            }
+
+            state.level = 1;
+            item = levels[1].pool[0];
+            initLevel(true);
+            useHint();
+            if (tipEl && item.explain && tipEl.textContent.includes(item.explain)) {
+                pass = false;
+                lines.push('FAIL useHint() leaked item.explain pre-solve');
+            }
+
+            // Verify Enter on last rune does NOT skip win state / Autopsy Card
+            state.level = 0;
+            item = levels[0].pool[0];
+            initLevel(true);
+            const ans0 = item.answers[0];
+            for (let i = 0; i < ans0.length - 1; i++) {
+                const b = Array.from(bank.querySelectorAll('.block')).find(x => x.dataset.text === ans0[i]);
+                if (b) zones()[i].appendChild(b);
+            }
+            refreshZones();
+            const lastB = Array.from(bank.querySelectorAll('.block')).find(x => x.dataset.text === ans0[ans0.length - 1]);
+            if (lastB) {
+                const titleBeforeEnter = $('quest-title') ? $('quest-title').textContent : '';
+                lastB.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+                if (!locked || ($('quest-title') && $('quest-title').textContent !== titleBeforeEnter)) {
+                    pass = false;
+                    lines.push('FAIL Enter key on last rune skipped solved state');
+                }
+            }
+
+            lines.push(`(2D) validated all ${testedItems}/${L.totalItems || testedItems} items across 25 floors + dynamic keys + undo + Enter lock`);
+        } catch (e) {
+            pass = false;
+            lines.push('FAIL 2D board: ' + e.message);
+        }
+
+        clearTransientTimers();
         inSelfTest = false;
-        state = L.store.sanitize(JSON.parse(saved)); saveState();
-        item = null; initLevel();
+        bossRushActive = false;
+        bossRushStep = 0;
+        bossRushResults = [];
+        dailySeedActive = false;
+        dailySeedStep = 0;
+        dailyGauntletData = null;
+        dailyStepResults = [];
+        pendingRecapMode = null;
+        hintsUsed = 0;
+        levelMistakes = 0;
+        hintLevel = -1;
+        campaignLevel = savedCampaign;
+        state = ensureStateShape(L.store.sanitize(JSON.parse(saved)));
+        saveState();
+        updateInventoryUI();
+        item = null;
+        initLevel();
+
         lines.push(pass ? 'RESULT: PASS' : 'RESULT: FAIL');
         out.textContent = lines.join('\n');
         out.dataset.pass = pass ? 'true' : 'false';
@@ -1060,45 +1847,104 @@
 
     /* ---------------- BOOT ---------------- */
 
-    // Ensure audio/music is OFF/muted by default until the user explicitly toggles sound on
-    const muteAudioByDefault = () => {
-        const audioBtn = document.getElementById('audio-toggle');
-        if (audioBtn && audioBtn.getAttribute('aria-pressed') === 'true') {
-            audioBtn.click();
-        }
-    };
-    muteAudioByDefault();
-
     document.addEventListener('DOMContentLoaded', () => {
-        muteAudioByDefault();
         loadState();
-        const justSubmitted = location.search.includes('success=true');
-        if (justSubmitted) {
-            state.leadSent = true;
-            saveState();
-            history.replaceState(null, '', location.pathname);
-            restartCrypt();
-        }
+        syncCleanModeUI();
+
+        try {
+            new MutationObserver(syncCleanModeUI).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+        } catch (_) {}
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'gm_teacher_clean_screenshare') syncCleanModeUI();
+            if (e.key === L.store.KEY && !inSelfTest) {
+                loadState();
+                refreshHud();
+                updateInventoryUI();
+            }
+        });
+        window.addEventListener('gc:sfxchange', (e) => {
+            if (e && e.detail && !e.detail.enabled) stopBossVoice();
+        });
+
         bindInteractions();
+        if (undoBtn) undoBtn.addEventListener('click', undoLastRune);
         $('reset-btn').addEventListener('click', resetBoard);
         if (hintBtn) hintBtn.addEventListener('click', useHint);
         nextBtn.addEventListener('click', nextLevel);
         $('claim-btn').addEventListener('click', closePrizeModal);
 
-        // Floor Selector & Boss Rush Drawer bindings
+        // Floor Selector, Mode & Utility bindings
         if ($('level-display')) $('level-display').addEventListener('click', () => toggleFloorDrawer());
-        if ($('floor-drawer-toggle')) $('floor-drawer-toggle').addEventListener('click', () => toggleFloorDrawer());
+        if ($('progress-pill')) $('progress-pill').addEventListener('click', () => toggleFloorDrawer());
         if ($('floor-drawer-close')) $('floor-drawer-close').addEventListener('click', () => toggleFloorDrawer(false));
         if ($('boss-rush-btn')) $('boss-rush-btn').addEventListener('click', toggleBossRush);
         if ($('daily-seed-btn')) $('daily-seed-btn').addEventListener('click', toggleDailySeed);
         if ($('daily-seed-hud-btn')) $('daily-seed-hud-btn').addEventListener('click', toggleDailySeed);
-        if ($('boss-voice-btn')) $('boss-voice-btn').addEventListener('click', () => playBossVoice(state.level, true));
+        if ($('buy-shield-btn')) $('buy-shield-btn').addEventListener('click', buyStreakShield);
+
+        if ($('drawer-player-name')) {
+            const nameInput = $('drawer-player-name');
+            nameInput.value = state.playerName || '';
+            const updateName = () => {
+                state.playerName = nameInput.value.trim().slice(0, 30);
+                saveState();
+                refreshHud();
+            };
+            nameInput.addEventListener('input', updateName);
+            nameInput.addEventListener('change', updateName);
+        }
+
+        if ($('boss-voice-btn')) {
+            $('boss-voice-btn').addEventListener('click', () => {
+                if (bossAudio && !bossAudio.paused) {
+                    stopBossVoice();
+                } else {
+                    playBossVoice(state.level, true);
+                }
+            });
+        }
+
         document.querySelectorAll('.act-pill[data-jump-floor]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const idx = parseInt(btn.getAttribute('data-jump-floor'), 10);
-                if (!Number.isNaN(idx)) jumpToFloor(idx);
+                if (!Number.isNaN(idx)) {
+                    trackCryptEvent('crypt_drawer_jump', { tool: `floor_${idx + 1}` });
+                    jumpToFloor(idx);
+                }
             });
         });
+
+        // Non-blocking Tier Jump Bar
+        if (tierJumpBar) {
+            try {
+                if (sessionStorage.getItem(TIER_BAR_DISMISS_KEY) === '1') {
+                    tierJumpBar.classList.add('hidden');
+                }
+            } catch (_) {}
+            tierJumpBar.querySelectorAll('.tier-pill[data-jump-tier]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tier = btn.dataset.jumpTier;
+                    if (Object.prototype.hasOwnProperty.call(TIER_START_FLOORS, tier)) {
+                        const targetIdx = TIER_START_FLOORS[tier];
+                        trackCryptEvent('crypt_drawer_jump', { tool: `tier_${tier}` });
+                        jumpToFloor(targetIdx);
+                    }
+                });
+            });
+            const dailyBarBtn = tierJumpBar.querySelector('.tier-pill[data-jump-mode="daily"]');
+            if (dailyBarBtn) {
+                dailyBarBtn.addEventListener('click', () => {
+                    trackCryptEvent('crypt_drawer_jump', { tool: 'tier_daily' });
+                    startDailySeed(false);
+                });
+            }
+            if ($('tier-bar-dismiss')) {
+                $('tier-bar-dismiss').addEventListener('click', () => {
+                    tierJumpBar.classList.add('hidden');
+                    try { sessionStorage.setItem(TIER_BAR_DISMISS_KEY, '1'); } catch (_) {}
+                });
+            }
+        }
 
         // Belfast Desk Syntax Autopsy Card bindings
         if (blueprintBtn) {
@@ -1106,25 +1952,75 @@
         }
         if ($('reveal-model-btn')) {
             $('reveal-model-btn').addEventListener('click', () => {
+                if (!locked && bosses[state.level]) return;
+                if (!locked) hintsUsed = Math.max(hintsUsed, 99);
                 updateAutopsyCard(state.level, item, null, true);
                 sfx('grab');
             });
         }
+        if ($('btn-reveal-bridge')) {
+            $('btn-reveal-bridge').addEventListener('click', () => {
+                const bridgeBox = $('autopsy-bridge-box');
+                if (!bridgeBox) return;
+                const ansEl = bridgeBox.querySelector('.bridge-answer-reveal');
+                if (ansEl) ansEl.classList.remove('hidden');
+                $('btn-reveal-bridge').classList.add('hidden');
+                sfx('grab');
+            });
+        }
 
-        // Full Keyboard Accessibility: 1-9/0 place/return rune, Backspace undo last, H hint, Enter next floor
+        // Recap Modal bindings
+        if ($('btn-copy-daily')) $('btn-copy-daily').addEventListener('click', copyDailyResult);
+        if ($('btn-open-diagnostic')) $('btn-open-diagnostic').addEventListener('click', openDiagnosticFromRecap);
+        if ($('btn-close-recap')) $('btn-close-recap').addEventListener('click', () => closeRecapModal(true));
+
+        // Keyboard Accessibility: 1-0 place bank rune, Backspace undo, H hint, Enter next, Escape close drawers/modals
         document.addEventListener('keydown', (e) => {
             if (modal && modal.classList.contains('open')) {
                 if (e.key === 'Escape') closePrizeModal();
                 if (e.key === 'Tab') { e.preventDefault(); $('claim-btn').focus(); }
                 return;
             }
+            if (recapModal && recapModal.classList.contains('open')) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeRecapModal(true);
+                    return;
+                }
+                if (e.key === 'Tab') {
+                    const focusables = Array.from(recapModal.querySelectorAll('button:not(.hidden):not([disabled]), a[href]:not(.hidden)'));
+                    if (focusables.length > 0) {
+                        const first = focusables[0];
+                        const last = focusables[focusables.length - 1];
+                        if (e.shiftKey && document.activeElement === first) {
+                            e.preventDefault();
+                            last.focus();
+                        } else if (!e.shiftKey && document.activeElement === last) {
+                            e.preventDefault();
+                            first.focus();
+                        }
+                    }
+                }
+                return;
+            }
+            if (floorDrawer && !floorDrawer.classList.contains('hidden') && e.key === 'Escape') {
+                e.preventDefault();
+                toggleFloorDrawer(false);
+                if (drawerReturnFocus && document.contains(drawerReturnFocus)) {
+                    drawerReturnFocus.focus();
+                } else if ($('level-display')) {
+                    $('level-display').focus();
+                }
+                return;
+            }
+
             if (document.querySelector('.fullscreen-modal.open')) return;
             if (e.ctrlKey || e.altKey || e.metaKey) return;
             const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
             if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable)) return;
 
             if (/^[0-9]$/.test(e.key) && !locked) {
-                const targetRune = document.querySelector(`.block[data-key="${e.key}"]`);
+                const targetRune = bank.querySelector(`.block[data-key="${e.key}"]`);
                 if (targetRune) {
                     e.preventDefault();
                     activateBlock(targetRune);
@@ -1132,16 +2028,7 @@
                 return;
             }
             if (e.key === 'Backspace' && !locked) {
-                const occupiedZones = zones().filter(z => !!blockIn(z));
-                if (occupiedZones.length > 0) {
-                    e.preventDefault();
-                    const lastBlock = blockIn(occupiedZones[occupiedZones.length - 1]);
-                    if (lastBlock) {
-                        place(lastBlock, bank);
-                        setTarget(null);
-                        afterMove();
-                    }
-                }
+                if (undoLastRune()) e.preventDefault();
                 return;
             }
             if ((e.key === 'h' || e.key === 'H') && !locked) {
@@ -1159,48 +2046,9 @@
             }
         });
 
-        // Intro / Name Entry Flow
-        const introScreen = $('intro-screen');
-        const nameScreen = $('name-screen');
-        if (introScreen && nameScreen && !state.playerName) {
-            introScreen.classList.add('open');
-            $('btn-continue-intro').addEventListener('click', () => {
-                introScreen.classList.remove('open');
-                nameScreen.classList.add('open');
-                $('player-name-input').focus();
-            });
-            
-            const nameInput = $('player-name-input');
-            const emailInput = $('player-email-input');
-            const startBtn = $('btn-start-game');
-            startBtn.disabled = false;
-
-            const handleEnterKey = (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    startBtn.click();
-                }
-            };
-            if (nameInput) nameInput.addEventListener('keydown', handleEnterKey);
-            if (emailInput) emailInput.addEventListener('keydown', handleEnterKey);
-
-            startBtn.addEventListener('click', () => {
-                const name = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Adventurer';
-                const email = emailInput ? emailInput.value.trim() : '';
-                state.playerName = name;
-                state.playerEmail = email;
-                saveState();
-                nameScreen.classList.remove('open');
-                refreshHud();
-                sfx('epic');
-            });
-        }
-
         updateInventoryUI();
-        initLevel();
+        const startedMode = applyUrlRoute();
+        if (!startedMode) initLevel();
         if (/[?&]selftest=1\b/.test(location.search)) runSelfTest();
-        if (justSubmitted) {
-            setStatus(`Thanks, ${state.playerName}! Use code ${DISCOUNT_CODE} for 50% off your trial lesson.` + (BOOKING_URL ? ' Book at ' + BOOKING_URL : '') + ' Descend again?', 'success');
-        }
     });
 })();

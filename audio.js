@@ -1,24 +1,24 @@
 /* ==========================================================
-   Grammar Crypt – synthesized audio (used by sounds.html only)
-   Exposes window.GCAudio.play(name); crypt.js calls it if present.
-   Sounds are scheduled on the AudioContext clock (not setTimeout), so
-   timing stays tight and nothing fires after the player mutes.
+   Grammar Crypt – synthesized Web Audio SFX & optional ambience
+   Exposes window.GCAudio = {
+     play, isSfxEnabled, setSfxEnabled, isBgmEnabled, setBgmEnabled
+   }
+   - AudioContext is created lazily on the first user gesture (never on load).
+   - SFX + Piper Boss Voices default ON (sfxEnabled = true).
+   - Ambient BGM defaults OFF (bgmEnabled = false), controlled by #bgm-toggle.
+   - Zero browser SpeechSynthesis APIs anywhere.
    ========================================================== */
 (() => {
     'use strict';
 
     const Ctx = window.AudioContext || window.webkitAudioContext;
-    const btn = document.getElementById('audio-toggle');
-
-    if (!Ctx) {                       // very old browsers: hide the control, game still works
-        if (btn) btn.hidden = true;
-        return;
-    }
 
     let ctx = null;
-    let master = null;
-    let enabled = true;
-    let userMuted = false;
+    let sfxMaster = null;
+    let bgmMaster = null;
+    let sfxEnabled = true;
+    let bgmEnabled = false;
+    let hasGestured = false;
     let bgm = null;
     let bgmStepTimer = null;
     let bgmStep = 0;
@@ -26,16 +26,27 @@
     const GOTHIC_ARPEGGIO = [146.83, 174.61, 220.00, 233.08, 220.00, 174.61, 164.81, 138.59];
 
     function ensureContext() {
-        if (ctx) return;
-        ctx = new Ctx();
-        master = ctx.createGain();
-        master.gain.value = 0.8;
-        master.connect(ctx.destination);
+        if (ctx || !Ctx || !hasGestured) return false;
+        try {
+            ctx = new Ctx();
+            sfxMaster = ctx.createGain();
+            sfxMaster.gain.value = 0.8;
+            sfxMaster.connect(ctx.destination);
+
+            bgmMaster = ctx.createGain();
+            bgmMaster.gain.value = 0.8;
+            bgmMaster.connect(ctx.destination);
+            return true;
+        } catch (_) {
+            ctx = null;
+            return false;
+        }
     }
 
-    // One enveloped note. A tiny attack and a ramp to ~0 avoid clicks at start and end.
-    function tone(freq, type, dur, vol, delay = 0) {
+    function tone(freq, type, dur, vol, delay = 0, targetGain = null) {
         if (!ctx) return;
+        const dest = targetGain || sfxMaster;
+        if (!dest) return;
         const t = ctx.currentTime + delay;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -45,45 +56,56 @@
         gain.gain.linearRampToValueAtTime(vol, t + 0.01);
         gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
         osc.connect(gain);
-        gain.connect(master);
+        gain.connect(dest);
         osc.start(t);
         osc.stop(t + dur + 0.05);
     }
 
     const sounds = {
-        grab:    () => tone(300, 'triangle', 0.1, 0.05),
-        drop:    () => tone(150, 'square', 0.1, 0.05),
-        success: (streak = 0) => {                 // chime climbs a semitone per streak step (max one octave)
+        grab: () => tone(300, 'triangle', 0.1, 0.05),
+        drop: () => tone(150, 'square', 0.1, 0.05),
+        success: (streak = 0) => {
             const k = Math.pow(2, Math.min(streak, 12) / 12);
-            tone(261.6 * k, 'sine', 0.3, 0.1, 0);       // C4 root
-            tone(329.6 * k, 'sine', 0.3, 0.1, 0.15);    // E4
-            tone(392.0 * k, 'sine', 0.6, 0.1, 0.30);    // G4
+            tone(261.6 * k, 'sine', 0.3, 0.1, 0);
+            tone(329.6 * k, 'sine', 0.3, 0.1, 0.15);
+            tone(392.0 * k, 'sine', 0.6, 0.1, 0.30);
         },
-        error:   () => {
+        error: () => {
             tone(150, 'sawtooth', 0.3, 0.1, 0);
             tone(140, 'sawtooth', 0.3, 0.1, 0.15);
         },
-        loot:    () => [523, 659, 783, 1046].forEach((f, i) => tone(f, 'sine', 0.4, 0.05, i * 0.08)),
-        epic:    () => {
+        loot: () => [523, 659, 783, 1046].forEach((f, i) => tone(f, 'sine', 0.4, 0.05, i * 0.08)),
+        epic: () => {
             tone(220, 'square', 1.5, 0.08, 0);
             tone(277, 'square', 1.5, 0.08, 0.2);
             tone(330, 'square', 2.0, 0.08, 0.4);
+        },
+        boss: () => {
+            tone(110, 'sawtooth', 0.6, 0.07, 0);
+            tone(138.59, 'sawtooth', 0.8, 0.06, 0.14);
         }
     };
 
     function play(name, arg) {
-        if (!enabled || !ctx || ctx.state !== 'running') return;
+        if (!sfxEnabled || !Ctx || !hasGestured) return;
         const fn = sounds[name];
-        if (fn) fn(arg);
+        if (!fn) return;
+        if (!ensureContext() && !ctx) return;
+        if (ctx.state === 'running') {
+            fn(arg);
+        } else if (ctx.state === 'suspended') {
+            ctx.resume().then(() => {
+                if (sfxEnabled && ctx && ctx.state === 'running') fn(arg);
+            }).catch(() => {});
+        }
     }
 
-    /* ---- Background soundtrack: Gothic D-minor arpeggio + deep subterranean drone ---- */
     function startBGM() {
-        if (bgm || !ctx) return;
+        if (bgm || !bgmEnabled || !ctx || !bgmMaster) return;
         const out = ctx.createGain();
         out.gain.setValueAtTime(0.0001, ctx.currentTime);
         out.gain.linearRampToValueAtTime(0.045, ctx.currentTime + 1.5);
-        out.connect(master);
+        out.connect(bgmMaster);
 
         const lfo = ctx.createOscillator();
         const lfoDepth = ctx.createGain();
@@ -108,12 +130,12 @@
         bgmStep = 0;
         if (bgmStepTimer) clearInterval(bgmStepTimer);
         bgmStepTimer = setInterval(() => {
-            if (!enabled || !ctx || ctx.state !== 'running') return;
+            if (!bgmEnabled || !ctx || ctx.state !== 'running') return;
             const note = GOTHIC_ARPEGGIO[bgmStep % GOTHIC_ARPEGGIO.length];
             bgmStep++;
-            tone(note, 'triangle', 0.36, 0.032, 0);
+            tone(note, 'triangle', 0.36, 0.032, 0, bgmMaster);
             if (bgmStep % 4 === 1) {
-                tone(note * 1.5, 'sine', 0.48, 0.018, 0.04);
+                tone(note * 1.5, 'sine', 0.48, 0.018, 0.04, bgmMaster);
             }
         }, 420);
 
@@ -125,52 +147,105 @@
             clearInterval(bgmStepTimer);
             bgmStepTimer = null;
         }
-        if (!bgm) return;
+        if (!bgm || !ctx) {
+            bgm = null;
+            return;
+        }
         const { out, lfo, oscs } = bgm;
         bgm = null;
         const t = ctx.currentTime;
         out.gain.cancelScheduledValues(t);
         out.gain.setValueAtTime(Math.max(out.gain.value, 0.0001), t);
         out.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
-        [lfo, ...oscs].forEach(o => o.stop(t + 0.6));
+        [lfo, ...oscs].forEach(o => {
+            try { o.stop(t + 0.6); } catch (_) {}
+        });
     }
 
-    function setEnabled(on, fromUserToggle = false) {
-        enabled = on;
-        if (fromUserToggle) userMuted = !on;
-        if (btn) {
-            btn.setAttribute('aria-pressed', String(on));
-            btn.textContent = on ? '🔊 Sound On' : '🔈 Sound Off';
+    function syncSfxButton() {
+        const sfxBtn = document.getElementById('audio-toggle');
+        if (!sfxBtn) return;
+        sfxBtn.setAttribute('aria-pressed', sfxEnabled ? 'true' : 'false');
+        sfxBtn.textContent = sfxEnabled ? '🔊 Sound On' : '🔈 Sound Off';
+    }
+
+    function syncBgmButton() {
+        const bgmBtn = document.getElementById('bgm-toggle');
+        if (!bgmBtn) return;
+        if (!Ctx) {
+            bgmBtn.hidden = true;
+            return;
         }
-        if (on) {
+        bgmBtn.setAttribute('aria-pressed', bgmEnabled ? 'true' : 'false');
+        bgmBtn.textContent = bgmEnabled ? '🎵 Ambience On' : '🎵 Ambience Off';
+    }
+
+    function setSfxEnabled(on) {
+        sfxEnabled = Boolean(on);
+        syncSfxButton();
+        if (sfxEnabled && hasGestured && Ctx) {
             ensureContext();
-            const go = () => { startBGM(); };
-            if (ctx.state === 'suspended') {
-                ctx.resume().then(go).catch(() => {});
-            } else {
-                go();
+            if (ctx && ctx.state === 'suspended') {
+                ctx.resume().catch(() => {});
+            }
+        }
+        try {
+            window.dispatchEvent(new CustomEvent('gc:sfxchange', { detail: { enabled: sfxEnabled } }));
+        } catch (_) {}
+        return sfxEnabled;
+    }
+
+    function setBgmEnabled(on) {
+        bgmEnabled = Boolean(on) && Boolean(Ctx);
+        syncBgmButton();
+        if (bgmEnabled) {
+            if (hasGestured) {
+                ensureContext();
+                if (ctx) {
+                    if (ctx.state === 'suspended') {
+                        ctx.resume().then(() => { if (bgmEnabled) startBGM(); }).catch(() => {});
+                    } else {
+                        startBGM();
+                    }
+                }
             }
         } else {
             stopBGM();
         }
+        return bgmEnabled;
     }
 
-    if (btn) {
-        btn.setAttribute('aria-pressed', 'true');
-        btn.textContent = '🔊 Sound On';
-        btn.addEventListener('click', () => setEnabled(!enabled, true));
+    function bindControls() {
+        const sfxBtn = document.getElementById('audio-toggle');
+        if (sfxBtn && !sfxBtn.dataset.gcAudioBound) {
+            sfxBtn.dataset.gcAudioBound = 'true';
+            syncSfxButton();
+            sfxBtn.addEventListener('click', () => {
+                hasGestured = true;
+                setSfxEnabled(!sfxEnabled);
+            });
+        }
+        const bgmBtn = document.getElementById('bgm-toggle');
+        if (bgmBtn && !bgmBtn.dataset.gcAudioBound) {
+            bgmBtn.dataset.gcAudioBound = 'true';
+            syncBgmButton();
+            bgmBtn.addEventListener('click', () => {
+                hasGestured = true;
+                setBgmEnabled(!bgmEnabled);
+            });
+        }
     }
 
-    // Auto-start music immediately on page load + unlock on first gesture if browser suspended AudioContext
-    setEnabled(true, false);
     const unlockEvents = ['pointerdown', 'keydown', 'touchstart', 'click'];
-    const unlockOnGesture = (e) => {
-        if (e && e.target && e.target.closest && e.target.closest('#audio-toggle')) return;
-        if (!userMuted && enabled) {
+    const unlockOnGesture = () => {
+        hasGestured = true;
+        if ((sfxEnabled || bgmEnabled) && Ctx) {
             ensureContext();
             if (ctx && ctx.state === 'suspended') {
-                ctx.resume().then(() => startBGM()).catch(() => {});
-            } else {
+                ctx.resume().then(() => {
+                    if (bgmEnabled && !bgm) startBGM();
+                }).catch(() => {});
+            } else if (bgmEnabled && !bgm) {
                 startBGM();
             }
         }
@@ -180,11 +255,25 @@
     };
     unlockEvents.forEach(ev => window.addEventListener(ev, unlockOnGesture, { capture: true, passive: true }));
 
-    // Be polite: silence when the tab is in the background.
     document.addEventListener('visibilitychange', () => {
-        if (!ctx || !enabled) return;
-        if (document.hidden) ctx.suspend(); else ctx.resume();
+        if (!ctx) return;
+        if (document.hidden) {
+            if (ctx.state === 'running') ctx.suspend().catch(() => {});
+        } else if (sfxEnabled || bgmEnabled) {
+            ctx.resume().catch(() => {});
+        }
     });
 
-    window.GCAudio = { play };
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', bindControls);
+    }
+    bindControls();
+
+    window.GCAudio = {
+        play,
+        isSfxEnabled: () => sfxEnabled,
+        setSfxEnabled,
+        isBgmEnabled: () => bgmEnabled,
+        setBgmEnabled
+    };
 })();
