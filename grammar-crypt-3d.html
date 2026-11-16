@@ -13,11 +13,8 @@
   <meta property="og:description" content="Master C1/C2 syntax in full 3D: 223 items across 25 floors, 5 voiced boss battles, daily seeded gauntlets, and legendary relics. Prefer the original? Play the classic 2D version.">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 
-  <!-- Fonts & Local FontAwesome -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nunito:wght@700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" /></noscript>
+  <!-- Self-Hosted Fonts & Local FontAwesome -->
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="assets/fonts/fontawesome-local.css">
 
   <!-- Three.js (r128). If the CDN is unreachable, fall back to the classic 2D crypt. -->
@@ -39,8 +36,8 @@
       --amber: #f59e0b;
       --emerald: #10b981;
       --crimson: #ef4444;
-      --font-gothic: 'Creepster', cursive;
-      --font-ui: 'Nunito', sans-serif;
+      --font-gothic: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+      --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     * {
@@ -1677,8 +1674,8 @@
       g.fillStyle = '#c084fc';
       g.fillText('ᚠ ᚢ ᚦ', S / 2, 40);
       g.fillText('ᚨ ᚱ ᚲ', S / 2, S - 40);
-      const FAM = 'Nunito, "Segoe UI", sans-serif', MAXW = 206;
-      const fits = (ls, sz) => { g.font = `900 ${sz}px ${FAM}`; return ls.every((l) => g.measureText(l).width <= MAXW); };
+      const FAM = '"Plus Jakarta Sans", "Segoe UI", sans-serif', MAXW = 206;
+      const fits = (ls, sz) => { g.font = `800 ${sz}px ${FAM}`; return ls.every((l) => g.measureText(l).width <= MAXW); };
       let lines = [text], size = 64;
       while (size > 24 && !fits(lines, size)) size -= 2;
       const words = text.split(' ');
@@ -1690,7 +1687,7 @@
           if (s > size) { size = s; lines = ls; }
         }
       }
-      g.font = `900 ${size}px ${FAM}`;
+      g.font = `800 ${size}px ${FAM}`;
       g.fillStyle = '#ffffff';
       const lh = size * 1.05;
       lines.forEach((l, i) => g.fillText(l, S / 2, S / 2 + (i - (lines.length - 1) / 2) * lh));
@@ -2907,7 +2904,7 @@
        14. BOOT (wait briefly for the rune font so textures measure correctly)
        ========================================================== */
     const fontReady = (document.fonts && document.fonts.load)
-      ? Promise.race([document.fonts.load('900 48px Nunito').then(() => document.fonts.ready), new Promise((r) => setTimeout(r, 1500))])
+      ? Promise.race([document.fonts.load('800 48px "Plus Jakarta Sans"').then(() => document.fonts.ready), new Promise((r) => setTimeout(r, 1500))])
       : Promise.resolve();
     fontReady.catch(() => {}).then(() => {
       buildFloor(state.level);

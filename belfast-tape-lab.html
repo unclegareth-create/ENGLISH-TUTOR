@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Belfast Tape Lab · 4-Track Analog Synth, Drum Machine &amp; Cassette Workstation | Gareth English</title>
+  <meta name="robots" content="noindex, follow" />
   <link rel="canonical" href="https://garethenglish.com/belfast-tape-lab.html" />
   <meta name="description" content="The Belfast Tape Lab: A tactile 1980s polyphonic analog synthesizer, 6-voice post-punk drum machine, Euclidean rhythm generator, 303 bass sequencer, and 4-track cassette dub workstation." />
   <link rel="stylesheet" href="assets/fonts/fonts.css">
@@ -2115,7 +2116,20 @@
     </div>
   </section>
 
-  <script src="assets/radio/audio/radio-audio-bundle.js"></script>
+  <script>
+    // Only load the 12.2 MB Base64 offline audio bundle on local file:// protocol;
+    // over http:// and https://, station MP3s are fetched on demand via Web Audio.
+    window.__radioBundlePromise = (window.location.protocol === 'file:')
+      ? new Promise(function (resolve) {
+          var s = document.createElement('script');
+          s.src = 'assets/radio/audio/radio-audio-bundle.js';
+          s.async = true;
+          s.onload = resolve;
+          s.onerror = resolve;
+          document.head.appendChild(s);
+        })
+      : Promise.resolve();
+  </script>
   <script>
   (function() {
     'use strict';

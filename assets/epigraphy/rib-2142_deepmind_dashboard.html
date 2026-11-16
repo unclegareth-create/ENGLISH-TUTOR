@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow" />
+<title>Predicting The Past — Results Dashboard</title>
+<link rel="stylesheet" href="../fonts/fonts.css" />
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; color: #212529; background: #f8f9fa; padding: 24px; line-height: 1.6; }
+h1 { font-weight: 300; font-size: 2em; margin-bottom: 8px; }
+h2 { font-weight: 400; font-size: 1.5em; margin: 0 0 8px; padding-bottom: 8px; border-bottom: 2px solid #e9ecef; }
+h3 { font-weight: 400; font-size: 1.15em; margin: 24px 0 8px; color: #495057; }
+h4 { font-weight: 400; font-size: 1.0em; margin: 16px 0 8px; color: #6c757d; }
+.desc { color: #6c757d; font-size: 14px; margin-bottom: 16px; }
+.window-note { background: #fff3cd; padding: 8px 16px; border-radius: 4px; font-size: 14px; margin-bottom: 16px; }
+section { background: white; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.window-block { border-bottom: 1px dotted #e9ecef; padding-bottom: 16px; margin-bottom: 16px; }
+.window-block:last-child { border-bottom: none; }
+
+/* Geo bar chart */
+.geo-table { width: 100%; max-width: 600px; border-collapse: collapse; }
+.geo-table td { padding: 6px 8px; vertical-align: middle; }
+.region-name { font-size: 14px; white-space: nowrap; width: 160px; text-align: right; padding-right: 12px !important; }
+.bar-cell { width: 100%; }
+.bar-bg { background: #e9ecef; height: 20px; border-radius: 4px; overflow: hidden; }
+.bar-fill { background: #da2b2f; height: 100%; border-radius: 4px; transition: width 0.3s; }
+.score-val { font-size: 13px; color: #6c757d; white-space: nowrap; width: 50px; }
+
+/* Chrono chart */
+.chart-container { width: 100%; margin: 16px 0; }
+
+/* Saliency */
+.saliency-box { font-family: 'JetBrains Mono', monospace; font-size: 15px; padding: 16px; border: 1px solid #e9ecef; border-radius: 4px; background: white; word-wrap: break-word; line-height: 1.8; margin: 8px 0 16px; }
+
+/* Restoration table */
+.mono-scroll { overflow-x: auto; margin: 8px 0 16px; }
+.mono-table { font-family: 'JetBrains Mono', monospace; font-size: 14px; white-space: nowrap; table-layout: fixed; }
+.mono-table td { border-bottom: 1px solid #ccc; padding: 4px 0; }
+.mono-table td.header { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; position: sticky; background: white; }
+.header-1 { width: 120px; min-width: 120px; left: 0; text-align: right; padding-right: 8px !important; }
+.header-2 { left: 120px; width: 50px; min-width: 50px; max-width: 50px; text-align: center; padding-right: 5px !important; }
+.header-2col { width: 170px; min-width: 170px; left: 0; text-align: right; padding-right: 8px !important; }
+.mono-table td:not(.header) { border-left: 1px solid #ddd; padding-left: 5px; }
+.pred { background: #ddd; }
+.restored-pos { background: #bdb; font-weight: bold; }
+.mono-table tr:hover .header-2 { background: #bdb; font-weight: bold; }
+.mono-table tr:hover .restored-pos { background: #bdb; }
+
+/* Parallels cards */
+.results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.card { background: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: box-shadow 0.2s; }
+.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.card-text { font-size: 15px; line-height: 1.5; color: #343a40; margin: 0 0 16px; height: 72px; overflow: hidden; }
+.card.is-expanded .card-text { height: auto; }
+.plus-button { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 50%; border: 1px solid #ced4da; background: white; color: #495057; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; }
+.window-tag { position: absolute; top: 12px; left: 12px; background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 11px; color: #6c757d; font-weight: bold; }
+.metadata { font-size: 13px; color: #495057; border-top: 1px solid #e9ecef; padding-top: 12px; margin-top: auto; }
+.metadata div { margin-bottom: 4px; }
+.metadata strong { font-weight: 700; color: #212529; }
+.metadata a { color: #007bff; text-decoration: none; }
+.score-bar-container { width: 100%; height: 6px; background: #e9ecef; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+.score-bar { height: 100%; background: #ffc107; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Predicting The Past — Results</h1>
+
+<section>
+<h2>Citation</h2>
+<p class="desc">When using these outputs, please cite the corresponding paper:</p>
+<p style="font-size:13px;line-height:1.7;color:#495057;">
+<strong>Ithaca</strong> (Ancient Greek):<br>
+Assael, Y., Sommerschield, T., Shillingford, B. et al.
+Restoring and attributing ancient texts using deep neural networks.
+<em>Nature</em> 603, 280&ndash;283 (2022).
+<a href="https://doi.org/10.1038/s41586-022-04448-z" target="_blank" rel="noopener">https://doi.org/10.1038/s41586-022-04448-z</a>
+</p>
+<p style="font-size:13px;line-height:1.7;color:#495057;">
+<strong>Aeneas</strong> (Latin):<br>
+Assael, Y., Sommerschield, T., Cooley, A. et al.
+Contextualizing ancient texts with generative neural networks.
+<em>Nature</em> 645, 141&ndash;147 (2025).
+<a href="https://doi.org/10.1038/s41586-025-09292-5" target="_blank" rel="noopener">https://doi.org/10.1038/s41586-025-09292-5</a>
+</p>
+<p style="font-size:13px;color:#6c757d;">For more information, visit
+<a href="https://predictingthepast.com" target="_blank" rel="noopener">predictingthepast.com</a>.
+</p>
+</section>
+
+
+<section><h2>Restoration</h2>
+    <div class="window-block">
+    <h3>Restoration Hypotheses (Window 1)</h3>
+    <div class="mono-scroll">
+    <table class="mono-table" cellspacing="0">
+      <tr>
+        <td colspan="2" class="header header-2col">Input text:</td>
+        <td>imp&nbsp;caes&nbsp;tito&nbsp;aelio&nbsp;hadriano&nbsp;antonino&nbsp;aug&nbsp;pio&nbsp;p&nbsp;p&nbsp;leg&nbsp;ii&nbsp;aug&nbsp;per&nbsp;m&nbsp;p&nbsp;<span class="pred">?</span><span class="pred">?</span><span class="pred">?</span></td>
+      </tr>
+      <tr>
+        <td class="header header-1">Hypothesis 1:</td>
+        <td class="header header-2">68.4%</td>
+        <td>imp&nbsp;caes&nbsp;tito&nbsp;aelio&nbsp;hadriano&nbsp;antonino&nbsp;aug&nbsp;pio&nbsp;p&nbsp;p&nbsp;leg&nbsp;ii&nbsp;aug&nbsp;per&nbsp;m&nbsp;p&nbsp;<span class="pred">i</span><span class="pred">i</span><span class="pred">i</span></td>
+      </tr>
+      <tr>
+        <td class="header header-1">Hypothesis 2:</td>
+        <td class="header header-2">14.2%</td>
+        <td>imp&nbsp;caes&nbsp;tito&nbsp;aelio&nbsp;hadriano&nbsp;antonino&nbsp;aug&nbsp;pio&nbsp;p&nbsp;p&nbsp;leg&nbsp;ii&nbsp;aug&nbsp;per&nbsp;m&nbsp;p&nbsp;<span class="pred">i</span><span class="pred">v</span><span class="pred">d</span></td>
+      </tr>
+      <tr>
+        <td class="header header-1">Hypothesis 3:</td>
+        <td class="header header-2">8.9%</td>
+        <td>imp&nbsp;caes&nbsp;tito&nbsp;aelio&nbsp;hadriano&nbsp;antonino&nbsp;aug&nbsp;pio&nbsp;p&nbsp;p&nbsp;leg&nbsp;ii&nbsp;aug&nbsp;per&nbsp;m&nbsp;p&nbsp;<span class="pred">i</span><span class="pred">i</span><span class="pred">d</span></td>
+      </tr>
+      <tr>
+        <td class="header header-1">Hypothesis 4:</td>
+        <td class="header header-2">5.1%</td>
+        <td>imp&nbsp;caes&nbsp;tito&nbsp;aelio&nbsp;hadriano&nbsp;antonino&nbsp;aug&nbsp;pio&nbsp;p&nbsp;p&nbsp;leg&nbsp;ii&nbsp;aug&nbsp;per&nbsp;m&nbsp;p&nbsp;<span class="pred">v</span><span class="pred">i</span><span class="pred">d</span></td>
+      </tr>
+      <tr>
+        <td class="header header-1">Hypothesis 5:</td>
+        <td class="header header-2">3.4%</td>
+        <td>imp&nbsp;caes&nbsp;tito&nbsp;aelio&nbsp;hadriano&nbsp;antonino&nbsp;aug&nbsp;pio&nbsp;p&nbsp;p&nbsp;leg&nbsp;ii&nbsp;aug&nbsp;per&nbsp;m&nbsp;p&nbsp;<span class="pred">p</span><span class="pred">e</span><span class="pred">r</span></td>
+      </tr>
+    </table>
+    </div>
+    
+    <h4>Restoration Saliency Map</h4>
+    <p class="desc">For each character predicted in the top hypothesis, purple
+    shading shows which input characters most influenced that step.</p>
+    <div class="mono-scroll">
+    <table class="mono-table" cellspacing="0">
+      <tr>
+        <td colspan="2" class="header header-2col">Input text:</td>
+        <td>imp&nbsp;caes&nbsp;tito&nbsp;aelio&nbsp;hadriano&nbsp;antonino&nbsp;aug&nbsp;pio&nbsp;p&nbsp;p&nbsp;leg&nbsp;ii&nbsp;aug&nbsp;per&nbsp;m&nbsp;p&nbsp;<span class="pred">?</span><span class="pred">?</span><span class="pred">?</span></td>
+      </tr>
+      <tr>
+        <td class="header header-1">Step 1:</td>
+        <td class="header header-2">i</td>
+        <td><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">m</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">c</span><span style="background:rgba(171,71,188,0.06)">a</span><span style="background:rgba(171,71,188,0.06)">e</span><span style="background:rgba(171,71,188,0.06)">s</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">t</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">t</span><span style="background:rgba(171,71,188,0.06)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">a</span><span style="background:rgba(171,71,188,0.06)">e</span><span style="background:rgba(171,71,188,0.06)">l</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">h</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">d</span><span style="background:rgba(171,71,188,0.72)">r</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">t</span><span style="background:rgba(171,71,188,0.72)">o</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">a</span><span style="background:rgba(171,71,188,0.06)">u</span><span style="background:rgba(171,71,188,0.06)">g</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">l</span><span style="background:rgba(171,71,188,0.72)">e</span><span style="background:rgba(171,71,188,0.72)">g</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">u</span><span style="background:rgba(171,71,188,0.72)">g</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">p</span><span style="background:rgba(171,71,188,0.72)">e</span><span style="background:rgba(171,71,188,0.72)">r</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">m</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">p</span><span style="background:rgba(171,71,188,0.76)">&nbsp;</span><span class="pred restored-pos">i</span><span style="background:rgba(171,71,188,0.00)">?</span><span style="background:rgba(171,71,188,0.00)">?</span></td>
+      </tr>
+      <tr>
+        <td class="header header-1">Step 2:</td>
+        <td class="header header-2">i</td>
+        <td><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">m</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">c</span><span style="background:rgba(171,71,188,0.06)">a</span><span style="background:rgba(171,71,188,0.06)">e</span><span style="background:rgba(171,71,188,0.06)">s</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">t</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">t</span><span style="background:rgba(171,71,188,0.06)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">a</span><span style="background:rgba(171,71,188,0.06)">e</span><span style="background:rgba(171,71,188,0.06)">l</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">h</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">d</span><span style="background:rgba(171,71,188,0.72)">r</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">t</span><span style="background:rgba(171,71,188,0.72)">o</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">a</span><span style="background:rgba(171,71,188,0.06)">u</span><span style="background:rgba(171,71,188,0.06)">g</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">l</span><span style="background:rgba(171,71,188,0.72)">e</span><span style="background:rgba(171,71,188,0.72)">g</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">u</span><span style="background:rgba(171,71,188,0.72)">g</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">p</span><span style="background:rgba(171,71,188,0.72)">e</span><span style="background:rgba(171,71,188,0.72)">r</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">m</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">p</span><span style="background:rgba(171,71,188,0.68)">&nbsp;</span><span style="background:rgba(171,71,188,0.76)">i</span><span class="pred restored-pos">i</span><span style="background:rgba(171,71,188,0.00)">?</span></td>
+      </tr>
+      <tr>
+        <td class="header header-1">Step 3:</td>
+        <td class="header header-2">i</td>
+        <td><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">m</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">c</span><span style="background:rgba(171,71,188,0.06)">a</span><span style="background:rgba(171,71,188,0.06)">e</span><span style="background:rgba(171,71,188,0.06)">s</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">t</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">t</span><span style="background:rgba(171,71,188,0.06)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">a</span><span style="background:rgba(171,71,188,0.06)">e</span><span style="background:rgba(171,71,188,0.06)">l</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">h</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">d</span><span style="background:rgba(171,71,188,0.72)">r</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">t</span><span style="background:rgba(171,71,188,0.72)">o</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">n</span><span style="background:rgba(171,71,188,0.72)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">a</span><span style="background:rgba(171,71,188,0.06)">u</span><span style="background:rgba(171,71,188,0.06)">g</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">o</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">l</span><span style="background:rgba(171,71,188,0.72)">e</span><span style="background:rgba(171,71,188,0.72)">g</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">i</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">a</span><span style="background:rgba(171,71,188,0.72)">u</span><span style="background:rgba(171,71,188,0.72)">g</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">p</span><span style="background:rgba(171,71,188,0.72)">e</span><span style="background:rgba(171,71,188,0.72)">r</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">m</span><span style="background:rgba(171,71,188,0.72)">&nbsp;</span><span style="background:rgba(171,71,188,0.72)">p</span><span style="background:rgba(171,71,188,0.06)">&nbsp;</span><span style="background:rgba(171,71,188,0.06)">i</span><span style="background:rgba(171,71,188,0.06)">i</span><span class="pred restored-pos">i</span></td>
+      </tr>
+    </table>
+    </div>
+    </div></section>
+
+  <section>
+    <h2>Geographical Attribution</h2>
+    <p class="desc">Top-10 geographical attribution hypotheses ranked by probability.</p>
+    <table class="geo-table">
+      <tbody>
+      <tr>
+        <td class="region-name">Britannia</td>
+        <td class="bar-cell">
+          <div class="bar-bg"><div class="bar-fill" style="width:100.0%"></div></div>
+        </td>
+        <td class="score-val">94.6%</td>
+      </tr>
+      <tr>
+        <td class="region-name">Germania superior</td>
+        <td class="bar-cell">
+          <div class="bar-bg"><div class="bar-fill" style="width:2.5%"></div></div>
+        </td>
+        <td class="score-val">2.4%</td>
+      </tr>
+      <tr>
+        <td class="region-name">Germania inferior</td>
+        <td class="bar-cell">
+          <div class="bar-bg"><div class="bar-fill" style="width:1.3%"></div></div>
+        </td>
+        <td class="score-val">1.2%</td>
+      </tr>
+      <tr>
+        <td class="region-name">Raetia</td>
+        <td class="bar-cell">
+          <div class="bar-bg"><div class="bar-fill" style="width:0.8%"></div></div>
+        </td>
+        <td class="score-val">0.8%</td>
+      </tr>
+      <tr>
+        <td class="region-name">Dacia</td>
+        <td class="bar-cell">
+          <div class="bar-bg"><div class="bar-fill" style="width:0.5%"></div></div>
+        </td>
+        <td class="score-val">0.5%</td>
+      </tr>
+      <tr>
+        <td class="region-name">Gallia</td>
+        <td class="bar-cell">
+          <div class="bar-bg"><div class="bar-fill" style="width:0.3%"></div></div>
+        </td>
+        <td class="score-val">0.3%</td>
+      </tr>
+      <tr>
+        <td class="region-name">Roma</td>
+        <td class="bar-cell">
+          <div class="bar-bg"><div class="bar-fill" style="width:0.2%"></div></div>
+        </td>
+        <td class="score-val">0.2%</td>
+      </tr>
+      </tbody>
+    </table>
+    
+    <h3>Geographical attribution saliency map</h3>
+    <p class="desc">Purple shading highlights which characters most influenced the geographical prediction.</p>
+    <div class="saliency-box"><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">i</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">m</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">p</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">c</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">a</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">e</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">s</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">t</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">i</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">t</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">a</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">e</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">l</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">i</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">h</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">a</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">d</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">r</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">i</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">a</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">n</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">a</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">n</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">t</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">o</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">n</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">i</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">n</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">a</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">u</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">g</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">p</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">i</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">p</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">p</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">l</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">e</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">g</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">i</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">i</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">a</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">u</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">g</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">p</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">e</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">r</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">m</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">&nbsp;</span><span style="background:rgba(248,127,195,0.76)" title="saliency 0.760">p</span><span style="background:rgba(248,127,195,0.84)" title="saliency 0.840">&nbsp;</span><span style="background:rgba(248,127,195,0.00)" title="saliency 0.000">?</span><span style="background:rgba(248,127,195,0.00)" title="saliency 0.000">?</span><span style="background:rgba(248,127,195,0.00)" title="saliency 0.000">?</span></div>
+  </section>
+
+  <section>
+    <h2>Chronological Attribution</h2>
+    <p class="desc">Date distribution over decades between 800 BCE and 800 CE.
+    Top year: <strong>145 CE</strong>, weighted average: <strong>145 CE</strong>.</p>
+    <div class="chart-container"><div id="chronoChart" style="width:100%;height:350px;"></div></div>
+    
+    <script>
+    google.charts.load('current', {'packages': ['corechart']});
+    google.charts.setOnLoadCallback(function() {
+      var labels = ["795 BCE", "785 BCE", "775 BCE", "765 BCE", "755 BCE", "745 BCE", "735 BCE", "725 BCE", "715 BCE", "705 BCE", "695 BCE", "685 BCE", "675 BCE", "665 BCE", "655 BCE", "645 BCE", "635 BCE", "625 BCE", "615 BCE", "605 BCE", "595 BCE", "585 BCE", "575 BCE", "565 BCE", "555 BCE", "545 BCE", "535 BCE", "525 BCE", "515 BCE", "505 BCE", "495 BCE", "485 BCE", "475 BCE", "465 BCE", "455 BCE", "445 BCE", "435 BCE", "425 BCE", "415 BCE", "405 BCE", "395 BCE", "385 BCE", "375 BCE", "365 BCE", "355 BCE", "345 BCE", "335 BCE", "325 BCE", "315 BCE", "305 BCE", "295 BCE", "285 BCE", "275 BCE", "265 BCE", "255 BCE", "245 BCE", "235 BCE", "225 BCE", "215 BCE", "205 BCE", "195 BCE", "185 BCE", "175 BCE", "165 BCE", "155 BCE", "145 BCE", "135 BCE", "125 BCE", "115 BCE", "105 BCE", "95 BCE", "85 BCE", "75 BCE", "65 BCE", "55 BCE", "45 BCE", "35 BCE", "25 BCE", "15 BCE", "5 BCE", "5 CE", "15 CE", "25 CE", "35 CE", "45 CE", "55 CE", "65 CE", "75 CE", "85 CE", "95 CE", "105 CE", "115 CE", "125 CE", "135 CE", "145 CE", "155 CE", "165 CE", "175 CE", "185 CE", "195 CE", "205 CE", "215 CE", "225 CE", "235 CE", "245 CE", "255 CE", "265 CE", "275 CE", "285 CE", "295 CE", "305 CE", "315 CE", "325 CE", "335 CE", "345 CE", "355 CE", "365 CE", "375 CE", "385 CE", "395 CE", "405 CE", "415 CE", "425 CE", "435 CE", "445 CE", "455 CE", "465 CE", "475 CE", "485 CE", "495 CE", "505 CE", "515 CE", "525 CE", "535 CE", "545 CE", "555 CE", "565 CE", "575 CE", "585 CE", "595 CE", "605 CE", "615 CE", "625 CE", "635 CE", "645 CE", "655 CE", "665 CE", "675 CE", "685 CE", "695 CE", "705 CE", "715 CE", "725 CE", "735 CE", "745 CE", "755 CE", "765 CE", "775 CE", "785 CE", "795 CE"];
+      var values = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 9.999999999999999e-05, 0.0018, 0.0221, 0.1889, 1.0955, 4.299, 11.4151, 20.5093, 24.9329, 20.5093, 11.4151, 4.299, 1.0955, 0.1889, 0.0221, 0.0018, 9.999999999999999e-05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+      var avgLabel = "145 CE";
+      var topLabel = "145 CE";
+
+      function decadeRange(lbl) {
+        var m = lbl.match(/^(\d+)\s*(BCE|CE)$/);
+        if (!m) return lbl;
+        var mid = parseInt(m[1], 10);
+        var era = m[2];
+        var lo = mid - 5, hi = mid + 5;
+        if (era === 'BCE') return hi + '-' + lo + ' ' + era;
+        return lo + '-' + hi + ' ' + era;
+      }
+      var rows = [];
+      for (var i = 0; i < labels.length; i++) {
+        var color = '#fdcc75';
+        if (avgLabel && labels[i] === avgLabel) color = '#da2b2f';
+        if (topLabel && labels[i] === topLabel) color = '#1a73e8';
+        rows.push([labels[i], values[i], color,
+          'Decade: ' + decadeRange(labels[i]) + '\nProb: ' + values[i].toFixed(1) + '%']);
+      }
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Date');
+      data.addColumn('number', 'Probability (%)');
+      data.addColumn({type: 'string', role: 'style'});
+      data.addColumn({type: 'string', role: 'tooltip'});
+      data.addRows(rows);
+
+      var chart = new google.visualization.ColumnChart(
+        document.getElementById('chronoChart'));
+      chart.draw(data, {
+        legend: 'none',
+        hAxis: {title: 'Date (years)', showTextEvery: Math.ceil(labels.length / 20)},
+        vAxis: {title: 'Probability (%)', minValue: 0},
+        chartArea: {width: '95%', height: '70%'},
+        bar: {groupWidth: '95%'},
+        colors: ['#fdcc75'],
+      });
+    });
+    </script>
+    
+    <h3>Chronological attribution saliency map</h3>
+    <p class="desc">Purple shading highlights which characters most influenced the dating prediction.</p>
+    <div class="saliency-box"><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">i</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">m</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">p</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">c</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">a</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">e</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">s</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">t</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">i</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">t</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">a</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">e</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">l</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">i</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">h</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">a</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">d</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">r</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">i</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">a</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">n</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">a</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">n</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">t</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">o</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">n</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">i</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">n</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">a</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">u</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">g</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">p</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">i</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">o</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">p</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">p</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">l</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">e</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">g</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">i</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">i</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">a</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">u</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">g</span><span style="background:rgba(248,127,195,0.06)" title="saliency 0.060">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">p</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">e</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">r</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">&nbsp;</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">m</span><span style="background:rgba(248,127,195,0.72)" title="saliency 0.720">&nbsp;</span><span style="background:rgba(248,127,195,0.76)" title="saliency 0.760">p</span><span style="background:rgba(248,127,195,0.84)" title="saliency 0.840">&nbsp;</span><span style="background:rgba(248,127,195,0.00)" title="saliency 0.000">?</span><span style="background:rgba(248,127,195,0.00)" title="saliency 0.000">?</span><span style="background:rgba(248,127,195,0.00)" title="saliency 0.000">?</span></div>
+  </section>
+
+  <section>
+    <h2>Parallels (Contextualization)</h2>
+    <p class="desc">Most relevant contextual parallels from the corpus, ranked by similarity.</p>
+    <div class="results-grid">
+        <div class="card" id="card-0">
+          
+          <div>
+            <div class="plus-button" onclick="toggleCard(this)">+</div>
+            <p class="card-text">Imp(eratori) Caes(ari) Tito Aelio Hadriano Antonino Aug(usto) Pio p(atri) p(atriae) leg(io) II Aug(usta) per m(ilia) p(assuum) III DCLXVI s(emis)</p>
+          </div>
+          <div class="metadata">
+            <div><strong>Record Number:</strong> EDCS-07801412 (RIB 2139)</div>
+            <div><strong>TMid:</strong> 182914</div>
+            <div><strong>Province:</strong> Britannia</div>
+            <div><strong>Date:</strong> 142 CE – 144 CE</div>
+            <div><strong>Source:</strong> <a href="https://romaninscriptionsofbritain.org/inscriptions/2139" target="_blank" rel="noopener">View on partner site</a></div>
+            <div class="score-bar-container">
+              <div class="score-bar" style="width:96%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" id="card-1">
+          
+          <div>
+            <div class="plus-button" onclick="toggleCard(this)">+</div>
+            <p class="card-text">Imp(eratori) Caes(ari) T(ito) Aelio Hadr(iano) Antonino Aug(usto) Pio p(atri) p(atriae) vex(illatio) leg(ionis) VI Vic(tricis) p(iae) f(idelis) opus valli p(edum) ...</p>
+          </div>
+          <div class="metadata">
+            <div><strong>Record Number:</strong> HD069811 (RIB 2184)</div>
+            <div><strong>TMid:</strong> 182955</div>
+            <div><strong>Province:</strong> Britannia</div>
+            <div><strong>Date:</strong> 142 CE – 161 CE</div>
+            <div><strong>Source:</strong> <a href="https://romaninscriptionsofbritain.org/inscriptions/2184" target="_blank" rel="noopener">View on partner site</a></div>
+            <div class="score-bar-container">
+              <div class="score-bar" style="width:93%"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" id="card-2">
+          
+          <div>
+            <div class="plus-button" onclick="toggleCard(this)">+</div>
+            <p class="card-text">Imp(eratori) C(aesari) T(ito) Ael(io) Hadr(iano) Antonino Aug(usto) Pio p(atri) p(atriae) vex(illatio) leg(ionis) XX V(aleriae) V(ictricis) fecit p(er) p(edes) III</p>
+          </div>
+          <div class="metadata">
+            <div><strong>Record Number:</strong> EDCS-07801450 (RIB 2200)</div>
+            <div><strong>TMid:</strong> 182970</div>
+            <div><strong>Province:</strong> Britannia</div>
+            <div><strong>Date:</strong> 142 CE – 145 CE</div>
+            <div><strong>Source:</strong> <a href="https://romaninscriptionsofbritain.org/inscriptions/2200" target="_blank" rel="noopener">View on partner site</a></div>
+            <div class="score-bar-container">
+              <div class="score-bar" style="width:90%"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </section>
+
+<section>
+<h2>Dataset Acknowledgements</h2>
+<div style="font-size:13px;line-height:1.7;color:#495057;">
+<p style="margin-bottom:8px;">
+The Ithaca and Aeneas projects rely on the availability of high-quality datasets
+of ancient Greek and Latin inscriptions, respectively. These datasets were built
+through centuries of scholarly collection and decades of digital editorial work.
+</p>
+
+<p style="margin-bottom:8px;">
+<strong>Ithaca</strong> (Ancient Greek): In particular, Ithaca draws on a 2019
+version of the Searchable Greek Inscriptions database made available under
+&ldquo;Fair Use&rdquo; license by the Packard Humanities Institute, generously supported
+by David Packard: <a href="https://inscriptions.packhum.org" target="_blank" rel="noopener">inscriptions.packhum.org</a>.
+</p>
+
+<p style="margin-bottom:4px;"><strong>Aeneas</strong> (Latin): Aeneas was trained on data from:</p>
+<ul style="margin-left:20px;margin-bottom:8px;">
+<li>
+<strong>Epigraphic Database Roma (EDR)</strong>: Made available pursuant to a
+Creative Commons Attribution 4.0 International License (CC-BY) on
+<a href="https://zenodo.org/records/3575495" target="_blank" rel="noopener">Zenodo</a>.
+EDR is also available at <a href="http://edr-edr.it" target="_blank" rel="noopener">edr-edr.it</a>.
+</li>
+<li>
+<strong>Epigraphic Database Heidelberg (EDH)</strong>: Made available pursuant to a
+Creative Commons Attribution-ShareAlike 4.0 International License (CC-BY-SA) on
+<a href="https://zenodo.org/records/3575155" target="_blank" rel="noopener">Zenodo</a>.
+EDH is also available at <a href="https://edh.ub.uni-heidelberg.de/" target="_blank" rel="noopener">edh.ub.uni-heidelberg.de</a>.
+</li>
+<li>
+<strong>ETL repository for Epigraphic Database Clauss Slaby (EDCS_ETL)</strong>:
+Made available pursuant to a Creative Commons Attribution 4.0 International License (CC-BY) on
+<a href="https://zenodo.org/records/7072337" target="_blank" rel="noopener">Zenodo</a>.
+EDCS_ETL is also available at <a href="http://www.manfredclauss.de/" target="_blank" rel="noopener">manfredclauss.de</a> and
+<a href="https://github.com/sdam-au/EDCS_ETL" target="_blank" rel="noopener">github.com/sdam-au/EDCS_ETL</a>.
+</li>
+</ul>
+
+<p>
+These resources bring together a large proportion of published inscriptions in a
+searchable digital format. Any use of these datasets should acknowledge and cite
+the original data sources.
+</p>
+</div>
+</section>
+
+<script>
+function toggleCard(btn) {
+  const card = btn.closest('.card');
+  if (card) {
+    const expanded = card.classList.toggle('is-expanded');
+    btn.textContent = expanded ? '−' : '+';
+  }
+}
+</script>
+</body>
+</html>

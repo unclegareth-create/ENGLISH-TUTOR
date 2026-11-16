@@ -71,8 +71,10 @@
     const LEGACY_HASH_MAP = {
         '#writing-markup': '#gareth-writing-markup',
         '#sample-markup': '#gareth-writing-markup',
+        '#coaching': '#services',
         '#courses': '#resources',
         '#gothic-course': '#resources',
+        '#self-study-course': '#pricing',
         '#exam-lab': '#resources',
         '#interactive-tools': '#resources',
         '#cal-booking': '#cal-booking-box',
@@ -254,6 +256,17 @@
         audit_async_29: 'https://buy.stripe.com/aFadR8clu0O0gqV2unb3q02'
     };
 
+    const setEssayUploadVisible = (visible) => {
+        const essayUploadGroup = document.getElementById('essay-upload-group');
+        const essayDocUrlInput = document.getElementById('essay-doc-url');
+        if (essayUploadGroup) {
+            essayUploadGroup.classList.toggle('hidden', !visible);
+        }
+        if (!visible && essayDocUrlInput) {
+            essayDocUrlInput.value = '';
+        }
+    };
+
     const applyPackagePrefill = (pkg, tierKey) => {
         const goalInput = document.getElementById('goal');
         const goalLabel = document.getElementById('goal-label');
@@ -281,7 +294,8 @@
             messageInput.value = '';
         }
 
-        const isAudit = pkg.includes('Audit') || pkg.includes('Async') || pkg.toLowerCase().includes('essay feedback');
+        const isAudit = tierKey === 'audit_async_29' || tierKey === 'audit_async_39' || pkg.includes('Audit') || pkg.includes('Async') || pkg.toLowerCase().includes('essay feedback');
+        setEssayUploadVisible(isAudit);
         const isWaitlist = tierKey === 'waitlist_free' ||
             pkg.toLowerCase().includes('waitlist') ||
             pkg.toLowerCase().includes('free 1-paragraph') ||
@@ -308,7 +322,7 @@
             messageLabel.textContent = isWaitlist
                 ? 'Your Question or 1 Short Paragraph (Up to 150 Words, Optional)'
                 : isAudit
-                    ? 'Exam Type, Essay Focus & Payment Preference (Stripe / Wise / PayPal)'
+                    ? 'Exam Type, Draft (Up to 350 Words if No Google Doc) & Payment Preference'
                     : 'Preferred Days/Times, Exam Goal & Payment Preference (Stripe / Wise / PayPal)';
         }
 
@@ -326,7 +340,7 @@
             formSubtitle.textContent = isWaitlist
                 ? 'No payment needed. Leave your question or goals below (and paste one short paragraph of your writing if you would like a quick free note from me).'
                 : isAudit
-                    ? 'Complete your details below for your \u00a329 Stripe Payment Link and Google Doc essay upload instructions (Wise or PayPal also available on request).'
+                    ? 'Paste your Google Doc link (or draft up to 350 words) below and click "Pay \u00a329 via Stripe" in one visit, or submit the form first to request Wise or PayPal.'
                     : 'Complete your details and preferred days/times below for your Stripe Payment Link (or request Wise / PayPal).';
         }
         if (formBadge) {
@@ -346,6 +360,8 @@
                     pkgNextStepEl.textContent = 'Click "Pay Full Pack (£780) via Stripe" to check out now, or submit the form below to claim your £35 starter-session credit (£745 remaining balance), confirm weekly lesson times, or request Wise/PayPal.';
                 } else if (resolvedTier === 'pack_5_375') {
                     pkgNextStepEl.textContent = 'Click "Pay via Stripe" to check out now, or submit the form below to confirm weekly lesson times or request Wise/PayPal.';
+                } else if (isAudit) {
+                    pkgNextStepEl.textContent = 'Paste your Google Doc link (or draft up to 350 words) below, click "Pay \u00a329 via Stripe" (opens in a new tab), and send your details in one visit \u2014 or submit first if you prefer Wise or PayPal.';
                 } else {
                     pkgNextStepEl.textContent = stripeUrl
                         ? 'Click "Pay via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
@@ -359,7 +375,9 @@
                         ? 'Pay Full Pack (£650) via Stripe \u2192'
                         : resolvedTier === 'pack_12_780'
                             ? 'Pay Full Pack (£780) via Stripe \u2192'
-                            : 'Pay via Stripe \u2192';
+                            : isAudit
+                                ? 'Pay £29 via Stripe \u2192'
+                                : 'Pay via Stripe \u2192';
                     stripeBtn.classList.remove('hidden');
                 } else {
                     stripeBtn.classList.add('hidden');
@@ -371,7 +389,7 @@
             submitBtn.innerHTML = isWaitlist
                 ? 'Send Question &rarr;'
                 : isAudit
-                    ? 'Request \u00a329 Stripe Link &amp; Upload Details &rarr;'
+                    ? 'Send Essay Details &rarr;'
                     : 'Request Payment Link &amp; Schedule &rarr;';
         }
         if (enquiryCard) {
@@ -382,7 +400,7 @@
             messageInput.placeholder = isWaitlist
                 ? 'Tell me your target exam or goal and time zone \u2014 and paste one short paragraph of your writing (up to 150 words) if you would like a quick free note from me...'
                 : isAudit
-                    ? 'Tell me which exam (IELTS, C1, C2) or professional writing task you are submitting (let me know if you prefer Stripe, Wise, or PayPal)...'
+                    ? 'Tell me which exam (IELTS, C1, C2) or work text this is, paste your draft (up to 350 words) if you are not sharing a Google Doc above, and note if you prefer Wise or PayPal...'
                     : 'Let me know your target exam or goal, your time zone, preferred days/times, and if you prefer Stripe, Wise, or PayPal...';
         }
         setTimeout(() => {
@@ -408,6 +426,7 @@
         const enquiryCard = document.getElementById('enquiry-card');
         if (!enquiryCard) return;
 
+        setEssayUploadVisible(false);
         if (pkgBanner) pkgBanner.classList.add('hidden');
         if (formBadge) formBadge.classList.add('hidden');
         if (goalLabel) goalLabel.textContent = 'Support Request';
@@ -523,6 +542,7 @@
             }
             if (stripeBtn) stripeBtn.classList.add('hidden');
             if (pkgBanner) pkgBanner.classList.add('hidden');
+            setEssayUploadVisible(false);
             if (submitBtn) submitBtn.innerHTML = 'Send Message &rarr;';
             if (enquiryCard) {
                 enquiryCard.classList.remove('border-emerald-400', 'ring-2', 'ring-emerald-400/25');
@@ -547,6 +567,9 @@
 
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
+        contactForm.addEventListener('reset', () => {
+            setEssayUploadVisible(false);
+        });
         contactForm.addEventListener('submit', async (e) => {
             if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
             if (contactForm.dataset.submitting === 'true') {

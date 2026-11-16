@@ -7,10 +7,7 @@
   <link rel="canonical" href="https://garethenglish.com/academy.html" />
   <meta name="description" content="Explore the three core tracks at the Belfast Desk: Cambridge C1/C2 Mastery, IELTS Academic Band 7.5+, and Executive & Literary Fluency. Launch all nine interactive engines and take the 5-item Part 4 Placement Diagnostic." />
   <meta name="theme-color" content="#1c1613" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
-  <noscript><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" /></noscript>
+  <link rel="stylesheet" href="assets/fonts/fonts.css" />
   <style>
     :root {
       --bg-paper: #f8f5ef;
@@ -32,7 +29,7 @@
       --radius-lg: 14px;
       --radius-md: 10px;
       --font-serif: 'Cormorant Garamond', Georgia, serif;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
     }
 
@@ -123,6 +120,95 @@
       color: #1c1613;
       border-color: var(--accent-gold-bright);
       font-weight: 600;
+    }
+    .academy-menu-btn {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(212, 175, 55, 0.42);
+      background: var(--bg-mahogany-soft);
+      color: #f4efe6;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .academy-menu-btn:hover {
+      background: #3a2d27;
+      border-color: var(--accent-gold-bright);
+    }
+    .academy-mobile-menu {
+      display: none;
+      max-width: 1240px;
+      margin: 0.85rem auto 0;
+      padding: 1rem 0 0.25rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.25);
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .academy-mobile-menu.open {
+      display: flex;
+    }
+    .academy-mobile-section-label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #cbbba0;
+      margin-bottom: 0.25rem;
+    }
+    .academy-mobile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+    .academy-mobile-link {
+      display: block;
+      text-decoration: none;
+      color: #f4efe6;
+      font-size: 0.86rem;
+      font-weight: 600;
+      padding: 0.6rem 0.8rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      transition: background 0.18s ease, border-color 0.18s ease;
+    }
+    .academy-mobile-link:hover {
+      background: rgba(212, 175, 55, 0.16);
+      border-color: var(--accent-gold-bright);
+    }
+    .academy-mobile-cta {
+      display: block;
+      width: 100%;
+      text-align: center;
+      text-decoration: none;
+      padding: 0.75rem 1rem;
+      border-radius: 999px;
+      background: var(--accent-gold-bright);
+      color: #1c1613;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: filter 0.18s ease;
+    }
+    .academy-mobile-cta:hover {
+      filter: brightness(1.06);
+    }
+    @media (max-width: 960px) {
+      .academy-topbar-inner {
+        flex-wrap: nowrap;
+      }
+      .nav-links {
+        display: none;
+      }
+      .academy-menu-btn {
+        display: inline-flex;
+      }
+      .brand-subtitle {
+        display: none;
+      }
     }
 
     /* Hero Banner */
@@ -755,7 +841,42 @@
         <a href="#diagnostic-section" class="nav-pill">4. Part 4 Placement Diagnostic</a>
         <a href="sounds.html" class="nav-pill">🎧 Phonetics Studio</a>
       </nav>
+      <button id="academy-menu-btn" type="button" class="academy-menu-btn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="academy-mobile-menu">
+        <svg id="academy-menu-icon-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+        <svg id="academy-menu-icon-close" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:none;">
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </svg>
+      </button>
     </div>
+
+    <nav id="academy-mobile-menu" class="academy-mobile-menu" aria-label="Mobile Navigation" aria-hidden="true">
+      <div>
+        <div class="academy-mobile-section-label">Site Navigation</div>
+        <div class="academy-mobile-grid">
+          <a href="index.html#services" class="academy-mobile-link">1-to-1 Coaching</a>
+          <a href="how-i-mark.html" class="academy-mobile-link">How I Mark</a>
+          <a href="index.html#pricing" class="academy-mobile-link">Pricing</a>
+          <a href="lab.html" class="academy-mobile-link">Free Lab</a>
+          <a href="blog.html" class="academy-mobile-link">Study Guides</a>
+          <a href="sounds.html" class="academy-mobile-link">Phonetics Studio</a>
+        </div>
+      </div>
+      <div>
+        <div class="academy-mobile-section-label">Academy Sections</div>
+        <div class="academy-mobile-grid">
+          <a href="#warmup-section" class="academy-mobile-link">1. Speaking Warm-Up</a>
+          <a href="#curriculum-section" class="academy-mobile-link">2. 3-Track Curriculum</a>
+          <a href="#engines-section" class="academy-mobile-link">3. 9 Core Engines</a>
+          <a href="#diagnostic-section" class="academy-mobile-link">4. Part 4 Diagnostic</a>
+        </div>
+      </div>
+      <a href="index.html#contact" class="academy-mobile-cta">Book starter (£35) &rarr;</a>
+    </nav>
   </header>
 
   <!-- Hero Section -->
@@ -1392,7 +1513,12 @@
     <p><strong>GarethEnglish.com</strong> · The Belfast Desk, Sprucefield · Cambridge C1/C2, IELTS Academic Band 7.5+ &amp; Literary Coaching</p>
     <p style="margin-top:0.4rem;">
       <a href="index.html">Home</a> ·
-      <a href="lab.html">Interactive Lab</a> ·
+      <a href="index.html#services">1-to-1 Coaching</a> ·
+      <a href="how-i-mark.html">How I Mark</a> ·
+      <a href="index.html#pricing">Pricing</a> ·
+      <a href="lab.html">Free Lab</a> ·
+      <a href="blog.html">Study Guides</a> ·
+      <a href="index.html#contact">Book starter (£35)</a> ·
       <a href="video-courses.html">Video Lesson Sets</a> ·
       <a href="sounds.html">Phonetics Studio</a> ·
       <a href="c1-part4-deconstructor.html">Part 4 Deconstructor</a> ·
@@ -1404,6 +1530,45 @@
   <script>
     (() => {
       'use strict';
+
+      /* ===================================================================
+         0. RESPONSIVE MOBILE MENU TOGGLE
+         =================================================================== */
+      const academyMenuBtn = document.getElementById('academy-menu-btn');
+      const academyMobileMenu = document.getElementById('academy-mobile-menu');
+      const openIcon = document.getElementById('academy-menu-icon-open');
+      const closeIcon = document.getElementById('academy-menu-icon-close');
+
+      if (academyMenuBtn && academyMobileMenu) {
+        const setMenuOpen = (isOpen, moveFocus = false) => {
+          academyMobileMenu.classList.toggle('open', isOpen);
+          academyMobileMenu.setAttribute('aria-hidden', String(!isOpen));
+          academyMenuBtn.setAttribute('aria-expanded', String(isOpen));
+          academyMenuBtn.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+          if (openIcon) openIcon.style.display = isOpen ? 'none' : 'block';
+          if (closeIcon) closeIcon.style.display = isOpen ? 'block' : 'none';
+          if (isOpen && moveFocus) {
+            const firstLink = academyMobileMenu.querySelector('a[href]');
+            if (firstLink) requestAnimationFrame(() => firstLink.focus());
+          }
+        };
+
+        academyMenuBtn.addEventListener('click', () => {
+          setMenuOpen(!academyMobileMenu.classList.contains('open'), true);
+        });
+        academyMobileMenu.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', () => setMenuOpen(false));
+        });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && academyMobileMenu.classList.contains('open')) {
+            setMenuOpen(false);
+            academyMenuBtn.focus();
+          }
+        });
+        window.matchMedia('(min-width: 961px)').addEventListener('change', (e) => {
+          if (e.matches) setMenuOpen(false);
+        });
+      }
 
       /* ===================================================================
          1. PURE WEB AUDIO API CHIME ENGINE
