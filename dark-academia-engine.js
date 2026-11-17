@@ -117,7 +117,8 @@ const DarkAcademiaGate = {
     try {
       const params = new URLSearchParams(window.location.search);
       const isDirectStripeReturn =
-        params.get('unlocked') === 'true' || Boolean(params.get('session_id'));
+        params.get('unlocked') === 'true' ||
+        /^cs_(?:live|test)_[A-Za-z0-9_]{20,}$/.test(params.get('session_id') || '');
       const unlockParam = params.get('unlock');
       if (isDirectStripeReturn || (unlockParam && this.unlock(unlockParam))) {
         this.persistUnlock();
@@ -1124,7 +1125,7 @@ class DarkAcademiaEngine {
 
   /**
    * Automatically attaches tap-to-build word tiles, Hint button, and Clear button
-   * to every .kwt-card across all 12 lessons so mobile & desktop users never get stuck.
+   * to every .kwt-card across all 15 lessons so mobile & desktop users never get stuck.
    */
   initKWTScaffolds() {
     const cards = document.querySelectorAll('.kwt-card');
@@ -1676,6 +1677,36 @@ class DarkAcademiaEngine {
   /**
    * Section 3: Cambridge Part 4 Key Word Transformations (2 Marks Each)
    */
+  escapeHtml(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /**
+   * Cambridge Part 4 word count: contractions count as two words
+   * (n't, 've, 'd, 'll, 're, 'm, and non-possessive 's such as it's / there's).
+   * Possessive 's (the lifeguard's) counts as one word.
+   */
+  countCambridgeWords(normStr) {
+    const NON_POSSESSIVE_S = /^(it|that|there|here|what|who|where|when|how|he|she|let)'s$/;
+    return String(normStr || '')
+      .toLowerCase()
+      .replace(/[\u2019\u2018]/g, "'")
+      .split(/\s+/)
+      .filter(Boolean)
+      .reduce((n, w) => {
+        const isContraction =
+          /n't$/.test(w) ||
+          /[a-z]'(ve|d|ll|re|m)$/.test(w) ||
+          NON_POSSESSIVE_S.test(w);
+        return n + (isContraction ? 2 : 1);
+      }, 0);
+  }
+
   normalizeText(str) {
     return str
       .trim()
@@ -1713,9 +1744,10 @@ class DarkAcademiaEngine {
     }
 
     const userWords = userNorm.split(' ').filter(Boolean);
+    const userWordCount = this.countCambridgeWords(userNorm);
     const maxWords = parseInt(card.getAttribute('data-max-words') || '6', 10);
     const minWords = parseInt(card.getAttribute('data-min-words') || '3', 10);
-    const withinWordLimit = userWords.length >= minWords && userWords.length <= maxWords;
+    const withinWordLimit = userWordCount >= minWords && userWordCount <= maxWords;
 
     const keyPill = card.querySelector('.kwt-key');
     const keyWord = keyPill ? this.normalizeText(keyPill.textContent) : '';
@@ -1741,7 +1773,7 @@ class DarkAcademiaEngine {
     const modelWords = modelAnswer.trim().split(/\s+/);
     const partialRegexAttr = card.getAttribute('data-partial-regex');
 
-    if (!isExactMatch && hasExactKeyword && userWords.length >= minWords && userWords.length <= 8) {
+    if (!isExactMatch && hasExactKeyword && userWordCount >= minWords && userWordCount <= 8) {
       if (partialRegexAttr) {
         try {
           const prx = new RegExp(partialRegexAttr, 'i');
@@ -1782,7 +1814,7 @@ class DarkAcademiaEngine {
       if (window.DarkAcademiaAtmosphere) window.DarkAcademiaAtmosphere.playSFX('seal');
       if (fb) {
         fb.className = 'feedback-box correct';
-        fb.innerHTML = `<strong>✓ Full Marks (+2/2):</strong> Spot on! <em>"${rawUser.trim()}"</em> (${userWords.length} words) — ${explanation}`;
+        fb.innerHTML = `<strong>✓ Full Marks (+2/2):</strong> Spot on! <em>"${this.escapeHtml(rawUser.trim())}"</em> (${userWordCount} words) — ${explanation}`;
       }
       if (window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
         window.CandidateDossier.recordAttempt({
@@ -1809,7 +1841,7 @@ class DarkAcademiaEngine {
       if (!hasExactKeyword && keyWord) {
         hintDiagnostic = `Remember: you must include the exact unchanged key word <strong>${keyWord.toUpperCase()}</strong>!`;
       } else if (!withinWordLimit) {
-        hintDiagnostic = `Your answer has <strong>${userWords.length} words</strong>—Cambridge Part 4 requires between <strong>${minWords} and ${maxWords} words</strong>.`;
+        hintDiagnostic = `Your answer has <strong>${userWordCount} words</strong>—Cambridge Part 4 requires between <strong>${minWords} and ${maxWords} words</strong>.`;
       } else if (isPartialMatch) {
         hintDiagnostic = `You already have <strong>1 of the 2 marks</strong> (the core structure or key word phrase is there)! Check your preposition, article, or participle form to claim full 2/2 marks.`;
       }
@@ -2079,7 +2111,7 @@ window.DarkAcademiaEngine = DarkAcademiaEngine;
 /**
  * ==========================================================================
  * DarkAcademiaAtmosphere — Volumetric Canvas VFX, Classical/Gothic Soundscape
- * & British Dramatic Excerpt Narration Engine (Hub + All 12 Lessons)
+ * & British Dramatic Excerpt Narration Engine (Hub + All 15 Lessons)
  * ==========================================================================
  */
 const DarkAcademiaAtmosphere = (() => {
@@ -3126,7 +3158,7 @@ const DarkAcademiaAtmosphere = (() => {
     const hero = document.querySelector('.portal-hero');
     if (!hero || document.getElementById('da-cinema-stage')) return;
 
-    // Preload all 4 book paintings and 12 unit paintings
+    // Preload all 4 book paintings and 15 unit paintings
     ['dracula', 'frankenstein', 'jekyll', 'baskerville'].forEach(getBookImage);
     Object.keys(UNIT_PAINTINGS).forEach(getBookImage);
 

@@ -2965,7 +2965,7 @@
       }
       const iframe = document.getElementById('tapeLabIframe');
       if (iframe && iframe.contentWindow) {
-        try { iframe.contentWindow.postMessage(payload, '*'); } catch (_) {}
+        try { iframe.contentWindow.postMessage(payload, window.location.origin && window.location.origin !== 'null' ? window.location.origin : '*'); } catch (_) {}
       }
       document.getElementById('patchStatusBadge').textContent =
         `✓ Beamed ${st.callsign} (${st.freq.toFixed(3)} MHz · Key ${payload.rootKey}) → Tape Lab Pad 01`;

@@ -588,6 +588,167 @@
       border-top: 1px solid var(--border-hairline);
     }
   </style>
+  <!-- GM-RESUME-BAR-START -->
+  <style id="gm-resume-style">
+    #gm-resume-bar { position: fixed; left: 16px; bottom: 16px; z-index: 9000; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: calc(100vw - 32px); padding: 8px 10px 8px 14px; border-radius: 10px; background: rgba(15, 23, 42, 0.92); color: #f8fafc; font: 600 0.8rem/1.3 system-ui, -apple-system, 'Segoe UI', sans-serif; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }
+    #gm-resume-bar .gm-rb-btn { cursor: pointer; border: 1px solid rgba(248, 250, 252, 0.35); background: #f8fafc; color: #0f172a; border-radius: 7px; padding: 6px 12px; font: 700 0.8rem/1 system-ui, -apple-system, 'Segoe UI', sans-serif; }
+    #gm-resume-bar .gm-rb-btn:hover { background: #e2e8f0; }
+    #gm-resume-bar .gm-rb-status { color: #6ee7b7; min-width: 3.5em; }
+    @media (max-width: 640px) { #gm-resume-bar .gm-rb-text { display: none; } }
+    @media print { #gm-resume-bar { display: none !important; } }
+  </style>
+  <script id="gm-resume-core" data-ls-prefixes="gareth_arkadiy_c1_workout_v1" data-autosave="0">
+  (function () {
+    'use strict';
+    var me = document.currentScript;
+    var LS_PREFIXES = ((me && me.getAttribute('data-ls-prefixes')) || '').split(',').filter(Boolean);
+    var AUTOSAVE = !!(me && me.getAttribute('data-autosave') === '1');
+    var AUTOSAVE_KEY = 'gm_resume_autosave:' + location.pathname;
+    var FIELD_SEL = 'input, textarea, select';
+    var SKIP_TYPES = /^(button|submit|reset|file|password|hidden|image)$/i;
+
+    function b64urlEncode(str) {
+      var bytes = new TextEncoder().encode(str), bin = '';
+      for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+      return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+    function b64urlDecode(s) {
+      s = s.replace(/-/g, '+').replace(/_/g, '/');
+      while (s.length % 4) s += '=';
+      var bin = atob(s), bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new TextDecoder().decode(bytes);
+    }
+    function ownsKey(k) {
+      for (var i = 0; i < LS_PREFIXES.length; i++) { if (k.indexOf(LS_PREFIXES[i]) === 0) return true; }
+      return false;
+    }
+    function fields() {
+      return Array.prototype.filter.call(document.querySelectorAll(FIELD_SEL), function (el) {
+        return !SKIP_TYPES.test(el.type || '') && !el.closest('[data-resume-ignore]');
+      });
+    }
+    function collectFields() {
+      var out = {}, seen = {};
+      fields().forEach(function (el, i) {
+        var key = (el.id && !seen[el.id]) ? 'id:' + el.id : 'i:' + i;
+        if (el.id) seen[el.id] = true;
+        if (el.type === 'checkbox' || el.type === 'radio') { if (el.checked) out[key] = true; }
+        else if (el.value !== '') out[key] = el.value;
+      });
+      return out;
+    }
+    function applyFields(map) {
+      if (!map) return;
+      var list = fields();
+      Object.keys(map).forEach(function (key) {
+        var el = key.indexOf('id:') === 0 ? document.getElementById(key.slice(3)) : list[parseInt(key.slice(2), 10)];
+        if (!el || !el.matches || !el.matches(FIELD_SEL)) return;
+        if (el.type === 'checkbox' || el.type === 'radio') el.checked = !!map[key];
+        else el.value = map[key];
+        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    }
+
+    // 1. Read #state= before the page's own scripts run, so their saved progress is restored first
+    var incoming = null;
+    var m = location.hash.match(/(?:^#|&)state=([A-Za-z0-9_-]+)/);
+    if (m) {
+      try {
+        incoming = JSON.parse(b64urlDecode(m[1]));
+        if (incoming && incoming.ls && typeof incoming.ls === 'object') {
+          Object.keys(incoming.ls).forEach(function (k) {
+            if (ownsKey(k)) { try { localStorage.setItem(k, String(incoming.ls[k])); } catch (e) {} }
+          });
+        }
+      } catch (e) { incoming = null; }
+      try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    }
+
+    // 2. Opt-in live classroom: load ../../classroom-sync.js only on http(s) when ?room=CODE is present
+    try {
+      var room = new URLSearchParams(location.search).get('room');
+      if (room && /^https?:$/.test(location.protocol) && /^[A-Za-z0-9-]{3,40}$/.test(room)) {
+        var cs = document.createElement('script');
+        cs.src = '../../classroom-sync.js';
+        cs.defer = true;
+        document.head.appendChild(cs);
+      }
+    } catch (e) {}
+
+    function buildLink() {
+      var state = { v: 1, f: collectFields(), ls: {} };
+      try {
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && ownsKey(k)) state.ls[k] = localStorage.getItem(k);
+        }
+      } catch (e) {}
+      return location.href.split('#')[0] + '#state=' + b64urlEncode(JSON.stringify(state));
+    }
+    function copyText(text, done) {
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        if (!ok) window.prompt('Copy this link:', text);
+        done();
+      }
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+      else fallback();
+    }
+
+    function mountBar() {
+      if (document.getElementById('gm-resume-bar')) return;
+      var bar = document.createElement('div');
+      bar.id = 'gm-resume-bar';
+      bar.setAttribute('data-resume-ignore', '');
+      bar.setAttribute('role', 'region');
+      bar.setAttribute('aria-label', 'Continue on another device');
+      bar.innerHTML = '<span class="gm-rb-text">Switching device? Your answers travel with this link.</span>' +
+        '<button type="button" class="gm-rb-btn">&#128203; Copy Resume Link</button>' +
+        '<span class="gm-rb-status" aria-live="polite"></span>';
+      document.body.appendChild(bar);
+      var btn = bar.querySelector('.gm-rb-btn'), status = bar.querySelector('.gm-rb-status');
+      btn.addEventListener('click', function () {
+        copyText(buildLink(), function () {
+          status.textContent = 'Copied';
+          setTimeout(function () { status.textContent = ''; }, 2200);
+        });
+      });
+    }
+
+    function hydrate() {
+      if (incoming && incoming.f) applyFields(incoming.f);
+      else if (AUTOSAVE) {
+        try { applyFields(JSON.parse(localStorage.getItem(AUTOSAVE_KEY) || 'null')); } catch (e) {}
+      }
+      if (AUTOSAVE) {
+        var t = null;
+        var save = function (ev) {
+          if (ev && ev.target && ev.target.closest && ev.target.closest('[data-resume-ignore]')) return;
+          clearTimeout(t);
+          t = setTimeout(function () { try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(collectFields())); } catch (e) {} }, 300);
+        };
+        document.addEventListener('input', save, true);
+        document.addEventListener('change', save, true);
+        save();
+      }
+    }
+
+    window.GMResume = { link: buildLink };
+
+    window.addEventListener('load', function () {
+      mountBar();
+      setTimeout(hydrate, 30);
+    });
+  })();
+  </script>
+  <!-- GM-RESUME-BAR-END -->
 </head>
 <body>
 

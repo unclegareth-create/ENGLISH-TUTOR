@@ -825,7 +825,7 @@
                 title.style.color = "var(--brass-light)";
             }
             if (desc) {
-                desc.textContent = `Scored under ${Math.ceil(quota * 0.9)}/${quota}? Cambridge Part 3 Use of English penalises tricky prefixes and internal vowel shifts. In 1-to-1 sessions, we eliminate these recurring errors.`;
+                desc.textContent = `Scored under ${Math.ceil(quota * 0.9)}/${quota}? Cambridge Part 3 Use of English penalises tricky prefixes and internal vowel shifts. In my 1-to-1 sessions, I help you eliminate these recurring errors.`;
             }
         } else {
             if (title) {
@@ -833,7 +833,7 @@
                 title.style.color = "var(--danger)";
             }
             if (desc) {
-                desc.textContent = "Word formation requires speed and morphological precision. In our 1-to-1 diagnostic lessons, we identify your exact spelling and affix weaknesses.";
+                desc.textContent = "Word formation requires speed and morphological precision. In my 1-to-1 diagnostic lessons, I identify your exact spelling and affix weaknesses.";
             }
         }
 

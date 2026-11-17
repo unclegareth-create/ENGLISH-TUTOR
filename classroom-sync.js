@@ -11,9 +11,11 @@
  *      sync across browser tabs/windows on the same computer (even offline or
  *      behind strict school/corporate firewalls).
  *
- * 2. Memorable Room Code Generator (e.g. CRYPT-482, VAULT-719):
+ * 2. Unguessable Room Code Generator (e.g. CRYPT-K7Q2XM, VAULT-9HWD3P):
+ *    - Suffix = 6 characters from crypto.getRandomValues (32^6 combinations), so
+ *      public PeerJS room IDs cannot be enumerated.
  *    - ClassroomSync.hostRoom() initializes the host transport and generates a
- *      1-click Student Join URL (?room=CRYPT-482).
+ *      1-click Student Join URL (?room=CRYPT-K7Q2XM).
  *    - ClassroomSync.joinRoom(code) (or automatic join when ?room=XXXX is in
  *      window.location.search) connects the student's browser to the tutor's HUD.
  *
@@ -34,6 +36,25 @@
 
   const PEERJS_CDN = 'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
   const ROOM_PREFIXES = ['CRYPT', 'VAULT', 'RUNE', 'QUILL', 'MOOR', 'BARD', 'ABBEY', 'FOLIO'];
+  // 32 unambiguous characters (no 0/O, 1/I): 256 % 32 === 0, so byte-to-index mapping has no modulo bias
+  const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+  // Cryptographically random room suffix so public PeerJS room IDs cannot be enumerated
+  function secureRandomCode(length) {
+    const n = Math.max(1, length | 0);
+    const bytes = new Uint8Array(n);
+    const cryptoObj = window.crypto || window.msCrypto;
+    if (cryptoObj && typeof cryptoObj.getRandomValues === 'function') {
+      cryptoObj.getRandomValues(bytes);
+    } else {
+      throw new Error('[ClassroomSync] Secure random generator unavailable; refusing to create a guessable room code.');
+    }
+    let out = '';
+    for (let i = 0; i < n; i++) {
+      out += ROOM_ALPHABET.charAt(bytes[i] % ROOM_ALPHABET.length);
+    }
+    return out;
+  }
 
   const PRESET_BOSS_CHALLENGES = [
     {
@@ -87,7 +108,7 @@
     if (role === 'host') {
       return `gm-live-${slug}`;
     }
-    return `gm-student-${slug}-${suffix || Math.random().toString(36).slice(2, 7)}`;
+    return `gm-student-${slug}-${suffix || secureRandomCode(6).toLowerCase()}`;
   }
 
   function countWords(str) {
@@ -166,7 +187,7 @@
 
   const ClassroomSync = {
     role: null,               // 'host' | 'student' | null
-    roomCode: '',             // e.g. 'CRYPT-482'
+    roomCode: '',             // e.g. 'CRYPT-K7Q2XM'
     peer: null,               // PeerJS instance
     connections: [],          // Active PeerJS DataConnections
     bc: null,                 // BroadcastChannel('gm_classroom_' + code)
@@ -181,14 +202,11 @@
     PRESET_BOSS_CHALLENGES,
 
     generateRoomCode() {
-      const prefix = ROOM_PREFIXES[Math.floor(Math.random() * ROOM_PREFIXES.length)];
-      const num = Math.floor(100 + Math.random() * 900);
-      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-      let pin = '';
-      for (let i = 0; i < 3; i++) {
-        pin += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return `${prefix}-${num}-${pin}`;
+      const prefixByte = new Uint8Array(1);
+      (window.crypto || window.msCrypto).getRandomValues(prefixByte);
+      const prefix = ROOM_PREFIXES[prefixByte[0] % ROOM_PREFIXES.length];
+      // 6 cryptographically random characters: 32^6 = 1,073,741,824 codes per prefix (e.g. VAULT-K7Q2XM)
+      return `${prefix}-${secureRandomCode(6)}`;
     },
 
     on(event, handler) {
@@ -378,7 +396,7 @@
     },
 
     /**
-     * Initialize Tutor Host Room (e.g. CRYPT-482)
+     * Initialize Tutor Host Room (e.g. CRYPT-K7Q2XM)
      */
     async hostRoom(customCode) {
       this.cleanupTransports();

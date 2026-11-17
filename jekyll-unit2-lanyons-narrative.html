@@ -421,7 +421,7 @@
     </div>
 
     <!-- KWT 4 -->
-    <div class="kwt-card jekyll" data-valid="not until the facade melted away did|not until the disguise melted away did" data-valid-regex="^not\s+until\s+the\s+(facade|disguise)\s+(had\s+)?melted\s+away\s+did$" data-partial-regex="^not\s+until\b.*\bdid$">
+    <div class="kwt-card jekyll" data-max-words="8" data-valid="not until the facade melted away did|not until the disguise melted away did" data-valid-regex="^not\s+until\s+the\s+(facade|disguise)\s+(had\s+)?melted\s+away\s+did$" data-partial-regex="^not\s+until\b.*\bdid$">
       <div class="kwt-original">11. Lanyon only recognised his colleague after the monstrous facade had melted away.</div>
       <span class="kwt-key">UNTIL</span>
       <div class="kwt-input-row">
@@ -786,6 +786,13 @@
     }
   }
 
+  // Cambridge Part 4 count: contractions (n't, 've, 'd, 'll, 're, 'm, it's) = 2 words; possessive 's = 1
+  function cambridgeWordCount(text) {
+    const NP = /^(it|that|there|here|what|who|where|when|how|he|she|let)'s$/;
+    return String(text || '').toLowerCase().replace(/[’‘]/g, "'").trim().split(/\s+/).filter(Boolean)
+      .reduce((n, w) => n + ((/n't$/.test(w) || /[a-z]'(ve|d|ll|re|m)$/.test(w) || NP.test(w)) ? 2 : 1), 0);
+  }
+
   function updateWbStatus(idx) {
     const item = workbenchItems[idx];
     const inp = document.getElementById(`wb-input-${idx}`);
@@ -793,8 +800,7 @@
     const kwPill = document.getElementById(`wb-kw-${idx}`);
     if (!inp || !item) return;
     const raw = inp.value.trim();
-    const words = raw ? raw.split(/\s+/) : [];
-    const n = words.length;
+    const n = cambridgeWordCount(raw);
     if (wcPill) {
       wcPill.textContent = `${n} / 3–6 words`;
       wcPill.className = 'da-wb-pill ' + (n >= 3 && n <= 6 ? 'ok' : (n > 0 ? 'warn' : ''));
@@ -812,8 +818,8 @@
     const fb = document.getElementById(`wb-fb-${idx}`);
     const card = document.getElementById(`wb-card-${idx}`);
     if (!inp || !fb || !item) return;
-    const norm = inp.value.trim().replace(/\s+/g, ' ').toLowerCase();
-    const words = norm ? norm.split(' ') : [];
+    const norm = inp.value.trim().replace(/\s+/g, ' ').toLowerCase().replace(/[\u2019\u2018]/g, "'");
+    const wc = cambridgeWordCount(norm);
     const hasKw = new RegExp(`\\b${item.keyWord.toLowerCase()}\\b`).test(norm);
     fb.style.display = 'block';
     if (!hasKw) {
@@ -821,9 +827,9 @@
       fb.textContent = `⚠️ Unchanged Keyword Guard: You must include the exact word "${item.keyWord}" without altering its form.`;
       return;
     }
-    if (words.length < 3 || words.length > 6) {
+    if (wc < 3 || wc > 6) {
       fb.className = 'feedback-box wrong';
-      fb.textContent = `⚠️ Word Count Alert: Your phrase has ${words.length} words. Cambridge C1 Part 4 requires between 3 and 6 words.`;
+      fb.textContent = `⚠️ Word Count Alert: Your phrase has ${wc} words. Cambridge C1 Part 4 requires between 3 and 6 words.`;
       return;
     }
     if (item.valid.includes(norm)) {

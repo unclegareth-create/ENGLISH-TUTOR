@@ -704,11 +704,11 @@
         } else if (survived) {
             title.textContent = "MEETING SURVIVED (NEEDS POLISH)";
             title.style.color = "#f59e0b";
-            desc.textContent = "Scored under 80%? In high-stakes meetings, even small phrasing slips can undermine your credibility. In our 1-to-1 Business English sessions, we practice real-time diplomatic phrasing for your actual work calls.";
+            desc.textContent = "Scored under 80%? In high-stakes meetings, even small phrasing slips can undermine your credibility. In my 1-to-1 Business English sessions, I practise real-time diplomatic phrasing with you for your actual work calls.";
         } else {
             title.textContent = "YOU WERE FIRED";
             title.style.color = "var(--danger)";
-            desc.textContent = "Your blunt phrasing alienated the board. In international business, linguistic nuance is influence. In our 1-to-1 Business English sessions, we build instinctive tact and diplomacy.";
+            desc.textContent = "Your blunt phrasing alienated the board. In international business, linguistic nuance is influence. In my 1-to-1 Business English sessions, I help you build instinctive tact and diplomacy.";
         }
 
         document.getElementById('final-score').textContent = String(finalReputation);

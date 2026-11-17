@@ -365,7 +365,7 @@ window.POE_UNIT13_MANIFEST = {
     {
       "number": 22,
       "original": "During the entire week before the crime, I never once spoke unkindly to the old man.",
-      "keyWord": "AT NO TIME",
+      "keyWord": "TIME",
       "leadIn": "",
       "leadOut": "unkindly to the old man during the entire week before the crime.",
       "validAnswers": [
@@ -373,7 +373,7 @@ window.POE_UNIT13_MANIFEST = {
         "At no time did I talk"
       ],
       "canonicalAnswer": "At no time did I speak",
-      "explanation": "Negative time-phrase inversion (6 words): unchanged keyword phrase 'At no time' + auxiliary 'did' + subject 'I' + bare infinitive 'speak'."
+      "explanation": "Negative time-phrase inversion (6 words): unchanged key word 'TIME' inside the fixed phrase 'At no time' + auxiliary 'did' + subject 'I' + bare infinitive 'speak'."
     },
     {
       "number": 23,
@@ -383,8 +383,7 @@ window.POE_UNIT13_MANIFEST = {
       "leadOut": "the bedchamber before the muffled beating grew so loud.",
       "validAnswers": [
         "would rather they had left",
-        "would rather they left",
-        "d rather they had left"
+        "would rather that they had left"
       ],
       "canonicalAnswer": "would rather they had left",
       "explanation": "Past preference subjunctive (5 words): 'would rather' + new subject 'they' + past perfect 'had left' for a counterfactual wish about an earlier past action."

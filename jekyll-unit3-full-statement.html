@@ -377,7 +377,7 @@
     </p>
 
     <!-- KWT 1 -->
-    <div class="kwt-card jekyll" data-valid="found it impossible to extricate himself from|was unable to extricate himself from" data-valid-regex="^(found\s+it\s+impossible|was\s+unable|was\s+powerless)\s+to\s+extricate\s+himself\s+from$" data-partial-regex="\bextricate\s+himself\s+from$">
+    <div class="kwt-card jekyll" data-max-words="8" data-valid="found it impossible to extricate himself from|was unable to extricate himself from" data-valid-regex="^(found\s+it\s+impossible|was\s+unable|was\s+powerless)\s+to\s+extricate\s+himself\s+from$" data-partial-regex="\bextricate\s+himself\s+from$">
       <div class="kwt-original">8. Jekyll could not free himself from the terrifying situation he had created.</div>
       <span class="kwt-key">EXTRICATE</span>
       <div class="kwt-input-row">
@@ -390,7 +390,7 @@
     </div>
 
     <!-- KWT 2 -->
-    <div class="kwt-card jekyll" data-valid="it was only when the salt ran|it was not until the salt ran" data-valid-regex="^it\s+(was\s+only\s+when|was\s+not\s+until|wasn't\s+until)\s+the\s+salt\s+ran$" data-partial-regex="^it\s+(was\s+only\s+when|was\s+not\s+until|wasn't\s+until)\b">
+    <div class="kwt-card jekyll" data-max-words="8" data-valid="it was only when the salt ran|it was not until the salt ran" data-valid-regex="^it\s+(was\s+only\s+when|was\s+not\s+until|wasn't\s+until)\s+the\s+salt\s+ran$" data-partial-regex="^it\s+(was\s+only\s+when|was\s+not\s+until|wasn't\s+until)\b">
       <div class="kwt-original">9. Jekyll only realised how hopeless his position was when the original chemical supply ran out.</div>
       <span class="kwt-key">SALT</span>
       <div class="kwt-input-row">
@@ -415,7 +415,7 @@
     </div>
 
     <!-- KWT 4 -->
-    <div class="kwt-card jekyll" data-valid="what brought about jekyll's downfall was his|what precipitated jekyll's downfall was his" data-valid-regex="^what\s+(brought\s+about|precipitated|caused|led\s+to)\s+jekyll'?s\s+downfall\s+was\s+his$" data-partial-regex="^what\b.*\bdownfall\s+was\s+his$">
+    <div class="kwt-card jekyll" data-max-words="8" data-valid="what brought about jekyll's downfall was his|what precipitated jekyll's downfall was his" data-valid-regex="^what\s+(brought\s+about|precipitated|caused|led\s+to)\s+jekyll'?s\s+downfall\s+was\s+his$" data-partial-regex="^what\b.*\bdownfall\s+was\s+his$">
       <div class="kwt-original">11. Jekyll's ruin was caused by his obsession with keeping a spotless public reputation.</div>
       <span class="kwt-key">DOWNFALL</span>
       <div class="kwt-input-row">
@@ -838,6 +838,13 @@
     }
   }
 
+  // Cambridge Part 4 count: contractions (n't, 've, 'd, 'll, 're, 'm, it's) = 2 words; possessive 's = 1
+  function cambridgeWordCount(text) {
+    const NP = /^(it|that|there|here|what|who|where|when|how|he|she|let)'s$/;
+    return String(text || '').toLowerCase().replace(/[’‘]/g, "'").trim().split(/\s+/).filter(Boolean)
+      .reduce((n, w) => n + ((/n't$/.test(w) || /[a-z]'(ve|d|ll|re|m)$/.test(w) || NP.test(w)) ? 2 : 1), 0);
+  }
+
   function updateWbStatus(idx) {
     const item = workbenchItems[idx];
     const inp = document.getElementById(`wb-input-${idx}`);
@@ -845,8 +852,7 @@
     const kwPill = document.getElementById(`wb-kw-${idx}`);
     if (!inp || !item) return;
     const raw = inp.value.trim();
-    const words = raw ? raw.split(/\s+/) : [];
-    const n = words.length;
+    const n = cambridgeWordCount(raw);
     if (wcPill) {
       wcPill.textContent = `${n} / 3–6 words`;
       wcPill.className = 'da-wb-pill ' + (n >= 3 && n <= 6 ? 'ok' : (n > 0 ? 'warn' : ''));
@@ -864,8 +870,8 @@
     const fb = document.getElementById(`wb-fb-${idx}`);
     const card = document.getElementById(`wb-card-${idx}`);
     if (!inp || !fb || !item) return;
-    const norm = inp.value.trim().replace(/\s+/g, ' ').toLowerCase();
-    const words = norm ? norm.split(' ') : [];
+    const norm = inp.value.trim().replace(/\s+/g, ' ').toLowerCase().replace(/[\u2019\u2018]/g, "'");
+    const wc = cambridgeWordCount(norm);
     const hasKw = new RegExp(`\\b${item.keyWord.toLowerCase()}\\b`).test(norm);
     fb.style.display = 'block';
     if (!hasKw) {
@@ -873,9 +879,9 @@
       fb.textContent = `⚠️ Unchanged Keyword Guard: You must include the exact word "${item.keyWord}" without altering its form.`;
       return;
     }
-    if (words.length < 3 || words.length > 6) {
+    if (wc < 3 || wc > 6) {
       fb.className = 'feedback-box wrong';
-      fb.textContent = `⚠️ Word Count Alert: Your phrase has ${words.length} words. Cambridge C1 Part 4 requires between 3 and 6 words.`;
+      fb.textContent = `⚠️ Word Count Alert: Your phrase has ${wc} words. Cambridge C1 Part 4 requires between 3 and 6 words.`;
       return;
     }
     if (item.valid.includes(norm)) {

@@ -38,7 +38,7 @@
     const path = (window.location.pathname || '').toLowerCase();
 
     // Never on the course itself, the compendium, or the Young Learners page.
-    const EXCLUDED_RE = /(^|\/)((dracula|frankenstein|jekyll|baskerville|alice)-unit\d+[^/]*|dark-academia[^/]*|the-gothic-canon[^/]*|professor-west-study[^/]*)$/i;
+    const EXCLUDED_RE = /(^|\/)((dracula|frankenstein|jekyll|baskerville|alice)-unit\d+[^/]*|poe-unit13-tell-tale-heart[^/]*|dark-academia[^/]*|the-gothic-canon[^/]*|professor-west-study[^/]*)$/i;
     if (EXCLUDED_RE.test(path)) return;
 
     const slug = ((path.split('/').pop() || '').split(/[?#]/)[0].replace(/\.html?$/i, '')) || 'index';

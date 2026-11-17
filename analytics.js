@@ -13,27 +13,35 @@
 (() => {
     'use strict';
 
+    if (window.__gmAnalyticsInitialized) return;
+    window.__gmAnalyticsInitialized = true;
+
+    const makeNoop = () => {
+        const fn = function () {};
+        fn.__gmNoop = true;
+        return fn;
+    };
+
     // Local file:/// Protocol Guard:
     // Prevent browser hanging on external analytics when files are opened locally off disk.
     if (!window.location.protocol.startsWith('http')) {
-        window.trackFunnelEvent = function () {};
-        window.showDiagnosticGate = function () {};
+        if (typeof window.trackFunnelEvent !== 'function') window.trackFunnelEvent = makeNoop();
+        if (typeof window.showDiagnosticGate !== 'function') window.showDiagnosticGate = makeNoop();
         return;
     }
 
-    // UK ICO Children's Code & Young Learner / Minor Opt-Out Guard:
-    // Never load analytics or store attribution trails on Young Learners pages (ages 6-12),
-    // minor student portals (Vitaly), or pages explicitly opting out via meta tag.
+    // UK ICO Children's Code & Explicit Opt-Out Guard:
+    // Never load analytics or store attribution trails on public Young Learners pages (ages 6-12)
+    // or pages explicitly opting out via meta tag. Private student portals (/s/*, including Vitaly)
+    // run cookieless GoatCounter telemetry while skipping GA4, marketing attribution, and conversion gates.
     const currentPath = (window.location.pathname || '').toLowerCase();
     const metaOptOut = document.querySelector('meta[name="gm-no-analytics"][content="1"]');
-    const isMinorPortal = currentPath.includes('vitaly');
     if (
         metaOptOut ||
-        currentPath.includes('professor-west-study') ||
-        isMinorPortal
+        currentPath.includes('professor-west-study')
     ) {
-        window.trackFunnelEvent = function () {};
-        window.showDiagnosticGate = function () {};
+        if (typeof window.trackFunnelEvent !== 'function') window.trackFunnelEvent = makeNoop();
+        if (typeof window.showDiagnosticGate !== 'function') window.showDiagnosticGate = makeNoop();
         return;
     }
 
@@ -151,7 +159,7 @@
     };
 
     const setLastFreeTool = (toolSlug) => {
-        if (!toolSlug) return;
+        if (!toolSlug || isStudentPortal) return;
         try {
             localStorage.setItem(LAST_FREE_TOOL_KEY, String(toolSlug).replace(/\.(html|pdf)$/i, ''));
         } catch (e) {}
@@ -175,15 +183,18 @@
     let enqueueGoatCounter = null;
 
     if (GOATCOUNTER_CODE) {
-        // Load the GoatCounter counter script (cookieless, privacy-friendly).
-        const s = document.createElement('script');
-        s.async = true;
-        s.src = 'https://gc.zgo.at/count.js';
-        s.dataset.goatcounter = `https://${GOATCOUNTER_CODE}.goatcounter.com/count`;
-        document.head.appendChild(s);
+        // Load the GoatCounter counter script once (cookieless, privacy-friendly).
+        let s = document.querySelector('script[src*="gc.zgo.at/count.js"]');
+        if (!s) {
+            s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://gc.zgo.at/count.js';
+            s.dataset.goatcounter = `https://${GOATCOUNTER_CODE}.goatcounter.com/count`;
+            document.head.appendChild(s);
+        }
 
         // Events clicked before the counter script has loaded are queued, then sent.
-        const queue = [];
+        const queue = Array.isArray(window.__gmGcQueue) ? window.__gmGcQueue.splice(0) : [];
         const send = (name, customTitle) => {
             const gc = window.goatcounter;
             if (gc && typeof gc.count === 'function') {
@@ -194,12 +205,17 @@
         };
         enqueueGoatCounter = send;
         window.__gmEnqueueGoatCounter = send;
-        s.addEventListener('load', () => {
+        const flushQueue = () => {
             while (queue.length) {
                 const item = queue.shift();
                 send(item[0], item[1]);
             }
-        });
+        };
+        if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+            flushQueue();
+        } else {
+            s.addEventListener('load', flushQueue);
+        }
 
         // Fire LLM / AI Referral Telemetry when a visitor lands from ChatGPT, Perplexity, Claude, Gemini, Copilot, etc.
         if (detectedAi && detectedAi.isNewSessionHit) {
@@ -276,31 +292,41 @@
             const a = e.target.closest('a[href]');
             if (!a) return;
             const href = a.getAttribute('href');
+            const trackedAttr = a.closest('[data-track]');
+            const hasFunnelTrackAttr = Boolean(trackedAttr && trackedAttr.getAttribute('data-track') !== 'articles');
 
             if (href.includes('buy.stripe.com/9B63cuadm8gs5Mhc4Xb3q01') || a.getAttribute('data-tier') === 'gothic_canon_24') {
                 const fromTool = getLastFreeTool();
-                send(`course-checkout: from=${fromTool}`);
+                e.__gmFunnelTracked = true;
                 if (typeof window.trackFunnelEvent === 'function') {
                     window.trackFunnelEvent('course_checkout_clicked', { tier: 'gothic_canon_24', from_free_tool: fromTool });
+                } else {
+                    send(`course-checkout: from=${fromTool}`);
                 }
             } else if (/(^|\/)dark-academia-index\.html/i.test(href)) {
                 const fromTool = getLastFreeTool();
-                send(`course-hub: from=${fromTool}`);
+                e.__gmFunnelTracked = true;
                 if (typeof window.trackFunnelEvent === 'function') {
                     window.trackFunnelEvent('course_hub_clicked', { tier: 'gothic_canon_24', from_free_tool: fromTool });
+                } else {
+                    send(`course-hub: from=${fromTool}`);
                 }
-            } else if (href === '#contact' || href.includes('#contact') || href.includes('#enquiry-card') || href.includes('#cal-booking-box')) {
-                send(`booking-cta: ${label(a)} (from=${getLastFreeTool()})`);
+            } else if (href === '#contact' || href.includes('#contact') || href.includes('#enquiry-card') || href.includes('#cal-booking-box') || href.includes('#book-diagnostic')) {
+                if (!hasFunnelTrackAttr) {
+                    send(`booking-cta: ${label(a)} (from=${getLastFreeTool()})`);
+                }
             } else if (href.includes('cal.com/gareth-montgomery-jgaefz')) {
-                send(`booking-external: cal.com (from=${getLastFreeTool()})`);
+                if (!hasFunnelTrackAttr) {
+                    send(`booking-external: cal.com (from=${getLastFreeTool()})`);
+                }
             } else if (href.includes('#prosody-lab')) {
                 setLastFreeTool('prosody-lab');
-                send('study-guide: prosody-lab');
+                if (!hasFunnelTrackAttr) send('study-guide: prosody-lab');
             } else if (RESEARCH_ARTICLE_RE.test(href)) {
                 const targetPage = page(href);
                 const slug = targetPage.replace(/\.html$/i, '');
                 setLastFreeTool(targetPage);
-                send(`article: ${targetPage}`, `Research Article Click: ${slug}`);
+                if (!hasFunnelTrackAttr) send(`article: ${targetPage}`, `Research Article Click: ${slug}`);
                 if (typeof window.gtag === 'function') {
                     window.gtag('event', 'research_article_view', {
                         article: slug,
@@ -310,16 +336,16 @@
                 }
             } else if (EXAM_LAB_RE.test(href)) {
                 setLastFreeTool(page(href));
-                send(`exam-lab: ${page(href)}`);
+                if (!hasFunnelTrackAttr) send(`exam-lab: ${page(href)}`);
             } else if (FREE_GAME_RE.test(href)) {
                 setLastFreeTool(page(href));
-                send(`game: ${page(href)}`);
+                if (!hasFunnelTrackAttr) send(`game: ${page(href)}`);
             } else if (FREE_GOTHIC_RE.test(href)) {
                 setLastFreeTool(page(href));
-                send(`free-gothic-lesson: ${page(href)}`);
+                if (!hasFunnelTrackAttr) send(`free-gothic-lesson: ${page(href)}`);
             } else if (STUDY_GUIDE_RE.test(href) || a.closest('[data-track="articles"]')) {
                 setLastFreeTool(page(href));
-                send(`article: ${page(href)}`);
+                if (!hasFunnelTrackAttr) send(`article: ${page(href)}`);
             }
         });
 
@@ -337,7 +363,7 @@
     }
 
     /* ---------- Conversion Funnel Telemetry & Diagnostic Gate ---------- */
-    if (!window.trackFunnelEvent) {
+    if (typeof window.trackFunnelEvent !== 'function' || window.trackFunnelEvent.__gmNoop) {
         const FUNNEL_KEY = 'gm_attribution_trail';
 
         const getTrail = () => {
@@ -367,12 +393,14 @@
                 ...params
             };
 
-            const trail = getTrail();
-            trail.push(payload);
-            if (trail.length > 10) trail.shift();
-            try {
-                localStorage.setItem(FUNNEL_KEY, JSON.stringify(trail));
-            } catch (e) {}
+            if (!isStudentPortal) {
+                const trail = getTrail();
+                trail.push(payload);
+                if (trail.length > 10) trail.shift();
+                try {
+                    localStorage.setItem(FUNNEL_KEY, JSON.stringify(trail));
+                } catch (e) {}
+            }
 
             if (typeof window.gtag === 'function') {
                 window.gtag('event', eventName, {
@@ -392,7 +420,11 @@
                 : (params.article || params.tool ? '/' + [params.article, params.tool].filter(Boolean).join('/') : '');
             const gcPath = eventName + detailSegment + (lastFreeTool ? '/from=' + lastFreeTool : '') + (aiReferrer ? '/ai=' + aiReferrer : '');
             const gcTitle = 'Funnel Event: ' + eventName + (params.tool ? ' (' + params.tool + ')' : '');
-            if (typeof enqueueGoatCounter === 'function') {
+            if (typeof window.__gmEnqueueGoatCounter === 'function') {
+                try {
+                    window.__gmEnqueueGoatCounter(gcPath, gcTitle);
+                } catch (e) {}
+            } else if (typeof enqueueGoatCounter === 'function') {
                 try {
                     enqueueGoatCounter(gcPath, gcTitle);
                 } catch (e) {}
@@ -404,12 +436,17 @@
                         event: true
                     });
                 } catch (e) {}
+            } else {
+                window.__gmGcQueue = window.__gmGcQueue || [];
+                window.__gmGcQueue.push([gcPath, gcTitle]);
             }
             if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
                 console.info('[GM Funnel Telemetry]', eventName, payload);
             }
         };
+    }
 
+    if (typeof window.showDiagnosticGate !== 'function' || window.showDiagnosticGate.__gmNoop) {
         window.showDiagnosticGate = function (opts) {
             if (isStudentPortal) return;
             opts = opts || {};
@@ -424,13 +461,22 @@
             const rawExamImpact = String(opts.examImpact || 'In Cambridge C1/C2 and IELTS examinations, hesitation and syntax friction reduce your Lexical Resource & Grammar scores by up to a full band.');
             const onReplay = typeof opts.onReplay === 'function' ? opts.onReplay : null;
 
-            const dossierSummary = window.CandidateDossier?.recordGameCompletion?.({
-                gameName: rawGameName,
-                score,
-                maxScore,
-                weakArea: rawWeakArea,
-                category: opts.category
-            });
+            const recordKey = `${rawGameName}|${score}|${maxScore}`;
+            const nowTs = Date.now();
+            const prevRec = window.__gmLastDossierCompletion;
+            let dossierSummary = null;
+            if (prevRec && prevRec.key === recordKey && nowTs - prevRec.ts < 2000) {
+                dossierSummary = window.CandidateDossier?.getSummary?.() || prevRec.summary || null;
+            } else {
+                dossierSummary = window.CandidateDossier?.recordGameCompletion?.({
+                    gameName: rawGameName,
+                    score,
+                    maxScore,
+                    weakArea: rawWeakArea,
+                    category: opts.category
+                }) || null;
+                window.__gmLastDossierCompletion = { key: recordKey, ts: nowTs, summary: dossierSummary };
+            }
 
             const pct = Math.max(0, Math.min(100, Math.round((score / (maxScore || 1)) * 100)));
             const cefrEstimate = dossierSummary?.cefrBand || (pct >= 85 ? 'C1 Advanced / C2 Ready' : pct >= 65 ? 'B2 Upper-Intermediate (Borderline C1)' : 'B1/B2 Transition');
@@ -671,20 +717,22 @@
 
             document.addEventListener('keydown', keyHandler);
         };
+    }
 
-        if (!window.__gmDataTrackBound) {
-            window.__gmDataTrackBound = true;
-            document.addEventListener('click', function (e) {
-                const target = e.target.closest('[data-track]');
-                if (!target) return;
-                const eventName = target.getAttribute('data-track');
-                const tier = target.getAttribute('data-tier') || null;
-                window.trackFunnelEvent(eventName, {
-                    tier: tier,
-                    cta_text: (target.innerText || '').trim().slice(0, 50)
-                });
+    if (!isStudentPortal && !window.__gmDataTrackBound) {
+        window.__gmDataTrackBound = true;
+        document.addEventListener('click', function (e) {
+            if (e.__gmFunnelTracked) return;
+            const target = e.target.closest('[data-track]');
+            if (!target) return;
+            const eventName = target.getAttribute('data-track');
+            if (!eventName || eventName === 'articles') return;
+            const tier = target.getAttribute('data-tier') || null;
+            window.trackFunnelEvent(eventName, {
+                tier: tier,
+                cta_text: (target.innerText || '').trim().slice(0, 50)
             });
-        }
+        });
     }
 
     // Load Teacher Classroom & White-Label Studio Runtime only when relevant
@@ -700,7 +748,7 @@
         }
     };
 
-    if (!window.GarethTeacherWhiteLabel && !document.querySelector('script[src*="teacher-white-label.js"]') && needsTeacherRuntime()) {
+    if (!isStudentPortal && !window.GarethTeacherWhiteLabel && !document.querySelector('script[src*="teacher-white-label.js"]') && needsTeacherRuntime()) {
         const wlScript = document.createElement('script');
         wlScript.src = 'teacher-white-label.js';
         wlScript.defer = true;

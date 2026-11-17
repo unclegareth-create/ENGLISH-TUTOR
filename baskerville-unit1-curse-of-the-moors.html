@@ -408,12 +408,12 @@
     </div>
 
     <!-- KWT 2 -->
-    <div class="kwt-card baskerville" data-valid="cannot have been a coincidence that|can't have been a coincidence that|could not have been a coincidence that|couldn't have been a coincidence that" data-valid-regex="^(cannot|can't|could not|couldn't) have been a coincidence that$" data-partial-regex="(cannot|can't|could not|couldn't) have been|a coincidence that">
+    <div class="kwt-card baskerville" data-max-words="8" data-valid="cannot have been a coincidence that|can't have been a coincidence that|could not have been a coincidence that|couldn't have been a coincidence that" data-valid-regex="^(cannot|can't|could not|couldn't) have been a coincidence that$" data-partial-regex="(cannot|can't|could not|couldn't) have been|a coincidence that">
       <div class="kwt-original">9. It is logically impossible that the giant footprints near the alley happened purely by chance.</div>
       <span class="kwt-key">COINCIDENCE</span>
       <div class="kwt-input-row">
         <span>It</span>
-        <input type="text" class="kwt-input" placeholder="3–6 words..." aria-label="Transformation answer for question 9">
+        <input type="text" class="kwt-input" placeholder="3–8 words (C2)..." aria-label="Transformation answer for question 9">
         <span>giant footprints were found near the alley.</span>
         <button class="btn-main baskerville" onclick="darkEngine.handleKWT(this, 'cannot have been a coincidence that', 'Uses \"cannot/can\'t/could not have been a coincidence that\".')">Check</button>
       </div>
@@ -740,7 +740,7 @@
       leadIn: "Sir Henry",
       leadOut: "across the moor alone after dark.",
       model: "ought not to have walked",
-      valid: ["ought not to have walked", "oughtn't to have walked", "ought never to have walked"],
+      valid: ["ought not to have walked", "ought never to have walked"],
       splitNote: "1 mark: ought not to // 1 mark: have walked (5 words)"
     }
   ];
@@ -801,6 +801,13 @@
     }
   }
 
+  // Cambridge Part 4 count: contractions (n't, 've, 'd, 'll, 're, 'm, it's) = 2 words; possessive 's = 1
+  function cambridgeWordCount(text) {
+    const NP = /^(it|that|there|here|what|who|where|when|how|he|she|let)'s$/;
+    return String(text || '').toLowerCase().replace(/[’‘]/g, "'").trim().split(/\s+/).filter(Boolean)
+      .reduce((n, w) => n + ((/n't$/.test(w) || /[a-z]'(ve|d|ll|re|m)$/.test(w) || NP.test(w)) ? 2 : 1), 0);
+  }
+
   function updateWbStatus(idx) {
     const item = workbenchItems[idx];
     const inp = document.getElementById(`wb-input-${idx}`);
@@ -808,8 +815,7 @@
     const kwPill = document.getElementById(`wb-kw-${idx}`);
     if (!inp || !item) return;
     const raw = inp.value.trim();
-    const words = raw ? raw.split(/\s+/) : [];
-    const n = words.length;
+    const n = cambridgeWordCount(raw);
     if (wcPill) {
       wcPill.textContent = `${n} / 3–6 words`;
       wcPill.className = 'da-wb-pill ' + (n >= 3 && n <= 6 ? 'ok' : (n > 0 ? 'warn' : ''));
@@ -827,8 +833,8 @@
     const fb = document.getElementById(`wb-fb-${idx}`);
     const card = document.getElementById(`wb-card-${idx}`);
     if (!inp || !fb || !item) return;
-    const norm = inp.value.trim().replace(/\s+/g, ' ').toLowerCase();
-    const words = norm ? norm.split(' ') : [];
+    const norm = inp.value.trim().replace(/\s+/g, ' ').toLowerCase().replace(/[\u2019\u2018]/g, "'");
+    const wc = cambridgeWordCount(norm);
     const hasKw = new RegExp(`\\b${item.keyWord.toLowerCase()}\\b`).test(norm);
     fb.style.display = 'block';
     if (!hasKw) {
@@ -836,9 +842,9 @@
       fb.textContent = `⚠️ Unchanged Keyword Guard: You must include the exact word "${item.keyWord}" without altering its form.`;
       return;
     }
-    if (words.length < 3 || words.length > 6) {
+    if (wc < 3 || wc > 6) {
       fb.className = 'feedback-box wrong';
-      fb.textContent = `⚠️ Word Count Alert: Your phrase has ${words.length} words. Cambridge C1 Part 4 requires between 3 and 6 words.`;
+      fb.textContent = `⚠️ Word Count Alert: Your phrase has ${wc} words. Cambridge C1 Part 4 requires between 3 and 6 words.`;
       return;
     }
     if (item.valid.includes(norm)) {

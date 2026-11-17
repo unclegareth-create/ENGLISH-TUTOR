@@ -872,7 +872,7 @@ const LabObservatory = (() => {
         filterWing(initialWing);
       }
       const unlockParam = params.get('unlock');
-      const isDirectUnlock = params.get('unlocked') === 'true' || Boolean(params.get('session_id'));
+      const isDirectUnlock = params.get('unlocked') === 'true' || /^cs_(?:live|test)_[A-Za-z0-9_]{20,}$/.test(params.get('session_id') || '');
       if (isDirectUnlock || (unlockParam && VALID_CODE_HASHES.includes(hashAccessCode(unlockParam)))) {
         try {
           localStorage.setItem('da_archive_unlocked', 'true');

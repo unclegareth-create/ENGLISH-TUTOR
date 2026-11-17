@@ -2,7 +2,7 @@
  * ============================================================================
  * GarethEnglish.com — Commercial Teacher Classroom & White-Label Studio Runtime
  * ----------------------------------------------------------------------------
- * Powers the B2B / B2B2C Licensing Engine across all 25 interactive
+ * Powers the B2B / B2B2C Licensing Engine across all 28 interactive
  * modules, games, exam builders, Dark Academia literature units, and compendium:
  *
  * 1. Open Core + Gated Pro Extension Architecture:
@@ -16,7 +16,7 @@
  *        d) Branded module-scoped Student Homework URL (?wl=1&sig=...)
  *
  * 2. Solo Tutor Classroom License (£49):
- *    - Unlocks all 12 Dark Academia C1/C2 units + Compendium + all Set B Vaults
+ *    - Unlocks all 15 Dark Academia C1/C2 units + Compendium + all Set B Vaults
  *    - Enables Clean Screen-Share Mode (hides Gareth Montgomery student CTAs)
  *    - Mounts the floating Teacher Presenter HUD (Live Classroom Timer,
  *      1-Click Reveal All Answers, 1-Click Reset Board, Print Handout,
@@ -26,7 +26,7 @@
  *    - Includes all Solo Tutor Classroom features
  *    - Branded Student Homework Links (?wl=1&tutor=...&sig=...) scoped to the
  *      specific assigned module without exposing the license key in the URL
- *      or unlocking the entire 12-unit course in localStorage
+ *      or unlocking the entire 15-unit course in localStorage
  *    - Dynamically replaces header branding & end-of-game showDiagnosticGate()
  *      CTAs with the licensed tutor/school's name, accent color, and URL
  * ============================================================================
@@ -1386,14 +1386,15 @@
       const safeCtaLabel = this.escapeHtml(wlConfig.ctaLabel || `Send Score to ${wlConfig.tutor || 'Your Tutor'}`);
       const currentPath = (window.location.pathname || '').toLowerCase();
       const isKidsModule = currentPath.includes('professor-west') || currentPath.includes('study');
+      const esc = (s) => this.escapeHtml(s);
 
       window.showDiagnosticGate = function (opts) {
         opts = opts || {};
-        const gameName = opts.gameName || 'Interactive Skill Test';
+        const gameName = esc(opts.gameName || 'Interactive Skill Test');
         const score = typeof opts.score === 'number' ? opts.score : 0;
         const maxScore = typeof opts.maxScore === 'number' ? opts.maxScore : 10;
-        const weakArea = opts.weakArea || 'C1/C2 Linguistic Precision under Time Pressure';
-        const examImpact = opts.examImpact || 'Review these items with your tutor in your next session to lock in active recall.';
+        const weakArea = esc(opts.weakArea || 'C1/C2 Linguistic Precision under Time Pressure');
+        const examImpact = esc(opts.examImpact || 'Review these items with your tutor in your next session to lock in active recall.');
         const onReplay = typeof opts.onReplay === 'function' ? opts.onReplay : null;
         const pct = Math.max(0, Math.min(100, Math.round((score / (maxScore || 1)) * 100)));
         const cefrEstimate = pct >= 85 ? 'C1 Advanced / C2 Ready' : pct >= 65 ? 'B2 Upper-Intermediate (Borderline C1)' : 'B1/B2 Transition';

@@ -469,6 +469,104 @@
       border-radius: 3px;
     }
 
+    .chime-toggle-btn {
+      font-size: 0.78rem;
+      padding: 0.48rem 0.8rem;
+    }
+    .chime-toggle-btn.active {
+      border-color: var(--accent-sky);
+      background: var(--accent-sky-bg);
+      color: var(--accent-navy);
+    }
+
+    .tts-player-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.95rem;
+      border-radius: var(--radius-sm);
+      background: var(--bg-card);
+      border: 1px solid var(--accent-emerald-border);
+      box-shadow: var(--shadow-sm);
+    }
+    .tts-player-main {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      flex: 1 1 280px;
+      min-width: 0;
+    }
+    .tts-play-btn {
+      white-space: nowrap;
+      padding: 0.5rem 0.95rem;
+      font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+    .tts-progress-wrap {
+      flex: 1 1 auto;
+      min-width: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .tts-track-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.71rem;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .tts-scrubber-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .tts-seek-range {
+      flex: 1 1 auto;
+      accent-color: var(--accent-emerald);
+      cursor: pointer;
+      height: 5px;
+    }
+    .tts-time-readout {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+    }
+    .tts-rate-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--bg-subtle);
+      padding: 0.22rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-light);
+    }
+    .tts-rate-pill {
+      border: none;
+      background: transparent;
+      color: var(--ink-secondary);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.26rem 0.58rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tts-rate-pill:hover {
+      color: var(--accent-navy);
+    }
+    .tts-rate-pill.active {
+      background: var(--accent-navy);
+      color: #fff;
+    }
+
     /* Daylight Speaking & Exam Conversion Section + Footer */
     .speaking-cta-section {
       background: var(--bg-card);
@@ -770,10 +868,11 @@
             <span style="font-family:'JetBrains Mono',monospace;font-size:0.76rem;font-weight:700;color:var(--accent-sky);text-transform:uppercase;">Live 120-Second Long Turn</span>
             <h3 style="font-family:'Playfair Display', 'Cormorant Garamond',serif;font-size:1.3rem;">The 3-Act Story Arc Phase Bar</h3>
           </div>
-          <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
             <span style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:800;color:var(--accent-navy);" id="arcTimerDisplay">00:00 / 02:00</span>
             <button type="button" class="btn btn-primary" onclick="toggleArcTimer()" id="arcTimerBtn">🎙️ Start 2-Min Turn</button>
             <button type="button" class="btn" onclick="resetArcTimer()">↺ Reset</button>
+            <button type="button" class="btn chime-toggle-btn active" onclick="toggleAudioCues()" id="audioCuesBtn" aria-pressed="true" title="Toggle gentle acoustic pacing cues at 0:30, 1:15, and 2:00">🔔 Audio Cues On</button>
           </div>
         </div>
 
@@ -799,10 +898,30 @@
 
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
           <button type="button" class="btn btn-emerald" onclick="togglePart2Model()" id="part2ModelBtn">👁️ Reveal Cambridge Model</button>
-          <span style="font-size:0.78rem;color:var(--ink-muted);">Annotated with C1 clefts, participle clauses &amp; counterfactuals</span>
+          <span style="font-size:0.78rem;color:var(--ink-muted);">British studio audio + annotated C1 clefts, participles &amp; counterfactuals</span>
         </div>
 
-        <div class="model-box" id="part2ModelBox"></div>
+        <div class="model-box" id="part2ModelBox">
+          <div class="tts-player-bar" role="region" aria-label="British English Spoken Model Audio">
+            <audio id="speakingModelAudio" preload="metadata" src="assets/audio/tts/speaking-arc-mentor-skill.mp3" style="display:none;"></audio>
+            <div class="tts-player-main">
+              <button type="button" class="btn btn-primary tts-play-btn" id="ttsPlayPauseBtn" onclick="toggleModelAudio()">▶ Play British Model</button>
+              <div class="tts-progress-wrap">
+                <div class="tts-track-label" id="ttsTrackLabel">British Neural Studio Audio &bull; 3-Act Long Turn</div>
+                <div class="tts-scrubber-row">
+                  <input type="range" id="ttsSeekRange" class="tts-seek-range" min="0" max="1000" value="0" step="1" aria-label="Seek spoken model audio" oninput="seekModelAudio(this.value)" />
+                  <span class="tts-time-readout" id="ttsTimeReadout">00:00 / 00:00</span>
+                </div>
+              </div>
+            </div>
+            <div class="tts-rate-group" role="group" aria-label="Playback speed">
+              <button type="button" class="tts-rate-pill" data-rate="0.9" onclick="setModelPlaybackRate(0.9)">0.9x</button>
+              <button type="button" class="tts-rate-pill active" data-rate="1" onclick="setModelPlaybackRate(1)">1.0x</button>
+              <button type="button" class="tts-rate-pill" data-rate="1.1" onclick="setModelPlaybackRate(1.1)">1.1x</button>
+            </div>
+          </div>
+          <div id="part2ModelTranscript"></div>
+        </div>
       </div>
     </section>
 
@@ -965,6 +1084,7 @@
     const CUE_CARDS = [
       {
         id: "mentor-skill",
+        audioSrc: "assets/audio/tts/speaking-arc-mentor-skill.mp3",
         category: "People & Mentors",
         title: "Describe a person who taught you a practical skill.",
         bullets: [
@@ -990,6 +1110,7 @@
       },
       {
         id: "calm-under-pressure",
+        audioSrc: "assets/audio/tts/speaking-arc-calm-under-pressure.mp3",
         category: "People & Mentors",
         title: "Describe someone you know who stays remarkably calm under pressure.",
         bullets: [
@@ -1015,6 +1136,7 @@
       },
       {
         id: "different-generation",
+        audioSrc: "assets/audio/tts/speaking-arc-different-generation.mp3",
         category: "People & Mentors",
         title: "Describe a conversation with someone from a very different generation that changed your perspective.",
         bullets: [
@@ -1040,6 +1162,7 @@
       },
       {
         id: "quiet-building",
+        audioSrc: "assets/audio/tts/speaking-arc-quiet-building.mp3",
         category: "Places & Architecture",
         title: "Describe a quiet building or public space where you go to think clearly.",
         bullets: [
@@ -1065,6 +1188,7 @@
       },
       {
         id: "historic-street",
+        audioSrc: "assets/audio/tts/speaking-arc-historic-street.mp3",
         category: "Places & Architecture",
         title: "Describe a historic street or neighbourhood you enjoyed exploring on foot.",
         bullets: [
@@ -1090,6 +1214,7 @@
       },
       {
         id: "coastal-landscape",
+        audioSrc: "assets/audio/tts/speaking-arc-coastal-landscape.mp3",
         category: "Places & Architecture",
         title: "Describe a coastal or rural landscape that left a strong impression on you.",
         bullets: [
@@ -1115,6 +1240,7 @@
       },
       {
         id: "repaired-object",
+        audioSrc: "assets/audio/tts/speaking-arc-repaired-object.mp3",
         category: "Objects & Craft",
         title: "Describe an old object in your home that you chose to repair rather than throw away.",
         bullets: [
@@ -1140,6 +1266,7 @@
       },
       {
         id: "reread-book",
+        audioSrc: "assets/audio/tts/speaking-arc-reread-book.mp3",
         category: "Objects & Craft",
         title: "Describe a book or long article that you have read more than once.",
         bullets: [
@@ -1165,6 +1292,7 @@
       },
       {
         id: "handcrafted-gift",
+        audioSrc: "assets/audio/tts/speaking-arc-handcrafted-gift.mp3",
         category: "Objects & Craft",
         title: "Describe something made by hand that you gave to or received from someone.",
         bullets: [
@@ -1190,6 +1318,7 @@
       },
       {
         id: "plan-changed",
+        audioSrc: "assets/audio/tts/speaking-arc-plan-changed.mp3",
         category: "Experiences & Turning Points",
         title: "Describe an occasion when a carefully made plan went wrong, but turned out well in the end.",
         bullets: [
@@ -1215,6 +1344,7 @@
       },
       {
         id: "difficult-decision",
+        audioSrc: "assets/audio/tts/speaking-arc-difficult-decision.mp3",
         category: "Experiences & Turning Points",
         title: "Describe a difficult professional or study decision that took you a long time to make.",
         bullets: [
@@ -1240,6 +1370,7 @@
       },
       {
         id: "without-screens",
+        audioSrc: "assets/audio/tts/speaking-arc-without-screens.mp3",
         category: "Experiences & Turning Points",
         title: "Describe a day or weekend when you deliberately switched off your phone and computer.",
         bullets: [
@@ -1272,7 +1403,198 @@
     let arcSeconds = 0;
     let arcInterval = null;
     let activeAct = 1;
+    let modelPlaybackRate = 1.0;
+    let audioCuesEnabled = true;
+    let chimeAudioCtx = null;
     const completedCards = new Set();
+
+    try {
+      const savedChimePref = localStorage.getItem("gm_speaking_arc_chimes");
+      if (savedChimePref === "0") audioCuesEnabled = false;
+    } catch (_) {}
+
+    function formatAudioClock(sec) {
+      if (!Number.isFinite(sec) || sec < 0) return "00:00";
+      const total = Math.floor(sec);
+      const m = String(Math.floor(total / 60)).padStart(2, "0");
+      const s = String(total % 60).padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function updateModelPlayerUI() {
+      const audio = document.getElementById("speakingModelAudio");
+      const playBtn = document.getElementById("ttsPlayPauseBtn");
+      const readout = document.getElementById("ttsTimeReadout");
+      const range = document.getElementById("ttsSeekRange");
+      if (!audio) return;
+
+      const cur = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+      const dur = Number.isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 0;
+      if (readout) {
+        readout.textContent = `${formatAudioClock(cur)} / ${formatAudioClock(dur)}`;
+      }
+      if (range) {
+        range.value = dur > 0 ? String(Math.round((cur / dur) * 1000)) : "0";
+      }
+      if (playBtn) {
+        playBtn.textContent = audio.paused ? "▶ Play British Model" : "⏸ Pause Model";
+      }
+    }
+
+    function syncModelAudioSource(card) {
+      const audio = document.getElementById("speakingModelAudio");
+      const label = document.getElementById("ttsTrackLabel");
+      if (!audio || !card) return;
+      audio.pause();
+      audio.currentTime = 0;
+      const nextSrc = card.audioSrc || `assets/audio/tts/speaking-arc-${card.id}.mp3`;
+      if (audio.getAttribute("src") !== nextSrc) {
+        audio.setAttribute("src", nextSrc);
+        audio.load();
+      }
+      audio.defaultPlaybackRate = modelPlaybackRate;
+      audio.playbackRate = modelPlaybackRate;
+      if (label) {
+        label.textContent = `British Neural Studio Audio \u2022 ${card.category}`;
+      }
+      updateModelPlayerUI();
+    }
+
+    function toggleModelAudio() {
+      const audio = document.getElementById("speakingModelAudio");
+      if (!audio) return;
+      audio.defaultPlaybackRate = modelPlaybackRate;
+      audio.playbackRate = modelPlaybackRate;
+      if (audio.paused) {
+        const p = audio.play();
+        if (p && typeof p.catch === "function") p.catch(() => updateModelPlayerUI());
+      } else {
+        audio.pause();
+      }
+      updateModelPlayerUI();
+    }
+
+    function setModelPlaybackRate(rate) {
+      modelPlaybackRate = Number(rate) || 1.0;
+      const audio = document.getElementById("speakingModelAudio");
+      if (audio) {
+        audio.defaultPlaybackRate = modelPlaybackRate;
+        audio.playbackRate = modelPlaybackRate;
+      }
+      document.querySelectorAll(".tts-rate-pill").forEach(btn => {
+        const r = Number(btn.getAttribute("data-rate"));
+        btn.classList.toggle("active", Math.abs(r - modelPlaybackRate) < 0.02);
+      });
+    }
+
+    function seekModelAudio(val) {
+      const audio = document.getElementById("speakingModelAudio");
+      if (!audio || !Number.isFinite(audio.duration) || audio.duration <= 0) return;
+      const ratio = Math.max(0, Math.min(1, Number(val) / 1000));
+      audio.currentTime = ratio * audio.duration;
+      updateModelPlayerUI();
+    }
+
+    function initModelAudioPlayer() {
+      const audio = document.getElementById("speakingModelAudio");
+      if (!audio) return;
+      ["loadedmetadata", "durationchange", "timeupdate", "play", "pause", "ratechange"].forEach(evt => {
+        audio.addEventListener(evt, updateModelPlayerUI);
+      });
+      audio.addEventListener("loadedmetadata", () => {
+        audio.defaultPlaybackRate = modelPlaybackRate;
+        audio.playbackRate = modelPlaybackRate;
+        updateModelPlayerUI();
+      });
+      audio.addEventListener("ended", () => {
+        audio.currentTime = 0;
+        updateModelPlayerUI();
+      });
+    }
+
+    function ensureChimeContext() {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return null;
+      if (!chimeAudioCtx) {
+        try {
+          chimeAudioCtx = new AudioCtx();
+        } catch (_) {
+          return null;
+        }
+      }
+      if (chimeAudioCtx && chimeAudioCtx.state === "suspended") {
+        chimeAudioCtx.resume().catch(() => {});
+      }
+      return chimeAudioCtx;
+    }
+
+    function ringWarmBell(ctx, freq, delaySec, durationSec, peakGain) {
+      const t0 = ctx.currentTime + delaySec;
+      const osc = ctx.createOscillator();
+      const overtone = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const overtoneGain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, t0);
+      overtone.type = "triangle";
+      overtone.frequency.setValueAtTime(freq * 2, t0);
+
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.linearRampToValueAtTime(peakGain, t0 + 0.018);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + durationSec);
+
+      overtoneGain.gain.setValueAtTime(0.18, t0);
+
+      osc.connect(gain);
+      overtone.connect(overtoneGain);
+      overtoneGain.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(t0);
+      overtone.start(t0);
+      osc.stop(t0 + durationSec + 0.03);
+      overtone.stop(t0 + durationSec + 0.03);
+    }
+
+    function playPacingChime(kind) {
+      if (!audioCuesEnabled) return;
+      const ctx = ensureChimeContext();
+      if (!ctx) return;
+      if (kind === "act2") {
+        // 0:30 — Act I -> Act II (gentle single warm bell)
+        ringWarmBell(ctx, 587.33, 0, 0.55, 0.095);
+      } else if (kind === "act3") {
+        // 1:15 — Act II -> Act III (gentle two-note ascending cue)
+        ringWarmBell(ctx, 587.33, 0, 0.5, 0.09);
+        ringWarmBell(ctx, 739.99, 0.14, 0.58, 0.095);
+      } else if (kind === "stop") {
+        // 2:00 — Examiner Stop (gentle three-note resolving chord cadence)
+        ringWarmBell(ctx, 587.33, 0, 0.6, 0.1);
+        ringWarmBell(ctx, 739.99, 0.13, 0.65, 0.1);
+        ringWarmBell(ctx, 880.0, 0.26, 0.8, 0.115);
+      }
+    }
+
+    function syncAudioCuesButton() {
+      const btn = document.getElementById("audioCuesBtn");
+      if (!btn) return;
+      btn.setAttribute("aria-pressed", audioCuesEnabled ? "true" : "false");
+      btn.classList.toggle("active", audioCuesEnabled);
+      btn.textContent = audioCuesEnabled ? "🔔 Audio Cues On" : "🔕 Audio Cues Off";
+    }
+
+    function toggleAudioCues() {
+      audioCuesEnabled = !audioCuesEnabled;
+      try {
+        localStorage.setItem("gm_speaking_arc_chimes", audioCuesEnabled ? "1" : "0");
+      } catch (_) {}
+      syncAudioCuesButton();
+      if (audioCuesEnabled) {
+        ensureChimeContext();
+        playPacingChime("act2");
+      }
+    }
 
     function filterCategory(cat, btn) {
       activeCategory = cat;
@@ -1323,7 +1645,8 @@
       `).join("");
 
       document.getElementById("part2ModelBox").classList.remove("open");
-      document.getElementById("part2ModelBox").innerHTML = `
+      syncModelAudioSource(card);
+      document.getElementById("part2ModelTranscript").innerHTML = `
         <div style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;font-weight:700;color:var(--accent-emerald);text-transform:uppercase;margin-bottom:0.5rem;">
           Cambridge Band 8.5 / C1 Model Transcript (3-Act Breakdown)
         </div>
@@ -1416,27 +1739,43 @@
         btn.textContent = "🎙️ Resume Turn";
         return;
       }
+      if (audioCuesEnabled) ensureChimeContext();
+      if (arcSeconds >= 120) {
+        arcSeconds = 0;
+        activeAct = 1;
+        updateArcClock();
+      }
       btn.textContent = "⏸️ Pause Turn";
       arcInterval = setInterval(() => {
         if (arcSeconds < 120) {
           arcSeconds++;
           updateArcClock();
+          if (arcSeconds === 30) {
+            playPacingChime("act2");
+          } else if (arcSeconds === 75) {
+            playPacingChime("act3");
+          } else if (arcSeconds === 120) {
+            playPacingChime("stop");
+            clearInterval(arcInterval);
+            arcInterval = null;
+            btn.textContent = "✓ 2:00 Complete";
+            const currentCard = CUE_CARDS[activeCardIndex];
+            if (currentCard && !completedCards.has(currentCard.id)) {
+              completedCards.add(currentCard.id);
+              if (window.CandidateDossier && typeof window.CandidateDossier.recordGameCompletion === "function") {
+                window.CandidateDossier.recordGameCompletion({
+                  gameName: "Speaking Part 2 Arc Studio",
+                  category: "clefts",
+                  score: 10,
+                  maxScore: 10
+                });
+              }
+            }
+          }
         } else {
           clearInterval(arcInterval);
           arcInterval = null;
           btn.textContent = "✓ 2:00 Complete";
-          const currentCard = CUE_CARDS[activeCardIndex];
-          if (currentCard && !completedCards.has(currentCard.id)) {
-            completedCards.add(currentCard.id);
-            if (window.CandidateDossier && typeof window.CandidateDossier.recordGameCompletion === "function") {
-              window.CandidateDossier.recordGameCompletion({
-                gameName: "Speaking Part 2 Arc Studio",
-                category: "clefts",
-                score: 10,
-                maxScore: 10
-              });
-            }
-          }
         }
       }, 1000);
     }
@@ -1517,7 +1856,11 @@
 
     function togglePart2Model() {
       const box = document.getElementById("part2ModelBox");
-      box.classList.toggle("open");
+      const isOpen = box.classList.toggle("open");
+      if (!isOpen) {
+        const audio = document.getElementById("speakingModelAudio");
+        if (audio && !audio.paused) audio.pause();
+      }
     }
 
     function readPlayedDossierSummary() {
@@ -1551,13 +1894,15 @@
     }
 
     function wireSpeakingLeadForm() {
-      document.querySelectorAll('[data-track^="organic_cta_"]').forEach(link => {
-        link.addEventListener("click", () => {
-          if (typeof window.trackFunnelEvent === "function") {
-            window.trackFunnelEvent(link.getAttribute("data-track"), { source_page: "speaking-part2-arc-trainer.html" });
-          }
+      if (!window.__gmDataTrackBound) {
+        document.querySelectorAll('[data-track^="organic_cta_"]').forEach(link => {
+          link.addEventListener("click", () => {
+            if (typeof window.trackFunnelEvent === "function") {
+              window.trackFunnelEvent(link.getAttribute("data-track"), { source_page: "speaking-part2-arc-trainer.html" });
+            }
+          });
         });
-      });
+      }
 
       const form = document.getElementById("contact-form");
       if (!form) return;
@@ -1635,13 +1980,16 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      syncAudioCuesButton();
+      initModelAudioPlayer();
       renderCueGrid();
       renderActiveWorkbench();
       wireSpeakingLeadForm();
     });
   </script>
-  <!-- Candidate Dossier & Cookieless Privacy Analytics (GoatCounter) -->
+  <!-- Candidate Dossier, Course Bridge & Cookieless Privacy Analytics (GoatCounter) -->
   <script src="dossier.js?v=8" defer></script>
+  <script src="course-bridge.js" defer></script>
   <script src="analytics.js?v=8" defer></script>
 </body>
 </html>
