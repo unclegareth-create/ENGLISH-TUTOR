@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="paper">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>Prototype Zero: The Midnight Tech Expo Heist · Vitaly | GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700&family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="paper"] {
+      --bg-base: #f6f5f1;
+      --surface-card: #ffffff;
+      --surface-subtle: #f8fafc;
+      --surface-warm: #fffbeb;
+      --surface-elevated: rgba(255, 255, 255, 0.94);
+      --ink-950: #0f172a;
+      --ink-800: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --border-hairline: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --navy: #1d4ed8;
+      --navy-dark: #1e3a8a;
+      --navy-soft: #eff6ff;
+      --emerald: #059669;
+      --emerald-soft: #ecfdf5;
+      --amber: #d97706;
+      --amber-soft: #fef3c7;
+      --rose: #e11d48;
+      --rose-soft: #fff1f2;
+      --purple: #7c3aed;
+      --purple-soft: #f5f3ff;
+      --shadow-card: 0 8px 24px -6px rgba(15, 23, 42, 0.06);
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #0b1120;
+      --surface-card: #111827;
+      --surface-subtle: #1e293b;
+      --surface-warm: rgba(245, 158, 11, 0.12);
+      --surface-elevated: rgba(17, 24, 39, 0.94);
+      --ink-950: #f8fafc;
+      --ink-800: #e2e8f0;
+      --ink-700: #cbd5e1;
+      --ink-500: #94a3b8;
+      --border-hairline: #1e293b;
+      --border-strong: #334155;
+      --navy: #60a5fa;
+      --navy-dark: #93c5fd;
+      --navy-soft: rgba(59, 130, 246, 0.16);
+      --emerald: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.15);
+      --amber: #fbbf24;
+      --amber-soft: rgba(245, 158, 11, 0.16);
+      --rose: #fb7185;
+      --rose-soft: rgba(225, 29, 72, 0.16);
+      --purple: #c084fc;
+      --purple-soft: rgba(168, 85, 247, 0.16);
+      --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg-base);
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      padding-bottom: 5rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .top-bar {
+      background: var(--surface-elevated);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 0.72rem 1.25rem;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+    }
+
+    .top-bar-inner {
+      max-width: 1020px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .back-link {
+      color: var(--navy);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    .top-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .score-pill {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: var(--navy-soft);
+      color: var(--navy);
+      padding: 0.32rem 0.72rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+    }
+
+    .btn-ghost {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-800);
+      padding: 0.42rem 0.85rem;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .btn-ghost:hover { border-color: var(--navy); }
+
+    .btn-primary {
+      background: var(--navy);
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 1.05rem;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      transition: opacity 0.15s ease;
+    }
+
+    .btn-primary:hover { opacity: 0.92; }
+
+    .btn-emerald {
+      background: var(--emerald);
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 1.05rem;
+      border-radius: 8px;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .container {
+      max-width: 1020px;
+      margin: 1.5rem auto 0;
+      padding: 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .hero {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-top: 4px solid var(--navy);
+      border-radius: 16px;
+      padding: 1.65rem 1.9rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    @media (max-width: 820px) {
+      .hero-grid { grid-template-columns: 1fr; }
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--amber-soft);
+      color: var(--amber);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 0.65rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.65rem, 3.2vw, 2.2rem);
+      color: var(--ink-950);
+      line-height: 1.2;
+      margin-bottom: 0.55rem;
+    }
+
+    .hero p {
+      color: var(--ink-700);
+      font-size: 0.96rem;
+    }
+
+    .stage-nav {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1.15rem;
+    }
+
+    .stage-pill {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 0.34rem 0.72rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-subtle);
+      color: var(--ink-700);
+      text-decoration: none;
+    }
+
+    .stage-pill:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+
+    .floorplan-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 0.75rem;
+    }
+
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 16px;
+      padding: 1.55rem 1.8rem;
+      box-shadow: var(--shadow-card);
+    }
+
+    .step-tag {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--navy-soft);
+      padding: 0.22rem 0.6rem;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 0.45rem;
+      letter-spacing: 0.03em;
+    }
+
+    .card h2 {
+      font-family: var(--font-serif);
+      font-size: 1.38rem;
+      color: var(--ink-950);
+      margin-bottom: 0.35rem;
+    }
+
+    .rubric {
+      color: var(--ink-700);
+      font-size: 0.94rem;
+      margin-bottom: 1rem;
+    }
+
+    .prompt-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-left: 4px solid var(--navy);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+      font-size: 0.94rem;
+    }
+
+    .blueprint-box {
+      background: var(--surface-warm);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--amber);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .blueprint-title {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--amber);
+      margin-bottom: 0.45rem;
+    }
+
+    .blueprint-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .blueprint-item {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.88rem;
+    }
+
+    .blueprint-formula {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Stage 1 Warm-Up Timer & Cue Card */
+    .warmup-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.9fr;
+      gap: 1.2rem;
+      align-items: start;
+    }
+
+    @media (max-width: 820px) {
+      .warmup-grid { grid-template-columns: 1fr; }
+    }
+
+    .cue-bullets {
+      margin: 0.6rem 0 0 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.28rem;
+      color: var(--ink-800);
+    }
+
+    .rules-trio {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    .rule-item {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 9px;
+      padding: 0.75rem 0.85rem;
+      font-size: 0.84rem;
+      color: var(--ink-700);
+    }
+
+    .rule-item strong {
+      display: block;
+      color: var(--navy);
+      margin-bottom: 0.2rem;
+      font-size: 0.82rem;
+    }
+
+    .timer-widget {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 1.15rem;
+      text-align: center;
+    }
+
+    .timer-label {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--navy);
+      letter-spacing: 0.04em;
+    }
+
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 2.55rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      margin: 0.35rem 0 0.75rem;
+      letter-spacing: 0.04em;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 0.45rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 0.85rem;
+    }
+
+    .btn-timer {
+      padding: 0.38rem 0.72rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-timer.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+
+    .note-pad {
+      width: 100%;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      background: var(--surface-card);
+      color: var(--ink-950);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      padding: 0.55rem 0.7rem;
+      resize: vertical;
+    }
+
+    .discussion-list {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .discussion-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 0.88rem;
+    }
+
+    /* Stage 2 Audio + Prototype Dossiers */
+    .audio-panel {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--emerald);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .audio-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.6rem;
+    }
+
+    .audio-title {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--emerald);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .proto-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.3rem;
+    }
+
+    .proto-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .proto-top {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .proto-svg-wrap {
+      width: 68px;
+      height: 54px;
+      flex-shrink: 0;
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .proto-title {
+      font-weight: 800;
+      color: var(--ink-950);
+      font-size: 0.98rem;
+    }
+
+    .proto-owner {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--ink-500);
+    }
+
+    .proto-spec {
+      font-size: 0.88rem;
+      color: var(--ink-700);
+    }
+
+    .forensic-badge {
+      display: none;
+      background: var(--navy-soft);
+      border: 1px solid var(--navy);
+      border-radius: 8px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.84rem;
+      color: var(--ink-950);
+    }
+
+    .forensic-badge.flipped { display: block; }
+
+    /* Drills */
+    .drill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .drill-row {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+    }
+
+    .drill-line {
+      font-size: 0.94rem;
+      color: var(--ink-950);
+      margin-bottom: 0.45rem;
+    }
+
+    .drill-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    input.gap-input {
+      display: inline-block;
+      min-width: 145px;
+      padding: 0.28rem 0.55rem;
+      margin: 0 0.25rem;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 7px;
+      background: var(--surface-card);
+      color: var(--ink-950);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    input.gap-input.wide { min-width: 185px; }
+
+    .match-correct { border-color: var(--emerald) !important; background: var(--emerald-soft) !important; }
+    .match-wrong { border-color: var(--rose) !important; background: var(--rose-soft) !important; }
+
+    .reveal-box {
+      display: none;
+      margin-top: 0.55rem;
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald);
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+      font-size: 0.86rem;
+      color: var(--ink-950);
+    }
+
+    .reveal-box.open { display: block; }
+
+    /* Stage 3 Word-Builder & Stress Pills */
+    .morph-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 0.95rem;
+    }
+
+    .morph-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 0.95rem 1.05rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .stem-pill {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      background: var(--purple-soft);
+      color: var(--purple);
+      padding: 0.18rem 0.55rem;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .stress-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      padding-top: 0.35rem;
+      border-top: 1px dashed var(--border-strong);
+    }
+
+    .stress-target {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink-700);
+      margin-right: 0.2rem;
+    }
+
+    .stress-pill {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-800);
+      cursor: pointer;
+    }
+
+    .stress-pill.selected {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+
+    .stress-pill.pill-correct {
+      background: var(--emerald);
+      color: #ffffff;
+      border-color: var(--emerald);
+    }
+
+    .stress-pill.pill-wrong {
+      background: var(--rose);
+      color: #ffffff;
+      border-color: var(--rose);
+    }
+
+    /* Stage 4 Timeline & Suspect Alibis */
+    .timeline-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 0.65rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .time-node {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-top: 3px solid var(--navy);
+      border-radius: 9px;
+      padding: 0.65rem 0.8rem;
+      font-size: 0.83rem;
+    }
+
+    .time-node.alert { border-top-color: var(--rose); }
+
+    .time-stamp {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--navy);
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .time-node.alert .time-stamp { color: var(--rose); }
+
+    .suspect-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .suspect-card {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 0.95rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .suspect-card.accused {
+      border-color: var(--amber);
+      background: var(--surface-warm);
+    }
+
+    .suspect-name {
+      font-weight: 800;
+      color: var(--ink-950);
+      font-size: 0.98rem;
+    }
+
+    .suspect-role {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .suspect-quote {
+      font-size: 0.85rem;
+      color: var(--ink-700);
+      font-style: italic;
+    }
+
+    .suspect-fact {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--ink-500);
+      border-top: 1px dashed var(--border-strong);
+      padding-top: 0.4rem;
+    }
+
+    .case-solver-box {
+      margin-top: 1.25rem;
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+    }
+
+    .accuse-btns {
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+      margin: 0.7rem 0;
+    }
+
+    .accuse-choice {
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-950);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .accuse-choice.picked {
+      border-color: var(--amber);
+      background: var(--amber-soft);
+    }
+
+    .verdict-panel {
+      display: none;
+      margin-top: 0.85rem;
+      border-radius: 10px;
+      padding: 0.95rem 1.1rem;
+      font-size: 0.9rem;
+    }
+
+    .verdict-panel.open { display: block; }
+    .verdict-panel.solved { background: var(--emerald-soft); border: 1.5px solid var(--emerald); color: var(--ink-950); }
+    .verdict-panel.retry { background: var(--rose-soft); border: 1.5px solid var(--rose); color: var(--ink-950); }
+
+    /* Stage 5 Pitch Cards & Checklist */
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 1rem;
+    }
+
+    .mission-tile {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 11px;
+      padding: 0.9rem 1rem;
+      text-align: left;
+      cursor: pointer;
+      color: var(--ink-950);
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .mission-tile.selected {
+      border-color: var(--emerald);
+      background: var(--emerald-soft);
+    }
+
+    .mission-tile strong {
+      display: block;
+      font-size: 0.94rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .mission-tile span {
+      font-size: 0.83rem;
+      color: var(--ink-700);
+    }
+
+    .checklist-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      margin-top: 0.9rem;
+      align-items: center;
+    }
+
+    .status-note {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    pre#selftest {
+      max-width: 1020px;
+      margin: 1.5rem auto;
+      padding: 1rem 1.25rem;
+      background: var(--surface-card);
+      border: 1.5px solid var(--emerald);
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--ink-950);
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <a href="index.html" class="back-link">&larr; Back to Vitaly's Portal</a>
+      <div class="top-controls">
+        <span class="score-pill" id="live-score-pill">Mission Score: 0 / 28</span>
+        <button class="btn-ghost" onclick="toggleTheme()" id="themeBtn">🌙 Dark Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <span class="badge">🕵️ Tuesday 16:30 Mission &bull; B1+ &rarr; B2 Case File</span>
+          <div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:var(--surface-subtle); border:1px solid var(--border-strong); margin-bottom:10px; font-size:0.78rem; font-weight:700; line-height:1.2;">
+            <img src="avatar.svg" alt="Vitaly" style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid var(--border-strong); flex-shrink:0;" />
+            <span>Vitaly &bull; Tech Mystery &amp; B2 Grammar</span>
+          </div>
+          <!-- STUDENT-PIXEL-BADGE-START -->
+<div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:rgba(15,23,42,0.12); border:1px solid rgba(148,163,184,0.32); margin-bottom:10px; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; font-size:0.78rem; font-weight:700; line-height:1.2;">
+  <img src="avatar.svg" alt="Vitaly" style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid rgba(255,255,255,0.28); flex-shrink:0;" />
+  <span>Vitaly &bull; B2 Grammar & Speaking</span>
+</div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+<h1>Prototype Zero: The Midnight Tech Expo Heist</h1>
+          <p>At 21:22 inside Hall B (Vault 4) at the international Midnight Tech &amp; Robotics Expo, a palm-sized solid-state energy chip called <strong>Prototype Zero</strong> vanished from its armoured case. Speak first, inspect the gadgets, clear the security word-builder, and expose the thief.</p>
+          <div class="stage-nav">
+            <a href="#stage-1" class="stage-pill">1. Warm-Up</a>
+            <a href="#stage-2" class="stage-pill">2. Passive Dossiers</a>
+            <a href="#stage-3" class="stage-pill">3. Word-Builder &amp; Stress</a>
+            <a href="#stage-4" class="stage-pill">4. Crack the Alibi</a>
+            <a href="#stage-5" class="stage-pill">5. Gadget Pitch</a>
+          </div>
+        </div>
+
+        <div class="floorplan-card">
+          <svg viewBox="0 0 360 220" width="100%" aria-label="Vault 4 Floorplan at Midnight Tech Expo">
+            <rect x="6" y="6" width="348" height="208" rx="10" fill="var(--surface-card)" stroke="var(--border-strong)" stroke-width="2" />
+            <text x="18" y="25" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="var(--navy)">HALL B &bull; VAULT 4 FLOORPLAN</text>
+            <!-- North Desk & Ceiling Vent -->
+            <rect x="92" y="38" width="176" height="38" rx="6" fill="var(--navy-soft)" stroke="var(--navy)" stroke-width="1.5" />
+            <text x="180" y="54" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="10" font-weight="700" fill="var(--ink-950)">North Display Desk</text>
+            <rect x="138" y="62" width="84" height="10" rx="3" fill="var(--amber-soft)" stroke="var(--amber)" stroke-dasharray="3 2" />
+            <text x="180" y="88" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" font-weight="700" fill="var(--amber)">21:12 Ceiling Vent Open</text>
+            <!-- 4 Prototype Booths -->
+            <rect x="24" y="102" width="72" height="44" rx="6" fill="var(--surface-subtle)" stroke="var(--border-strong)" />
+            <text x="60" y="121" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="var(--ink-950)">1. EchoLens</text>
+            <text x="60" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="var(--ink-500)">Maya (20:45)</text>
+
+            <rect x="106" y="102" width="72" height="44" rx="6" fill="var(--surface-subtle)" stroke="var(--border-strong)" />
+            <text x="142" y="121" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="var(--ink-950)">2. PulseBand</text>
+            <text x="142" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="var(--ink-500)">Sam (20:30)</text>
+
+            <rect x="188" y="102" width="72" height="44" rx="6" fill="var(--surface-subtle)" stroke="var(--border-strong)" />
+            <text x="224" y="121" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="var(--ink-950)">3. WhisperDrone</text>
+            <text x="224" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="var(--ink-500)">Clara</text>
+
+            <rect x="270" y="102" width="70" height="44" rx="6" fill="var(--rose-soft)" stroke="var(--rose)" stroke-width="1.5" />
+            <text x="305" y="121" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="700" fill="var(--ink-950)">4. MagLock</text>
+            <text x="305" y="134" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="var(--rose)">21:22 Empty</text>
+
+            <!-- Main Doors & East Stairwell -->
+            <rect x="115" y="182" width="130" height="22" rx="4" fill="var(--emerald-soft)" stroke="var(--emerald)" />
+            <text x="180" y="196" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8.5" font-weight="700" fill="var(--emerald)">Main Glass Doors (21:00 Locked)</text>
+
+            <rect x="278" y="42" width="66" height="40" rx="5" fill="var(--rose-soft)" stroke="var(--rose)" stroke-dasharray="3 2" />
+            <text x="311" y="59" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" font-weight="700" fill="var(--rose)">East Stairs</text>
+            <text x="311" y="72" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="7.5" fill="var(--ink-700)">21:19 Card #04</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 1 -->
+    <section class="card" id="stage-1">
+      <span class="step-tag">STAGE 1 &bull; ACTIVE SPEAKING WARM-UP (PART 2 LONG TURN)</span>
+      <h2>Describe a Smart Gadget You Would Test for a Week</h2>
+      <p class="rubric">Take the microphone first. Spend one minute jotting down <strong>four single trigger words</strong>, then speak for two full minutes without stopping.</p>
+
+      <div class="warmup-grid">
+        <div>
+          <div class="prompt-box">
+            <strong>Speaking Cue Card:</strong> Describe a smart gadget or futuristic invention you would love to test for a week.
+            <p style="margin-top:0.5rem; font-weight:700; color:var(--ink-700); font-size:0.86rem;">You should say:</p>
+            <ul class="cue-bullets">
+              <li>what the gadget is and what it does</li>
+              <li>who it is designed for</li>
+              <li>how it would change your daily routine for seven days</li>
+              <li>and explain one feature you would improve before it goes on sale.</li>
+            </ul>
+          </div>
+
+          <div class="rules-trio">
+            <div class="rule-item">
+              <strong>1. The 1-Minute Note Secret</strong>
+              Write only 4 single trigger keywords down the margin (one per bullet). Never write full sentences.
+            </div>
+            <div class="rule-item">
+              <strong>2. The 3-Act Story Arc</strong>
+              Setup &amp; First Look (30s) &rarr; Daily Testing Snapshot (45s) &rarr; Verdict / Upgrade (45s).
+            </div>
+            <div class="rule-item">
+              <strong>3. The Cambridge Anchor</strong>
+              Bullet points are springboards, not a checklist. If you finish early, compare options and explain why.
+            </div>
+          </div>
+        </div>
+
+        <div class="timer-widget">
+          <div class="timer-label" id="timer-state">1-Minute Prep Mode</div>
+          <div class="timer-display" id="timer-display">01:00</div>
+          <div class="timer-controls">
+            <button type="button" class="btn-timer active" id="btn-mode-prep" onclick="setWarmupMode('prep')">01:00 Prep</button>
+            <button type="button" class="btn-timer" id="btn-mode-speak" onclick="setWarmupMode('speak')">02:00 Speak</button>
+            <button type="button" class="btn-timer" id="btn-timer-toggle" onclick="toggleWarmupTimer()">▶ Start</button>
+            <button type="button" class="btn-timer" id="btn-timer-reset" onclick="resetWarmupTimer()">↺ Reset</button>
+          </div>
+          <textarea class="note-pad" id="warmup-keywords" rows="4" placeholder="4 single trigger keywords (1 per line):&#10;1. ...&#10;2. ...&#10;3. ...&#10;4. ..."></textarea>
+        </div>
+      </div>
+
+      <div class="discussion-list">
+        <div class="discussion-card"><strong>Q1:</strong> Which everyday hassle annoys you enough that a gadget ought to solve it?</div>
+        <div class="discussion-card"><strong>Q2:</strong> Would you trust wearable tech to organise your homework schedule for a week? Why or why not?</div>
+        <div class="discussion-card"><strong>Q3:</strong> What makes a smart device genuinely <strong>reliable</strong> rather than just flashy?</div>
+      </div>
+    </section>
+
+    <!-- STAGE 2 -->
+    <section class="card" id="stage-2">
+      <span class="step-tag">STAGE 2 &bull; PROTOTYPE DOSSIERS &amp; PASSIVE VOICE</span>
+      <h2>Inspect the 4 Suspect Prototypes</h2>
+      <p class="rubric">Play the Vault 4 Security Audio Log carefully and note every time and sound clue. Then inspect each gadget dossier and flip its forensic badge.</p>
+
+      <div class="audio-panel">
+        <div class="audio-header">
+          <span class="audio-title">🎧 Vault 4 Security Audio Log (21:00 &ndash; 21:22)</span>
+          <button type="button" class="btn-ghost" id="btn-transcript" onclick="toggleReveal('audio-transcript')">📄 Show / Hide Audio Transcript</button>
+        </div>
+        <audio id="vault-audio" controls preload="metadata" style="width:100%;" src="vitaly-prototype-zero-log.mp3"></audio>
+        <div id="audio-transcript" class="reveal-box" style="margin-top:0.75rem;">
+          <strong>Transcript:</strong> &ldquo;Vault Four automated security log. At twenty-one hundred hours, the main doors are locked and nobody is inside Hall B. At twenty-one twelve, a ceiling vent is opened above the north display desk. A faint, high-pitched propeller hum is recorded for forty seconds near the biometric case. At twenty-one nineteen, a single keycard unlocks the east stairwell door. Three minutes later, the Mag Lock case is found completely empty.&rdquo;
+        </div>
+      </div>
+
+      <div class="blueprint-box">
+        <div class="blueprint-title">Structural Blueprint &bull; Present &amp; Past Passive</div>
+        <div class="blueprint-grid">
+          <div class="blueprint-item">
+            <span class="blueprint-formula">Present Passive: am / is / are + Past Participle (V3)</span>
+            Use for how a gadget works or standard security rules: <em>&ldquo;The case <strong>is sealed</strong> by dual sensors.&rdquo;</em>
+          </div>
+          <div class="blueprint-item">
+            <span class="blueprint-formula">Past Passive: was / were + Past Participle (V3)</span>
+            Use for past heist events when we don't yet know who did it: <em>&ldquo;A faint hum <strong>was recorded</strong> at 21:12.&rdquo;</em>
+          </div>
+        </div>
+      </div>
+
+      <div class="proto-grid">
+        <!-- 1. EchoLens -->
+        <article class="proto-card">
+          <div class="proto-top">
+            <div class="proto-svg-wrap">
+              <svg viewBox="0 0 64 40" width="54" height="34" aria-label="EchoLens AR Glasses">
+                <rect x="6" y="11" width="22" height="16" rx="4" fill="var(--navy-soft)" stroke="var(--navy)" stroke-width="2" />
+                <rect x="36" y="11" width="22" height="16" rx="4" fill="var(--navy-soft)" stroke="var(--navy)" stroke-width="2" />
+                <path d="M28 16 Q32 13 36 16" fill="none" stroke="var(--ink-800)" stroke-width="2" />
+                <line x1="10" y1="16" x2="21" y2="16" stroke="var(--emerald)" stroke-width="1.5" />
+                <line x1="10" y1="21" x2="17" y2="21" stroke="var(--emerald)" stroke-width="1.5" />
+              </svg>
+            </div>
+            <div>
+              <div class="proto-title">1. EchoLens AR Glasses</div>
+              <div class="proto-owner">Lead Designer: Maya &bull; Booth 1</div>
+            </div>
+          </div>
+          <p class="proto-spec">Night-vision overlays <strong>are projected</strong> onto ultra-light glass, and voice notes <strong>are saved</strong> automatically.</p>
+          <button type="button" class="btn-ghost" onclick="flipForensic('forensic-1', this)">🔍 Flip Forensic Badge</button>
+          <div id="forensic-1" class="forensic-badge">
+            <strong>Optical Dock Intact:</strong> EchoLens was placed in its sealed tray at 20:45 and was not moved after closing.
+          </div>
+        </article>
+
+        <!-- 2. PulseBand -->
+        <article class="proto-card">
+          <div class="proto-top">
+            <div class="proto-svg-wrap">
+              <svg viewBox="0 0 64 40" width="54" height="34" aria-label="PulseBand Live Earbuds">
+                <rect x="12" y="10" width="40" height="22" rx="7" fill="var(--emerald-soft)" stroke="var(--emerald)" stroke-width="2" />
+                <circle cx="24" cy="21" r="5" fill="var(--surface-card)" stroke="var(--ink-800)" stroke-width="1.8" />
+                <circle cx="40" cy="21" r="5" fill="var(--surface-card)" stroke="var(--ink-800)" stroke-width="1.8" />
+                <path d="M8 14 Q4 20 8 26" fill="none" stroke="var(--emerald)" stroke-width="1.5" />
+                <path d="M56 14 Q60 20 56 26" fill="none" stroke="var(--emerald)" stroke-width="1.5" />
+              </svg>
+            </div>
+            <div>
+              <div class="proto-title">2. PulseBand Live Earbuds</div>
+              <div class="proto-owner">Audio Tester: Sam &bull; Booth 2</div>
+            </div>
+          </div>
+          <p class="proto-spec">Crowd noise <strong>is filtered</strong> out in milliseconds, and live translations <strong>are streamed</strong> directly to the ear.</p>
+          <button type="button" class="btn-ghost" onclick="flipForensic('forensic-2', this)">🔍 Flip Forensic Badge</button>
+          <div id="forensic-2" class="forensic-badge">
+            <strong>Dock Activity Zero:</strong> Both earbuds stayed inside the charging dock until 22:00 with no Bluetooth signal after 20:30.
+          </div>
+        </article>
+
+        <!-- 3. WhisperDrone -->
+        <article class="proto-card">
+          <div class="proto-top">
+            <div class="proto-svg-wrap">
+              <svg viewBox="0 0 64 40" width="54" height="34" aria-label="WhisperDrone Pocket Cam">
+                <line x1="12" y1="10" x2="52" y2="30" stroke="var(--ink-700)" stroke-width="2" />
+                <line x1="52" y1="10" x2="12" y2="30" stroke="var(--ink-700)" stroke-width="2" />
+                <rect x="24" y="14" width="16" height="12" rx="4" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="2" />
+                <circle cx="32" cy="20" r="3" fill="var(--navy)" />
+                <ellipse cx="12" cy="10" rx="7" ry="2.2" fill="none" stroke="var(--amber)" stroke-width="1.4" />
+                <ellipse cx="52" cy="10" rx="7" ry="2.2" fill="none" stroke="var(--amber)" stroke-width="1.4" />
+                <ellipse cx="12" cy="30" rx="7" ry="2.2" fill="none" stroke="var(--amber)" stroke-width="1.4" />
+                <ellipse cx="52" cy="30" rx="7" ry="2.2" fill="none" stroke="var(--amber)" stroke-width="1.4" />
+              </svg>
+            </div>
+            <div>
+              <div class="proto-title">3. WhisperDrone Pocket Cam</div>
+              <div class="proto-owner">Drone Pilot: Clara &bull; Booth 3</div>
+            </div>
+          </div>
+          <p class="proto-spec">Folded carbon blades <strong>are hidden</strong> inside a pocket shell, and stealth flights <strong>are steered</strong> from a wristwatch.</p>
+          <button type="button" class="btn-ghost" onclick="flipForensic('forensic-3', this)">🔍 Flip Forensic Badge</button>
+          <div id="forensic-3" class="forensic-badge">
+            <strong>Motor Burst &amp; Grey Vent Dust:</strong> An unscheduled 40-second flight burst was logged at 21:12, and fine ceiling-vent dust was found on the blades.
+          </div>
+        </article>
+
+        <!-- 4. MagLock -->
+        <article class="proto-card">
+          <div class="proto-top">
+            <div class="proto-svg-wrap">
+              <svg viewBox="0 0 64 40" width="54" height="34" aria-label="MagLock Biometric Case">
+                <rect x="10" y="9" width="44" height="24" rx="5" fill="var(--rose-soft)" stroke="var(--rose)" stroke-width="2" />
+                <line x1="10" y1="18" x2="54" y2="18" stroke="var(--ink-700)" stroke-width="1.5" />
+                <rect x="26" y="14" width="12" height="9" rx="2" fill="var(--surface-card)" stroke="var(--rose)" stroke-width="1.5" />
+                <circle cx="32" cy="18.5" r="2" fill="var(--rose)" />
+              </svg>
+            </div>
+            <div>
+              <div class="proto-title">4. MagLock Biometric Case</div>
+              <div class="proto-owner">Security Guard: Leo &bull; Booth 4</div>
+            </div>
+          </div>
+          <p class="proto-spec">The armoured lid <strong>is locked</strong> by twin fingerprint pads, and every entry <strong>is recorded</strong> digitally.</p>
+          <button type="button" class="btn-ghost" onclick="flipForensic('forensic-4', this)">🔍 Flip Forensic Badge</button>
+          <div id="forensic-4" class="forensic-badge">
+            <strong>Inner Release &amp; Keycard #04:</strong> The inside button was pressed via a micro-tool from above, and Keycard #04 (issued to Clara) swiped out at 21:19.
+          </div>
+        </article>
+      </div>
+
+      <h3 style="font-size:1.05rem; color:var(--ink-950); margin-bottom:0.6rem;">Passive Voice Lab Drills (6 Sentences)</h3>
+      <p class="rubric">Complete each sentence with the correct <strong>Present Passive</strong> or <strong>Past Passive</strong> form of the verb in brackets.</p>
+
+      <div class="drill-list" id="passive-drills">
+        <div class="drill-row">
+          <div class="drill-line">1. Every display shelf in Vault 4 <input class="gap-input" id="pas-1" data-answer="is protected" placeholder="present passive" /> (protect) by laser sensors every night.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('pas-mod-1')">👁️ Reveal Cambridge Model</button></div>
+          <div id="pas-mod-1" class="reveal-box"><strong>Model:</strong> Every display shelf in Vault 4 <strong>is protected</strong> by laser sensors every night. <em>(Routine rule &rarr; Present Passive)</em></div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">2. Live translations <input class="gap-input" id="pas-2" data-answer="are streamed" placeholder="present passive" /> (stream) directly to the PulseBand earbuds.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('pas-mod-2')">👁️ Reveal Cambridge Model</button></div>
+          <div id="pas-mod-2" class="reveal-box"><strong>Model:</strong> Live translations <strong>are streamed</strong> directly to the PulseBand earbuds. <em>(Plural noun + Present Passive)</em></div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">3. Twin fingerprint scans <input class="gap-input" id="pas-3" data-answer="are required" placeholder="present passive" /> (require) to unlock the MagLock lid from outside.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('pas-mod-3')">👁️ Reveal Cambridge Model</button></div>
+          <div id="pas-mod-3" class="reveal-box"><strong>Model:</strong> Twin fingerprint scans <strong>are required</strong> to unlock the MagLock lid from outside. <em>(Plural subject &rarr; are + V3)</em></div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">4. At 21:12, the ceiling vent <input class="gap-input" id="pas-4" data-answer="was opened" placeholder="past passive" /> (open) quietly above the north desk.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('pas-mod-4')">👁️ Reveal Cambridge Model</button></div>
+          <div id="pas-mod-4" class="reveal-box"><strong>Model:</strong> At 21:12, the ceiling vent <strong>was opened</strong> quietly above the north desk. <em>(Specific past time &rarr; Past Passive)</em></div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">5. Several fine grey dust marks <input class="gap-input" id="pas-5" data-answer="were found" placeholder="past passive" /> (find) on WhisperDrone's blades after midnight.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('pas-mod-5')">👁️ Reveal Cambridge Model</button></div>
+          <div id="pas-mod-5" class="reveal-box"><strong>Model:</strong> Several fine grey dust marks <strong>were found</strong> on WhisperDrone's blades after midnight. <em>(Plural past subject &rarr; were + V3)</em></div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">6. The East Stairwell door <input class="gap-input" id="pas-6" data-answer="was unlocked" placeholder="past passive" /> (unlock) by Keycard #04 at 21:19.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('pas-mod-6')">👁️ Reveal Cambridge Model</button></div>
+          <div id="pas-mod-6" class="reveal-box"><strong>Model:</strong> The East Stairwell door <strong>was unlocked</strong> by Keycard #04 at 21:19. <em>(Past Passive with timestamp)</em></div>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button type="button" class="btn-primary" id="btn-check-passive" onclick="checkPassiveDrills()">Check Passive Drills</button>
+        <span class="status-note" id="passive-status">0 / 6 verified</span>
+      </div>
+    </section>
+
+    <!-- STAGE 3 -->
+    <section class="card" id="stage-3">
+      <span class="step-tag">STAGE 3 &bull; MORPHOLOGY &amp; SYLLABLE STRESS SCANNER</span>
+      <h2>Security Clearance Word-Builder &amp; Stress Scanner</h2>
+      <p class="rubric">Transform each root stem into the correct B2 noun or adjective, then click the matching syllable stress pattern (<strong>X</strong> = main stressed beat, <strong>o</strong> = light unstressed beat).</p>
+
+      <div class="blueprint-box">
+        <div class="blueprint-title">Structural Blueprint &bull; Word Formation &amp; Stress Rhythm</div>
+        <div class="blueprint-grid">
+          <div class="blueprint-item">
+            <span class="blueprint-formula">Root Stem &rarr; Noun (-tion / -ence / -acy)</span>
+            <em>protect &rarr; protec<strong>tion</strong></em> | <em>independent &rarr; independ<strong>ence</strong></em> | <em>accurate &rarr; accur<strong>acy</strong></em>
+          </div>
+          <div class="blueprint-item">
+            <span class="blueprint-formula">Root Stem &rarr; Adjective (-able / un- / im-)</span>
+            <em>rely &rarr; reli<strong>able</strong> / <strong>un</strong>reliable</em> | <em>possible &rarr; <strong>im</strong>possible</em>
+          </div>
+          <div class="blueprint-item">
+            <span class="blueprint-formula">Stress Guide: oX &bull; Ooo &bull; oXo &bull; ooXo</span>
+            <code>oXo</code>: <em>con-<strong>VEN</strong>-ient</em> | <code>ooXo</code>: <em>in-de-<strong>PEND</strong>-ent</em> | <code>oX</code>: <em>pro-<strong>TECT</strong></em> | <code>Ooo</code>: <em><strong>AC</strong>-cu-rate</em>
+          </div>
+        </div>
+      </div>
+
+      <div class="morph-grid" id="word-builder-grid">
+        <!-- 1. rely -> reliable / unreliable -->
+        <article class="morph-card" data-stress-answer="oX">
+          <div><span class="stem-pill">STEM 1: RELY</span></div>
+          <p style="font-size:0.9rem;">Human memory can be <input class="gap-input" id="wf-1a" data-answer="unreliable" placeholder="negative adj." />, so police trust <input class="gap-input" id="wf-1b" data-answer="reliable" placeholder="positive adj." /> digital logs.</p>
+          <div class="stress-row">
+            <span class="stress-target">Stress of <strong>re-LY</strong>:</span>
+            <button type="button" class="stress-pill" data-pattern="oX" onclick="pickStress(this)">oX</button>
+            <button type="button" class="stress-pill" data-pattern="Ooo" onclick="pickStress(this)">Ooo</button>
+            <button type="button" class="stress-pill" data-pattern="oXo" onclick="pickStress(this)">oXo</button>
+            <button type="button" class="stress-pill" data-pattern="ooXo" onclick="pickStress(this)">ooXo</button>
+          </div>
+          <div><button type="button" class="btn-ghost" onclick="toggleReveal('wf-mod-1')">👁️ Reveal Cambridge Model</button></div>
+          <div id="wf-mod-1" class="reveal-box"><strong>Model:</strong> <strong>unreliable</strong> / <strong>reliable</strong> &bull; Stress: <em>re-<strong>LY</strong></em> (<code>oX</code>); adding <em>-able</em> keeps stress on the same syllable: <em>re-<strong>LI</strong>-a-ble</em>.</div>
+        </article>
+
+        <!-- 2. convenient -> convenience -->
+        <article class="morph-card" data-stress-answer="oXo">
+          <div><span class="stem-pill">STEM 2: CONVENIENT</span></div>
+          <p style="font-size:0.9rem;">A pocket drone offers huge <input class="gap-input" id="wf-2" data-answer="convenience" placeholder="noun" /> when filming tight spaces.</p>
+          <div class="stress-row">
+            <span class="stress-target">Stress of <strong>con-VEN-ience</strong>:</span>
+            <button type="button" class="stress-pill" data-pattern="oX" onclick="pickStress(this)">oX</button>
+            <button type="button" class="stress-pill" data-pattern="Ooo" onclick="pickStress(this)">Ooo</button>
+            <button type="button" class="stress-pill" data-pattern="oXo" onclick="pickStress(this)">oXo</button>
+            <button type="button" class="stress-pill" data-pattern="ooXo" onclick="pickStress(this)">ooXo</button>
+          </div>
+          <div><button type="button" class="btn-ghost" onclick="toggleReveal('wf-mod-2')">👁️ Reveal Cambridge Model</button></div>
+          <div id="wf-mod-2" class="reveal-box"><strong>Model:</strong> <strong>convenience</strong> &bull; Spoken rhythm: <em>con-<strong>VEN</strong>-ience</em> (<code>oXo</code>), matching <em>con-<strong>VEN</strong>-ient</em>.</div>
+        </article>
+
+        <!-- 3. independent -> independence -->
+        <article class="morph-card" data-stress-answer="ooXo">
+          <div><span class="stem-pill">STEM 3: INDEPENDENT</span></div>
+          <p style="font-size:0.9rem;">Wireless batteries give drones complete <input class="gap-input" id="wf-3" data-answer="independence" placeholder="noun" /> from wall cables.</p>
+          <div class="stress-row">
+            <span class="stress-target">Stress of <strong>in-de-PEND-ence</strong>:</span>
+            <button type="button" class="stress-pill" data-pattern="oX" onclick="pickStress(this)">oX</button>
+            <button type="button" class="stress-pill" data-pattern="Ooo" onclick="pickStress(this)">Ooo</button>
+            <button type="button" class="stress-pill" data-pattern="oXo" onclick="pickStress(this)">oXo</button>
+            <button type="button" class="stress-pill" data-pattern="ooXo" onclick="pickStress(this)">ooXo</button>
+          </div>
+          <div><button type="button" class="btn-ghost" onclick="toggleReveal('wf-mod-3')">👁️ Reveal Cambridge Model</button></div>
+          <div id="wf-mod-3" class="reveal-box"><strong>Model:</strong> <strong>independence</strong> &bull; Stress: <em>in-de-<strong>PEND</strong>-ence</em> (<code>ooXo</code>), matching <em>in-de-<strong>PEND</strong>-ent</em>.</div>
+        </article>
+
+        <!-- 4. protect -> protection -->
+        <article class="morph-card" data-stress-answer="oXo">
+          <div><span class="stem-pill">STEM 4: PROTECT</span></div>
+          <p style="font-size:0.9rem;">Vault 4 had reinforced glass <input class="gap-input" id="wf-4" data-answer="protection" placeholder="noun" /> around every prototype.</p>
+          <div class="stress-row">
+            <span class="stress-target">Stress of <strong>pro-TEC-tion</strong>:</span>
+            <button type="button" class="stress-pill" data-pattern="oX" onclick="pickStress(this)">oX</button>
+            <button type="button" class="stress-pill" data-pattern="Ooo" onclick="pickStress(this)">Ooo</button>
+            <button type="button" class="stress-pill" data-pattern="oXo" onclick="pickStress(this)">oXo</button>
+            <button type="button" class="stress-pill" data-pattern="ooXo" onclick="pickStress(this)">ooXo</button>
+          </div>
+          <div><button type="button" class="btn-ghost" onclick="toggleReveal('wf-mod-4')">👁️ Reveal Cambridge Model</button></div>
+          <div id="wf-mod-4" class="reveal-box"><strong>Model:</strong> <strong>protection</strong> &bull; Stress: <em>pro-<strong>TEC</strong>-tion</em> (<code>oXo</code>); root verb <em>pro-<strong>TECT</strong></em> is <code>oX</code>.</div>
+        </article>
+
+        <!-- 5. invent -> invention -->
+        <article class="morph-card" data-stress-answer="oXo">
+          <div><span class="stem-pill">STEM 5: INVENT</span></div>
+          <p style="font-size:0.9rem;">Prototype Zero was praised as the boldest <input class="gap-input" id="wf-5" data-answer="invention" placeholder="noun" /> at this year's expo.</p>
+          <div class="stress-row">
+            <span class="stress-target">Stress of <strong>in-VEN-tion</strong>:</span>
+            <button type="button" class="stress-pill" data-pattern="oX" onclick="pickStress(this)">oX</button>
+            <button type="button" class="stress-pill" data-pattern="Ooo" onclick="pickStress(this)">Ooo</button>
+            <button type="button" class="stress-pill" data-pattern="oXo" onclick="pickStress(this)">oXo</button>
+            <button type="button" class="stress-pill" data-pattern="ooXo" onclick="pickStress(this)">ooXo</button>
+          </div>
+          <div><button type="button" class="btn-ghost" onclick="toggleReveal('wf-mod-5')">👁️ Reveal Cambridge Model</button></div>
+          <div id="wf-mod-5" class="reveal-box"><strong>Model:</strong> <strong>invention</strong> &bull; Stress: <em>in-<strong>VEN</strong>-tion</em> (<code>oXo</code>); root verb <em>in-<strong>VENT</strong></em> is <code>oX</code>.</div>
+        </article>
+
+        <!-- 6. connect -> connection -->
+        <article class="morph-card" data-stress-answer="oXo">
+          <div><span class="stem-pill">STEM 6: CONNECT</span></div>
+          <p style="font-size:0.9rem;">The PulseBand earbuds lost their Bluetooth <input class="gap-input" id="wf-6" data-answer="connection" placeholder="noun" /> at 20:30.</p>
+          <div class="stress-row">
+            <span class="stress-target">Stress of <strong>con-NEC-tion</strong>:</span>
+            <button type="button" class="stress-pill" data-pattern="oX" onclick="pickStress(this)">oX</button>
+            <button type="button" class="stress-pill" data-pattern="Ooo" onclick="pickStress(this)">Ooo</button>
+            <button type="button" class="stress-pill" data-pattern="oXo" onclick="pickStress(this)">oXo</button>
+            <button type="button" class="stress-pill" data-pattern="ooXo" onclick="pickStress(this)">ooXo</button>
+          </div>
+          <div><button type="button" class="btn-ghost" onclick="toggleReveal('wf-mod-6')">👁️ Reveal Cambridge Model</button></div>
+          <div id="wf-mod-6" class="reveal-box"><strong>Model:</strong> <strong>connection</strong> &bull; Stress: <em>con-<strong>NEC</strong>-tion</em> (<code>oXo</code>); the ending <em>-tion</em> pulls stress to the syllable before it.</div>
+        </article>
+
+        <!-- 7. accurate -> accuracy -->
+        <article class="morph-card" data-stress-answer="Ooo">
+          <div><span class="stem-pill">STEM 7: ACCURATE</span></div>
+          <p style="font-size:0.9rem;">Keycard readers log every door scan with total <input class="gap-input" id="wf-7" data-answer="accuracy" placeholder="noun" />.</p>
+          <div class="stress-row">
+            <span class="stress-target">Stress of <strong>AC-cu-rate</strong>:</span>
+            <button type="button" class="stress-pill" data-pattern="oX" onclick="pickStress(this)">oX</button>
+            <button type="button" class="stress-pill" data-pattern="Ooo" onclick="pickStress(this)">Ooo</button>
+            <button type="button" class="stress-pill" data-pattern="oXo" onclick="pickStress(this)">oXo</button>
+            <button type="button" class="stress-pill" data-pattern="ooXo" onclick="pickStress(this)">ooXo</button>
+          </div>
+          <div><button type="button" class="btn-ghost" onclick="toggleReveal('wf-mod-7')">👁️ Reveal Cambridge Model</button></div>
+          <div id="wf-mod-7" class="reveal-box"><strong>Model:</strong> <strong>accuracy</strong> &bull; Stress stays at the front: <em><strong>AC</strong>-cu-rate</em> (<code>Ooo</code>) &rarr; <em><strong>AC</strong>-cu-ra-cy</em>.</div>
+        </article>
+
+        <!-- 8. possible -> impossible -->
+        <article class="morph-card" data-stress-answer="Ooo">
+          <div><span class="stem-pill">STEM 8: POSSIBLE</span></div>
+          <p style="font-size:0.9rem;">Without a pass, it is <input class="gap-input" id="wf-8" data-answer="impossible" placeholder="negative adj." /> to open the MagLock lid from outside.</p>
+          <div class="stress-row">
+            <span class="stress-target">Stress of <strong>POS-si-ble</strong>:</span>
+            <button type="button" class="stress-pill" data-pattern="oX" onclick="pickStress(this)">oX</button>
+            <button type="button" class="stress-pill" data-pattern="Ooo" onclick="pickStress(this)">Ooo</button>
+            <button type="button" class="stress-pill" data-pattern="oXo" onclick="pickStress(this)">oXo</button>
+            <button type="button" class="stress-pill" data-pattern="ooXo" onclick="pickStress(this)">ooXo</button>
+          </div>
+          <div><button type="button" class="btn-ghost" onclick="toggleReveal('wf-mod-8')">👁️ Reveal Cambridge Model</button></div>
+          <div id="wf-mod-8" class="reveal-box"><strong>Model:</strong> <strong>impossible</strong> &bull; Root <em><strong>POS</strong>-si-ble</em> is <code>Ooo</code>; adding <em>im-</em> keeps stress on <em>POS</em>: <em>im-<strong>POS</strong>-si-ble</em>.</div>
+        </article>
+      </div>
+
+      <div class="actions-row">
+        <button type="button" class="btn-primary" id="btn-check-morph" onclick="checkWordBuilder()">Check Word-Builder &amp; Stress</button>
+        <span class="status-note" id="morph-status">Words: 0 / 8 &bull; Stress: 0 / 8</span>
+      </div>
+    </section>
+
+    <!-- STAGE 4 -->
+    <section class="card" id="stage-4">
+      <span class="step-tag">STAGE 4 &bull; PAST MODALS OF DEDUCTION &amp; INDEFINITE PRONOUNS</span>
+      <h2>Crack the Alibi: Vault 4 Timeline &amp; Suspects</h2>
+      <p class="rubric">Compare the 21:00&ndash;21:30 timeline against each suspect's alibi, complete the deduction drills, and lock in your accusation.</p>
+
+      <div class="blueprint-box">
+        <div class="blueprint-title">Structural Blueprint &bull; Past Deduction &amp; Indefinite Pronouns</div>
+        <div class="blueprint-grid">
+          <div class="blueprint-item">
+            <span class="blueprint-formula">must have + V3 (99% sure)</span>
+            Strong proof: <em>&ldquo;The pilot <strong>must have flown</strong> it through the vent.&rdquo;</em>
+          </div>
+          <div class="blueprint-item">
+            <span class="blueprint-formula">might / could have + V3 (possible)</span>
+            Open guess: <em>&ldquo;They <strong>could have hidden</strong> it on the roof.&rdquo;</em>
+          </div>
+          <div class="blueprint-item">
+            <span class="blueprint-formula">can't have + V3 (impossible)</span>
+            Ruled out by proof: <em>&ldquo;Maya <strong>can't have stolen</strong> it at 21:19.&rdquo;</em>
+          </div>
+          <div class="blueprint-item">
+            <span class="blueprint-formula">somebody / anybody / nobody / nowhere</span>
+            Use <strong>anybody</strong> after <em>didn't</em>; use <strong>nobody</strong> + singular verb; never double negatives.
+          </div>
+        </div>
+      </div>
+
+      <h3 style="font-size:1.02rem; color:var(--ink-950); margin-bottom:0.55rem;">Vault 4 Timeline (21:00&ndash;21:30)</h3>
+      <div class="timeline-strip">
+        <div class="time-node"><span class="time-stamp">21:00</span>Main glass doors lock automatically; nobody is inside Hall B.</div>
+        <div class="time-node"><span class="time-stamp">21:05</span>Maya's train ticket scans at Central Station (2 km away).</div>
+        <div class="time-node alert"><span class="time-stamp">21:12</span>Audio log catches ceiling vent opening + 40-sec propeller hum.</div>
+        <div class="time-node"><span class="time-stamp">21:15</span>Leo swipes Keycard #01 at Hall A West Coffee Lounge.</div>
+        <div class="time-node alert"><span class="time-stamp">21:19</span>Keycard #04 unlocks East Stairwell door inside Vault 4 towards roof.</div>
+        <div class="time-node"><span class="time-stamp">21:22 &ndash; 21:30</span>Leo finds MagLock case empty (21:22); lockdown seals all exits (21:30).</div>
+      </div>
+
+      <h3 style="font-size:1.02rem; color:var(--ink-950); margin-bottom:0.55rem;">4 Suspect Alibi Cards</h3>
+      <div class="suspect-grid">
+        <article class="suspect-card" data-suspect="maya">
+          <div class="suspect-name">Maya</div>
+          <div class="suspect-role">Lens Designer &bull; Keycard #02</div>
+          <p class="suspect-quote">&ldquo;I sealed EchoLens at 20:45 and left the expo hall. I didn't hear anybody in Vault 4 because I was already on the train home.&rdquo;</p>
+          <div class="suspect-fact">Check: Train ticket scanned 21:05; Keycard #02 inactive after 20:48.</div>
+        </article>
+
+        <article class="suspect-card" data-suspect="leo">
+          <div class="suspect-name">Leo</div>
+          <div class="suspect-role">Night Guard &bull; Keycard #01</div>
+          <p class="suspect-quote">&ldquo;I was patrolling Hall A from 21:00 to 21:20. I grabbed tea in the west lounge at 21:15, then found the empty case at 21:22.&rdquo;</p>
+          <div class="suspect-fact">Check: Keycard #01 logged in Hall A West at 21:15; main-door check at 21:22.</div>
+        </article>
+
+        <article class="suspect-card" data-suspect="sam">
+          <div class="suspect-name">Sam</div>
+          <div class="suspect-role">Audio Tester &bull; Keycard #03</div>
+          <p class="suspect-quote">&ldquo;After 20:30, I stayed upstairs in the media studio editing sound clips until the 21:30 lockdown. Nobody came up to see me.&rdquo;</p>
+          <div class="suspect-fact">Check: Studio login active 20:35&ndash;21:30; Keycard #03 stayed upstairs.</div>
+        </article>
+
+        <article class="suspect-card" data-suspect="clara">
+          <div class="suspect-name">Clara</div>
+          <div class="suspect-role">Drone Pilot &bull; Keycard #04</div>
+          <p class="suspect-quote">&ldquo;I locked WhisperDrone away at 20:30 and stayed in the basement workshop charging batteries. I didn't go anywhere near Vault 4 or the east stairwell after 21:00, and my drone wasn't flown indoors.&rdquo;</p>
+          <div class="suspect-fact">Check: Keycard #04 belongs to Clara; compare with 21:12 audio &amp; 21:19 door log!</div>
+        </article>
+      </div>
+
+      <h3 style="font-size:1.02rem; color:var(--ink-950); margin-bottom:0.55rem;">Modal &amp; Pronoun Deduction Drills (6 Sentences)</h3>
+      <div class="drill-list" id="deduction-drills">
+        <div class="drill-row">
+          <div class="drill-line">1. Maya scanned her train ticket two kilometres away at 21:05, so she <input class="gap-input wide" id="ded-1" data-answer="can't have been|cannot have been|couldn't have been" placeholder="impossible past modal" /> (be) inside Vault 4 at 21:19.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('ded-mod-1')">👁️ Reveal Cambridge Model</button></div>
+          <div id="ded-mod-1" class="reveal-box"><strong>Model:</strong> Maya <strong>can't have been</strong> (or <strong>couldn't have been</strong>) inside Vault 4 at 21:19. <em>(Impossibility backed by train ticket)</em></div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">2. Vent dust was wiped off WhisperDrone's blades and a 21:12 hum was taped, so the thief <input class="gap-input wide" id="ded-2" data-answer="must have flown" placeholder="99% sure past modal" /> (fly) the drone through the vent.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('ded-mod-2')">👁️ Reveal Cambridge Model</button></div>
+          <div id="ded-mod-2" class="reveal-box"><strong>Model:</strong> The thief <strong>must have flown</strong> the drone through the vent. <em>(Strong certainty from matching evidence)</em></div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">3. Guards haven't checked the roof air units yet, so the culprit <input class="gap-input wide" id="ded-3" data-answer="might have hidden|could have hidden|may have hidden" placeholder="possible past modal" /> (hide) Prototype Zero up there at 21:20.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('ded-mod-3')">👁️ Reveal Cambridge Model</button></div>
+          <div id="ded-mod-3" class="reveal-box"><strong>Model:</strong> The culprit <strong>might have hidden</strong> (or <strong>could have hidden</strong>) Prototype Zero up there at 21:20. <em>(Open possibility)</em></div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">4. When Leo patrolled the corridor at 21:15, he didn't see <input class="gap-input" id="ded-4" data-answer="anybody|anyone" placeholder="indefinite pronoun" /> near the front entrance.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('ded-mod-4')">👁️ Reveal Cambridge Model</button></div>
+          <div id="ded-mod-4" class="reveal-box"><strong>Model:</strong> He didn't see <strong>anybody</strong> (or <strong>anyone</strong>) near the front entrance. <em>(Never &ldquo;didn't see nobody&rdquo;)</em></div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">5. The motion log proved that <input class="gap-input" id="ded-5" data-answer="nobody|no one" placeholder="indefinite pronoun" /> entered Hall B through the main glass doors after 21:00.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('ded-mod-5')">👁️ Reveal Cambridge Model</button></div>
+          <div id="ded-mod-5" class="reveal-box"><strong>Model:</strong> <strong>Nobody</strong> (or <strong>No one</strong>) entered Hall B through the main glass doors after 21:00.</div>
+        </div>
+
+        <div class="drill-row">
+          <div class="drill-line">6. By 21:22, Prototype Zero was <input class="gap-input" id="ded-6a" data-answer="nowhere" placeholder="place pronoun" /> to be found, even though <input class="gap-input" id="ded-6b" data-answer="somebody|someone" placeholder="person pronoun" /> with Keycard #04 had just left via the stairs.</div>
+          <div class="drill-meta"><button type="button" class="btn-ghost" onclick="toggleReveal('ded-mod-6')">👁️ Reveal Cambridge Model</button></div>
+          <div id="ded-mod-6" class="reveal-box"><strong>Model:</strong> Prototype Zero was <strong>nowhere</strong> to be found, even though <strong>somebody</strong> (or <strong>someone</strong>) with Keycard #04 had just left via the stairs.</div>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button type="button" class="btn-primary" id="btn-check-deduction" onclick="checkDeductionDrills()">Check Deduction Drills</button>
+        <span class="status-note" id="deduction-status">0 / 6 verified</span>
+      </div>
+
+      <div class="case-solver-box">
+        <strong style="color:var(--ink-950); font-size:0.98rem;">Final Investigation Decision: Who Stole Prototype Zero?</strong>
+        <p style="font-size:0.86rem; color:var(--ink-700); margin-top:0.25rem;">Pick the suspect whose alibi clashes directly with the audio log, the prototype forensic badge, and the keycard timestamp.</p>
+        <div class="accuse-btns">
+          <button type="button" class="accuse-choice" data-suspect="maya" onclick="selectSuspect('maya', this)">Maya (Lens Designer)</button>
+          <button type="button" class="accuse-choice" data-suspect="leo" onclick="selectSuspect('leo', this)">Leo (Night Guard)</button>
+          <button type="button" class="accuse-choice" data-suspect="sam" onclick="selectSuspect('sam', this)">Sam (Audio Tester)</button>
+          <button type="button" class="accuse-choice" data-suspect="clara" onclick="selectSuspect('clara', this)">Clara (Drone Pilot)</button>
+        </div>
+        <button type="button" class="btn-emerald" id="btn-lock-accusation" onclick="lockInAccusation()">🔒 Lock In Your Accusation</button>
+        <div id="verdict-panel" class="verdict-panel"></div>
+      </div>
+    </section>
+
+    <!-- STAGE 5 -->
+    <section class="card" id="stage-5">
+      <span class="step-tag">STAGE 5 &bull; FINAL SPEAKING SHOWDOWN</span>
+      <h2>Pitch Your Own Gadget</h2>
+      <p class="rubric">Choose one everyday-problem mission card below, then deliver a crisp 60-second pitch in the second person using the checklist.</p>
+
+      <div class="mission-grid">
+        <button type="button" class="mission-tile selected" data-mission="1" onclick="pickMission(1, this)">
+          <strong>Mission A &bull; The Heavy School Bag</strong>
+          <span>Invent a light wearable or smart organiser for carrying books, laptops, and sports kit comfortably.</span>
+        </button>
+        <button type="button" class="mission-tile" data-mission="2" onclick="pickMission(2, this)">
+          <strong>Mission B &bull; The Dead Battery Crisis</strong>
+          <span>Design a self-charging pocket tool that keeps phones and earbuds running all day without wall plugs.</span>
+        </button>
+        <button type="button" class="mission-tile" data-mission="3" onclick="pickMission(3, this)">
+          <strong>Mission C &bull; The Noisy Study Room</strong>
+          <span>Pitch a portable quiet-zone gadget that blocks background noise so you can focus anywhere.</span>
+        </button>
+      </div>
+
+      <div class="prompt-box" id="active-mission-brief">
+        <strong>Active Pitch Target:</strong> Mission A &mdash; Pitch your smart school-bag solution: explain how it is built, why it brings genuine convenience, and solve one complaint!
+      </div>
+
+      <div class="checklist-grid">
+        <label class="check-item"><input type="checkbox" class="pitch-check" /> <span><strong>2 Passive Verbs</strong> &mdash; e.g. <em>&ldquo;It is powered by...&rdquo;</em> / <em>&ldquo;Weight is balanced across...&rdquo;</em></span></label>
+        <label class="check-item"><input type="checkbox" class="pitch-check" /> <span><strong>2 Word-Formation Nouns or Adjectives</strong> &mdash; e.g. <em>reliable, convenience, independence, protection, invention, connection, accuracy</em></span></label>
+        <label class="check-item"><input type="checkbox" class="pitch-check" /> <span><strong>1 Past Modal of Deduction</strong> &mdash; e.g. <em>&ldquo;You must have felt annoyed when your battery died on the bus.&rdquo;</em></span></label>
+      </div>
+
+      <div class="actions-row">
+        <button type="button" class="btn-ghost" onclick="toggleReveal('pitch-model')">👁️ Reveal Cambridge Model</button>
+      </div>
+      <div id="pitch-model" class="reveal-box">
+        <strong>Model Gadget Pitch:</strong> &ldquo;You <strong>must have wished</strong> for a lighter backpack on a rainy Tuesday morning. My invention is called FlexPack: extra weight <strong>is lifted</strong> away from your shoulders by micro-air pads, and your tablet <strong>is protected</strong> inside a waterproof shell. It gives students total <strong>independence</strong> from sore backs and unreliable straps, with one-click magnetic <strong>convenience</strong>.&rdquo;
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function toggleTheme() {
+      const root = document.documentElement;
+      const isDark = root.getAttribute('data-theme') === 'dark';
+      root.setAttribute('data-theme', isDark ? 'paper' : 'dark');
+      document.getElementById('themeBtn').textContent = isDark ? '🌙 Dark Mode' : '☀️ Paper Mode';
+    }
+
+    function toggleReveal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('open');
+    }
+
+    function flipForensic(id, btn) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const open = el.classList.toggle('flipped');
+      if (btn) btn.textContent = open ? '✅ Hide Forensic Badge' : '🔍 Flip Forensic Badge';
+    }
+
+    // Stage 1 Timer
+    let warmupMode = 'prep';
+    let warmupSeconds = 60;
+    let warmupInterval = null;
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return m + ':' + s;
+    }
+
+    function renderTimer() {
+      document.getElementById('timer-display').textContent = formatTime(warmupSeconds);
+      document.getElementById('timer-state').textContent =
+        warmupMode === 'prep' ? '1-Minute Prep Mode' : '2-Minute Speaking Mode';
+      document.getElementById('btn-mode-prep').classList.toggle('active', warmupMode === 'prep');
+      document.getElementById('btn-mode-speak').classList.toggle('active', warmupMode === 'speak');
+    }
+
+    function stopWarmupTimer() {
+      if (warmupInterval) {
+        clearInterval(warmupInterval);
+        warmupInterval = null;
+      }
+      document.getElementById('btn-timer-toggle').textContent = '▶ Start';
+    }
+
+    function setWarmupMode(mode) {
+      stopWarmupTimer();
+      warmupMode = mode;
+      warmupSeconds = mode === 'prep' ? 60 : 120;
+      renderTimer();
+    }
+
+    function resetWarmupTimer() {
+      setWarmupMode(warmupMode);
+    }
+
+    function toggleWarmupTimer() {
+      const btn = document.getElementById('btn-timer-toggle');
+      if (warmupInterval) {
+        stopWarmupTimer();
+        return;
+      }
+      btn.textContent = '⏸ Pause';
+      warmupInterval = setInterval(function() {
+        if (warmupSeconds > 0) {
+          warmupSeconds -= 1;
+          renderTimer();
+        } else {
+          stopWarmupTimer();
+          document.getElementById('timer-state').textContent = 'Time Up!';
+        }
+      }, 1000);
+    }
+
+    // Normalised answer check helper shared by Stages 2, 3, and 4
+    function normaliseAnswer(str) {
+      return String(str || '').trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function isInputCorrect(inp) {
+      const val = normaliseAnswer(inp.value);
+      if (!val) return false;
+      const accepted = (inp.dataset.answer || '').split('|').map(normaliseAnswer);
+      return accepted.includes(val);
+    }
+
+    function markInput(inp) {
+      inp.classList.remove('match-correct', 'match-wrong');
+      if (!normaliseAnswer(inp.value)) return false;
+      const ok = isInputCorrect(inp);
+      inp.classList.add(ok ? 'match-correct' : 'match-wrong');
+      return ok;
+    }
+
+    let scorePassive = 0;
+    let scoreMorphWords = 0;
+    let scoreMorphStress = 0;
+    let scoreDeduction = 0;
+
+    function updateMissionScore() {
+      const total = scorePassive + scoreMorphWords + scoreMorphStress + scoreDeduction;
+      document.getElementById('live-score-pill').textContent = 'Mission Score: ' + total + ' / 28';
+    }
+
+    function checkPassiveDrills() {
+      const inputs = document.querySelectorAll('#passive-drills input[data-answer]');
+      let right = 0;
+      inputs.forEach(function(inp) {
+        if (markInput(inp)) right++;
+      });
+      scorePassive = right;
+      document.getElementById('passive-status').textContent = right + ' / ' + inputs.length + ' verified';
+      updateMissionScore();
+      return right;
+    }
+
+    function pickStress(btn) {
+      const row = btn.closest('.stress-row');
+      row.querySelectorAll('.stress-pill').forEach(function(p) {
+        p.classList.remove('selected', 'pill-correct', 'pill-wrong');
+      });
+      btn.classList.add('selected');
+    }
+
+    function checkWordBuilder() {
+      const cards = document.querySelectorAll('#word-builder-grid .morph-card');
+      let wordsRight = 0;
+      let stressRight = 0;
+
+      cards.forEach(function(card) {
+        const inputs = Array.from(card.querySelectorAll('input[data-answer]'));
+        let cardWordOk = true;
+        inputs.forEach(function(inp) {
+          if (!markInput(inp)) cardWordOk = false;
+        });
+        if (cardWordOk) wordsRight++;
+
+        const targetStress = card.dataset.stressAnswer;
+        const selected = card.querySelector('.stress-pill.selected');
+        card.querySelectorAll('.stress-pill').forEach(function(p) {
+          p.classList.remove('pill-correct', 'pill-wrong');
+        });
+        if (selected) {
+          if (selected.dataset.pattern === targetStress) {
+            selected.classList.add('pill-correct');
+            stressRight++;
+          } else {
+            selected.classList.add('pill-wrong');
+          }
+        }
+      });
+
+      scoreMorphWords = wordsRight;
+      scoreMorphStress = stressRight;
+      document.getElementById('morph-status').textContent =
+        'Words: ' + wordsRight + ' / 8 • Stress: ' + stressRight + ' / 8';
+      updateMissionScore();
+      return { wordsRight: wordsRight, stressRight: stressRight };
+    }
+
+    function checkDeductionDrills() {
+      const rows = document.querySelectorAll('#deduction-drills .drill-row');
+      let right = 0;
+      rows.forEach(function(row) {
+        const inputs = Array.from(row.querySelectorAll('input[data-answer]'));
+        let rowOk = true;
+        inputs.forEach(function(inp) {
+          if (!markInput(inp)) rowOk = false;
+        });
+        if (rowOk) right++;
+      });
+      scoreDeduction = right;
+      document.getElementById('deduction-status').textContent = right + ' / ' + rows.length + ' verified';
+      updateMissionScore();
+      return right;
+    }
+
+    // Stage 4 Accusation Solver
+    let chosenSuspect = '';
+
+    function selectSuspect(name, btn) {
+      chosenSuspect = name;
+      document.querySelectorAll('.accuse-choice').forEach(function(b) {
+        b.classList.toggle('picked', b.dataset.suspect === name);
+      });
+      document.querySelectorAll('.suspect-card').forEach(function(c) {
+        c.classList.toggle('accused', c.dataset.suspect === name);
+      });
+    }
+
+    const SUSPECT_FEEDBACK = {
+      maya: "Re-check the timeline! Maya can't have been inside Vault 4 at 21:19 because her train ticket scanned 2 km away at 21:05 and Keycard #02 stayed inactive after 20:48.",
+      leo: "Look closer at the logs! Leo's Keycard #01 placed him in Hall A West at 21:15, and he opened the main door at 21:22 — not the East Stairwell at 21:19.",
+      sam: "Check Booth 2 and the media studio! Sam stayed logged in upstairs until 21:30, and his earbuds showed zero Bluetooth activity after 20:30."
+    };
+
+    function lockInAccusation() {
+      const panel = document.getElementById('verdict-panel');
+      panel.classList.remove('solved', 'retry', 'open');
+      if (!chosenSuspect) {
+        panel.classList.add('open', 'retry');
+        panel.innerHTML = '<strong>Choose a suspect first</strong> above before locking in your accusation.';
+        return { solved: false, reason: 'none' };
+      }
+
+      if (chosenSuspect === 'clara') {
+        panel.classList.add('open', 'solved');
+        panel.innerHTML =
+          '<strong>CASE CRACKED! Clara (Drone Pilot) stole Prototype Zero.</strong>' +
+          '<ul style="margin:0.5rem 0 0 1.2rem; display:flex; flex-direction:column; gap:0.3rem;">' +
+            '<li><strong>Clue 1 (21:12 Audio Log):</strong> A faint, high-pitched propeller hum lasted 40 seconds near the MagLock case right when the ceiling vent opened — matching WhisperDrone Pocket Cam.</li>' +
+            '<li><strong>Clue 2 (Forensic Dossier):</strong> WhisperDrone logged an unscheduled 40-second flight burst at 21:12, and fine grey ceiling-vent dust was wiped off its blades — disproving Clara&rsquo;s claim that it stayed boxed.</li>' +
+            '<li><strong>Clue 3 (21:19 Keycard Log):</strong> Keycard #04 (issued to Clara) unlocked the East Stairwell door inside Vault 4 at 21:19 towards the roof — directly contradicting her basement workshop alibi.</li>' +
+          '</ul>';
+        return { solved: true, suspect: 'clara' };
+      }
+
+      panel.classList.add('open', 'retry');
+      panel.innerHTML = '<strong>Not the culprit!</strong> ' + SUSPECT_FEEDBACK[chosenSuspect];
+      return { solved: false, suspect: chosenSuspect };
+    }
+
+    // Stage 5 Pitch Missions
+    const MISSION_BRIEFS = {
+      1: '<strong>Active Pitch Target:</strong> Mission A &mdash; Pitch your smart school-bag solution: explain how it is built, why it brings genuine convenience, and solve one everyday hassle!',
+      2: '<strong>Active Pitch Target:</strong> Mission B &mdash; Pitch your self-charging pocket tool: explain how power is stored, why users gain independence from cables, and solve one travel crisis!',
+      3: '<strong>Active Pitch Target:</strong> Mission C &mdash; Pitch your portable quiet-zone device: explain how noise is blocked, why reliable focus matters, and sell its main feature!'
+    };
+
+    function pickMission(num, btn) {
+      document.querySelectorAll('.mission-tile').forEach(function(t) {
+        t.classList.remove('selected');
+      });
+      if (btn) btn.classList.add('selected');
+      document.getElementById('active-mission-brief').innerHTML = MISSION_BRIEFS[num] || MISSION_BRIEFS[1];
+    }
+
+    // Built-in Self-Test (?selftest=1)
+    (function runSelfTestIfRequested() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('selftest') !== '1') return;
+
+      const checks = [];
+      function assert(name, cond) {
+        checks.push({ name: name, pass: Boolean(cond) });
+      }
+
+      // 1. Metadata & theme toggle
+      const htmlEl = document.documentElement;
+      const startTheme = htmlEl.getAttribute('data-theme');
+      const hasNoindex = Boolean(document.querySelector('meta[name="robots"][content*="noindex"]'));
+      toggleTheme();
+      const darkTheme = htmlEl.getAttribute('data-theme');
+      toggleTheme();
+      const restoredTheme = htmlEl.getAttribute('data-theme');
+      assert('Theme paper default & toggle', startTheme === 'paper' && darkTheme === 'dark' && restoredTheme === 'paper' && hasNoindex);
+
+      // 2. Stage 1 timer buttons
+      setWarmupMode('speak');
+      const speakDisplay = document.getElementById('timer-display').textContent;
+      toggleWarmupTimer();
+      const runningLabel = document.getElementById('btn-timer-toggle').textContent;
+      toggleWarmupTimer();
+      setWarmupMode('prep');
+      const prepDisplay = document.getElementById('timer-display').textContent;
+      assert('Stage 1 timer buttons (prep/speak/start/pause)', speakDisplay === '02:00' && runningLabel.indexOf('Pause') !== -1 && prepDisplay === '01:00');
+
+      // 3. Audio asset ref, transcript & forensic badges
+      const audioEl = document.getElementById('vault-audio');
+      const audioSrcOk = audioEl && audioEl.getAttribute('src') === 'vitaly-prototype-zero-log.mp3';
+      toggleReveal('audio-transcript');
+      const transcriptOpened = document.getElementById('audio-transcript').classList.contains('open');
+      toggleReveal('audio-transcript');
+      const fBtn = document.querySelector('.proto-card button');
+      flipForensic('forensic-3', fBtn);
+      const forensicOpened = document.getElementById('forensic-3').classList.contains('flipped');
+      flipForensic('forensic-3', fBtn);
+      assert('Stage 2 audio src, transcript & forensic badge', audioSrcOk && transcriptOpened && forensicOpened);
+
+      // 4. Stage 2 passive drills
+      const passiveSample = {
+        'pas-1': 'is protected',
+        'pas-2': 'are streamed',
+        'pas-3': 'are required',
+        'pas-4': 'was opened',
+        'pas-5': 'were found',
+        'pas-6': 'was unlocked'
+      };
+      Object.keys(passiveSample).forEach(function(id) {
+        document.getElementById(id).value = passiveSample[id];
+      });
+      const passivePassed = checkPassiveDrills();
+      assert('Stage 2 passive drills (6/6)', passivePassed === 6);
+
+      // 5. Stage 3 word-formation & stress scanner
+      const morphSample = {
+        'wf-1a': 'unreliable',
+        'wf-1b': 'reliable',
+        'wf-2': 'convenience',
+        'wf-3': 'independence',
+        'wf-4': 'protection',
+        'wf-5': 'invention',
+        'wf-6': 'connection',
+        'wf-7': 'accuracy',
+        'wf-8': 'impossible'
+      };
+      Object.keys(morphSample).forEach(function(id) {
+        document.getElementById(id).value = morphSample[id];
+      });
+      document.querySelectorAll('#word-builder-grid .morph-card').forEach(function(card) {
+        const target = card.dataset.stressAnswer;
+        const btn = card.querySelector('.stress-pill[data-pattern="' + target + '"]');
+        if (btn) pickStress(btn);
+      });
+      const morphResult = checkWordBuilder();
+      assert('Stage 3 word-builder (8/8) & stress scanner (8/8)', morphResult.wordsRight === 8 && morphResult.stressRight === 8);
+
+      // 6. Stage 4 deduction drills & culprit verdict logic
+      const dedSample = {
+        'ded-1': "can't have been",
+        'ded-2': 'must have flown',
+        'ded-3': 'might have hidden',
+        'ded-4': 'anybody',
+        'ded-5': 'nobody',
+        'ded-6a': 'nowhere',
+        'ded-6b': 'somebody'
+      };
+      Object.keys(dedSample).forEach(function(id) {
+        document.getElementById(id).value = dedSample[id];
+      });
+      const dedPassed = checkDeductionDrills();
+      selectSuspect('maya', document.querySelector('.accuse-choice[data-suspect="maya"]'));
+      const wrongVerdict = lockInAccusation();
+      selectSuspect('clara', document.querySelector('.accuse-choice[data-suspect="clara"]'));
+      const rightVerdict = lockInAccusation();
+      const verdictText = document.getElementById('verdict-panel').textContent;
+      const hasThreeClues = verdictText.indexOf('Clue 1') !== -1 && verdictText.indexOf('Clue 2') !== -1 && verdictText.indexOf('Clue 3') !== -1;
+      assert('Stage 4 deduction drills (6/6) & culprit verdict logic', dedPassed === 6 && wrongVerdict.solved === false && rightVerdict.solved === true && hasThreeClues);
+
+      // 7. Stage 5 mission tiles & all reveal buttons
+      const mission2Btn = document.querySelector('.mission-tile[data-mission="2"]');
+      pickMission(2, mission2Btn);
+      const missionPicked = mission2Btn.classList.contains('selected') && document.getElementById('active-mission-brief').textContent.indexOf('Mission B') !== -1;
+      const revealBtns = Array.from(document.querySelectorAll('button')).filter(function(b) {
+        return b.textContent.indexOf('Reveal Cambridge Model') !== -1;
+      });
+      let revealsOk = revealBtns.length >= 15;
+      revealBtns.forEach(function(btn) {
+        const match = (btn.getAttribute('onclick') || '').match(/toggleReveal\('([^']+)'\)/);
+        if (!match) { revealsOk = false; return; }
+        const target = document.getElementById(match[1]);
+        if (!target) { revealsOk = false; return; }
+        btn.click();
+        if (!target.classList.contains('open')) revealsOk = false;
+        btn.click();
+      });
+      assert('Stage 5 mission cards & reveal buttons (' + revealBtns.length + ')', missionPicked && revealsOk);
+
+      // Reset inputs & UI back to clean student-ready state after testing
+      document.querySelectorAll('input[data-answer]').forEach(function(inp) {
+        inp.value = '';
+        inp.classList.remove('match-correct', 'match-wrong');
+      });
+      document.querySelectorAll('.stress-pill').forEach(function(p) {
+        p.classList.remove('selected', 'pill-correct', 'pill-wrong');
+      });
+      document.querySelectorAll('.accuse-choice').forEach(function(b) { b.classList.remove('picked'); });
+      document.querySelectorAll('.suspect-card').forEach(function(c) { c.classList.remove('accused'); });
+      document.getElementById('verdict-panel').classList.remove('open', 'solved', 'retry');
+      chosenSuspect = '';
+      scorePassive = 0; scoreMorphWords = 0; scoreMorphStress = 0; scoreDeduction = 0;
+      document.getElementById('passive-status').textContent = '0 / 6 verified';
+      document.getElementById('morph-status').textContent = 'Words: 0 / 8 • Stress: 0 / 8';
+      document.getElementById('deduction-status').textContent = '0 / 6 verified';
+      updateMissionScore();
+      pickMission(1, document.querySelector('.mission-tile[data-mission="1"]'));
+
+      // 8. Guard check on rendered text
+      const bodyLower = document.body.innerText.toLowerCase();
+      const cleanGuards =
+        bodyLower.indexOf('switzerland') === -1 &&
+        bodyLower.indexOf('zurich') === -1 &&
+        bodyLower.indexOf('geneva') === -1 &&
+        bodyLower.indexOf('alps') === -1 &&
+        bodyLower.indexOf('tutor cue:') === -1 &&
+        bodyLower.indexOf('teacher note:') === -1;
+      assert('Editorial & privacy guardrails', cleanGuards);
+
+      const allPassed = checks.every(function(c) { return c.pass; });
+      const pre = document.createElement('pre');
+      pre.id = 'selftest';
+      pre.dataset.pass = allPassed ? 'true' : 'false';
+      pre.textContent = checks.map(function(c) {
+        return (c.pass ? '[PASS] ' : '[FAIL] ') + c.name;
+      }).join('\n') + '\nRESULT: ' + (allPassed ? 'PASS' : 'FAIL');
+      document.body.appendChild(pre);
+    })();
+  </script>
+</body>
+</html>

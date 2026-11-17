@@ -85,10 +85,12 @@
                 </button>
                 <div id="streak-display" title="Streak">🔥 0</div>
                 <button type="button" id="daily-seed-hud-btn" class="hud-daily-btn" title="Start today's 5-question C1/C2 gauntlet">🎲 Daily Seed</button>
+                <button type="button" id="duel-hud-btn" class="hud-duel-btn" title="Forge a 5-Rune Duel or exit active duel">⚔️ Duel</button>
                 <button type="button" id="audio-toggle" aria-pressed="true">🔊 Sound On</button>
                 <button type="button" id="pwa-install-btn" class="hidden" title="Install App to your device">📲 Install App</button>
                 <span id="boss-rush-badge" class="boss-rush-badge hidden" role="status">⚔️ Boss Rush 1/5</span>
                 <span id="daily-seed-badge" class="daily-seed-badge hidden" role="status">🎲 Daily Seed 1/5</span>
+                <span id="duel-badge" class="duel-badge hidden" role="status">⚔️ Duel 1/5 · 0:00</span>
             </div>
 
             <!-- Interactive Floor Selector & Boss Rush Drawer -->
@@ -110,6 +112,28 @@
                     <button type="button" id="buy-shield-btn" class="btn-ghost-action">🛡️ Buy Streak Shield (50 🪙) · 0/3</button>
                     <a href="grammar-crypt-3d.html" class="drawer-3d-link" data-track="crypt_3d_switch">🧊 3D Crypt Showcase</a>
                 </div>
+                <details id="duel-forge-box" class="duel-forge-box">
+                    <summary class="duel-forge-summary">
+                        <span class="duel-forge-heading">⚔️ Forge a 5-Rune Duel</span>
+                        <span class="duel-forge-sub">Pick 5 challenges for a student or friend, or set a target time</span>
+                    </summary>
+                    <div class="duel-forge-body">
+                        <div class="duel-preset-bar" role="toolbar" aria-label="Duel presets">
+                            <button type="button" class="duel-preset-pill" data-duel-preset="c1_random">🎲 Random C1/C2</button>
+                            <button type="button" class="duel-preset-pill" data-duel-preset="inversions">🔀 Neg. Inversions</button>
+                            <button type="button" class="duel-preset-pill" data-duel-preset="conditionals">⚡ Conditionals</button>
+                            <button type="button" class="duel-preset-pill" data-duel-preset="clefts">🪞 Clefts &amp; Fronting</button>
+                            <button type="button" class="duel-preset-pill" data-duel-preset="unsolved">🎯 Unsolved Traps</button>
+                            <button type="button" id="duel-show-sentences-btn" class="btn-ghost-action duel-toggle-sentences" aria-pressed="false">👁️ Show sentences</button>
+                        </div>
+                        <div id="duel-forge-slots" class="duel-forge-slots"></div>
+                        <div class="duel-forge-actions">
+                            <button type="button" id="duel-copy-instant-btn" class="btn-copy-daily">📋 Copy Instant Duel Link</button>
+                            <button type="button" id="duel-play-forge-btn" class="btn-duel-play">⚔️ Play &amp; Set Target Time</button>
+                            <span id="duel-forge-feedback" class="duel-forge-feedback" role="status" aria-live="polite"></span>
+                        </div>
+                    </div>
+                </details>
                 <div class="act-filter-bar" role="toolbar" aria-label="Jump by Act">
                     <button type="button" class="act-pill" data-jump-floor="0">Act I · B1 Questions (1–5)</button>
                     <button type="button" class="act-pill" data-jump-floor="5">Act II · B2 Perfect &amp; Passive (6–10)</button>
@@ -139,6 +163,7 @@
                     </div>
                     <button type="button" id="boss-voice-btn" class="btn-boss-voice" aria-pressed="false" title="Play or stop Boss Voice Track">🔊 Boss Voice</button>
                 </div>
+                <div id="duel-target-banner" class="duel-target-banner hidden" role="status" aria-live="polite"></div>
                 <h2 id="quest-title">Floor 1: Wh- Questions in the Past (B1)</h2>
                 <div class="puzzle-board" id="board" aria-label="Sentence board"></div>
                 <div class="block-bank" id="bank" aria-label="Rune bank"></div>
@@ -237,9 +262,11 @@
         <div class="modal-panel recap-panel">
             <h2 id="recap-heading">Run Complete!</h2>
             <p id="recap-summary"></p>
+            <div id="recap-verdict" class="recap-verdict hidden" role="status"></div>
             <div id="recap-step-list" class="recap-step-list"></div>
             <div class="recap-actions">
                 <button type="button" id="btn-copy-daily" class="btn-copy-daily hidden">📋 Copy Daily Result</button>
+                <button type="button" id="btn-copy-duel" class="btn-copy-duel hidden">⚔️ Copy Counter-Duel Link</button>
                 <button type="button" id="btn-open-diagnostic" class="btn-claim">View Score &amp; Next Steps &rarr;</button>
                 <button type="button" id="btn-close-recap" class="btn-reset">Close &amp; Continue</button>
             </div>
@@ -250,6 +277,7 @@
     <script src="assets/vendor/confetti.browser.min.js" defer></script>
     <script src="audio.js" defer></script>
     <script src="crypt-levels.js" defer></script>
+    <script src="dossier.js" defer></script>
     <script src="crypt.js" defer></script>
     <script src="course-bridge.js" defer></script>
     <script src="analytics.js" defer></script>

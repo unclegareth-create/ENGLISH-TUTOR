@@ -18,6 +18,7 @@
     const ACT_START_FLOORS = { 1: 0, 2: 5, 3: 10, 4: 15, 5: 20 };
     const TIER_START_FLOORS = { b1: 0, b2: 5, c1: 10, c2: 20 };
     const DAILY_SHARE_URL = 'https://garethenglish.com/grammar-crypt.html?mode=daily';
+    const DUEL_SHARE_BASE_URL = 'https://garethenglish.com/grammar-crypt.html';
     const TIER_BAR_DISMISS_KEY = 'gc_tier_bar_dismissed';
 
     const vibrate = (pattern) => {
@@ -69,7 +70,7 @@
     /* ---------------- STATE ---------------- */
 
     let state = ensureStateShape(L.store.fresh());
-    let campaignLevel = null;    // preserved when Daily Seed or Boss Rush is active
+    let campaignLevel = null;    // preserved when Daily Seed, Boss Rush, or Duel is active
     let item = null;
     let locked = false;
     let targetedZone = null;
@@ -77,6 +78,7 @@
     let hintsUsed = 0;
     let levelMistakes = 0;
     let hintLevel = -1;
+    let hintItemKey = null;
     let bossRushActive = false;
     let bossRushStep = 0;
     let bossRushResults = [];
@@ -85,6 +87,22 @@
     let dailyGauntletData = null;
     let dailyStepResults = [];
     let dailyStepHadNearMiss = false;
+    let duelActive = false;
+    let duelStep = 0;
+    let duelData = null;
+    let duelLastSpec = null;
+    let duelStepResults = [];
+    let duelStepHadNearMiss = false;
+    let duelElapsedMs = 0;
+    let duelTurnStartedAt = null;
+    let duelTimerInterval = null;
+    let pendingDuelShareSpec = null;
+    let pendingDuelShareLabel = '⚔️ Copy Counter-Duel Link';
+    let deferredBootStatus = null;
+    let deferredForgeOpen = false;
+    let forgeSelectedIds = [];
+    let forgeShowSentences = false;
+    let forgeActivePreset = 'c1_random';
     let pendingRecapMode = null;
     let activeRecapMode = null;
     let firstMoveFired = false;
@@ -195,7 +213,65 @@
         }
     }
 
+    function clearDuelTimerInterval() {
+        if (duelTimerInterval) {
+            clearInterval(duelTimerInterval);
+            duelTimerInterval = null;
+        }
+    }
+
+    function formatDuration(sec) {
+        const s = Math.max(0, Math.floor(Number(sec) || 0));
+        const mins = Math.floor(s / 60);
+        const rem = s % 60;
+        return `${mins}:${String(rem).padStart(2, '0')}`;
+    }
+
+    function getDuelActiveMs() {
+        return duelElapsedMs + (duelTurnStartedAt !== null ? Math.max(0, Date.now() - duelTurnStartedAt) : 0);
+    }
+
+    function getDuelActiveSec() {
+        return Math.min(3600, Math.floor(getDuelActiveMs() / 1000));
+    }
+
+    function pauseDuelTimer() {
+        if (duelTurnStartedAt !== null) {
+            duelElapsedMs += Math.max(0, Date.now() - duelTurnStartedAt);
+            duelTurnStartedAt = null;
+        }
+        clearDuelTimerInterval();
+    }
+
+    function refreshDuelTimerUI() {
+        const badge = $('duel-badge');
+        if (!badge || !duelActive || !duelData) return;
+        badge.textContent = `⚔️ Duel ${duelStep + 1}/${duelData.steps.length} · ${formatDuration(getDuelActiveSec())}`;
+    }
+
+    function resumeDuelTimer() {
+        if (!(duelActive || dailySeedActive || bossRushActive) || locked) return;
+        if (duelTurnStartedAt === null) {
+            duelTurnStartedAt = Date.now();
+        }
+        if (duelActive && !duelTimerInterval && !inSelfTest) {
+            duelTimerInterval = setInterval(refreshDuelTimerUI, 500);
+        }
+    }
+
+    function resetDuelState() {
+        clearDuelTimerInterval();
+        duelActive = false;
+        duelStep = 0;
+        duelData = null;
+        duelStepResults = [];
+        duelStepHadNearMiss = false;
+        duelElapsedMs = 0;
+        duelTurnStartedAt = null;
+    }
+
     function clearTransientTimers() {
+        clearDuelTimerInterval();
         if (milestoneTimer) { clearTimeout(milestoneTimer); milestoneTimer = null; }
         if (lootTimer) { clearTimeout(lootTimer); lootTimer = null; }
         if (hintGlowTimer) { clearTimeout(hintGlowTimer); hintGlowTimer = null; }
@@ -212,7 +288,7 @@
 
     function saveState() {
         if (inSelfTest) return;
-        const toSave = ((dailySeedActive || bossRushActive) && campaignLevel !== null)
+        const toSave = ((dailySeedActive || bossRushActive || duelActive) && campaignLevel !== null)
             ? { ...state, level: campaignLevel }
             : state;
         L.store.save(toSave);
@@ -313,14 +389,225 @@
                 ? `⏹️ Exit Daily Crypt Seed (${dailySeedStep + 1}/5)`
                 : `🎲 Daily Crypt Seed · ${seedLabel} (5-Q C1/C2)`;
         }
+        if ($('duel-badge')) {
+            if (duelActive && duelData) {
+                $('duel-badge').classList.remove('hidden');
+                refreshDuelTimerUI();
+            } else {
+                $('duel-badge').classList.add('hidden');
+            }
+        }
+        if ($('duel-hud-btn')) {
+            $('duel-hud-btn').classList.toggle('active', duelActive);
+            $('duel-hud-btn').textContent = (duelActive && duelData)
+                ? `⏹️ Exit Duel (${duelStep + 1}/${duelData.steps.length})`
+                : '⚔️ Duel';
+        }
 
         if (tierJumpBar) {
             const activeTier = tierForFloor(state.level);
             tierJumpBar.querySelectorAll('.tier-pill[data-jump-tier]').forEach(btn => {
-                btn.classList.toggle('active', !dailySeedActive && !bossRushActive && btn.dataset.jumpTier === activeTier);
+                btn.classList.toggle('active', !dailySeedActive && !bossRushActive && !duelActive && btn.dataset.jumpTier === activeTier);
             });
             const dailyPill = tierJumpBar.querySelector('.tier-pill[data-jump-mode="daily"]');
             if (dailyPill) dailyPill.classList.toggle('active', dailySeedActive);
+        }
+    }
+
+    function renderDuelTargetBanner() {
+        const banner = $('duel-target-banner');
+        if (!banner) return;
+        if (!duelActive || !duelData) {
+            banner.classList.add('hidden');
+            banner.textContent = '';
+            return;
+        }
+        const total = duelData.steps.length;
+        banner.classList.remove('hidden');
+        if (duelData.sec > 0) {
+            const who = duelData.by ? duelData.by : 'Challenger';
+            banner.textContent = `🎯 Target to beat: ${who} scored ${duelData.clean}/${total} Clean in ${formatDuration(duelData.sec)}`;
+        } else if (total === 5) {
+            banner.textContent = '⚔️ Custom 5-Rune Duel — set the benchmark!';
+        } else {
+            banner.textContent = `⚔️ Custom ${total}-Rune Duel — set the benchmark!`;
+        }
+    }
+
+    function buildDuelShareUrl(token) {
+        return `${DUEL_SHARE_BASE_URL}?duel=${encodeURIComponent(token)}`;
+    }
+
+    function ensureForgeSelection() {
+        const hits = forgeSelectedIds.length === 5 ? forgeSelectedIds.map(id => L.findItemById(id)) : [];
+        if (hits.length === 5 && hits.every(Boolean) && new Set(hits.map(h => h.item.id)).size === 5) {
+            return;
+        }
+        if (typeof L.duelPreset === 'function') {
+            const presetRes = L.duelPreset(forgeActivePreset || 'c1_random', state);
+            forgeSelectedIds = presetRes.ids.slice();
+            forgeActivePreset = presetRes.preset;
+        }
+    }
+
+    function setForgeFeedback(msg, isError) {
+        const fb = $('duel-forge-feedback');
+        if (!fb) return;
+        fb.textContent = msg || '';
+        fb.classList.toggle('error', Boolean(isError));
+    }
+
+    function renderDuelForge() {
+        const box = $('duel-forge-box');
+        const slotsEl = $('duel-forge-slots');
+        if (!box || !slotsEl) return;
+        ensureForgeSelection();
+
+        box.querySelectorAll('.duel-preset-pill[data-duel-preset]').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-duel-preset') === forgeActivePreset);
+        });
+        const toggleBtn = $('duel-show-sentences-btn');
+        if (toggleBtn) {
+            toggleBtn.setAttribute('aria-pressed', forgeShowSentences ? 'true' : 'false');
+            toggleBtn.textContent = forgeShowSentences ? '🙈 Hide sentences' : '👁️ Show sentences';
+        }
+
+        slotsEl.textContent = '';
+        forgeSelectedIds.forEach((selectedId, idx) => {
+            const hit = L.findItemById(selectedId) || { floorIdx: 10, item: levels[10].pool[0] };
+            const usedElsewhere = new Set(forgeSelectedIds.filter((_, j) => j !== idx));
+
+            const row = document.createElement('div');
+            row.className = 'duel-forge-slot';
+
+            const numEl = document.createElement('span');
+            numEl.className = 'duel-slot-num';
+            numEl.textContent = `Rune ${idx + 1}`;
+
+            const floorSelect = document.createElement('select');
+            floorSelect.className = 'duel-floor-select';
+            floorSelect.setAttribute('aria-label', `Rune ${idx + 1} floor`);
+            levels.forEach((fl, fIdx) => {
+                const opt = document.createElement('option');
+                opt.value = String(fIdx);
+                opt.textContent = `F${fIdx + 1} · ${fl.title} (${fl.cefr})`;
+                if (fIdx === hit.floorIdx) opt.selected = true;
+                floorSelect.appendChild(opt);
+            });
+
+            const itemSelect = document.createElement('select');
+            itemSelect.className = 'duel-item-select';
+            itemSelect.setAttribute('aria-label', `Rune ${idx + 1} challenge`);
+            const flPool = levels[hit.floorIdx].pool;
+            flPool.forEach((poolItem, itemIdx) => {
+                const opt = document.createElement('option');
+                opt.value = poolItem.id;
+                opt.textContent = forgeShowSentences
+                    ? `${poolItem.id} · ${L.formatSentence(poolItem.answers[0])}`
+                    : `${poolItem.id} · Challenge ${itemIdx + 1} (${poolItem.tokens.length} slots)`;
+                if (poolItem.id === hit.item.id) opt.selected = true;
+                else if (usedElsewhere.has(poolItem.id)) opt.disabled = true;
+                itemSelect.appendChild(opt);
+            });
+
+            floorSelect.addEventListener('change', () => {
+                const nextFloor = parseInt(floorSelect.value, 10);
+                if (Number.isNaN(nextFloor) || !levels[nextFloor]) return;
+                const pool = levels[nextFloor].pool;
+                const avail = pool.find(p => !usedElsewhere.has(p.id)) || pool[0];
+                forgeSelectedIds[idx] = avail.id;
+                forgeActivePreset = '';
+                setForgeFeedback('', false);
+                renderDuelForge();
+            });
+
+            itemSelect.addEventListener('change', () => {
+                const nextId = itemSelect.value;
+                if (usedElsewhere.has(nextId)) {
+                    setForgeFeedback('Each rune must be unique across the 5 slots.', true);
+                    renderDuelForge();
+                    return;
+                }
+                forgeSelectedIds[idx] = nextId;
+                forgeActivePreset = '';
+                setForgeFeedback('', false);
+                renderDuelForge();
+            });
+
+            row.append(numEl, floorSelect, itemSelect);
+            if (forgeShowSentences) {
+                const preview = document.createElement('div');
+                preview.className = 'duel-slot-preview';
+                preview.textContent = `${hit.item.id}: ${L.formatSentence(hit.item.answers[0])}`;
+                row.appendChild(preview);
+            }
+            slotsEl.appendChild(row);
+        });
+    }
+
+    function applyForgePreset(presetKey) {
+        if (typeof L.duelPreset !== 'function') return;
+        const res = L.duelPreset(presetKey, state);
+        forgeSelectedIds = res.ids.slice();
+        forgeActivePreset = res.preset;
+        setForgeFeedback('', false);
+        renderDuelForge();
+        sfx('grab');
+    }
+
+    function copyInstantDuelLink() {
+        ensureForgeSelection();
+        if (typeof L.encodeDuel !== 'function') return;
+        const token = L.encodeDuel({ ids: forgeSelectedIds, clean: 0, sec: 0, by: state.playerName || '' });
+        if (!token) {
+            setForgeFeedback('Pick 5 distinct challenges before copying a duel link.', true);
+            return;
+        }
+        const url = buildDuelShareUrl(token);
+        const btn = $('duel-copy-instant-btn');
+        if (btn) btn.dataset.duelUrl = url;
+        const markDone = () => {
+            setForgeFeedback('✓ Instant Duel Link copied! Ready to paste in chat.', false);
+            if (btn) {
+                btn.textContent = '✓ Instant Duel Copied!';
+                setTimeout(() => {
+                    if (btn) btn.textContent = '📋 Copy Instant Duel Link';
+                }, 2200);
+            }
+            trackCryptEvent('crypt_duel_forged', { tool: 'duel_forge', action: 'copy_instant', preset: forgeActivePreset || 'custom' });
+            sfx('loot');
+        };
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            navigator.clipboard.writeText(url).then(markDone).catch(() => fallbackCopyText(url, markDone));
+        } else {
+            fallbackCopyText(url, markDone);
+        }
+    }
+
+    function playForgedDuel() {
+        ensureForgeSelection();
+        if (typeof L.encodeDuel !== 'function' || typeof L.decodeDuel !== 'function') return;
+        const token = L.encodeDuel({ ids: forgeSelectedIds, clean: 0, sec: 0, by: '' });
+        const spec = L.decodeDuel(token);
+        if (!spec) {
+            setForgeFeedback('Pick 5 distinct challenges to start the duel.', true);
+            return;
+        }
+        trackCryptEvent('crypt_duel_forged', { tool: 'duel_forge', action: 'play', preset: forgeActivePreset || 'custom' });
+        startDuel(spec, false);
+    }
+
+    function openDuelForge() {
+        toggleFloorDrawer(true);
+        const forgeBox = $('duel-forge-box');
+        if (forgeBox) {
+            forgeBox.open = true;
+            renderDuelForge();
+            try { forgeBox.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (_) {}
+            const focusTarget = forgeBox.querySelector('.duel-preset-pill') || forgeBox.querySelector('summary');
+            if (focusTarget) {
+                try { focusTarget.focus({ preventScroll: true }); } catch (_) { focusTarget.focus(); }
+            }
         }
     }
 
@@ -392,6 +679,7 @@
         if (willOpen) {
             if ($('drawer-player-name')) $('drawer-player-name').value = state.playerName || '';
             renderFloorDrawer();
+            renderDuelForge();
         } else if (wasOpen && drawerReturnFocus && document.contains(drawerReturnFocus) && floorDrawer.contains(document.activeElement)) {
             drawerReturnFocus.focus();
         } else if (!willOpen && wasOpen && drawerReturnFocus && document.contains(drawerReturnFocus) && document.activeElement === document.body) {
@@ -408,6 +696,8 @@
         dailySeedStep = 0;
         dailyGauntletData = null;
         dailyStepResults = [];
+        dailyStepHadNearMiss = false;
+        resetDuelState();
         pendingRecapMode = null;
         if (campaignLevel !== null) {
             state.level = campaignLevel;
@@ -429,6 +719,8 @@
             dailySeedStep = 0;
             dailyGauntletData = null;
             dailyStepResults = [];
+            dailyStepHadNearMiss = false;
+            resetDuelState();
             campaignLevel = null;
         }
         state.level = floorIdx;
@@ -446,6 +738,8 @@
         dailySeedStep = 0;
         dailyGauntletData = null;
         dailyStepResults = [];
+        dailyStepHadNearMiss = false;
+        resetDuelState();
         bossRushActive = true;
         bossRushStep = 0;
         bossRushResults = [];
@@ -475,10 +769,12 @@
         bossRushActive = false;
         bossRushStep = 0;
         bossRushResults = [];
+        resetDuelState();
         dailyGauntletData = L.dailyGauntlet();
         dailySeedActive = true;
         dailySeedStep = 0;
         dailyStepResults = [];
+        dailyStepHadNearMiss = false;
         const firstStep = dailyGauntletData.steps[0];
         state.level = firstStep.floorIdx;
         item = firstStep.item;
@@ -497,6 +793,66 @@
             return;
         }
         startDailySeed(false);
+    }
+
+    function startDuel(duelSpec, silent) {
+        if (!duelSpec || !Array.isArray(duelSpec.steps) || duelSpec.steps.length === 0) return false;
+        clearTransientTimers();
+        if (campaignLevel === null) campaignLevel = state.level;
+        bossRushActive = false;
+        bossRushStep = 0;
+        bossRushResults = [];
+        dailySeedActive = false;
+        dailySeedStep = 0;
+        dailyGauntletData = null;
+        dailyStepResults = [];
+        dailyStepHadNearMiss = false;
+        resetDuelState();
+
+        duelData = duelSpec;
+        duelLastSpec = duelSpec;
+        duelActive = true;
+        duelStep = 0;
+        duelStepResults = [];
+        duelStepHadNearMiss = false;
+
+        const firstStep = duelData.steps[0];
+        state.level = firstStep.floorIdx;
+        item = firstStep.item;
+        saveState();
+        toggleFloorDrawer(false);
+        initLevel(true);
+
+        const total = duelData.steps.length;
+        if (duelData.sec > 0) {
+            const who = duelData.by ? duelData.by : 'the challenger';
+            setStatus(`⚔️ Duel engaged! Beat ${who}'s ${duelData.clean}/${total} Clean (${formatDuration(duelData.sec)}).`, '');
+        } else {
+            setStatus(`⚔️ ${total}-Rune Duel engaged! Solve cleanly and set the benchmark.`, '');
+        }
+        trackCryptEvent('crypt_mode_started', {
+            tool: 'duel_link',
+            count: total,
+            timed: duelData.sec > 0 ? 'yes' : 'no'
+        });
+        if (!silent) sfx('epic');
+        return true;
+    }
+
+    function toggleDuelMode() {
+        if (duelActive) {
+            exitSpecialModeAndRestoreCampaign();
+            setStatus('Exited Duel — returned to your campaign floor.', '');
+            return;
+        }
+        const drawerClosed = !floorDrawer || floorDrawer.classList.contains('hidden');
+        const forgeBox = $('duel-forge-box');
+        const forgeClosed = !forgeBox || !forgeBox.open;
+        if (drawerClosed || forgeClosed) {
+            openDuelForge();
+        } else {
+            toggleFloorDrawer(false);
+        }
     }
 
     /* ---------------- BELFAST DESK SYNTAX AUTOPSY CARD ---------------- */
@@ -633,10 +989,14 @@
 
     function initLevel(keepItem) {
         clearTransientTimers();
+        if (duelActive && duelData && duelData.steps[duelStep]) {
+            state.level = duelData.steps[duelStep].floorIdx;
+        }
         const level = levels[state.level];
         locked = false;
         pendingRecapMode = null;
         dailyStepHadNearMiss = false;
+        duelStepHadNearMiss = false;
 
         const boss = bosses[state.level];
         if (boss) {
@@ -656,24 +1016,41 @@
         }
 
         targetedZone = null;
-        if (hintLevel !== state.level) { hintsUsed = 0; levelMistakes = 0; hintLevel = state.level; }
 
         if (dailySeedActive && dailyGauntletData && dailyGauntletData.steps[dailySeedStep]) {
             item = dailyGauntletData.steps[dailySeedStep].item;
+        } else if (duelActive && duelData && duelData.steps[duelStep]) {
+            item = duelData.steps[duelStep].item;
         } else if (!keepItem || !item || !level.pool.includes(item)) {
             item = L.pickItem(state.level, item && item.id);
         }
 
+        const nextHintKey = `${state.level}:${item ? item.id : ''}:${duelActive ? 'd' + duelStep : (dailySeedActive ? 's' + dailySeedStep : (bossRushActive ? 'b' + bossRushStep : 'c'))}`;
+        if (hintItemKey !== nextHintKey) {
+            hintsUsed = 0;
+            levelMistakes = 0;
+            hintItemKey = nextHintKey;
+            hintLevel = state.level;
+        }
+
         if (tipEl) tipEl.textContent = '';
+        resumeDuelTimer();
         refreshHud();
+        renderDuelTargetBanner();
         $('quest-title').textContent = (dailySeedActive && dailyGauntletData)
             ? `🎲 Daily Seed ${dailySeedStep + 1}/${dailyGauntletData.steps.length} · ${level.title} (${level.cefr})`
-            : `${level.title} (${level.cefr})`;
+            : (duelActive && duelData)
+                ? `⚔️ Duel ${duelStep + 1}/${duelData.steps.length} · ${level.title} (${level.cefr})`
+                : `${level.title} (${level.cefr})`;
 
         board.innerHTML = '';
         bank.innerHTML = '';
         nextBtn.disabled = true;
-        nextBtn.textContent = dailySeedActive ? 'Next Seed ➔' : (bossRushActive ? 'Next Boss ➔' : 'Next Floor ➔');
+        nextBtn.textContent = dailySeedActive
+            ? 'Next Seed ➔'
+            : (duelActive
+                ? 'Next Rune ➔'
+                : (bossRushActive ? 'Next Boss ➔' : 'Next Floor ➔'));
         setStatus('Summon the sentence!', '');
         toggleAutopsyCard(false, false);
 
@@ -1063,6 +1440,7 @@
             solveLevel(r.answer);
         } else if (r.result === 'near') {
             if (dailySeedActive) dailyStepHadNearMiss = true;
+            if (duelActive) duelStepHadNearMiss = true;
             setStatus('Almost!', '');
             if (tipEl) tipEl.textContent = r.msg;
             sfx('grab');
@@ -1125,6 +1503,9 @@
 
     function solveLevel(answer) {
         locked = true;
+        if (duelActive || dailySeedActive || bossRushActive) {
+            pauseDuelTimer();
+        }
         const solvedFloorIdx = state.level;
         const solvedOrder = answer || item.answers[0];
         board.querySelectorAll('.block').forEach(b => { b.classList.add('correct'); b.draggable = false; });
@@ -1187,12 +1568,13 @@
 
         const stepEmoji = levelMistakes >= 2
             ? '🟥'
-            : ((levelMistakes === 0 && hintsUsed === 0 && !dailyStepHadNearMiss) ? '🟩' : '🟨');
+            : ((levelMistakes === 0 && hintsUsed === 0 && !dailyStepHadNearMiss && !duelStepHadNearMiss) ? '🟩' : '🟨');
 
         if (dailySeedActive && dailyGauntletData) {
             dailyStepResults[dailySeedStep] = {
                 step: dailySeedStep + 1,
                 floorIdx: solvedFloorIdx,
+                id: item ? item.id : '',
                 cefr: levels[solvedFloorIdx].cefr,
                 title: levels[solvedFloorIdx].title,
                 sentence: L.formatSentence(solvedOrder),
@@ -1206,6 +1588,21 @@
             bossRushResults[bossRushStep] = {
                 step: bossRushStep + 1,
                 floorIdx: solvedFloorIdx,
+                id: item ? item.id : '',
+                cefr: levels[solvedFloorIdx].cefr,
+                title: levels[solvedFloorIdx].title,
+                sentence: L.formatSentence(solvedOrder),
+                explain: item.explain,
+                emoji: stepEmoji,
+                mistakes: levelMistakes,
+                hints: hintsUsed
+            };
+        }
+        if (duelActive && duelData) {
+            duelStepResults[duelStep] = {
+                step: duelStep + 1,
+                floorIdx: solvedFloorIdx,
+                id: item ? item.id : '',
                 cefr: levels[solvedFloorIdx].cefr,
                 title: levels[solvedFloorIdx].title,
                 sentence: L.formatSentence(solvedOrder),
@@ -1218,6 +1615,7 @@
 
         const isBossRushFinal = bossRushActive && bossRushStep >= BOSS_FLOORS.length - 1;
         const isDailyFinal = dailySeedActive && dailyGauntletData && dailySeedStep >= dailyGauntletData.steps.length - 1;
+        const isDuelFinal = duelActive && duelData && duelStep >= duelData.steps.length - 1;
 
         if (isDailyFinal) {
             const seed = dailyGauntletData.seed;
@@ -1243,8 +1641,15 @@
             setStatus('🏆 5-Boss Rush Conquered! All 5 Crypt Guardians Defeated! (+100 🪙)', 'success');
             pendingRecapMode = 'boss';
             trackCryptEvent('crypt_mode_completed', { tool: 'boss_rush', score: cleanCount });
+        } else if (isDuelFinal) {
+            const cleanCount = duelStepResults.filter(s => s && s.emoji === '🟩').length;
+            const finalSec = getDuelActiveSec();
+            const total = duelData.steps.length;
+            setStatus(`⚔️ Duel Complete! ${cleanCount}/${total} Clean in ${formatDuration(finalSec)}.`, 'success');
+            pendingRecapMode = 'duel';
+            trackCryptEvent('crypt_mode_completed', { tool: 'duel_link', score: cleanCount, sec: finalSec });
         } else {
-            pendingRecapMode = (isLast && !dailySeedActive && !bossRushActive) ? 'campaign' : null;
+            pendingRecapMode = (isLast && !dailySeedActive && !bossRushActive && !duelActive) ? 'campaign' : null;
             setStatus(isLast ? 'The Crypt is Conquered!' : (firstClear ? 'The incantation is complete!' : 'The incantation is complete! (Rewards already claimed)'), 'success');
         }
 
@@ -1273,6 +1678,10 @@
             nextBtn.textContent = `Next Seed (${dailySeedStep + 2}/${dailyGauntletData.steps.length}) ➔`;
         } else if (isDailyFinal) {
             nextBtn.textContent = 'Finish Daily Seed ✔';
+        } else if (duelActive && !isDuelFinal) {
+            nextBtn.textContent = `Next Rune (${duelStep + 2}/${duelData.steps.length}) ➔`;
+        } else if (isDuelFinal) {
+            nextBtn.textContent = 'Finish Duel ⚔️';
         } else if (bossRushActive && !isBossRushFinal) {
             nextBtn.textContent = `Next Boss (${bossRushStep + 2}/${BOSS_FLOORS.length}) ➔`;
         } else if (isBossRushFinal) {
@@ -1291,7 +1700,7 @@
             updateInventoryUI();
         }
 
-        if (!bossRushActive && !dailySeedActive) {
+        if (!bossRushActive && !dailySeedActive && !duelActive) {
             state.level = isLast ? state.level : state.level + 1;
         }
         saveState();
@@ -1420,22 +1829,97 @@
 
     /* ---------------- UNIFIED RECAP MODAL ---------------- */
 
+    function computeDuelVerdict(playerClean, playerSec, challengerClean, challengerSec, challengerBy, totalSteps) {
+        if (!(challengerSec > 0)) return null;
+        const who = challengerBy || 'Challenger';
+        const total = totalSteps || 5;
+        if (playerClean > challengerClean) {
+            return {
+                outcome: 'victory',
+                label: 'Victory',
+                text: `🏆 Victory! You beat ${who}'s ${challengerClean}/${total} Clean (${formatDuration(challengerSec)}) with ${playerClean}/${total} Clean in ${formatDuration(playerSec)}.`
+            };
+        }
+        if (playerClean < challengerClean) {
+            return {
+                outcome: 'defeat',
+                label: 'Narrow Defeat',
+                text: `⚔️ Narrow Defeat — ${who} scored ${challengerClean}/${total} Clean (${formatDuration(challengerSec)}) vs your ${playerClean}/${total} Clean (${formatDuration(playerSec)}).`
+            };
+        }
+        if (playerSec < challengerSec) {
+            return {
+                outcome: 'victory',
+                label: 'Victory',
+                text: `🏆 Victory! Tied at ${playerClean}/${total} Clean, and you beat ${who} on time (${formatDuration(playerSec)} vs ${formatDuration(challengerSec)}).`
+            };
+        }
+        if (playerSec > challengerSec) {
+            return {
+                outcome: 'defeat',
+                label: 'Narrow Defeat',
+                text: `⚔️ Narrow Defeat — Tied at ${playerClean}/${total} Clean, ${who} finished faster (${formatDuration(challengerSec)} vs ${formatDuration(playerSec)}).`
+            };
+        }
+        return {
+            outcome: 'tie',
+            label: 'Tie',
+            text: `🤝 Tie! Level pegging with ${who} at ${playerClean}/${total} Clean in ${formatDuration(playerSec)}.`
+        };
+    }
+
     function getRecapStats(mode) {
         if (mode === 'daily') {
             const steps = dailyStepResults.filter(Boolean);
             const cleanCount = steps.filter(s => s.emoji === '🟩').length;
+            const activeMs = getDuelActiveMs();
+            const duelSec = Math.min(3600, Math.max(activeMs > 0 ? 1 : 0, Math.round(activeMs / 1000)));
             return {
                 score: cleanCount,
                 maxScore: 5,
                 grid: steps.map(s => s.emoji).join(''),
                 steps,
+                ids: steps.map(s => s.id).filter(Boolean),
+                duelSec,
                 seed: (dailyGauntletData && dailyGauntletData.seed) || state.lastDailyDate || L.getTodaySeed?.() || ''
             };
         }
         if (mode === 'boss') {
             const steps = bossRushResults.filter(Boolean);
             const cleanCount = steps.filter(s => s.emoji === '🟩').length;
-            return { score: cleanCount, maxScore: BOSS_FLOORS.length, steps };
+            const activeMs = getDuelActiveMs();
+            const duelSec = Math.min(3600, Math.max(activeMs > 0 ? 1 : 0, Math.round(activeMs / 1000)));
+            return {
+                score: cleanCount,
+                maxScore: BOSS_FLOORS.length,
+                steps,
+                ids: steps.map(s => s.id).filter(Boolean),
+                duelSec
+            };
+        }
+        if (mode === 'duel') {
+            const steps = duelStepResults.filter(Boolean);
+            const cleanCount = steps.filter(s => s.emoji === '🟩').length;
+            const total = (duelData && duelData.steps && duelData.steps.length) || steps.length || 5;
+            const sec = getDuelActiveSec();
+            const ids = (duelData && duelData.ids) ? duelData.ids.slice() : steps.map(s => s.id).filter(Boolean);
+            const challengerClean = duelData ? duelData.clean : 0;
+            const challengerSec = duelData ? duelData.sec : 0;
+            const challengerBy = duelData ? duelData.by : '';
+            const verdict = computeDuelVerdict(cleanCount, sec, challengerClean, challengerSec, challengerBy, total);
+            return {
+                score: cleanCount,
+                maxScore: total,
+                sec,
+                timeText: formatDuration(sec),
+                grid: steps.map(s => s.emoji).join(''),
+                steps,
+                ids,
+                challengerClean,
+                challengerSec,
+                challengerBy,
+                verdict
+            };
         }
         const totalItems = L.totalItems || levels.reduce((sum, fl) => sum + fl.pool.length, 0);
         const cleared = state.completed.length;
@@ -1471,11 +1955,22 @@
 
         const heading = $('recap-heading');
         const summary = $('recap-summary');
+        const verdictEl = $('recap-verdict');
         const listEl = $('recap-step-list');
         const copyBtn = $('btn-copy-daily');
+        const copyDuelBtn = $('btn-copy-duel');
         const stats = getRecapStats(mode);
 
         if (listEl) listEl.textContent = '';
+        if (verdictEl) {
+            verdictEl.className = 'recap-verdict hidden';
+            verdictEl.textContent = '';
+        }
+        pendingDuelShareSpec = null;
+        if (copyDuelBtn) {
+            copyDuelBtn.classList.add('hidden');
+            copyDuelBtn.removeAttribute('data-duel-url');
+        }
 
         if (mode === 'daily') {
             if (heading) heading.textContent = `🎲 Daily Crypt Seed (${stats.seed})`;
@@ -1484,6 +1979,14 @@
                 copyBtn.classList.remove('hidden');
                 copyBtn.textContent = '📋 Copy Daily Result';
             }
+            if (copyDuelBtn && stats.ids.length >= 3 && stats.ids.length <= 5 && typeof L.encodeDuel === 'function') {
+                pendingDuelShareSpec = { ids: stats.ids, clean: stats.score, sec: stats.duelSec, by: state.playerName || '' };
+                pendingDuelShareLabel = '⚔️ Challenge a Friend on These 5 Runes';
+                const tok = L.encodeDuel(pendingDuelShareSpec);
+                if (tok) copyDuelBtn.dataset.duelUrl = buildDuelShareUrl(tok);
+                copyDuelBtn.textContent = pendingDuelShareLabel;
+                copyDuelBtn.classList.remove('hidden');
+            }
             stats.steps.forEach((st) => {
                 if (listEl) listEl.appendChild(buildRecapStepRow(`${st.emoji} ${st.cefr} · F${st.floorIdx + 1}`, st.sentence, st.explain));
             });
@@ -1491,8 +1994,41 @@
             if (heading) heading.textContent = '🏆 5-Boss Rush Complete!';
             if (summary) summary.textContent = `All 5 Crypt Guardians defeated · ${stats.score}/5 Clean · Gold: 🪙 ${state.gold}`;
             if (copyBtn) copyBtn.classList.add('hidden');
+            if (copyDuelBtn && stats.ids.length >= 3 && stats.ids.length <= 5 && typeof L.encodeDuel === 'function') {
+                pendingDuelShareSpec = { ids: stats.ids, clean: stats.score, sec: stats.duelSec, by: state.playerName || '' };
+                pendingDuelShareLabel = '⚔️ Challenge a Friend on These 5 Runes';
+                const tok = L.encodeDuel(pendingDuelShareSpec);
+                if (tok) copyDuelBtn.dataset.duelUrl = buildDuelShareUrl(tok);
+                copyDuelBtn.textContent = pendingDuelShareLabel;
+                copyDuelBtn.classList.remove('hidden');
+            }
             stats.steps.forEach((st) => {
                 if (listEl) listEl.appendChild(buildRecapStepRow(`${st.emoji} Boss F${st.floorIdx + 1} (${st.cefr})`, st.sentence, st.explain));
+            });
+        } else if (mode === 'duel') {
+            if (heading) heading.textContent = `⚔️ ${stats.maxScore}-Rune Duel Complete!`;
+            if (summary) summary.textContent = `${stats.score}/${stats.maxScore} Clean · ${stats.timeText} · ${stats.grid}`;
+            if (copyBtn) copyBtn.classList.add('hidden');
+            if (verdictEl) {
+                verdictEl.classList.remove('hidden');
+                if (stats.verdict) {
+                    verdictEl.classList.add(stats.verdict.outcome);
+                    verdictEl.textContent = stats.verdict.text;
+                } else {
+                    verdictEl.classList.add('benchmark');
+                    verdictEl.textContent = `⚔️ Benchmark set: ${stats.score}/${stats.maxScore} Clean in ${stats.timeText} — copy your link below to challenge someone!`;
+                }
+            }
+            if (copyDuelBtn && stats.ids.length >= 3 && stats.ids.length <= 5 && typeof L.encodeDuel === 'function') {
+                pendingDuelShareSpec = { ids: stats.ids, clean: stats.score, sec: stats.sec, by: state.playerName || '' };
+                pendingDuelShareLabel = '⚔️ Copy Counter-Duel Link';
+                const tok = L.encodeDuel(pendingDuelShareSpec);
+                if (tok) copyDuelBtn.dataset.duelUrl = buildDuelShareUrl(tok);
+                copyDuelBtn.textContent = pendingDuelShareLabel;
+                copyDuelBtn.classList.remove('hidden');
+            }
+            stats.steps.forEach((st) => {
+                if (listEl) listEl.appendChild(buildRecapStepRow(`${st.emoji} ${st.cefr} · F${st.floorIdx + 1}`, st.sentence, st.explain));
             });
         } else {
             if (heading) heading.textContent = '👑 Crypt Floor 25 Conquered!';
@@ -1504,7 +2040,11 @@
         }
 
         recapModal.classList.add('open');
-        const firstFocus = (copyBtn && !copyBtn.classList.contains('hidden')) ? copyBtn : ($('btn-open-diagnostic') || $('btn-close-recap'));
+        const firstFocus = (copyBtn && !copyBtn.classList.contains('hidden'))
+            ? copyBtn
+            : ((copyDuelBtn && !copyDuelBtn.classList.contains('hidden'))
+                ? copyDuelBtn
+                : ($('btn-open-diagnostic') || $('btn-close-recap')));
         if (firstFocus) firstFocus.focus();
     }
 
@@ -1515,12 +2055,38 @@
         activeRecapMode = null;
 
         if (restoreFocusAndMode) {
-            if (closedMode === 'daily' || closedMode === 'boss') {
+            if (closedMode === 'daily' || closedMode === 'boss' || closedMode === 'duel') {
                 exitSpecialModeAndRestoreCampaign();
             }
             if (recapReturnFocus && document.contains(recapReturnFocus)) {
                 try { recapReturnFocus.focus(); } catch (_) {}
             }
+        }
+    }
+
+    function copyDuelChallengeLink() {
+        if (!pendingDuelShareSpec || typeof L.encodeDuel !== 'function') return;
+        const spec = { ...pendingDuelShareSpec, by: state.playerName || pendingDuelShareSpec.by || '' };
+        const token = L.encodeDuel(spec);
+        if (!token) return;
+        const url = buildDuelShareUrl(token);
+        const copyDuelBtn = $('btn-copy-duel');
+        const restoreLabel = pendingDuelShareLabel || '⚔️ Copy Counter-Duel Link';
+        if (copyDuelBtn) copyDuelBtn.dataset.duelUrl = url;
+        const markCopied = () => {
+            if (copyDuelBtn) {
+                copyDuelBtn.textContent = '✓ Duel Link Copied!';
+                setTimeout(() => {
+                    if (copyDuelBtn) copyDuelBtn.textContent = restoreLabel;
+                }, 2200);
+            }
+            trackCryptEvent('crypt_duel_shared', { tool: activeRecapMode || 'duel', clean: spec.clean, sec: spec.sec });
+            sfx('loot');
+        };
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            navigator.clipboard.writeText(url).then(markCopied).catch(() => fallbackCopyText(url, markCopied));
+        } else {
+            fallbackCopyText(url, markCopied);
         }
     }
 
@@ -1567,14 +2133,18 @@
         const stats = getRecapStats(mode);
         closeRecapModal(false);
 
-        if (mode === 'daily' || mode === 'boss') {
+        if (mode === 'daily' || mode === 'boss' || mode === 'duel') {
             exitSpecialModeAndRestoreCampaign();
             stopBossVoice();
         }
 
         if (location.protocol.startsWith('http') && typeof window.showDiagnosticGate === 'function') {
             window.showDiagnosticGate({
-                gameName: mode === 'daily' ? 'Grammar Crypt (Daily Seed)' : (mode === 'boss' ? 'Grammar Crypt (Boss Rush)' : 'Grammar Crypt'),
+                gameName: mode === 'daily'
+                    ? 'Grammar Crypt (Daily Seed)'
+                    : (mode === 'boss'
+                        ? 'Grammar Crypt (Boss Rush)'
+                        : (mode === 'duel' ? 'Grammar Crypt (5-Rune Duel)' : 'Grammar Crypt')),
                 score: stats.score,
                 maxScore: stats.maxScore,
                 category: 'inversion',
@@ -1583,6 +2153,7 @@
                 onReplay: () => {
                     if (mode === 'daily') startDailySeed(false);
                     else if (mode === 'boss') startBossRush(false);
+                    else if (mode === 'duel' && duelLastSpec) startDuel(duelLastSpec, false);
                     else jumpToFloor(0);
                 }
             });
@@ -1616,6 +2187,19 @@
                 return;
             }
             openRecapModal('daily');
+            return;
+        }
+        if (duelActive && duelData) {
+            if (duelStep < duelData.steps.length - 1) {
+                duelStep++;
+                const nextStep = duelData.steps[duelStep];
+                state.level = nextStep.floorIdx;
+                item = nextStep.item;
+                saveState();
+                initLevel(true);
+                return;
+            }
+            openRecapModal('duel');
             return;
         }
         if (bossRushActive) {
@@ -1663,6 +2247,18 @@
             history.replaceState(null, '', location.pathname);
         }
 
+        if (params.has('duel')) {
+            const duelSpec = typeof L.decodeDuel === 'function' ? L.decodeDuel(params.get('duel')) : null;
+            if (duelSpec && startDuel(duelSpec, true)) {
+                trackCryptEvent('crypt_entry', { entry: 'duel', tier: 'c1', tool: 'duel_link' });
+                return true;
+            }
+            deferredBootStatus = {
+                text: 'That duel link could not be read — loaded your current floor instead.',
+                kind: 'error'
+            };
+        }
+
         const mode = (params.get('mode') || '').toLowerCase();
         if (mode === 'daily') {
             startDailySeed(true);
@@ -1673,6 +2269,10 @@
             startBossRush(true);
             trackCryptEvent('crypt_entry', { entry: 'boss', tier: 'c1', tool: 'boss_rush' });
             return true;
+        }
+
+        if (params.get('forge') === '1') {
+            deferredForgeOpen = true;
         }
 
         let targetFloor = null;
@@ -1719,6 +2319,7 @@
         const lines = ['GRAMMAR CRYPT 2D SELFTEST'].concat(res.lines);
         const saved = JSON.stringify(state);
         const savedCampaign = campaignLevel;
+        const lsSnapshotBeforeSelfTest = (() => { try { return localStorage.getItem(L.store.KEY); } catch (_) { return null; } })();
         let testedItems = 0;
 
         inSelfTest = true;
@@ -1813,6 +2414,99 @@
             }
 
             lines.push(`(2D) validated all ${testedItems}/${L.totalItems || testedItems} items across 25 floors + dynamic keys + undo + Enter lock`);
+
+            // Verify Zero-Backend ?duel= Mode: startDuel, timer pause on solveLevel(), recap stats/verdict, campaignLevel restoration, localStorage isolation
+            const lsBeforeDuel = (() => { try { return localStorage.getItem(L.store.KEY); } catch (_) { return null; } })();
+            state.level = 3;
+            campaignLevel = null;
+            const duelToken = L.encodeDuel({ ids: ['f11a', 'f14b', 'f17f', 'f21g', 'f25a'], clean: 4, sec: 45, by: 'Igor' });
+            const duelSpec = L.decodeDuel(duelToken);
+            if (!duelSpec || !startDuel(duelSpec, true)) {
+                pass = false;
+                lines.push('FAIL duel self-test: startDuel(duelSpec, true) did not activate');
+            } else {
+                if (!duelActive || campaignLevel !== 3 || state.level !== duelSpec.steps[0].floorIdx || duelTurnStartedAt === null) {
+                    pass = false;
+                    lines.push('FAIL duel self-test: initial state/campaignLevel/timer check failed');
+                }
+                const bannerText = $('duel-target-banner') ? $('duel-target-banner').textContent : '';
+                if (!bannerText.includes('Igor') || !bannerText.includes('4/5') || !bannerText.includes('0:45')) {
+                    pass = false;
+                    lines.push('FAIL duel self-test: target banner missing challenger info: ' + bannerText);
+                }
+
+                for (let si = 0; si < duelSpec.steps.length; si++) {
+                    const stepItem = duelSpec.steps[si].item;
+                    if (si === 0) duelTurnStartedAt = Date.now() - 5000;
+                    else duelTurnStartedAt = Date.now() - 2000;
+                    const targetAns = stepItem.answers[0];
+                    const stepBlocks = Array.from(bank.querySelectorAll('.block'));
+                    zones().forEach((z, zi) => {
+                        const b = stepBlocks.find(x => x.dataset.text === targetAns[zi] && !x.closest('.drop-zone'));
+                        if (b) z.appendChild(b);
+                    });
+                    validateBoard();
+                    if (!locked || duelTurnStartedAt !== null) {
+                        pass = false;
+                        lines.push(`FAIL duel self-test: step ${si + 1} did not pause timer immediately on solveLevel()`);
+                    }
+                    if (si === 0) {
+                        const pausedElapsed = duelElapsedMs;
+                        if (pausedElapsed < 4800 || getDuelActiveMs() !== pausedElapsed) {
+                            pass = false;
+                            lines.push('FAIL duel self-test: solve timer did not accumulate or stay paused during autopsy');
+                        }
+                    }
+                    if (si < duelSpec.steps.length - 1) {
+                        nextLevel();
+                        if (locked || duelStep !== si + 1 || duelTurnStartedAt === null) {
+                            pass = false;
+                            lines.push(`FAIL duel self-test: nextLevel() did not advance/resume timer for step ${si + 2}`);
+                        }
+                    }
+                }
+
+                if (pendingRecapMode !== 'duel' || nextBtn.textContent !== 'Finish Duel ⚔️') {
+                    pass = false;
+                    lines.push('FAIL duel self-test: final step pendingRecapMode or button label wrong: ' + nextBtn.textContent);
+                }
+                nextLevel(); // opens recap modal in 'duel' mode
+                const dStats = getRecapStats('duel');
+                const verdictText = $('recap-verdict') ? $('recap-verdict').textContent : '';
+                const copyDuelBtnEl = $('btn-copy-duel');
+                const counterTok = copyDuelBtnEl && copyDuelBtnEl.dataset.duelUrl
+                    ? (new URL(copyDuelBtnEl.dataset.duelUrl)).searchParams.get('duel')
+                    : '';
+                const counterDec = counterTok ? L.decodeDuel(counterTok) : null;
+                if (!recapModal.classList.contains('open') || dStats.score !== 5 || dStats.maxScore !== 5 ||
+                    !dStats.verdict || dStats.verdict.outcome !== 'victory' ||
+                    !verdictText.includes('Victory') || !copyDuelBtnEl || copyDuelBtnEl.classList.contains('hidden') ||
+                    !counterDec || counterDec.clean !== 5 || counterDec.ids.join(',') !== duelSpec.ids.join(',')) {
+                    pass = false;
+                    lines.push('FAIL duel self-test: duel recap modal stats/verdict/counter-link check failed');
+                }
+                const vTie = computeDuelVerdict(4, 45, 4, 45, 'Igor', 5);
+                const vLossClean = computeDuelVerdict(3, 20, 4, 45, 'Igor', 5);
+                const vLossSec = computeDuelVerdict(4, 55, 4, 45, 'Igor', 5);
+                const vWinSec = computeDuelVerdict(4, 30, 4, 45, 'Igor', 5);
+                if (!vTie || vTie.outcome !== 'tie' || !vLossClean || vLossClean.outcome !== 'defeat' ||
+                    !vLossSec || vLossSec.outcome !== 'defeat' || !vWinSec || vWinSec.outcome !== 'victory') {
+                    pass = false;
+                    lines.push('FAIL duel self-test: computeDuelVerdict tie-break cases failed');
+                }
+
+                closeRecapModal(true);
+                if (duelActive || campaignLevel !== null || state.level !== 3 || duelTimerInterval !== null || duelTurnStartedAt !== null) {
+                    pass = false;
+                    lines.push('FAIL duel self-test: closeRecapModal(true) did not restore campaignLevel or clear timer');
+                }
+            }
+            const lsAfterDuel = (() => { try { return localStorage.getItem(L.store.KEY); } catch (_) { return null; } })();
+            if (lsBeforeDuel !== lsAfterDuel) {
+                pass = false;
+                lines.push('FAIL duel self-test: touched real localStorage during inSelfTest');
+            }
+            lines.push('(2D-duel) validated startDuel, guilt-free timer pause, duel recap verdict/counter-link, campaignLevel restoration & localStorage isolation');
         } catch (e) {
             pass = false;
             lines.push('FAIL 2D board: ' + e.message);
@@ -1827,13 +2521,17 @@
         dailySeedStep = 0;
         dailyGauntletData = null;
         dailyStepResults = [];
+        resetDuelState();
+        duelLastSpec = null;
+        pendingDuelShareSpec = null;
         pendingRecapMode = null;
         hintsUsed = 0;
         levelMistakes = 0;
         hintLevel = -1;
+        hintItemKey = null;
         campaignLevel = savedCampaign;
         state = ensureStateShape(L.store.sanitize(JSON.parse(saved)));
-        saveState();
+        if (lsSnapshotBeforeSelfTest !== null) saveState();
         updateInventoryUI();
         item = null;
         initLevel();
@@ -1880,7 +2578,22 @@
         if ($('boss-rush-btn')) $('boss-rush-btn').addEventListener('click', toggleBossRush);
         if ($('daily-seed-btn')) $('daily-seed-btn').addEventListener('click', toggleDailySeed);
         if ($('daily-seed-hud-btn')) $('daily-seed-hud-btn').addEventListener('click', toggleDailySeed);
+        if ($('duel-hud-btn')) $('duel-hud-btn').addEventListener('click', toggleDuelMode);
         if ($('buy-shield-btn')) $('buy-shield-btn').addEventListener('click', buyStreakShield);
+
+        // Duel Forge bindings inside #floor-drawer
+        document.querySelectorAll('.duel-preset-pill[data-duel-preset]').forEach(btn => {
+            btn.addEventListener('click', () => applyForgePreset(btn.getAttribute('data-duel-preset')));
+        });
+        if ($('duel-show-sentences-btn')) {
+            $('duel-show-sentences-btn').addEventListener('click', () => {
+                forgeShowSentences = !forgeShowSentences;
+                renderDuelForge();
+                sfx('grab');
+            });
+        }
+        if ($('duel-copy-instant-btn')) $('duel-copy-instant-btn').addEventListener('click', copyInstantDuelLink);
+        if ($('duel-play-forge-btn')) $('duel-play-forge-btn').addEventListener('click', playForgedDuel);
 
         if ($('drawer-player-name')) {
             const nameInput = $('drawer-player-name');
@@ -1971,6 +2684,7 @@
 
         // Recap Modal bindings
         if ($('btn-copy-daily')) $('btn-copy-daily').addEventListener('click', copyDailyResult);
+        if ($('btn-copy-duel')) $('btn-copy-duel').addEventListener('click', copyDuelChallengeLink);
         if ($('btn-open-diagnostic')) $('btn-open-diagnostic').addEventListener('click', openDiagnosticFromRecap);
         if ($('btn-close-recap')) $('btn-close-recap').addEventListener('click', () => closeRecapModal(true));
 
@@ -2048,7 +2762,17 @@
 
         updateInventoryUI();
         const startedMode = applyUrlRoute();
-        if (!startedMode) initLevel();
+        if (!startedMode) {
+            initLevel();
+            if (deferredBootStatus) {
+                setStatus(deferredBootStatus.text, deferredBootStatus.kind);
+                deferredBootStatus = null;
+            }
+            if (deferredForgeOpen) {
+                deferredForgeOpen = false;
+                openDuelForge();
+            }
+        }
         if (/[?&]selftest=1\b/.test(location.search)) runSelfTest();
     });
 })();

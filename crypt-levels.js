@@ -680,13 +680,22 @@
 
     // ids + near-miss defaults per floor topic
     const nearDefault = (f) => f < 10 ? 'Grammatical, but not the structure this floor practises.' : f < 15 ? NEAR.neg : f === 18 ? NEAR.so : f < 20 ? NEAR.cond : f < 23 ? NEAR.cleft : NEAR.front;
+    const byId = Object.create(null);
     floors.forEach((fl, f) => {
         fl.floor = f + 1;
         fl.pool.forEach((it, k) => {
             it.id = 'f' + (f + 1) + String.fromCharCode(97 + k);
             it.nearMiss.forEach(n => { if (!n.msg) n.msg = nearDefault(f); });
+            byId[it.id] = { floorIdx: f, item: it };
         });
     });
+
+    function findItemById(id) {
+        if (typeof id !== 'string') return null;
+        const norm = id.trim().toLowerCase();
+        const hit = norm ? byId[norm] : null;
+        return hit ? { floorIdx: hit.floorIdx, item: hit.item } : null;
+    }
 
     const bosses = {
         4:  { name: 'The Goblin of Questions', emoji: '👺', taunt: 'Who taught you to ask questions? Nobody did!', color: 0x4d7c0f, audio: 'assets/audio/crypt/boss-act1-goblin.mp3' },
@@ -1026,6 +1035,200 @@
         return { seed, steps };
     }
 
+    /* ---------------- ZERO-BACKEND ?duel= CHALLENGE CODEC & PRESETS ---------------- */
+    function toBase64Url(ascii) {
+        const b64 = (typeof btoa === 'function')
+            ? btoa(ascii)
+            : Buffer.from(ascii, 'latin1').toString('base64');
+        return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    function fromBase64Url(token) {
+        if (typeof token !== 'string' || !/^[A-Za-z0-9_-]+$/.test(token)) return null;
+        if (token.length % 4 === 1) return null;
+        let b64 = token.replace(/-/g, '+').replace(/_/g, '/');
+        while (b64.length % 4) b64 += '=';
+        try {
+            if (typeof atob === 'function') return atob(b64);
+            return Buffer.from(b64, 'base64').toString('latin1');
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function sanitizeDuelAuthor(rawBy) {
+        return String(rawBy || '').replace(/[^A-Za-z0-9 _.-]/g, '').trim().slice(0, 18).trim();
+    }
+
+    function resolveDistinctDuelHits(rawIds) {
+        if (!Array.isArray(rawIds) || rawIds.length < 3 || rawIds.length > 5) return null;
+        const hits = [];
+        const seen = new Set();
+        for (let i = 0; i < rawIds.length; i++) {
+            const hit = findItemById(rawIds[i]);
+            if (!hit || seen.has(hit.item.id)) return null;
+            seen.add(hit.item.id);
+            hits.push(hit);
+        }
+        return hits;
+    }
+
+    function buildDuelSteps(hits) {
+        return hits.map((hit, idx) => ({
+            step: idx + 1,
+            floorIdx: hit.floorIdx,
+            item: hit.item,
+            title: floors[hit.floorIdx].title,
+            cefr: floors[hit.floorIdx].cefr
+        }));
+    }
+
+    function encodeDuel(spec) {
+        if (!spec || typeof spec !== 'object') return '';
+        const hits = resolveDistinctDuelHits(spec.ids);
+        if (!hits) return '';
+        const ids = hits.map(h => h.item.id);
+        const rawClean = Number(spec.clean);
+        const clean = Number.isFinite(rawClean) ? Math.min(ids.length, Math.max(0, Math.trunc(rawClean))) : 0;
+        const rawSec = Number(spec.sec);
+        const sec = Number.isFinite(rawSec) ? Math.min(3600, Math.max(0, Math.round(rawSec))) : 0;
+        const by = sanitizeDuelAuthor(spec.by);
+        const core = `${ids.join(',')}|${clean}|${sec}|${by}`;
+        const sig = hashSeed('CRYPT_DUEL_V1|' + core).toString(36).slice(0, 4);
+        return toBase64Url(`v1|${core}|${sig}`);
+    }
+
+    function decodeDuel(raw) {
+        try {
+            if (typeof raw !== 'string' || raw.length === 0 || raw.length > 240) return null;
+            const trimmed = raw.trim();
+            if (!trimmed || trimmed.length > 240) return null;
+
+            // Teacher comma-separated shorthand (e.g. f11a,f14b,f17f,f21g,f25a)
+            if (trimmed.includes(',')) {
+                if (!/^[A-Za-z0-9,\s]+$/.test(trimmed)) return null;
+                const rawIds = trimmed.split(',').map(s => s.trim());
+                const hits = resolveDistinctDuelHits(rawIds);
+                if (!hits) return null;
+                return {
+                    ids: hits.map(h => h.item.id),
+                    steps: buildDuelSteps(hits),
+                    clean: 0,
+                    sec: 0,
+                    by: ''
+                };
+            }
+
+            // Signed v1 base64url token
+            const decoded = fromBase64Url(trimmed);
+            if (!decoded || toBase64Url(decoded) !== trimmed) return null;
+            const parts = decoded.split('|');
+            if (parts.length !== 6 || parts[0] !== 'v1') return null;
+
+            const [, idsStr, cleanStr, secStr, byStr, sig] = parts;
+            if (!/^\d+$/.test(cleanStr) || !/^\d+$/.test(secStr)) return null;
+            const clean = parseInt(cleanStr, 10);
+            const sec = parseInt(secStr, 10);
+            const by = sanitizeDuelAuthor(byStr);
+            if (by !== byStr) return null;
+
+            const core = `${idsStr}|${cleanStr}|${secStr}|${byStr}`;
+            const expectedSig = hashSeed('CRYPT_DUEL_V1|' + core).toString(36).slice(0, 4);
+            if (sig !== expectedSig) return null;
+
+            const hits = resolveDistinctDuelHits(idsStr.split(','));
+            if (!hits || clean < 0 || clean > hits.length || sec < 0 || sec > 3600) return null;
+
+            return {
+                ids: hits.map(h => h.item.id),
+                steps: buildDuelSteps(hits),
+                clean,
+                sec,
+                by
+            };
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function duelPreset(presetKey, stateObj) {
+        const keyName = typeof presetKey === 'string' ? presetKey.trim().toLowerCase() : 'c1_random';
+        const pickOnePerFloor = (floorIndices) => {
+            const chosenFloors = shuffle(floorIndices).slice(0, 5).sort((a, b) => a - b);
+            return chosenFloors.map(fIdx => {
+                const pool = floors[fIdx].pool;
+                return { floorIdx: fIdx, item: pool[Math.floor(Math.random() * pool.length)] };
+            });
+        };
+
+        let preset = keyName;
+        let picked = null;
+        if (keyName === 'inversions') {
+            picked = pickOnePerFloor([10, 11, 12, 13, 14]);
+        } else if (keyName === 'conditionals') {
+            picked = pickOnePerFloor([15, 16, 17, 18, 19]);
+        } else if (keyName === 'clefts') {
+            picked = pickOnePerFloor([20, 21, 22, 23, 24]);
+        } else if (keyName === 'unsolved') {
+            const solvedSet = new Set(Array.isArray(stateObj && stateObj.solvedIds) ? stateObj.solvedIds : []);
+            const c1c2Entries = [];
+            for (let fIdx = 9; fIdx <= LAST; fIdx++) {
+                if (/^C[12]$/.test(floors[fIdx].cefr)) {
+                    floors[fIdx].pool.forEach(it => c1c2Entries.push({ floorIdx: fIdx, item: it }));
+                }
+            }
+            const unsolved = shuffle(c1c2Entries.filter(e => !solvedSet.has(e.item.id)));
+            const chosen = [];
+            const seenIds = new Set();
+            const seenFloors = new Set();
+            // Prefer distinct floors among unsolved C1/C2 items first
+            for (let i = 0; i < unsolved.length && chosen.length < 5; i++) {
+                const e = unsolved[i];
+                if (!seenIds.has(e.item.id) && !seenFloors.has(e.floorIdx)) {
+                    seenIds.add(e.item.id);
+                    seenFloors.add(e.floorIdx);
+                    chosen.push(e);
+                }
+            }
+            // Top up from remaining unsolved C1/C2 items if needed
+            for (let i = 0; i < unsolved.length && chosen.length < 5; i++) {
+                const e = unsolved[i];
+                if (!seenIds.has(e.item.id)) {
+                    seenIds.add(e.item.id);
+                    chosen.push(e);
+                }
+            }
+            // Fill to 5 from Floors 11-25 if fewer than 5 unsolved C1/C2 items remain
+            if (chosen.length < 5) {
+                const fallbackPool = [];
+                for (let fIdx = 10; fIdx <= LAST; fIdx++) {
+                    floors[fIdx].pool.forEach(it => fallbackPool.push({ floorIdx: fIdx, item: it }));
+                }
+                const shuffledFallback = shuffle(fallbackPool);
+                for (let i = 0; i < shuffledFallback.length && chosen.length < 5; i++) {
+                    const e = shuffledFallback[i];
+                    if (!seenIds.has(e.item.id)) {
+                        seenIds.add(e.item.id);
+                        chosen.push(e);
+                    }
+                }
+            }
+            chosen.sort((a, b) => a.floorIdx - b.floorIdx);
+            picked = chosen;
+        } else {
+            preset = 'c1_random';
+            const c1Floors = [];
+            for (let fIdx = 9; fIdx <= LAST; fIdx++) c1Floors.push(fIdx);
+            picked = pickOnePerFloor(c1Floors);
+        }
+
+        return {
+            preset,
+            ids: picked.map(e => e.item.id),
+            steps: buildDuelSteps(picked)
+        };
+    }
+
     /* ---------------- DATA SELF-TEST (used by ?selftest=1 pages) ---------------- */
     function multiset(arr) { return arr.slice().sort().join('\u0001'); }
     function dataTests() {
@@ -1204,12 +1407,101 @@
         ex.forEach((e, i) => { const got = formatSentence(e); if (got !== want[i]) fail(`formatSentence -> "${got}"`); });
         lines.push('(f) formatSentence: ' + ex.map(e => '"' + formatSentence(e) + '"').join(' | '));
         lines.push('(g) slots/tipFor/autopsy/bridge/store checks passed');
+
+        // Duel lookup, codec, shorthand, tamper rejection, clamping/sanitization, and 5 presets
+        const h1 = findItemById('f1a'), h25 = findItemById('f25j');
+        if (!h1 || h1.floorIdx !== 0 || h1.item.id !== 'f1a' || !h25 || h25.floorIdx !== 24 || h25.item.id !== 'f25j') {
+            fail('findItemById valid lookup failed');
+        }
+        if (findItemById('f99z') !== null || findItemById('') !== null || findItemById(null) !== null) {
+            fail('findItemById invalid lookup failed');
+        }
+        const duelSampleIds = ['f11a', 'f14b', 'f17f', 'f21g', 'f25a'];
+        const dTok = encodeDuel({ ids: duelSampleIds, clean: 4, sec: 45, by: 'Igor' });
+        if (!dTok || /[+/=]/.test(dTok) || dTok.length > 240) {
+            fail('encodeDuel token formatting failed: ' + dTok);
+        }
+        const dDec = decodeDuel(dTok);
+        if (!dDec || dDec.ids.join(',') !== duelSampleIds.join(',') || dDec.steps.length !== 5 ||
+            dDec.steps[0].floorIdx !== 10 || dDec.steps[0].item.id !== 'f11a' ||
+            dDec.steps[0].step !== 1 || !dDec.steps[0].title || !dDec.steps[0].cefr ||
+            dDec.clean !== 4 || dDec.sec !== 45 || dDec.by !== 'Igor') {
+            fail('encodeDuel/decodeDuel round-trip failed');
+        }
+        // Comma shorthand
+        const dShort = decodeDuel('f11a,f14b,f17f,f21g,f25a');
+        if (!dShort || dShort.ids.join(',') !== duelSampleIds.join(',') || dShort.steps.length !== 5 ||
+            dShort.clean !== 0 || dShort.sec !== 0 || dShort.by !== '') {
+            fail('decodeDuel comma shorthand failed');
+        }
+        const dShort3 = decodeDuel('f11a,f14b,f17f');
+        if (!dShort3 || dShort3.steps.length !== 3) fail('decodeDuel 3-rune shorthand failed');
+        // Checksum tamper rejection
+        const mid = Math.floor(dTok.length / 2);
+        const flippedChar = dTok[mid] === 'A' ? 'B' : 'A';
+        const tamperedTok = dTok.slice(0, mid) + flippedChar + dTok.slice(mid + 1);
+        const forgedRaw = toBase64Url('v1|f11a,f14b,f17f|3|10|Fake|0000');
+        if (decodeDuel(tamperedTok) !== null || decodeDuel(forgedRaw) !== null) {
+            fail('decodeDuel failed to reject tampered checksum');
+        }
+        // Duplicate / unknown / length rejection
+        if (encodeDuel({ ids: ['f11a', 'f11a', 'f14b'] }) !== '' ||
+            encodeDuel({ ids: ['f11a', 'f14b'] }) !== '' ||
+            encodeDuel({ ids: ['f1a', 'f2a', 'f3a', 'f4a', 'f5a', 'f6a'] }) !== '' ||
+            encodeDuel({ ids: ['f11a', 'unknown99', 'f14b'] }) !== '' ||
+            decodeDuel('f11a,f11a,f14b') !== null ||
+            decodeDuel('f11a,unknown99,f14b') !== null ||
+            decodeDuel('f11a,f14b') !== null ||
+            decodeDuel('not_a_token!') !== null ||
+            decodeDuel('a'.repeat(241)) !== null ||
+            decodeDuel(null) !== null) {
+            fail('duel duplicate/unknown/malformed rejection failed');
+        }
+        // Clamping & by sanitization
+        const clampTok = encodeDuel({ ids: ['f11a', 'f14b', 'f17f'], clean: 99, sec: 9999, by: '  Gareth<script>!_1234567890  ' });
+        const clampDec = decodeDuel(clampTok);
+        if (!clampDec || clampDec.clean !== 3 || clampDec.sec !== 3600 ||
+            clampDec.by.length > 18 || /[^A-Za-z0-9 _.-]/.test(clampDec.by) || clampDec.by !== 'Garethscript_12345') {
+            fail('encodeDuel clamping / by sanitization failed: ' + JSON.stringify(clampDec));
+        }
+        // All 5 duelPreset keys
+        const presetRanges = {
+            c1_random: [9, 24],
+            inversions: [10, 14],
+            conditionals: [15, 19],
+            clefts: [20, 24],
+            unsolved: [9, 24]
+        };
+        Object.keys(presetRanges).forEach((pk) => {
+            const [lo, hi] = presetRanges[pk];
+            const pr = duelPreset(pk, { solvedIds: ['f11a', 'f11b'] });
+            if (!pr || pr.preset !== pk || pr.ids.length !== 5 || pr.steps.length !== 5 ||
+                new Set(pr.ids).size !== 5 ||
+                pr.steps.some(s => s.floorIdx < lo || s.floorIdx > hi || !s.item || !s.title || !s.cefr)) {
+                fail(`duelPreset('${pk}') failed validation`);
+            }
+        });
+        // Verify 'unsolved' prioritises remaining unsolved C1/C2 items and fills to 5 from 11-25
+        const allC1C2ExceptTwo = [];
+        for (let fi = 9; fi <= LAST; fi++) {
+            floors[fi].pool.forEach(it => {
+                if (it.id !== 'f12b' && it.id !== 'f22c') allC1C2ExceptTwo.push(it.id);
+            });
+        }
+        const prUnsolved = duelPreset('unsolved', { solvedIds: allC1C2ExceptTwo });
+        if (!prUnsolved || prUnsolved.ids.length !== 5 || new Set(prUnsolved.ids).size !== 5 ||
+            !prUnsolved.ids.includes('f12b') || !prUnsolved.ids.includes('f22c')) {
+            fail('duelPreset("unsolved") priority + fill-to-5 failed');
+        }
+        lines.push('(h-duel) findItemById / encodeDuel / decodeDuel / 5 duelPreset checks passed');
+
         return { pass, lines };
     }
 
     root.CRYPT_LEVELS = {
         version: 2, POS, CSS, TIPS, NEAR, floors, bosses, milestones, loot, totalItems,
         explain: (f, id) => { const it = floors[f] && floors[f].pool.find(p => p.id === id); return it ? it.explain : ''; },
+        findItemById, encodeDuel, decodeDuel, duelPreset,
         autopsy, tipFor,
         getTodaySeed, dailyGauntlet,
         formatSentence, shuffle, shuffledRunes, pickItem, check, closest,
