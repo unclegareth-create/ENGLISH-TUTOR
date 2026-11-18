@@ -211,7 +211,12 @@
                             <p class="bridge-prompt"></p>
                             <span class="bridge-keyword-badge"></span>
                             <p class="bridge-frame"></p>
-                            <button type="button" id="btn-reveal-bridge" class="btn-reveal-model">👁️ Reveal Cambridge Model</button>
+                            <div class="bridge-attempt-row">
+                                <input type="text" id="bridge-attempt-input" class="bridge-attempt-input" autocomplete="off" spellcheck="false" placeholder="Type 3–6 words using the unchanged key word..." aria-label="Type your 3 to 6 word Part 4 transformation" />
+                                <button type="button" id="btn-check-bridge" class="btn-check-bridge">✓ Check Gap</button>
+                                <button type="button" id="btn-reveal-bridge" class="btn-reveal-model">👁️ Reveal Cambridge Model</button>
+                            </div>
+                            <div id="bridge-attempt-feedback" class="bridge-attempt-feedback hidden" role="status" aria-live="polite"></div>
                             <div class="bridge-answer-reveal hidden"></div>
                         </div>
                     </div>
@@ -231,19 +236,41 @@
         </aside>
     </div>
 
-    <aside data-course-bridge></aside>
-
     <section id="belfast-desk-strip" class="belfast-desk-strip" aria-label="Belfast Desk Feedback and Coaching">
         <div class="belfast-desk-copy">
             <span class="belfast-desk-kicker">🖋️ From My Belfast Desk</span>
             <h2>Want a red-pen look at your own writing or speaking?</h2>
-            <p>After 19 years of teaching (15 of them at Belfast Met), I know how quickly word-order slips or awkward inversions hold back an otherwise strong C1 script. If you want to test these structures in your own English, you can send me an essay for line-by-line written notes or talk them through with me live.</p>
+            <p>After 19 years of teaching (15 of them at Belfast Met), I know how quickly word-order slips or awkward inversions hold back an otherwise strong C1 script. Write 1 original sentence using this floor&rsquo;s pattern for a free 24h note from my desk.</p>
         </div>
         <div class="belfast-desk-actions">
-            <a href="index.html?offer=live_diagnostic_35#cal-booking-box" class="btn-desk-primary" data-track="crypt_book_diagnostic" data-tier="starter_session_35">Book a 30-Min Starter Session (£35) &rarr;</a>
-            <a href="index.html?offer=async_essay_audit_29#enquiry-card" class="btn-desk-secondary" data-track="crypt_essay_audit" data-tier="async_essay_audit_29">Get Written Essay Feedback (£29) &rarr;</a>
+            <button type="button" id="btn-toggle-crypt-desk" class="btn-desk-primary-btn" aria-expanded="false" aria-controls="crypt-desk-drawer">✍️ Send 1 Original Sentence From This Floor (Free 24h Note) &rarr;</button>
+            <a href="index.html?offer=live_diagnostic_35#cal-booking-box" class="btn-desk-primary" data-track="crypt_book_diagnostic" data-tier="starter_session_35">Book a 30-Min Starter (£35) &rarr;</a>
+            <a href="index.html?offer=async_essay_audit_29#enquiry-card" class="btn-desk-secondary" data-track="crypt_essay_audit" data-tier="async_essay_audit_29">Essay Feedback (£29) &rarr;</a>
+        </div>
+
+        <div id="crypt-desk-drawer" class="crypt-desk-drawer hidden">
+            <div class="crypt-desk-head">
+                <strong>Send 1 Original Sentence From This Floor (Free 24h Note)</strong>
+                <span id="crypt-desk-context-pill" class="crypt-desk-context-pill"></span>
+            </div>
+            <form id="crypt-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST" class="crypt-desk-form">
+                <input type="hidden" name="_subject" value="Grammar Crypt — Original C1/C2 Sentence Check">
+                <input type="hidden" name="form_source" value="grammar_crypt_inline_desk">
+                <input type="hidden" name="floor_context" id="crypt-desk-context-hidden" value="">
+                <input type="hidden" name="candidate_dossier" id="crypt-desk-dossier" value="">
+                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
+
+                <textarea id="crypt-desk-message" name="message" rows="3" class="crypt-desk-textarea" required placeholder="Write 1 true sentence about your work or studies using this floor's structure (or ask a grammar question)..."></textarea>
+                <div class="crypt-desk-footer">
+                    <input type="email" id="crypt-desk-email" name="email" class="crypt-desk-input" required placeholder="Your email for my 24h red-pen note..." aria-label="Your email address">
+                    <button type="submit" id="crypt-desk-submit" class="btn-desk-primary-btn">Send to My Desk &rarr;</button>
+                </div>
+                <div id="crypt-desk-status" class="crypt-desk-status" role="status" aria-live="polite"></div>
+            </form>
         </div>
     </section>
+
+    <aside data-course-bridge></aside>
 
     <div id="loot-announcement" role="status" aria-live="polite"></div>
 

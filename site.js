@@ -350,40 +350,42 @@
                 : '<i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Package Checkout &amp; Scheduling';
         }
         if (pkgBanner && pkgNameEl) {
-            pkgNameEl.textContent = pkg;
-            if (pkgNextStepEl) {
-                if (isWaitlist) {
-                    pkgNextStepEl.textContent = 'No payment required today. Tell me your target exam or goal below \u2014 and paste one short paragraph of your writing (up to 150 words) if you would like a quick free note from me.';
-                } else if (resolvedTier === 'sprint_10_650') {
-                    pkgNextStepEl.textContent = 'Click "Pay Full Pack (£650) via Stripe" to check out now, or submit the form below to claim your £35 starter-session credit (£615 remaining balance), confirm weekly lesson times, or request Wise/PayPal.';
-                } else if (resolvedTier === 'pack_12_780') {
-                    pkgNextStepEl.textContent = 'Click "Pay Full Pack (£780) via Stripe" to check out now, or submit the form below to claim your £35 starter-session credit (£745 remaining balance), confirm weekly lesson times, or request Wise/PayPal.';
-                } else if (resolvedTier === 'pack_5_375') {
-                    pkgNextStepEl.textContent = 'Click "Pay via Stripe" to check out now, or submit the form below to confirm weekly lesson times or request Wise/PayPal.';
-                } else if (isAudit) {
-                    pkgNextStepEl.textContent = 'Paste your Google Doc link (or draft up to 350 words) below, click "Pay \u00a329 via Stripe" (opens in a new tab), and send your details in one visit \u2014 or submit first if you prefer Wise or PayPal.';
-                } else {
-                    pkgNextStepEl.textContent = stripeUrl
-                        ? 'Click "Pay via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
-                        : 'Enter your name, email, and time zone below \u2014 I will send your Stripe Payment Link (or Wise/PayPal details on request) and confirm your schedule.';
+            if (isWaitlist) {
+                pkgBanner.classList.add('hidden');
+            } else {
+                pkgNameEl.textContent = pkg;
+                if (pkgNextStepEl) {
+                    if (resolvedTier === 'sprint_10_650') {
+                        pkgNextStepEl.textContent = 'Click "Pay Full Pack (£650) via Stripe" to check out now, or submit the form below to claim your £35 starter-session credit (£615 remaining balance), confirm weekly lesson times, or request Wise/PayPal.';
+                    } else if (resolvedTier === 'pack_12_780') {
+                        pkgNextStepEl.textContent = 'Click "Pay Full Pack (£780) via Stripe" to check out now, or submit the form below to claim your £35 starter-session credit (£745 remaining balance), confirm weekly lesson times, or request Wise/PayPal.';
+                    } else if (resolvedTier === 'pack_5_375') {
+                        pkgNextStepEl.textContent = 'Click "Pay via Stripe" to check out now, or submit the form below to confirm weekly lesson times or request Wise/PayPal.';
+                    } else if (isAudit) {
+                        pkgNextStepEl.textContent = 'Paste your Google Doc link (or draft up to 350 words) below, click "Pay \u00a329 via Stripe" (opens in a new tab), and send your details in one visit \u2014 or submit first if you prefer Wise or PayPal.';
+                    } else {
+                        pkgNextStepEl.textContent = stripeUrl
+                            ? 'Click "Pay via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
+                            : 'Enter your name, email, and time zone below \u2014 I will send your Stripe Payment Link (or Wise/PayPal details on request) and confirm your schedule.';
+                    }
                 }
-            }
-            if (stripeBtn) {
-                if (stripeUrl) {
-                    stripeBtn.href = stripeUrl;
-                    stripeBtn.textContent = resolvedTier === 'sprint_10_650'
-                        ? 'Pay Full Pack (£650) via Stripe \u2192'
-                        : resolvedTier === 'pack_12_780'
-                            ? 'Pay Full Pack (£780) via Stripe \u2192'
-                            : isAudit
-                                ? 'Pay £29 via Stripe \u2192'
-                                : 'Pay via Stripe \u2192';
-                    stripeBtn.classList.remove('hidden');
-                } else {
-                    stripeBtn.classList.add('hidden');
+                if (stripeBtn) {
+                    if (stripeUrl) {
+                        stripeBtn.href = stripeUrl;
+                        stripeBtn.textContent = resolvedTier === 'sprint_10_650'
+                            ? 'Pay Full Pack (£650) via Stripe \u2192'
+                            : resolvedTier === 'pack_12_780'
+                                ? 'Pay Full Pack (£780) via Stripe \u2192'
+                                : isAudit
+                                    ? 'Pay £29 via Stripe \u2192'
+                                    : 'Pay via Stripe \u2192';
+                        stripeBtn.classList.remove('hidden');
+                    } else {
+                        stripeBtn.classList.add('hidden');
+                    }
                 }
+                pkgBanner.classList.remove('hidden');
             }
-            pkgBanner.classList.remove('hidden');
         }
         if (submitBtn) {
             submitBtn.innerHTML = isWaitlist
@@ -405,7 +407,7 @@
         }
         setTimeout(() => {
             if (enquiryCard) {
-                enquiryCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                enquiryCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
             if (nameInput) nameInput.focus({ preventScroll: true });
         }, 250);
@@ -475,7 +477,7 @@
         enquiryCard.classList.remove('border-slate-200');
 
         setTimeout(() => {
-            enquiryCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            enquiryCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
             if (nameInput) nameInput.focus({ preventScroll: true });
         }, 200);
     };

@@ -571,6 +571,8 @@
         return array;
     }
 
+    let seenRunWords = [];
+
     function buildQueue() {
         const cat = categorySelect ? categorySelect.value : 'all';
         if (cat === 'marathon40') {
@@ -594,6 +596,7 @@
 
         queue = buildQueue();
         quota = queue.length;
+        seenRunWords = queue.map((item) => `${item.root}→${item.ans}`);
         score = 0;
         lives = 3;
         isActive = true;
@@ -844,19 +847,49 @@
         if (leadScoreEl) leadScoreEl.value = `Word Factory - Score: ${score}/${quota}`;
 
         const leadEmailEl = document.getElementById('lead-email');
-        if (leadEmailEl) leadEmailEl.value = emailInput ? emailInput.value.trim() : '';
+        if (leadEmailEl && !leadEmailEl.value.trim() && emailInput) {
+            leadEmailEl.value = emailInput.value.trim();
+        }
 
         const leadNameEl = document.getElementById('lead-name');
         if (leadNameEl) leadNameEl.value = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Foreman';
 
-        if (endModal) endModal.classList.add('open');
+        const runCtxEl = document.getElementById('lead-run-context');
+        if (runCtxEl) runCtxEl.value = seenRunWords.join(', ');
+        const runPromptEl = document.getElementById('lead-run-prompt');
+        if (runPromptEl) {
+            runPromptEl.textContent = seenRunWords.length
+                ? `From this shift: ${seenRunWords.slice(0, 6).join(' · ')}`
+                : '';
+        }
+        const dossierEl = document.getElementById('lead-dossier');
+        if (dossierEl) {
+            try { dossierEl.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+        }
+        const statusEl = document.getElementById('lead-form-status');
+        if (statusEl) {
+            statusEl.textContent = '';
+            statusEl.className = 'desk-form-status';
+        }
+        const claimBtn = document.getElementById('btn-claim');
+        if (claimBtn) {
+            claimBtn.disabled = false;
+            claimBtn.textContent = 'Send Sentence for Free 24h Note →';
+        }
 
-        if (typeof window.showDiagnosticGate === 'function') {
-            setTimeout(() => {
+        if (endModal) endModal.classList.add('open');
+    }
+
+    const viewRecallBtn = document.getElementById('btn-view-recall');
+    if (viewRecallBtn) {
+        viewRecallBtn.addEventListener('click', () => {
+            if (endModal) endModal.classList.remove('open');
+            if (typeof window.showDiagnosticGate === 'function') {
                 window.showDiagnosticGate({
                     gameName: 'The Formation Factory',
                     score: score,
                     maxScore: quota,
+                    category: 'word_formation',
                     weakArea: 'Morphological Derivation & Double-Affix Shifts (Use of English Part 3)',
                     examImpact: 'In Cambridge C1/C2 Use of English Part 3, missing double-affixes (e.g. in-explic-ab-ly or un-precedent-ed) drops your score directly into B2 territory.',
                     onReplay: () => {
@@ -864,8 +897,75 @@
                         if (startBtn) startBtn.click();
                     }
                 });
-            }, 600);
-        }
+            } else {
+                window.location.href = 'index.html#contact';
+            }
+        });
+    }
+
+    const leadForm = document.getElementById('lead-form');
+    if (leadForm) {
+        leadForm.addEventListener('submit', async (e) => {
+            if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+            e.preventDefault();
+            if (leadForm.dataset.submitting === 'true') return;
+
+            const gotcha = leadForm.querySelector('input[name="_gotcha"]');
+            const statusEl = document.getElementById('lead-form-status');
+            const submitBtn = document.getElementById('btn-claim');
+            const origText = submitBtn ? submitBtn.textContent : 'Send Sentence for Free 24h Note →';
+
+            if (gotcha && gotcha.value.trim()) {
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status is-success';
+                    statusEl.textContent = 'Sent to my desk — thank you.';
+                }
+                return;
+            }
+
+            const dossierEl = document.getElementById('lead-dossier');
+            if (dossierEl) {
+                try { dossierEl.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+            }
+
+            leadForm.dataset.submitting = 'true';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending to my desk...';
+            }
+            if (statusEl) {
+                statusEl.className = 'desk-form-status';
+                statusEl.textContent = '';
+            }
+
+            try {
+                const res = await fetch(leadForm.action || 'https://formspree.io/f/mvkgrwvj', {
+                    method: 'POST',
+                    body: new FormData(leadForm),
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) throw new Error('Request failed');
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status is-success';
+                    statusEl.textContent = 'Received at my desk in Northern Ireland. I will reply with personal feedback within 24 hours.';
+                }
+                if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+                if (typeof window.trackFunnelEvent === 'function') {
+                    window.trackFunnelEvent('desk_dropbox_submitted', { tool: 'word_factory' });
+                }
+            } catch (_) {
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status is-error';
+                    statusEl.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=Word%20Factory%20Sentence%20Check" style="color:inherit;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = origText;
+                }
+            } finally {
+                leadForm.dataset.submitting = 'false';
+            }
+        });
     }
 
 })();

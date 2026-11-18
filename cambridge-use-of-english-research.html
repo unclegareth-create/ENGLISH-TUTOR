@@ -137,7 +137,7 @@
   <!-- Top Navigation Bar -->
   <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2.5">
+      <div class="flex flex-wrap items-center gap-2" style="min-width:0;max-width:100%;">
         <a href="index.html" class="text-sm font-bold text-slate-900 hover:text-amber-800 transition flex items-center gap-2">
           <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-900 text-white text-xs mono-font">GM</span>
           <span>GarethEnglish.com</span>
@@ -354,7 +354,7 @@
               Walk the Part 4 Ladder Yourself (B2 &rarr; C1 &rarr; C2)
             </h3>
             <p class="text-xs sm:text-sm text-slate-600 mt-1">
-              Use <strong>✂️ Strike Out Echoes</strong> to isolate the exact words missing from Sentence 2. Every item enforces the unchanged keyword rule, live Cambridge word counting (3 to 6 words), and <code>1 + 1</code> split-mark scoring.
+              Use <strong>✂️ Strike Out Echoes</strong> to isolate the exact words missing from Sentence 2. Every item enforces the unchanged keyword rule, live Cambridge word counting (3 to 6 words), and <code>1 + 1</code> split-mark scoring. <span class="text-slate-500">Runs 100% locally in your browser &middot; Zero text uploaded.</span>
             </p>
           </div>
           <div class="flex flex-wrap gap-2">
@@ -557,8 +557,78 @@
       </div>
     </section>
 
+    <!-- ================= EXPLICIT OPT-IN BELFAST DESK DROP-BOX ================= -->
+    <section id="belfast-desk-card" class="bg-white border-2 border-slate-200 rounded-2xl p-6 sm:p-8 md:p-10 shadow-sm space-y-6 scroll-mt-24">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+        <div class="space-y-1.5">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Explicit Opt-In Only &middot; Zero Automatic Upload</div>
+          <h2 class="text-2xl sm:text-3xl font-bold display-serif text-slate-900">
+            Send to My Belfast Desk (Free 24h Red-Pen Note)
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+            Every drill above runs 100% locally in your browser (zero text uploaded while you practise). If 1&ndash;3 tricky Part 4 transformations, Open Cloze gaps, or a short essay paragraph are costing you marks, load your B2&ndash;C2 Ladder score below or paste your attempts for a free personal note within 24 hours.
+          </p>
+        </div>
+        <div class="shrink-0 bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2 text-xs font-bold text-emerald-900 mono-font">
+          24h Human Reply &middot; No Bots
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <button type="button" id="desk-load-btn" onclick="loadStudy2ToolIntoDesk()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">
+          Load my text &amp; metrics from tool above
+        </button>
+        <span id="desk-load-status" class="text-xs font-semibold text-emerald-800" aria-live="polite"></span>
+      </div>
+
+      <div id="desk-success-banner" role="status" aria-live="polite" class="hidden rounded-xl bg-emerald-50 border border-emerald-200 p-5 text-sm text-emerald-950 space-y-2">
+        <div class="font-bold text-base">Sent straight to my Belfast desk</div>
+        <p class="text-slate-700 leading-relaxed">
+          Thank you &mdash; I have received your Part 4 / Cloze attempts and Ladder score, and I will reply with a personal red-pen note within 24 hours.
+        </p>
+        <button type="button" id="desk-reset-btn" class="text-xs font-bold text-amber-800 hover:underline cursor-pointer">
+          Send another gap or paragraph
+        </button>
+      </div>
+
+      <form id="belfast-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST" class="space-y-4">
+        <input type="hidden" name="_subject" value="Study 2 (Use of English) — Free 24h Belfast Desk Red-Pen Note" />
+        <input type="hidden" name="form_source" value="research_study_2_use_of_english" />
+        <input type="hidden" id="desk-metrics-field" name="tool_metrics" value="" />
+        <input type="hidden" id="desk-last-tool-field" name="last_free_tool" value="" />
+        <input type="hidden" id="desk-dossier-field" name="candidate_dossier" value="" />
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="desk-email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your email (required for my 24h note)</label>
+            <input type="email" id="desk-email" name="email" required placeholder="you@example.com" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-amber-700" />
+          </div>
+          <div>
+            <label for="desk-name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your name / target exam (optional)</label>
+            <input type="text" id="desk-name" name="name" placeholder="e.g. Marco — C1 Advanced or C2 Proficiency" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-amber-700" />
+          </div>
+        </div>
+
+        <div>
+          <label for="desk-message" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your 1&ndash;3 tricky Part 4 / Cloze gaps or short paragraph</label>
+          <textarea id="desk-message" name="message" rows="5" required placeholder="Paste 1–3 tricky Part 4 transformations, Open Cloze gaps, or 1 short paragraph (up to 150 words) for a free 24h red-pen note..." class="w-full rounded-xl border border-slate-300 bg-slate-50 p-3.5 text-sm text-slate-900 leading-relaxed focus:outline-none focus:border-amber-700"></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <button type="submit" id="desk-submit-btn" class="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer">
+            Send to My Belfast Desk (Free 24h Red-Pen Note) &rarr;
+          </button>
+          <div class="text-xs text-slate-600">
+            Prefer direct email? <a href="mailto:gareth@garethenglish.com?subject=Study%202%20%E2%80%94%20Free%2024h%20Red-Pen%20Note" class="underline font-bold text-amber-800 hover:text-amber-700">gareth@garethenglish.com</a>
+          </div>
+        </div>
+        <div id="desk-form-status" role="status" aria-live="polite" class="text-xs sm:text-sm font-semibold"></div>
+      </form>
+    </section>
+
     <!-- ================= SIBLING RESEARCH SERIES CROSS-NAVIGATION ================= -->
-    <section class="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 md:p-10 space-y-6">
+    <section id="research-series" class="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 md:p-10 space-y-6">
       <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-800 pb-5">
         <div>
           <div class="text-xs font-bold uppercase tracking-wider text-amber-300 mono-font">Sprucefield Empirical Notes &middot; Sibling Investigations</div>
@@ -1450,6 +1520,214 @@
       }
     }
 
+    function loadStudy2ToolIntoDesk() {
+      let sumL = 0;
+      let sumR = 0;
+      const trickyEntries = [];
+
+      LADDER_ITEMS.forEach(item => {
+        const ans = (ladderAnswers[item.id] || '').trim();
+        const res = ladderResults[item.id];
+        if (res) {
+          sumL += res.mL || 0;
+          sumR += res.mR || 0;
+        }
+        if (ans || res) {
+          const itemScore = res ? `${(res.mL || 0) + (res.mR || 0)}/2 (m_L=${res.mL || 0}, m_R=${res.mR || 0})` : 'Typed (unchecked)';
+          trickyEntries.push({
+            scoreNum: res ? (res.mL || 0) + (res.mR || 0) : 1,
+            line: `Part 4 #${item.id} (${item.tier} · KEY: ${item.key}): "${item.s2Pre}[ ${ans || '___'} ]${item.s2Post}" — ${itemScore}`
+          });
+        }
+      });
+
+      CLOZE_DRILL_ITEMS.forEach(item => {
+        const wEl = document.getElementById('p2-word-' + item.id);
+        const sEl = document.getElementById('p2-slot-' + item.id);
+        const wVal = wEl ? wEl.value.trim() : '';
+        const sVal = sEl ? sEl.value : '';
+        if (wVal) {
+          const ok = item.accepted.includes(wVal.toLowerCase());
+          trickyEntries.push({
+            scoreNum: ok ? 2 : 0,
+            line: `Part 2 Cloze #${item.id} (${item.level}): "${item.pre}[ ${wVal} ]${item.post}" (Slot: ${sVal || 'unset'})`
+          });
+        }
+      });
+
+      WF_DRILL_ITEMS.forEach(item => {
+        const el = document.getElementById('p3-inp-' + item.id);
+        const val = el ? el.value.trim() : '';
+        if (val) {
+          const ok = val.toUpperCase() === item.answer;
+          trickyEntries.push({
+            scoreNum: ok ? 2 : 0,
+            line: `Part 3 #${item.id} (${item.stem}): "${val}"`
+          });
+        }
+      });
+
+      // Prioritise missed or incomplete attempts, up to 3 items
+      trickyEntries.sort((a, b) => a.scoreNum - b.scoreNum);
+      const picked = trickyEntries.slice(0, 3).map(e => e.line);
+      const ladderSummary = `B2-C2 Ladder Score: m_L=${sumL}/9, m_R=${sumR}/9, Total=${sumL + sumR}/18 Marks`;
+
+      const msgEl = document.getElementById('desk-message');
+      const metricsField = document.getElementById('desk-metrics-field');
+      const statusEl = document.getElementById('desk-load-status');
+
+      if (metricsField) {
+        metricsField.value = picked.length ? `${ladderSummary} | Selected items: ${picked.length}` : ladderSummary;
+      }
+      if (msgEl) {
+        if (picked.length) {
+          msgEl.value = `[${ladderSummary}]\n\nTricky Part 4 / Cloze / Part 3 attempts (up to 3):\n- ${picked.join('\n- ')}\n\nOptional paragraph or question for Gareth: `;
+        } else {
+          msgEl.value = `[${ladderSummary}]\n\nPaste 1–3 tricky Part 4 / Open Cloze gaps or 1 short paragraph here:\n`;
+        }
+        msgEl.focus();
+      }
+      if (statusEl) {
+        statusEl.textContent = picked.length
+          ? `Loaded ${picked.length} item(s) + ${ladderSummary}.`
+          : `Loaded ${ladderSummary}. Paste 1–3 gaps or a paragraph below.`;
+      }
+    }
+
+    function readStudyDossierIfPlayed() {
+      let lastFreeTool = 'cambridge-use-of-english-research';
+      try {
+        lastFreeTool = localStorage.getItem('gm_last_free_tool') || 'cambridge-use-of-english-research';
+      } catch (e) {}
+      let candidateDossier = '';
+      try {
+        const rawSummary = localStorage.getItem('gm_active_dossier_summary');
+        const rawState = localStorage.getItem('gm_candidate_dossier_v1');
+        let parsedState = null;
+        if (rawState) {
+          try { parsedState = JSON.parse(rawState); } catch (_) {}
+        }
+        const hasUpdatedSkill = Boolean(
+          parsedState && parsedState.skills &&
+          Object.values(parsedState.skills).some(sk => sk && sk.lastUpdated)
+        );
+        if (rawSummary) {
+          let summary = null;
+          try { summary = JSON.parse(rawSummary); } catch (_) {}
+          const played = Boolean(
+            summary && (
+              (summary.gamesCompleted || 0) > 0 ||
+              (summary.drillsCompleted || 0) > 0 ||
+              hasUpdatedSkill ||
+              (summary.gamesCompleted === undefined && summary.drillsCompleted === undefined && summary.code)
+            )
+          );
+          if (played) {
+            const parts = [];
+            if (summary.code) parts.push(summary.code);
+            if (summary.cefrShort || summary.cefrBand) parts.push(summary.cefrShort || summary.cefrBand);
+            if (summary.weakestSkill) parts.push('Focus: ' + summary.weakestSkill);
+            candidateDossier = parts.join(' | ') || rawSummary.slice(0, 400);
+          }
+        }
+      } catch (e) {}
+      return { lastFreeTool, candidateDossier };
+    }
+
+    function initBelfastDeskForm(articleSlug) {
+      const form = document.getElementById('belfast-desk-form');
+      if (!form) return;
+      const statusEl = document.getElementById('desk-form-status');
+      const successEl = document.getElementById('desk-success-banner');
+      const submitBtn = document.getElementById('desk-submit-btn');
+      const resetBtn = document.getElementById('desk-reset-btn');
+      const lastToolEl = document.getElementById('desk-last-tool-field');
+      const dossierEl = document.getElementById('desk-dossier-field');
+
+      const syncTel = () => {
+        const tel = readStudyDossierIfPlayed();
+        if (lastToolEl) lastToolEl.value = tel.lastFreeTool || articleSlug;
+        if (dossierEl) dossierEl.value = tel.candidateDossier;
+      };
+      syncTel();
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (successEl) successEl.classList.add('hidden');
+          form.classList.remove('hidden');
+          if (statusEl) statusEl.textContent = '';
+        });
+      }
+
+      form.addEventListener('submit', async (e) => {
+        if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+        if (form.dataset.submitting === 'true') {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+
+        const emailInput = form.querySelector('input[name="email"]');
+        const msgInput = form.querySelector('textarea[name="message"]');
+        const emailVal = emailInput ? emailInput.value.trim() : '';
+        const msgVal = msgInput ? msgInput.value.trim() : '';
+
+        if (!emailVal || !emailVal.includes('@')) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.textContent = 'Please enter a valid email address so I can send your 24h red-pen note.';
+          }
+          if (emailInput) emailInput.focus();
+          return;
+        }
+        if (!msgVal) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.textContent = 'Please load your Ladder attempts above or paste 1–3 gaps or a paragraph first.';
+          }
+          if (msgInput) msgInput.focus();
+          return;
+        }
+
+        syncTel();
+        const origHtml = submitBtn ? submitBtn.innerHTML : 'Send to My Belfast Desk (Free 24h Red-Pen Note) &rarr;';
+        form.dataset.submitting = 'true';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending to Gareth...';
+        }
+        if (statusEl) {
+          statusEl.textContent = '';
+          statusEl.className = 'text-xs sm:text-sm font-semibold';
+        }
+
+        try {
+          const response = await fetch(form.action || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { 'Accept': 'application/json' }
+          });
+          if (!response.ok) throw new Error('Submission failed');
+          window.trackFunnelEvent?.('research_desk_dropbox_succeeded', { article: articleSlug });
+          form.reset();
+          syncTel();
+          form.classList.add('hidden');
+          if (successEl) successEl.classList.remove('hidden');
+        } catch (err) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.innerHTML = 'Could not send right now &mdash; your text above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Study%202%20Free%2024h%20Red-Pen%20Note" class="underline font-bold">gareth@garethenglish.com</a>.';
+          }
+        } finally {
+          delete form.dataset.submitting;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origHtml;
+          }
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', function () {
       switchTrackAView('combined');
       switchTrackBView('combined');
@@ -1457,6 +1735,7 @@
       renderPart4Ladder();
       renderPart2Cloze();
       renderPart3Wf();
+      initBelfastDeskForm('cambridge-use-of-english-research');
     });
   </script>
   <script src="analytics.js" defer></script>

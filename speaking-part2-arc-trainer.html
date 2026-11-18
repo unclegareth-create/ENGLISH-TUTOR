@@ -896,8 +896,26 @@
 
         <div id="liveActScaffolding" style="background:var(--bg-subtle);border:1px solid var(--border-light);border-radius:var(--radius-md);padding:1.1rem;margin-bottom:1rem;"></div>
 
+        <div id="postTurnAuditPanel" style="display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:var(--radius-md);padding:1rem 1.1rem;margin-bottom:1rem;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:0.74rem;font-weight:700;color:#065f46;text-transform:uppercase;margin-bottom:0.4rem;">Post-Turn Self-Audit (Required Before Recording Completion)</div>
+          <p style="font-size:0.84rem;color:#064e3b;margin-bottom:0.65rem;">Only tick the checks you genuinely met during your 2-minute turn:</p>
+          <div style="display:flex;flex-direction:column;gap:0.45rem;margin-bottom:0.75rem;font-size:0.86rem;color:#0f172a;">
+            <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;"><input type="checkbox" id="audit-chk-time" style="margin-top:3px;" /> <span>1. Spoke to 1:45–2:00 without stopping early</span></label>
+            <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;"><input type="checkbox" id="audit-chk-triggers" style="margin-top:3px;" /> <span>2. Spoke from 4 single trigger words rather than full sentences</span></label>
+            <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;"><input type="checkbox" id="audit-chk-reflection" style="margin-top:3px;" /> <span>3. Included an Act III past-vs-now reflection</span></label>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.5rem;align-items:center;">
+            <button type="button" id="savePostTurnAuditBtn" class="btn btn-emerald" onclick="submitPostTurnAudit()">Confirm Honest Self-Audit &check;</button>
+            <button type="button" class="btn" onclick="sendPart3AndAuditToForm()">Send Triggers + Audit to Gareth &darr;</button>
+          </div>
+          <div id="postTurnAuditFeedback" style="display:none;margin-top:0.65rem;font-size:0.83rem;color:#065f46;background:#ffffff;border:1px solid #bbf7d0;padding:0.65rem 0.85rem;border-radius:8px;"></div>
+        </div>
+
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.75rem;">
-          <button type="button" class="btn btn-emerald" onclick="togglePart2Model()" id="part2ModelBtn">👁️ Reveal Cambridge Model</button>
+          <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+            <button type="button" class="btn btn-emerald" onclick="togglePart2Model()" id="part2ModelBtn">👁️ Reveal Cambridge Model</button>
+            <button type="button" class="btn" onclick="openPostTurnAudit()">✓ Post-Turn Self-Audit</button>
+          </div>
           <span style="font-size:0.78rem;color:var(--ink-muted);">British studio audio + annotated C1 clefts, participles &amp; counterfactuals</span>
         </div>
 
@@ -936,7 +954,11 @@
         <div class="formula-box">A.R.E.A. Blueprint: [Assertion: It is widely argued that...] + [Reason: What drives this is...] + [Evidence: For instance, ..., thereby + -ing] + [Alternative: That said, were we to...]</div>
       </div>
 
-      <div id="part3Container" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.25rem;"></div>
+      <div id="part3Container" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%, 300px),1fr));gap:1.25rem;"></div>
+      <div style="margin-top:1.15rem;padding-top:1rem;border-top:1px solid var(--border-light);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0.75rem;">
+        <span style="font-size:0.84rem;color:var(--ink-secondary);max-width:58ch;">A browser timer cannot judge hesitation repairs, spoken conditional slips, or whether your Part 3 examples move cleanly from personal anecdotes to wider analysis.</span>
+        <button type="button" id="btn-send-part3-to-form" class="btn btn-primary" onclick="sendPart3AndAuditToForm()">Send my Part 3 A.R.E.A. response for a free desk note &darr;</button>
+      </div>
     </section>
 
     <!-- C1 SPOKEN GRAMMAR WORKOUT -->
@@ -947,7 +969,7 @@
         Work through these three spoken sentence upgrades aloud before clicking the reveal button to compare against the Cambridge C1 model.
       </p>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%, 280px),1fr));gap:1rem;">
         <div class="rule-card">
           <div class="formula-box" style="margin-top:0;margin-bottom:0.65rem;">What + Clause + BE + Noun/Clause</div>
           <p style="font-size:0.88rem;color:var(--ink-secondary);margin-bottom:0.75rem;">
@@ -1030,13 +1052,15 @@
           <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact-form" />
           <input type="hidden" name="source_page" value="speaking-part2-arc-trainer.html" />
           <input type="hidden" id="drill-score-field" name="drill_progress" value="" />
+          <input type="hidden" id="part3-area-field" name="part3_area_drafts" value="" />
+          <input type="hidden" id="self-audit-field" name="part2_self_audit" value="" />
           <input type="hidden" id="candidate-dossier-field" name="candidate_dossier" value="" />
           <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
 
           <div class="redpen-grid-2">
             <div class="redpen-field">
-              <label for="redpen-name">First Name</label>
-              <input id="redpen-name" class="redpen-input" name="name" type="text" required autocomplete="name" placeholder="Your first name" />
+              <label for="redpen-name">First Name (Optional)</label>
+              <input id="redpen-name" class="redpen-input" name="name" type="text" autocomplete="name" placeholder="Your first name (optional)" />
             </div>
             <div class="redpen-field">
               <label for="redpen-email">Email Address</label>
@@ -1656,20 +1680,141 @@
       `;
 
       const p3Box = document.getElementById("part3Container");
-      p3Box.innerHTML = card.part3.map((item, i) => `
+      p3Box.innerHTML = card.part3.map((item, i) => {
+        const savedDraft = (part3Drafts[`${card.id}-${i}`] || "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return `
         <div class="rule-card">
           <span class="rule-num">PART 3 CHALLENGE 0${i + 1}</span>
           <h3 style="font-family:'Playfair Display', 'Cormorant Garamond',serif;font-size:1.08rem;margin-bottom:0.6rem;">${item.q}</h3>
-          <textarea rows="2" placeholder="Jot your A.R.E.A. hinge here (e.g. It is widely argued that... / What drives this is...)" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid var(--border-strong);font-family:inherit;font-size:0.85rem;margin-bottom:0.65rem;"></textarea>
+          <textarea id="part3-area-${i}" class="part3-area-input" data-part3-idx="${i}" rows="2" oninput="savePart3Draft(${i}, this.value)" placeholder="Jot your A.R.E.A. hinge here (e.g. It is widely argued that... / What drives this is...)" style="width:100%;padding:0.6rem;border-radius:8px;border:1px solid var(--border-strong);font-family:inherit;font-size:0.85rem;margin-bottom:0.65rem;">${savedDraft}</textarea>
           <button type="button" class="btn btn-emerald" onclick="this.nextElementSibling.classList.toggle('open')">👁️ Reveal Cambridge Model</button>
           <div class="model-box">
             <div style="font-family:'JetBrains Mono',monospace;font-size:0.72rem;font-weight:700;color:var(--accent-emerald);margin-bottom:0.35rem;">A.R.E.A. C1 MODEL RESPONSE</div>
             <p style="font-size:0.9rem;">${item.a}</p>
           </div>
         </div>
-      `).join("");
+      `;
+      }).join("");
 
+      resetPostTurnAuditUI();
       updateActScaffolding();
+    }
+
+    const part3Drafts = {};
+    const selfAuditByCard = {};
+
+    function savePart3Draft(idx, val) {
+      const card = CUE_CARDS[activeCardIndex];
+      if (!card) return;
+      part3Drafts[`${card.id}-${idx}`] = val;
+    }
+
+    function openPostTurnAudit() {
+      const panel = document.getElementById("postTurnAuditPanel");
+      if (panel) panel.style.display = "block";
+    }
+
+    function resetPostTurnAuditUI() {
+      const panel = document.getElementById("postTurnAuditPanel");
+      const fb = document.getElementById("postTurnAuditFeedback");
+      const card = CUE_CARDS[activeCardIndex];
+      const saved = card ? selfAuditByCard[card.id] : null;
+      ["audit-chk-time", "audit-chk-triggers", "audit-chk-reflection"].forEach((id, idx) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = saved ? Boolean(saved.flags[idx]) : false;
+      });
+      if (panel) panel.style.display = saved ? "block" : "none";
+      if (fb) {
+        fb.style.display = saved ? "block" : "none";
+        if (saved) fb.innerHTML = saved.feedbackHtml;
+      }
+    }
+
+    function getSelfAuditSnapshot() {
+      const checks = [
+        { id: "audit-chk-time", label: "Spoke 1:45-2:00 without stopping early" },
+        { id: "audit-chk-triggers", label: "Used 4 single trigger keywords" },
+        { id: "audit-chk-reflection", label: "Included Act III past-vs-now reflection" }
+      ];
+      const flags = checks.map(c => {
+        const el = document.getElementById(c.id);
+        return Boolean(el && el.checked);
+      });
+      const checkedLabels = checks.filter((_, i) => flags[i]).map(c => c.label);
+      const missedLabels = checks.filter((_, i) => !flags[i]).map(c => c.label);
+      return { flags, checkedCount: checkedLabels.length, checkedLabels, missedLabels };
+    }
+
+    function submitPostTurnAudit() {
+      const card = CUE_CARDS[activeCardIndex];
+      const snap = getSelfAuditSnapshot();
+      const fb = document.getElementById("postTurnAuditFeedback");
+      let tips = [];
+      if (!snap.flags[0]) tips.push("Use the Act III Cambridge Anchor (<em>'Looking back in the cold light of day...'</em>) when you finish bullets early.");
+      if (!snap.flags[1]) tips.push("Trim your left-hand margin slots to single trigger keywords so your eyes never lock onto the page.");
+      if (!snap.flags[2]) tips.push("Spend the final 45 seconds contrasting how you felt then with how you see it now.");
+
+      const feedbackHtml = snap.checkedCount === 3
+        ? `<strong>3 / 3 Self-Audit Confirmed:</strong> Strong 3-Act pacing and trigger discipline. Paste a Part 3 A.R.E.A. answer below if you want a human phrasing check.`
+        : `<strong>${snap.checkedCount} / 3 Logged:</strong> ${tips.join(" ")}`;
+
+      if (card) {
+        selfAuditByCard[card.id] = { flags: snap.flags, checkedCount: snap.checkedCount, feedbackHtml };
+        if (!completedCards.has(card.id)) {
+          completedCards.add(card.id);
+          if (window.CandidateDossier && typeof window.CandidateDossier.recordGameCompletion === "function") {
+            window.CandidateDossier.recordGameCompletion({
+              gameName: "Speaking Part 2 Arc Studio",
+              category: "prosody_cadence",
+              score: snap.checkedCount,
+              maxScore: 3
+            });
+          }
+        }
+      }
+      if (fb) {
+        fb.innerHTML = feedbackHtml;
+        fb.style.display = "block";
+      }
+    }
+
+    function getPart3EntriesText() {
+      const card = CUE_CARDS[activeCardIndex];
+      if (!card || !Array.isArray(card.part3)) return "";
+      const entries = [];
+      card.part3.forEach((item, i) => {
+        const el = document.getElementById("part3-area-" + i);
+        const val = el ? el.value.trim() : (part3Drafts[`${card.id}-${i}`] || "").trim();
+        if (val) entries.push(`Part 3 Q${i + 1}: ${item.q}\nDraft: ${val}`);
+      });
+      return entries.join("\n\n");
+    }
+
+    function sendPart3AndAuditToForm() {
+      const card = CUE_CARDS[activeCardIndex];
+      const msgEl = document.getElementById("redpen-message");
+      const targetSection = document.getElementById("free-redpen-check");
+      const marginKeywords = [0, 1, 2, 3]
+        .map(i => {
+          const el = document.getElementById("slot-" + i);
+          return el ? el.value.trim() : "";
+        })
+        .filter(Boolean);
+      const snap = getSelfAuditSnapshot();
+      const p3Text = getPart3EntriesText();
+
+      const lines = [];
+      lines.push(`Cue Card: ${card ? card.title : "Part 2 Topic"}`);
+      if (marginKeywords.length) lines.push(`Margin Triggers: ${marginKeywords.join(" | ")}`);
+      lines.push(`Post-Turn Self-Audit: ${snap.checkedCount}/3 checked${snap.missedLabels.length ? " (Need focus: " + snap.missedLabels.join("; ") + ")" : ""}`);
+      if (p3Text) lines.push(`\n${p3Text}`);
+      else lines.push(`\n[Jot one short Part 3 A.R.E.A. answer above or finish writing your question here]`);
+
+      if (msgEl) msgEl.value = lines.join("\n").slice(0, 2200);
+      if (targetSection && typeof targetSection.scrollIntoView === "function") {
+        targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      if (msgEl) msgEl.focus();
     }
 
     function checkMarginGuard(idx, val) {
@@ -1759,18 +1904,7 @@
             clearInterval(arcInterval);
             arcInterval = null;
             btn.textContent = "✓ 2:00 Complete";
-            const currentCard = CUE_CARDS[activeCardIndex];
-            if (currentCard && !completedCards.has(currentCard.id)) {
-              completedCards.add(currentCard.id);
-              if (window.CandidateDossier && typeof window.CandidateDossier.recordGameCompletion === "function") {
-                window.CandidateDossier.recordGameCompletion({
-                  gameName: "Speaking Part 2 Arc Studio",
-                  category: "clefts",
-                  score: 10,
-                  maxScore: 10
-                });
-              }
-            }
+            openPostTurnAudit();
           }
         } else {
           clearInterval(arcInterval);
@@ -1909,6 +2043,8 @@
 
       form.addEventListener("submit", async e => {
         const scoreField = document.getElementById("drill-score-field");
+        const p3Field = document.getElementById("part3-area-field");
+        const auditField = document.getElementById("self-audit-field");
         const dossierField = document.getElementById("candidate-dossier-field");
         const currentCard = CUE_CARDS[activeCardIndex];
         const marginKeywords = [0, 1, 2, 3]
@@ -1917,12 +2053,18 @@
             return el ? el.value.trim() : "";
           })
           .filter(Boolean);
+        const snap = getSelfAuditSnapshot();
+        const p3Text = getPart3EntriesText();
 
         if (scoreField) {
           const cardLabel = currentCard ? currentCard.title : "Cue Card";
           scoreField.value = marginKeywords.length
             ? `${cardLabel} | Triggers: ${marginKeywords.join(", ")}`
-            : `${cardLabel} | Completed arcs: ${completedCards.size}`;
+            : `${cardLabel} | Completed audits: ${completedCards.size}`;
+        }
+        if (p3Field) p3Field.value = p3Text;
+        if (auditField) {
+          auditField.value = `${snap.checkedCount}/3 checked` + (snap.missedLabels.length ? ` | Missed: ${snap.missedLabels.join("; ")}` : "");
         }
         if (dossierField) {
           dossierField.value = readPlayedDossierSummary();
@@ -1987,9 +2129,8 @@
       wireSpeakingLeadForm();
     });
   </script>
-  <!-- Candidate Dossier, Course Bridge & Cookieless Privacy Analytics (GoatCounter) -->
+  <!-- Candidate Dossier & Cookieless Privacy Analytics (GoatCounter) -->
   <script src="dossier.js?v=8" defer></script>
-  <script src="course-bridge.js" defer></script>
   <script src="analytics.js?v=8" defer></script>
 </body>
 </html>

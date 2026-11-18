@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Connected Speech &amp; Prosody Lab: Weak Forms, Elision &amp; Stress-Timing | Gareth English</title>
+    <meta name="description" content="Practise British weak forms, past modals, /t/ and /d/ elision, linking /r/ and /w/, and C1 stress-timing across 12 studio British clips with a live spectrogram and voice overlay. Built by CELTA tutor Gareth Montgomery." />
+    <meta name="author" content="Gareth Montgomery" />
+    <meta name="theme-color" content="#f8fafc" />
+    <link rel="canonical" href="https://garethenglish.com/connected-speech-lab.html" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230369a1'/%3E%3Ctext%20x='16'%20y='23'%20font-family='Georgia,serif'%20font-size='20'%20font-weight='700'%20text-anchor='middle'%20fill='white'%3EG%3C/text%3E%3C/svg%3E" />
+
+    <meta property="og:site_name" content="Gareth English" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Connected Speech &amp; Prosody Lab | Gareth English" />
+    <meta property="og:description" content="Hear British weak forms, shadow stress peaks over schwa valleys, and measure your contrast on a live spectrogram across 12 clips and 4 Acts." />
+    <meta property="og:url" content="https://garethenglish.com/connected-speech-lab.html" />
+    <meta property="og:image" content="https://garethenglish.com/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Connected Speech &amp; Prosody Lab | Gareth English" />
+    <meta name="twitter:description" content="12 British connected-speech drills across 4 Acts with live spectrogram, microphone overlay, Daily 5, and Duel mode." />
+    <meta name="twitter:image" content="https://garethenglish.com/og-image.png" />
+
+    <link rel="stylesheet" href="assets/fonts/fonts.css" />
+    <link rel="stylesheet" href="connected-speech.css" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["LearningResource", "WebApplication"],
+          "name": "Connected Speech & Prosody Lab",
+          "description": "Interactive British English connected speech studio covering weak forms, past modals of deduction, elision and catenation, and C1 stress-timing across 12 clips with real-time spectrogram and vocal rhythm comparison.",
+          "url": "https://garethenglish.com/connected-speech-lab.html",
+          "inLanguage": "en-GB",
+          "isAccessibleForFree": true,
+          "applicationCategory": "EducationalApplication",
+          "educationalLevel": ["CEFR B2", "CEFR C1", "CEFR C2"],
+          "author": {
+            "@type": "Person",
+            "@id": "https://garethenglish.com/#tutor",
+            "name": "Gareth Montgomery",
+            "jobTitle": "CELTA-Qualified Cambridge & IELTS Tutor",
+            "url": "https://garethenglish.com/"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://garethenglish.com/" },
+            { "@type": "ListItem", "position": 2, "name": "Interactive Lab", "item": "https://garethenglish.com/lab.html" },
+            { "@type": "ListItem", "position": 3, "name": "Connected Speech Lab", "item": "https://garethenglish.com/connected-speech-lab.html" }
+          ]
+        }
+      ]
+    }
+    </script>
+</head>
+<body>
+    <a href="#main-card" class="skip-link">Skip to connected speech lab</a>
+
+    <div class="page-shell">
+        <header class="site-header">
+            <div class="header-left">
+                <div class="breadcrumb-row">
+                    <a href="lab.html" class="back-link">&larr; Interactive Lab</a>
+                    <span class="header-sep" aria-hidden="true">/</span>
+                    <span class="desk-kicker">Belfast Desk &middot; Connected Speech Lab</span>
+                </div>
+                <h1>Connected Speech Lab</h1>
+                <p class="header-subtitle">Hear British weak forms, shadow stressed peaks over schwa /ə/ valleys, and compare your rhythm on a live spectrogram.</p>
+            </div>
+            <img src="assets/arcade/connected_speech_lab.svg" alt="Editorial diagram of a connected speech spectrogram showing gold stress peaks and cyan weak-form valleys" width="640" height="360" class="header-art" />
+        </header>
+
+        <div class="hud" role="region" aria-label="Progress and session tools">
+            <div id="hud-progress" class="hud-pill">Clip 1/12</div>
+            <div id="streak-display" class="hud-pill" title="Clean shadowing streak">🔥 0</div>
+            <button type="button" id="daily-seed-btn" class="hud-btn" title="Start today's 5-clip Daily Seed">🎲 Daily Seed</button>
+            <button type="button" id="duel-forge-btn" class="hud-btn hud-duel-btn" aria-expanded="false" aria-controls="duel-forge-drawer" title="Build a 3–5 clip rhythm challenge link">⚔️ Forge Duel</button>
+            <button type="button" id="audio-toggle" class="hud-btn" aria-pressed="false" title="Toggle gentle UI click sound">🔇 Sound Off</button>
+            <span id="mode-badge" class="mode-badge hidden" role="status"></span>
+            <button type="button" id="exit-mode-btn" class="hud-btn hud-exit-btn hidden">⏹️ Exit Mode</button>
+        </div>
+
+        <nav id="act-jump-bar" class="act-jump-bar" aria-label="Jump by Act or Mode">
+            <button type="button" class="act-pill active" data-act="1">Act I &middot; Weak Forms</button>
+            <button type="button" class="act-pill" data-act="2">Act II &middot; Past Modals</button>
+            <button type="button" class="act-pill" data-act="3">Act III &middot; Elision &amp; Linking</button>
+            <button type="button" class="act-pill" data-act="4">Act IV &middot; Stress-Timing</button>
+            <button type="button" class="act-pill pill-mode-daily" data-mode="daily">🎲 Daily 5</button>
+            <button type="button" class="act-pill pill-mode-duel" data-mode="duel">⚔️ Duel</button>
+        </nav>
+
+        <section id="duel-forge-drawer" class="duel-forge-drawer hidden" aria-label="Forge a Connected Speech Duel">
+            <div class="duel-forge-head">
+                <div>
+                    <h2>⚔️ Forge a 5-Clip Rhythm Duel</h2>
+                    <p class="duel-forge-sub">Pick 5 clips for a timed shadowing challenge or copy an instant link for a student or study partner.</p>
+                </div>
+                <div class="duel-forge-controls">
+                    <input type="text" id="player-name-input" class="duel-name-input" placeholder="Your name (optional)..." aria-label="Your name for duel scoreboard" maxlength="18" autocomplete="off" />
+                    <button type="button" id="duel-forge-close" class="btn-secondary" aria-label="Close duel builder">✕ Close</button>
+                </div>
+            </div>
+
+            <div class="duel-preset-row" role="group" aria-label="Duel presets">
+                <button type="button" class="act-pill" data-duel-preset="all_mix">All Acts Mix</button>
+                <button type="button" class="act-pill" data-duel-preset="act1_2">Acts I–II · Weak Forms &amp; Modals</button>
+                <button type="button" class="act-pill" data-duel-preset="act3_4">Acts III–IV · Elision &amp; Stress</button>
+                <button type="button" class="act-pill" data-duel-preset="c1_stress">C1/C2 Selection</button>
+                <button type="button" id="duel-preview-toggle" class="act-pill" aria-pressed="false">👁️ Show sentences</button>
+            </div>
+
+            <div id="duel-slots-grid" class="duel-slots-grid"></div>
+            <div id="duel-preview-list" class="duel-preview-list hidden"></div>
+
+            <div class="duel-forge-actions">
+                <button type="button" id="btn-copy-instant-duel" class="btn-secondary">📋 Copy Instant Duel Link</button>
+                <button type="button" id="btn-start-duel" class="btn-crimson">⚔️ Play &amp; Set Target Time</button>
+                <span id="duel-forge-status" class="feedback-line" role="status" aria-live="polite"></span>
+            </div>
+        </section>
+
+        <main id="main-card" class="lab-card">
+            <div id="duel-target-banner" class="duel-target-banner hidden" role="status"></div>
+
+            <div class="card-meta-row">
+                <span id="drill-meta-tag" class="meta-tag">ACT I &middot; B2+ &middot; CLIP 1/12</span>
+                <span id="engine-status-pill" class="phase-pill">British Neural Audio Ready</span>
+            </div>
+
+            <h2 id="drill-title" class="drill-title">1. Auxiliary Compression (&ldquo;Ahv-bin&rdquo;)</h2>
+            <p id="scene-context" class="scene-context"></p>
+
+            <!-- Target Sentence + Playback Controls -->
+            <section class="sentence-stage" aria-label="Target sentence and playback speed">
+                <div class="sentence-stage-top">
+                    <span id="target-feature-badge" class="feature-tag">Auxiliary &amp; preposition reduction</span>
+                    <div class="sentence-legend">
+                        <span class="legend-stress">&#9679; Stressed peak</span>
+                        <span class="legend-weak">&#9675; Reduced /ə/ valley</span>
+                    </div>
+                </div>
+
+                <div id="sentence-segments" class="sentence-segments" aria-label="Sentence stress and weak-form map"></div>
+
+                <div class="playback-row">
+                    <div class="speed-group" role="group" aria-label="Model playback speed">
+                        <span class="speed-label">Speed:</span>
+                        <button type="button" class="speed-btn" data-speed="0.85">0.85x</button>
+                        <button type="button" class="speed-btn is-active" data-speed="1.0">1.0x</button>
+                        <button type="button" class="speed-btn" data-speed="1.1">1.1x</button>
+                    </div>
+                    <button type="button" id="btn-play-ref" class="btn-ref-play">
+                        <span aria-hidden="true">▶</span>
+                        <span id="play-ref-label">Listen to British Model</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Crisp Dark Spectrogram & Live Microphone Overlay Well -->
+            <section class="spectrogram-well" aria-label="Speech spectrogram and live rhythm comparison">
+                <div class="well-topbar">
+                    <div class="well-status-wrap">
+                        <span id="well-dot" class="well-dot"></span>
+                        <span id="well-status-text" class="well-status-text" aria-live="polite">Listen to the British model, then shadow with your mic or tap rhythm.</span>
+                    </div>
+                    <div class="well-legend">
+                        <span class="wleg-item"><span class="wleg-swatch wleg-gold"></span>Reference peaks</span>
+                        <span class="wleg-item"><span class="wleg-swatch wleg-cyan"></span>Your voice</span>
+                        <span class="wleg-item"><span class="wleg-swatch wleg-schwa"></span>/ə/ valleys</span>
+                        <span id="well-timer" class="well-timer">0.0s / 2.1s</span>
+                    </div>
+                </div>
+
+                <div class="canvas-stack">
+                    <canvas id="cs-ref-canvas" width="760" height="250" aria-label="Reference speech spectrogram and stress envelope"></canvas>
+                    <canvas id="cs-live-canvas" width="760" height="250" aria-hidden="true"></canvas>
+                </div>
+
+                <div class="well-controls">
+                    <button type="button" id="btn-record-mic" class="btn-well btn-well-mic">🎙️ Shadow with Mic</button>
+                    <button type="button" id="btn-replay-mine" class="btn-well" disabled>▶ Replay My Take</button>
+                    <button type="button" id="btn-compare" class="btn-well" disabled>🔀 Compare Ref &rarr; Mine</button>
+                    <button type="button" id="btn-simulate" class="btn-well btn-well-sim">⚡ Simulate C1 Shadowing</button>
+                    <button type="button" id="btn-mode-toggle" class="btn-well">Quiet room? Tap rhythm</button>
+                </div>
+
+                <p class="well-privacy">Your microphone audio stays on your device — the spectrogram and rhythm match score are computed locally in your browser.</p>
+
+                <div id="rhythm-strip" class="rhythm-strip">
+                    <div class="rhythm-strip-head">
+                        <span>Quiet-room tap rhythm (tap stressed peaks firmly, skim weak /ə/ pads):</span>
+                        <button type="button" id="btn-clear-trace" class="btn-link-muted">Reset trace</button>
+                    </div>
+                    <div id="rhythm-pads" class="rhythm-pads" role="group" aria-label="Rhythm tap pads"></div>
+                </div>
+            </section>
+
+            <!-- Live Match Score Card -->
+            <section id="score-card" class="score-card hidden" aria-live="polite" aria-label="Stress-timing match score">
+                <div class="score-top">
+                    <span id="score-badge" class="score-badge">91% Match &middot; Crisp Contrast</span>
+                    <span id="dossier-sync-note" class="feedback-line">✓ Saved to your practice log</span>
+                </div>
+                <div class="score-metrics">
+                    <div class="metric-chip">
+                        <span class="metric-label">Overall Match</span>
+                        <span id="metric-overall" class="metric-value">--%</span>
+                    </div>
+                    <div class="metric-chip">
+                        <span class="metric-label">Stress Peaks</span>
+                        <span id="metric-peaks" class="metric-value">--%</span>
+                    </div>
+                    <div class="metric-chip">
+                        <span class="metric-label">Weak /ə/ Valleys</span>
+                        <span id="metric-valleys" class="metric-value">--%</span>
+                    </div>
+                </div>
+                <p id="score-feedback" class="score-feedback"></p>
+            </section>
+
+            <div class="action-bar">
+                <button type="button" id="btn-reset" class="btn-secondary">Reset</button>
+                <button type="button" id="btn-blueprint" class="btn-blueprint" aria-expanded="false" aria-controls="blueprint-panel">👁️ Reveal Phonetic Blueprint</button>
+                <button type="button" id="btn-next" class="btn-primary">Next Clip &rarr;</button>
+            </div>
+
+            <section id="blueprint-panel" class="blueprint-panel hidden" aria-live="polite" aria-label="Phonetic Blueprint and Belfast Desk Notes">
+                <div class="blueprint-top">
+                    <div>
+                        <span class="blueprint-kicker">🖋️ Belfast Desk Phonetic Blueprint</span>
+                        <h3 id="bp-feature-title" class="blueprint-title"></h3>
+                    </div>
+                    <span id="bp-cefr" class="blueprint-cefr">C1</span>
+                </div>
+                <div class="blueprint-grid">
+                    <div class="bp-box">
+                        <span class="formula-tag">Written Form</span>
+                        <span id="bp-written" class="bp-written-text"></span>
+                    </div>
+                    <div class="bp-box">
+                        <span class="formula-tag">Weak-Form IPA</span>
+                        <code id="bp-ipa"></code>
+                    </div>
+                    <div class="bp-box">
+                        <span class="formula-tag">Connected Respelling</span>
+                        <code id="bp-respelling"></code>
+                    </div>
+                    <div class="bp-box">
+                        <span class="formula-tag">Rhythm Formula</span>
+                        <code id="bp-formula"></code>
+                    </div>
+                </div>
+                <p id="bp-note" class="blueprint-note"></p>
+            </section>
+        </main>
+
+        <aside data-course-bridge></aside>
+
+        <section id="belfast-desk-strip" class="belfast-desk-strip" aria-label="Belfast Desk Feedback and Coaching">
+            <div class="belfast-desk-copy">
+                <span class="belfast-desk-kicker">🖋️ From My Belfast Desk</span>
+                <h2>Want live coaching on your speaking rhythm and weak forms?</h2>
+                <p>After 19 years of teaching (15 of them at Belfast Met), I hear strong C1 candidates sound robotic simply because they stress every auxiliary and preposition equally. Practise real IELTS and Cambridge prompts with me live, or send an essay for line-by-line notes.</p>
+            </div>
+            <div class="belfast-desk-actions">
+                <a href="index.html?offer=live_diagnostic_35#cal-booking-box" class="btn-desk-primary" data-track="connected_speech_book_diagnostic" data-tier="starter_session_35">Book a 30-Min Starter Session (£35) &rarr;</a>
+                <a href="index.html?offer=async_essay_audit_29#enquiry-card" class="btn-desk-secondary" data-track="connected_speech_essay_audit" data-tier="async_essay_audit_29">Get Written Essay Feedback (£29) &rarr;</a>
+            </div>
+        </section>
+    </div>
+
+    <div id="recap-modal" class="recap-modal" role="dialog" aria-modal="true" aria-labelledby="recap-heading">
+        <div class="recap-panel">
+            <h2 id="recap-heading">Run Complete!</h2>
+            <p id="recap-summary" class="recap-summary"></p>
+            <div id="recap-verdict" class="recap-verdict hidden"></div>
+            <div id="recap-step-list" class="recap-step-list"></div>
+            <div class="recap-actions">
+                <button type="button" id="btn-copy-daily" class="btn-secondary hidden">📋 Copy Daily Result</button>
+                <button type="button" id="btn-copy-duel" class="btn-crimson hidden">⚔️ Copy Counter-Duel Link</button>
+                <button type="button" id="btn-open-diagnostic" class="btn-primary">View Score &amp; Next Steps &rarr;</button>
+                <button type="button" id="btn-close-recap" class="btn-secondary">Close &amp; Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="analytics-funnel.js" defer></script>
+    <script src="dossier.js" defer></script>
+    <script src="connected-speech-data.js" defer></script>
+    <script src="connected-speech.js" defer></script>
+    <script src="course-bridge.js" defer></script>
+    <script src="analytics.js" defer></script>
+</body>
+</html>

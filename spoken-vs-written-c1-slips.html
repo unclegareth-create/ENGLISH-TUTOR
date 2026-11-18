@@ -487,7 +487,7 @@
             Live Spoken Self-Repair Clinic &amp; Timed Retrieval Drill
           </h2>
           <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
-            Work through eight genuine spoken slips from my 1-to-1 portals. First repair the original sentence, then write <strong>one true personal sentence</strong> using the target structure — the built-in checker will warn you right off the bat if you try to dodge the target verb or tense! Toggle the optional <strong>15-second reflex timer</strong> if you want to simulate live IELTS Part 3 pressure.
+            Work through eight genuine spoken slips from my 1-to-1 portals. First repair the original sentence, then write <strong>one true personal sentence</strong> using the target structure — the built-in checker will warn you right off the bat if you try to dodge the target verb or tense! Toggle the optional <strong>15-second reflex timer</strong> if you want to simulate live IELTS Part 3 pressure. <span class="text-slate-500">Runs 100% locally in your browser &middot; Zero text uploaded.</span>
           </p>
         </div>
 
@@ -526,6 +526,76 @@
       <div id="spoken-clinic-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <!-- Populated by renderSpokenClinic() -->
       </div>
+    </section>
+
+    <!-- ================= EXPLICIT OPT-IN BELFAST DESK DROP-BOX ================= -->
+    <section id="belfast-desk-card" class="bg-white border-2 border-slate-200 rounded-2xl p-6 sm:p-8 md:p-10 shadow-sm space-y-6 scroll-mt-24">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+        <div class="space-y-1.5">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Explicit Opt-In Only &middot; Zero Automatic Upload</div>
+          <h2 class="text-2xl sm:text-3xl font-bold display-serif text-slate-900">
+            Send to My Belfast Desk (Free 24h Red-Pen Note)
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+            The Spoken Self-Repair Clinic above stays 100% private inside your browser (zero text uploaded while you practise). Automated dodge checks cannot verify real meaning or idiomatic flow, so if you want my human check on your Column-4 personal sentences, load them below and send them straight to my desk in Northern Ireland.
+          </p>
+        </div>
+        <div class="shrink-0 bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2 text-xs font-bold text-emerald-900 mono-font">
+          24h Human Reply &middot; No Bots
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <button type="button" id="desk-load-btn" onclick="loadStudy5ToolIntoDesk()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">
+          Load my text &amp; metrics from tool above
+        </button>
+        <span id="desk-load-status" class="text-xs font-semibold text-emerald-800" aria-live="polite"></span>
+      </div>
+
+      <div id="desk-success-banner" role="status" aria-live="polite" class="hidden rounded-xl bg-emerald-50 border border-emerald-200 p-5 text-sm text-emerald-950 space-y-2">
+        <div class="font-bold text-base">Sent straight to my Belfast desk</div>
+        <p class="text-slate-700 leading-relaxed">
+          Thank you &mdash; I have received your Column-4 personal sentences and will send a personal red-pen note back within 24 hours.
+        </p>
+        <button type="button" id="desk-reset-btn" class="text-xs font-bold text-amber-800 hover:underline cursor-pointer">
+          Send another spoken slip or example
+        </button>
+      </div>
+
+      <form id="belfast-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST" class="space-y-4">
+        <input type="hidden" name="_subject" value="Study 5 (Spoken vs Written Slips) — Free 24h Belfast Desk Red-Pen Note" />
+        <input type="hidden" name="form_source" value="research_study_5_spoken_slips" />
+        <input type="hidden" id="desk-metrics-field" name="tool_metrics" value="" />
+        <input type="hidden" id="desk-last-tool-field" name="last_free_tool" value="" />
+        <input type="hidden" id="desk-dossier-field" name="candidate_dossier" value="" />
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="desk-email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your email (required for my 24h note)</label>
+            <input type="email" id="desk-email" name="email" required placeholder="you@example.com" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-amber-700" />
+          </div>
+          <div>
+            <label for="desk-name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your name / target exam (optional)</label>
+            <input type="text" id="desk-name" name="name" placeholder="e.g. Kasia — IELTS Speaking or C1 Advanced" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-amber-700" />
+          </div>
+        </div>
+
+        <div>
+          <label for="desk-message" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your Column-4 personal sentences or spoken question</label>
+          <textarea id="desk-message" name="message" rows="5" required placeholder="Click 'Load my text & metrics from tool above' after typing Column-4 sentences in the Clinic, or paste 1–3 spoken sentences you want checked..." class="w-full rounded-xl border border-slate-300 bg-slate-50 p-3.5 text-sm text-slate-900 leading-relaxed focus:outline-none focus:border-amber-700"></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <button type="submit" id="desk-submit-btn" class="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer">
+            Send to My Belfast Desk (Free 24h Red-Pen Note) &rarr;
+          </button>
+          <div class="text-xs text-slate-600">
+            Prefer direct email? <a href="mailto:gareth@garethenglish.com?subject=Study%205%20%E2%80%94%20Free%2024h%20Red-Pen%20Note" class="underline font-bold text-amber-800 hover:text-amber-700">gareth@garethenglish.com</a>
+          </div>
+        </div>
+        <div id="desk-form-status" role="status" aria-live="polite" class="text-xs sm:text-sm font-semibold"></div>
+      </form>
     </section>
 
     <!-- ================= CROSS-LINKS: RED-PEN RESEARCH SERIES ================= -->
@@ -727,10 +797,24 @@
 
     let activeClinicFilter = 'all';
     const solvedClinicIds = new Set();
+    const clinicInputs = {};
     let reflexTimerEnabled = false;
     let reflexInterval = null;
     let reflexSecondsLeft = 15;
     let clinicTelemetryFired = false;
+
+    function saveClinicInput(id) {
+      const repEl = document.getElementById('rep-' + id);
+      const persEl = document.getElementById('pers-' + id);
+      clinicInputs[id] = {
+        rep: repEl ? repEl.value : ((clinicInputs[id] && clinicInputs[id].rep) || ''),
+        pers: persEl ? persEl.value : ((clinicInputs[id] && clinicInputs[id].pers) || '')
+      };
+    }
+
+    function escapeAttr(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
 
     function fireClinicTelemetry(actionName) {
       if (!clinicTelemetryFired || actionName === 'completed_card') {
@@ -811,6 +895,7 @@
 
       grid.innerHTML = items.map(function (item) {
         const isSolved = solvedClinicIds.has(item.id);
+        const saved = clinicInputs[item.id] || { rep: '', pers: '' };
         return `
           <div class="rounded-2xl border ${isSolved ? 'border-emerald-300 bg-emerald-50/20' : 'border-slate-200 bg-slate-50/70'} p-5 space-y-3.5 flex flex-col justify-between">
             <div class="space-y-2.5">
@@ -831,6 +916,8 @@
                 <input
                   id="rep-${item.id}"
                   type="text"
+                  value="${escapeAttr(saved.rep)}"
+                  oninput="saveClinicInput('${item.id}')"
                   onfocus="if(reflexTimerEnabled) startReflexCountdown()"
                   placeholder="Type the clean spoken repair..."
                   class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-700"
@@ -842,6 +929,8 @@
                 <input
                   id="pers-${item.id}"
                   type="text"
+                  value="${escapeAttr(saved.pers)}"
+                  oninput="saveClinicInput('${item.id}')"
                   placeholder="Write 1 personal example using the exact target..."
                   class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:border-emerald-700"
                 />
@@ -883,6 +972,7 @@
       const persEl = document.getElementById('pers-' + id);
       if (repEl) repEl.value = item.modelRepair;
       if (persEl) persEl.value = item.personalModel;
+      saveClinicInput(id);
       checkClinicItem(id);
     }
 
@@ -937,8 +1027,179 @@
       fireClinicTelemetry('completed_card');
     }
 
+    function loadStudy5ToolIntoDesk() {
+      const collected = [];
+      CLINIC_DRILLS.forEach(function (item) {
+        const repDom = document.getElementById('rep-' + item.id);
+        const persDom = document.getElementById('pers-' + item.id);
+        const stored = clinicInputs[item.id] || {};
+        const repVal = ((repDom ? repDom.value : stored.rep) || '').trim();
+        const persVal = ((persDom ? persDom.value : stored.pers) || '').trim();
+        if (persVal) {
+          let entry = `${item.id.toUpperCase()} (${item.categoryLabel}): Column-4 Personal: "${persVal}"`;
+          if (repVal) entry += ` | Step A Repair: "${repVal}"`;
+          collected.push(entry);
+        }
+      });
+
+      const metricsText = `Spoken Self-Repair Clinic Repaired: ${solvedClinicIds.size}/8 | Column-4 Sentences Loaded: ${collected.length}`;
+      const metricsEl = document.getElementById('desk-metrics-field');
+      const msgEl = document.getElementById('desk-message');
+      const statusEl = document.getElementById('desk-load-status');
+
+      if (metricsEl) metricsEl.value = metricsText;
+      if (msgEl) {
+        if (collected.length > 0) {
+          msgEl.value = `[${metricsText}]\n\nMy Column-4 Personal Sentences:\n- ${collected.join('\n- ')}\n\nQuestion for Gareth: `;
+        } else {
+          msgEl.value = `[${metricsText}]\n\n(No Column-4 personal sentence typed in the 8-item Clinic above yet — type at least 1 in the Clinic or write your spoken sentence below:)\n`;
+        }
+        msgEl.focus();
+      }
+      if (statusEl) {
+        statusEl.textContent = collected.length > 0
+          ? `Loaded ${collected.length} Column-4 personal sentence(s) (${solvedClinicIds.size}/8 clinic items solved).`
+          : 'No Column-4 sentences typed above yet — write one in the Clinic or paste a spoken slip below.';
+      }
+    }
+
+    function readStudyDossierIfPlayed() {
+      let lastFreeTool = 'spoken-vs-written-c1-slips';
+      try {
+        lastFreeTool = localStorage.getItem('gm_last_free_tool') || 'spoken-vs-written-c1-slips';
+      } catch (e) {}
+      let candidateDossier = '';
+      try {
+        const rawSummary = localStorage.getItem('gm_active_dossier_summary');
+        const rawState = localStorage.getItem('gm_candidate_dossier_v1');
+        let parsedState = null;
+        if (rawState) {
+          try { parsedState = JSON.parse(rawState); } catch (_) {}
+        }
+        const hasUpdatedSkill = Boolean(
+          parsedState && parsedState.skills &&
+          Object.values(parsedState.skills).some(sk => sk && sk.lastUpdated)
+        );
+        if (rawSummary) {
+          let summary = null;
+          try { summary = JSON.parse(rawSummary); } catch (_) {}
+          const played = Boolean(
+            summary && (
+              (summary.gamesCompleted || 0) > 0 ||
+              (summary.drillsCompleted || 0) > 0 ||
+              hasUpdatedSkill ||
+              (summary.gamesCompleted === undefined && summary.drillsCompleted === undefined && summary.code)
+            )
+          );
+          if (played) {
+            const parts = [];
+            if (summary.code) parts.push(summary.code);
+            if (summary.cefrShort || summary.cefrBand) parts.push(summary.cefrShort || summary.cefrBand);
+            if (summary.weakestSkill) parts.push('Focus: ' + summary.weakestSkill);
+            candidateDossier = parts.join(' | ') || rawSummary.slice(0, 400);
+          }
+        }
+      } catch (e) {}
+      return { lastFreeTool, candidateDossier };
+    }
+
+    function initBelfastDeskForm(articleSlug) {
+      const form = document.getElementById('belfast-desk-form');
+      if (!form) return;
+      const statusEl = document.getElementById('desk-form-status');
+      const successEl = document.getElementById('desk-success-banner');
+      const submitBtn = document.getElementById('desk-submit-btn');
+      const resetBtn = document.getElementById('desk-reset-btn');
+      const lastToolEl = document.getElementById('desk-last-tool-field');
+      const dossierEl = document.getElementById('desk-dossier-field');
+
+      const syncTel = () => {
+        const tel = readStudyDossierIfPlayed();
+        if (lastToolEl) lastToolEl.value = tel.lastFreeTool || articleSlug;
+        if (dossierEl) dossierEl.value = tel.candidateDossier;
+      };
+      syncTel();
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (successEl) successEl.classList.add('hidden');
+          form.classList.remove('hidden');
+          if (statusEl) statusEl.textContent = '';
+        });
+      }
+
+      form.addEventListener('submit', async (e) => {
+        if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+        if (form.dataset.submitting === 'true') {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+
+        const emailInput = form.querySelector('input[name="email"]');
+        const msgInput = form.querySelector('textarea[name="message"]');
+        const emailVal = emailInput ? emailInput.value.trim() : '';
+        const msgVal = msgInput ? msgInput.value.trim() : '';
+
+        if (!emailVal || !emailVal.includes('@')) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.textContent = 'Please enter a valid email address so I can send your 24h red-pen note.';
+          }
+          if (emailInput) emailInput.focus();
+          return;
+        }
+        if (!msgVal) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.textContent = 'Please load your Column-4 sentences above or paste a spoken sentence first.';
+          }
+          if (msgInput) msgInput.focus();
+          return;
+        }
+
+        syncTel();
+        const origHtml = submitBtn ? submitBtn.innerHTML : 'Send to My Belfast Desk (Free 24h Red-Pen Note) &rarr;';
+        form.dataset.submitting = 'true';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending to Gareth...';
+        }
+        if (statusEl) {
+          statusEl.textContent = '';
+          statusEl.className = 'text-xs sm:text-sm font-semibold';
+        }
+
+        try {
+          const response = await fetch(form.action || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { 'Accept': 'application/json' }
+          });
+          if (!response.ok) throw new Error('Submission failed');
+          window.trackFunnelEvent?.('research_desk_dropbox_succeeded', { article: articleSlug });
+          form.reset();
+          syncTel();
+          form.classList.add('hidden');
+          if (successEl) successEl.classList.remove('hidden');
+        } catch (err) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.innerHTML = 'Could not send right now &mdash; your text above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Study%205%20Free%2024h%20Red-Pen%20Note" class="underline font-bold">gareth@garethenglish.com</a>.';
+          }
+        } finally {
+          delete form.dataset.submitting;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origHtml;
+          }
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', function () {
       renderSpokenClinic();
+      initBelfastDeskForm('spoken-vs-written-c1-slips');
     });
   </script>
   <script src="analytics.js" defer></script>

@@ -412,6 +412,123 @@
       </div>
     </section>
 
+    <!-- ================= SECTION 4: INTERACTIVE FLAGGED-SENTENCE MINI-SANDBOX ================= -->
+    <section id="flagged-sentence-sandbox" class="bg-white border-2 border-amber-600/80 rounded-2xl p-6 sm:p-8 md:p-10 shadow-md space-y-6 scroll-mt-24">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+        <div class="space-y-1.5">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Live Triage Mini-Sandbox &middot; 100% Private In-Browser Check</div>
+          <h2 class="text-2xl sm:text-3xl font-bold display-serif text-slate-900">
+            Error or Just Style? Test a Flagged Sentence
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+            Paste 1&ndash;2 sentences flagged by Grammarly, Word, or an AI checker (plus what it complained about). Run a local check right here to separate common false alarms from genuine uncountable or preposition traps &mdash; or send it to my Belfast desk for a human verdict.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-1.5 shrink-0">
+          <button type="button" onclick="loadFlaggedSample('discussed_if')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition cursor-pointer">
+            Sample: &ldquo;discussed if&rdquo;
+          </button>
+          <button type="button" onclick="loadFlaggedSample('most_and')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition cursor-pointer">
+            Sample: &ldquo;most of the&rdquo; + &ldquo;And&rdquo;
+          </button>
+          <button type="button" onclick="loadFlaggedSample('mixed_traps')" class="px-3 py-1.5 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-bold transition cursor-pointer">
+            Sample: Split Infinitive vs Traps
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label for="flagged-sentence-input" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">1&ndash;2 Sentences Flagged by Grammarly / AI</label>
+          <textarea id="flagged-sentence-input" rows="3" class="w-full rounded-xl border border-slate-300 bg-slate-50 p-3.5 text-sm text-slate-900 leading-relaxed focus:outline-none focus:border-amber-700" placeholder="Paste 1–2 sentences here (e.g. 'Most of the species in these reefs are declining. And researchers have long discussed if quotas help.')..."></textarea>
+        </div>
+        <div>
+          <label for="flagged-context-input" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Optional Context: What Did the Checker Flag or Suggest?</label>
+          <input id="flagged-context-input" type="text" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-amber-700" placeholder="e.g. Grammarly told me to change 'discussed if' to 'whether', or complained about 'And' at the start..." />
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <button type="button" id="flagged-check-btn" onclick="runFlaggedSentenceCheck()" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer">
+            Check Error vs Style (Local)
+          </button>
+          <span class="text-xs text-slate-500">100% private in-browser check &middot; Zero text uploaded.</span>
+        </div>
+      </div>
+
+      <div id="flagged-sandbox-output" aria-live="polite" class="hidden rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-4">
+        <!-- Populated by runFlaggedSentenceCheck() -->
+      </div>
+    </section>
+
+    <!-- ================= EXPLICIT OPT-IN BELFAST DESK DROP-BOX ================= -->
+    <section id="belfast-desk-card" class="bg-white border-2 border-slate-200 rounded-2xl p-6 sm:p-8 md:p-10 shadow-sm space-y-6 scroll-mt-24">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+        <div class="space-y-1.5">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Explicit Opt-In Only &middot; Zero Automatic Upload</div>
+          <h2 class="text-2xl sm:text-3xl font-bold display-serif text-slate-900">
+            Send to My Belfast Desk (Free 24h Red-Pen Note)
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+            Both the 12-Sentence Audit Game and the mini-sandbox above run 100% locally in your browser (zero text uploaded). If an automated checker flagged something nuanced and you want my personal human verdict from Northern Ireland, load your sentence and check readout below and send them explicitly.
+          </p>
+        </div>
+        <div class="shrink-0 bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2 text-xs font-bold text-emerald-900 mono-font">
+          24h Human Reply &middot; No Bots
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <button type="button" id="desk-load-btn" onclick="loadStudy6ToolIntoDesk()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">
+          Load my text &amp; metrics from tool above
+        </button>
+        <span id="desk-load-status" class="text-xs font-semibold text-emerald-800" aria-live="polite"></span>
+      </div>
+
+      <div id="desk-success-banner" role="status" aria-live="polite" class="hidden rounded-xl bg-emerald-50 border border-emerald-200 p-5 text-sm text-emerald-950 space-y-2">
+        <div class="font-bold text-base">Sent straight to my Belfast desk</div>
+        <p class="text-slate-700 leading-relaxed">
+          Thank you &mdash; I have received your flagged sentence and check summary, and I will reply with a human Error-vs-Style verdict within 24 hours.
+        </p>
+        <button type="button" id="desk-reset-btn" class="text-xs font-bold text-amber-800 hover:underline cursor-pointer">
+          Send another flagged sentence
+        </button>
+      </div>
+
+      <form id="belfast-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST" class="space-y-4">
+        <input type="hidden" name="_subject" value="Study 6 (Error vs Style) — Free 24h Human Verdict" />
+        <input type="hidden" name="form_source" value="research_study_6_error_vs_style" />
+        <input type="hidden" id="desk-metrics-field" name="tool_metrics" value="" />
+        <input type="hidden" id="desk-last-tool-field" name="last_free_tool" value="" />
+        <input type="hidden" id="desk-dossier-field" name="candidate_dossier" value="" />
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="desk-email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your email (required for my 24h verdict)</label>
+            <input type="email" id="desk-email" name="email" required placeholder="you@example.com" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-amber-700" />
+          </div>
+          <div>
+            <label for="desk-name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your name / target exam (optional)</label>
+            <input type="text" id="desk-name" name="name" placeholder="e.g. Sofia — IELTS 7.5 or C1 Advanced" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-amber-700" />
+          </div>
+        </div>
+
+        <div>
+          <label for="desk-message" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Flagged sentence(s), checker complaint &amp; question</label>
+          <textarea id="desk-message" name="message" rows="5" required placeholder="Click 'Load my text & metrics from tool above' or paste 1–2 sentences flagged by Grammarly/AI + what it underlined..." class="w-full rounded-xl border border-slate-300 bg-slate-50 p-3.5 text-sm text-slate-900 leading-relaxed focus:outline-none focus:border-amber-700"></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <button type="submit" id="desk-submit-btn" class="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer">
+            Send to My Belfast Desk (Free 24h Red-Pen Note) &rarr;
+          </button>
+          <div class="text-xs text-slate-600">
+            Prefer direct email? <a href="mailto:gareth@garethenglish.com?subject=Study%206%20%E2%80%94%20Free%2024h%20Human%20Verdict" class="underline font-bold text-amber-800 hover:text-amber-700">gareth@garethenglish.com</a>
+          </div>
+        </div>
+        <div id="desk-form-status" role="status" aria-live="polite" class="text-xs sm:text-sm font-semibold"></div>
+      </form>
+    </section>
+
     <!-- ================= CROSS-LINKS: RED-PEN RESEARCH SERIES ================= -->
     <section id="research-series" class="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 md:p-10 space-y-6">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-800 pb-5">
@@ -797,9 +914,374 @@
       }).join('');
     }
 
+    const FLAGGED_SAMPLES = {
+      discussed_if: {
+        sentence: 'Environmental economists have long discussed if regional carbon rebates offset rising fuel costs.',
+        context: "Grammarly underlined 'discussed if' and told me to replace 'if' with 'whether'."
+      },
+      most_and: {
+        sentence: 'Most of the species in shallow Atlantic estuaries rely on eelgrass beds. And coastal planners cannot ignore water quality.',
+        context: "Checker flagged 'Most of the' as wordy and marked sentence-initial 'And' as an error."
+      },
+      mixed_traps: {
+        sentence: 'To quickly review these informations, managers asked me to explain them why outcomes depend of seasonal grants.',
+        context: "Flagged the split infinitive 'To quickly review', but missed 'informations', 'explain them', and 'depend of'."
+      }
+    };
+
+    const FALSE_ALARM_RULES = [
+      {
+        id: 'discussed_if',
+        rx: /\bdiscuss(?:ed|es|ing)?\s+if\b/i,
+        title: '"discussed if" (Style Only — Grammatical English)',
+        detail: 'In British and Cambridge standard English, "discuss if/whether" is grammatical. Switching to "debated whether" can sharpen formal register, but counting "discussed if" as a grammar error is a false alarm.'
+      },
+      {
+        id: 'most_of_the',
+        rx: /\bmost\s+of\s+the\s+(?:[a-z]{3,}s|species|people|children|men|women|data|staff|fish|sheep)\b/i,
+        title: '"most of the + plural noun" (Style Only — Grammatical English)',
+        detail: 'When a plural group is bounded or specified in context ("most of the species in..."), "most of the + noun" is completely grammatical. Trimming "of the" is purely a conciseness edit.'
+      },
+      {
+        id: 'initial_conj',
+        rx: /(?:^|[.!?]\s+)(?:And|But|So|Yet)\b/,
+        title: 'Sentence-initial "And / But / So / Yet" (Style Only — Not an Error)',
+        detail: 'Opening a sentence with "And" or "But" is grammatical across standard British prose. In formal IELTS/C1 reports, "In addition" or "However" may suit tone better, yet it is never a broken grammar rule.'
+      },
+      {
+        id: 'split_infinitive',
+        rx: /\bto\s+(?!(?:only|reply|rely|apply|supply|imply|comply|multiply|rally|tally|fly|italy|july|family|ally|bully|jelly|folly|silly|lily|holy|ugly|early)\b)[a-z]{3,}ly\s+[a-z]{2,}\b/i,
+        title: 'Split infinitive ("to + adverb + verb") (Style Only — Accepted Modern Usage)',
+        detail: 'Placing a clear focusing adverb between "to" and the verb (e.g. "to genuinely understand", "to quickly review") is accepted in modern British and Cambridge English.'
+      },
+      {
+        id: 'passive_reporting',
+        rx: /\bit\s+(?:is|was)\s+(?:widely|often|generally|commonly|strongly)\s+(?:argued|believed|thought|known|assumed|recommended|claimed)\s+that\b/i,
+        title: 'Impersonal passive reporting ("It is widely argued that...") (C1 Target — Keep!)',
+        detail: 'Business checkers often cry wolf over passive voice. In IELTS Task 2 and C1/C2 essays, impersonal passive reporting earns C1 Grammatical Range credit.'
+      },
+      {
+        id: 'challenge_to',
+        rx: /\bpose\s+(?:a\s+)?(?:serious\s+|major\s+)?challenge\s+to\b/i,
+        title: '"pose a challenge to" (Style Only — Valid C1 Collocation)',
+        detail: 'Both "pose a challenge to" and "pose a challenge for" are standard academic English collocations.'
+      }
+    ];
+
+    const REAL_TRAP_RULES = [
+      {
+        id: 'uncountable_plural',
+        rx: /\b(informations|advices|equipments|researches|evidences|staffs|infrastructures|homeworks|knowledges|luggages|furnitures)\b/i,
+        title: 'Uncountable noun pluralised (Genuine Error)',
+        detail: 'Nouns such as information, advice, equipment, research, evidence, staff, and infrastructure stay uncountable (no plural -s). Use "pieces of information" or "studies" when you need a plural.'
+      },
+      {
+        id: 'damages_trap',
+        rx: /\b(?:countless|much|many|great|widespread|severe)\s+damages\b/i,
+        title: 'Physical harm pluralised as "damages" (Genuine Error)',
+        detail: 'Physical or environmental harm is uncountable "damage". Plural "damages" means court-awarded financial compensation, so automated spell-checkers miss it.'
+      },
+      {
+        id: 'explain_me',
+        rx: /\bexplain\s+(?:me|him|her|us|them)\b/i,
+        title: '"explain + person" missing "to" (Genuine Error)',
+        detail: '"Explain" does not take a bare indirect person object. Write "explain to me / explain to them" (or "explain why... to me").'
+      },
+      {
+        id: 'depend_of',
+        rx: /\bdepend(?:s|ed|ing)?\s+of\b/i,
+        title: '"depend of" preposition calque (Genuine Error)',
+        detail: '"Depend" locks strictly onto "on" or "upon" ("depend on local grants"), never "of".'
+      },
+      {
+        id: 'discuss_about',
+        rx: /\bdiscuss(?:ed|es|ing)?\s+about\b/i,
+        title: '"discuss about" transitive verb trap (Genuine Error)',
+        detail: '"Discuss" takes a direct object without "about" ("discuss the policy"). Only the noun takes "about" ("a discussion about...").'
+      },
+      {
+        id: 'arrive_to',
+        rx: /\barrive(?:s|d)?\s+to\b/i,
+        title: '"arrive to" directional preposition error (Genuine Error)',
+        detail: 'Use "arrive in" for cities or countries and "arrive at" for buildings, stations, or events.'
+      },
+      {
+        id: 'if_would',
+        rx: /\bIf\s+[^.!?,]{1,50}\bwould\b/i,
+        title: '"would" inside an "if"-clause (Genuine Error)',
+        detail: 'Keep "would" in the result clause; use Past Simple or Past Perfect inside the conditional "if"-clause.'
+      },
+      {
+        id: 'perspectives_friend',
+        rx: /\b(?:job|career|future|good)\s+perspectives\b/i,
+        title: '"perspectives" lexical false friend (Genuine Error)',
+        detail: 'When referring to future employment opportunities, use "career prospects" or "job prospects", not "perspectives".'
+      }
+    ];
+
+    let lastSandboxAnalysis = null;
+
+    function loadFlaggedSample(key) {
+      const s = FLAGGED_SAMPLES[key];
+      if (!s) return;
+      const sentEl = document.getElementById('flagged-sentence-input');
+      const ctxEl = document.getElementById('flagged-context-input');
+      if (sentEl) sentEl.value = s.sentence;
+      if (ctxEl) ctxEl.value = s.context;
+      runFlaggedSentenceCheck();
+    }
+
+    function evaluateFlaggedText(text) {
+      const styleAlarms = FALSE_ALARM_RULES.filter(r => r.rx.test(text));
+      const realTraps = REAL_TRAP_RULES.filter(r => r.rx.test(text));
+      return { styleAlarms, realTraps };
+    }
+
+    function runFlaggedSentenceCheck() {
+      const sentEl = document.getElementById('flagged-sentence-input');
+      const ctxEl = document.getElementById('flagged-context-input');
+      const outEl = document.getElementById('flagged-sandbox-output');
+      if (!sentEl || !outEl) return;
+
+      const text = (sentEl.value || '').trim();
+      const context = ctxEl ? (ctxEl.value || '').trim() : '';
+      outEl.classList.remove('hidden');
+
+      if (!text) {
+        outEl.innerHTML = '<div class="text-xs sm:text-sm font-semibold text-rose-800">Paste 1–2 sentences above first (or pick one of the three samples), then click Check.</div>';
+        return;
+      }
+
+      const res = evaluateFlaggedText(text);
+      const summaryLine = `Local Triage: ${res.styleAlarms.length} style false alarm(s) · ${res.realTraps.length} genuine grammar/L1 trap(s)`;
+      lastSandboxAnalysis = { text, context, summaryLine, ...res };
+      fireGameTelemetry('flagged_sandbox_check');
+
+      const styleHtml = res.styleAlarms.length
+        ? res.styleAlarms.map(a =>
+            `<div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs space-y-1">
+              <div class="font-bold text-amber-950">🟢 Likely False Alarm (Style Only): ${escapeHtml(a.title)}</div>
+              <div class="text-slate-700">${escapeHtml(a.detail)}</div>
+            </div>`
+          ).join('')
+        : '<div class="text-xs text-slate-600 bg-white border border-slate-200 rounded-xl p-3">No classic false-alarm rule patterns ("discussed if", "most of the", initial "And/But", split infinitives) detected.</div>';
+
+      const trapHtml = res.realTraps.length
+        ? res.realTraps.map(t =>
+            `<div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs space-y-1">
+              <div class="font-bold text-rose-900">🔴 Genuine Grammar / L1 Trap: ${escapeHtml(t.title)}</div>
+              <div class="text-slate-700">${escapeHtml(t.detail)}</div>
+            </div>`
+          ).join('')
+        : '<div class="text-xs text-slate-600 bg-white border border-slate-200 rounded-xl p-3">No textbook uncountable-plural or preposition trap from the local pattern list matched — context, article choice, and collocation still benefit from a quick human check.</div>';
+
+      outEl.innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="text-xs font-bold uppercase tracking-wider text-slate-700 mono-font">${escapeHtml(summaryLine)}</div>
+          <button type="button" id="sandbox-send-verdict-btn" onclick="sendSandboxToBelfastDesk()" class="px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold transition cursor-pointer">
+            Send to Gareth&rsquo;s Belfast Desk for a Human Verdict &rarr;
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-900 mono-font">Style False Alarms (${res.styleAlarms.length})</div>
+            ${styleHtml}
+          </div>
+          <div class="space-y-2">
+            <div class="text-xs font-bold uppercase tracking-wider text-rose-900 mono-font">Genuine Errors (${res.realTraps.length})</div>
+            ${trapHtml}
+          </div>
+        </div>
+      `;
+    }
+
+    function sendSandboxToBelfastDesk() {
+      loadStudy6ToolIntoDesk();
+      const card = document.getElementById('belfast-desk-card');
+      const emailEl = document.getElementById('desk-email');
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setTimeout(() => {
+        if (emailEl && !emailEl.value.trim()) emailEl.focus();
+      }, 250);
+    }
+
+    function loadStudy6ToolIntoDesk() {
+      const sentEl = document.getElementById('flagged-sentence-input');
+      const ctxEl = document.getElementById('flagged-context-input');
+      const rawSent = sentEl ? sentEl.value.trim() : '';
+      const rawCtx = ctxEl ? ctxEl.value.trim() : '';
+
+      const accStat = (document.getElementById('game-accuracy-stat') && document.getElementById('game-accuracy-stat').textContent) || '0 / 0';
+      const repEfsr = (document.getElementById('game-reported-efsr') && document.getElementById('game-reported-efsr').textContent) || '50.0%';
+      const auditSummary = `12-Item Red-Pen Audit: ${accStat} accurate | Reported EFSR: ${repEfsr}`;
+
+      let sandboxSummary = 'No sentence pasted in mini-sandbox yet';
+      if (rawSent) {
+        const res = evaluateFlaggedText(rawSent);
+        const alarmLabels = res.styleAlarms.map(a => a.title).join('; ') || 'none';
+        const trapLabels = res.realTraps.map(t => t.title).join('; ') || 'none';
+        sandboxSummary = `Local Check (${res.styleAlarms.length} false alarms [${alarmLabels}], ${res.realTraps.length} real traps [${trapLabels}])`;
+      }
+
+      const fullMetrics = `${sandboxSummary} | ${auditSummary}`;
+      const metricsEl = document.getElementById('desk-metrics-field');
+      const msgEl = document.getElementById('desk-message');
+      const statusEl = document.getElementById('desk-load-status');
+
+      if (metricsEl) metricsEl.value = fullMetrics;
+      if (msgEl) {
+        if (rawSent) {
+          msgEl.value = `[${fullMetrics}]\n\nFlagged sentence(s):\n"${rawSent}"\n\nChecker note / suggestion: ${rawCtx || '(not specified)'}\n\nIs this a genuine grammar error or just style? `;
+        } else {
+          msgEl.value = `[${auditSummary}]\n\nPaste 1–2 sentences flagged by Grammarly or an AI checker (plus what it complained about) for my human verdict:\n`;
+        }
+        msgEl.focus();
+      }
+      if (statusEl) {
+        statusEl.textContent = rawSent
+          ? 'Loaded flagged sentence + Error-vs-Style check readout.'
+          : 'Loaded 12-Sentence Audit metrics. Paste your flagged sentence below.';
+      }
+    }
+
+    function readStudyDossierIfPlayed() {
+      let lastFreeTool = 'grammar-error-vs-style-audit';
+      try {
+        lastFreeTool = localStorage.getItem('gm_last_free_tool') || 'grammar-error-vs-style-audit';
+      } catch (e) {}
+      let candidateDossier = '';
+      try {
+        const rawSummary = localStorage.getItem('gm_active_dossier_summary');
+        const rawState = localStorage.getItem('gm_candidate_dossier_v1');
+        let parsedState = null;
+        if (rawState) {
+          try { parsedState = JSON.parse(rawState); } catch (_) {}
+        }
+        const hasUpdatedSkill = Boolean(
+          parsedState && parsedState.skills &&
+          Object.values(parsedState.skills).some(sk => sk && sk.lastUpdated)
+        );
+        if (rawSummary) {
+          let summary = null;
+          try { summary = JSON.parse(rawSummary); } catch (_) {}
+          const played = Boolean(
+            summary && (
+              (summary.gamesCompleted || 0) > 0 ||
+              (summary.drillsCompleted || 0) > 0 ||
+              hasUpdatedSkill ||
+              (summary.gamesCompleted === undefined && summary.drillsCompleted === undefined && summary.code)
+            )
+          );
+          if (played) {
+            const parts = [];
+            if (summary.code) parts.push(summary.code);
+            if (summary.cefrShort || summary.cefrBand) parts.push(summary.cefrShort || summary.cefrBand);
+            if (summary.weakestSkill) parts.push('Focus: ' + summary.weakestSkill);
+            candidateDossier = parts.join(' | ') || rawSummary.slice(0, 400);
+          }
+        }
+      } catch (e) {}
+      return { lastFreeTool, candidateDossier };
+    }
+
+    function initBelfastDeskForm(articleSlug) {
+      const form = document.getElementById('belfast-desk-form');
+      if (!form) return;
+      const statusEl = document.getElementById('desk-form-status');
+      const successEl = document.getElementById('desk-success-banner');
+      const submitBtn = document.getElementById('desk-submit-btn');
+      const resetBtn = document.getElementById('desk-reset-btn');
+      const lastToolEl = document.getElementById('desk-last-tool-field');
+      const dossierEl = document.getElementById('desk-dossier-field');
+
+      const syncTel = () => {
+        const tel = readStudyDossierIfPlayed();
+        if (lastToolEl) lastToolEl.value = tel.lastFreeTool || articleSlug;
+        if (dossierEl) dossierEl.value = tel.candidateDossier;
+      };
+      syncTel();
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (successEl) successEl.classList.add('hidden');
+          form.classList.remove('hidden');
+          if (statusEl) statusEl.textContent = '';
+        });
+      }
+
+      form.addEventListener('submit', async (e) => {
+        if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+        if (form.dataset.submitting === 'true') {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+
+        const emailInput = form.querySelector('input[name="email"]');
+        const msgInput = form.querySelector('textarea[name="message"]');
+        const emailVal = emailInput ? emailInput.value.trim() : '';
+        const msgVal = msgInput ? msgInput.value.trim() : '';
+
+        if (!emailVal || !emailVal.includes('@')) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.textContent = 'Please enter a valid email address so I can send your 24h verdict.';
+          }
+          if (emailInput) emailInput.focus();
+          return;
+        }
+        if (!msgVal) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.textContent = 'Please paste or load a flagged sentence above first.';
+          }
+          if (msgInput) msgInput.focus();
+          return;
+        }
+
+        syncTel();
+        const origHtml = submitBtn ? submitBtn.innerHTML : 'Send to My Belfast Desk (Free 24h Red-Pen Note) &rarr;';
+        form.dataset.submitting = 'true';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending to Gareth...';
+        }
+        if (statusEl) {
+          statusEl.textContent = '';
+          statusEl.className = 'text-xs sm:text-sm font-semibold';
+        }
+
+        try {
+          const response = await fetch(form.action || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { 'Accept': 'application/json' }
+          });
+          if (!response.ok) throw new Error('Submission failed');
+          window.trackFunnelEvent?.('research_desk_dropbox_succeeded', { article: articleSlug });
+          form.reset();
+          syncTel();
+          form.classList.add('hidden');
+          if (successEl) successEl.classList.remove('hidden');
+        } catch (err) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.innerHTML = 'Could not send right now &mdash; your text above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Study%206%20Free%2024h%20Human%20Verdict" class="underline font-bold">gareth@garethenglish.com</a>.';
+          }
+        } finally {
+          delete form.dataset.submitting;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origHtml;
+          }
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', function () {
       renderRedPenGame();
       updateEfsrDashboard();
+      initBelfastDeskForm('grammar-error-vs-style-audit');
     });
   </script>
   <script src="analytics.js" defer></script>

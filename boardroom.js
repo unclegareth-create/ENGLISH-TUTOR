@@ -706,24 +706,47 @@
             title.style.color = "#f59e0b";
             desc.textContent = "Scored under 80%? In high-stakes meetings, even small phrasing slips can undermine your credibility. In my 1-to-1 Business English sessions, I practise real-time diplomatic phrasing with you for your actual work calls.";
         } else {
-            title.textContent = "YOU WERE FIRED";
+            title.textContent = "THE BOARD PUSHED BACK";
             title.style.color = "var(--danger)";
             desc.textContent = "Your blunt phrasing alienated the board. In international business, linguistic nuance is influence. In my 1-to-1 Business English sessions, I help you build instinctive tact and diplomacy.";
         }
 
         document.getElementById('final-score').textContent = String(finalReputation);
         document.getElementById('lead-score').value = `Boardroom Pitch - Rep: ${finalReputation}% (${score}/${totalQuestions})`;
-        document.getElementById('lead-email').value = emailInput ? emailInput.value.trim() : '';
+        const dossierEl = document.getElementById('lead-dossier');
+        if (dossierEl) {
+            try { dossierEl.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+        }
+        const leadEmailEl = document.getElementById('lead-email');
+        if (leadEmailEl && !leadEmailEl.value.trim() && emailInput) {
+            leadEmailEl.value = emailInput.value.trim();
+        }
         document.getElementById('lead-name').value = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Executive Player';
 
-        endModal.classList.add('open');
+        const formStatusEl = document.getElementById('lead-form-status');
+        if (formStatusEl) {
+            formStatusEl.textContent = '';
+            formStatusEl.className = 'desk-form-status';
+        }
+        const submitBtn = document.getElementById('btn-claim');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Message for Free 24h C1 Note →';
+        }
 
-        if (typeof window.showDiagnosticGate === 'function') {
-            setTimeout(() => {
+        endModal.classList.add('open');
+    }
+
+    const viewRecallBtn = document.getElementById('btn-view-recall');
+    if (viewRecallBtn) {
+        viewRecallBtn.addEventListener('click', () => {
+            endModal.classList.remove('open');
+            if (typeof window.showDiagnosticGate === 'function') {
                 window.showDiagnosticGate({
                     gameName: 'The Boardroom Pitch',
                     score: Math.max(0, score),
                     maxScore: totalQuestions || 8,
+                    category: 'register_shift',
                     weakArea: 'Executive Diplomatic Nuance & C1/C2 Register Precision',
                     examImpact: 'In international executive meetings and Cambridge C2 speaking, blunt or informal phrasing undermines professional authority and reduces your discourse management score.',
                     onReplay: () => {
@@ -731,8 +754,75 @@
                         startBtn.click();
                     }
                 });
-            }, 600);
-        }
+            } else {
+                window.location.href = 'index.html#contact';
+            }
+        });
+    }
+
+    const leadForm = document.getElementById('lead-form');
+    if (leadForm) {
+        leadForm.addEventListener('submit', async (e) => {
+            if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+            e.preventDefault();
+            if (leadForm.dataset.submitting === 'true') return;
+
+            const gotcha = leadForm.querySelector('input[name="_gotcha"]');
+            const statusEl = document.getElementById('lead-form-status');
+            const submitBtn = document.getElementById('btn-claim');
+            const origText = submitBtn ? submitBtn.textContent : 'Send Message for Free 24h C1 Note →';
+
+            if (gotcha && gotcha.value.trim()) {
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status is-success';
+                    statusEl.textContent = 'Sent to my desk — thank you.';
+                }
+                return;
+            }
+
+            const dossierEl = document.getElementById('lead-dossier');
+            if (dossierEl) {
+                try { dossierEl.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+            }
+
+            leadForm.dataset.submitting = 'true';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending to my desk...';
+            }
+            if (statusEl) {
+                statusEl.className = 'desk-form-status';
+                statusEl.textContent = '';
+            }
+
+            try {
+                const res = await fetch(leadForm.action || 'https://formspree.io/f/mvkgrwvj', {
+                    method: 'POST',
+                    body: new FormData(leadForm),
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) throw new Error('Request failed');
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status is-success';
+                    statusEl.textContent = 'Received at my desk in Northern Ireland. I will send 2 natural British C1 options within 24 hours.';
+                }
+                if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+                if (typeof window.trackFunnelEvent === 'function') {
+                    window.trackFunnelEvent('desk_dropbox_submitted', { tool: 'boardroom_pitch' });
+                }
+            } catch (_) {
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status is-error';
+                    statusEl.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=Boardroom%20Pitch%20C1%20Message%20Check" style="color:inherit;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = origText;
+                }
+            } finally {
+                leadForm.dataset.submitting = 'false';
+            }
+        });
     }
 
 })();

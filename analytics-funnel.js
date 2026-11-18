@@ -38,9 +38,9 @@
   const AI_REFERRER_KEY = 'gm_ai_referrer';
 
   const RESEARCH_ARTICLE_RE = /(^|\/)(c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.html/i;
-  const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|c1-part4-deconstructor|ielts-c1-syntax-workbench|speaking-part2-arc-trainer|academy|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
+  const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|c1-part4-deconstructor|ielts-c1-syntax-workbench|speaking-part2-arc-trainer|connected-speech-lab|academy|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
   const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses|key-word-transformations|word-formation|ielts-c1-structural-shifts|ielts-speaking-part-3|business-english-meetings|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.(html|pdf)/i;
-  const FREE_GAME_RE = /(^|\/)(between-the-lines|grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-verbs|phrasal-reactor|word-factory|boardroom-pitch|chronicle-88|abyssal-bathysphere|gareth_english_arcade_observatory|c1_arcade_showcase)\.html/i;
+  const FREE_GAME_RE = /(^|\/)(between-the-lines|red-pen-speedrun|jsw-c1-mansion|grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-verbs|phrasal-reactor|word-factory|boardroom-pitch|chronicle-88|abyssal-bathysphere|gareth_english_arcade_observatory|c1_arcade_showcase)\.html/i;
 
   function getTrail() {
     try {
@@ -204,9 +204,17 @@
       }
 
       const pct = Math.max(0, Math.min(100, Math.round((score / (maxScore || 1)) * 100)));
-      const cefrEstimate = dossierSummary?.cefrBand || (pct >= 85 ? 'C1 Advanced / C2 Ready' : pct >= 65 ? 'B2 Upper-Intermediate (Borderline C1)' : 'B1/B2 Transition');
-      const rawDiagnosedWeakness = String(dossierSummary?.weakestSkill || rawWeakArea);
-      const diagnosedAccuracy = typeof dossierSummary?.weakestAccuracy === 'number' ? dossierSummary.weakestAccuracy : pct;
+      const playedCategoryCount = typeof dossierSummary?.playedCategories === 'number'
+        ? dossierSummary.playedCategories
+        : (dossierSummary && dossierSummary.skills
+            ? Object.values(dossierSummary.skills).filter((s) => s && s.attempts > 0 && s.accuracy !== null).length
+            : 0);
+      const cefrEstimate = (playedCategoryCount > 0 && dossierSummary?.cefrBand)
+        ? dossierSummary.cefrBand
+        : (pct >= 85 ? 'C1 Advanced / C2 Ready' : pct >= 65 ? 'B2 Upper-Intermediate (Borderline C1)' : 'B1/B2 Transition');
+      const useDossierWeakest = playedCategoryCount >= 2 && Boolean(dossierSummary?.weakestSkill) && typeof dossierSummary?.weakestAccuracy === 'number';
+      const rawDiagnosedWeakness = useDossierWeakest ? String(dossierSummary.weakestSkill) : rawWeakArea;
+      const diagnosedAccuracy = useDossierWeakest ? dossierSummary.weakestAccuracy : pct;
       const dossierCode = String(dossierSummary?.code || '');
       const savedEmail = String(window.CandidateDossier?.getState?.()?.savedEmail || '');
       const hasRecallDrill = typeof window.CandidateDossier?.openRecallDrill === 'function';

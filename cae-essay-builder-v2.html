@@ -62,7 +62,7 @@
       }
     ]
   }
-  </script>
+</script>
   <style>
     :root {
       --bg: #0f172a;
@@ -333,6 +333,83 @@
     .reveal-panel { display: none; }
     .reveal-panel.open { display: block; margin-top: 1rem; }
     .benchmark-card { background: #0f172a; border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-top: 1rem; }
+    .sample-compare-notice {
+      display: none;
+      margin-top: 0.75rem;
+      padding: 0.7rem 0.95rem;
+      border-radius: 8px;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      background: rgba(245, 158, 11, 0.12);
+      color: #fde68a;
+      font-size: 0.84rem;
+    }
+    .sample-compare-notice.visible { display: block; }
+    .desk-card {
+      background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%);
+      border: 1px solid #10b981;
+    }
+    .desk-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .desk-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+    }
+    .desk-field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 0.35rem;
+    }
+    .desk-input {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #f8fafc;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.92rem;
+      outline: none;
+    }
+    .desk-input:focus { border-color: #34d399; }
+    .desk-status-ok {
+      display: none;
+      margin-top: 0.9rem;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid #34d399;
+      color: #d1fae5;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .desk-status-ok.visible { display: block; }
+    .desk-status-err {
+      display: none;
+      margin-top: 0.9rem;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      background: rgba(244, 63, 94, 0.16);
+      border: 1px solid #fb7185;
+      color: #fecdd3;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .desk-status-err.visible { display: block; }
+    @media (max-width: 480px) {
+      body { padding: 1rem 0.65rem; }
+      header { padding: 1.25rem; }
+      .card { padding: 1.2rem; }
+      .step-pill { min-width: 105px; }
+    }
 
     @media print {
       body { background: white; color: black; padding: 0; }
@@ -393,8 +470,11 @@
     </div>
     <div class="essay-output" id="full-essay-output">Your sentences will stitch together here as you type...</div>
     <div style="margin-top:0.75rem; display:flex; flex-wrap:wrap; gap:0.6rem;">
-      <button type="button" class="btn btn-secondary" onclick="loadAllModelSentences()" style="font-size:0.8rem; padding:0.45rem 0.9rem;">⚡ Load Full C1 Model into Builder</button>
+      <button type="button" class="btn btn-secondary" onclick="loadAllModelSentences()" style="font-size:0.8rem; padding:0.45rem 0.9rem;">👁️ Compare With Sample C1 Sentences</button>
       <button type="button" class="btn btn-secondary" onclick="clearAllSentences()" style="font-size:0.8rem; padding:0.45rem 0.9rem; background:#334155;">Clear Builder</button>
+    </div>
+    <div id="sample-compare-notice" class="sample-compare-notice" role="status">
+      <strong>Sample C1 comparison loaded:</strong> Inspect the five structural shifts below, then click <strong>Clear Builder</strong> when you are ready to draft your own sentences for feedback.
     </div>
 
     <!-- Live 5-Badge C1 Syntactic Detector & Red-Pen Cliché Guard -->
@@ -504,17 +584,67 @@
     </div>
   </div>
 
-  <!-- Next Steps: Course & Personalised Feedback CTA -->
+  <!-- Inline Belfast Desk Red-Pen Card -->
+  <section id="free-redpen-check" class="card desk-card" aria-labelledby="desk-redpen-heading">
+    <div class="desk-header-row">
+      <div>
+        <span class="tag" style="background:#10b981; color:#052e16;">Free 1-Paragraph Desk Note · Reply Within 24h</span>
+        <h2 id="desk-redpen-heading" style="color:#ffffff; margin-top:0.2rem; margin-bottom:0.3rem;">Send Your Assembled Draft + Rubric Score to My Belfast Desk</h2>
+      </div>
+      <button type="button" id="btn-pull-builder-draft" class="btn btn-primary" style="background:#0284c7; font-size:0.82rem;">Pull My Assembled Essay &amp; Rubric ↓</button>
+    </div>
+    <p style="font-size:0.9rem; color:#d1fae5; margin-bottom:1.1rem;">
+      Automated badges can spot surface patterns, yet only a human marker can judge your Content balance, paragraph cohesion, and whether a wording issue is a real error or just style. Pull your assembled steps and self-rubric score below (or paste 1 paragraph up to 150 words) and I will reply personally from my desk in Northern Ireland within 24 hours.
+    </p>
+
+    <form id="contact-form" action="https://formspree.io/f/mvkgrwvj" method="POST" style="position:relative;">
+      <input type="hidden" name="_subject" value="Free 1-Paragraph Red-Pen Check (CAE Essay Builder)" />
+      <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact-form" />
+      <input type="hidden" name="source_page" value="cae-essay-builder-v2.html" />
+      <input type="hidden" name="form_source" value="cae_essay_builder_inline_desk" />
+      <input type="hidden" id="desk-rubric-field" name="rubric_score" value="" />
+      <input type="hidden" id="desk-detector-field" name="c1_detector_summary" value="" />
+      <input type="hidden" id="candidate-dossier-field" name="candidate_dossier" value="" />
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute; left:-9999px;" />
+
+      <div class="desk-form-grid">
+        <div class="desk-field">
+          <label for="redpen-name">First Name (Optional)</label>
+          <input id="redpen-name" class="desk-input" name="name" type="text" autocomplete="name" placeholder="Your first name" />
+        </div>
+        <div class="desk-field">
+          <label for="redpen-email">Email Address</label>
+          <input id="redpen-email" class="desk-input" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+        </div>
+      </div>
+
+      <div class="desk-field" style="margin-bottom:0.95rem;">
+        <label for="redpen-message">Your Assembled Essay, 1 Paragraph (Up to 150 Words), or Question</label>
+        <textarea id="redpen-message" name="message" rows="4" required placeholder="Click 'Pull My Assembled Essay &amp; Rubric' above, or paste up to 150 words + your target CAE grade/exam date..."></textarea>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem;">
+        <span style="font-size:0.8rem; color:#cbd5e1;">Read personally by Gareth Montgomery · <a href="privacy-policy.html" style="color:#a7f3d0; font-weight:600;">Privacy Policy</a></span>
+        <button id="redpen-submit-btn" type="submit" class="btn btn-success">Send for Free 24h Desk Note →</button>
+      </div>
+
+      <div id="redpen-success-banner" class="desk-status-ok" role="status" aria-live="polite">
+        ✓ Sent! I have received your draft and rubric notes and will reply personally from Northern Ireland within 24 hours.
+      </div>
+      <div id="redpen-form-status" class="desk-status-err" role="status" aria-live="polite"></div>
+    </form>
+  </section>
+
+  <!-- Next Steps: Personalised Feedback & Live Coaching -->
   <div class="card" style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); border-color: #3b82f6;">
     <span class="tag" style="background:#f59e0b; color:#0f172a;">Next Steps with Gareth Montgomery</span>
-    <h2 style="color:#ffffff; margin-top:0.25rem;">Want Your C1 Essay Marked Line-by-Line or More C1/C2 Practice?</h2>
+    <h2 style="color:#ffffff; margin-top:0.25rem;">Want a Full 220–260 Word CAE Script Marked Line-by-Line?</h2>
     <p style="font-size:0.94rem; color:#cbd5e1; margin-bottom:1.25rem;">
-      Send your completed 220–260 word CAE essay for <strong>Written Essay Feedback (£29)</strong> (line-by-line red-pen rewrites and official 20-mark Cambridge rubric breakdown within 48h), book a <strong>30-minute 1-to-1 Starter Session (£35)</strong>, or master C1/C2 grammar across my <strong>15-Lesson Dark Academia Course (5 lessons free, full course £24)</strong>.
+      Send a complete Paper 1 essay for <strong>Written Essay Feedback (£29)</strong> (line-by-line red-pen rewrites and official 20-mark Cambridge rubric breakdown within 48h), book a <strong>30-minute 1-to-1 Starter Session (£35)</strong>, or inspect a sample red-pen mark-up first.
     </p>
     <div style="display:flex; flex-wrap:wrap; gap:0.75rem;">
       <a href="index.html?package=Written+essay+feedback+(%C2%A329)&tier=audit_async_29#enquiry-card" class="btn btn-primary" style="text-decoration:none;">Order Written Essay Feedback (£29) →</a>
-      <a href="index.html#pricing" class="btn btn-secondary" style="text-decoration:none; background:#0284c7;">Book 30-Min Starter Session (£35)</a>
-      <a href="dark-academia-index.html" class="btn btn-secondary" style="text-decoration:none; border:1px solid #f59e0b; color:#fde68a;">🕯️ 15-Lesson Dark Academia Course (5 Free · £24)</a>
+      <a href="index.html#contact" class="btn btn-secondary" style="text-decoration:none; background:#0284c7;">Book 30-Min Starter Session (£35)</a>
       <a href="how-i-mark.html" class="btn btn-secondary" style="text-decoration:none;">See Sample Markup</a>
     </div>
   </div>
@@ -547,7 +677,7 @@
     {
       badge: "Body 1 • Sentence 3–4",
       title: "Sentence 3 & 4: Your Analysis of Content Point 1",
-      desc: "Analyse the pros and cons of taxing unhealthy food using the four exact grammar targets from the Prezi node.",
+      desc: "Analyse the pros and cons of taxing unhealthy food using the four C1 grammar targets below.",
       constraints: [
         { label: "Modal verb of hedging (p.43)", hint: "may well, might, could conceivably, would appear to" },
         { label: "Non-defining relative clause (p.112)", hint: "..., which disproportionately affects lower earners, ..." },
@@ -581,7 +711,7 @@
     }
   ];
 
-  // Official Cambridge C1 Writing Rubric Descriptors (from Prezi tables)
+  // Official Cambridge C1 Writing Rubric Descriptors
   const rubricData = [
     {
       key: "content",
@@ -633,6 +763,9 @@
     }
   ];
 
+  let isSampleLoaded = false;
+  let currentDetectorSummary = "0 / 5 C1 Structures Detected";
+  let currentRubricSummary = "12 / 20 — Grade C (C1 Pass • ~180–192)";
   let currentStep = 0;
   let userInputs = Array(steps.length).fill("");
   let checkedState = steps.map(s => Array(s.constraints.length).fill(false));
@@ -690,6 +823,9 @@
 
   function saveCurrentInput() {
     userInputs[currentStep] = document.getElementById('sentence-input').value;
+    isSampleLoaded = false;
+    const notice = document.getElementById('sample-compare-notice');
+    if (notice) notice.classList.remove('visible');
     updateFullEssay();
   }
 
@@ -702,6 +838,7 @@
         paragraphs.push(currentPara.join(' '));
         currentPara = [];
       }
+  
     });
     if (currentPara.length > 0) paragraphs.push(currentPara.join(' '));
     const finalStr = paragraphs.join('\n\n');
@@ -734,8 +871,9 @@
     });
 
     const summaryEl = document.getElementById("detector-summary");
+    currentDetectorSummary = `${count} / 5 C1 Structures Detected`;
     if (summaryEl) {
-      summaryEl.textContent = `${count} / 5 C1 Structures Detected`;
+      summaryEl.textContent = currentDetectorSummary;
       summaryEl.style.color = count >= 4 ? "#4ade80" : (count >= 2 ? "#f59e0b" : "#94a3b8");
     }
 
@@ -764,12 +902,18 @@
   function loadAllModelSentences() {
     userInputs = steps.map(s => s.model);
     checkedState = steps.map(s => Array(s.constraints.length).fill(true));
+    isSampleLoaded = true;
+    const notice = document.getElementById('sample-compare-notice');
+    if (notice) notice.classList.add('visible');
     renderStep();
   }
 
   function clearAllSentences() {
     userInputs = Array(steps.length).fill("");
     checkedState = steps.map(s => Array(s.constraints.length).fill(false));
+    isSampleLoaded = false;
+    const notice = document.getElementById('sample-compare-notice');
+    if (notice) notice.classList.remove('visible');
     renderStep();
   }
 
@@ -805,33 +949,67 @@
     if (total >= 18) verdict = "Grade A (C2 Level • ~200–210)";
     else if (total >= 16) verdict = "Grade B (Strong C1 • ~193–199)";
     else if (total >= 12) verdict = "Grade C (C1 Pass • ~180–192)";
-    document.getElementById('total-rubric-score').textContent = `${total} / 20 — ${verdict}`;
+    currentRubricSummary = `${total} / 20 — ${verdict}`;
+    document.getElementById('total-rubric-score').textContent = currentRubricSummary;
   }
 
   function selectBand(cIdx, band) {
     rubricData[cIdx].selected = band;
     renderRubric();
 
-  document.querySelectorAll('.reveal-model-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetId = btn.getAttribute('data-target');
-      const panel = document.getElementById(targetId);
-      if (!panel) return;
-      const isOpen = panel.classList.contains('open');
-      if (isOpen) {
-        panel.classList.remove('open');
-        btn.textContent = '👁️ Reveal Cambridge Model';
-      } else {
-        panel.classList.add('open');
-        btn.textContent = '🙈 Hide Cambridge Model';
+
+
+  }
+
+  function readPlayedDossierSummary() {
+    const parts = [];
+    try {
+      const rawD = localStorage.getItem('gm_candidate_dossier_v1');
+      if (rawD) {
+        const d = JSON.parse(rawD);
+        const skills = d && d.skills && typeof d.skills === 'object' ? d.skills : {};
+        const hasUpdatedSkill = Object.keys(skills).some(k => Boolean(skills[k] && skills[k].lastUpdated));
+        const played = Boolean(d && ((d.gamesCompleted || 0) > 0 || (d.drillsCompleted || 0) > 0 || hasUpdatedSkill));
+        if (played) {
+          if (d.code) parts.push('Lab code: ' + d.code);
+          if (d.weakestSkill) parts.push('Weakest skill: ' + d.weakestSkill);
+        }
       }
-    });
-  });
+    } catch (_) {}
+    return parts.join(' | ');
+  }
+
+  function getAssembledSummaryText() {
+    const stepLines = steps
+      .map((s, idx) => {
+        const txt = (userInputs[idx] || '').trim();
+        return txt ? `${s.badge}: ${txt}` : '';
+      })
+      .filter(Boolean);
+    const rubricBreakdown = rubricData.map(c => `${c.title}: ${c.selected}/5`).join(', ');
+    if (!stepLines.length) return '';
+    const sampleTag = isSampleLoaded ? '[Sample Comparison Text — Replace With Your Own Sentences Before Submitting]\n' : '';
+    return `${sampleTag}${stepLines.join('\n\n')}\n\n[Self-Rubric: ${currentRubricSummary} (${rubricBreakdown}) | ${currentDetectorSummary}]`;
+  }
+
+  function pullAssembledToDeskForm() {
+    const msgEl = document.getElementById('redpen-message');
+    if (!msgEl) return;
+    const combined = getAssembledSummaryText();
+    if (!combined) {
+      msgEl.focus();
+      msgEl.placeholder = 'Write at least 1 sentence in the builder above (or paste up to 150 words directly here)...';
+      return;
+    }
+    msgEl.value = combined.slice(0, 2200);
+    msgEl.focus();
   }
 
   renderStep();
   renderRubric();
 
+
+
   document.querySelectorAll('.reveal-model-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const targetId = btn.getAttribute('data-target');
@@ -847,9 +1025,75 @@
       }
     });
   });
+
+  (function wireCaeDeskForm() {
+    const pullBtn = document.getElementById('btn-pull-builder-draft');
+    if (pullBtn) {
+      pullBtn.addEventListener('click', pullAssembledToDeskForm);
+    }
+
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+      const rubricField = document.getElementById('desk-rubric-field');
+      const detectorField = document.getElementById('desk-detector-field');
+      const dossierField = document.getElementById('candidate-dossier-field');
+      const rubricBreakdown = rubricData.map(c => `${c.title}: ${c.selected}/5`).join(', ');
+      if (rubricField) rubricField.value = `${currentRubricSummary} (${rubricBreakdown})`;
+      if (detectorField) detectorField.value = `${currentDetectorSummary}${isSampleLoaded ? ' | SampleComparisonActive' : ''}`;
+      if (dossierField) dossierField.value = readPlayedDossierSummary();
+
+      if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+      if (form.dataset.submitting === 'true') {
+        e.preventDefault();
+        return;
+      }
+      e.preventDefault();
+
+      const submitBtn = document.getElementById('redpen-submit-btn');
+      const successBanner = document.getElementById('redpen-success-banner');
+      const formStatus = document.getElementById('redpen-form-status');
+      const originalText = submitBtn ? submitBtn.textContent : 'Send for Free 24h Desk Note →';
+
+      form.dataset.submitting = 'true';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+      }
+      if (successBanner) successBanner.classList.remove('visible');
+      if (formStatus) {
+        formStatus.textContent = '';
+        formStatus.classList.remove('visible');
+      }
+
+      try {
+        const response = await fetch(form.action || 'https://formspree.io/f/mvkgrwvj', {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' }
+        });
+        if (!response.ok) throw new Error('Formspree returned ' + response.status);
+        form.reset();
+        if (successBanner) successBanner.classList.add('visible');
+      } catch (_) {
+        if (formStatus) {
+          formStatus.innerHTML = 'Your note was not sent yet &mdash; your draft above is still saved. Please try again, or email me at <a href="mailto:gareth@garethenglish.com?subject=CAE%20Free%20Red-Pen%20Note" style="color:#a7f3d0;text-decoration:underline;">gareth@garethenglish.com</a>.';
+          formStatus.classList.add('visible');
+        }
+      } finally {
+        delete form.dataset.submitting;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      }
+    });
+  })();
 </script>
 
-<script src="analytics.js" defer></script>
-    <script src="course-bridge.js" defer></script>
+<script src="analytics.js" defer>
+</script>
+
 </body>
 </html>

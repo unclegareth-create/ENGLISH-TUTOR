@@ -301,6 +301,84 @@
       color: #ffffff;
       border-color: #38bdf8;
     }
+    .wb-preflight-box {
+      margin-top: 0.85rem;
+      padding: 0.85rem 0.95rem;
+      border-radius: 10px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      font-size: 0.83rem;
+      color: #cbd5e1;
+      line-height: 1.55;
+    }
+    .wb-preflight-list {
+      list-style: none;
+      margin: 0.45rem 0 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .wb-preflight-list li.warn { color: #fda4af; }
+    .wb-preflight-list li.ok { color: #86efac; }
+    .wb-honesty-note {
+      padding: 0.65rem 0.8rem;
+      border-radius: 8px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+      font-size: 0.79rem;
+      line-height: 1.5;
+    }
+    .wb-desk-card {
+      margin-top: 1.5rem;
+      background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
+      border: 1px solid #10b981;
+      border-radius: 14px;
+      padding: 1.5rem;
+    }
+    .wb-desk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+    }
+    .wb-desk-input {
+      width: 100%;
+      background: #070b14;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #f8fafc;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.92rem;
+    }
+    .wb-desk-input:focus {
+      outline: 2px solid #34d399;
+      border-color: transparent;
+    }
+    .wb-desk-ok {
+      display: none;
+      margin-top: 0.85rem;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.16);
+      border: 1px solid #34d399;
+      color: #d1fae5;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .wb-desk-ok.visible { display: block; }
+    .wb-desk-err {
+      display: none;
+      margin-top: 0.85rem;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      background: rgba(244, 63, 94, 0.16);
+      border: 1px solid #fb7185;
+      color: #fecdd3;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .wb-desk-err.visible { display: block; }
   </style>
 </head>
 <body>
@@ -582,7 +660,7 @@
       <span class="pill">Live C1 Syntax Detector + Side-by-Side Models</span>
     </div>
     <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1.1rem;">
-      In nineteen years of teaching—including fifteen years lecturing at Belfast Metropolitan College—the single biggest leap I see at my desk happens when a candidate stops stuffing memorised thesaurus words (<em>plethora, conundrum, ubiquitous, paramount</em>) into flat B2 sentences and starts rebuilding the paragraph's spine. Select any of the <strong>4 core essay types</strong> below, rewrite the flat Band 6.5 draft using the C1 structural blueprint, watch the live detector light up as your syntax matures, and click <strong>👁️ Reveal Cambridge Model</strong> to inspect my Band 8.0+ rewrite side by side.
+      In nineteen years of teaching—including fifteen years lecturing at Belfast Metropolitan College—the single biggest leap I see at my desk happens when a candidate stops stuffing memorised thesaurus words (<em>plethora, conundrum, ubiquitous, paramount</em>) into flat B2 sentences and starts rebuilding the paragraph's spine. Select any of the <strong>5 core essay types</strong> below, rewrite the flat Band 6.5 draft using the C1 structural blueprint, inspect the Pre-Flight Diagnostics below, and click <strong>👁️ Reveal Cambridge Model</strong> to compare against my Band 8.0+ rewrite.
     </p>
 
     <div class="wb-type-tabs" role="tablist" aria-label="Paragraph Upgrade Essay Types">
@@ -590,9 +668,60 @@
       <button type="button" class="wb-tab-btn" onclick="selectWorkbenchType(1, this)">2. Discussion + Opinion</button>
       <button type="button" class="wb-tab-btn" onclick="selectWorkbenchType(2, this)">3. Problem &amp; Solution</button>
       <button type="button" class="wb-tab-btn" onclick="selectWorkbenchType(3, this)">4. Two-Part Question</button>
+      <button type="button" class="wb-tab-btn" onclick="selectWorkbenchType(4, this)">5. Advantages Outweigh?</button>
     </div>
 
     <div id="workbench-container"></div>
+  </section>
+
+  <!-- Inline Belfast Desk Free Red-Pen Check -->
+  <section id="free-redpen-check" class="wb-desk-card" aria-labelledby="wb-desk-heading">
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem; margin-bottom:0.85rem;">
+      <div>
+        <span class="pill" style="background:rgba(16,185,129,0.2);color:#a7f3d0;border-color:#34d399;">Free 1-Paragraph Note · 24h Turnaround</span>
+        <h2 id="wb-desk-heading" style="color:#ffffff; font-size:1.35rem; margin-top:0.35rem;">Send Your Workbench Paragraph to My Belfast Desk</h2>
+      </div>
+      <button type="button" id="btn-pull-wb-to-desk" class="btn-main" style="background:#0284c7; font-size:0.82rem;">Pull Workbench Draft + Readout ↓</button>
+    </div>
+    <p style="font-size:0.9rem; color:#d1fae5; margin-bottom:1rem; line-height:1.6;">
+      Automated rules can spot repeated openers and C1 frame patterns, yet only a human marker can check article precision, prepositions, Task Response stance, and whether a wording issue is a real error or just style. Pull your paragraph below (or paste up to 150 words) for a free 24-hour note from my desk in Northern Ireland.
+    </p>
+
+    <form id="contact-form" action="https://formspree.io/f/mvkgrwvj" method="POST" style="position:relative;">
+      <input type="hidden" name="_subject" value="Free 1-Paragraph Red-Pen Check (IELTS Essay Masterclass)" />
+      <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact-form" />
+      <input type="hidden" name="source_page" value="ielts-essay-masterclass.html" />
+      <input type="hidden" name="form_source" value="ielts_essay_masterclass_workbench" />
+      <input type="hidden" id="workbench-diagnostics-field" name="workbench_diagnostics" value="" />
+      <input type="hidden" id="candidate-dossier-field" name="candidate_dossier" value="" />
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute; left:-9999px;" />
+
+      <div class="wb-desk-grid">
+        <div>
+          <label for="redpen-name" style="display:block;font-size:0.78rem;font-weight:700;color:#d1fae5;margin-bottom:0.35rem;">First Name (Optional)</label>
+          <input id="redpen-name" class="wb-desk-input" name="name" type="text" autocomplete="name" placeholder="Your first name (optional)" />
+        </div>
+        <div>
+          <label for="redpen-email" style="display:block;font-size:0.78rem;font-weight:700;color:#d1fae5;margin-bottom:0.35rem;">Email Address</label>
+          <input id="redpen-email" class="wb-desk-input" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+        </div>
+      </div>
+
+      <div style="margin-bottom:0.9rem;">
+        <label for="redpen-message" style="display:block;font-size:0.78rem;font-weight:700;color:#d1fae5;margin-bottom:0.35rem;">Your Body Paragraph (Up to 150 Words) or Essay Question</label>
+        <textarea id="redpen-message" class="wb-textarea" name="message" rows="4" required style="margin-top:0; min-height:110px;" placeholder="Click 'Pull Workbench Draft + Readout' above, or paste your own Task 2 paragraph + target band..."></textarea>
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem;">
+        <span style="font-size:0.8rem; color:#cbd5e1;">Read personally by Gareth Montgomery · <a href="privacy-policy.html" style="color:#a7f3d0; font-weight:600;">Privacy Policy</a></span>
+        <button id="redpen-submit-btn" type="submit" class="btn-main" style="background:#10b981; color:#052e16; font-weight:800;">Send 1 Paragraph Free →</button>
+      </div>
+
+      <div id="redpen-success-banner" class="wb-desk-ok" role="status" aria-live="polite">
+        ✓ Sent! I have received your paragraph and pre-flight readout and will reply personally from Northern Ireland within 24 hours.
+      </div>
+      <div id="redpen-form-status" class="wb-desk-err" role="status" aria-live="polite"></div>
+    </form>
   </section>
 
   <!-- Conversion Banner for IELTS Students -->
@@ -765,7 +894,7 @@
         "Were authorities to redirect highway budgets into "
       ],
       modelParagraph: "<strong>What makes public transit far more effective than highway expansion is</strong> its superior passenger capacity. Expanding urban motorways rarely resolves congestion; instead, extra lanes simply induce further private car journeys within a few years. <strong>Were municipal authorities to redirect road budgets into</strong> frequent, affordable metro and bus networks, thousands of daily commuters could leave their vehicles at home<strong>, thereby curbing both tailpipe emissions and peak-hour gridlock.</strong>",
-      garethNote: "Notice how we tossed out 'a plethora of cars' and 'and this means that'. A Wh-cleft opens the paragraph with clear authority ('What makes... is...'), an inverted conditional handles the policy solution ('Were municipal authorities to redirect...'), and a trailing participle clause (', thereby curbing...') delivers the result without a single wasted word."
+      garethNote: "Notice how I tossed out 'a plethora of cars' and 'and this means that'. A Wh-cleft opens the paragraph with clear authority ('What makes... is...'), an inverted conditional handles the policy solution ('Were municipal authorities to redirect...'), and a trailing participle clause (', thereby curbing...') delivers the result without a single wasted word."
     },
     {
       typeLabel: "2. Discussion + Opinion (Body Paragraph 2 — Your Side Pivot)",
@@ -780,7 +909,7 @@
         ", thereby enabling graduates to adapt "
       ],
       modelParagraph: "<strong>While it is widely argued that</strong> narrow vocational training helps graduates secure their first job, <strong>what equips young people for a forty-year career is</strong> rigorous analytical and critical thinking. Because automation and industry shifts routinely render specific technical tools obsolete within five years, <strong>not only does broad academic enquiry cultivate intellectual flexibility, but it also</strong> trains graduates to evaluate complex problems<strong>, thereby enabling them to adapt as the labour market evolves.</strong>",
-      garethNote: "Instead of 'every coin has two sides', we open with an impersonal passive reporting concession ('While it is widely argued that...') that pivots straight into a Wh-cleft spotlight ('what equips young people... is...'). That single sentence bridges Body 1 and Body 2 seamlessly."
+      garethNote: "Instead of 'every coin has two sides', the paragraph opens with an impersonal passive reporting concession ('While it is widely argued that...') that pivots straight into a Wh-cleft spotlight ('what equips young people... is...'). That single sentence bridges Body 1 and Body 2 seamlessly."
     },
     {
       typeLabel: "3. Problem & Solution (Body Paragraph 2 — Targeted Remedies)",
@@ -811,10 +940,27 @@
       ],
       modelParagraph: "<strong>What makes this throwaway culture particularly damaging is</strong> that its costs fall on both household budgets and the natural environment. <strong>Not only does compulsive garment buying drain</strong> young consumers' personal savings for fleeting satisfaction, <strong>but it also</strong> generates millions of tonnes of non-biodegradable polyester waste each year<strong>, thereby choking municipal landfills and polluting river systems in manufacturing regions.</strong>",
       garethNote: "In a Two-Part question that asks about 'individuals and society', 'Not only does... [personal impact], but it also... [societal impact]' is the cleanest structural bridge you can build. It answers both halves of the prompt inside one balanced C1 period."
+    },
+    {
+      typeLabel: "5. Advantages Outweigh? (Body Paragraph 2 — Decisive Verdict)",
+      prompt: "Prompt: In many countries, employees work from home more frequently than in the past. Do the advantages of this trend outweigh the disadvantages?",
+      blueprint: "While [Concession Clause], + what tips the balance is + [Stronger Claim] ... + , thereby + [-ing participle]",
+      band65Draft: "Nowadays, working from home has both advantages and disadvantages and it depends on the job. Firstly, commuters save hours every week. Secondly, some staff feel isolated at home. To some extent, both sides are balanced.",
+      diagnosis: "Why this stalls at Band 6.5: Classic 50/50 fence-sitting ('both advantages and disadvantages', 'it depends', 'to some extent, both sides are balanced') plus mechanical 'Firstly... Secondly...' openers. On 'outweigh' prompts, examiners penalise sitting on the fence.",
+      starters: [
+        "While remote work can reduce informal ",
+        "What tilts the balance clearly in favour of ",
+        "Not only does flexible scheduling remove ",
+        ", thereby retaining experienced parents and carers "
+      ],
+      modelParagraph: "<strong>While full-time remote working can reduce informal mentorship for junior hires,</strong> <strong>what tilts the balance decisively in its favour is</strong> the autonomy and workforce retention it creates. <strong>Not only does flexible scheduling eliminate</strong> exhausting multi-hour commutes each week, <strong>but it also</strong> widens regional hiring pools beyond expensive capital cities<strong>, thereby enabling experienced parents and carers to remain in senior roles.</strong>",
+      garethNote: "Never hedge at 50/50 on an Advantages Outweigh prompt. Acknowledge the drawback in one brief 'While...' clause, then use a Wh-cleft ('what tilts the balance decisively in its favour is...') to make your stance unmistakable."
     }
   ];
 
   let currentWbIndex = 0;
+  let isWbSamplePreview = false;
+  let lastWbDiagnostics = '';
 
   function selectWorkbenchType(idx, btn) {
     currentWbIndex = idx;
@@ -870,9 +1016,23 @@
             <span class="c1-detector-pill" id="det-cliche">✓ Zero Thesaurus Clichés</span>
           </div>
 
+          <div class="wb-preflight-box" id="wb-preflight-panel">
+            <div style="font-size:0.74rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:#7dd3fc;">Pre-Flight Essay Check</div>
+            <ul class="wb-preflight-list" id="wb-preflight-list">
+              <li>Type 2+ sentences above to check repeated mechanical openers, sentence length spread, and Advantages-Outweigh balance.</li>
+            </ul>
+            <div class="wb-honesty-note">
+              <strong>What Browser Checks Cannot Judge (Error vs Style, Articles &amp; Prepositions):</strong> Rules here only flag surface structure and opener chains — a human marker is still needed to judge preposition precision, general-plural articles, Error-vs-Style choices, and whether your paragraph directly answers the prompt.
+            </div>
+          </div>
+
           <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.95rem;">
             <button type="button" class="btn-main" style="background:#059669;" onclick="toggleWbModel(this)">👁️ Reveal Cambridge Model</button>
-            <button type="button" class="btn-main" style="background:#334155;" onclick="loadWbSampleIntoEditor()">Load Model Into Editor to Inspect</button>
+            <button type="button" class="btn-main" style="background:#334155;" onclick="loadWbSampleIntoEditor()">Compare Model Text in Editor</button>
+            <button type="button" class="btn-main" style="background:#1e293b; border:1px solid #475569;" onclick="clearWbEditor()">Clear Editor</button>
+          </div>
+          <div id="wb-sample-warning" style="display:none; margin-top:0.65rem; font-size:0.8rem; color:#fde68a; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); padding:0.55rem 0.75rem; border-radius:8px;">
+            <strong>Model text loaded for comparison:</strong> Study how the clauses join, then click <strong>Clear Editor</strong> before writing your own paragraph.
           </div>
         </div>
       </div>
@@ -892,6 +1052,9 @@
   function insertWbStarter(phrase) {
     const ta = document.getElementById('wb-user-input');
     if (!ta) return;
+    isWbSamplePreview = false;
+    const warnEl = document.getElementById('wb-sample-warning');
+    if (warnEl) warnEl.style.display = 'none';
     const start = ta.selectionStart || ta.value.length;
     const prefix = ta.value.length > 0 && !ta.value.endsWith(' ') ? ' ' : '';
     ta.value = ta.value.slice(0, start) + prefix + phrase + ta.value.slice(start);
@@ -903,21 +1066,40 @@
     const ta = document.getElementById('wb-user-input');
     const item = workbenchCases[currentWbIndex];
     if (!ta || !item) return;
+    isWbSamplePreview = true;
     ta.value = item.modelParagraph.replace(/<\/?strong>/g, '');
+    const warnEl = document.getElementById('wb-sample-warning');
+    if (warnEl) warnEl.style.display = 'block';
+    evaluateWbInput();
+  }
+
+  function clearWbEditor() {
+    const ta = document.getElementById('wb-user-input');
+    if (!ta) return;
+    isWbSamplePreview = false;
+    ta.value = '';
+    const warnEl = document.getElementById('wb-sample-warning');
+    if (warnEl) warnEl.style.display = 'none';
     evaluateWbInput();
   }
 
   function evaluateWbInput() {
     const ta = document.getElementById('wb-user-input');
     if (!ta) return;
+    const item = workbenchCases[currentWbIndex];
     const text = ta.value.trim();
-    const words = text ? text.split(/\s+/).length : 0;
+    if (isWbSamplePreview && item && text !== item.modelParagraph.replace(/<\/?strong>/g, '').trim()) {
+      isWbSamplePreview = false;
+      const warnEl = document.getElementById('wb-sample-warning');
+      if (warnEl) warnEl.style.display = 'none';
+    }
+    const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
     const wcEl = document.getElementById('wb-word-count');
     if (wcEl) wcEl.textContent = words + (words === 1 ? ' word' : ' words');
 
-    const hasCleft = /\b(what\s+[a-z]+\s+.*?\b(is|was|are|were)\b|it\s+(is|was)\s+[^.?!]+\b(that|who)\b)/i.test(text);
-    const hasInversion = /\b(not\s+only\s+(does|do|did|is|are|was|were|can|could|would|should|will|has|have)|were\s+[a-z\s]+to\s+[a-z]+|had\s+[a-z\s]+(been|invested|acted|known|prioritised|prioritized)|seldom\s+(do|does|did|have|has)|little\s+did)/i.test(text);
-    const hasParticiple = /(,\s*(thereby|thus|hence)\s+[a-z]+ing\b|,\s*(curbing|fostering|enabling|reducing|creating|alleviating|driving|undermining|generating)\b)/i.test(text);
+    const hasCleft = /\b(what\s+(?!is\b|are\b|was\b|were\b)[a-z][^.?!]{3,100}?\b(is|was|are|were)\b|it\s+(is|was)\s+(?!(?:widely|generally|often|commonly)?\s*(?:argued|accepted|acknowledged|recognised|recognized|believed|clear|evident|obvious|apparent|essential|vital|important)\b)[^.?!]{2,70}\b(that|who)\b)/i.test(text);
+    const hasInversion = /(?:^|[.!?;]\s*|,\s*(?:yet|and)\s+|\b(?:but|and)\s+)(not\s+only\s+(does|do|did|is|are|was|were|can|could|would|should|will|has|have)|were\s+[a-z\s]+to\s+[a-z]+|had\s+[a-z\s]+(been|invested|acted|known|prioritised|prioritized)|seldom\s+(do|does|did|have|has)|rarely\s+(do|does|did|have|has)|little\s+did)\s+\w+/i.test(text);
+    const hasParticiple = /(,\s*(thereby|thus|hence)\s+(?!morning\b|evening\b|thing\b)[a-z]{2,}ing\s+[a-z]{2,}|,\s*(curbing|fostering|enabling|reducing|creating|alleviating|driving|undermining|generating|choking|retaining|widening)\s+[a-z]{2,})/i.test(text);
     const hasPassive = /\b(it\s+is\s+(widely|often|frequently|commonly|generally)?\s*(argued|contended|maintained|recognised|recognized|believed|claimed|suggested|acknowledged)|is\s+(widely\s+)?(believed|thought|considered|known|seen)\s+to\b|can\s+be\s+(largely\s+)?attributed\s+to)/i.test(text);
     const hasCliche = /\b(plethora|conundrum|ubiquitous|paramount|every\s+coin\s+has\s+two\s+sides|in\s+a\s+nutshell|double-edged\s+sword|fast-paced\s+society)\b/i.test(text);
 
@@ -936,6 +1118,65 @@
         clicheBadge.textContent = '✓ Zero Thesaurus Clichés';
       }
     }
+
+    const preflightList = document.getElementById('wb-preflight-list');
+    if (!preflightList) return;
+    if (!text) {
+      lastWbDiagnostics = '';
+      preflightList.innerHTML = '<li>Type 2+ sentences above to check repeated mechanical openers, sentence length spread, and Advantages-Outweigh balance.</li>';
+      return;
+    }
+
+    const sentences = text
+      .split(/(?<=[.!?])\s+|\n+/)
+      .map((s) => s.trim())
+      .filter((s) => s.split(/\s+/).filter(Boolean).length >= 3);
+    const lengths = sentences.map((s) => s.split(/\s+/).filter(Boolean).length);
+    const minLen = lengths.length ? Math.min.apply(null, lengths) : 0;
+    const maxLen = lengths.length ? Math.max.apply(null, lengths) : 0;
+    const longSents = lengths.filter((n) => n > 38);
+    const flatChain = lengths.length >= 2 && maxLen < 12;
+
+    const openers = [];
+    sentences.forEach((s) => {
+      const m = s.match(/^(first(?:ly)?|second(?:ly)?|third(?:ly)?|nowadays|moreover|in\s+addition|furthermore)\b/i);
+      if (m) openers.push(m[1]);
+    });
+    const repeatedOpeners = openers.length >= 2;
+
+    const isOutweighPrompt = item && /\boutweigh\b/i.test(item.prompt);
+    const hedgeMatch = text.match(/\b(both\s+(?:advantages\s+and\s+disadvantages|sides)\b|\bdepends(?:\s+on)?\b|\bto\s+some\s+extent\b|\bboth\s+.*\s+and\b)/i);
+    const balanceWarn = Boolean(isOutweighPrompt && hedgeMatch);
+
+    const rows = [];
+    if (repeatedOpeners) {
+      rows.push(`<li class="warn">⚠️ <strong>Repeated mechanical openers (${openers.join(', ')}):</strong> Replace checklist starters with a fronted clause or Wh-cleft.</li>`);
+    } else {
+      rows.push(`<li class="ok">✓ <strong>Sentence openers:</strong> No repeated mechanical opener chain (Firstly/Secondly/Nowadays/Moreover/In addition/Furthermore).</li>`);
+    }
+
+    if (flatChain) {
+      rows.push(`<li class="warn">⚠️ <strong>Flat sentence-length spread (${minLen}–${maxLen}w):</strong> All sentences are under 12 words — fuse linked points.</li>`);
+    } else if (longSents.length > 0) {
+      rows.push(`<li class="warn">⚠️ <strong>Run-on risk (${maxLen} words max):</strong> Break sentences longer than 38 words so the grammatical subject stays crisp.</li>`);
+    } else if (lengths.length > 0) {
+      rows.push(`<li class="ok">✓ <strong>Sentence-length spread (${minLen}–${maxLen}w):</strong> No &lt;12w flat chain or &gt;38w run-on detected.</li>`);
+    }
+
+    if (balanceWarn) {
+      rows.push(`<li class="warn">⚠️ <strong>50/50 Hedging Check (Advantages Outweigh):</strong> Avoid sitting on the fence (&ldquo;${hedgeMatch[0]}&rdquo;) — state clearly which side outweighs the other.</li>`);
+    } else if (isOutweighPrompt) {
+      rows.push(`<li class="ok">✓ <strong>Advantages-Outweigh Stance:</strong> No obvious 50/50 hedging phrases detected (confirm clarity of verdict by eye).</li>`);
+    }
+
+    preflightList.innerHTML = rows.join('');
+    const flags = [];
+    if (repeatedOpeners) flags.push('Openers: ' + openers.join('/'));
+    if (flatChain) flags.push('Flat <12w chain');
+    if (longSents.length > 0) flags.push('Long >38w (' + maxLen + 'w)');
+    if (balanceWarn) flags.push('50/50 hedge: ' + hedgeMatch[0]);
+    if (hasCliche) flags.push('Cliché hit');
+    lastWbDiagnostics = `${item ? item.typeLabel : 'Workbench'} | Words: ${words} | Range: ${minLen}-${maxLen}w | Cleft:${hasCleft ? 1 : 0} Inv:${hasInversion ? 1 : 0} Part:${hasParticiple ? 1 : 0} Pass:${hasPassive ? 1 : 0}${flags.length ? ' | Flags: ' + flags.join('; ') : ''}`;
   }
 
   function setDetectorState(id, active, activeText, idleText) {
@@ -984,12 +1225,102 @@
     styleShiftItems: shiftData
   });
 
+  function readPlayedDossierSummary() {
+    const parts = [];
+    try {
+      const rawD = localStorage.getItem('gm_candidate_dossier_v1');
+      if (rawD) {
+        const d = JSON.parse(rawD);
+        const skills = d && d.skills && typeof d.skills === 'object' ? d.skills : {};
+        const hasUpdatedSkill = Object.keys(skills).some(k => Boolean(skills[k] && skills[k].lastUpdated));
+        const played = Boolean(d && ((d.gamesCompleted || 0) > 0 || (d.drillsCompleted || 0) > 0 || hasUpdatedSkill));
+        if (played) {
+          if (d.code) parts.push('Lab code: ' + d.code);
+          if (d.weakestSkill) parts.push('Weakest skill: ' + d.weakestSkill);
+        }
+      }
+    } catch (_) {}
+    return parts.join(' | ');
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     showEssayModel(0, document.querySelector('.model-tab-btn'));
     renderWorkbenchCase(0);
+
+    const pullBtn = document.getElementById('btn-pull-wb-to-desk');
+    const msgEl = document.getElementById('redpen-message');
+    if (pullBtn && msgEl) {
+      pullBtn.addEventListener('click', () => {
+        const ta = document.getElementById('wb-user-input');
+        const item = workbenchCases[currentWbIndex];
+        const draft = ta ? ta.value.trim() : '';
+        const prefix = (isWbSamplePreview ? '[Model Preview Active — Replace With Your Own Sentences]\n' : '') + (item ? item.prompt + '\n' : '');
+        if (!draft) {
+          msgEl.value = prefix + '\n[Paste your own Band 7.5+ paragraph upgrade here]';
+        } else {
+          const readOut = lastWbDiagnostics ? `[Pre-Flight: ${lastWbDiagnostics}]\n\n` : '';
+          msgEl.value = (prefix + readOut + draft).slice(0, 2200);
+        }
+        msgEl.focus();
+      });
+    }
+
+    const form = document.getElementById('contact-form');
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        const diagField = document.getElementById('workbench-diagnostics-field');
+        const dossierField = document.getElementById('candidate-dossier-field');
+        if (diagField) diagField.value = lastWbDiagnostics;
+        if (dossierField) dossierField.value = readPlayedDossierSummary();
+
+        if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+        if (form.dataset.submitting === 'true') {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+
+        const submitBtn = document.getElementById('redpen-submit-btn');
+        const successBanner = document.getElementById('redpen-success-banner');
+        const formStatus = document.getElementById('redpen-form-status');
+        const originalText = submitBtn ? submitBtn.textContent : 'Send 1 Paragraph Free →';
+
+        form.dataset.submitting = 'true';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+        }
+        if (successBanner) successBanner.classList.remove('visible');
+        if (formStatus) {
+          formStatus.textContent = '';
+          formStatus.classList.remove('visible');
+        }
+
+        try {
+          const response = await fetch(form.action || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' }
+          });
+          if (!response.ok) throw new Error('Formspree returned ' + response.status);
+          form.reset();
+          if (successBanner) successBanner.classList.add('visible');
+        } catch (_) {
+          if (formStatus) {
+            formStatus.innerHTML = 'Your paragraph was not sent yet &mdash; your draft above is still saved. Please try again, or email me at <a href="mailto:gareth@garethenglish.com?subject=IELTS%20Free%20Red-Pen%20Note" style="color:#a7f3d0;text-decoration:underline;">gareth@garethenglish.com</a>.';
+            formStatus.classList.add('visible');
+          }
+        } finally {
+          delete form.dataset.submitting;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+          }
+        }
+      });
+    }
   });
 </script>
-    <script src="course-bridge.js" defer></script>
   <script src="analytics.js" defer></script>
 </body>
 </html>

@@ -10,6 +10,80 @@
     <link rel="stylesheet" href="reactor.css">
     <style>
       body { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+      #lead-form { text-align: left; margin-top: 10px; }
+      #lead-form .desk-form-intro {
+          font-size: 0.85rem;
+          color: #e2e8f0;
+          margin-bottom: 6px;
+          line-height: 1.45;
+          user-select: text;
+      }
+      #lead-form .desk-run-chips {
+          font-size: 0.78rem;
+          color: #7dd3fc;
+          margin-bottom: 8px;
+          line-height: 1.4;
+          user-select: text;
+      }
+      #lead-form input:not([type="checkbox"]),
+      #lead-form textarea {
+          user-select: text;
+          -webkit-user-select: text;
+          text-align: left;
+          width: 100%;
+          background: #000;
+          border: 1px solid #3f3f46;
+          color: #f8fafc;
+          padding: 0.65rem 0.75rem;
+          margin-bottom: 0.6rem;
+          font-family: inherit;
+          font-size: 0.9rem;
+          border-radius: 4px;
+          outline: none;
+          resize: vertical;
+      }
+      #lead-form input:not([type="checkbox"]):focus,
+      #lead-form textarea:focus {
+          border-color: var(--core);
+          box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      }
+      #lead-form .desk-consent-label {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          font-size: 0.76rem;
+          color: #cbd5e1;
+          margin: 4px 0 10px;
+          cursor: pointer;
+          user-select: text;
+      }
+      #lead-form .desk-consent-label input[type="checkbox"] {
+          width: auto;
+          margin: 2px 0 0;
+          flex-shrink: 0;
+      }
+      .desk-form-status {
+          margin: 6px 0 10px;
+          font-size: 0.84rem;
+          font-weight: 700;
+          line-height: 1.45;
+          user-select: text;
+      }
+      .desk-form-status.is-success {
+          background: rgba(34, 197, 94, 0.14);
+          border: 1px solid #22c55e;
+          color: #bbf7d0;
+          padding: 8px 10px;
+          border-radius: 6px;
+      }
+      .desk-form-status.is-error {
+          background: rgba(239, 68, 68, 0.16);
+          border: 1px solid #ef4444;
+          color: #fecaca;
+          padding: 8px 10px;
+          border-radius: 6px;
+      }
+      .desk-form-status:empty { display: none; }
     </style>
 </head>
 <body>
@@ -59,17 +133,25 @@
             </div>
 
             <form action="https://formspree.io/f/mvkgrwvj" method="POST" id="lead-form">
-                <input type="hidden" name="_subject" value="Phrasal Verb Reactor Lead!">
-                <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact">
-                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none">
-                <input type="hidden" name="name" id="lead-name">
+                <input type="hidden" name="_subject" value="Phrasal Verb Reactor — C1 Sentence Check">
+                <input type="hidden" name="form_source" value="phrasal_reactor_inline_desk">
+                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
+                <input type="hidden" name="name" id="lead-name" value="Reactor Player">
                 <input type="hidden" name="score" id="lead-score" value="">
-                <input type="email" name="email" id="lead-email" placeholder="Your Email Address..." aria-label="Your Email Address" required style="margin-bottom: 6px;">
-                <label style="display:block; font-size:0.75rem; color:#94a3b8; margin:8px 0; text-align:left;">
-                    <input type="checkbox" id="lead-consent" required> I agree to receive my score report and C1/C2 tips.
+                <input type="hidden" name="run_context" id="lead-run-context" value="">
+                <input type="hidden" name="candidate_dossier" id="lead-dossier" value="">
+                <p class="desk-form-intro"><strong>Write 1 sentence using a phrasal verb from this run</strong> (or ask a C1 question) for a free 24h note from my desk.</p>
+                <p id="lead-run-prompt" class="desk-run-chips"></p>
+                <textarea id="lead-message" name="message" rows="3" placeholder="Write 1 sentence using a phrasal verb from this run, or ask me 1 C1 question..." aria-label="Your sentence or C1 question" required></textarea>
+                <input type="email" name="email" id="lead-email" placeholder="Your Email Address..." aria-label="Your Email Address" required>
+                <label class="desk-consent-label">
+                    <input type="checkbox" id="lead-consent" required>
+                    <span>I agree to receive a free 24h note from Gareth&rsquo;s desk.</span>
                 </label>
-                <button type="submit" id="btn-claim" style="font-size: 0.8rem; opacity: 0.9;">SUBMIT MISSION DEBRIEF FOR NOTES</button>
+                <button type="submit" id="btn-claim" style="font-size: 0.9rem;">Send Sentence for Free 24h Note &rarr;</button>
+                <div id="lead-form-status" class="desk-form-status" role="status" aria-live="polite"></div>
             </form>
+            <button type="button" id="btn-view-recall" class="secondary">View Score Breakdown &amp; Recall Vault</button>
             <button type="button" id="btn-restart" class="secondary">REBOOT SYSTEM</button>
         </div>
     </div>

@@ -117,6 +117,7 @@
     let modalReturnFocus = null;
     let drawerReturnFocus = null;
     let recapReturnFocus = null;
+    let activeAutopsyInfo = null;
 
     /* ---------------- DOM ---------------- */
 
@@ -928,28 +929,48 @@
         }
 
         // Cambridge C1 Part 4 micro-drill bridge (post-solve only)
+        activeAutopsyInfo = {
+            floorIdx,
+            title: levels[floorIdx].title,
+            cefr: info.cefr,
+            formula: info.formula,
+            bridge: info.bridge || null
+        };
         const bridgeBox = $('autopsy-bridge-box');
         if (bridgeBox) {
             if (locked && info.bridge) {
                 const b = info.bridge;
+                const bridgeKey = `${floorIdx}:${b.keyword || ''}:${b.answer || ''}`;
+                const isNewBridge = bridgeBox.dataset.activeBridgeKey !== bridgeKey;
+                bridgeBox.dataset.activeBridgeKey = bridgeKey;
                 bridgeBox.classList.remove('hidden');
                 const promptEl = bridgeBox.querySelector('.bridge-prompt');
                 const kwEl = bridgeBox.querySelector('.bridge-keyword-badge');
                 const frameEl = bridgeBox.querySelector('.bridge-frame');
                 const revealBridgeBtn = $('btn-reveal-bridge');
                 const ansEl = bridgeBox.querySelector('.bridge-answer-reveal');
+                const attemptInput = $('bridge-attempt-input');
+                const attemptFb = $('bridge-attempt-feedback');
                 if (promptEl) promptEl.textContent = b.prompt || '';
                 if (kwEl) kwEl.textContent = b.keyword ? `KEY WORD: ${b.keyword}` : '';
                 if (frameEl) frameEl.textContent = `${b.frameBefore || ''} ________ ${b.frameAfter || ''}`.trim();
                 if (ansEl) {
                     ansEl.textContent = `✔ ${b.answer || ''}${b.note ? ` — ${b.note}` : ''}`;
-                    ansEl.classList.add('hidden');
+                    if (isNewBridge) ansEl.classList.add('hidden');
                 }
-                if (revealBridgeBtn) {
+                if (revealBridgeBtn && isNewBridge) {
                     revealBridgeBtn.classList.remove('hidden');
                     revealBridgeBtn.disabled = false;
                 }
+                if (attemptInput && isNewBridge) {
+                    attemptInput.value = '';
+                }
+                if (attemptFb && isNewBridge) {
+                    attemptFb.textContent = '';
+                    attemptFb.className = 'bridge-attempt-feedback hidden';
+                }
             } else {
+                bridgeBox.dataset.activeBridgeKey = '';
                 bridgeBox.classList.add('hidden');
             }
         }
@@ -994,6 +1015,13 @@
         }
         const level = levels[state.level];
         locked = false;
+        activeAutopsyInfo = {
+            floorIdx: state.level,
+            title: level.title,
+            cefr: level.cefr,
+            formula: level.formula || '',
+            bridge: null
+        };
         pendingRecapMode = null;
         dailyStepHadNearMiss = false;
         duelStepHadNearMiss = false;
@@ -2679,6 +2707,197 @@
                 if (ansEl) ansEl.classList.remove('hidden');
                 $('btn-reveal-bridge').classList.add('hidden');
                 sfx('grab');
+            });
+        }
+
+        function countCambridgeBridgeWords(text) {
+            const cleaned = String(text || '').replace(/[\u2018\u2019\u02BC]/g, "'").replace(/\s+/g, ' ').trim();
+            if (!cleaned) return 0;
+            const nonPossBases = new Set(['it', 'that', 'there', 'what', 'who', 'where', 'how', 'he', 'she', 'let', 'here', 'this', 'when', 'why']);
+            const tokens = cleaned.split(' ').map(t => t.replace(/^[^A-Za-z0-9']+|[^A-Za-z0-9']+$/g, '')).filter(Boolean);
+            let count = 0;
+            for (const tok of tokens) {
+                const w = tok.toLowerCase();
+                if (/[a-z]n't$/.test(w) || /[a-z]'(ve|d|ll|re|m)$/.test(w)) {
+                    count += 2;
+                } else if (/'s$/.test(w) && nonPossBases.has(w.slice(0, -2))) {
+                    count += 2;
+                } else {
+                    count += 1;
+                }
+            }
+            return count;
+        }
+
+        function normaliseBridgeGap(text) {
+            return String(text || '')
+                .replace(/[\u2018\u2019\u02BC]/g, "'")
+                .replace(/[.,;!?]+$/g, '')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .toLowerCase();
+        }
+
+        function checkBridgeAttempt() {
+            const bridge = activeAutopsyInfo && activeAutopsyInfo.bridge;
+            const attemptInput = $('bridge-attempt-input');
+            const fbEl = $('bridge-attempt-feedback');
+            const bridgeBox = $('autopsy-bridge-box');
+            if (!bridge || !attemptInput || !fbEl) return;
+
+            const raw = attemptInput.value.trim();
+            const kw = String(bridge.keyword || '').trim();
+            fbEl.classList.remove('hidden', 'is-ok', 'is-warn', 'is-bad');
+
+            if (!raw) {
+                fbEl.classList.add('is-warn');
+                fbEl.textContent = `Type 3 to 6 words including the unchanged key word "${kw}".`;
+                return;
+            }
+
+            const escapedKw = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const hasExactKw = kw ? new RegExp(`\\b${escapedKw}\\b`, 'i').test(raw) : true;
+            if (!hasExactKw) {
+                const stem = kw.toLowerCase().replace(/(?:ed|ing|es|s)$/, '');
+                const inflected = stem.length >= 3 && new RegExp(`\\b${stem}[a-z]*\\b`, 'i').test(raw);
+                fbEl.classList.add('is-bad');
+                fbEl.textContent = inflected
+                    ? `Never change the key word "${kw}" — keep its exact form unchanged.`
+                    : `Include the exact unchanged key word "${kw}" in your gap.`;
+                sfx('error');
+                return;
+            }
+
+            const wc = countCambridgeBridgeWords(raw);
+            if (wc < 3 || wc > 6) {
+                fbEl.classList.add('is-warn');
+                fbEl.textContent = `Cambridge Part 4 requires 3 to 6 words (your gap is ${wc} words; contractions count as 2).`;
+                sfx('error');
+                return;
+            }
+
+            const normUser = normaliseBridgeGap(raw);
+            const normTarget = normaliseBridgeGap(bridge.answer || '');
+            const normUserBritish = normUser.replace(/\brealize\b/g, 'realise');
+            const normTargetBritish = normTarget.replace(/\brealize\b/g, 'realise');
+            if (normUser === normTarget || normUserBritish === normTargetBritish) {
+                fbEl.classList.add('is-ok');
+                fbEl.textContent = `✓ Spot on! 2 / 2 Marks (${wc} words, unchanged "${kw}") — "${bridge.answer}"`;
+                const ansEl = bridgeBox ? bridgeBox.querySelector('.bridge-answer-reveal') : null;
+                if (ansEl) ansEl.classList.remove('hidden');
+                if ($('btn-reveal-bridge')) $('btn-reveal-bridge').classList.add('hidden');
+                sfx('success', state.streak);
+                trackCryptEvent('crypt_bridge_solved', { floor: (activeAutopsyInfo.floorIdx || 0) + 1 });
+            } else {
+                fbEl.classList.add('is-bad');
+                fbEl.textContent = `Not quite (${wc} words, "${kw}" intact). Check Tense Harmony, Voice Shift, or Preposition Lock — or click "👁️ Reveal Cambridge Model".`;
+                sfx('error');
+            }
+        }
+
+        if ($('btn-check-bridge')) {
+            $('btn-check-bridge').addEventListener('click', checkBridgeAttempt);
+        }
+        if ($('bridge-attempt-input')) {
+            $('bridge-attempt-input').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    checkBridgeAttempt();
+                }
+            });
+        }
+
+        function syncCryptDeskContext() {
+            const info = activeAutopsyInfo || {
+                floorIdx: state.level,
+                title: levels[state.level] ? levels[state.level].title : 'Grammar Crypt',
+                cefr: levels[state.level] ? levels[state.level].cefr : 'C1',
+                formula: levels[state.level] ? (levels[state.level].formula || '') : ''
+            };
+            const label = `Floor ${info.floorIdx + 1} (${info.cefr}) · ${info.title}`;
+            const pillEl = $('crypt-desk-context-pill');
+            const ctxHidden = $('crypt-desk-context-hidden');
+            const dossierEl = $('crypt-desk-dossier');
+            const attemptEl = $('bridge-attempt-input');
+            const bridgeDraft = attemptEl && attemptEl.value.trim() ? ` | Part 4 attempt: ${attemptEl.value.trim()}` : '';
+            if (pillEl) pillEl.textContent = label;
+            if (ctxHidden) ctxHidden.value = `${label}${info.formula ? ` | Blueprint: ${info.formula}` : ''}${bridgeDraft}`;
+            if (dossierEl) {
+                try { dossierEl.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+            }
+        }
+
+        const toggleCryptDeskBtn = $('btn-toggle-crypt-desk');
+        const cryptDeskDrawer = $('crypt-desk-drawer');
+        if (toggleCryptDeskBtn && cryptDeskDrawer) {
+            toggleCryptDeskBtn.addEventListener('click', () => {
+                const willOpen = cryptDeskDrawer.classList.contains('hidden');
+                cryptDeskDrawer.classList.toggle('hidden', !willOpen);
+                toggleCryptDeskBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                if (willOpen) {
+                    syncCryptDeskContext();
+                    const msgEl = $('crypt-desk-message');
+                    if (msgEl) msgEl.focus();
+                }
+            });
+        }
+
+        const cryptDeskForm = $('crypt-desk-form');
+        if (cryptDeskForm) {
+            cryptDeskForm.addEventListener('submit', async (e) => {
+                if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+                e.preventDefault();
+                if (cryptDeskForm.dataset.submitting === 'true') return;
+
+                const gotcha = cryptDeskForm.querySelector('input[name="_gotcha"]');
+                const statusBox = $('crypt-desk-status');
+                const submitBtn = $('crypt-desk-submit');
+                const origText = submitBtn ? submitBtn.textContent : 'Send to My Desk →';
+
+                if (gotcha && gotcha.value.trim()) {
+                    if (statusBox) {
+                        statusBox.className = 'crypt-desk-status is-success';
+                        statusBox.textContent = 'Sent to my desk — thank you.';
+                    }
+                    return;
+                }
+
+                syncCryptDeskContext();
+                cryptDeskForm.dataset.submitting = 'true';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Sending...';
+                }
+                if (statusBox) {
+                    statusBox.className = 'crypt-desk-status';
+                    statusBox.textContent = '';
+                }
+
+                try {
+                    const res = await fetch(cryptDeskForm.action || 'https://formspree.io/f/mvkgrwvj', {
+                        method: 'POST',
+                        body: new FormData(cryptDeskForm),
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!res.ok) throw new Error('Request failed');
+                    if (statusBox) {
+                        statusBox.className = 'crypt-desk-status is-success';
+                        statusBox.textContent = 'Received at my desk in Northern Ireland. I will reply with a personal red-pen note within 24 hours.';
+                    }
+                    if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+                    trackCryptEvent('desk_dropbox_submitted', { tool: 'grammar_crypt' });
+                } catch (_) {
+                    if (statusBox) {
+                        statusBox.className = 'crypt-desk-status is-error';
+                        statusBox.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=Grammar%20Crypt%20Sentence%20Check" style="color:inherit;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = origText;
+                    }
+                } finally {
+                    cryptDeskForm.dataset.submitting = 'false';
+                }
             });
         }
 

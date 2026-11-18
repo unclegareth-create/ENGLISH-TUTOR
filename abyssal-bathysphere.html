@@ -1083,6 +1083,35 @@
     </div>
   </section>
 
+  <!-- Section 7: Belfast Desk Free Conditional / Part 4 Check -->
+  <section id="belfast-desk-strip" class="card-ocean" aria-label="Belfast Desk Conditional Check">
+    <div class="card-header-ocean">
+      <div>
+        <span style="display:block; font-size:0.74rem; font-weight:800; text-transform:uppercase; letter-spacing:0.08em; color:var(--gold-bright); margin-bottom:3px;">🖋️ From My Belfast Desk</span>
+        <h2>Send 1 Counterfactual Conditional or Part 4 Attempt (Free 24h Note)</h2>
+      </div>
+      <a href="index.html#contact" class="btn-action-ocean" style="text-decoration:none; background:#0284c7;">Book 30-Min Starter (£35) &rarr;</a>
+    </div>
+    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:14px;">
+      Write one inverted or mixed conditional sentence about a real decision in your work or studies (e.g. <em>&ldquo;Had I known earlier...&rdquo;</em> or <em>&ldquo;Were the team to...&rdquo;</em>), or paste a Part 4 gap from above that tripped you up, and I will send back a personal red-pen note within 24 hours.
+    </p>
+    <form id="bathy-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST" style="display:flex; flex-direction:column; gap:10px;">
+      <input type="hidden" name="_subject" value="Abyssal Bathysphere — Conditional / Part 4 Desk Check">
+      <input type="hidden" name="form_source" value="abyssal_bathysphere_inline_desk">
+      <input type="hidden" name="bathysphere_score" id="bathy-desk-score" value="">
+      <input type="hidden" name="candidate_dossier" id="bathy-desk-dossier" value="">
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
+
+      <textarea id="bathy-desk-message" name="message" rows="3" required placeholder="Write 1 original counterfactual sentence (or paste a Part 4 gap you want me to check)..." aria-label="Your conditional sentence or Part 4 question" style="width:100%; box-sizing:border-box; padding:10px 12px; border-radius:8px; border:1px solid var(--ocean-border); background:#020712; color:#f8fafc; font-size:0.92rem; line-height:1.5; resize:vertical; user-select:text;"></textarea>
+
+      <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:stretch;">
+        <input type="email" id="bathy-desk-email" name="email" required placeholder="Your email for my 24h note..." aria-label="Your email address" style="flex:1 1 220px; min-width:0; box-sizing:border-box; padding:10px 12px; border-radius:8px; border:1px solid var(--ocean-border); background:#020712; color:#f8fafc; font-size:0.9rem; user-select:text;">
+        <button type="submit" id="bathy-desk-submit" class="btn-action-ocean" style="background:#059669; padding:10px 18px;">Send for Free 24h Note &rarr;</button>
+      </div>
+      <div id="bathy-desk-status" role="status" aria-live="polite" style="font-size:0.86rem; font-weight:700; line-height:1.45;"></div>
+    </form>
+  </section>
+
 </div>
 
 <script>
@@ -1547,6 +1576,77 @@ const bathyApp = (() => {
     updateSimUI();
     updateProgressReadout();
     requestAnimationFrame(drawCanvas);
+
+    const bathyForm = document.getElementById('bathy-desk-form');
+    if (bathyForm) {
+      bathyForm.addEventListener('submit', async (e) => {
+        if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+        e.preventDefault();
+        if (bathyForm.dataset.submitting === 'true') return;
+
+        const gotcha = bathyForm.querySelector('input[name="_gotcha"]');
+        const statusEl = document.getElementById('bathy-desk-status');
+        const submitBtn = document.getElementById('bathy-desk-submit');
+        const origText = submitBtn ? submitBtn.textContent : 'Send for Free 24h Note →';
+
+        if (gotcha && gotcha.value.trim()) {
+          if (statusEl) {
+            statusEl.style.color = '#6ee7b7';
+            statusEl.textContent = 'Sent to my desk — thank you.';
+          }
+          return;
+        }
+
+        const scoreEl = document.getElementById('session-score');
+        const locksEl = document.getElementById('locks-progress-readout');
+        const scoreHidden = document.getElementById('bathy-desk-score');
+        if (scoreHidden) {
+          scoreHidden.value = `${scoreEl ? scoreEl.textContent : score} | ${locksEl ? locksEl.textContent : ''}`.trim();
+        }
+        const dosHidden = document.getElementById('bathy-desk-dossier');
+        if (dosHidden) {
+          try { dosHidden.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+        }
+
+        bathyForm.dataset.submitting = 'true';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+        }
+        if (statusEl) {
+          statusEl.style.color = '#e2e8f0';
+          statusEl.textContent = '';
+        }
+
+        try {
+          const res = await fetch(bathyForm.action || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(bathyForm),
+            headers: { Accept: 'application/json' }
+          });
+          if (!res.ok) throw new Error('Request failed');
+          if (statusEl) {
+            statusEl.style.color = '#6ee7b7';
+            statusEl.textContent = 'Received at my desk in Northern Ireland. I will send back a personal red-pen note within 24 hours.';
+          }
+          if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+          if (typeof window.trackFunnelEvent === 'function') {
+            window.trackFunnelEvent('desk_dropbox_submitted', { tool: 'abyssal_bathysphere' });
+          }
+        } catch (_) {
+          if (statusEl) {
+            statusEl.style.color = '#fda4af';
+            statusEl.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=Abyssal%20Bathysphere%20Conditional%20Check" style="color:#7dd3fc;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+          }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = origText;
+          }
+        } finally {
+          bathyForm.dataset.submitting = 'false';
+        }
+      });
+    }
   }
 
   window.addEventListener('DOMContentLoaded', init);

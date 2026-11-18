@@ -776,6 +776,100 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
       .gm-spark-bar:hover {
         filter: brightness(1.1);
       }
+      .gm-scanner-desk-card {
+        margin-top: 1.5rem;
+        padding: 1.25rem;
+        border-radius: 1rem;
+        background: rgba(15, 23, 42, 0.78);
+        border: 1px solid rgba(52, 211, 153, 0.3);
+        scroll-margin-top: 6rem;
+      }
+      .gm-desk-form-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        margin-top: 0.875rem;
+      }
+      @media (min-width: 640px) {
+        .gm-desk-form-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .gm-desk-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #cbd5e1;
+        margin-bottom: 0.3rem;
+      }
+      .gm-desk-input,
+      .gm-desk-textarea {
+        width: 100%;
+        border-radius: 0.75rem;
+        border: 1px solid #334155;
+        background: #020617;
+        color: #f8fafc;
+        padding: 0.65rem 0.85rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+      }
+      .gm-desk-input:focus,
+      .gm-desk-textarea:focus {
+        outline: 2px solid #34d399;
+        outline-offset: 1px;
+        border-color: #34d399;
+      }
+      .gm-desk-textarea {
+        resize: vertical;
+        min-height: 6rem;
+      }
+      .gm-desk-footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-top: 0.85rem;
+      }
+      .gm-desk-submit {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.75rem;
+        background: #10b981;
+        color: #020617;
+        font-weight: 800;
+        font-size: 0.875rem;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+      }
+      .gm-desk-submit:hover:not(:disabled) {
+        background: #34d399;
+      }
+      .gm-desk-submit:disabled {
+        opacity: 0.65;
+        cursor: wait;
+      }
+      .gm-desk-status {
+        margin-top: 0.75rem;
+        padding: 0.75rem 0.9rem;
+        border-radius: 0.75rem;
+        font-size: 0.8125rem;
+        line-height: 1.45;
+      }
+      .gm-desk-status-ok {
+        background: rgba(16, 185, 129, 0.16);
+        border: 1px solid rgba(52, 211, 153, 0.45);
+        color: #a7f3d0;
+      }
+      .gm-desk-status-err {
+        background: rgba(244, 63, 94, 0.16);
+        border: 1px solid rgba(251, 113, 133, 0.45);
+        color: #fecdd3;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -1077,19 +1171,91 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
               >
                 <span>Book 30-Min Live Diagnostic (£35) &rarr;</span>
               </a>
-              <a
-                href="index.html?source=essay_scanner&amp;tier=waitlist_free#enquiry-card"
-                id="gm-send-draft-free-btn"
-                data-scanner-cta="waitlist_free"
-                class="text-xs font-semibold text-slate-300 hover:text-emerald-300 underline text-center pt-1 transition"
-              >
-                Or send 1 short paragraph for a free 24h red-pen note &rarr;
-              </a>
               <span class="text-[11px] text-slate-400 text-center">
                 Auto-attaches your typed draft &amp; scan &bull; £35 credited toward any 10- or 12-lesson pack
               </span>
             </div>
           </div>
+
+          <form
+            id="gm-scanner-inline-desk-form"
+            action="https://formspree.io/f/mvkgrwvj"
+            method="POST"
+            class="gm-scanner-desk-card"
+          >
+            <input type="hidden" name="form_source" value="how_i_mark_inline_scanner">
+            <input type="hidden" name="_subject" value="Free 1-Paragraph Red-Pen Check (How I Mark Scanner)">
+            <input type="hidden" name="scanner_metrics" id="gm-desk-metrics" value="">
+            <input type="hidden" name="candidate_dossier" id="gm-desk-dossier" value="">
+            <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h5 class="text-sm sm:text-base font-bold text-white">
+                Or Send 1 Short Paragraph Free (24h Belfast Desk Note)
+              </h5>
+              <span class="text-[11px] font-semibold text-emerald-300">
+                No page redirect required
+              </span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed mt-1">
+              Paste 1 short paragraph (80 to 150 words) or ask me 1 question below. If you already typed your own draft in the box above, it carries down automatically.
+            </p>
+
+            <div class="gm-desk-form-grid">
+              <div>
+                <label for="gm-desk-email" class="gm-desk-label">Your email address *</label>
+                <input
+                  type="email"
+                  id="gm-desk-email"
+                  name="email"
+                  required
+                  autocomplete="email"
+                  placeholder="you@example.com"
+                  class="gm-desk-input"
+                >
+              </div>
+              <div>
+                <label for="gm-desk-name" class="gm-desk-label">First name (optional)</label>
+                <input
+                  type="text"
+                  id="gm-desk-name"
+                  name="name"
+                  autocomplete="given-name"
+                  placeholder="e.g. Alex"
+                  class="gm-desk-input"
+                >
+              </div>
+            </div>
+
+            <div class="mt-3">
+              <label for="gm-desk-message" class="gm-desk-label">Your paragraph or question *</label>
+              <textarea
+                id="gm-desk-message"
+                name="message"
+                required
+                rows="4"
+                placeholder="Paste 1 short paragraph or write 1 question about your essay. If you typed your own draft above, it carries across automatically."
+                class="gm-desk-textarea"
+              ></textarea>
+            </div>
+
+            <div class="gm-desk-footer">
+              <span class="text-xs text-slate-400">
+                Personal reply from my desk within 24 hours. No mailing list.
+              </span>
+              <button type="submit" id="gm-desk-submit-btn" class="gm-desk-submit">
+                Send 1 Paragraph Free (24h Note) &rarr;
+              </button>
+            </div>
+
+            <div id="gm-desk-success" role="status" aria-live="polite" class="gm-desk-status gm-desk-status-ok hidden">
+              Sent to my desk. Watch your inbox within 24 hours for my written notes on your paragraph.
+            </div>
+            <div id="gm-desk-error" role="alert" class="gm-desk-status gm-desk-status-err hidden">
+              That submission did not go through, and your draft is still safe above. Please email it directly to
+              <a href="mailto:gareth@garethenglish.com?subject=Free%201-Paragraph%20Red-Pen%20Check" class="underline font-bold text-white">gareth@garethenglish.com</a>.
+            </div>
+          </form>
         </div>
       </div>
     `;
@@ -1119,6 +1285,24 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
     const sparklineBars = root.querySelector('#gm-sparkline-bars');
     const scannerCtaBtns = root.querySelectorAll('[data-scanner-cta]');
     const copyFeedbackEl = root.querySelector('#gm-conversion-copy-feedback');
+    const deskForm = root.querySelector('#gm-scanner-inline-desk-form');
+    const deskEmailInput = root.querySelector('#gm-desk-email');
+    const deskMessageInput = root.querySelector('#gm-desk-message');
+    const deskMetricsInput = root.querySelector('#gm-desk-metrics');
+    const deskDossierInput = root.querySelector('#gm-desk-dossier');
+    const deskSubmitBtn = root.querySelector('#gm-desk-submit-btn');
+    const deskSuccessEl = root.querySelector('#gm-desk-success');
+    const deskErrorEl = root.querySelector('#gm-desk-error');
+    let deskMessageEdited = false;
+
+    try {
+      const savedState = window.CandidateDossier && typeof window.CandidateDossier.getState === 'function'
+        ? window.CandidateDossier.getState()
+        : null;
+      if (savedState && savedState.savedEmail && deskEmailInput && !deskEmailInput.value) {
+        deskEmailInput.value = savedState.savedEmail;
+      }
+    } catch (_) {}
 
     textarea.value = currentText;
 
@@ -1208,7 +1392,50 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
       }
     }
 
+    function syncDeskFields() {
+      if (deskMetricsInput) {
+        const isSample = isSamplePresetText(currentText);
+        deskMetricsInput.value = [
+          `source=${isSample ? 'sample_preset' : 'visitor_draft'}`,
+          `words=${currentResult.wordCount}`,
+          `sentences=${currentResult.sentenceCount}`,
+          `ceiling=${currentResult.ceilingScore}`,
+          `cefr=${currentResult.cefrCode}`,
+          `amber=${currentResult.amberMatches.length}`,
+          `emerald=${currentResult.emeraldMatches.length}`,
+          `c1_pillars=${currentResult.c1CategoriesHit}/5`,
+          `mean=${currentResult.meanLength}`,
+          `stdDev=${currentResult.stdDev}`
+        ].join(' | ');
+      }
+      if (deskDossierInput) {
+        try {
+          const summary = window.CandidateDossier && typeof window.CandidateDossier.getSummary === 'function'
+            ? window.CandidateDossier.getSummary()
+            : null;
+          if (summary && summary.code && summary.code !== 'GM-NEW' && (summary.playedCategories > 0 || summary.gamesCompleted > 0 || summary.drillsCompleted > 0)) {
+            deskDossierInput.value = [
+              `code=${summary.code}`,
+              `band=${summary.estimatedBand || 'unscored'}`,
+              `accuracy=${summary.overallAccuracy !== null ? summary.overallAccuracy + '%' : 'untested'}`,
+              `weakest=${summary.weakestSkill || 'none'}`,
+              `played=${summary.playedCategories || 0}`
+            ].join(' | ');
+          } else {
+            deskDossierInput.value = '';
+          }
+        } catch (_) {
+          deskDossierInput.value = '';
+        }
+      }
+      if (deskMessageInput && !deskMessageEdited) {
+        const trimmed = (currentText || '').trim();
+        deskMessageInput.value = (!isSamplePresetText(trimmed) && trimmed) ? trimmed : '';
+      }
+    }
+
     function renderAll() {
+      syncDeskFields();
       wordCountEl.textContent = `${currentResult.wordCount} words`;
       sentenceCountEl.textContent = `${currentResult.sentenceCount} sentences`;
 
@@ -1432,6 +1659,83 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
         }
       });
     });
+
+    if (deskMessageInput) {
+      deskMessageInput.addEventListener('input', () => {
+        deskMessageEdited = deskMessageInput.value.trim().length > 0;
+      });
+    }
+
+    if (deskForm) {
+      deskForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (deskForm.dataset.submitting === 'true') return;
+
+        currentText = textarea.value || currentText;
+        currentResult = scanEssay(currentText);
+        syncDeskFields();
+
+        const emailVal = (deskEmailInput ? deskEmailInput.value : '').trim();
+        const msgVal = (deskMessageInput ? deskMessageInput.value : '').trim();
+        if (!emailVal || !msgVal) {
+          if (typeof deskForm.reportValidity === 'function') deskForm.reportValidity();
+          return;
+        }
+
+        deskForm.dataset.submitting = 'true';
+        if (deskSuccessEl) deskSuccessEl.classList.add('hidden');
+        if (deskErrorEl) deskErrorEl.classList.add('hidden');
+        if (deskSubmitBtn) {
+          deskSubmitBtn.disabled = true;
+          deskSubmitBtn.textContent = "Sending to Gareth's Desk...";
+        }
+
+        try {
+          if (window.CandidateDossier && typeof window.CandidateDossier.saveEmail === 'function') {
+            window.CandidateDossier.saveEmail(emailVal);
+          }
+        } catch (_) {}
+
+        try {
+          const response = await fetch(deskForm.getAttribute('action') || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(deskForm),
+            headers: { Accept: 'application/json' }
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          if (deskSuccessEl) deskSuccessEl.classList.remove('hidden');
+          if (deskSubmitBtn) {
+            deskSubmitBtn.disabled = false;
+            deskSubmitBtn.textContent = 'Sent! Send Another Note \u2192';
+          }
+          try {
+            if (typeof window.trackFunnelEvent === 'function') {
+              window.trackFunnelEvent('how_i_mark_inline_redpen_succeeded', {
+                wordCount: currentResult.wordCount,
+                hasDraft: !isSamplePresetText(currentText)
+              });
+            }
+          } catch (_) {}
+        } catch (err) {
+          if (deskErrorEl) deskErrorEl.classList.remove('hidden');
+          if (deskSubmitBtn) {
+            deskSubmitBtn.disabled = false;
+            deskSubmitBtn.textContent = 'Send 1 Paragraph Free (24h Note) \u2192';
+          }
+          try {
+            if (typeof window.trackFunnelEvent === 'function') {
+              window.trackFunnelEvent('how_i_mark_inline_redpen_failed', {});
+            }
+          } catch (_) {}
+        } finally {
+          deskForm.dataset.submitting = 'false';
+        }
+      });
+    }
 
     renderAll();
 

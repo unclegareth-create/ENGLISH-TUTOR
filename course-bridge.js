@@ -37,9 +37,10 @@
 
     const path = (window.location.pathname || '').toLowerCase();
 
-    // Never on the course itself, the compendium, or the Young Learners page.
+    // Never on the course itself, the compendium, the Young Learners page, or core exam workbenches.
     const EXCLUDED_RE = /(^|\/)((dracula|frankenstein|jekyll|baskerville|alice)-unit\d+[^/]*|poe-unit13-tell-tale-heart[^/]*|dark-academia[^/]*|the-gothic-canon[^/]*|professor-west-study[^/]*)$/i;
-    if (EXCLUDED_RE.test(path)) return;
+    const EXAM_EXCLUDE_RE = /(^|\/)(c1-50-key-word-transformations-checklist|cae-essay-builder-v2|ielts-essay-masterclass|c1-report-proposal-builder|speaking-part2-arc-trainer|cpe-psychometrics-passives)(\.html)?$/i;
+    if (EXCLUDED_RE.test(path) || EXAM_EXCLUDE_RE.test(path)) return;
 
     const slug = ((path.split('/').pop() || '').split(/[?#]/)[0].replace(/\.html?$/i, '')) || 'index';
 
@@ -84,6 +85,10 @@
 #${CARD_ID} a.gmcb-secondary{background:transparent;color:#f5ebd6;border:1px solid #5a4a38;}
 #${CARD_ID} a.gmcb-secondary:hover{border-color:#c9a24a;color:#fff;}
 #${CARD_ID} a.gmcb-btn:focus-visible{outline:2px solid #f5ebd6;outline-offset:3px;}
+#${CARD_ID} .gmcb-desk-note{margin:16px 0 0;padding-top:14px;border-top:1px solid #3a3026;
+  font:500 .9rem/1.45 "Plus Jakarta Sans",system-ui,sans-serif;color:#d8cfc0;}
+#${CARD_ID} a.gmcb-desk-link{color:#e8cd8b;font-weight:700;text-decoration:underline;text-underline-offset:3px;}
+#${CARD_ID} a.gmcb-desk-link:hover{color:#fff;}
 #${CARD_ID}.gmcb-compact{margin:20px 0 8px;padding:18px 18px 16px;box-shadow:none;text-align:center;}
 #${CARD_ID}.gmcb-compact .gmcb-title{font-size:1.15rem;}
 #${CARD_ID}.gmcb-compact .gmcb-text{font-size:.98rem;margin-bottom:14px;}
@@ -137,6 +142,14 @@
         actions.appendChild(primary);
         actions.appendChild(secondary);
         card.appendChild(actions);
+
+        const deskNote = el('p', 'gmcb-desk-note', 'Working on an exam or work draft? ');
+        const deskLink = el('a', 'gmcb-desk-link', 'Send 1 short paragraph for a free 24h note \u2192');
+        deskLink.href = 'lab.html#belfast-desk-dropbox';
+        deskLink.addEventListener('click', () => track('desk-dropbox'));
+        deskNote.appendChild(deskLink);
+        card.appendChild(deskNote);
+
         return card;
     };
 
@@ -151,8 +164,8 @@
             return;
         }
 
-        // 2. Known finish panels inside the arcade games.
-        const finish = document.querySelector('#end-screen .modal-content, #lead-modal .modal-panel, #endModal');
+        // 2. Known finish panels inside the arcade games (skip #end-screen on reactor/factory/boardroom).
+        const finish = document.querySelector('#lead-modal .modal-panel, #endModal');
         if (finish) {
             finish.classList.add('gmcb-host-scroll');
             finish.appendChild(buildCard(true));

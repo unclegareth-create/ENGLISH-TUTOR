@@ -19,8 +19,8 @@
       label: 'Negative & Conditional Inversion',
       shortLabel: 'Inversion',
       axis: 0,
-      defaultAttempts: 5,
-      defaultCorrect: 3
+      defaultAttempts: 0,
+      defaultCorrect: 0
     },
     cleft_clauses: {
       id: 'cleft_clauses',
@@ -28,8 +28,8 @@
       label: 'Cleft & Pseudo-Cleft Structures',
       shortLabel: 'Clefts & Syntax',
       axis: 1,
-      defaultAttempts: 5,
-      defaultCorrect: 3
+      defaultAttempts: 0,
+      defaultCorrect: 0
     },
     nominalisation: {
       id: 'nominalisation',
@@ -37,8 +37,8 @@
       label: 'Nominalisation & Clause Density',
       shortLabel: 'Nominalisation',
       axis: 2,
-      defaultAttempts: 4,
-      defaultCorrect: 3
+      defaultAttempts: 0,
+      defaultCorrect: 0
     },
     register_shift: {
       id: 'register_shift',
@@ -46,8 +46,8 @@
       label: 'Academic & Executive Register Control',
       shortLabel: 'Register Control',
       axis: 2,
-      defaultAttempts: 5,
-      defaultCorrect: 3
+      defaultAttempts: 0,
+      defaultCorrect: 0
     },
     phrasal_verbs: {
       id: 'phrasal_verbs',
@@ -55,8 +55,8 @@
       label: 'C1/C2 Phrasal Verbs & Collocations',
       shortLabel: 'Phrasal & Collocations',
       axis: 3,
-      defaultAttempts: 5,
-      defaultCorrect: 4
+      defaultAttempts: 0,
+      defaultCorrect: 0
     },
     word_formation: {
       id: 'word_formation',
@@ -64,8 +64,8 @@
       label: 'Morphology & Affixation',
       shortLabel: 'Word Formation',
       axis: 3,
-      defaultAttempts: 4,
-      defaultCorrect: 3
+      defaultAttempts: 0,
+      defaultCorrect: 0
     },
     prosody_cadence: {
       id: 'prosody_cadence',
@@ -73,8 +73,8 @@
       label: 'Spoken Prosody & Reformulation',
       shortLabel: 'Prosody & Cadence',
       axis: 1,
-      defaultAttempts: 4,
-      defaultCorrect: 3
+      defaultAttempts: 0,
+      defaultCorrect: 0
     }
   };
 
@@ -142,10 +142,9 @@
   function createDefaultState() {
     const skills = {};
     Object.keys(CATEGORIES).forEach((key) => {
-      const cfg = CATEGORIES[key];
       skills[key] = {
-        attempts: cfg.defaultAttempts,
-        correct: cfg.defaultCorrect,
+        attempts: 0,
+        correct: 0,
         lastUpdated: null
       };
     });
@@ -157,7 +156,7 @@
       drillsCompleted: 0,
       savedEmail: '',
       skills: skills,
-      mistakeVault: getStarterMistakes()
+      mistakeVault: []
     };
   }
 
@@ -170,21 +169,39 @@
       const mergedSkills = { ...def.skills };
       if (parsed && parsed.skills) {
         Object.keys(CATEGORIES).forEach((k) => {
-          if (parsed.skills[k] && typeof parsed.skills[k].attempts === 'number') {
+          const rawSkill = parsed.skills[k];
+          if (rawSkill && typeof rawSkill.attempts === 'number' && rawSkill.lastUpdated) {
+            const att = Math.max(0, rawSkill.attempts);
             mergedSkills[k] = {
-              attempts: Math.max(1, parsed.skills[k].attempts),
-              correct: Math.max(0, Math.min(parsed.skills[k].attempts, parsed.skills[k].correct || 0)),
-              lastUpdated: parsed.skills[k].lastUpdated || null
+              attempts: att,
+              correct: Math.max(0, Math.min(att, rawSkill.correct || 0)),
+              lastUpdated: rawSkill.lastUpdated || null
+            };
+          } else {
+            mergedSkills[k] = {
+              attempts: 0,
+              correct: 0,
+              lastUpdated: null
             };
           }
         });
       }
-      const vault = Array.isArray(parsed.mistakeVault) && parsed.mistakeVault.length > 0
-        ? parsed.mistakeVault
-        : getStarterMistakes();
+      const gamesCompleted = Number(parsed && parsed.gamesCompleted) || 0;
+      const drillsCompleted = Number(parsed && parsed.drillsCompleted) || 0;
+      const anySkillUpdated = Object.keys(mergedSkills).some((k) => Boolean(mergedSkills[k] && mergedSkills[k].lastUpdated));
+      if (gamesCompleted === 0 && drillsCompleted === 0 && !anySkillUpdated) {
+        Object.keys(mergedSkills).forEach((k) => {
+          mergedSkills[k] = { attempts: 0, correct: 0, lastUpdated: null };
+        });
+      }
+      const vault = Array.isArray(parsed && parsed.mistakeVault)
+        ? parsed.mistakeVault.filter((m) => m && m.starter !== true)
+        : [];
       return {
         ...def,
         ...parsed,
+        gamesCompleted,
+        drillsCompleted,
         skills: mergedSkills,
         mistakeVault: vault
       };
@@ -232,25 +249,29 @@
     return 'inversion';
   }
 
+  function isPlayedSkill(s) {
+    return Boolean(s && s.attempts > 0 && s.lastUpdated !== null);
+  }
+
   function getCategoryAccuracy(catKey) {
-    const s = state.skills[catKey] || { attempts: 1, correct: 0 };
-    if (!s.attempts || s.attempts <= 0) return 60;
+    const s = state.skills[catKey];
+    if (!isPlayedSkill(s)) return null;
     return Math.max(15, Math.min(100, Math.round((s.correct / s.attempts) * 100)));
   }
 
   function getAxisAccuracy(axisIndex) {
     const axis = RADAR_AXES[axisIndex];
-    if (!axis) return 65;
+    if (!axis) return null;
     let totalAtt = 0;
     let totalCor = 0;
     axis.cats.forEach((c) => {
       const s = state.skills[c];
-      if (s) {
+      if (isPlayedSkill(s)) {
         totalAtt += s.attempts;
         totalCor += s.correct;
       }
     });
-    if (totalAtt <= 0) return 65;
+    if (totalAtt <= 0) return null;
     return Math.max(15, Math.min(100, Math.round((totalCor / totalAtt) * 100)));
   }
 
@@ -259,17 +280,20 @@
     let totalCor = 0;
     Object.keys(CATEGORIES).forEach((k) => {
       const s = state.skills[k];
-      if (s) {
+      if (isPlayedSkill(s)) {
         totalAtt += s.attempts;
         totalCor += s.correct;
       }
     });
-    if (totalAtt <= 0) return 66;
+    if (totalAtt <= 0) return null;
     return Math.max(20, Math.min(100, Math.round((totalCor / totalAtt) * 100)));
   }
 
   function getEstimatedBand(overallPct) {
     const pct = typeof overallPct === 'number' ? overallPct : getOverallAccuracy();
+    if (pct === null || typeof pct !== 'number') {
+      return { cefr: 'No lab runs recorded yet', short: 'Not tested yet', code: 'NEW' };
+    }
     if (pct >= 88) return { cefr: 'CEFR C1.8 · C2 Mastery', short: 'C1.8 / C2 Ready', code: 'C2' };
     if (pct >= 78) return { cefr: 'CEFR C1.4 · C1 Solid', short: 'C1.4 / C2 Track', code: 'C1' };
     if (pct >= 66) return { cefr: 'CEFR B2.8 · C1 Ready', short: 'CEFR B2.8 / C1 Ready', code: 'C1' };
@@ -278,15 +302,25 @@
   }
 
   function getWeakestSkill() {
-    let weakestKey = 'inversion';
+    let weakestKey = '';
     let lowestPct = 101;
     Object.keys(CATEGORIES).forEach((k) => {
       const pct = getCategoryAccuracy(k);
-      if (pct < lowestPct) {
+      if (pct !== null && pct < lowestPct) {
         lowestPct = pct;
         weakestKey = k;
       }
     });
+    if (!weakestKey) {
+      return {
+        key: '',
+        id: '',
+        code: 'NONE',
+        label: '',
+        shortLabel: '',
+        accuracy: null
+      };
+    }
     return {
       key: weakestKey,
       ...CATEGORIES[weakestKey],
@@ -295,15 +329,25 @@
   }
 
   function getStrongestSkill() {
-    let strongestKey = 'phrasal_verbs';
+    let strongestKey = '';
     let highestPct = -1;
     Object.keys(CATEGORIES).forEach((k) => {
       const pct = getCategoryAccuracy(k);
-      if (pct > highestPct) {
+      if (pct !== null && pct > highestPct) {
         highestPct = pct;
         strongestKey = k;
       }
     });
+    if (!strongestKey) {
+      return {
+        key: '',
+        id: '',
+        code: 'NONE',
+        label: '',
+        shortLabel: '',
+        accuracy: null
+      };
+    }
     return {
       key: strongestKey,
       ...CATEGORIES[strongestKey],
@@ -313,13 +357,16 @@
 
   function getDecayingMistakes() {
     const now = Date.now();
-    return (state.mistakeVault || []).filter((item) => !item.nextReview || item.nextReview <= now);
+    return (state.mistakeVault || []).filter((item) => item && item.starter !== true && (!item.nextReview || item.nextReview <= now));
   }
 
   function getDossierCode() {
     const band = getEstimatedBand();
     const weakest = getWeakestSkill();
     const strongest = getStrongestSkill();
+    if (!weakest.key || weakest.accuracy === null || !strongest.key || strongest.accuracy === null) {
+      return 'GM-NEW';
+    }
     return `GM-${band.code}-${weakest.code}${weakest.accuracy}-${strongest.code}${strongest.accuracy}`;
   }
 
@@ -331,12 +378,16 @@
     const decaying = getDecayingMistakes();
     const code = getDossierCode();
     const skillsSnapshot = {};
+    let playedCategories = 0;
     Object.keys(CATEGORIES).forEach((k) => {
+      const acc = getCategoryAccuracy(k);
+      if (acc !== null) playedCategories += 1;
       skillsSnapshot[k] = {
         label: CATEGORIES[k].label,
-        accuracy: getCategoryAccuracy(k),
+        accuracy: acc,
         attempts: state.skills[k].attempts,
-        correct: state.skills[k].correct
+        correct: state.skills[k].correct,
+        lastUpdated: state.skills[k].lastUpdated || null
       };
     });
     return {
@@ -349,6 +400,7 @@
       weakestAccuracy: weakest.accuracy,
       strongestSkill: strongest.label,
       strongestAccuracy: strongest.accuracy,
+      playedCategories,
       decayingCount: decaying.length,
       gamesCompleted: state.gamesCompleted || 0,
       drillsCompleted: state.drillsCompleted || 0,
@@ -485,7 +537,9 @@
     const cx = 130;
     const cy = 115;
     const maxR = 72;
-    const vals = [0, 1, 2, 3].map((i) => getAxisAccuracy(i) / 100);
+    const rawAxes = [0, 1, 2, 3].map((i) => getAxisAccuracy(i));
+    const vals = rawAxes.map((v) => (v === null ? 0.12 : v / 100));
+    const fmtAxis = (i) => (rawAxes[i] === null ? 'Not tested' : `${rawAxes[i]}%`);
 
     const pt = (axisIdx, ratio) => {
       const r = maxR * Math.max(0.12, Math.min(1, ratio));
@@ -516,14 +570,14 @@
         ${dataPts
           .map(
             (p, idx) =>
-              `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#fbbf24" stroke="#0f172a" stroke-width="1.5"><title>${RADAR_AXES[idx].label}: ${Math.round(vals[idx] * 100)}%</title></circle>`
+              `<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#fbbf24" stroke="#0f172a" stroke-width="1.5"><title>${RADAR_AXES[idx].label}: ${fmtAxis(idx)}</title></circle>`
           )
           .join('')}
         <!-- Axis Labels -->
-        <text x="${cx}" y="${cy - maxR - 12}" text-anchor="middle" fill="#e2e8f0" font-size="10.5" font-weight="700">Inversion (${Math.round(vals[0] * 100)}%)</text>
-        <text x="${cx + maxR + 8}" y="${cy + 4}" text-anchor="start" fill="#e2e8f0" font-size="10" font-weight="600">Clefts (${Math.round(vals[1] * 100)}%)</text>
-        <text x="${cx}" y="${cy + maxR + 18}" text-anchor="middle" fill="#e2e8f0" font-size="10.5" font-weight="700">Register &amp; Nom. (${Math.round(vals[2] * 100)}%)</text>
-        <text x="${cx - maxR - 8}" y="${cy + 4}" text-anchor="end" fill="#e2e8f0" font-size="10" font-weight="600">Lexis (${Math.round(vals[3] * 100)}%)</text>
+        <text x="${cx}" y="${cy - maxR - 12}" text-anchor="middle" fill="#e2e8f0" font-size="10.5" font-weight="700">Inversion (${fmtAxis(0)})</text>
+        <text x="${cx + maxR + 8}" y="${cy + 4}" text-anchor="start" fill="#e2e8f0" font-size="10" font-weight="600">Clefts (${fmtAxis(1)})</text>
+        <text x="${cx}" y="${cy + maxR + 18}" text-anchor="middle" fill="#e2e8f0" font-size="10.5" font-weight="700">Register &amp; Nom. (${fmtAxis(2)})</text>
+        <text x="${cx - maxR - 8}" y="${cy + 4}" text-anchor="end" fill="#e2e8f0" font-size="10" font-weight="600">Lexis (${fmtAxis(3)})</text>
       </svg>
     `;
   }
@@ -668,7 +722,7 @@
 
   function renderFloatingPill() {
     if (!document.body) return;
-    if (isCleanScreenShareMode()) {
+    if (isCleanScreenShareMode() || !hasRealActivity()) {
       const existing = document.getElementById('gm-dossier-pill');
       if (existing) existing.remove();
       return;
@@ -707,14 +761,16 @@
 
     const axisBarsHtml = RADAR_AXES.map((ax, idx) => {
       const pct = getAxisAccuracy(idx);
+      const pctLabel = pct === null ? 'Not tested yet' : `${pct}%`;
+      const barWidth = pct === null ? 0 : pct;
       return `
         <div style="margin-bottom:9px;">
           <div style="display:flex;justify-content:space-between;font-size:12px;color:#cbd5e1;font-weight:600;">
             <span>${ax.label}</span>
-            <span style="color:#fbbf24;">${pct}%</span>
+            <span style="color:${pct === null ? '#94a3b8' : '#fbbf24'};">${pctLabel}</span>
           </div>
           <div class="gm-dossier-bar-track">
-            <div class="gm-dossier-bar-fill" style="width:${pct}%;"></div>
+            <div class="gm-dossier-bar-fill" style="width:${barWidth}%;"></div>
           </div>
         </div>
       `;
@@ -724,7 +780,11 @@
       .map((k) => {
         const cat = CATEGORIES[k];
         const pct = getCategoryAccuracy(k);
-        return `<span style="font-size:11px;background:#1e293b;border:1px solid #334155;color:#cbd5e1;padding:3px 8px;border-radius:6px;">${cat.shortLabel}: <strong style="color:#fbbf24;">${pct}%</strong></span>`;
+        const pctHtml =
+          pct === null
+            ? `<strong style="color:#94a3b8;">Not tested yet</strong>`
+            : `<strong style="color:#fbbf24;">${pct}%</strong>`;
+        return `<span style="font-size:11px;background:#1e293b;border:1px solid #334155;color:#cbd5e1;padding:3px 8px;border-radius:6px;">${cat.shortLabel}: ${pctHtml}</span>`;
       })
       .join('');
 
@@ -801,7 +861,9 @@
 
       <div style="background:rgba(37,99,235,0.12);border:1px solid rgba(59,130,246,0.4);border-radius:12px;padding:14px;">
         <p style="margin:0 0 10px 0;font-size:12.5px;line-height:1.5;color:#e2e8f0;">
-          Your Lab results show a <strong style="color:#fbbf24;">${summary.weakestAccuracy}%</strong> accuracy rate on <strong style="color:#ffffff;">${escapeHtml(summary.weakestSkill)}</strong>. Book your £35 30-minute starter session or send an essay for 48-hour written feedback (£29):
+          ${summary.weakestSkill && summary.weakestAccuracy !== null
+            ? `Your Lab results show a <strong style="color:#fbbf24;">${summary.weakestAccuracy}%</strong> accuracy rate on <strong style="color:#ffffff;">${escapeHtml(summary.weakestSkill)}</strong>. `
+            : ''}Book your £35 30-minute starter session or send an essay for 48-hour written feedback (£29):
         </p>
         <div style="display:grid;gap:8px;">
           <a href="index.html?offer=live_diagnostic_35&amp;dossier=${encodeURIComponent(summary.code)}#cal-booking-box"
@@ -845,7 +907,11 @@
     const copyBtn = document.getElementById('gm-dossier-copy-code');
     if (copyBtn) {
       copyBtn.onclick = () => {
-        const text = `GarethEnglish Candidate Dossier: ${summary.code} | ${summary.cefrBand} | Primary Bottleneck: ${summary.weakestSkill} (${summary.weakestAccuracy}%) | Overall Accuracy: ${summary.overallAccuracy}%`;
+        const focusText = summary.weakestSkill && summary.weakestAccuracy !== null
+          ? `${summary.weakestSkill} (${summary.weakestAccuracy}%)`
+          : 'Not tested yet';
+        const overallText = summary.overallAccuracy !== null ? `${summary.overallAccuracy}%` : 'Not tested yet';
+        const text = `GarethEnglish Candidate Dossier: ${summary.code} | ${summary.cefrBand} | Focus Area: ${focusText} | Overall Accuracy: ${overallText}`;
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(text).catch(() => {});
         }
@@ -904,14 +970,21 @@
 
         const formData = typeof FormData === 'function' ? new FormData() : null;
         if (formData) {
+          const overallVal = summary.overallAccuracy !== null ? `${summary.overallAccuracy}%` : 'Not tested yet';
+          const weakestVal = summary.weakestSkill && summary.weakestAccuracy !== null
+            ? `${summary.weakestSkill} (${summary.weakestAccuracy}%)`
+            : 'Not tested yet';
+          const strongestVal = summary.strongestSkill && summary.strongestAccuracy !== null
+            ? `${summary.strongestSkill} (${summary.strongestAccuracy}%)`
+            : 'Not tested yet';
           formData.append('email', email);
           formData.append('_subject', `Candidate Dossier Saved: ${summary.code} (${summary.cefrShort})`);
           formData.append('form_source', 'candidate_dossier_drawer');
           formData.append('dossier_code', summary.code);
           formData.append('cefr_band', summary.cefrBand);
-          formData.append('overall_accuracy', `${summary.overallAccuracy}%`);
-          formData.append('weakest_skill', `${summary.weakestSkill} (${summary.weakestAccuracy}%)`);
-          formData.append('strongest_skill', `${summary.strongestSkill} (${summary.strongestAccuracy}%)`);
+          formData.append('overall_accuracy', overallVal);
+          formData.append('weakest_skill', weakestVal);
+          formData.append('strongest_skill', strongestVal);
           formData.append('games_completed', String(summary.gamesCompleted || 0));
           formData.append('drills_completed', String(summary.drillsCompleted || 0));
           formData.append('last_free_tool', lastFreeTool);
@@ -1018,9 +1091,7 @@
     const decaying = getDecayingMistakes();
     const queue = (decaying.length > 0 ? decaying : state.mistakeVault.slice(0, 3)).map((item) => ({ ...item }));
     if (queue.length === 0) {
-      state.mistakeVault = getStarterMistakes();
-      saveState();
-      queue.push(...state.mistakeVault.map((item) => ({ ...item })));
+      queue.push(...getStarterMistakes().map((item) => ({ ...item })));
     }
 
     let currentIdx = 0;
@@ -1226,6 +1297,7 @@
           if (state.skills[item.category]) {
             state.skills[item.category].attempts += 1;
             state.skills[item.category].correct += 1;
+            state.skills[item.category].lastUpdated = new Date().toISOString();
           }
         } else {
           if (vaultItem) {
@@ -1235,6 +1307,7 @@
           }
           if (state.skills[item.category]) {
             state.skills[item.category].attempts += 1;
+            state.skills[item.category].lastUpdated = new Date().toISOString();
           }
         }
         saveState();

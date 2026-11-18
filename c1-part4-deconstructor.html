@@ -817,6 +817,87 @@
       color: var(--crimson-text);
     }
 
+    .reveal-guard-msg {
+      display: none;
+      margin-top: 0.75rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: var(--radius-sm);
+      background: var(--deficit-amber-bg);
+      border: 1px solid var(--deficit-amber-border);
+      color: var(--deficit-amber-text);
+      font-size: 0.83rem;
+      font-weight: 600;
+    }
+
+    .reveal-guard-msg.visible {
+      display: block;
+    }
+
+    .transfer-box {
+      display: none;
+      margin-top: 0.85rem;
+      padding: 0.85rem 1rem;
+      background: #F0F9FF;
+      border: 1px solid #BAE6FD;
+      border-radius: var(--radius-sm);
+    }
+
+    .transfer-box.visible {
+      display: block;
+    }
+
+    .transfer-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-navy);
+      margin-bottom: 0.45rem;
+    }
+
+    .transfer-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .transfer-input {
+      flex: 1 1 240px;
+      min-width: 0;
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      padding: 0.48rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--ink-primary);
+    }
+
+    .transfer-input:focus {
+      outline: none;
+      border-color: var(--accent-sky);
+      box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.14);
+    }
+
+    .btn-transfer-desk {
+      background: var(--accent-sky);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.52rem 0.95rem;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s ease;
+    }
+
+    .btn-transfer-desk:hover {
+      background: var(--accent-navy);
+    }
+
     /* Cambridge Model Reveal Drawer */
     .model-drawer {
       display: none;
@@ -1987,6 +2068,10 @@
 
     // State tracking
     const itemScores = {};
+    const cardCheckedAttempt = new Set();
+    const cardEchoStruck = new Set();
+    const cardGapDrafts = {};
+    const cardTransferDrafts = {};
     const recordedAttemptKeys = new Set();
     let activeFilter = "all";
 
@@ -2033,9 +2118,10 @@
       if (!trimmed) return 0;
       const tokens = trimmed.split(/\s+/);
       let total = 0;
-      const contractionRegex = /\b(don't|doesn't|didn't|won't|wouldn't|can't|couldn't|shouldn't|mustn't|isn't|aren't|wasn't|weren't|haven't|hasn't|hadn't|i'm|you're|we're|they're|he's|she's|it's|that's|there's|what's|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll)\b/i;
+      const contractionRegex = /^(don't|doesn't|didn't|won't|wouldn't|can't|couldn't|shouldn't|mustn't|isn't|aren't|wasn't|weren't|haven't|hasn't|hadn't|i'm|you're|we're|they're|he's|she's|it's|that's|there's|here's|what's|who's|where's|how's|let's|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll)$/i;
       for (const tk of tokens) {
-        if (contractionRegex.test(tk)) {
+        const cleanTok = tk.replace(/[\u2018\u2019\u02BC]/g, "'").replace(/^[^A-Za-z0-9']+|[^A-Za-z0-9']+$/g, "");
+        if (cleanTok && contractionRegex.test(cleanTok)) {
           total += 2;
         } else {
           total += 1;
@@ -2099,13 +2185,13 @@
               <span class="pattern-chip">Pattern: ${item.patternTag}</span>
             </div>
             <button type="button" class="action-btn primary-amber strike-card-btn" data-id="${item.id}">
-              ⚡ Strike Out Echoes
+              ✂️ Step 1: Strike Echoes
             </button>
           </div>
 
           <!-- Step 1: Sentence 1 Interactive Echo Deconstructor -->
           <div class="step-section-label">
-            <span>Step 1 · Sentence 1 (Click words repeated in Sentence 2, or use ⚡ Strike Out Echoes)</span>
+            <span>Step 1 · Sentence 1 (Click words repeated in Sentence 2, or use ✂️ Step 1: Strike Echoes)</span>
           </div>
           <div class="sentence-one-box">
             <div class="tokens-wrap" id="tokens-wrap-${item.id}">
@@ -2113,7 +2199,7 @@
             </div>
             <div class="deficit-callout">
               <span>Isolated Semantic Deficit (what you still owe the gap):</span>
-              <span class="deficit-pill" id="deficit-pill-${item.id}">Click "⚡ Strike Out Echoes" to isolate deficit</span>
+              <span class="deficit-pill" id="deficit-pill-${item.id}">Click "✂️ Step 1: Strike Echoes" to isolate deficit</span>
             </div>
           </div>
 
@@ -2167,7 +2253,17 @@
             <span class="pattern-chip" id="card-score-badge-${item.id}">Not checked yet</span>
           </div>
 
+          <div class="reveal-guard-msg" id="reveal-guard-${item.id}" role="status" aria-live="polite"></div>
+
           <div class="feedback-banner" id="feedback-${item.id}"></div>
+
+          <div class="transfer-box" id="transfer-${item.id}">
+            <label class="transfer-label" for="transfer-input-${item.id}">Write 1 original sentence using this frame (${item.patternTag}):</label>
+            <div class="transfer-row">
+              <input type="text" class="transfer-input" id="transfer-input-${item.id}" data-id="${item.id}" placeholder="Write 1 original sentence using this C1 pattern..." autocomplete="off" />
+              <button type="button" class="btn-transfer-desk" data-id="${item.id}">Send this gap &amp; my sentence to Gareth &darr;</button>
+            </div>
+          </div>
 
           <div class="model-drawer" id="drawer-${item.id}">
             <div class="split-mark-box">
@@ -2198,6 +2294,13 @@
       const item = PART4_ITEMS.find(i => i.id === Number(itemId));
       if (!item) return;
 
+      cardEchoStruck.add(item.id);
+      const guardEl = document.getElementById(`reveal-guard-${item.id}`);
+      if (guardEl) {
+        guardEl.textContent = "";
+        guardEl.classList.remove("visible");
+      }
+
       const wrap = document.getElementById(`tokens-wrap-${item.id}`);
       if (!wrap) return;
 
@@ -2218,6 +2321,44 @@
       }
     }
 
+    function sendCardTransferToDesk(itemId) {
+      const item = PART4_ITEMS.find(i => i.id === Number(itemId));
+      if (!item) return;
+      const gapEl = document.getElementById(`input-${item.id}`);
+      const badgeEl = document.getElementById(`card-score-badge-${item.id}`);
+      const fbEl = document.getElementById(`feedback-${item.id}`);
+      const transferEl = document.getElementById(`transfer-input-${item.id}`);
+      const msgEl = document.getElementById("redpen-message");
+      const scoreField = document.getElementById("drill-score-field");
+      const dossierField = document.getElementById("candidate-dossier-field");
+      const tracker = document.getElementById("liveScoreTracker");
+
+      const s1Sentence = item.s1Tokens.map(t => t.text).join(" ");
+      const s2Frame = `${item.s2Prefix ? item.s2Prefix + " " : ""}______ ${item.s2Suffix}`.trim();
+      const typedGap = gapEl && gapEl.value.trim() ? gapEl.value.trim() : "(blank)";
+      const splitScore = badgeEl ? badgeEl.textContent : "Not checked yet";
+      const fbNote = fbEl && fbEl.textContent ? ` (${fbEl.textContent})` : "";
+      const originalSentence = transferEl && transferEl.value.trim() ? transferEl.value.trim() : "(not written yet)";
+
+      if (msgEl) {
+        msgEl.value = [
+          `Part 4 Item #${item.id} (${item.categoryLabel} · ${item.patternTag})`,
+          `Prompt 1: ${s1Sentence}`,
+          `Prompt 2 [${item.keyword}]: ${s2Frame}`,
+          `My typed gap: "${typedGap}"`,
+          `Split score: ${splitScore}${fbNote}`,
+          `My original sentence: ${originalSentence}`
+        ].join("\n");
+      }
+      if (scoreField && tracker) scoreField.value = tracker.textContent;
+      if (dossierField) dossierField.value = readPlayedDossierSummary();
+
+      const contactForm = document.getElementById("contact-form");
+      if (contactForm) {
+        contactForm.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
     // Evaluate user's answer against the 1 mark // 1 mark split
     function evaluateAnswer(itemId) {
       const item = PART4_ITEMS.find(i => i.id === Number(itemId));
@@ -2225,10 +2366,13 @@
       const feedbackEl = document.getElementById(`feedback-${item.id}`);
       const badgeEl = document.getElementById(`card-score-badge-${item.id}`);
       const cardEl = document.getElementById(`kwt-card-${item.id}`);
+      const transferBox = document.getElementById(`transfer-${item.id}`);
+      const guardEl = document.getElementById(`reveal-guard-${item.id}`);
 
       if (!item || !inputEl) return;
 
       const raw = inputEl.value.trim();
+      cardGapDrafts[item.id] = inputEl.value;
       const wordCount = countCambridgeWords(raw);
       const kwCheck = inspectKeywordIntegrity(raw, item.keyword);
 
@@ -2240,8 +2384,15 @@
         feedbackEl.textContent = "0 / 2 Marks — Type your 3 to 6 word transformation in the gap first.";
         itemScores[item.id] = 0;
         badgeEl.textContent = "0 / 2 Marks";
+        if (transferBox) transferBox.classList.remove("visible");
         updateGlobalScore();
         return;
+      }
+
+      cardCheckedAttempt.add(item.id);
+      if (guardEl) {
+        guardEl.textContent = "";
+        guardEl.classList.remove("visible");
       }
 
       if (kwCheck.status !== "intact") {
@@ -2249,6 +2400,7 @@
         feedbackEl.textContent = `0 / 2 Marks — You omitted or altered the given keyword (${item.keyword}). Under Cambridge marking rules, changing the keyword automatically scores zero.`;
         itemScores[item.id] = 0;
         badgeEl.textContent = "0 / 2 Marks";
+        if (transferBox) transferBox.classList.add("visible");
         updateGlobalScore();
         recordDeconstructorAttempt(item, raw, false);
         return;
@@ -2259,12 +2411,13 @@
         feedbackEl.textContent = `0 / 2 Marks — Your answer is ${wordCount} words long. Cambridge Part 4 strictly requires between 3 and 6 words.`;
         itemScores[item.id] = 0;
         badgeEl.textContent = "0 / 2 Marks";
+        if (transferBox) transferBox.classList.add("visible");
         updateGlobalScore();
         recordDeconstructorAttempt(item, raw, false);
         return;
       }
 
-      const norm = raw.toLowerCase().replace(/\s+/g, " ").trim();
+      const norm = raw.toLowerCase().replace(/[’‘]/g, "'").replace(/\s+/g, " ").trim();
 
       // Check full 2-mark match across all accepted Part 1 + Part 2 combinations
       let fullMatch = false;
@@ -2283,14 +2436,15 @@
         cardEl.classList.add("solved-full");
         itemScores[item.id] = 2;
         badgeEl.textContent = "2 / 2 Marks";
+        if (transferBox) transferBox.classList.remove("visible");
         updateGlobalScore();
         recordDeconstructorAttempt(item, raw, true);
         return;
       }
 
       // Check 1-mark partial match (either Part 1 at start or Part 2 at end)
-      const matchedP1 = item.acceptedPart1.some(p1 => norm.startsWith(p1));
-      const matchedP2 = item.acceptedPart2.some(p2 => norm.endsWith(p2));
+      const matchedP1 = item.acceptedPart1.some(p1 => norm === p1 || norm.startsWith(p1 + " "));
+      const matchedP2 = item.acceptedPart2.some(p2 => norm === p2 || norm.endsWith(" " + p2));
 
       if (matchedP1 || matchedP2) {
         const earnedHalf = matchedP1 ? `left frame ("${item.part1}")` : `right frame ("${item.part2}")`;
@@ -2300,6 +2454,7 @@
         cardEl.classList.add("solved-partial");
         itemScores[item.id] = 1;
         badgeEl.textContent = "1 / 2 Marks";
+        if (transferBox) transferBox.classList.add("visible");
         updateGlobalScore();
         recordDeconstructorAttempt(item, raw, false);
         return;
@@ -2309,6 +2464,7 @@
       feedbackEl.textContent = `0 / 2 Marks — Your word count (${wordCount}) and keyword (${item.keyword}) are valid, but the grammatical frame doesn't match the target pattern. Click "👁️ Reveal Cambridge Model" below.`;
       itemScores[item.id] = 0;
       badgeEl.textContent = "0 / 2 Marks";
+      if (transferBox) transferBox.classList.add("visible");
       updateGlobalScore();
       recordDeconstructorAttempt(item, raw, false);
     }
@@ -2344,6 +2500,12 @@
           if (allStruck && item) {
             wrap.querySelectorAll('.s1-token[data-echo="false"]').forEach(el => el.classList.add("isolated-deficit"));
             pill.textContent = `Deficit: "${item.deficitSummary}"`;
+            cardEchoStruck.add(itemId);
+            const guardEl = document.getElementById(`reveal-guard-${itemId}`);
+            if (guardEl) {
+              guardEl.textContent = "";
+              guardEl.classList.remove("visible");
+            }
           }
         });
       });
@@ -2363,6 +2525,7 @@
           if (!item) return;
 
           const val = input.value;
+          cardGapDrafts[itemId] = val;
           const wc = countCambridgeWords(val);
           const wcPill = document.getElementById(`wc-pill-${itemId}`);
           const kwPill = document.getElementById(`kw-pill-${itemId}`);
@@ -2418,17 +2581,73 @@
         });
       });
 
-      // Reveal Cambridge Model buttons
+      // Reveal Cambridge Model buttons (require 1 typed check attempt OR Step 1: Strike Echoes first)
       document.querySelectorAll(".btn-reveal").forEach(btn => {
         btn.addEventListener("click", () => {
           const id = btn.dataset.id;
+          const numId = Number(id);
           const drawer = document.getElementById(`drawer-${id}`);
-          const isOpen = drawer.classList.toggle("open");
-          btn.textContent = isOpen ? "🙈 Hide Cambridge Model" : "👁️ Reveal Cambridge Model";
-          if (isOpen) {
+          const guardEl = document.getElementById(`reveal-guard-${id}`);
+          if (!drawer) return;
+
+          const isOpen = drawer.classList.contains("open");
+          if (!isOpen && !cardCheckedAttempt.has(numId) && !cardEchoStruck.has(numId)) {
+            if (guardEl) {
+              guardEl.textContent = 'First, either type a gap and click "Check Answer (2 Marks)", or click "✂️ Step 1: Strike Echoes" above before revealing the Cambridge model.';
+              guardEl.classList.add("visible");
+            }
+            return;
+          }
+
+          if (guardEl) {
+            guardEl.textContent = "";
+            guardEl.classList.remove("visible");
+          }
+          const nowOpen = drawer.classList.toggle("open");
+          btn.textContent = nowOpen ? "🙈 Hide Cambridge Model" : "👁️ Reveal Cambridge Model";
+          if (nowOpen) {
             applyStrikeEchoes(id);
           }
         });
+      });
+
+      // Inline transfer input drafts & "Send this gap & my sentence to Gareth ↓" buttons
+      document.querySelectorAll(".transfer-input").forEach(inp => {
+        inp.addEventListener("input", () => {
+          cardTransferDrafts[Number(inp.dataset.id)] = inp.value;
+        });
+        inp.addEventListener("keydown", e => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            sendCardTransferToDesk(inp.dataset.id);
+          }
+        });
+      });
+
+      document.querySelectorAll(".btn-transfer-desk").forEach(btn => {
+        btn.addEventListener("click", () => {
+          sendCardTransferToDesk(btn.dataset.id);
+        });
+      });
+
+      // Restore per-card drafts and struck/scored state after filter re-render
+      document.querySelectorAll(".kwt-card").forEach(card => {
+        const numId = Number(card.dataset.id);
+        const gapInp = document.getElementById(`input-${numId}`);
+        const transInp = document.getElementById(`transfer-input-${numId}`);
+        if (gapInp && typeof cardGapDrafts[numId] === "string") {
+          gapInp.value = cardGapDrafts[numId];
+          gapInp.dispatchEvent(new Event("input"));
+        }
+        if (transInp && typeof cardTransferDrafts[numId] === "string") {
+          transInp.value = cardTransferDrafts[numId];
+        }
+        if (cardEchoStruck.has(numId)) {
+          applyStrikeEchoes(numId);
+        }
+        if (cardCheckedAttempt.has(numId) && gapInp && gapInp.value.trim()) {
+          evaluateAnswer(numId);
+        }
       });
     }
 
@@ -2450,6 +2669,10 @@
     // Global Reset button
     document.getElementById("resetAllBtn").addEventListener("click", () => {
       Object.keys(itemScores).forEach(k => delete itemScores[k]);
+      cardCheckedAttempt.clear();
+      cardEchoStruck.clear();
+      Object.keys(cardGapDrafts).forEach(k => delete cardGapDrafts[k]);
+      Object.keys(cardTransferDrafts).forEach(k => delete cardTransferDrafts[k]);
       updateGlobalScore();
       renderCards();
     });

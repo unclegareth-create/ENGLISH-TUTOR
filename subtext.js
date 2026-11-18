@@ -1601,6 +1601,95 @@
         if ($('btn-open-diagnostic')) $('btn-open-diagnostic').addEventListener('click', openDiagnosticFromRecap);
         if ($('btn-close-recap')) $('btn-close-recap').addEventListener('click', () => closeRecapModal(true));
 
+        /* ---------------- BELFAST DESK INLINE DRAWER ---------------- */
+        function syncSubtextDeskContext() {
+            const summaryEl = $('subtext-desk-active-summary');
+            const ctxHidden = $('subtext-desk-context-hidden');
+            const dossierEl = $('subtext-desk-dossier');
+            const ex = currentExchange;
+            const actLabel = ex ? `Act ${ex.act} (${ex.cefr}) · ${ex.title}` : 'Between the Lines';
+            const scoreLabel = `Solved ${state.solvedIds.length}/${D.allExchanges.length} · Streak ${state.streak}`;
+            if (summaryEl) summaryEl.textContent = `${actLabel} · ${scoreLabel}`;
+            if (ctxHidden) ctxHidden.value = `${actLabel} | ${scoreLabel}`;
+            if (dossierEl) {
+                try { dossierEl.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+            }
+        }
+
+        const toggleDeskBtn = $('btn-toggle-subtext-desk');
+        const deskDrawer = $('subtext-desk-drawer');
+        if (toggleDeskBtn && deskDrawer) {
+            toggleDeskBtn.addEventListener('click', () => {
+                const willOpen = deskDrawer.classList.contains('hidden');
+                deskDrawer.classList.toggle('hidden', !willOpen);
+                toggleDeskBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                if (willOpen) {
+                    syncSubtextDeskContext();
+                    const msgEl = $('subtext-desk-message');
+                    if (msgEl) msgEl.focus();
+                }
+            });
+        }
+
+        const subtextDeskForm = $('subtext-desk-form');
+        if (subtextDeskForm) {
+            subtextDeskForm.addEventListener('submit', async (e) => {
+                if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+                e.preventDefault();
+                if (subtextDeskForm.dataset.submitting === 'true') return;
+
+                const gotcha = subtextDeskForm.querySelector('input[name="_gotcha"]');
+                const statusEl = $('subtext-desk-status');
+                const submitBtn = $('subtext-desk-submit');
+                const origText = submitBtn ? submitBtn.textContent : 'Send to My Desk →';
+
+                if (gotcha && gotcha.value.trim()) {
+                    if (statusEl) {
+                        statusEl.className = 'desk-form-status is-success';
+                        statusEl.textContent = 'Sent to my desk — thank you.';
+                    }
+                    return;
+                }
+
+                syncSubtextDeskContext();
+                subtextDeskForm.dataset.submitting = 'true';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Sending...';
+                }
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status';
+                    statusEl.textContent = '';
+                }
+
+                try {
+                    const res = await fetch(subtextDeskForm.action || 'https://formspree.io/f/mvkgrwvj', {
+                        method: 'POST',
+                        body: new FormData(subtextDeskForm),
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!res.ok) throw new Error('Request failed');
+                    if (statusEl) {
+                        statusEl.className = 'desk-form-status is-success';
+                        statusEl.textContent = 'Received at my desk in Northern Ireland. I will reply with 2 natural C1/C2 ways to phrase this within 24 hours.';
+                    }
+                    if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+                    trackSubtextEvent('desk_dropbox_submitted', { tool: 'between_the_lines' });
+                } catch (_) {
+                    if (statusEl) {
+                        statusEl.className = 'desk-form-status is-error';
+                        statusEl.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=Between%20the%20Lines%20Subtext%20Check" style="color:inherit;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = origText;
+                    }
+                } finally {
+                    subtextDeskForm.dataset.submitting = 'false';
+                }
+            });
+        }
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             const modal = $('recap-modal');

@@ -512,6 +512,34 @@
               <p class="text-xs text-slate-600"><strong>Why it scores Band 8.5:</strong> Zero raw percentages in the Overview (saving exact figures for Body 3 &amp; 4), clean subordinate contrast (<em>while... whereas...</em>), and a participle clause highlighting the crossover point (<em>, ultimately overtaking coal...</em>).</p>
             </div>
           </div>
+
+          <!-- Paragraph 2 Overview Cold-Write (50-75 Words) -->
+          <div id="t1-overview-coldwrite" class="mt-6 rounded-2xl bg-white border-2 border-emerald-200 p-5 sm:p-6 shadow-xs">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <div>
+                <span class="inline-block px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[11px] font-extrabold uppercase tracking-wider mb-1">Active Production · No Dropdowns</span>
+                <h3 class="text-base sm:text-lg font-extrabold text-slate-900">Your Figure 1 Paragraph 2 Overview Cold-Write (50–75 Words)</h3>
+              </div>
+              <span id="t1-cold-wc" class="text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">0 / 50–75 words</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+              Write your own 2-sentence <strong>Paragraph 2 Overview</strong> of Figure 1 above (Coal, Renewables, Nuclear, and the 2015 crossover). Summarise the overall direction cleanly — keep raw percentages strictly for Body Paragraphs 3 &amp; 4.
+            </p>
+            <label for="t1-cold-input" class="sr-only">Write your Figure 1 Paragraph 2 Overview</label>
+            <textarea id="t1-cold-input" rows="3" placeholder="Example start: Overall, whereas coal-fired electricity contracted over the twenty-year period..." class="w-full rounded-xl border border-slate-300 bg-slate-50 focus:bg-white p-3.5 text-sm text-slate-900 leading-relaxed focus:outline-none focus:border-emerald-600"></textarea>
+
+            <div class="flex flex-wrap items-center gap-3 mt-3">
+              <button type="button" id="t1-cold-audit-btn" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">Check My Overview Draft</button>
+              <button type="button" id="t1-copy-overview-btn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">Copy Overview + Flags to Gareth's Desk &darr;</button>
+            </div>
+
+            <div id="t1-cold-diagnostics" class="mt-4 space-y-2 text-xs text-slate-700">
+              <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">Type your 50–75 word Overview above to check for raw-number leaks, tabloid verbs, and key Figure 1 trend coverage.</div>
+            </div>
+            <p class="mt-3 text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              <strong>What browser checks cannot judge:</strong> automated rules catch percentages and tabloid slang, yet only a human marker can check preposition pairs (<em>by</em> vs <em>to</em> vs <em>at</em>), tense control, and natural academic phrasing.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -754,13 +782,14 @@
           <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact-form">
           <input type="hidden" name="source_page" value="ielts-task1-academic-verbs-drill.html">
           <input type="hidden" id="drill-score-field" name="drill_progress" value="">
+          <input type="hidden" id="task1-coldwrite-field" name="task1_coldwrite_metrics" value="">
           <input type="hidden" id="candidate-dossier-field" name="candidate_dossier" value="">
           <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="absolute -left-[9999px]">
 
           <div class="grid sm:grid-cols-2 gap-4">
             <div>
-              <label for="redpen-name" class="block text-xs font-bold text-slate-800 mb-1">First Name</label>
-              <input id="redpen-name" name="name" type="text" required autocomplete="name" placeholder="Your first name" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 text-sm focus:outline-none focus:border-brand-600 focus:ring-2">
+              <label for="redpen-name" class="block text-xs font-bold text-slate-800 mb-1">First Name (Optional)</label>
+              <input id="redpen-name" name="name" type="text" autocomplete="name" placeholder="Your first name (optional)" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 text-sm focus:outline-none focus:border-brand-600 focus:ring-2">
             </div>
             <div>
               <label for="redpen-email" class="block text-xs font-bold text-slate-800 mb-1">Email Address</label>
@@ -1040,10 +1069,12 @@
 
         form.addEventListener('submit', async function(e) {
           var scoreField = document.getElementById('drill-score-field');
+          var cwField = document.getElementById('task1-coldwrite-field');
           var dossierField = document.getElementById('candidate-dossier-field');
           if (scoreField) {
             try { scoreField.value = getScoreText() || ''; } catch (_) {}
           }
+          if (cwField) cwField.value = t1ColdSummary || '';
           if (dossierField) {
             dossierField.value = readPlayedDossierSummary();
           }
@@ -1095,6 +1126,100 @@
               submitBtn.innerHTML = originalHtml;
             }
           }
+        });
+      }
+
+      var t1ColdSummary = '';
+      var t1ColdInput = document.getElementById('t1-cold-input');
+      var t1ColdWc = document.getElementById('t1-cold-wc');
+      var t1ColdDiag = document.getElementById('t1-cold-diagnostics');
+      var t1ColdAuditBtn = document.getElementById('t1-cold-audit-btn');
+      var t1CopyBtn = document.getElementById('t1-copy-overview-btn');
+
+      function runT1ColdAudit() {
+        if (!t1ColdInput || !t1ColdWc || !t1ColdDiag) return '';
+        var raw = t1ColdInput.value.trim();
+        var words = raw ? raw.split(/\s+/).filter(Boolean).length : 0;
+
+        if (!raw) {
+          t1ColdWc.className = 'text-xs font-mono font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200';
+          t1ColdWc.textContent = '0 / 50–75 words';
+          t1ColdDiag.innerHTML = '<div class="p-3 rounded-xl bg-slate-50 border border-slate-200">Type your 50–75 word Overview above to check for raw-number leaks, tabloid verbs, and key Figure 1 trend coverage.</div>';
+          t1ColdSummary = '';
+          return '';
+        }
+
+        if (words >= 50 && words <= 75) {
+          t1ColdWc.className = 'text-xs font-mono font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300';
+          t1ColdWc.textContent = words + ' words (Target 50–75 ✓)';
+        } else {
+          t1ColdWc.className = 'text-xs font-mono font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300';
+          t1ColdWc.textContent = words + ' words (Aim 50–75)';
+        }
+
+        var pctLeaks = raw.match(/\b\d+(?:\.\d+)?\s*(?:%|per\s*cent)\b/gi) || [];
+        var figDigits = raw.match(/\b(?:10|16|19|20|22|25|35|38|40|45)\b(?!\s*[-–]?\s*year)/g) || [];
+        var rawNumberLeaks = Array.from(new Set(pctLeaks.concat(figDigits)));
+        var tabloidHits = Array.from(new Set(raw.match(/\b(?:skyrocket\w*|plummet\w*|shoot(?:ing)?\s+up|shot\s+up|rocket\w*|rollercoaster\w*|huge\s+jump|went\s+up\s+a\s+lot|went\s+down\s+a\s+lot|catastrophically)\b/gi) || []));
+
+        var hasCoal = /\bcoal\b/i.test(raw);
+        var hasRenewables = /\brenewable\w*\b/i.test(raw);
+        var hasNuclear = /\bnuclear\b/i.test(raw);
+        var hasCrossover = /\b(?:overtook|overtaking|overtake|surpass\w*|crossover|exceed\w*|outpac\w*)\b/i.test(raw);
+
+        var cards = [];
+        if (rawNumberLeaks.length > 0) {
+          cards.push('<div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-900"><strong>⚠️ Raw-Number Leak Inside Overview (' + rawNumberLeaks.join(', ') + '):</strong> Keep exact percentages and chart numbers for Body Paragraphs 3 &amp; 4. Replace figures here with qualitative proportions.</div>');
+        } else {
+          cards.push('<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900"><strong>✓ Zero Raw-Data Leaks:</strong> No percentages or chart figures detected inside your Paragraph 2 Overview.</div>');
+        }
+
+        if (tabloidHits.length > 0) {
+          cards.push('<div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-900"><strong>⚠️ Tabloid Verb Guard (' + tabloidHits.join(', ') + '):</strong> Cut journalistic exaggeration. Use measured academic phrasing (<em>surged, rose markedly, contracted</em>).</div>');
+        } else {
+          cards.push('<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900"><strong>✓ Sober Academic Verbs:</strong> No tabloid verbs (<em>skyrocket / plummet / shoot up / rollercoaster</em>) detected.</div>');
+        }
+
+        var missingTrends = [];
+        if (!hasCoal) missingTrends.push('Coal decline');
+        if (!hasRenewables) missingTrends.push('Renewables rise');
+        if (!hasNuclear) missingTrends.push('Nuclear stability');
+        if (!hasCrossover) missingTrends.push('2015 overtaking/crossover');
+
+        if (missingTrends.length > 0) {
+          cards.push('<div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900"><strong>Missing Key Feature(s):</strong> ' + missingTrends.join(', ') + '. Mention all three sources plus the crossover for Band 7.5+ Task Achievement.</div>');
+        } else {
+          cards.push('<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900"><strong>✓ All 4 Key Features Present:</strong> Coal, Renewables, Nuclear, and the crossover shift are all covered.</div>');
+        }
+
+        if (words < 50 || words > 75) {
+          cards.push('<div class="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900"><strong>Length Check (' + words + ' words):</strong> Aim cleanly for <strong>50–75 words</strong> across 1–2 concise overview sentences.</div>');
+        }
+
+        t1ColdDiag.innerHTML = cards.join('');
+        t1ColdSummary = 'Words: ' + words + '/50-75 | Number leaks: ' + (rawNumberLeaks.length ? rawNumberLeaks.join('/') : 'none') + ' | Tabloid verbs: ' + (tabloidHits.length ? tabloidHits.join('/') : 'none') + ' | Missing features: ' + (missingTrends.length ? missingTrends.join(', ') : 'none');
+        return t1ColdSummary;
+      }
+
+      if (t1ColdInput) t1ColdInput.addEventListener('input', runT1ColdAudit);
+      if (t1ColdAuditBtn) t1ColdAuditBtn.addEventListener('click', runT1ColdAudit);
+      if (t1CopyBtn) {
+        t1CopyBtn.addEventListener('click', function() {
+          var summary = runT1ColdAudit();
+          var msgEl = document.getElementById('redpen-message');
+          var formSection = document.getElementById('free-redpen-check');
+          if (msgEl) {
+            var draft = t1ColdInput ? t1ColdInput.value.trim() : '';
+            if (draft) {
+              msgEl.value = ('[Figure 1 Task 1 Overview Cold-Write | ' + summary + ']\n\n' + draft).slice(0, 2200);
+            } else {
+              msgEl.value = '[Figure 1 Task 1 Overview Cold-Write]\nPaste your 50–75 word Overview here...';
+            }
+          }
+          if (formSection && typeof formSection.scrollIntoView === 'function') {
+            formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+          if (msgEl) msgEl.focus();
         });
       }
 

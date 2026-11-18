@@ -797,9 +797,14 @@
 
         <div class="capstone-stats-bar">
           <span id="capstone-word-counter" class="word-counter-pill">0 Words</span>
-          <button type="button" class="btn-main" style="padding:0.45rem 1rem; font-size:0.82rem;" onclick="darkEngine.toggleModelAnswer()">
-            👁️ Reveal C1 Examiner Model Paragraph
-          </button>
+          <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+            <button type="button" class="btn-main" style="padding:0.45rem 1rem; font-size:0.82rem;" onclick="darkEngine.toggleModelAnswer()">
+              👁️ Reveal C1 Examiner Model Paragraph
+            </button>
+            <button type="button" class="kwt-mini-btn" onclick="openDracDeskCheck()">
+              ✍️ Send Draft to Gareth (Free 24h Note) &darr;
+            </button>
+          </div>
         </div>
 
         <!-- Enhancement 3: Live C1 Syntactic Detector Pills -->
@@ -1290,6 +1295,24 @@
     };
     ta.addEventListener('input', updatePills);
   })();
+
+  function openDracDeskCheck() {
+    const card = document.getElementById('dynamic-completion-card');
+    if (!card) return;
+    const toggleBtn = card.querySelector('#da-desk-toggle-btn');
+    const drawer = card.querySelector('#da-desk-drawer');
+    if (toggleBtn && drawer && drawer.hasAttribute('hidden')) {
+      toggleBtn.click();
+    } else if (drawer) {
+      const cap = document.getElementById('capstone-input');
+      const msg = card.querySelector('#da-desk-message');
+      if (cap && msg && cap.value.trim() && !msg.dataset.userEdited) {
+        msg.value = cap.value.trim();
+      }
+      if (msg) msg.focus();
+    }
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 </script>
   <script src="analytics.js" defer></script>
 </body>

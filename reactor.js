@@ -640,17 +640,54 @@
 
         document.getElementById('final-score').textContent = `${score}/${total}`;
         document.getElementById('lead-score').value = `Phrasal Reactor - Score: ${score}/${total}`;
-        document.getElementById('lead-email').value = emailInput ? emailInput.value.trim() : '';
-        document.getElementById('lead-name').value = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Reactor Agent';
+        const leadEmailEl = document.getElementById('lead-email');
+        if (leadEmailEl && !leadEmailEl.value.trim() && emailInput) {
+            leadEmailEl.value = emailInput.value.trim();
+        }
+        const leadNameEl = document.getElementById('lead-name');
+        if (leadNameEl) {
+            leadNameEl.value = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : 'Reactor Player';
+        }
+        const seenVerbs = levels.slice(0, Math.max(1, currentLevel + (won ? 0 : 1)))
+            .map((l) => `${l.verb} ${l.ans}`)
+            .filter((v, i, a) => a.indexOf(v) === i);
+        const runCtxEl = document.getElementById('lead-run-context');
+        if (runCtxEl) runCtxEl.value = seenVerbs.join(', ');
+        const runPromptEl = document.getElementById('lead-run-prompt');
+        if (runPromptEl) {
+            runPromptEl.textContent = seenVerbs.length
+                ? `From this run: ${seenVerbs.slice(0, 6).join(' · ')}`
+                : '';
+        }
+        const dossierEl = document.getElementById('lead-dossier');
+        if (dossierEl) {
+            try { dossierEl.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+        }
+        const statusEl = document.getElementById('lead-form-status');
+        if (statusEl) {
+            statusEl.textContent = '';
+            statusEl.className = 'desk-form-status';
+        }
+        const claimBtn = document.getElementById('btn-claim');
+        if (claimBtn) {
+            claimBtn.disabled = false;
+            claimBtn.textContent = 'Send Sentence for Free 24h Note →';
+        }
 
         endModal.classList.add('open');
+    }
 
-        if (typeof window.showDiagnosticGate === 'function') {
-            setTimeout(() => {
+    const viewRecallBtn = document.getElementById('btn-view-recall');
+    if (viewRecallBtn) {
+        viewRecallBtn.addEventListener('click', () => {
+            endModal.classList.remove('open');
+            const total = levels.length || sessionSize;
+            if (typeof window.showDiagnosticGate === 'function') {
                 window.showDiagnosticGate({
                     gameName: 'Phrasal Reactor',
                     score: score,
                     maxScore: total,
+                    category: 'phrasal_verbs',
                     weakArea: 'C1 Particle Precision & Phrasal Collocations under Time Pressure',
                     examImpact: 'In Cambridge C1/C2 Use of English (Parts 1-4) and IELTS Speaking Part 3, hesitation on phrasal particles drops your Lexical Resource score from Band 7.5 to 6.5.',
                     onReplay: () => {
@@ -658,8 +695,75 @@
                         startBtn.click();
                     }
                 });
-            }, 600);
-        }
+            } else {
+                window.location.href = 'index.html#contact';
+            }
+        });
+    }
+
+    const leadForm = document.getElementById('lead-form');
+    if (leadForm) {
+        leadForm.addEventListener('submit', async (e) => {
+            if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+            e.preventDefault();
+            if (leadForm.dataset.submitting === 'true') return;
+
+            const gotcha = leadForm.querySelector('input[name="_gotcha"]');
+            const statusEl = document.getElementById('lead-form-status');
+            const submitBtn = document.getElementById('btn-claim');
+            const origText = submitBtn ? submitBtn.textContent : 'Send Sentence for Free 24h Note →';
+
+            if (gotcha && gotcha.value.trim()) {
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status is-success';
+                    statusEl.textContent = 'Sent to my desk — thank you.';
+                }
+                return;
+            }
+
+            const dossierEl = document.getElementById('lead-dossier');
+            if (dossierEl) {
+                try { dossierEl.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+            }
+
+            leadForm.dataset.submitting = 'true';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending to my desk...';
+            }
+            if (statusEl) {
+                statusEl.className = 'desk-form-status';
+                statusEl.textContent = '';
+            }
+
+            try {
+                const res = await fetch(leadForm.action || 'https://formspree.io/f/mvkgrwvj', {
+                    method: 'POST',
+                    body: new FormData(leadForm),
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) throw new Error('Request failed');
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status is-success';
+                    statusEl.textContent = 'Received at my desk in Northern Ireland. I will reply with personal feedback within 24 hours.';
+                }
+                if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+                if (typeof window.trackFunnelEvent === 'function') {
+                    window.trackFunnelEvent('desk_dropbox_submitted', { tool: 'phrasal_reactor' });
+                }
+            } catch (_) {
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status is-error';
+                    statusEl.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=Phrasal%20Reactor%20Sentence%20Check" style="color:inherit;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+                }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = origText;
+                }
+            } finally {
+                leadForm.dataset.submitting = 'false';
+            }
+        });
     }
 
 })();

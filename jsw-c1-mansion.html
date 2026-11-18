@@ -1,0 +1,4068 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-asset-root="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Jet Set Willy (1984) · 8-Room ZX Spectrum C1 Mansion &amp; Room Builder | Gareth English</title>
+  <meta name="description" content="Explore an 8-room ZX Spectrum 48K Mansion built on Matthew Smith's 14Hz Z80 jump physics and 256-byte room pages. Collect 16 flashing relics, solve Cambridge C1 Part 4 riddles with British Piper audio clues, and paint custom rooms." />
+  <meta name="author" content="Gareth Montgomery" />
+  <meta name="theme-color" content="#0b0c10" />
+  <meta name="jsw-asset-root" content="" />
+  <link rel="canonical" href="https://garethenglish.com/jsw-c1-mansion.html" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230b0c10'/%3E%3Crect%20x='4'%20y='22'%20width='24'%20height='4'%20fill='%2300f0ff'/%3E%3Ctext%20x='16'%20y='19'%20font-family='monospace'%20font-size='15'%20font-weight='700'%20text-anchor='middle'%20fill='%23e6c875'%3EW%3C/text%3E%3C/svg%3E" />
+
+  <meta property="og:site_name" content="Gareth English" />
+  <meta property="og:locale" content="en_GB" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Jet Set Willy (1984) · 8-Room ZX Spectrum C1 Mansion &amp; Room Builder | Gareth English" />
+  <meta property="og:description" content="Play 8 interconnected ZX Spectrum Mansion rooms at 14Hz, solve 16 Cambridge C1 Part 4 riddles with British audio clues, or paint and share your own Z80 room." />
+  <meta property="og:url" content="https://garethenglish.com/jsw-c1-mansion.html" />
+  <meta property="og:image" content="https://garethenglish.com/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Jet Set Willy (1984) · 8-Room ZX Spectrum C1 Mansion | Gareth English" />
+  <meta name="twitter:description" content="8 ZX Spectrum rooms, 16 Cambridge C1 Part 4 riddles, British audio clues, Xbox/mobile controls, and a live 8-bit Room Builder." />
+  <meta name="twitter:image" content="https://garethenglish.com/og-image.png" />
+
+  <link rel="stylesheet" href="assets/fonts/fonts.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["LearningResource", "VideoGame"],
+        "name": "Jet Set Willy (1984): 8-Room ZX Spectrum C1 Mansion & Room Builder",
+        "description": "Playable 8-room ZX Spectrum Z80 platformer paired with 16 Cambridge C1 Advanced Part 4 Key Word Transformation riddles, British Piper audio clues, and an interactive 32x16 room builder.",
+        "url": "https://garethenglish.com/jsw-c1-mansion.html",
+        "inLanguage": "en-GB",
+        "isAccessibleForFree": true,
+        "gamePlatform": "Web browser",
+        "applicationCategory": "EducationalApplication",
+        "educationalLevel": ["CEFR C1", "CEFR C2"],
+        "author": {
+          "@type": "Person",
+          "@id": "https://garethenglish.com/#tutor",
+          "name": "Gareth Montgomery",
+          "jobTitle": "CELTA-Qualified Cambridge & IELTS Tutor",
+          "url": "https://garethenglish.com/"
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://garethenglish.com/" },
+          { "@type": "ListItem", "position": 2, "name": "Interactive Lab", "item": "https://garethenglish.com/lab.html" },
+          { "@type": "ListItem", "position": 3, "name": "JSW C1 Mansion", "item": "https://garethenglish.com/jsw-c1-mansion.html" }
+        ]
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg-deep: #0b0c10;
+      --bg-panel: #13151d;
+      --bg-card: #1a1d28;
+      --border: #2a2f42;
+      --gold: #e6c875;
+      --cyan: #00f0ff;
+      --magenta: #ff2a85;
+      --green: #00ff66;
+      --red: #ff3838;
+      --amber: #f59e0b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --mono: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+      --ui: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --serif: 'Playfair Display', Georgia, serif;
+      --ink-dark: #0f172a;
+      --ink-body: #334155;
+      --paper: #f8fafc;
+      --surface: #ffffff;
+      --crimson: #be123c;
+      --sky-dark: #0369a1;
+      --emerald-text: #065f46;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: var(--bg-deep);
+      color: var(--text);
+      font-family: var(--ui);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 18px 28px;
+      gap: 14px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    header.mansion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px 18px;
+      padding: 14px 18px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      min-width: 0;
+    }
+
+    .header-brand-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1 1 320px;
+      min-width: 0;
+    }
+
+    .breadcrumb-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-family: var(--mono);
+      color: var(--muted);
+    }
+
+    .breadcrumb-row a {
+      color: var(--cyan);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .breadcrumb-row a:hover {
+      text-decoration: underline;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .spectrum-stripe {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      border-radius: 5px;
+      background: linear-gradient(
+        135deg,
+        #d70000 0% 25%,
+        #d7d700 25% 50%,
+        #00d700 50% 75%,
+        #00d7d7 75% 100%
+      );
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+    }
+
+    h1 {
+      font-size: 1.18rem;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      color: #ffffff;
+      line-height: 1.25;
+    }
+
+    .subtitle {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      margin-top: 2px;
+    }
+
+    .header-status-pills {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--gold);
+    }
+
+    .status-pill.gamepad-ready {
+      color: var(--cyan);
+      border-color: rgba(0, 240, 255, 0.35);
+    }
+
+    .status-pill.gamepad-active {
+      background: rgba(0, 255, 102, 0.14);
+      color: var(--green);
+      border-color: var(--green);
+    }
+
+    .header-art {
+      width: 240px;
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      flex: 0 0 auto;
+    }
+
+    button, .file-btn {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 11px;
+      font-size: 0.76rem;
+      font-family: var(--mono);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.14s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      max-width: 100%;
+    }
+
+    button:hover, .file-btn:hover {
+      border-color: var(--cyan);
+      color: #ffffff;
+      background: #222738;
+    }
+
+    button.active {
+      background: rgba(0, 240, 255, 0.14);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    button.warn {
+      border-color: rgba(255, 56, 56, 0.5);
+      color: #ff9a9a;
+    }
+
+    button.warn.active {
+      background: rgba(255, 56, 56, 0.22);
+      border-color: var(--red);
+      color: #ffffff;
+    }
+
+    button.accent-gold {
+      border-color: rgba(230, 200, 117, 0.5);
+      color: var(--gold);
+    }
+
+    button.accent-gold.active {
+      background: rgba(230, 200, 117, 0.18);
+      border-color: var(--gold);
+      color: #ffffff;
+    }
+
+    /* Clickable 8-Room Mini-Map / Room Jump Matrix */
+    .minimap-bar {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .minimap-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .minimap-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .minimap-matrix {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .room-node {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 3px;
+      padding: 7px 9px;
+      border-radius: 7px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      text-align: left;
+      min-width: 0;
+    }
+
+    .room-node.active {
+      background: rgba(0, 240, 255, 0.14);
+      border-color: var(--cyan);
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.18);
+    }
+
+    .room-node.attic-slot {
+      grid-column: 3;
+    }
+
+    .room-node-top {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+    }
+
+    .room-node-name {
+      color: var(--gold);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .room-dots {
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    .item-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #334155;
+      border: 1px solid #64748b;
+      display: inline-block;
+    }
+
+    .item-dot.solved {
+      background: var(--green);
+      border-color: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 680px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    @media (max-width: 1120px) {
+      .workspace {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .crt-column,
+    .telemetry-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .crt-frame {
+      background: #0000d7;
+      border: 3px solid #2b3044;
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65);
+      transition: background-color 0.08s ease;
+      min-width: 0;
+    }
+
+    canvas#zx-screen {
+      width: 100%;
+      max-width: 640px;
+      aspect-ratio: 4 / 3;
+      height: auto;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background: #000;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: block;
+    }
+
+    /* Room Riddle & Audio Strip below CRT */
+    .room-riddle-strip {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .room-item-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .relic-btn {
+      font-size: 0.73rem;
+      padding: 5px 9px;
+      border-color: rgba(230, 200, 117, 0.45);
+      color: var(--gold);
+    }
+
+    .relic-btn.solved {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(0, 255, 102, 0.1);
+    }
+
+    /* Responsive Touch Arcade Pad */
+    .touch-pad {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .touch-dpad-group,
+    .touch-action-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .touch-btn {
+      min-width: 64px;
+      min-height: 44px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      border-radius: 8px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .touch-btn.jump-btn {
+      background: rgba(0, 240, 255, 0.14);
+      border-color: var(--cyan);
+      color: var(--cyan);
+      min-width: 84px;
+    }
+
+    .touch-btn.pressed {
+      transform: scale(0.96);
+      background: rgba(0, 240, 255, 0.28);
+      color: #ffffff;
+    }
+
+    .controls-bar {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .key-hint {
+      font-family: var(--mono);
+      font-size: 0.73rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    kbd {
+      background: #232738;
+      border: 1px solid #3c435c;
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      padding: 2px 5px;
+      color: var(--gold);
+      font-size: 0.71rem;
+      font-family: var(--mono);
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      min-width: 0;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-family: var(--mono);
+      font-size: 0.79rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.69rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #232736;
+      color: var(--cyan);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+    }
+
+    .z80-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .mem-cell {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-family: var(--mono);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .mem-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .mem-addr { color: var(--cyan); font-weight: 700; }
+    .mem-val { font-size: 0.88rem; color: #fff; font-weight: 700; overflow-wrap: anywhere; }
+    .mem-desc { font-size: 0.68rem; color: var(--gold); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .parabola-strip {
+      display: grid;
+      grid-template-columns: repeat(18, minmax(0, 1fr));
+      gap: 3px;
+      margin-top: 8px;
+      align-items: end;
+      height: 54px;
+      padding: 6px;
+      background: var(--bg-card);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      min-width: 0;
+    }
+
+    .p-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      color: var(--muted);
+      border-radius: 3px;
+      padding-bottom: 2px;
+      min-width: 0;
+    }
+
+    .p-bar {
+      width: 100%;
+      border-radius: 2px;
+      background: #2f364f;
+    }
+
+    .p-step.current {
+      background: rgba(0, 240, 255, 0.18);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .p-step.current .p-bar {
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .asm-box {
+      background: #0d0f16;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 10px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      line-height: 1.48;
+      color: #cbd5e1;
+      overflow-x: auto;
+      max-width: 100%;
+    }
+
+    .asm-line {
+      display: flex;
+      gap: 10px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .asm-line.active-branch { background: rgba(0, 255, 102, 0.14); color: #fff; }
+    .asm-line.bug-highlight { background: rgba(255, 56, 56, 0.22); color: #ffb3b3; }
+    .asm-addr { color: var(--muted); min-width: 40px; }
+    .asm-bytes { color: #64748b; min-width: 68px; }
+    .asm-op { color: var(--cyan); min-width: 130px; font-weight: 600; }
+    .asm-comment { color: #94a3b8; }
+
+    .hex-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-bottom: 8px;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+    }
+
+    .legend-item { display: inline-flex; align-items: center; gap: 5px; }
+    .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+    .hex-grid {
+      font-family: var(--mono);
+      font-size: 0.66rem;
+      line-height: 1.45;
+      background: #0d0f16;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      max-height: 245px;
+      overflow: auto;
+      max-width: 100%;
+    }
+
+    .hex-row { display: flex; gap: 8px; white-space: pre; }
+    .hex-offset { color: var(--muted); user-select: none; }
+    .hb { padding: 0 2px; border-radius: 2px; }
+    .hb-map { color: #60a5fa; }
+    .hb-name { color: var(--gold); }
+    .hb-tiles { color: #34d399; }
+    .hb-conv { color: #f472b6; }
+    .hb-exits { color: #a78bfa; }
+    .hb-guard { color: #fb923c; }
+    .hb-corrupt {
+      background: var(--red) !important;
+      color: #fff !important;
+      font-weight: 700;
+      animation: pulse-red 0.6s infinite alternate;
+    }
+
+    @keyframes pulse-red {
+      from { opacity: 1; }
+      to { opacity: 0.45; }
+    }
+
+    input[type="file"] { display: none; }
+
+    .inline-toast {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--green);
+      min-height: 1.1em;
+    }
+
+    /* ==============================================================
+       8-BIT ROOM BUILDER DRAWER
+       ============================================================== */
+    .builder-drawer {
+      background: var(--bg-panel);
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .builder-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 520px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    @media (max-width: 1020px) {
+      .builder-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .brush-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .brush-btn.active {
+      background: rgba(230, 200, 117, 0.2);
+      border-color: var(--gold);
+      color: #ffffff;
+    }
+
+    canvas#builder-canvas {
+      width: 100%;
+      max-width: 512px;
+      aspect-ratio: 2 / 1;
+      height: auto;
+      background: #000000;
+      border: 2px solid var(--border);
+      border-radius: 6px;
+      cursor: crosshair;
+      touch-action: none;
+      display: block;
+    }
+
+    .builder-form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .builder-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .builder-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .builder-field label {
+      font-family: var(--mono);
+      font-size: 0.71rem;
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .builder-field input,
+    .builder-field select,
+    .builder-field textarea {
+      width: 100%;
+      min-width: 0;
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 9px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    .builder-field input:focus,
+    .builder-field select:focus,
+    .builder-field textarea:focus {
+      outline: none;
+      border-color: var(--cyan);
+    }
+
+    /* ==============================================================
+       CAMBRIDGE C1 PART 4 RIDDLE MODAL (CRISP EDITORIAL WELL)
+       ============================================================== */
+    .riddle-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(11, 12, 16, 0.84);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      z-index: 1500;
+    }
+
+    .riddle-modal.open {
+      display: flex;
+    }
+
+    .riddle-panel {
+      background: var(--paper);
+      color: var(--ink-dark);
+      border: 2px solid #cbd5e1;
+      border-top: 5px solid var(--crimson);
+      border-radius: 14px;
+      padding: 20px;
+      width: 100%;
+      max-width: 720px;
+      max-height: 92vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 22px 50px rgba(0, 0, 0, 0.55);
+    }
+
+    .riddle-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 10px;
+    }
+
+    .riddle-kicker {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--crimson);
+    }
+
+    .riddle-title {
+      font-family: var(--serif);
+      font-size: 1.32rem;
+      color: var(--ink-dark);
+      margin-top: 2px;
+    }
+
+    .riddle-close-btn {
+      background: #e2e8f0;
+      color: var(--ink-dark);
+      border-color: #cbd5e1;
+    }
+
+    .riddle-close-btn:hover {
+      background: #cbd5e1;
+      color: #000000;
+      border-color: #94a3b8;
+    }
+
+    .audio-clue-bar {
+      background: #0f172a;
+      color: #f8fafc;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .audio-clue-btn {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+      font-family: var(--ui);
+      font-weight: 700;
+    }
+
+    .audio-clue-btn:hover {
+      background: #0369a1;
+      border-color: #7dd3fc;
+    }
+
+    .audio-clue-status {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: #cbd5e1;
+    }
+
+    .riddle-s1-box {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .riddle-s1-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink-body);
+    }
+
+    .btn-strike-echoes {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #f59e0b;
+      font-family: var(--ui);
+      font-weight: 700;
+    }
+
+    .btn-strike-echoes:hover,
+    .btn-strike-echoes.active {
+      background: #fde68a;
+      color: #78350f;
+      border-color: #d97706;
+    }
+
+    .s1-tokens-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      font-size: 1.04rem;
+      line-height: 1.5;
+    }
+
+    .s1-tok {
+      padding: 2px 5px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .s1-tok.struck-echo {
+      text-decoration: line-through;
+      text-decoration-color: #dc2626;
+      text-decoration-thickness: 2px;
+      color: #94a3b8;
+      background: #f1f5f9;
+    }
+
+    .s1-tok.isolated-deficit {
+      background: #fef3c7;
+      color: #92400e;
+      font-weight: 700;
+      border-bottom: 2px solid #f59e0b;
+    }
+
+    .diag-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+    }
+
+    .diag-card {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      color: var(--ink-body);
+    }
+
+    .diag-card strong {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: #475569;
+      margin-bottom: 2px;
+    }
+
+    .keyword-guard-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .keyword-badge {
+      background: #0f172a;
+      color: #fcd34d;
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 6px;
+      letter-spacing: 0.06em;
+    }
+
+    .guard-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .guard-pill {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #475569;
+    }
+
+    .guard-pill.ok {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #065f46;
+    }
+
+    .guard-pill.bad {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #991b1b;
+    }
+
+    .s2-solve-box {
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .s2-sentence-row {
+      font-size: 1.02rem;
+      line-height: 1.75;
+      color: var(--ink-dark);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .riddle-input {
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      font-weight: 700;
+      padding: 7px 10px;
+      border: 2px solid #0284c7;
+      border-radius: 7px;
+      color: #0f172a;
+      background: #f8fafc;
+      min-width: 210px;
+      flex: 1 1 200px;
+    }
+
+    .chip-forge-label {
+      font-family: var(--mono);
+      font-size: 0.71rem;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .chip-tray {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 36px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      border: 1px dashed #94a3b8;
+      align-items: center;
+    }
+
+    .chip-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .word-chip {
+      background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #94a3b8;
+      border-bottom-width: 2px;
+      font-family: var(--ui);
+      font-size: 0.84rem;
+      font-weight: 700;
+      padding: 6px 11px;
+      border-radius: 7px;
+    }
+
+    .word-chip:hover {
+      background: #e0f2fe;
+      border-color: #0284c7;
+      color: #0c4a6e;
+    }
+
+    .word-chip.used {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .word-chip.tray-chip {
+      background: #0369a1;
+      color: #ffffff;
+      border-color: #075985;
+    }
+
+    .word-chip.gp-focus {
+      outline: 3px solid #f59e0b;
+      outline-offset: 2px;
+    }
+
+    .riddle-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-riddle-primary {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+      font-family: var(--ui);
+      font-weight: 700;
+    }
+
+    .btn-riddle-primary:hover {
+      background: #1e293b;
+      border-color: #0369a1;
+    }
+
+    .btn-riddle-secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+      border-color: #cbd5e1;
+      font-family: var(--ui);
+      font-weight: 700;
+    }
+
+    .btn-riddle-secondary:hover {
+      background: #cbd5e1;
+      color: #000000;
+    }
+
+    .riddle-feedback {
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .riddle-feedback.pass {
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+      color: #065f46;
+    }
+
+    .riddle-feedback.fail {
+      background: #fef2f2;
+      border: 1px solid #ef4444;
+      color: #991b1b;
+    }
+
+    .riddle-blueprint-box {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-left: 4px solid #0369a1;
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .riddle-blueprint-box code {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #0c4a6e;
+      overflow-wrap: anywhere;
+    }
+
+    .riddle-model-output {
+      background: #ecfdf5;
+      border: 1px solid #10b981;
+      color: #065f46;
+      border-radius: 7px;
+      padding: 9px 11px;
+      font-size: 0.86rem;
+    }
+
+    /* Belfast Desk Strip + Course Bridge */
+    [data-course-bridge] {
+      width: 100%;
+    }
+
+    .belfast-desk-strip {
+      background: var(--surface);
+      color: var(--ink-dark);
+      border: 1px solid #cbd5e1;
+      border-top: 4px solid var(--crimson);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px 20px;
+    }
+
+    .belfast-desk-copy {
+      flex: 1 1 300px;
+      min-width: 0;
+    }
+
+    .belfast-desk-kicker {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--crimson);
+      margin-bottom: 4px;
+    }
+
+    .belfast-desk-strip h2 {
+      margin: 0 0 6px;
+      font-family: var(--serif);
+      font-size: 1.25rem;
+      color: var(--ink-dark);
+    }
+
+    .belfast-desk-strip p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--ink-body);
+    }
+
+    .belfast-desk-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-desk-primary,
+    .btn-desk-secondary {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-radius: 9px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .btn-desk-primary {
+      background: var(--sky-dark);
+      border: 1px solid var(--sky-dark);
+      color: #ffffff;
+    }
+
+    .btn-desk-secondary {
+      background: var(--paper);
+      border: 1px solid #94a3b8;
+      color: var(--ink-dark);
+    }
+
+    body.gm-clean-screenshare #belfast-desk-strip,
+    body.gm-clean-screenshare [data-course-bridge],
+    body.gm-clean-screenshare #gm-course-bridge {
+      display: none !important;
+    }
+
+    #selftest-banner {
+      background: #0f172a;
+      border: 2px solid var(--green);
+      color: #a7f3d0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    #selftest-banner[data-pass="false"] {
+      border-color: var(--red);
+      color: #fecaca;
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 8px;
+      }
+
+      header.mansion-header {
+        padding: 12px;
+      }
+
+      .header-art {
+        display: none;
+      }
+
+      .minimap-matrix {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .room-node.attic-slot {
+        grid-column: span 2;
+      }
+
+      .crt-frame {
+        padding: 8px;
+      }
+
+      .parabola-strip {
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+        height: 92px;
+      }
+
+      .z80-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .touch-btn {
+        min-width: 52px;
+        min-height: 42px;
+        padding: 6px 9px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="mansion-header">
+    <div class="header-brand-wrap">
+      <div class="breadcrumb-row">
+        <a href="lab.html">&larr; Interactive Lab</a>
+        <span aria-hidden="true">/</span>
+        <span>Belfast Desk &middot; ZX Spectrum C1 Mansion</span>
+      </div>
+      <div class="brand">
+        <div class="spectrum-stripe" title="ZX Spectrum 48K ULA"></div>
+        <div>
+          <h1>JET SET WILLY (1984) · 8-ROOM C1 MANSION &amp; BUILDER</h1>
+          <div class="subtitle">14 Hz Z80 Parabola · 256-Byte Room Pages · 16 Cambridge Part 4 Relics · British Audio Clues</div>
+        </div>
+      </div>
+      <div class="header-status-pills">
+        <span class="status-pill" id="mansion-progress-pill">🔑 Solved: 0 / 16</span>
+        <span class="status-pill gamepad-ready" id="gamepad-pill">🎮 Xbox / Gamepad Ready</span>
+        <button type="button" id="btn-audio" onclick="toggleAudio()">🔇 Chip Audio: OFF</button>
+        <button type="button" id="btn-toggle-builder" class="accent-gold" onclick="toggleBuilderDrawer()">🛠️ 8-Bit Room Builder (Y)</button>
+      </div>
+    </div>
+    <img src="assets/arcade/jsw_c1_mansion.svg" alt="ZX Spectrum CRT display showing Miner Willy jumping along a parabolic arc next to a Cambridge Part 4 riddle" width="640" height="360" class="header-art" />
+  </header>
+
+  <!-- 8-Room Mansion Mini-Map & Room Jump Matrix -->
+  <section class="minimap-bar" aria-label="8-Room Mansion Mini-Map and Snapshot Loader">
+    <div class="minimap-head">
+      <span class="panel-title">🗺️ 8-Room Mansion Matrix (Click any room or walk through exits)</span>
+      <div class="minimap-actions">
+        <span class="inline-toast" id="engine-toast" role="status" aria-live="polite"></span>
+        <label class="file-btn" title="Drop or select an original 48K .SNA snapshot to load all 61 rooms">
+          📂 Load .SNA Snapshot
+          <input type="file" id="sna-input" accept=".sna,.z80,.tap" />
+        </label>
+      </div>
+    </div>
+
+    <div class="minimap-matrix" id="minimap-matrix">
+      <!-- Top Row: Attic (col 3) -->
+      <button type="button" id="btn-room-42" class="room-node attic-slot" data-room-id="42" onclick="loadRoom(42)">
+        <div class="room-node-top"><span>Rm 42 · 0xEA00</span><span class="room-dots" data-dots="42"><i class="item-dot"></i><i class="item-dot"></i></span></div>
+        <div class="room-node-name">The Attic (Bugged)</div>
+      </button>
+
+      <!-- Middle Row: 32 - 27 - 35 - 33 - 34 -->
+      <button type="button" id="btn-room-32" class="room-node" data-room-id="32" onclick="loadRoom(32)" style="grid-row:2;grid-column:1;">
+        <div class="room-node-top"><span>Rm 32 · 0xE000</span><span class="room-dots" data-dots="32"><i class="item-dot"></i><i class="item-dot"></i></span></div>
+        <div class="room-node-name">The Banyan Tree</div>
+      </button>
+      <button type="button" id="btn-room-27" class="room-node" data-room-id="27" onclick="loadRoom(27)" style="grid-row:2;grid-column:2;">
+        <div class="room-node-top"><span>Rm 27 · 0xDB00</span><span class="room-dots" data-dots="27"><i class="item-dot"></i><i class="item-dot"></i></span></div>
+        <div class="room-node-name">The Chapel</div>
+      </button>
+      <button type="button" id="btn-room-35" class="room-node" data-room-id="35" onclick="loadRoom(35)" style="grid-row:2;grid-column:3;">
+        <div class="room-node-top"><span>Rm 35 · 0xE300</span><span class="room-dots" data-dots="35"><i class="item-dot"></i><i class="item-dot"></i></span></div>
+        <div class="room-node-name">Master Bedroom</div>
+      </button>
+      <button type="button" id="btn-room-33" class="room-node active" data-room-id="33" onclick="loadRoom(33)" style="grid-row:2;grid-column:4;">
+        <div class="room-node-top"><span>Rm 33 · 0xE100</span><span class="room-dots" data-dots="33"><i class="item-dot"></i><i class="item-dot"></i></span></div>
+        <div class="room-node-name">The Bathroom ★</div>
+      </button>
+      <button type="button" id="btn-room-34" class="room-node" data-room-id="34" onclick="loadRoom(34)" style="grid-row:2;grid-column:5;">
+        <div class="room-node-top"><span>Rm 34 · 0xE200</span><span class="room-dots" data-dots="34"><i class="item-dot"></i><i class="item-dot"></i></span></div>
+        <div class="room-node-name">The Belfast Study</div>
+      </button>
+
+      <!-- Lower Row: 18 - 28 (+ optional Custom Room 45) -->
+      <button type="button" id="btn-room-18" class="room-node" data-room-id="18" onclick="loadRoom(18)" style="grid-row:3;grid-column:1;">
+        <div class="room-node-top"><span>Rm 18 · 0xD200</span><span class="room-dots" data-dots="18"><i class="item-dot"></i><i class="item-dot"></i></span></div>
+        <div class="room-node-name">The Wine Cellar</div>
+      </button>
+      <button type="button" id="btn-room-28" class="room-node" data-room-id="28" onclick="loadRoom(28)" style="grid-row:3;grid-column:2;">
+        <div class="room-node-top"><span>Rm 28 · 0xDC00</span><span class="room-dots" data-dots="28"><i class="item-dot"></i><i class="item-dot"></i></span></div>
+        <div class="room-node-name">First Landing</div>
+      </button>
+      <button type="button" id="btn-room-45" class="room-node hidden" data-room-id="45" onclick="loadRoom(45)" style="grid-row:3;grid-column:3;">
+        <div class="room-node-top"><span>Rm 45 · Custom</span><span class="room-dots" data-dots="45"><i class="item-dot"></i></span></div>
+        <div class="room-node-name" id="btn-room-45-name">Custom Chamber</div>
+      </button>
+    </div>
+  </section>
+
+  <!-- Interactive 8-Bit Room Builder Drawer -->
+  <section id="room-builder-drawer" class="builder-drawer hidden" aria-label="8-Bit Room Builder">
+    <div class="panel-header" style="margin-bottom:0;">
+      <span class="panel-title">🛠️ 8-Bit Z80 Room Builder &amp; Custom C1 Part 4 Riddle Forge</span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button type="button" onclick="loadCurrentRoomIntoBuilder()">📋 Copy Current Room</button>
+        <button type="button" onclick="clearBuilderGrid()">🧹 Clear Floor</button>
+        <button type="button" onclick="toggleBuilderDrawer(false)">✕ Close</button>
+      </div>
+    </div>
+
+    <div class="builder-layout">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0;">
+        <div class="brush-bar" id="builder-brushes" role="group" aria-label="Tile Brushes">
+          <button type="button" class="brush-btn active" data-brush=".">Air (.)</button>
+          <button type="button" class="brush-btn" data-brush="=">Floor (=)</button>
+          <button type="button" class="brush-btn" data-brush="#">Wall (#)</button>
+          <button type="button" class="brush-btn" data-brush="*">Nasty (*)</button>
+          <button type="button" class="brush-btn" data-brush="R">Ramp (R)</button>
+          <button type="button" class="brush-btn" data-brush="C">Conveyor (C)</button>
+          <button type="button" class="brush-btn" data-brush="I">Item (I)</button>
+          <button type="button" class="brush-btn" data-brush="G">Guardian (G)</button>
+        </div>
+        <canvas id="builder-canvas" width="512" height="256" aria-label="32 by 16 room painting grid"></canvas>
+        <div class="key-hint">
+          <span>Click or drag to paint 32&times;16 cells · Gamepad: D-Pad moves cursor, <kbd>A</kbd> Paint, <kbd>B</kbd> Air, <kbd>X</kbd> Brush</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0;">
+        <div class="builder-form-grid">
+          <div class="builder-field">
+            <label for="b-room-name">32-Char Room Name (0x80–0x9F)</label>
+            <input type="text" id="b-room-name" maxlength="32" value="My Belfast C1 Chamber" />
+          </div>
+          <div class="builder-field">
+            <label for="b-border">ZX Border Colour (0..7)</label>
+            <select id="b-border">
+              <option value="0">0 · Black</option>
+              <option value="1" selected>1 · Blue</option>
+              <option value="2">2 · Red</option>
+              <option value="3">3 · Magenta</option>
+              <option value="4">4 · Green</option>
+              <option value="5">5 · Cyan</option>
+              <option value="6">6 · Yellow</option>
+              <option value="7">7 · White</option>
+            </select>
+          </div>
+          <div class="builder-field">
+            <label for="b-conv-dir">Conveyor Direction</label>
+            <select id="b-conv-dir">
+              <option value="1">Left</option>
+              <option value="2" selected>Right</option>
+            </select>
+          </div>
+          <div class="builder-field">
+            <label for="b-ramp-dir">Ramp Slope</label>
+            <select id="b-ramp-dir">
+              <option value="0" selected>Up-Left</option>
+              <option value="1">Up-Right</option>
+            </select>
+          </div>
+          <div class="builder-field full">
+            <label for="b-riddle-s1">Custom Part 4 · Sentence 1</label>
+            <input type="text" id="b-riddle-s1" value="Willy never expected the attic arrow to corrupt the Chapel floor." />
+          </div>
+          <div class="builder-field">
+            <label for="b-riddle-s2b">Sentence 2 Before Gap</label>
+            <input type="text" id="b-riddle-s2b" value="Little" />
+          </div>
+          <div class="builder-field">
+            <label for="b-riddle-s2a">Sentence 2 After Gap</label>
+            <input type="text" id="b-riddle-s2a" value="the attic arrow to corrupt the Chapel floor." />
+          </div>
+          <div class="builder-field">
+            <label for="b-riddle-kw">Keyword (1 Unchanged Uppercase Word)</label>
+            <input type="text" id="b-riddle-kw" value="EXPECT" maxlength="24" />
+          </div>
+          <div class="builder-field">
+            <label for="b-riddle-ans">Accepted Model (3–6 Cambridge Words)</label>
+            <input type="text" id="b-riddle-ans" value="did Willy expect" />
+          </div>
+          <div class="builder-field full">
+            <label for="b-riddle-formula">Structural Formula &amp; Desk Note</label>
+            <input type="text" id="b-riddle-formula" value="Little + did + Subject + Bare Infinitive" />
+          </div>
+        </div>
+
+        <div class="guard-pills">
+          <span class="guard-pill ok" id="b-wc-pill">3 / 3–6 Cambridge words</span>
+          <span class="guard-pill ok" id="b-kw-pill">✓ Keyword EXPECT intact</span>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <button type="button" id="btn-builder-test" class="active" onclick="testBuilderRoomLive()">▶ Test Room Live</button>
+          <button type="button" id="btn-builder-share" class="accent-gold" onclick="shareBuilderRoomUrl()">🔗 Share #room= URL</button>
+          <span class="inline-toast" id="builder-status" role="status" aria-live="polite"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="workspace">
+    <!-- Left Column: ZX Spectrum 256x192 CRT & Controls -->
+    <div class="crt-column">
+      <div class="crt-frame" id="crt-border">
+        <canvas id="zx-screen" width="256" height="192"></canvas>
+      </div>
+
+      <!-- Current Room Audio Clue & Relic Checklist -->
+      <div class="room-riddle-strip">
+        <button type="button" id="btn-play-room-clue" class="active" onclick="playRoomAudioClue()">🎧 Play Room Audio Clue (X)</button>
+        <div class="room-item-pills" id="room-item-pills"></div>
+      </div>
+
+      <!-- Mobile / Tablet LAN Touch D-Pad + Jump -->
+      <div class="touch-pad" aria-label="Touch Arcade Controls">
+        <div class="touch-dpad-group">
+          <button type="button" id="touch-left" class="touch-btn" data-touch-key="left" aria-label="Move Left">◀ LEFT</button>
+          <button type="button" id="touch-right" class="touch-btn" data-touch-key="right" aria-label="Move Right">RIGHT ▶</button>
+        </div>
+        <div class="touch-action-group">
+          <button type="button" id="touch-jump" class="touch-btn jump-btn" data-touch-key="jump" aria-label="Jump">▲ JUMP</button>
+          <button type="button" id="touch-pause" class="touch-btn" onclick="togglePause()" aria-label="Pause">⏸</button>
+        </div>
+      </div>
+
+      <div class="controls-bar">
+        <div class="control-row">
+          <div class="key-hint">
+            <span>Move: <kbd>A</kbd>/<kbd>D</kbd> or <kbd>←</kbd>/<kbd>→</kbd></span>
+            <span>Jump: <kbd>Space</kbd>/<kbd>W</kbd>/<kbd>↑</kbd></span>
+            <span>Tick: <kbd>N</kbd></span>
+            <span>Reset: <kbd>R</kbd></span>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" id="btn-pause" onclick="togglePause()">⏸ Pause (P)</button>
+            <button type="button" id="btn-step" onclick="stepSingleFrame()">⏭ Step 1 Tick (N)</button>
+            <button type="button" id="btn-reset" onclick="resetWilly()">↺ Reset Room (R)</button>
+          </div>
+        </div>
+
+        <div class="control-row" style="border-top: 1px solid var(--border); padding-top: 8px;">
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" id="btn-grid" class="active" onclick="toggleOverlay('grid')">8×8 Attr Grid</button>
+            <button type="button" id="btn-hitbox" class="active" onclick="toggleOverlay('hitbox')">Willy Cell Hitbox</button>
+            <button type="button" id="btn-arc" class="active" onclick="toggleOverlay('arc')">Jump Arc Vector</button>
+            <button type="button" id="btn-god" onclick="toggleGodMode()">🛡️ Invincible: OFF</button>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" id="btn-attic-bug" class="warn active" onclick="toggleAtticBug()" title="Simulates the original 1984 arrow overflow at 0x91B6">
+              🐛 1984 Attic Bug: UNPATCHED
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Z80 Routine Live Trace -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Z80 Engine Disassembly Trace (0x8DD3 – Move Willy &amp; 0x91B6 – Arrow Bug)</span>
+          <span class="badge" id="active-routine-badge">PC: 0x8DD3</span>
+        </div>
+        <div class="asm-box" id="asm-trace">
+          <div class="asm-line" id="asm-airborne">
+            <span class="asm-addr">8DD3</span>
+            <span class="asm-bytes">3A CF 85</span>
+            <span class="asm-op">LD A, (85CFh)</span>
+            <span class="asm-comment">; Check AIRBORNE state (0=Ground, 1=Jumping, 2..12=Falling)</span>
+          </div>
+          <div class="asm-line" id="asm-jump-calc">
+            <span class="asm-addr">8DF7</span>
+            <span class="asm-bytes">3A D1 85 D6 08</span>
+            <span class="asm-op">LD A,(85D1h) : SUB 8</span>
+            <span class="asm-comment">; Load JUMP_COUNTER (0..17) and subtract 8 (-8..+9)</span>
+          </div>
+          <div class="asm-line" id="asm-jump-sra">
+            <span class="asm-addr">8DFC</span>
+            <span class="asm-bytes">CB 2F</span>
+            <span class="asm-op">SRA A</span>
+            <span class="asm-comment">; Arithmetic shift right: dy = (JUMP_COUNTER - 8) &gt;&gt; 1</span>
+          </div>
+          <div class="asm-line" id="asm-horiz">
+            <span class="asm-addr">8EBC</span>
+            <span class="asm-bytes">3A D0 85</span>
+            <span class="asm-op">LD A, (85D0h)</span>
+            <span class="asm-comment">; Bits 0-1: Sub-cell frame (0..3 = 2px step), Bit 7: Direction</span>
+          </div>
+          <div class="asm-line" id="asm-ramp">
+            <span class="asm-addr">8F8C</span>
+            <span class="asm-bytes">3A DA 80</span>
+            <span class="asm-op">LD A, (RAMP_DIR)</span>
+            <span class="asm-comment">; Adjust WILLY_Y by ±2px per frame when walking on 45° ramp</span>
+          </div>
+          <div class="asm-line" id="asm-arrow">
+            <span class="asm-addr">91B6</span>
+            <span class="asm-bytes">DD 7E 01</span>
+            <span class="asm-op">LD A, (IX+01h)</span>
+            <span class="asm-comment" id="asm-arrow-comment">; Attic Arrow Y-coord: if out of screen range, corrupts Room RAM!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Live Z80 RAM State & 256-Byte Room Hex Inspector -->
+    <div class="telemetry-column">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Z80 Game Variables (0x85CF – 0x85D6)</span>
+          <span class="badge" id="tick-counter">Tick #0 (14 Hz)</span>
+        </div>
+
+        <div class="z80-grid">
+          <div class="mem-cell">
+            <div class="mem-top"><span>AIRBORNE</span><span class="mem-addr">0x85CF</span></div>
+            <div class="mem-val" id="val-85cf">0x00 (0)</div>
+            <div class="mem-desc" id="desc-85cf">0 = Grounded on platform</div>
+          </div>
+
+          <div class="mem-cell">
+            <div class="mem-top"><span>DIR / FRAME</span><span class="mem-addr">0x85D0</span></div>
+            <div class="mem-val" id="val-85d0">0x00</div>
+            <div class="mem-desc" id="desc-85d0">Facing RIGHT · Frame 0 (+0px)</div>
+          </div>
+
+          <div class="mem-cell">
+            <div class="mem-top"><span>JUMP_COUNTER</span><span class="mem-addr">0x85D1</span></div>
+            <div class="mem-val" id="val-85d1">0x00 (0/18)</div>
+            <div class="mem-desc" id="desc-85d1">dy = ((0 - 8) &gt;&gt; 1) = 0 px</div>
+          </div>
+
+          <div class="mem-cell">
+            <div class="mem-top"><span>WILLY_Y (2&times;Px)</span><span class="mem-addr">0x85D2</span></div>
+            <div class="mem-val" id="val-85d2">0xD0 (Y=104px)</div>
+            <div class="mem-desc" id="desc-85d2">Cell Aligned (2&times;2 cells)</div>
+          </div>
+
+          <div class="mem-cell">
+            <div class="mem-top"><span>WILLY_X (Col)</span><span class="mem-addr">0x85D3</span></div>
+            <div class="mem-val" id="val-85d3">0x19 (Col 25)</div>
+            <div class="mem-desc" id="desc-85d3">Pixel X = 200 px</div>
+          </div>
+
+          <div class="mem-cell">
+            <div class="mem-top"><span>CURRENT_ROOM</span><span class="mem-addr">0x8420</span></div>
+            <div class="mem-val" id="val-8420">0x21 (Rm 33)</div>
+            <div class="mem-desc" id="desc-8420">Page 0xE100–0xE1FF</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px;">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; font-family:var(--mono); font-size:0.71rem; color:var(--muted);">
+            <span>18-TICK Z80 JUMP PARABOLA: <code>dy = (JUMP_COUNTER - 8) &gt;&gt; 1</code></span>
+            <span id="parabola-status">Idle (Grounded)</span>
+          </div>
+          <div class="parabola-strip" id="parabola-strip"></div>
+        </div>
+      </div>
+
+      <!-- 256-Byte Room Page Hex Dump -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title" id="hex-panel-title">Live 256-Byte Room Page (0xE100 – 0xE1FF)</span>
+          <span class="badge" id="corrupt-badge">RAM Integrity: OK</span>
+        </div>
+
+        <div class="hex-legend">
+          <span class="legend-item"><span class="swatch" style="background:#60a5fa"></span>00–7F: 2-Bit Tile Map (128B)</span>
+          <span class="legend-item"><span class="swatch" style="background:#e6c875"></span>80–9F: ASCII Room Name (32B)</span>
+          <span class="legend-item"><span class="swatch" style="background:#34d399"></span>A0–D5: 6&times;9B Tile Graphics (54B)</span>
+          <span class="legend-item"><span class="swatch" style="background:#f472b6"></span>D6–DC: Conveyor &amp; Ramp (7B)</span>
+          <span class="legend-item"><span class="swatch" style="background:#a78bfa"></span>EA–ED: Exits L/R/U/D (4B)</span>
+          <span class="legend-item"><span class="swatch" style="background:#fb923c"></span>F0–FF: Guardians (16B)</span>
+        </div>
+
+        <div class="hex-grid" id="hex-dump"></div>
+      </div>
+    </div>
+  </main>
+
+  <aside data-course-bridge></aside>
+
+  <section id="belfast-desk-strip" class="belfast-desk-strip" aria-label="Belfast Desk Feedback and Coaching">
+    <div class="belfast-desk-copy">
+      <span class="belfast-desk-kicker">🖋️ From My Belfast Desk</span>
+      <h2>Want a red-pen look at your own C1 grammar or essay?</h2>
+      <p>After 19 years of teaching (15 of them at Belfast Met), I see capable candidates drop marks on Part 4 transformations not through missing vocabulary, but through tense drift and altered keywords. Send me an essay for written notes or work through real prompts with me live.</p>
+    </div>
+    <div class="belfast-desk-actions">
+      <a href="index.html?offer=live_diagnostic_35#cal-booking-box" class="btn-desk-primary" data-track="jsw_book_diagnostic" data-tier="starter_session_35">Book a 30-Min Starter Session (£35) &rarr;</a>
+      <a href="index.html?offer=async_essay_audit_29#enquiry-card" class="btn-desk-secondary" data-track="jsw_essay_audit" data-tier="async_essay_audit_29">Get Written Essay Feedback (£29) &rarr;</a>
+    </div>
+  </section>
+
+  <!-- Cambridge C1 Part 4 Riddle Modal -->
+  <div id="riddle-modal" class="riddle-modal" role="dialog" aria-modal="true" aria-labelledby="riddle-modal-title">
+    <div class="riddle-panel">
+      <div class="riddle-head">
+        <div>
+          <span class="riddle-kicker" id="riddle-modal-kicker">ROOM 33 · RELIC RIDDLE</span>
+          <h2 class="riddle-title" id="riddle-modal-title">Porcelain Sponge</h2>
+        </div>
+        <button type="button" id="btn-close-riddle" class="riddle-close-btn" onclick="closeRiddleModal()">✕ Close (B / Esc)</button>
+      </div>
+
+      <div class="audio-clue-bar">
+        <button type="button" id="riddle-audio-btn" class="audio-clue-btn" onclick="playRoomAudioClue()">🎧 Play Room Audio Clue</button>
+        <span class="audio-clue-status" id="riddle-audio-status">British Piper Clue ready</span>
+      </div>
+
+      <div class="riddle-s1-box">
+        <div class="riddle-s1-head">
+          <span>Step 1 · Sentence 1 (Click echoed words or strike all echoes automatically)</span>
+          <button type="button" id="btn-strike-echoes" class="btn-strike-echoes" onclick="toggleStrikeEchoes()">✂️ Strike Out the Echoes</button>
+        </div>
+        <div class="s1-tokens-wrap" id="riddle-s1-tokens"></div>
+      </div>
+
+      <div class="diag-strip">
+        <div class="diag-card">
+          <strong>Step 2 · Tense Harmony</strong>
+          <span id="riddle-tense-note"></span>
+        </div>
+        <div class="diag-card">
+          <strong>Step 3 · Structural Shift</strong>
+          <span id="riddle-voice-note"></span>
+        </div>
+      </div>
+
+      <div class="keyword-guard-row">
+        <span class="keyword-badge" id="riddle-keyword-badge">KEYWORD</span>
+        <div class="guard-pills">
+          <span class="guard-pill" id="riddle-wc-pill">0 / 3–6 words</span>
+          <span class="guard-pill" id="riddle-kw-pill">Keyword required</span>
+        </div>
+      </div>
+
+      <div class="s2-solve-box">
+        <div class="s2-sentence-row">
+          <span id="riddle-s2-before"></span>
+          <input type="text" id="riddle-text-input" class="riddle-input" placeholder="Type 3–6 words or use chips..." autocomplete="off" spellcheck="false" aria-label="Cambridge Part 4 transformation gap" />
+          <span id="riddle-s2-after"></span>
+        </div>
+
+        <div class="chip-forge-label">Xbox / LAN Word-Chip Forge (click chips or use D-Pad + A to add, B to undo):</div>
+        <div class="chip-tray" id="riddle-chip-tray" aria-label="Selected word chips"></div>
+        <div class="chip-bank" id="riddle-chip-bank" aria-label="Available word chips"></div>
+      </div>
+
+      <div class="riddle-actions">
+        <button type="button" id="btn-check-riddle" class="btn-riddle-primary" onclick="submitRiddleAnswer()">✓ Check Answer</button>
+        <button type="button" id="btn-undo-chip" class="btn-riddle-secondary" onclick="undoLastRiddleChip()">↩ Undo Chip</button>
+        <button type="button" id="btn-clear-riddle" class="btn-riddle-secondary" onclick="clearRiddleInput()">Clear</button>
+        <button type="button" id="btn-reveal-riddle-model" class="btn-riddle-secondary" onclick="revealRiddleModel()">👁️ Reveal Cambridge Model</button>
+        <button type="button" id="btn-resume-mansion" class="btn-riddle-primary hidden" onclick="closeRiddleModal()">▶ Resume Mansion</button>
+      </div>
+
+      <div id="riddle-feedback" class="riddle-feedback hidden" role="status" aria-live="polite"></div>
+
+      <div class="riddle-blueprint-box">
+        <span class="chip-forge-label" style="color:#0369a1;">Structural Formation Blueprint</span>
+        <code id="riddle-formula-code"></code>
+        <div id="riddle-model-drawer" class="riddle-model-output hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="jsw-clue-audio" preload="none"></audio>
+
+  <script src="jsw-mansion-riddles.js"></script>
+  <script>
+    // =========================================================================
+    // 0. ASSET BASE RESOLUTION (Works at both root and tools/jsw-engine/)
+    // =========================================================================
+    const ASSET_ROOT = (function () {
+      const meta = document.querySelector('meta[name="jsw-asset-root"]');
+      if (meta && typeof meta.content === 'string' && meta.content.length > 0) {
+        return meta.content;
+      }
+      if (document.documentElement.dataset.assetRoot) {
+        return document.documentElement.dataset.assetRoot;
+      }
+      return /\/tools\/jsw-engine(?:\/|$)/i.test(window.location.pathname) ? '../../' : '';
+    })();
+
+    function resolveAssetUrl(relPath) {
+      if (!relPath) return '';
+      if (/^(?:https?:|data:|blob:|\/)/i.test(relPath)) return relPath;
+      return ASSET_ROOT + relPath;
+    }
+
+    // Load base64 audio bundle ONLY on file:// protocol
+    window.__jswClueBundlePromise = (window.location.protocol === 'file:')
+      ? new Promise(function (resolve) {
+          const s = document.createElement('script');
+          s.src = resolveAssetUrl('assets/audio/tts/jsw-clue-bundle.js');
+          s.async = true;
+          s.onload = resolve;
+          s.onerror = resolve;
+          document.head.appendChild(s);
+        })
+      : Promise.resolve();
+
+    const D = window.JSW_MANSION_RIDDLES;
+
+    // =========================================================================
+    // 1. ZX SPECTRUM 48K PALETTE & 18-TICK JUMP PARABOLA
+    // =========================================================================
+    const ZX_PALETTE = [
+      '#000000', '#0000D7', '#D70000', '#D700D7',
+      '#00D700', '#00D7D7', '#D7D700', '#D7D7D7',
+      '#000000', '#0000FF', '#FF0000', '#FF00FF',
+      '#00FF00', '#00FFFF', '#FFFF00', '#FFFFFF'
+    ];
+
+    const JUMP_DELTAS = Array.from({ length: 18 }, (_, j) => (j - 8) >> 1);
+    const JUMP_HEIGHTS = [];
+    {
+      let h = 0;
+      for (let j = 0; j < 18; j++) {
+        h -= JUMP_DELTAS[j];
+        JUMP_HEIGHTS.push(h);
+      }
+    }
+
+    const parabolaStrip = document.getElementById('parabola-strip');
+    JUMP_DELTAS.forEach((dy, idx) => {
+      const cell = document.createElement('div');
+      cell.className = 'p-step';
+      cell.id = `p-step-${idx}`;
+      const barHeight = Math.max(4, Math.round((JUMP_HEIGHTS[idx] / 20) * 32));
+      const sign = dy > 0 ? `+${dy}` : `${dy}`;
+      cell.innerHTML = `<div class="p-bar" style="height:${barHeight}px"></div><span>${sign}</span>`;
+      parabolaStrip.appendChild(cell);
+    });
+
+    // =========================================================================
+    // 2. WILLY'S 16x16 SPRITE BITMAPS (4 SUB-CELL FRAMES x 2 DIRECTIONS)
+    // =========================================================================
+    const WILLY_BASE_RIGHT = [
+      0b0000011111000000,
+      0b0000111111110000,
+      0b0000011111000000,
+      0b0000011011100000,
+      0b0000011111000000,
+      0b0000001110000000,
+      0b0000011111000000,
+      0b0000111111100000,
+      0b0000110110110000,
+      0b0000011111100000,
+      0b0000011111000000,
+      0b0000011001100000,
+      0b0000110000110000,
+      0b0000110000110000,
+      0b0000111000111000,
+      0b0000000000000000
+    ];
+
+    function buildWillyFrame(dir, frameIdx) {
+      const rows = WILLY_BASE_RIGHT.slice();
+      if (frameIdx === 0) {
+        rows[11] = 0b0000001111000000;
+        rows[12] = 0b0000001111000000;
+        rows[13] = 0b0000001111000000;
+        rows[14] = 0b0000001111000000;
+      } else if (frameIdx === 1) {
+        rows[8]  = 0b0000011111100000;
+        rows[11] = 0b0000011001100000;
+        rows[12] = 0b0000011000110000;
+        rows[13] = 0b0000110000110000;
+        rows[14] = 0b0000111000111000;
+      } else if (frameIdx === 2) {
+        rows[8]  = 0b0001101111011000;
+        rows[11] = 0b0000110000110000;
+        rows[12] = 0b0001100000011000;
+        rows[13] = 0b0001100000011000;
+        rows[14] = 0b0001110000011100;
+      } else {
+        rows[8]  = 0b0000011111100000;
+        rows[11] = 0b0000011001100000;
+        rows[12] = 0b0000001101100000;
+        rows[13] = 0b0000001101100000;
+        rows[14] = 0b0000001111110000;
+      }
+
+      return rows.map((word) => {
+        let w = word;
+        if (dir === 1) {
+          let rev = 0;
+          for (let b = 0; b < 16; b++) {
+            if ((w >> b) & 1) rev |= (1 << (15 - b));
+          }
+          w = rev;
+        }
+        const shift = frameIdx - 1;
+        if (shift > 0) w = (w >> shift) & 0xFFFF;
+        else if (shift < 0) w = (w << (-shift)) & 0xFFFF;
+        return w;
+      });
+    }
+
+    // =========================================================================
+    // 3. AUTHENTIC 256-BYTE ROOM PAGE BUILDER (0xC000 + ROOM_ID * 0x100)
+    // =========================================================================
+    const ROOM_PAGES = {};
+    const CORRUPTED_BYTES = new Set();
+    const SOLVED_RIDDLES = new Set();
+    const CUSTOM_RIDDLES = {};
+    let inSelfTest = false;
+
+    function encodeTileRow(str) {
+      const bytes = new Uint8Array(8);
+      for (let col = 0; col < 32; col++) {
+        const ch = str[col] || '.';
+        const code = ch === '#' ? 2 : ch === '=' ? 1 : ch === '*' ? 3 : 0;
+        const byteIdx = col >> 2;
+        const shift = (3 - (col & 3)) * 2;
+        bytes[byteIdx] |= (code << shift);
+      }
+      return bytes;
+    }
+
+    function createRoomPage({
+      id,
+      name,
+      gridStrings,
+      bgTile,
+      floorTile,
+      wallTile,
+      nastyTile,
+      rampTile,
+      convTile,
+      convDir = 0,
+      convRow = 0,
+      convCol = 0,
+      convLen = 0,
+      rampDir = 0,
+      rampRow = 0,
+      rampCol = 0,
+      rampLen = 0,
+      border = 0,
+      exits = [33, 33, 33, 33],
+      guardians = [],
+      items = [],
+      spawn = { x: 4, y: 104, dir: 0 },
+      customRamps = null,
+      customConveyors = null
+    }) {
+      const page = new Uint8Array(256);
+
+      // 0x00..0x7F: 128 bytes of 2-bit tile map (16 rows x 8 bytes)
+      for (let r = 0; r < 16; r++) {
+        const rowBytes = encodeTileRow(gridStrings[r] || '................................');
+        page.set(rowBytes, r * 8);
+      }
+
+      // 0x80..0x9F: 32-byte ASCII Room Name padded with spaces
+      const paddedName = (name + '                                ').slice(0, 32);
+      for (let i = 0; i < 32; i++) {
+        page[0x80 + i] = paddedName.charCodeAt(i);
+      }
+
+      // 0xA0..0xD5: Six 9-byte tile definitions [attr, b0..b7]
+      const tiles = [bgTile, floorTile, wallTile, nastyTile, rampTile, convTile];
+      tiles.forEach((t, idx) => {
+        const base = 0xA0 + idx * 9;
+        page[base] = t.attr;
+        for (let b = 0; b < 8; b++) page[base + 1 + b] = t.bitmap[b] || 0;
+      });
+
+      // 0xD6..0xD9: Conveyor definition
+      page[0xD6] = convDir;
+      const convOffset = convRow * 32 + convCol;
+      page[0xD7] = convOffset & 0xFF;
+      page[0xD8] = 0x58 + ((convOffset >> 8) & 0x03);
+      page[0xD9] = convLen;
+
+      // 0xDA..0xDC: Ramp definition
+      page[0xDA] = rampDir;
+      page[0xDB] = (rampRow << 4) | (rampCol & 0x1F);
+      page[0xDC] = rampLen;
+
+      // 0xDD: Border colour (0..7)
+      page[0xDD] = border & 7;
+
+      page._meta = {
+        id,
+        convDir, convRow, convCol, convLen,
+        rampDir, rampRow, rampCol, rampLen,
+        customRamps: customRamps ? new Set(customRamps) : null,
+        customConveyors: customConveyors ? new Set(customConveyors) : null,
+        spawn: { ...spawn },
+        items: items.map((it) => ({
+          ...it,
+          collected: SOLVED_RIDDLES.has(it.riddleId),
+          rearmTick: 0
+        })),
+        guardians: guardians.map((g) => ({ ...g }))
+      };
+
+      // 0xEA..0xED: Exits [Left, Right, Up, Down]
+      page[0xEA] = exits[0];
+      page[0xEB] = exits[1];
+      page[0xEC] = exits[2];
+      page[0xED] = exits[3];
+
+      // 0xF0..0xFF: Guardians
+      page.fill(0xFF, 0xF0, 0x100);
+      guardians.forEach((g, idx) => {
+        if (idx < 7) {
+          page[0xF0 + idx * 2] = g.typeByte || 0x01;
+          page[0xF0 + idx * 2 + 1] = g.startByte || ((g.y & 0xF8) | (g.col & 0x07));
+        }
+      });
+
+      return page;
+    }
+
+    function initDefaultRooms() {
+      CORRUPTED_BYTES.clear();
+      const customPage = ROOM_PAGES[45] || null;
+      D.rooms.forEach((rm) => {
+        ROOM_PAGES[rm.id] = createRoomPage(rm);
+      });
+      if (customPage) ROOM_PAGES[45] = customPage;
+      updateMinimapBadges();
+    }
+
+    // =========================================================================
+    // 4. WILLY & Z80 ENGINE STATE (0x85CF - 0x85D6)
+    // =========================================================================
+    const Z80 = {
+      roomId: 33,
+      airborne: 0,
+      dirFrame: 0x80,
+      jumpCounter: 0,
+      willyY: 104,
+      willyX: 25,
+      moveFlag: 0,
+      lives: 7,
+      itemsCollected: 0,
+      ticks: 0,
+      paused: false,
+      modalPaused: false,
+      godMode: false,
+      atticBugUnpatched: true,
+      deathFlash: 0,
+      deathReason: '',
+      activeBranch: 'asm-airborne'
+    };
+
+    const OVERLAYS = {
+      grid: true,
+      hitbox: true,
+      arc: true
+    };
+
+    const KEYS = { left: false, right: false, jump: false };
+    const TOUCH_KEYS = { left: false, right: false, jump: false };
+    const GP_KEYS = { left: false, right: false, jump: false };
+
+    function isInputActive(which) {
+      return Boolean(KEYS[which] || TOUCH_KEYS[which] || GP_KEYS[which]);
+    }
+
+    window.addEventListener('keydown', (e) => {
+      const riddleOpen = document.getElementById('riddle-modal').classList.contains('open');
+      const tag = (e.target && e.target.tagName) ? e.target.tagName.toUpperCase() : '';
+      const typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+      if (riddleOpen) {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          closeRiddleModal();
+        }
+        return;
+      }
+      if (typing) return;
+
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') KEYS.left = true;
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') KEYS.right = true;
+      if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+        KEYS.jump = true;
+        if (e.code === 'Space' || e.code === 'ArrowUp') e.preventDefault();
+      }
+      if (e.code === 'KeyP') togglePause();
+      if (e.code === 'KeyN') stepSingleFrame();
+      if (e.code === 'KeyR') resetWilly();
+      if (e.code === 'KeyX') playRoomAudioClue();
+      if (e.code === 'KeyY') toggleBuilderDrawer();
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'ArrowLeft' || e.code === 'KeyA') KEYS.left = false;
+      if (e.code === 'ArrowRight' || e.code === 'KeyD') KEYS.right = false;
+      if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') KEYS.jump = false;
+    });
+
+    // Touch controls binding
+    document.querySelectorAll('[data-touch-key]').forEach((btn) => {
+      const k = btn.dataset.touchKey;
+      const setPress = (on, ev) => {
+        if (ev) ev.preventDefault();
+        TOUCH_KEYS[k] = on;
+        btn.classList.toggle('pressed', on);
+      };
+      btn.addEventListener('pointerdown', (e) => setPress(true, e));
+      btn.addEventListener('pointerup', (e) => setPress(false, e));
+      btn.addEventListener('pointercancel', (e) => setPress(false, e));
+      btn.addEventListener('pointerleave', () => {
+        TOUCH_KEYS[k] = false;
+        btn.classList.remove('pressed');
+      });
+    });
+
+    // =========================================================================
+    // 5. WEB AUDIO API 1-BIT CHIP BEEPER (DEFAULT OFF) & PIPER AUDIO CLUE
+    // =========================================================================
+    let audioCtx = null;
+    let audioEnabled = false;
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      const btn = document.getElementById('btn-audio');
+      if (audioEnabled) {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (Ctx && !audioCtx) audioCtx = new Ctx();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+        btn.textContent = '🔊 Chip Audio: ON';
+        btn.classList.add('active');
+      } else {
+        btn.textContent = '🔇 Chip Audio: OFF';
+        btn.classList.remove('active');
+      }
+    }
+
+    function beep1Bit(freq, durationMs, type = 'square') {
+      if (!audioEnabled || !audioCtx || inSelfTest) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(Math.max(60, Math.min(3500, freq)), audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durationMs / 1000);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + durationMs / 1000);
+      } catch (_) {}
+    }
+
+    async function resolveClueAudioSrc(clue) {
+      const rel = clue.file;
+      if (window.location.protocol === 'file:') {
+        await window.__jswClueBundlePromise;
+        if (window.GARETH_JSW_CLUE_B64 && window.GARETH_JSW_CLUE_B64[rel]) {
+          return 'data:audio/mpeg;base64,' + window.GARETH_JSW_CLUE_B64[rel];
+        }
+      }
+      return resolveAssetUrl(rel);
+    }
+
+    async function playRoomAudioClue(roomIdOverride) {
+      const targetRoomId = roomIdOverride || Z80.roomId;
+      const clue = D.findClueForRoom(targetRoomId);
+      const audioEl = document.getElementById('jsw-clue-audio');
+      const statusEl = document.getElementById('riddle-audio-status');
+      const modalBtn = document.getElementById('riddle-audio-btn');
+      const roomBtn = document.getElementById('btn-play-room-clue');
+
+      if (!clue || !audioEl) return;
+      const src = await resolveClueAudioSrc(clue);
+      audioEl.src = src;
+
+      if (statusEl) statusEl.textContent = `🎧 Playing ${clue.title}`;
+      if (modalBtn) modalBtn.textContent = '🔊 Playing British Clue...';
+      if (roomBtn) roomBtn.textContent = '🔊 Playing Clue...';
+
+      const resetLabels = () => {
+        if (statusEl) statusEl.textContent = `${clue.title} ready`;
+        if (modalBtn) modalBtn.textContent = '🎧 Play Room Audio Clue';
+        if (roomBtn) roomBtn.textContent = '🎧 Play Room Audio Clue (X)';
+      };
+      audioEl.onended = resetLabels;
+      audioEl.onerror = resetLabels;
+
+      if (!inSelfTest) {
+        audioEl.currentTime = 0;
+        audioEl.play().catch(() => {
+          if (statusEl) statusEl.textContent = 'Tap Play to start audio clue';
+        });
+      }
+      return src;
+    }
+
+    // =========================================================================
+    // 6. ROOM CELL QUERY HELPERS (DECODING 2-BIT TILE MAP + RAMP/CONVEYOR)
+    // =========================================================================
+    function getCellType(page, row, col) {
+      if (row < 0) return 0;
+      if (row >= 16 || col < 0 || col >= 32) return 0;
+
+      const meta = page._meta;
+      const key = `${row},${col}`;
+      if (meta && meta.customConveyors && meta.customConveyors.has(key)) return 5;
+      if (meta && meta.customRamps && meta.customRamps.has(key)) return 4;
+
+      if (meta && meta.convDir > 0 && row === meta.convRow &&
+          col >= meta.convCol && col < meta.convCol + meta.convLen) {
+        return 5;
+      }
+
+      if (meta && meta.rampLen > 0) {
+        for (let k = 0; k < meta.rampLen; k++) {
+          const rRow = meta.rampRow - k;
+          const rCol = meta.rampDir === 1 ? (meta.rampCol + k) : (meta.rampCol - k);
+          if (row === rRow && col === rCol) return 4;
+        }
+      }
+
+      const byteIdx = row * 8 + (col >> 2);
+      const shift = (3 - (col & 3)) * 2;
+      return (page[byteIdx] >> shift) & 0x03;
+    }
+
+    function isSolidFloorLike(t) {
+      return t === 1 || t === 2 || t === 4 || t === 5;
+    }
+
+    function getRampTargetY(page, willyCol, willyFrame) {
+      const meta = page._meta;
+      if (!meta || meta.rampLen === 0) return null;
+      const fineX = willyCol * 4 + willyFrame;
+      if (meta.rampDir === 0) {
+        const startFineX = (meta.rampCol + 1) * 4;
+        const endFineX = (meta.rampCol - meta.rampLen) * 4;
+        if (fineX <= startFineX && fineX >= endFineX) {
+          const stepsUp = startFineX - fineX;
+          const baseFootY = (meta.rampRow + 1) * 8;
+          return baseFootY - stepsUp * 2 - 16;
+        }
+      } else {
+        const startFineX = (meta.rampCol - 1) * 4;
+        const endFineX = (meta.rampCol + meta.rampLen) * 4;
+        if (fineX >= startFineX && fineX <= endFineX) {
+          const stepsUp = fineX - startFineX;
+          const baseFootY = (meta.rampRow + 1) * 8;
+          return baseFootY - stepsUp * 2 - 16;
+        }
+      }
+      return null;
+    }
+
+    // =========================================================================
+    // 7. MATTHEW SMITH'S EXACT Z80 PHYSICS TICK (0x8DD3 -> 0x8EBC -> 0x91B6)
+    // =========================================================================
+    function stepZ80Tick() {
+      const page = ROOM_PAGES[Z80.roomId];
+      if (!page) return;
+      Z80.ticks++;
+
+      if (Z80.deathFlash > 0) {
+        Z80.deathFlash--;
+        if (Z80.deathFlash === 0) {
+          resetWillyPositionOnly();
+        }
+        return;
+      }
+
+      // PHASE 1: VERTICAL PHYSICS (0x8DD3)
+      if (Z80.airborne === 1) {
+        Z80.activeBranch = 'asm-jump-sra';
+        const dy = (Z80.jumpCounter - 8) >> 1;
+        const nextY = Z80.willyY + dy;
+
+        if (dy < 0) {
+          const topRow = Math.max(0, nextY >> 3);
+          const tL = getCellType(page, topRow, Z80.willyX);
+          const tR = getCellType(page, topRow, Z80.willyX + 1);
+          if (tL === 2 || tR === 2) {
+            Z80.willyY = (topRow + 1) << 3;
+            Z80.airborne = 2;
+            Z80.jumpCounter = 0;
+          } else {
+            Z80.willyY = nextY;
+          }
+        } else {
+          Z80.willyY = nextY;
+        }
+
+        beep1Bit(680 - Z80.willyY * 3 - Math.abs(dy) * 35, 45);
+
+        if (Z80.airborne === 1 && Z80.jumpCounter >= 9) {
+          if ((Z80.willyY & 7) === 0) {
+            const footRow = (Z80.willyY + 16) >> 3;
+            const fL = getCellType(page, footRow, Z80.willyX);
+            const fR = getCellType(page, footRow, Z80.willyX + 1);
+            if (isSolidFloorLike(fL) || isSolidFloorLike(fR)) {
+              Z80.airborne = 0;
+              Z80.jumpCounter = 0;
+            }
+          }
+        }
+
+        if (Z80.airborne === 1) {
+          Z80.jumpCounter++;
+          if (Z80.jumpCounter >= 18) {
+            Z80.airborne = 2;
+            Z80.jumpCounter = 0;
+          }
+        }
+      } else if (Z80.airborne >= 2) {
+        Z80.activeBranch = 'asm-airborne';
+        Z80.moveFlag = 0;
+        Z80.willyY += 4;
+        beep1Bit(420 - Z80.willyY * 2.5, 45, 'sawtooth');
+
+        if ((Z80.willyY & 7) === 0) {
+          Z80.airborne++;
+          const footRow = (Z80.willyY + 16) >> 3;
+          const fL = getCellType(page, footRow, Z80.willyX);
+          const fR = getCellType(page, footRow, Z80.willyX + 1);
+          if (isSolidFloorLike(fL) || isSolidFloorLike(fR)) {
+            if (Z80.airborne >= 10 && !Z80.godMode) {
+              triggerWillyDeath('Fatal Fall Height (AIRBORNE = ' + Z80.airborne + ' >= 10)');
+              return;
+            }
+            Z80.airborne = 0;
+          }
+        }
+      }
+
+      // PHASE 2: GROUNDED CHECK, CONVEYORS, INPUT & HORIZONTAL STEP (0x8EBC)
+      if (Z80.airborne === 0) {
+        Z80.activeBranch = 'asm-horiz';
+        const footRow = (Z80.willyY + 16) >> 3;
+        const fL = getCellType(page, footRow, Z80.willyX);
+        const fR = getCellType(page, footRow, Z80.willyX + 1);
+
+        let wantLeft = isInputActive('left');
+        let wantRight = isInputActive('right');
+
+        if (fL === 5 || fR === 5) {
+          const convDir = page._meta.convDir;
+          if (convDir === 1 && !wantRight) wantLeft = true;
+          if (convDir === 2 && !wantLeft) wantRight = true;
+        }
+
+        const curDir = (Z80.dirFrame >> 7) & 1;
+        if (wantLeft && !wantRight) {
+          if (curDir === 0) {
+            Z80.dirFrame = (Z80.dirFrame & 0x03) | 0x80;
+            Z80.moveFlag = 0;
+          } else {
+            Z80.moveFlag = 1;
+          }
+        } else if (wantRight && !wantLeft) {
+          if (curDir === 1) {
+            Z80.dirFrame = (Z80.dirFrame & 0x03);
+            Z80.moveFlag = 0;
+          } else {
+            Z80.moveFlag = 1;
+          }
+        } else {
+          Z80.moveFlag = 0;
+        }
+
+        if (isInputActive('jump')) {
+          Z80.airborne = 1;
+          Z80.jumpCounter = 0;
+          Z80.willyY &= ~1;
+        }
+      }
+
+      if (Z80.moveFlag === 1 && Z80.airborne <= 1) {
+        const dir = (Z80.dirFrame >> 7) & 1;
+        let frame = Z80.dirFrame & 0x03;
+
+        if (dir === 0) {
+          if (frame < 3) {
+            frame++;
+            Z80.dirFrame = frame;
+            if (Z80.airborne === 0) beep1Bit(190 + frame * 20, 18);
+          } else {
+            const nextCol = Z80.willyX + 1;
+            if (nextCol > 30) {
+              if (ROOM_PAGES[page[0xEB]]) {
+                loadRoom(page[0xEB], 0, Z80.willyY);
+                return;
+              }
+            } else {
+              const rTop = Z80.willyY >> 3;
+              const rMid = (Z80.willyY + 8) >> 3;
+              const rBot = (Z80.willyY + 15) >> 3;
+              if (getCellType(page, rTop, nextCol + 1) !== 2 &&
+                  getCellType(page, rMid, nextCol + 1) !== 2 &&
+                  getCellType(page, rBot, nextCol + 1) !== 2) {
+                Z80.willyX = nextCol;
+                Z80.dirFrame = 0;
+                if (Z80.airborne === 0) beep1Bit(260, 18);
+              }
+            }
+          }
+        } else {
+          if (frame > 0) {
+            frame--;
+            Z80.dirFrame = 0x80 | frame;
+            if (Z80.airborne === 0) beep1Bit(180 + frame * 20, 18);
+          } else {
+            const nextCol = Z80.willyX - 1;
+            if (nextCol < 0) {
+              if (ROOM_PAGES[page[0xEA]]) {
+                loadRoom(page[0xEA], 30, Z80.willyY);
+                return;
+              }
+            } else {
+              const rTop = Z80.willyY >> 3;
+              const rMid = (Z80.willyY + 8) >> 3;
+              const rBot = (Z80.willyY + 15) >> 3;
+              if (getCellType(page, rTop, nextCol) !== 2 &&
+                  getCellType(page, rMid, nextCol) !== 2 &&
+                  getCellType(page, rBot, nextCol) !== 2) {
+                Z80.willyX = nextCol;
+                Z80.dirFrame = 0x80 | 3;
+                if (Z80.airborne === 0) beep1Bit(250, 18);
+              }
+            }
+          }
+        }
+      }
+
+      // PHASE 3: RAMP ELEVATION & GRAVITY SUPPORT CHECK
+      if (Z80.airborne === 0) {
+        const frame = Z80.dirFrame & 0x03;
+        const rampY = getRampTargetY(page, Z80.willyX, frame);
+
+        if (rampY !== null && Math.abs(rampY - Z80.willyY) <= 10) {
+          Z80.activeBranch = 'asm-ramp';
+          Z80.willyY = Math.max(0, Math.min(112, rampY));
+        } else {
+          if ((Z80.willyY & 7) !== 0) {
+            Z80.willyY = Math.round(Z80.willyY / 8) * 8;
+          }
+          const alignedFootRow = (Z80.willyY + 16) >> 3;
+          const aL = getCellType(page, alignedFootRow, Z80.willyX);
+          const aR = getCellType(page, alignedFootRow, Z80.willyX + 1);
+          if (!isSolidFloorLike(aL) && !isSolidFloorLike(aR)) {
+            Z80.airborne = 2;
+            Z80.moveFlag = 0;
+          }
+        }
+      }
+
+      // Vertical Room Exits (Up / Down)
+      if (Z80.willyY < 2 && Z80.airborne === 1) {
+        if (page[0xEC] !== Z80.roomId && ROOM_PAGES[page[0xEC]]) {
+          loadRoom(page[0xEC], Z80.willyX, 104);
+          return;
+        }
+      }
+      if (Z80.willyY > 112) {
+        if (page[0xED] !== Z80.roomId && ROOM_PAGES[page[0xED]]) {
+          loadRoom(page[0xED], Z80.willyX, 8);
+          return;
+        } else {
+          Z80.willyY = 112;
+          Z80.airborne = 0;
+        }
+      }
+
+      // PHASE 4: CONVEYOR ANIMATION, GUARDIANS & THE 0x91B6 ATTIC BUG
+      const convBase = 0xA0 + 5 * 9;
+      if (page._meta.convDir === 1) {
+        page[convBase + 1] = ((page[convBase + 1] << 1) | (page[convBase + 1] >> 7)) & 0xFF;
+        page[convBase + 2] = ((page[convBase + 2] >> 1) | (page[convBase + 2] << 7)) & 0xFF;
+      } else if (page._meta.convDir === 2) {
+        page[convBase + 1] = ((page[convBase + 1] >> 1) | (page[convBase + 1] << 7)) & 0xFF;
+        page[convBase + 2] = ((page[convBase + 2] << 1) | (page[convBase + 2] >> 7)) & 0xFF;
+      }
+
+      page._meta.guardians.forEach((g) => {
+        if (g.kind === 'horizontal') {
+          if (g.dir === 0) {
+            if (g.frame < 3) g.frame++;
+            else {
+              g.frame = 0;
+              if (g.col < g.maxCol) g.col++;
+              else g.dir = 1;
+            }
+          } else {
+            if (g.frame > 0) g.frame--;
+            else {
+              g.frame = 3;
+              if (g.col > g.minCol) g.col--;
+              else g.dir = 0;
+            }
+          }
+        } else if (g.kind === 'arrow') {
+          g.xPx -= 4;
+          if (g.xPx < 0) g.xPx = 248;
+          g.col = g.xPx >> 3;
+        } else if (g.kind === 'arrow_bugged') {
+          g.xPx -= 4;
+          if (g.xPx < 0) g.xPx = 248;
+          g.col = g.xPx >> 3;
+
+          if (Z80.atticBugUnpatched && Z80.roomId === 42) {
+            Z80.activeBranch = 'asm-arrow';
+            const corruptOffset = (g.col * 5 + (Z80.ticks & 0x7F)) & 0xFF;
+            if (ROOM_PAGES[27]) {
+              ROOM_PAGES[27][corruptOffset] ^= 0xFF;
+            }
+            const atticOffset = 0x20 + (g.col & 0x1F);
+            page[atticOffset] = 0xFF;
+            CORRUPTED_BYTES.add(atticOffset);
+          }
+        }
+      });
+
+      // Collect Flashing Items -> Open C1 Part 4 Riddle Modal!
+      const wRowTop = Z80.willyY >> 3;
+      const wRowBot = (Z80.willyY + 15) >> 3;
+      page._meta.items.forEach((it) => {
+        if (it.rearmTick && Z80.ticks < it.rearmTick) return;
+        const touching = it.col >= Z80.willyX && it.col <= Z80.willyX + 1 &&
+                         it.row >= wRowTop && it.row <= wRowBot;
+        if (!it.collected && touching) {
+          it.rearmTick = Z80.ticks + 16;
+          beep1Bit(880, 60);
+          setTimeout(() => beep1Bit(1320, 90), 55);
+          if (it.riddleId && !inSelfTest) {
+            openRiddleModal(it.riddleId, it);
+          } else {
+            it.collected = true;
+            Z80.itemsCollected++;
+          }
+        }
+      });
+
+      // PHASE 5: NASTY ATTRIBUTE COLLISION
+      if (!Z80.godMode) {
+        const startRow = Z80.willyY >> 3;
+        const endRow = (Z80.willyY + 15) >> 3;
+        for (let r = startRow; r <= endRow; r++) {
+          for (let c = Z80.willyX; c <= Z80.willyX + 1; c++) {
+            if (getCellType(page, r, c) === 3) {
+              triggerWillyDeath(`Touched Nasty Tile at Cell (Col ${c}, Row ${r})`);
+              return;
+            }
+          }
+        }
+      }
+    }
+
+    function triggerWillyDeath(reason) {
+      Z80.deathFlash = 10;
+      Z80.deathReason = reason;
+      Z80.lives = Math.max(0, Z80.lives - 1);
+      beep1Bit(140, 260, 'sawtooth');
+    }
+
+    function resetWillyPositionOnly() {
+      Z80.airborne = 0;
+      Z80.jumpCounter = 0;
+      Z80.moveFlag = 0;
+      const page = ROOM_PAGES[Z80.roomId];
+      if (page && page._meta && page._meta.spawn) {
+        Z80.willyX = page._meta.spawn.x;
+        Z80.willyY = page._meta.spawn.y;
+        Z80.dirFrame = page._meta.spawn.dir || 0;
+      } else {
+        Z80.willyX = 4;
+        Z80.willyY = 104;
+        Z80.dirFrame = 0;
+      }
+    }
+
+    function resetWilly() {
+      initDefaultRooms();
+      resetWillyPositionOnly();
+      Z80.deathReason = '';
+      renderRoomRelicPills();
+      renderFrame();
+      updateTelemetry();
+    }
+
+    function loadRoom(roomId, spawnX = null, spawnY = null) {
+      if (!ROOM_PAGES[roomId]) roomId = 33;
+      Z80.roomId = roomId;
+      CORRUPTED_BYTES.clear();
+
+      document.querySelectorAll('#minimap-matrix .room-node').forEach((btn) => {
+        btn.classList.toggle('active', Number(btn.dataset.roomId) === roomId);
+      });
+
+      if (spawnX !== null) {
+        Z80.willyX = Math.max(0, Math.min(30, spawnX));
+        Z80.willyY = Math.max(0, Math.min(112, spawnY));
+      } else {
+        resetWillyPositionOnly();
+      }
+      renderRoomRelicPills();
+      renderFrame();
+      updateTelemetry();
+    }
+
+    function renderRoomRelicPills() {
+      const container = document.getElementById('room-item-pills');
+      const page = ROOM_PAGES[Z80.roomId];
+      if (!container || !page || !page._meta) return;
+      container.innerHTML = '';
+      if (!page._meta.items.length) {
+        const span = document.createElement('span');
+        span.className = 'subtitle';
+        span.textContent = 'No collectible relics in this room.';
+        container.appendChild(span);
+        return;
+      }
+      page._meta.items.forEach((it) => {
+        const solved = SOLVED_RIDDLES.has(it.riddleId) || it.collected;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'relic-btn' + (solved ? ' solved' : '');
+        btn.textContent = (solved ? '✓ ' : '◆ ') + (it.label || 'Relic');
+        btn.onclick = () => openRiddleModal(it.riddleId, it);
+        container.appendChild(btn);
+      });
+    }
+
+    function updateMinimapBadges() {
+      D.rooms.forEach((rm) => {
+        const dotsWrap = document.querySelector(`[data-dots="${rm.id}"]`);
+        if (!dotsWrap) return;
+        const dots = dotsWrap.querySelectorAll('.item-dot');
+        rm.items.forEach((it, idx) => {
+          if (dots[idx]) dots[idx].classList.toggle('solved', SOLVED_RIDDLES.has(it.riddleId));
+        });
+      });
+      const customDot = document.querySelector('[data-dots="45"] .item-dot');
+      if (customDot) customDot.classList.toggle('solved', SOLVED_RIDDLES.has('custom-riddle-1'));
+      const pill = document.getElementById('mansion-progress-pill');
+      const solvedCount = D.riddles.filter((r) => SOLVED_RIDDLES.has(r.id)).length;
+      if (pill) {
+        pill.textContent = `🔑 Solved: ${solvedCount} / ${D.riddles.length}`;
+      }
+    }
+
+    // =========================================================================
+    // 8. ZX SPECTRUM 256x192 BITMAP + 32x24 ATTRIBUTE CLASH RENDERER
+    // =========================================================================
+    const canvas = document.getElementById('zx-screen');
+    const ctx = canvas.getContext('2d');
+    const imgData = ctx.createImageData(256, 192);
+    const vramBitmap = new Uint8Array(32 * 192);
+    const vramAttr = new Uint8Array(32 * 24);
+
+    function draw8x8TileToVRAM(row, col, attr, bitmapBytes, offset = 0) {
+      if (row < 0 || row >= 24 || col < 0 || col >= 32) return;
+      vramAttr[row * 32 + col] = attr;
+      for (let y = 0; y < 8; y++) {
+        vramBitmap[(row * 8 + y) * 32 + col] = bitmapBytes[offset + y] || 0;
+      }
+    }
+
+    const GLYPH_CACHE = {};
+    const fontCanvas = document.createElement('canvas');
+    fontCanvas.width = 8;
+    fontCanvas.height = 8;
+    const fontCtx = fontCanvas.getContext('2d');
+
+    function getGlyph8x8(charCode) {
+      if (GLYPH_CACHE[charCode]) return GLYPH_CACHE[charCode];
+      const g = new Uint8Array(8);
+      if (charCode <= 32) {
+        GLYPH_CACHE[charCode] = g;
+        return g;
+      }
+      fontCtx.clearRect(0, 0, 8, 8);
+      fontCtx.fillStyle = '#fff';
+      fontCtx.font = 'bold 8px monospace';
+      fontCtx.textBaseline = 'top';
+      fontCtx.fillText(String.fromCharCode(charCode), 1, 0);
+      const data = fontCtx.getImageData(0, 0, 8, 8).data;
+      for (let y = 0; y < 8; y++) {
+        let byte = 0;
+        for (let x = 0; x < 8; x++) {
+          if (data[(y * 8 + x) * 4 + 3] > 90) byte |= (1 << (7 - x));
+        }
+        g[y] = byte;
+      }
+      GLYPH_CACHE[charCode] = g;
+      return g;
+    }
+
+    function drawCharToVRAM(row, col, ch, attr) {
+      if (row < 0 || row >= 24 || col < 0 || col >= 32) return;
+      vramAttr[row * 32 + col] = attr;
+      const glyph = getGlyph8x8(ch.charCodeAt(0));
+      for (let y = 0; y < 8; y++) {
+        vramBitmap[(row * 8 + y) * 32 + col] = glyph[y];
+      }
+    }
+
+    function renderFrame() {
+      const page = ROOM_PAGES[Z80.roomId];
+      if (!page) return;
+
+      const borderIdx = (Z80.deathFlash > 0) ? (Z80.ticks & 7) : (page[0xDD] & 7);
+      document.getElementById('crt-border').style.backgroundColor = ZX_PALETTE[borderIdx];
+
+      vramBitmap.fill(0);
+      vramAttr.fill(0x07);
+
+      // 1. 32x16 Room Tile Map
+      for (let r = 0; r < 16; r++) {
+        for (let c = 0; c < 32; c++) {
+          const t = getCellType(page, r, c);
+          const tileDefOffset = 0xA0 + t * 9;
+          vramAttr[r * 32 + c] = page[tileDefOffset];
+          for (let y = 0; y < 8; y++) {
+            vramBitmap[(r * 8 + y) * 32 + c] = page[tileDefOffset + 1 + y];
+          }
+        }
+      }
+
+      // 2. Flashing Collectible Items
+      const itemBmp = [0x18, 0x3C, 0x7E, 0xFF, 0xFF, 0x7E, 0x3C, 0x18];
+      const flashInk = 3 + (Z80.ticks & 3);
+      page._meta.items.forEach((it) => {
+        if (!it.collected) {
+          draw8x8TileToVRAM(it.row, it.col, 0x40 | flashInk, itemBmp, 0);
+        }
+      });
+
+      // 3. Guardians
+      page._meta.guardians.forEach((g) => {
+        if (g.kind === 'horizontal') {
+          const spriteWords = buildWillyFrame(g.dir, g.frame);
+          for (let py = 0; py < 16; py++) {
+            const sy = g.y + py;
+            if (sy >= 0 && sy < 128) {
+              const word = spriteWords[py];
+              vramBitmap[sy * 32 + g.col] |= (word >> 8) & 0xFF;
+              if (g.col + 1 < 32) vramBitmap[sy * 32 + g.col + 1] |= word & 0xFF;
+            }
+          }
+          const gRow = g.y >> 3;
+          for (let rr = gRow; rr <= Math.min(15, (g.y + 15) >> 3); rr++) {
+            vramAttr[rr * 32 + g.col] = (vramAttr[rr * 32 + g.col] & 0x38) | (g.attr & 0x47);
+            if (g.col + 1 < 32) {
+              vramAttr[rr * 32 + g.col + 1] = (vramAttr[rr * 32 + g.col + 1] & 0x38) | (g.attr & 0x47);
+            }
+          }
+        } else if (g.kind === 'arrow' || g.kind === 'arrow_bugged') {
+          const sy = g.y + 3;
+          if (sy >= 0 && sy < 128 && g.col >= 0 && g.col < 32) {
+            vramBitmap[(sy - 1) * 32 + g.col] |= 0x40;
+            vramBitmap[sy * 32 + g.col] |= 0xFF;
+            vramBitmap[(sy + 1) * 32 + g.col] |= 0x40;
+            const r = sy >> 3;
+            vramAttr[r * 32 + g.col] = (vramAttr[r * 32 + g.col] & 0x38) | 0x47;
+          }
+        }
+      });
+
+      // 4. Miner Willy + Bitwise AND Collision
+      const wDir = (Z80.dirFrame >> 7) & 1;
+      const wFrame = Z80.dirFrame & 0x03;
+      const willyWords = buildWillyFrame(wDir, wFrame);
+      let pixelCollision = false;
+
+      for (let py = 0; py < 16; py++) {
+        const sy = Z80.willyY + py;
+        if (sy >= 0 && sy < 128) {
+          const hiByte = (willyWords[py] >> 8) & 0xFF;
+          const loByte = willyWords[py] & 0xFF;
+          const rowCell = sy >> 3;
+
+          const tL = getCellType(page, rowCell, Z80.willyX);
+          const tR = getCellType(page, rowCell, Z80.willyX + 1);
+          if (tL === 0 && (vramBitmap[sy * 32 + Z80.willyX] & hiByte) !== 0) pixelCollision = true;
+          if (Z80.willyX + 1 < 32 && tR === 0 && (vramBitmap[sy * 32 + Z80.willyX + 1] & loByte) !== 0) pixelCollision = true;
+
+          vramBitmap[sy * 32 + Z80.willyX] |= hiByte;
+          if (Z80.willyX + 1 < 32) vramBitmap[sy * 32 + Z80.willyX + 1] |= loByte;
+        }
+      }
+
+      const wStartRow = Z80.willyY >> 3;
+      const wEndRow = Math.min(15, (Z80.willyY + 15) >> 3);
+      for (let r = wStartRow; r <= wEndRow; r++) {
+        for (let c = Z80.willyX; c <= Math.min(31, Z80.willyX + 1); c++) {
+          const existingPaper = vramAttr[r * 32 + c] & 0x38;
+          vramAttr[r * 32 + c] = 0x40 | existingPaper | 0x07;
+        }
+      }
+
+      if (pixelCollision && !Z80.godMode && Z80.deathFlash === 0) {
+        triggerWillyDeath('Bitwise AND Sprite Collision at 0x948A!');
+      }
+
+      // 5. Status Bar (Rows 16..23)
+      for (let c = 0; c < 32; c++) {
+        const ch = String.fromCharCode(page[0x80 + c] || 32);
+        drawCharToVRAM(16, c, ch, 0x30);
+      }
+
+      const solvedCount = D.riddles.filter((r) => SOLVED_RIDDLES.has(r.id)).length;
+      const statusStr = `Relics: ${String(solvedCount).padStart(2, '0')}/16     TIME 7:00am `;
+      for (let c = 0; c < 32; c++) {
+        drawCharToVRAM(18, c, statusStr[c] || ' ', 0x47);
+      }
+
+      const msg = Z80.deathReason
+        ? `DEAD: ${Z80.deathReason.slice(0, 26)}`.padEnd(32, ' ')
+        : `LIVES: ${'W '.repeat(Math.min(7, Z80.lives)).padEnd(14, ' ')} ROOM #${String(Z80.roomId).padStart(2, '0')}  `;
+      const msgAttr = Z80.deathReason ? 0x42 : 0x45;
+      for (let c = 0; c < 32; c++) {
+        drawCharToVRAM(20, c, msg[c] || ' ', msgAttr);
+      }
+
+      // 6. VRAM -> RGBA
+      const rgba = imgData.data;
+      for (let y = 0; y < 192; y++) {
+        const attrRow = y >> 3;
+        for (let col = 0; col < 32; col++) {
+          const byte = vramBitmap[y * 32 + col];
+          const attr = vramAttr[attrRow * 32 + col];
+          const brightOffset = (attr & 0x40) ? 8 : 0;
+          const inkHex = ZX_PALETTE[brightOffset + (attr & 0x07)];
+          const paperHex = ZX_PALETTE[brightOffset + ((attr >> 3) & 0x07)];
+
+          const inkR = parseInt(inkHex.slice(1, 3), 16);
+          const inkG = parseInt(inkHex.slice(3, 5), 16);
+          const inkB = parseInt(inkHex.slice(5, 7), 16);
+
+          const papR = parseInt(paperHex.slice(1, 3), 16);
+          const papG = parseInt(paperHex.slice(3, 5), 16);
+          const papB = parseInt(paperHex.slice(5, 7), 16);
+
+          for (let bit = 0; bit < 8; bit++) {
+            const px = (col << 3) + bit;
+            const idx = (y * 256 + px) * 4;
+            const isInk = (byte >> (7 - bit)) & 1;
+            rgba[idx]     = isInk ? inkR : papR;
+            rgba[idx + 1] = isInk ? inkG : papG;
+            rgba[idx + 2] = isInk ? inkB : papB;
+            rgba[idx + 3] = 255;
+          }
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+
+      // 7. Overlays
+      if (OVERLAYS.grid) {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.11)';
+        ctx.lineWidth = 0.5;
+        for (let x = 0; x <= 256; x += 8) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 128); ctx.stroke();
+        }
+        for (let y = 0; y <= 128; y += 8) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(256, y); ctx.stroke();
+        }
+      }
+
+      if (OVERLAYS.hitbox) {
+        const cellH = ((Z80.willyY & 7) === 0 ? 2 : 3) * 8;
+        ctx.strokeStyle = (Z80.willyY & 7) === 0 ? '#00ff66' : '#ff2a85';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(Z80.willyX * 8 + 0.5, wStartRow * 8 + 0.5, 15, cellH - 1);
+      }
+
+      if (OVERLAYS.arc) {
+        const dirSign = ((Z80.dirFrame >> 7) & 1) ? -1 : 1;
+        ctx.fillStyle = '#00f0ff';
+        let simX = Z80.willyX * 8 + (Z80.dirFrame & 3) * 2 + 8;
+        let simY = Z80.willyY + 8;
+        const startJ = Z80.airborne === 1 ? Z80.jumpCounter : 0;
+        for (let j = startJ; j < 18; j++) {
+          simY += (j - 8) >> 1;
+          simX += dirSign * 2;
+          ctx.fillRect(simX - 1, simY - 1, 2, 2);
+        }
+      }
+    }
+
+    // =========================================================================
+    // 9. Z80 TELEMETRY & 256-BYTE HEX DUMP
+    // =========================================================================
+    function toHex(n, pad = 2) {
+      return '0x' + (n >>> 0).toString(16).toUpperCase().padStart(pad, '0');
+    }
+
+    function updateTelemetry() {
+      document.getElementById('tick-counter').textContent = `Tick #${Z80.ticks} (14 Hz)`;
+      document.getElementById('val-85cf').textContent = `${toHex(Z80.airborne)} (${Z80.airborne})`;
+      document.getElementById('desc-85cf').textContent = Z80.airborne === 0
+        ? '0 = Grounded on platform'
+        : Z80.airborne === 1
+          ? '1 = Parabolic Jump (0x8DF7)'
+          : `${Z80.airborne} = Falling (+4px/tick, fatal @ 10)`;
+
+      const dir = (Z80.dirFrame >> 7) & 1;
+      const frame = Z80.dirFrame & 3;
+      document.getElementById('val-85d0').textContent = `${toHex(Z80.dirFrame)} (b${Z80.dirFrame.toString(2).padStart(8, '0')})`;
+      document.getElementById('desc-85d0').textContent = `Facing ${dir ? 'LEFT' : 'RIGHT'} · Frame ${frame} (+${frame * 2}px)`;
+
+      const dy = Z80.airborne === 1 ? ((Z80.jumpCounter - 8) >> 1) : 0;
+      document.getElementById('val-85d1').textContent = `${toHex(Z80.jumpCounter)} (${Z80.jumpCounter}/18)`;
+      document.getElementById('desc-85d1').textContent = `dy = ((${Z80.jumpCounter} - 8) >> 1) = ${dy >= 0 ? '+' + dy : dy} px`;
+
+      const z80Y = (Z80.willyY * 2) & 0xFF;
+      const aligned = (Z80.willyY & 7) === 0;
+      document.getElementById('val-85d2').textContent = `${toHex(z80Y)} (Y=${Z80.willyY}px)`;
+      document.getElementById('desc-85d2').textContent = aligned ? 'Cell Aligned (2×2 = 4 cells)' : 'Straddling Row (2×3 = 6 cells!)';
+
+      document.getElementById('val-85d3').textContent = `${toHex(Z80.willyX)} (Col ${Z80.willyX})`;
+      document.getElementById('desc-85d3').textContent = `Sub-pixel X = ${Z80.willyX * 8 + frame * 2} px`;
+
+      const pageBase = 0xC000 + Z80.roomId * 0x100;
+      document.getElementById('val-8420').textContent = `${toHex(Z80.roomId)} (Rm ${Z80.roomId})`;
+      document.getElementById('desc-8420').textContent = `Page ${toHex(pageBase, 4)}–${toHex(pageBase + 0xFF, 4)}`;
+
+      for (let j = 0; j < 18; j++) {
+        const el = document.getElementById(`p-step-${j}`);
+        if (el) el.classList.toggle('current', Z80.airborne === 1 && Z80.jumpCounter === j);
+      }
+      document.getElementById('parabola-status').textContent = Z80.airborne === 1
+        ? `Jumping: Tick ${Z80.jumpCounter}/17 (dy = ${dy}px)`
+        : Z80.airborne >= 2
+          ? 'Falling Straight Down (+4px/tick)'
+          : 'Idle (Grounded)';
+
+      ['asm-airborne', 'asm-jump-calc', 'asm-jump-sra', 'asm-horiz', 'asm-ramp', 'asm-arrow'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.classList.toggle('active-branch', id === Z80.activeBranch);
+          if (id === 'asm-arrow') el.classList.toggle('bug-highlight', Z80.roomId === 42 && Z80.atticBugUnpatched);
+        }
+      });
+
+      renderHexDump(pageBase, ROOM_PAGES[Z80.roomId]);
+    }
+
+    function renderHexDump(pageBase, page) {
+      if (!page) return;
+      document.getElementById('hex-panel-title').textContent =
+        `Live 256-Byte Room Page (${toHex(pageBase, 4)} – ${toHex(pageBase + 0xFF, 4)})`;
+
+      const badge = document.getElementById('corrupt-badge');
+      if (CORRUPTED_BYTES.size > 0) {
+        badge.textContent = `⚠️ ATTIC BUG OVERFLOW: ${CORRUPTED_BYTES.size} BYTES CORRUPTED!`;
+        badge.style.color = '#ff8b8b';
+        badge.style.borderColor = '#ff3838';
+      } else {
+        badge.textContent = 'RAM Integrity: OK';
+        badge.style.color = 'var(--cyan)';
+        badge.style.borderColor = 'rgba(0, 240, 255, 0.25)';
+      }
+
+      let html = '';
+      for (let row = 0; row < 16; row++) {
+        const baseOffset = row * 16;
+        const addrStr = (pageBase + baseOffset).toString(16).toUpperCase().padStart(4, '0');
+        let bytesHtml = '';
+        let asciiStr = '';
+
+        for (let col = 0; col < 16; col++) {
+          const idx = baseOffset + col;
+          const b = page[idx];
+          const hex = b.toString(16).toUpperCase().padStart(2, '0');
+
+          let cls = 'hb ';
+          if (CORRUPTED_BYTES.has(idx)) cls += 'hb-corrupt';
+          else if (idx < 0x80) cls += 'hb-map';
+          else if (idx < 0xA0) cls += 'hb-name';
+          else if (idx < 0xD6) cls += 'hb-tiles';
+          else if (idx <= 0xDC) cls += 'hb-conv';
+          else if (idx >= 0xEA && idx <= 0xED) cls += 'hb-exits';
+          else if (idx >= 0xF0) cls += 'hb-guard';
+
+          bytesHtml += `<span class="${cls}">${hex}</span> `;
+          asciiStr += (b >= 32 && b <= 126) ? String.fromCharCode(b).replace(/[<>&]/g, '.') : '·';
+        }
+        html += `<div class="hex-row"><span class="hex-offset">${addrStr}:</span><span>${bytesHtml}</span><span class="hex-offset">${asciiStr}</span></div>`;
+      }
+      document.getElementById('hex-dump').innerHTML = html;
+    }
+
+    // =========================================================================
+    // 10. UI CONTROLS & BINARY .SNA SNAPSHOT PARSER
+    // =========================================================================
+    function togglePause() {
+      Z80.paused = !Z80.paused;
+      const btn = document.getElementById('btn-pause');
+      btn.textContent = Z80.paused ? '▶ Resume (P)' : '⏸ Pause (P)';
+      btn.classList.toggle('active', Z80.paused);
+    }
+
+    function stepSingleFrame() {
+      Z80.paused = true;
+      const btn = document.getElementById('btn-pause');
+      btn.textContent = '▶ Resume (P)';
+      btn.classList.add('active');
+      stepZ80Tick();
+      renderFrame();
+      updateTelemetry();
+    }
+
+    function toggleOverlay(key) {
+      OVERLAYS[key] = !OVERLAYS[key];
+      document.getElementById(`btn-${key}`).classList.toggle('active', OVERLAYS[key]);
+      renderFrame();
+    }
+
+    function toggleGodMode() {
+      Z80.godMode = !Z80.godMode;
+      const btn = document.getElementById('btn-god');
+      btn.textContent = Z80.godMode ? '🛡️ Invincible: ON' : '🛡️ Invincible: OFF';
+      btn.classList.toggle('active', Z80.godMode);
+    }
+
+    function toggleAtticBug() {
+      Z80.atticBugUnpatched = !Z80.atticBugUnpatched;
+      const btn = document.getElementById('btn-attic-bug');
+      const comment = document.getElementById('asm-arrow-comment');
+      if (Z80.atticBugUnpatched) {
+        btn.textContent = '🐛 1984 Attic Bug: UNPATCHED';
+        btn.classList.add('active');
+        comment.textContent = '; Attic Arrow Y-coord (0xB8) overflows screen table & corrupts Room RAM!';
+      } else {
+        btn.textContent = '✅ Attic Bug: PATCHED (POKE 37309,203)';
+        btn.classList.remove('active');
+        comment.textContent = '; Patched! Out-of-bounds arrow Y-coord clamped before writing to RAM.';
+        initDefaultRooms();
+      }
+      renderFrame();
+      updateTelemetry();
+    }
+
+    document.getElementById('sna-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      const toast = document.getElementById('engine-toast');
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const buf = new Uint8Array(ev.target.result);
+        if (buf.length === 49179) {
+          for (let rm = 0; rm <= 60; rm++) {
+            const pageStart = 27 + (0xC000 - 0x4000) + rm * 256;
+            const rawPage = buf.slice(pageStart, pageStart + 256);
+            rawPage._meta = {
+              id: rm,
+              convDir: rawPage[0xD6] & 3,
+              convRow: ((rawPage[0xD8] & 0x03) << 3) | (rawPage[0xD7] >> 5),
+              convCol: rawPage[0xD7] & 0x1F,
+              convLen: rawPage[0xD9],
+              rampDir: rawPage[0xDA] & 1,
+              rampRow: 14,
+              rampCol: 16,
+              rampLen: rawPage[0xDC],
+              spawn: { x: 4, y: 104, dir: 0 },
+              items: [],
+              guardians: []
+            };
+            ROOM_PAGES[rm] = rawPage;
+          }
+          loadRoom(33);
+          if (toast) toast.textContent = 'Loaded all 61 rooms (0xC000–0xFCFF) from 48K .SNA!';
+        } else {
+          if (toast) toast.textContent = 'Select an uncompressed 48K .SNA snapshot (49,179 bytes).';
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    // =========================================================================
+    // 11. CAMBRIDGE C1 PART 4 RIDDLE MODAL & WORD-CHIP FORGE
+    // =========================================================================
+    let activeRiddle = null;
+    let activeRiddleItem = null;
+    let activeChips = []; // Array of indices into activeRiddle.wordChips
+    let chipCursorIdx = 0;
+    let echoesStruck = false;
+
+    function getRiddleById(riddleId) {
+      return CUSTOM_RIDDLES[riddleId] || D.findRiddle(riddleId);
+    }
+
+    function openRiddleModal(riddleId, itemRef = null) {
+      const riddle = getRiddleById(riddleId);
+      if (!riddle) return;
+      activeRiddle = riddle;
+      activeRiddleItem = itemRef;
+      activeChips = [];
+      chipCursorIdx = 0;
+      echoesStruck = false;
+      Z80.modalPaused = true;
+
+      const rmMeta = D.findRoom(riddle.roomId);
+      const roomLabel = rmMeta ? `ROOM ${rmMeta.id} · ${rmMeta.shortName.toUpperCase()}` : `ROOM ${riddle.roomId} · CUSTOM BUILDER`;
+      document.getElementById('riddle-modal-kicker').textContent = `${roomLabel} · ${riddle.category.toUpperCase()} (${riddle.cefr})`;
+      document.getElementById('riddle-modal-title').textContent = riddle.itemName;
+      document.getElementById('riddle-tense-note').textContent = riddle.tenseHarmony;
+      document.getElementById('riddle-voice-note').textContent = riddle.voiceShift;
+      document.getElementById('riddle-keyword-badge').textContent = `KEY: ${riddle.keyword}`;
+      document.getElementById('riddle-s2-before').textContent = riddle.s2Before;
+      document.getElementById('riddle-s2-after').textContent = riddle.s2After;
+      document.getElementById('riddle-formula-code').textContent = riddle.formula;
+
+      const clue = D.findClueForRoom(riddle.roomId);
+      document.getElementById('riddle-audio-status').textContent = `${clue.title} ready`;
+      document.getElementById('riddle-audio-btn').textContent = '🎧 Play Room Audio Clue';
+
+      const s1Wrap = document.getElementById('riddle-s1-tokens');
+      s1Wrap.innerHTML = '';
+      riddle.s1Tokens.forEach((tk) => {
+        const span = document.createElement('span');
+        span.className = 's1-tok';
+        span.dataset.echo = tk.echo ? 'true' : 'false';
+        span.textContent = tk.text;
+        span.onclick = () => {
+          span.classList.toggle(tk.echo ? 'struck-echo' : 'isolated-deficit');
+        };
+        s1Wrap.appendChild(span);
+      });
+
+      const strikeBtn = document.getElementById('btn-strike-echoes');
+      strikeBtn.classList.remove('active');
+      strikeBtn.textContent = '✂️ Strike Out the Echoes';
+
+      const input = document.getElementById('riddle-text-input');
+      input.value = '';
+      document.getElementById('riddle-feedback').className = 'riddle-feedback hidden';
+      document.getElementById('riddle-feedback').textContent = '';
+      document.getElementById('riddle-model-drawer').classList.add('hidden');
+      document.getElementById('riddle-model-drawer').textContent = '';
+      document.getElementById('btn-resume-mansion').classList.add('hidden');
+
+      renderRiddleChips();
+      updateRiddleGuards();
+
+      document.getElementById('riddle-modal').classList.add('open');
+      if (!inSelfTest) input.focus();
+    }
+
+    function closeRiddleModal() {
+      document.getElementById('riddle-modal').classList.remove('open');
+      const audioEl = document.getElementById('jsw-clue-audio');
+      if (audioEl && !audioEl.paused) audioEl.pause();
+      Z80.modalPaused = false;
+      activeRiddle = null;
+      activeRiddleItem = null;
+    }
+
+    function toggleStrikeEchoes() {
+      echoesStruck = !echoesStruck;
+      const btn = document.getElementById('btn-strike-echoes');
+      btn.classList.toggle('active', echoesStruck);
+      btn.textContent = echoesStruck ? '✓ Echoes Struck Out' : '✂️ Strike Out the Echoes';
+      document.querySelectorAll('#riddle-s1-tokens .s1-tok').forEach((el) => {
+        el.classList.remove('struck-echo', 'isolated-deficit');
+        if (echoesStruck) {
+          el.classList.add(el.dataset.echo === 'true' ? 'struck-echo' : 'isolated-deficit');
+        }
+      });
+    }
+
+    function renderRiddleChips() {
+      if (!activeRiddle) return;
+      const tray = document.getElementById('riddle-chip-tray');
+      const bank = document.getElementById('riddle-chip-bank');
+      tray.innerHTML = '';
+      bank.innerHTML = '';
+
+      if (activeChips.length === 0) {
+        const placeholder = document.createElement('span');
+        placeholder.style.cssText = 'font-size:0.75rem;color:#64748b;font-family:var(--mono);';
+        placeholder.textContent = 'Click word chips below to forge your 3–6 word answer...';
+        tray.appendChild(placeholder);
+      } else {
+        activeChips.forEach((chipIdx, pos) => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'word-chip tray-chip';
+          b.textContent = activeRiddle.wordChips[chipIdx];
+          b.onclick = () => {
+            activeChips.splice(pos, 1);
+            syncInputFromChips();
+          };
+          tray.appendChild(b);
+        });
+      }
+
+      activeRiddle.wordChips.forEach((word, idx) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'word-chip';
+        if (activeChips.includes(idx)) b.classList.add('used');
+        if (idx === chipCursorIdx) b.classList.add('gp-focus');
+        b.dataset.chipIdx = String(idx);
+        b.dataset.chipWord = word;
+        b.textContent = word;
+        b.onclick = () => selectRiddleChip(idx);
+        bank.appendChild(b);
+      });
+    }
+
+    function selectRiddleChip(chipIdx) {
+      if (!activeRiddle || activeChips.includes(chipIdx)) return;
+      activeChips.push(chipIdx);
+      syncInputFromChips();
+    }
+
+    function undoLastRiddleChip() {
+      if (!activeRiddle || activeChips.length === 0) return false;
+      activeChips.pop();
+      syncInputFromChips();
+      return true;
+    }
+
+    function clearRiddleInput() {
+      activeChips = [];
+      document.getElementById('riddle-text-input').value = '';
+      renderRiddleChips();
+      updateRiddleGuards();
+    }
+
+    function syncInputFromChips() {
+      if (!activeRiddle) return;
+      const text = activeChips.map((i) => activeRiddle.wordChips[i]).join(' ');
+      document.getElementById('riddle-text-input').value = text;
+      renderRiddleChips();
+      updateRiddleGuards();
+    }
+
+    function updateRiddleGuards() {
+      if (!activeRiddle) return;
+      const val = document.getElementById('riddle-text-input').value;
+      const wc = D.countCambridgeWords(val);
+      const wcPill = document.getElementById('riddle-wc-pill');
+      const kwPill = document.getElementById('riddle-kw-pill');
+      const check = D.validatePart4Answer(val, activeRiddle.keyword);
+
+      wcPill.textContent = `${wc} / 3–6 words`;
+      wcPill.className = 'guard-pill ' + (wc >= 3 && wc <= 6 ? 'ok' : (wc > 0 ? 'bad' : ''));
+      kwPill.textContent = check.keywordOk ? `✓ ${activeRiddle.keyword} intact` : `Keyword: ${activeRiddle.keyword}`;
+      kwPill.className = 'guard-pill ' + (check.keywordOk ? 'ok' : (val.trim() ? 'bad' : ''));
+    }
+
+    document.getElementById('riddle-text-input').addEventListener('input', updateRiddleGuards);
+    document.getElementById('riddle-text-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitRiddleAnswer();
+      }
+    });
+
+    function revealRiddleModel() {
+      if (!activeRiddle) return;
+      const drawer = document.getElementById('riddle-model-drawer');
+      drawer.classList.remove('hidden');
+      drawer.innerHTML = `<strong>Cambridge Model:</strong> ${activeRiddle.targetAnswer}<br><span style="font-weight:500;">${activeRiddle.modelNote}</span>`;
+    }
+
+    function submitRiddleAnswer() {
+      if (!activeRiddle) return { pass: false };
+      const raw = document.getElementById('riddle-text-input').value;
+      const result = D.evaluateRiddleAnswer(activeRiddle, raw);
+      const fb = document.getElementById('riddle-feedback');
+      fb.className = 'riddle-feedback ' + (result.pass ? 'pass' : 'fail');
+      fb.textContent = (result.pass ? '✓ ' : '✗ ') + result.reason;
+
+      if (!inSelfTest && window.CandidateDossier && typeof window.CandidateDossier.recordAttempt === 'function') {
+        window.CandidateDossier.recordAttempt({
+          category: activeRiddle.dossierCategory || 'inversion',
+          game: 'Jet Set Willy C1 Mansion',
+          correct: result.pass,
+          prompt: activeRiddle.s1Tokens.map((t) => t.text).join(' '),
+          frame: `${activeRiddle.s2Before ? activeRiddle.s2Before + ' ' : ''}________ ${activeRiddle.s2After}`.trim(),
+          keyword: activeRiddle.keyword,
+          targetAnswer: activeRiddle.targetAnswer,
+          acceptedAnswers: activeRiddle.acceptedAnswers,
+          userAttempt: raw,
+          explanation: activeRiddle.modelNote
+        });
+      }
+
+      if (result.pass) {
+        SOLVED_RIDDLES.add(activeRiddle.id);
+        if (activeRiddleItem) activeRiddleItem.collected = true;
+        const page = ROOM_PAGES[Z80.roomId];
+        if (page && page._meta) {
+          page._meta.items.forEach((it) => {
+            if (it.riddleId === activeRiddle.id) it.collected = true;
+          });
+        }
+        Z80.itemsCollected = SOLVED_RIDDLES.size;
+        revealRiddleModel();
+        document.getElementById('btn-resume-mansion').classList.remove('hidden');
+        updateMinimapBadges();
+        renderRoomRelicPills();
+        renderFrame();
+        beep1Bit(1046, 90);
+        if (!inSelfTest && SOLVED_RIDDLES.size >= D.riddles.length && window.CandidateDossier && typeof window.CandidateDossier.recordGameCompletion === 'function') {
+          window.CandidateDossier.recordGameCompletion('Jet Set Willy C1 Mansion', SOLVED_RIDDLES.size, D.riddles.length);
+        }
+      } else {
+        beep1Bit(180, 140, 'sawtooth');
+      }
+      return result;
+    }
+
+    // =========================================================================
+    // 12. INTERACTIVE 8-BIT ROOM BUILDER + #room=<base64url> HASH SUPPORT
+    // =========================================================================
+    const BUILDER = {
+      brush: '.',
+      cursorCol: 4,
+      cursorRow: 13,
+      painting: false,
+      grid: Array.from({ length: 16 }, (_, r) =>
+        r === 15 ? '################################' : '................................'
+      ),
+      items: [{ col: 15, row: 11 }],
+      guardians: [{ col: 12, row: 13, minCol: 8, maxCol: 20 }]
+    };
+
+    const builderCanvas = document.getElementById('builder-canvas');
+    const builderCtx = builderCanvas.getContext('2d');
+
+    function toggleBuilderDrawer(forceOpen) {
+      const drawer = document.getElementById('room-builder-drawer');
+      const btn = document.getElementById('btn-toggle-builder');
+      const willOpen = typeof forceOpen === 'boolean' ? forceOpen : drawer.classList.contains('hidden');
+      drawer.classList.toggle('hidden', !willOpen);
+      btn.classList.toggle('active', willOpen);
+      if (willOpen) {
+        renderBuilderGrid();
+        validateBuilderRiddleFields();
+      }
+    }
+
+    document.querySelectorAll('#builder-brushes .brush-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        BUILDER.brush = btn.dataset.brush;
+        document.querySelectorAll('#builder-brushes .brush-btn').forEach((b) =>
+          b.classList.toggle('active', b === btn)
+        );
+      });
+    });
+
+    function clearBuilderGrid() {
+      BUILDER.grid = Array.from({ length: 16 }, (_, r) =>
+        r === 15 ? '################################' : '................................'
+      );
+      BUILDER.items = [];
+      BUILDER.guardians = [];
+      renderBuilderGrid();
+    }
+
+    function loadCurrentRoomIntoBuilder() {
+      const page = ROOM_PAGES[Z80.roomId];
+      if (!page) return;
+      for (let r = 0; r < 16; r++) {
+        let rowStr = '';
+        for (let c = 0; c < 32; c++) {
+          const t = getCellType(page, r, c);
+          rowStr += t === 2 ? '#' : t === 1 ? '=' : t === 3 ? '*' : t === 4 ? 'R' : t === 5 ? 'C' : '.';
+        }
+        BUILDER.grid[r] = rowStr;
+      }
+      BUILDER.items = (page._meta.items || []).map((it) => ({ col: it.col, row: it.row }));
+      BUILDER.guardians = (page._meta.guardians || [])
+        .filter((g) => g.kind === 'horizontal')
+        .map((g) => ({ col: g.col, row: g.y >> 3, minCol: g.minCol, maxCol: g.maxCol }));
+      let name = '';
+      for (let i = 0; i < 32; i++) name += String.fromCharCode(page[0x80 + i] || 32);
+      document.getElementById('b-room-name').value = name.trim() || 'Remixed Chamber';
+      document.getElementById('b-border').value = String(page[0xDD] & 7);
+      document.getElementById('b-conv-dir').value = String(page._meta.convDir === 2 ? 2 : 1);
+      document.getElementById('b-ramp-dir').value = String(page._meta.rampDir === 1 ? 1 : 0);
+      renderBuilderGrid();
+      document.getElementById('builder-status').textContent = `Copied Rm ${Z80.roomId} into builder.`;
+    }
+
+    function paintBuilderCell(col, row, brushOverride = null) {
+      if (col < 0 || col >= 32 || row < 0 || row >= 16) return;
+      const brush = brushOverride || BUILDER.brush;
+      if (brush === 'I') {
+        const existingIdx = BUILDER.items.findIndex((i) => i.col === col && i.row === row);
+        if (existingIdx >= 0) {
+          BUILDER.items.splice(existingIdx, 1);
+        } else {
+          if (BUILDER.items.length >= 2) BUILDER.items.shift();
+          BUILDER.items.push({ col, row });
+        }
+      } else if (brush === 'G') {
+        const existingIdx = BUILDER.guardians.findIndex((g) => g.col === col && g.row === row);
+        if (existingIdx >= 0) {
+          BUILDER.guardians.splice(existingIdx, 1);
+        } else {
+          if (BUILDER.guardians.length >= 4) BUILDER.guardians.shift();
+          BUILDER.guardians.push({
+            col,
+            row: Math.min(13, row),
+            minCol: Math.max(1, col - 5),
+            maxCol: Math.min(29, col + 5)
+          });
+        }
+      } else {
+        const rowArr = BUILDER.grid[row].split('');
+        rowArr[col] = brush;
+        BUILDER.grid[row] = rowArr.join('');
+      }
+      renderBuilderGrid();
+    }
+
+    function renderBuilderGrid() {
+      if (!builderCtx) return;
+      const cw = 16;
+      const ch = 16;
+      builderCtx.fillStyle = '#07090e';
+      builderCtx.fillRect(0, 0, 512, 256);
+
+      const palette = {
+        '.': '#07090e',
+        '=': '#00d7d7',
+        '#': '#d70000',
+        '*': '#facc15',
+        'R': '#38bdf8',
+        'C': '#f472b6'
+      };
+
+      for (let r = 0; r < 16; r++) {
+        for (let c = 0; c < 32; c++) {
+          const chCell = BUILDER.grid[r][c] || '.';
+          if (chCell !== '.') {
+            builderCtx.fillStyle = palette[chCell] || '#475569';
+            builderCtx.fillRect(c * cw + 1, r * ch + 1, cw - 2, ch - 2);
+          }
+          builderCtx.strokeStyle = 'rgba(255,255,255,0.08)';
+          builderCtx.lineWidth = 1;
+          builderCtx.strokeRect(c * cw + 0.5, r * ch + 0.5, cw, ch);
+        }
+      }
+
+      // Draw Items
+      BUILDER.items.forEach((it) => {
+        builderCtx.fillStyle = '#00ff66';
+        builderCtx.beginPath();
+        builderCtx.arc(it.col * cw + 8, it.row * ch + 8, 5, 0, Math.PI * 2);
+        builderCtx.fill();
+      });
+
+      // Draw Guardians
+      BUILDER.guardians.forEach((gd) => {
+        builderCtx.fillStyle = '#ff2a85';
+        builderCtx.fillRect(gd.col * cw + 2, gd.row * ch + 2, 12, 12);
+      });
+
+      // Draw Active Cursor
+      builderCtx.strokeStyle = '#00f0ff';
+      builderCtx.lineWidth = 2;
+      builderCtx.strokeRect(BUILDER.cursorCol * cw + 1, BUILDER.cursorRow * ch + 1, cw - 2, ch - 2);
+    }
+
+    function getCanvasCell(ev) {
+      const rect = builderCanvas.getBoundingClientRect();
+      const col = Math.max(0, Math.min(31, Math.floor(((ev.clientX - rect.left) / rect.width) * 32)));
+      const row = Math.max(0, Math.min(15, Math.floor(((ev.clientY - rect.top) / rect.height) * 16)));
+      return { col, row };
+    }
+
+    builderCanvas.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      BUILDER.painting = true;
+      const { col, row } = getCanvasCell(e);
+      BUILDER.cursorCol = col;
+      BUILDER.cursorRow = row;
+      paintBuilderCell(col, row);
+    });
+    builderCanvas.addEventListener('pointermove', (e) => {
+      if (!BUILDER.painting || BUILDER.brush === 'I' || BUILDER.brush === 'G') return;
+      const { col, row } = getCanvasCell(e);
+      BUILDER.cursorCol = col;
+      BUILDER.cursorRow = row;
+      paintBuilderCell(col, row);
+    });
+    window.addEventListener('pointerup', () => {
+      BUILDER.painting = false;
+    });
+
+    function validateBuilderRiddleFields() {
+      const kwEl = document.getElementById('b-riddle-kw');
+      const ansEl = document.getElementById('b-riddle-ans');
+      const kw = (kwEl.value || '').trim().toUpperCase();
+      const ans = ansEl.value || '';
+      const res = D.validatePart4Answer(ans, kw);
+      const wcPill = document.getElementById('b-wc-pill');
+      const kwPill = document.getElementById('b-kw-pill');
+      wcPill.textContent = `${res.wordCount} / 3–6 Cambridge words`;
+      wcPill.className = 'guard-pill ' + (res.wordCount >= 3 && res.wordCount <= 6 ? 'ok' : 'bad');
+      kwPill.textContent = res.keywordOk ? `✓ Keyword ${kw} intact` : res.reason;
+      kwPill.className = 'guard-pill ' + (res.keywordOk ? 'ok' : 'bad');
+      return res;
+    }
+
+    ['b-riddle-kw', 'b-riddle-ans'].forEach((id) => {
+      document.getElementById(id).addEventListener('input', validateBuilderRiddleFields);
+    });
+
+    function gatherBuilderSpec() {
+      return {
+        name: (document.getElementById('b-room-name').value || 'Custom C1 Chamber').trim().slice(0, 32),
+        border: Number(document.getElementById('b-border').value) & 7,
+        convDir: Number(document.getElementById('b-conv-dir').value) === 2 ? 2 : 1,
+        rampDir: Number(document.getElementById('b-ramp-dir').value) === 1 ? 1 : 0,
+        gridStrings: BUILDER.grid.slice(),
+        items: BUILDER.items.slice(0, 2),
+        guardians: BUILDER.guardians.slice(0, 4),
+        riddle: {
+          s1: document.getElementById('b-riddle-s1').value.trim(),
+          s2Before: document.getElementById('b-riddle-s2b').value.trim(),
+          s2After: document.getElementById('b-riddle-s2a').value.trim(),
+          keyword: document.getElementById('b-riddle-kw').value.trim().toUpperCase(),
+          targetAnswer: document.getElementById('b-riddle-ans').value.trim(),
+          formula: document.getElementById('b-riddle-formula').value.trim(),
+          modelNote: 'Built inside the 8-Bit Z80 Room Builder.'
+        }
+      };
+    }
+
+    function compileBuilderSpecIntoRAM(spec) {
+      const customRamps = [];
+      const customConveyors = [];
+      const cleanGrids = spec.gridStrings.map((rowStr, r) => {
+        let clean = '';
+        for (let c = 0; c < 32; c++) {
+          const ch = rowStr[c] || '.';
+          if (ch === 'R') {
+            customRamps.push(`${r},${c}`);
+            clean += '.';
+          } else if (ch === 'C') {
+            customConveyors.push(`${r},${c}`);
+            clean += '.';
+          } else {
+            clean += ch;
+          }
+        }
+        return clean;
+      });
+
+      const token = D.encodeCustomRoom(spec);
+      const decoded = D.decodeCustomRoom(token);
+      if (decoded && decoded.riddle) {
+        CUSTOM_RIDDLES['custom-riddle-1'] = decoded.riddle;
+      }
+
+      // Find safe spawn above floor
+      let spawn = { x: 4, y: 104, dir: 0 };
+      outer: for (let c = 2; c <= 28; c++) {
+        for (let r = 13; r >= 2; r--) {
+          const headClear = cleanGrids[r][c] === '.' && cleanGrids[r][c + 1] === '.' &&
+                            cleanGrids[r + 1][c] === '.' && cleanGrids[r + 1][c + 1] === '.';
+          const footSolid = cleanGrids[r + 2] && (cleanGrids[r + 2][c] === '#' || cleanGrids[r + 2][c] === '=');
+          if (headClear && footSolid) {
+            spawn = { x: c, y: r * 8, dir: 0 };
+            break outer;
+          }
+        }
+      }
+
+      ROOM_PAGES[45] = createRoomPage({
+        id: 45,
+        name: spec.name.padStart(Math.floor((32 + spec.name.length) / 2), ' '),
+        border: spec.border,
+        gridStrings: cleanGrids,
+        bgTile: { attr: 0x07, bitmap: [0, 0, 0, 0, 0, 0, 0, 0] },
+        floorTile: { attr: 0x05, bitmap: [0xFF, 0xAA, 0x55, 0xFF, 0, 0, 0, 0] },
+        wallTile: { attr: 0x16, bitmap: [0xFF, 0x80, 0x80, 0xFF, 0x08, 0x08, 0x08, 0xFF] },
+        nastyTile: { attr: 0x46, bitmap: [0x18, 0x3C, 0x7E, 0x18, 0x18, 0x3C, 0x7E, 0xFF] },
+        rampTile: { attr: 0x45, bitmap: [0x03, 0x06, 0x0C, 0x18, 0x30, 0x60, 0xC0, 0x80] },
+        convTile: { attr: 0x47, bitmap: [0xCC, 0x33, 0xFF, 0x7E, 0x7E, 0x3C, 0, 0] },
+        convDir: spec.convDir,
+        rampDir: spec.rampDir,
+        exits: [33, 33, 42, 33],
+        spawn,
+        customRamps,
+        customConveyors,
+        items: (decoded ? decoded.items : spec.items).map((it, idx) => ({
+          id: `custom-item-${idx + 1}`,
+          label: `Custom Relic ${idx + 1}`,
+          col: it.col,
+          row: it.row,
+          attr: 0x46,
+          riddleId: 'custom-riddle-1'
+        })),
+        guardians: decoded ? decoded.guardians : []
+      });
+
+      const customBtn = document.getElementById('btn-room-45');
+      const customLabel = document.getElementById('btn-room-45-name');
+      if (customBtn && customLabel) {
+        customBtn.classList.remove('hidden');
+        customLabel.textContent = spec.name || 'Custom Chamber';
+      }
+      return token;
+    }
+
+    function testBuilderRoomLive() {
+      const check = validateBuilderRiddleFields();
+      const status = document.getElementById('builder-status');
+      if (!check.valid) {
+        status.textContent = 'Fix Custom Riddle first: ' + check.reason;
+        status.style.color = '#ff8b8b';
+        return false;
+      }
+      const spec = gatherBuilderSpec();
+      compileBuilderSpecIntoRAM(spec);
+      loadRoom(45);
+      status.textContent = '✓ Custom room loaded into Z80 Page 45 (0xED00)!';
+      status.style.color = 'var(--green)';
+      return true;
+    }
+
+    function shareBuilderRoomUrl() {
+      const check = validateBuilderRiddleFields();
+      const status = document.getElementById('builder-status');
+      if (!check.valid) {
+        status.textContent = 'Fix Custom Riddle first: ' + check.reason;
+        status.style.color = '#ff8b8b';
+        return '';
+      }
+      const spec = gatherBuilderSpec();
+      const token = compileBuilderSpecIntoRAM(spec);
+      const url = window.location.href.split('#')[0] + '#room=' + token;
+      try {
+        history.replaceState(null, '', '#room=' + token);
+      } catch (_) {}
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).catch(() => {});
+      }
+      status.textContent = '✓ Shareable #room= URL updated & copied!';
+      status.style.color = 'var(--green)';
+      return url;
+    }
+
+    function applyRoomHashIfPresent() {
+      if (!window.location.hash || !window.location.hash.startsWith('#room=')) return false;
+      const decoded = D.decodeCustomRoom(window.location.hash);
+      if (!decoded) return false;
+      BUILDER.grid = decoded.gridStrings.slice();
+      BUILDER.items = decoded.items.map((it) => ({ col: it.col, row: it.row }));
+      BUILDER.guardians = decoded.guardians.map((g) => ({
+        col: g.col, row: g.row, minCol: g.minCol, maxCol: g.maxCol
+      }));
+      document.getElementById('b-room-name').value = decoded.name;
+      document.getElementById('b-border').value = String(decoded.border);
+      document.getElementById('b-conv-dir').value = String(decoded.convDir);
+      document.getElementById('b-ramp-dir').value = String(decoded.rampDir);
+      if (decoded.riddle) {
+        document.getElementById('b-riddle-s1').value = decoded.riddle.s1Tokens.map((t) => t.text).join(' ');
+        document.getElementById('b-riddle-s2b').value = decoded.riddle.s2Before;
+        document.getElementById('b-riddle-s2a').value = decoded.riddle.s2After;
+        document.getElementById('b-riddle-kw').value = decoded.riddle.keyword;
+        document.getElementById('b-riddle-ans').value = decoded.riddle.targetAnswer;
+        document.getElementById('b-riddle-formula').value = decoded.riddle.formula;
+      }
+      compileBuilderSpecIntoRAM(gatherBuilderSpec());
+      loadRoom(45);
+      return true;
+    }
+
+    // =========================================================================
+    // 13. LAN / XBOX SERIES X GAMEPAD POLLING
+    // =========================================================================
+    let prevGpButtons = {};
+    let lastGpCursorTick = 0;
+
+    function updateGamepadPill(pad) {
+      const pill = document.getElementById('gamepad-pill');
+      if (!pill) return;
+      if (pad) {
+        const label = (pad.id || 'Controller').split('(')[0].trim().slice(0, 22);
+        pill.textContent = `🎮 Pad Active: ${label}`;
+        pill.classList.remove('gamepad-ready');
+        pill.classList.add('gamepad-active');
+      } else {
+        pill.textContent = '🎮 Xbox / Gamepad Ready';
+        pill.classList.add('gamepad-ready');
+        pill.classList.remove('gamepad-active');
+      }
+    }
+
+    window.addEventListener('gamepadconnected', (e) => updateGamepadPill(e.gamepad));
+    window.addEventListener('gamepaddisconnected', () => updateGamepadPill(null));
+
+    function pollGamepads(now) {
+      if (!navigator.getGamepads) return;
+      const pads = navigator.getGamepads();
+      let pad = null;
+      for (let i = 0; i < pads.length; i++) {
+        if (pads[i] && pads[i].connected) {
+          pad = pads[i];
+          break;
+        }
+      }
+      if (!pad) {
+        GP_KEYS.left = false;
+        GP_KEYS.right = false;
+        GP_KEYS.jump = false;
+        return;
+      }
+      updateGamepadPill(pad);
+
+      const bPressed = (idx) => Boolean(pad.buttons[idx] && pad.buttons[idx].pressed);
+      const justPressed = (idx) => {
+        const cur = bPressed(idx);
+        const prev = Boolean(prevGpButtons[idx]);
+        prevGpButtons[idx] = cur;
+        return cur && !prev;
+      };
+
+      const axX = pad.axes[0] || 0;
+      const axY = pad.axes[1] || 0;
+      const dLeft = bPressed(14) || axX < -0.35;
+      const dRight = bPressed(15) || axX > 0.35;
+      const dUp = bPressed(12) || axY < -0.35;
+      const dDown = bPressed(13) || axY > 0.35;
+
+      const btnA = justPressed(0);
+      const btnB = justPressed(1);
+      const btnX = justPressed(2);
+      const btnY = justPressed(3);
+      const btnStart = justPressed(9);
+
+      if (btnStart) togglePause();
+
+      const riddleOpen = document.getElementById('riddle-modal').classList.contains('open');
+      const builderOpen = !document.getElementById('room-builder-drawer').classList.contains('hidden');
+
+      if (riddleOpen && activeRiddle) {
+        GP_KEYS.left = false; GP_KEYS.right = false; GP_KEYS.jump = false;
+        if (now - lastGpCursorTick > 160) {
+          if (dLeft) {
+            chipCursorIdx = (chipCursorIdx - 1 + activeRiddle.wordChips.length) % activeRiddle.wordChips.length;
+            renderRiddleChips();
+            lastGpCursorTick = now;
+          } else if (dRight) {
+            chipCursorIdx = (chipCursorIdx + 1) % activeRiddle.wordChips.length;
+            renderRiddleChips();
+            lastGpCursorTick = now;
+          }
+        }
+        if (btnA) {
+          if (!document.getElementById('btn-resume-mansion').classList.contains('hidden')) {
+            closeRiddleModal();
+          } else if (activeChips.includes(chipCursorIdx)) {
+            submitRiddleAnswer();
+          } else {
+            selectRiddleChip(chipCursorIdx);
+            const nextAvail = activeRiddle.wordChips.findIndex((_, i) => !activeChips.includes(i));
+            if (nextAvail >= 0) {
+              chipCursorIdx = nextAvail;
+              renderRiddleChips();
+            }
+          }
+        }
+        if (btnB) {
+          if (!undoLastRiddleChip()) closeRiddleModal();
+        }
+        if (btnX) playRoomAudioClue(activeRiddle.roomId);
+        if (btnY) toggleStrikeEchoes();
+        return;
+      }
+
+      if (builderOpen) {
+        GP_KEYS.left = false; GP_KEYS.right = false; GP_KEYS.jump = false;
+        if (now - lastGpCursorTick > 120) {
+          if (dLeft) { BUILDER.cursorCol = Math.max(0, BUILDER.cursorCol - 1); renderBuilderGrid(); lastGpCursorTick = now; }
+          if (dRight) { BUILDER.cursorCol = Math.min(31, BUILDER.cursorCol + 1); renderBuilderGrid(); lastGpCursorTick = now; }
+          if (dUp) { BUILDER.cursorRow = Math.max(0, BUILDER.cursorRow - 1); renderBuilderGrid(); lastGpCursorTick = now; }
+          if (dDown) { BUILDER.cursorRow = Math.min(15, BUILDER.cursorRow + 1); renderBuilderGrid(); lastGpCursorTick = now; }
+        }
+        if (btnA) paintBuilderCell(BUILDER.cursorCol, BUILDER.cursorRow);
+        if (btnB) paintBuilderCell(BUILDER.cursorCol, BUILDER.cursorRow, '.');
+        if (btnX) {
+          const order = ['.', '=', '#', '*', 'R', 'C', 'I', 'G'];
+          BUILDER.brush = order[(order.indexOf(BUILDER.brush) + 1) % order.length];
+          document.querySelectorAll('#builder-brushes .brush-btn').forEach((b) =>
+            b.classList.toggle('active', b.dataset.brush === BUILDER.brush)
+          );
+        }
+        if (btnY) toggleBuilderDrawer(false);
+        return;
+      }
+
+      GP_KEYS.left = dLeft;
+      GP_KEYS.right = dRight;
+      GP_KEYS.jump = bPressed(0) || dUp;
+      if (btnX) playRoomAudioClue();
+      if (btnY) toggleBuilderDrawer(true);
+    }
+
+    // Clean screen-share guard
+    function syncCleanScreenshare() {
+      let clean = false;
+      try {
+        if (localStorage.getItem('gm_teacher_clean_screenshare') === 'true') clean = true;
+        if (new URLSearchParams(window.location.search).get('wl') === '1') clean = true;
+      } catch (_) {}
+      if (clean) document.body.classList.add('gm-clean-screenshare');
+    }
+
+    // =========================================================================
+    // 14. ?selftest=1 VERIFICATION SUITE
+    // =========================================================================
+    async function runSelfTest() {
+      inSelfTest = true;
+      const checks = [];
+      const addCheck = (name, ok, detail) => checks.push({ name, pass: Boolean(ok), detail });
+
+      try {
+        // 1. DataTests
+        const dt = D.dataTests();
+        addCheck('JSW_MANSION_RIDDLES.dataTests()', dt.pass, dt.lines.join(' | '));
+
+        // 2. All 8 Rooms loaded in Z80 RAM as 256-byte pages
+        const roomIds = [33, 35, 42, 27, 28, 32, 18, 34];
+        const allPagesValid = roomIds.every((id) => {
+          const p = ROOM_PAGES[id];
+          return p instanceof Uint8Array && p.length === 256 && p._meta && p._meta.items.length === 2;
+        });
+        addCheck('8 Interconnected 256-Byte Z80 Rooms', allPagesValid, `Verified ${roomIds.length} pages with 16 items`);
+
+        // 3. Z80 14Hz Parabolic Jump Physics (Phase 2 arms jump; subsequent ticks trace dy)
+        loadRoom(33);
+        const startY = Z80.willyY;
+        KEYS.jump = true;
+        stepZ80Tick(); // Phase 2 arms airborne=1, jumpCounter=0
+        KEYS.jump = false;
+        const armedOk = Z80.airborne === 1 && Z80.jumpCounter === 0;
+        stepZ80Tick(); // Tick 0 of parabola: dy = -4
+        const tick0Ok = Z80.airborne === 1 && Z80.jumpCounter === 1 && Z80.willyY === startY - 4;
+        for (let t = 0; t < 7; t++) stepZ80Tick(); // Reach apex (j=8)
+        const apexOk = Z80.willyY === startY - 20;
+        const jumpOk = armedOk && tick0Ok && apexOk;
+        addCheck('Z80 14Hz Jump Parabola (dy=-4, apex=-20px)', jumpOk, `armed=${armedOk}, tick0Y=${startY - 4}, apexY=${Z80.willyY}`);
+
+        // 4. Attic Bug (0x91B6) & POKE 37309,203 Patch Toggle
+        loadRoom(42);
+        if (!Z80.atticBugUnpatched) toggleAtticBug();
+        stepZ80Tick();
+        const corruptedOk = CORRUPTED_BYTES.size > 0;
+        toggleAtticBug();
+        const patchedOk = !Z80.atticBugUnpatched && CORRUPTED_BYTES.size === 0;
+        toggleAtticBug(); // restore unpatched default
+        addCheck('Attic Bug 0x91B6 & POKE 37309,203', corruptedOk && patchedOk, `corrupted=${corruptedOk}, patched=${patchedOk}`);
+
+        // 5. Audio Clues (all 8 files resolve cleanly from current URL depth)
+        let audioOk = true;
+        const audioDetails = [];
+        for (const clue of D.audioClues) {
+          const url = await resolveClueAudioSrc(clue);
+          if (window.location.protocol.startsWith('http')) {
+            const resp = await fetch(url, { method: 'HEAD' });
+            if (!resp.ok) { audioOk = false; audioDetails.push(`${clue.file}: HTTP ${resp.status}`); }
+          } else if (!url || !url.startsWith('data:audio/mpeg;base64,')) {
+            audioOk = false;
+            audioDetails.push(`${clue.file}: missing file:// base64 bundle entry`);
+          }
+        }
+        addCheck('8 British Piper Audio Clues Reachable', audioOk, audioOk ? `All 8 MP3 paths valid (prefix="${ASSET_ROOT}")` : audioDetails.join('; '));
+
+        // 6. C1 Part 4 Riddle Modal, Strike Echoes, Chip Forge & Solver
+        openRiddleModal('jsw-33-1');
+        toggleStrikeEchoes();
+        const struckCount = document.querySelectorAll('#riddle-s1-tokens .s1-tok.struck-echo').length;
+        ['sooner', 'had', 'Willy', 'stepped'].forEach((tok) => {
+          const chipBtn = Array.from(document.querySelectorAll('#riddle-chip-bank .word-chip'))
+            .find((b) => b.dataset.chipWord === tok);
+          if (chipBtn) chipBtn.click();
+        });
+        const solveRes = submitRiddleAnswer();
+        revealRiddleModel();
+        const modalVisible = document.getElementById('riddle-modal').classList.contains('open');
+        const modelShown = !document.getElementById('riddle-model-drawer').classList.contains('hidden');
+        closeRiddleModal();
+        SOLVED_RIDDLES.clear();
+        addCheck('Riddle Modal + Echoes + Chip Forge + Reveal', solveRes.pass && struckCount > 0 && modalVisible && modelShown, `struck=${struckCount}, solve=${solveRes.pass}`);
+
+        // 7. Room Builder + Test Live + #room= Round-Trip
+        toggleBuilderDrawer(true);
+        paintBuilderCell(10, 12, '=');
+        const testLiveOk = testBuilderRoomLive() && Z80.roomId === 45 && ROOM_PAGES[45].length === 256;
+        const tok = D.encodeCustomRoom(gatherBuilderSpec());
+        const dec = D.decodeCustomRoom('#room=' + tok);
+        const roundTripOk = Boolean(dec && dec.gridStrings[12][10] === '=' && dec.riddle && dec.riddle.keyword === 'EXPECT');
+        toggleBuilderDrawer(false);
+        delete ROOM_PAGES[45];
+        document.getElementById('btn-room-45').classList.add('hidden');
+        addCheck('8-Bit Room Builder Live + #room= Round-Trip', testLiveOk && roundTripOk, `testLive=${testLiveOk}, roundTrip=${roundTripOk}`);
+
+        // 8. HTMLAudioElement British MP3 player check
+        const audioElCheck = document.getElementById('jsw-clue-audio') instanceof HTMLAudioElement;
+        addCheck('Native HTMLAudioElement Clue Engine', audioElCheck, 'Offline British Piper MP3 playback ready');
+      } catch (err) {
+        addCheck('Runtime Execution', false, err.message);
+      }
+
+      // Restore clean state
+      initDefaultRooms();
+      loadRoom(33);
+      Z80.ticks = 0;
+      Z80.itemsCollected = 0;
+      Z80.lives = 7;
+      Z80.paused = false;
+      Z80.modalPaused = false;
+      inSelfTest = false;
+
+      const pass = checks.every((c) => c.pass);
+      window.__SELFTEST_RESULT__ = { pass, checks };
+
+      const existingBanner = document.getElementById('selftest-banner');
+      if (existingBanner) existingBanner.remove();
+      const banner = document.createElement('pre');
+      banner.id = 'selftest-banner';
+      banner.dataset.pass = pass ? 'true' : 'false';
+      banner.textContent =
+        `JSW C1 MANSION SELFTEST: ${pass ? 'PASS' : 'FAIL'}\n` +
+        checks.map((c) => `${c.pass ? '[PASS]' : '[FAIL]'} ${c.name} — ${c.detail}`).join('\n');
+      document.body.prepend(banner);
+    }
+
+    // =========================================================================
+    // 15. BOOT ENGINE AT AUTHENTIC ~14 HZ Z80 GAME LOOP
+    // =========================================================================
+    syncCleanScreenshare();
+    initDefaultRooms();
+    if (!applyRoomHashIfPresent()) {
+      loadRoom(33);
+    }
+    renderBuilderGrid();
+    validateBuilderRiddleFields();
+    renderFrame();
+    updateTelemetry();
+
+    window.addEventListener('hashchange', applyRoomHashIfPresent);
+
+    setInterval(() => {
+      if (!Z80.paused && !Z80.modalPaused && !inSelfTest) {
+        stepZ80Tick();
+        renderFrame();
+        updateTelemetry();
+      }
+    }, 72);
+
+    function gamepadRafLoop(now) {
+      pollGamepads(now);
+      requestAnimationFrame(gamepadRafLoop);
+    }
+    requestAnimationFrame(gamepadRafLoop);
+
+    if (/[?&]selftest=1\b/.test(window.location.search)) {
+      if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', runSelfTest, { once: true });
+      } else {
+        runSelfTest();
+      }
+    }
+  </script>
+
+  <script src="analytics-funnel.js" defer></script>
+  <script src="dossier.js" defer></script>
+  <script src="course-bridge.js" defer></script>
+  <script src="analytics.js" defer></script>
+</body>
+</html>

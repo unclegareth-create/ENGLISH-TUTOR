@@ -77,10 +77,10 @@
     .slide-tag { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--navy-800); margin-bottom: 0.25rem; }
     .slide-title { font-size: 1.5rem; font-weight: 800; color: var(--navy-900); margin-bottom: 0.5rem; line-height: 1.25; }
     .slide-desc { font-size: 0.9rem; color: var(--ink-700); margin-bottom: 0.75rem; }
-    .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 0.75rem; }
-    .grid-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; margin-bottom: 0.75rem; }
+    .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 0.75rem; min-width: 0; }
+    .grid-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; margin-bottom: 0.75rem; min-width: 0; }
     @media (max-width: 820px) { .grid-2col, .grid-4col { grid-template-columns: 1fr; } }
-    .mini-card { background: #fff; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.83rem; }
+    .mini-card { background: #fff; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; font-size: 0.83rem; min-width: 0; max-width: 100%; overflow-wrap: break-word; }
     .mini-card.accent { border-color: var(--navy-800); background: var(--navy-50); }
     .mini-card.emerald { border-color: var(--emerald-border); background: var(--emerald-bg); }
     .mini-card.amber { border-color: var(--amber-border); background: var(--amber-bg); }
@@ -126,6 +126,16 @@
     .gauntlet-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; border-bottom: 1.5px solid var(--border); padding-bottom: 1.1rem; margin-bottom: 1.2rem; }
     .gauntlet-badge-bar { display: grid; grid-template-columns: repeat(10, 1fr); gap: 0.45rem; margin-bottom: 1.25rem; }
     @media (max-width: 820px) { .gauntlet-badge-bar { grid-template-columns: repeat(5, 1fr); } .gauntlet-panel { padding: 1.2rem 1rem; } }
+    @media (max-width: 560px) {
+      .top-hud { padding: 0.6rem 0.85rem; }
+      .slide-stage { padding: 0.85rem 0.65rem; }
+      .slide-viewport { padding: 1rem 0.9rem; min-height: auto; }
+      .gauntlet-section { padding: 0 0.65rem; }
+      .gauntlet-badge-bar { grid-template-columns: repeat(2, 1fr); }
+      .answer-input { min-width: 0; width: 100%; }
+      .hud-rule { white-space: normal; }
+      .check-btn, .reveal-btn, .desk-prefill-btn { white-space: normal; max-width: 100%; text-align: center; }
+    }
     .pat-chip { background: #f8fafc; border: 1.5px solid var(--border); border-radius: 8px; padding: 0.4rem 0.35rem; text-align: center; font-size: 0.72rem; font-weight: 800; color: var(--ink-500); transition: all 0.15s; cursor: pointer; }
     .pat-chip.m2 { background: var(--emerald-bg); border-color: var(--emerald-border); color: var(--emerald-text); }
     .pat-chip.m1 { background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber-text); }
@@ -142,7 +152,33 @@
     .key-guard-pill { font-family: 'Consolas', monospace; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--ink-500); }
     .key-guard-pill.ok { background: var(--emerald-bg); border-color: var(--emerald-border); color: var(--emerald-text); }
     .key-guard-pill.bad { background: var(--rose-bg); border-color: var(--rose-border); color: var(--rose-text); }
-    @media print { .top-hud, .nav-bar, .reveal-btn, .check-btn, .answer-row { display: none !important; } .slide { display: flex !important; page-break-after: always; } .solution { display: block !important; } }
+    .mint-inline-drawer { display: none; background: #fff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 0.65rem 0.8rem; margin-top: 0.2rem; }
+    .mint-inline-drawer.open { display: flex; flex-direction: column; gap: 0.45rem; }
+    .mint-inline-label { font-size: 0.75rem; font-weight: 800; color: var(--navy-900); }
+    .mint-inline-cue { font-size: 0.73rem; color: var(--ink-700); }
+    .mint-panel { background: var(--paper-bg); border: 2px solid var(--navy-800); border-radius: 14px; padding: 1.8rem 2.2rem; box-shadow: 0 12px 32px rgba(15,37,87,0.08); margin-top: 1.4rem; }
+    .mint-controls-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-top: 0.75rem; }
+    .mint-select, .desk-input, .mint-textarea, .desk-textarea { width: 100%; max-width: 100%; min-width: 0; padding: 0.55rem 0.75rem; border: 1.5px solid #93c5fd; border-radius: 8px; font-size: 0.88rem; color: var(--ink-900); background: #fff; font-family: inherit; }
+    .mint-select:focus, .desk-input:focus, .mint-textarea:focus, .desk-textarea:focus { outline: none; border-color: var(--navy-700); box-shadow: 0 0 0 3px rgba(29,78,216,0.12); }
+    .mint-blueprint-callout { background: var(--navy-50); border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.65rem 0.85rem; font-size: 0.82rem; color: var(--navy-900); }
+    .desk-card { background: var(--emerald-bg); border: 2px solid var(--emerald-border); border-radius: 14px; padding: 1.8rem 2.2rem; box-shadow: 0 12px 32px rgba(6,95,70,0.08); margin-top: 1.4rem; }
+    .desk-kicker { display: inline-block; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: var(--emerald-text); margin-bottom: 0.35rem; }
+    .desk-prefill-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; margin: 0.85rem 0 1rem; padding: 0.75rem 0.9rem; background: #fff; border: 1px solid #a7f3d0; border-radius: 10px; }
+    .desk-prefill-btn { background: var(--navy-900); color: #fff; border: none; padding: 0.48rem 0.9rem; border-radius: 7px; font-size: 0.78rem; font-weight: 700; cursor: pointer; }
+    .desk-prefill-btn:hover { background: var(--navy-700); }
+    .desk-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 0.75rem; }
+    .desk-field { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.75rem; }
+    .desk-field label { font-size: 0.8rem; font-weight: 700; color: var(--ink-900); }
+    .desk-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
+    .desk-submit-btn { background: var(--emerald-text); color: #fff; border: none; padding: 0.62rem 1.25rem; border-radius: 999px; font-size: 0.86rem; font-weight: 800; cursor: pointer; }
+    .desk-submit-btn:hover { background: #047857; }
+    .desk-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .desk-status-ok { display: none; margin-top: 0.75rem; padding: 0.8rem 1rem; background: #fff; border: 1.5px solid var(--emerald-border); border-radius: 8px; color: var(--emerald-text); font-size: 0.85rem; font-weight: 700; }
+    .desk-status-ok.visible { display: block; }
+    .desk-status-err { display: none; margin-top: 0.75rem; padding: 0.8rem 1rem; background: var(--rose-bg); border: 1.5px solid var(--rose-border); border-radius: 8px; color: var(--rose-text); font-size: 0.85rem; font-weight: 700; }
+    .desk-status-err.visible { display: block; }
+    @media (max-width: 720px) { .desk-grid-2 { grid-template-columns: 1fr; } .mint-panel, .desk-card { padding: 1.2rem 1rem; } }
+    @media print { .top-hud, .nav-bar, .reveal-btn, .check-btn, .answer-row, .mint-inline-drawer, .desk-card { display: none !important; } .slide { display: flex !important; page-break-after: always; } .solution { display: block !important; } }
   </style>
 </head>
 <body>
@@ -246,6 +282,9 @@
             <p style="font-size: 0.84rem; color: var(--ink-700); margin-bottom: 0.55rem;" id="fp-ceiling-summary"></p>
             <div class="fp-skill-grid" id="fp-skill-grid"></div>
             <div class="mini-card accent" style="font-size: 0.81rem;" id="fp-recommendation-box"></div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.65rem;">
+              <button type="button" class="check-btn" onclick="prefillAndScrollToDesk('fingerprint')">Send My (L, R) Fingerprint &amp; a Sentence to Gareth's Desk &darr;</button>
+            </div>
           </div>
         </div>
       </div>
@@ -695,6 +734,89 @@
         <!-- Populated by renderGauntlet() -->
       </div>
     </div>
+
+    <!-- MINT YOUR OWN C1/C2 SENTENCE: OPEN-PRODUCTION PANEL -->
+    <div class="mint-panel" id="mint-production-panel" aria-labelledby="mint-panel-title">
+      <div class="slide-tag">✍️ Open Production &bull; From Closed Drill to Original Writing</div>
+      <h2 class="slide-title" id="mint-panel-title" style="margin-bottom: 0.35rem;">Mint Your Own C1/C2 Sentence</h2>
+      <p class="slide-desc" style="margin-bottom: 0.55rem;">
+        Spotting a transformation in a gap exercise is only half the job; using the frame inside a real sentence proves you own it. Pick one of the Top-10 patterns below and write <strong>1 original academic or workplace sentence</strong> of at least <strong>8 words</strong>.
+      </p>
+
+      <div class="mint-controls-grid">
+        <div>
+          <label for="mint-pattern-select" style="display:block; font-size:0.78rem; font-weight:800; color:var(--navy-900); margin-bottom:0.3rem;">Target Top-10 Pattern</label>
+          <select id="mint-pattern-select" class="mint-select" onchange="updateMintBlueprint()"></select>
+        </div>
+
+        <div class="mint-blueprint-callout" id="mint-blueprint-callout"></div>
+
+        <div>
+          <label for="mint-sentence-input" style="display:block; font-size:0.78rem; font-weight:800; color:var(--navy-900); margin-bottom:0.3rem;">Your Original Academic / Workplace Sentence (&ge; 8 words)</label>
+          <textarea id="mint-sentence-input" class="mint-textarea" rows="2" oninput="updateMintWordCount()" placeholder="Write one original sentence from your studies, work, or IELTS/CPE topic deploying the target phrase..."></textarea>
+        </div>
+
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.55rem;">
+          <span class="wc" id="mint-wc-pill">0 words</span>
+          <button type="button" class="check-btn" id="mint-check-btn" onclick="checkMainMintSentence()">✓ Check Key Structure &amp; Length</button>
+          <button type="button" class="reveal-btn" onclick="prefillAndScrollToDesk('mint')">Send Minted Sentence to My Desk &darr;</button>
+        </div>
+
+        <div class="grade-feedback" id="mint-feedback"></div>
+      </div>
+    </div>
+
+    <!-- INLINE BELFAST DESK FORMSPREE CARD -->
+    <div class="desk-card" id="belfast-desk-card" aria-labelledby="cpe-desk-title">
+      <span class="desk-kicker">Free 24-Hour Red-Pen Note &bull; Gareth Montgomery, Northern Ireland</span>
+      <h2 class="slide-title" id="cpe-desk-title" style="margin-bottom: 0.35rem;">Drop a 1/2 Split or Your Minted Sentence Across My Desk</h2>
+      <p class="slide-desc" style="margin-bottom: 0.4rem;">
+        An automated check can confirm word count and key phrases, but it cannot tell you whether your alternative paraphrase holds full Cambridge marks or whether your original sentence sounds natural in context. Attach your profile and write below &mdash; I read every note from my desk in Northern Ireland and reply within 24 hours, free with no booking needed.
+      </p>
+
+      <div class="desk-prefill-bar">
+        <button type="button" class="desk-prefill-btn" id="cpe-prefill-desk-btn" onclick="prefillCpeDesk()">Attach My (L, R) Fingerprint, Missed Items &amp; Minted Sentence</button>
+        <span id="cpe-prefill-note" style="font-size:0.78rem; color:var(--ink-700); font-weight:600;">One click loads your Syntactic Fingerprint, any 0/2 or 1/2 drills, and your minted sentence.</span>
+      </div>
+
+      <form id="cpe-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST">
+        <input type="hidden" name="_subject" value="Free 24h Desk Note (CPE Part 4 Top 10 Patterns)" />
+        <input type="hidden" name="source_page" value="cpe-part4-top-10-patterns.html" />
+        <input type="hidden" id="cpe-desk-fp-hidden" name="fingerprint_result" value="" />
+        <input type="hidden" id="cpe-desk-split-hidden" name="split_scores" value="" />
+        <input type="hidden" id="cpe-desk-missed-hidden" name="missed_items" value="" />
+        <input type="hidden" id="cpe-desk-minted-hidden" name="minted_sentence" value="" />
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
+
+        <div class="desk-grid-2">
+          <div class="desk-field" style="margin-bottom:0;">
+            <label for="cpe-desk-name">First Name (Optional)</label>
+            <input id="cpe-desk-name" class="desk-input" name="name" type="text" autocomplete="name" placeholder="Your first name" />
+          </div>
+          <div class="desk-field" style="margin-bottom:0;">
+            <label for="cpe-desk-email">Email Address</label>
+            <input id="cpe-desk-email" class="desk-input" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+          </div>
+        </div>
+
+        <div class="desk-field">
+          <label for="cpe-desk-message">Your Missed Part 4 Attempt(s), (L, R) Profile &amp; Minted Sentence</label>
+          <textarea id="cpe-desk-message" class="desk-textarea" name="message" rows="5" required placeholder="Click the attach button above, or paste up to 3 Part 4 items or your minted C1/C2 sentence here..."></textarea>
+        </div>
+
+        <div class="desk-actions">
+          <p style="font-size:0.78rem; color:var(--ink-700);">
+            Read personally by Gareth Montgomery &middot; <a href="how-i-mark.html" style="color:var(--navy-800); font-weight:700;">How I mark writing</a> &middot; <a href="index.html#contact" style="color:var(--navy-800); font-weight:700;">Book starter (&pound;35)</a>
+          </p>
+          <button id="cpe-desk-submit-btn" class="desk-submit-btn" type="submit">Send for Free 24h Desk Note &rarr;</button>
+        </div>
+
+        <div id="cpe-desk-success" class="desk-status-ok" role="status" aria-live="polite">
+          &#10003; Sent! I have received your Part 4 profile and sentence at my desk in Northern Ireland and will reply within 24 hours.
+        </div>
+        <div id="cpe-desk-error" class="desk-status-err" role="status" aria-live="polite"></div>
+      </form>
+    </div>
   </section>
 
   <script>
@@ -735,7 +857,7 @@
       if (!fpCurrentItem) resetFingerprint();
     }
     document.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT') return;
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT' || e.target.isContentEditable) return;
       if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
       else if (e.key === 'ArrowLeft') prevSlide();
     });
@@ -1222,14 +1344,23 @@
       } else if (winner.state[3] === 0) {
         recBox.innerHTML = '<strong>Gareth’s Next Step for You:</strong> Your noun and passive frames are working well, so focus next on <strong>Negative Inversions &amp; C2 Conditionals</strong> on <strong>Slides 9 and 10</strong> (<em>At no time, On no account, But for</em>).';
       } else {
-        recBox.innerHTML = '<strong>Gareth’s Next Step for You:</strong> All five core syntactic families are firing cleanly. Test your stamina across all 20 past-paper transformations on <strong>Slides 2 to 11</strong> to lock in a 36+/40 score.';
+        recBox.innerHTML = '<strong>Gareth’s Next Step for You:</strong> All five core syntactic families are firing cleanly. Test your stamina across all 20 past-paper transformations on <strong>Slides 2 to 11</strong> to aim for a 36+/40 score.';
       }
+      fpLatestReport = {
+        cefr: winner.cefr,
+        confPct: confPct,
+        tupleSummary: tupleSummary,
+        skills: FP_SKILLS.map((sk, k) => sk.name + ': ' + (winner.state[k] === 1 ? 'Established' : 'Priority Drill') + ' (' + Math.round(skillProbs[k] * 100) + '%)')
+      };
     }
+
+    let fpLatestReport = null;
 
     function resetFingerprint() {
       fpHistory = [];
       fpCurrentItem = null;
       fpAwaitingNext = false;
+      fpLatestReport = null;
       renderFingerprintStep();
     }
 
@@ -1372,11 +1503,11 @@
       }
     ];
 
-    let mgState = { answers: {}, vectors: {}, echo: {} };
+    let mgState = { answers: {}, vectors: {}, echo: {}, minted: {} };
     try {
       const savedMg = JSON.parse(localStorage.getItem(MG_STORAGE_KEY) || 'null');
       if (savedMg && typeof savedMg === 'object') {
-        ['answers', 'vectors', 'echo'].forEach(k => {
+        ['answers', 'vectors', 'echo', 'minted'].forEach(k => {
           if (savedMg[k] && typeof savedMg[k] === 'object') mgState[k] = savedMg[k];
         });
       }
@@ -1444,7 +1575,13 @@
       const fb = document.getElementById('mg-fb-' + id);
       fb.className = 'grade-feedback ' + res.cls;
       fb.textContent = res.msg;
-      document.getElementById('mg-card-' + id).classList.toggle('mastered', res.mL + res.mR === 2);
+      const mastered = (res.mL + res.mR) === 2;
+      document.getElementById('mg-card-' + id).classList.toggle('mastered', mastered);
+      const mintBox = document.getElementById('mg-mint-' + id);
+      if (mintBox) {
+        const hasSavedMint = Boolean(mgState.minted && mgState.minted[id] && mgState.minted[id].trim());
+        mintBox.classList.toggle('open', !mastered || hasSavedMint);
+      }
     }
 
     function checkGauntletItem(id, silent) {
@@ -1543,6 +1680,16 @@
           '<div class="grade-feedback" id="mg-fb-' + it.id + '"></div>' +
           '<div class="solution" id="mg-sol-' + it.id + '">' + it.s2Pre + '<strong>' + it.model[0] + ' <span class="split">|</span> ' + it.model[1] + '</strong>' + it.s2Post +
             ' <span class="count">(' + modelCount + ' words)</span></div>' +
+          '<div class="mint-inline-drawer" id="mg-mint-' + it.id + '">' +
+            '<div class="mint-inline-label">✍️ Missed this pattern? Write 1 original sentence using it (&ge;8 words):</div>' +
+            '<div class="mint-inline-cue">Target frame: <strong>' + (MINT_PATTERNS[it.id - 1] ? MINT_PATTERNS[it.id - 1].shortCue : it.key) + '</strong></div>' +
+            '<div class="answer-row" style="margin-top:0.15rem;">' +
+              '<input type="text" class="answer-input" id="mg-mint-inp-' + it.id + '" oninput="mgSaveInlineMint(' + it.id + ')" onkeydown="if(event.key===\'Enter\')checkInlineMint(' + it.id + ')" placeholder="Write 1 original sentence from your work or studies...">' +
+              '<button type="button" class="check-btn" onclick="checkInlineMint(' + it.id + ')">✓ Check</button>' +
+              '<button type="button" class="reveal-btn" onclick="prefillAndScrollToDesk(\'gauntlet\', ' + it.id + ')">Send to Desk &darr;</button>' +
+            '</div>' +
+            '<div class="grade-feedback" id="mg-mint-fb-' + it.id + '"></div>' +
+          '</div>' +
         '</div>';
       }).join('');
 
@@ -1550,6 +1697,15 @@
         const inp = document.getElementById('mg-input-' + it.id);
         const saved = mgState.answers[it.id];
         if (typeof saved === 'string') inp.value = saved;
+        const mintInp = document.getElementById('mg-mint-inp-' + it.id);
+        const savedMint = mgState.minted && mgState.minted[it.id];
+        if (mintInp && typeof savedMint === 'string') {
+          mintInp.value = savedMint;
+          if (savedMint.trim()) {
+            const mintBox = document.getElementById('mg-mint-' + it.id);
+            if (mintBox) mintBox.classList.add('open');
+          }
+        }
         mgUpdateLive(it.id);
         if (mgState.echo[it.id]) toggleGauntletEcho(it.id, true);
         const v = mgState.vectors[it.id];
@@ -1561,17 +1717,357 @@
     }
 
     function resetGauntlet() {
-      mgState = { answers: {}, vectors: {}, echo: {} };
+      mgState = { answers: {}, vectors: {}, echo: {}, minted: {} };
       try { localStorage.removeItem(MG_STORAGE_KEY); } catch (e) {}
       const allBtn = document.getElementById('mg-strike-all-btn');
       if (allBtn) allBtn.textContent = '✂️ Strike Out All 10 Echoes';
       renderGauntlet();
     }
 
-    // Initialise HUD score, adaptive diagnostic and Mastery Gauntlet on page load
+    // =========================================================================
+    // MINT YOUR OWN C1/C2 SENTENCE & INLINE BELFAST DESK HANDOFF
+    // =========================================================================
+    const MINT_PATTERNS = [
+      {
+        id: 1,
+        label: 'P1 · Negative Noun Frame (no desire to / no intention of / no sign of / no resemblance to)',
+        shortCue: 'have/had no desire to · have/had no intention of + -ing · show no sign of · bear no resemblance to',
+        example: 'Senior managers had no intention of delaying the audit beyond Friday.',
+        rx: /\b(?:have|has|had|having|show|shows|showed|shown|give|gives|gave|given|display|displays|displayed|with|is|are|was|were)\s+(?:no|little)\s+(?:desire\s+to|intention\s+of|sign\s+of)\b|\b(?:bear|bears|bore|borne)\s+(?:no|little)\s+resemblance\s+to\b/i
+      },
+      {
+        id: 2,
+        label: 'P2 · Probability, Demand & Obligation (little demand for / little prospect of / under no obligation to)',
+        shortCue: 'little/no demand for · little/no prospect of · under no obligation to',
+        example: 'There is little demand for printed timetables among daily commuters.',
+        rx: /\b(?:little|no|slim|scant|growing|strong|limited)\s+(?:demand\s+for|prospect\s+of)\b|\bunder\s+no\s+obligation\s+to\b/i
+      },
+      {
+        id: 3,
+        label: 'P3 · Clause-to-Noun Shift (the failure of / a lack of / in the absence of)',
+        shortCue: 'the failure of [noun] · a lack of [noun] · in the absence of',
+        example: 'Residents grew frustrated by the failure of the council to repair the bridge.',
+        rx: /\bthe\s+failure\s+of\b|\b(?:a|the)\s+lack\s+of\b|\bin\s+the\s+absence\s+of\b/i
+      },
+      {
+        id: 4,
+        label: 'P4 · Fixed Passive Idiom (put/placed in charge of / taken into account)',
+        shortCue: 'put/placed in charge of · taken into account',
+        example: 'Regional travel costs must be taken into account before approving the grant.',
+        rx: /\b(?:put|placed|is|are|was|were|be|been)\s+in\s+charge\s+of\b|\btaken\s+into\s+account\b/i
+      },
+      {
+        id: 5,
+        label: 'P5 · Set Expression (take no notice of / at a complete loss / to the best of my knowledge)',
+        shortCue: 'take/took no notice of · at a complete loss · to the best of my knowledge',
+        example: 'New interns often take no notice of minor formatting rules until review week.',
+        rx: /\b(?:take|takes|took|taken|taking)\s+(?:no|little)\s+notice\s+of\b|\bat\s+a\s+(?:complete\s+|total\s+)?loss\b|\bto\s+the\s+best\s+of\s+(?:my|our|his|her|their)\s+knowledge\b/i
+      },
+      {
+        id: 6,
+        label: 'P6 · Phrasal Verb + Passive (be put off / called off / ruled out / taken in by)',
+        shortCue: 'be/been/was/were put off · called off · ruled out · drawn up · taken in',
+        example: 'The regional consultation has been put off until the final figures arrive.',
+        rx: /\b(?:is|are|was|were|be|been|being)\s+(?:repeatedly\s+|indefinitely\s+|temporarily\s+|finally\s+)?(?:put\s+off|called\s+off|ruled\s+out|drawn\s+up|carried\s+out|taken\s+in)\b/i
+      },
+      {
+        id: 7,
+        label: 'P7 · Verb + Dependent Preposition (dismissed as / object to / restricted to)',
+        shortCue: 'dismissed [sth] as · object/objected to · restricted to',
+        example: 'Early safety warnings were dismissed as alarmist by the regional board.',
+        rx: /\bdismiss(?:ed|es|ing)?\b[\s\S]{1,35}\bas\b|\bobject(?:ed|s|ing)?\s+to\b|\brestrict(?:ed|s)?\s+to\b/i
+      },
+      {
+        id: 8,
+        label: 'P8 · C2 Conditional (Had it not been for / Were it not for / But for)',
+        shortCue: 'Had it not been for · Were it not for · But for',
+        example: 'Had it not been for her calm mentoring, I would have left the programme.',
+        rx: /\bhad\s+it\s+not\s+been\s+for\b|\bwere\s+it\s+not\s+for\b|\bbut\s+for\b/i
+      },
+      {
+        id: 9,
+        label: 'P9 · Negative & Limiting Inversion (Little did / At no time did / On no account must / Under no circumstances should)',
+        shortCue: 'Little did [subject]... · At no time did/was... · On no account must/should... · No sooner had...',
+        example: 'Little did the committee realise how swiftly local opposition would grow.',
+        rx: /\b(?:little|at\s+no\s+time|on\s+no\s+account|under\s+no\s+circumstances|seldom|rarely|never|no\s+sooner)\s+(?:did|do|does|had|has|have|was|were|is|are|can|could|should|must|will|would)\s+[a-z]/i
+      },
+      {
+        id: 10,
+        label: 'P10 · Passive Reporting + Perfect Infinitive (is/are/was/were thought/believed/rumoured/alleged/said to have)',
+        shortCue: 'is/are thought/believed/rumoured/alleged/said to have + V3',
+        example: 'The medieval bridge is thought to have collapsed during an autumn flood.',
+        rx: /\b(?:is|are|was|were)\s+(?:widely\s+)?(?:thought|believed|rumoured|rumored|alleged|said|reported|known)\s+to\s+have\b/i
+      }
+    ];
+
+    let latestMintedRecord = null;
+
+    function countPlainWords(txt) {
+      const cleaned = (txt || '').trim();
+      if (!cleaned) return 0;
+      return cleaned.split(/\s+/).filter(Boolean).length;
+    }
+
+    function validateMintSentence(patternId, rawText) {
+      const pat = MINT_PATTERNS.find(p => p.id === Number(patternId)) || MINT_PATTERNS[0];
+      const trimmed = (rawText || '').trim();
+      const wc = countPlainWords(trimmed);
+      if (!trimmed) {
+        return { ok: false, cls: 'm0', msg: 'Write one complete academic or workplace sentence first (at least 8 words).' };
+      }
+      if (wc < 8) {
+        return { ok: false, cls: 'm0', msg: 'Too short (' + wc + ' words). Write a full academic or workplace sentence of at least 8 words.' };
+      }
+      const normUser = normText(trimmed);
+      if (normUser === normText(pat.example)) {
+        return { ok: false, cls: 'm0', msg: 'That copies the example sentence. Write your own original sentence from your studies or work.' };
+      }
+      const drill = MG_ITEMS.find(it => it.id === pat.id);
+      if (drill) {
+        const plainS1 = normText(drill.s1.replace(/\[\[|\]\]|\{\{|\}\}/g, ''));
+        const plainModel = normText(drill.s2Pre + drill.model.join(' ') + drill.s2Post);
+        if (normUser === plainS1 || normUser === plainModel) {
+          return { ok: false, cls: 'm0', msg: 'That repeats the drill sentence above. Write your own original sentence.' };
+        }
+      }
+      if (!pat.rx.test(trimmed)) {
+        return {
+          ok: false,
+          cls: 'm1',
+          msg: 'Length is fine (' + wc + ' words), but the target frame is missing or un-inverted. Deploy one of: ' + pat.shortCue
+        };
+      }
+      return {
+        ok: true,
+        cls: 'm2',
+        msg: '✓ Structure & length verified (' + wc + ' words). An automated check cannot judge tone, prepositions, or natural register — send it to my desk below if you want a 24h human check.'
+      };
+    }
+
+    function populateMintPanel() {
+      const sel = document.getElementById('mint-pattern-select');
+      if (!sel) return;
+      sel.innerHTML = MINT_PATTERNS.map(p => '<option value="' + p.id + '">' + p.label + '</option>').join('');
+      updateMintBlueprint();
+    }
+
+    function updateMintBlueprint() {
+      const sel = document.getElementById('mint-pattern-select');
+      const box = document.getElementById('mint-blueprint-callout');
+      if (!sel || !box) return;
+      const pat = MINT_PATTERNS.find(p => p.id === Number(sel.value)) || MINT_PATTERNS[0];
+      box.innerHTML = '<strong>Required structural cue:</strong> ' + pat.shortCue + '<br><span style="color:var(--ink-700);"><em>Model idea:</em> "' + pat.example + '"</span>';
+    }
+
+    function updateMintWordCount() {
+      const inp = document.getElementById('mint-sentence-input');
+      const pill = document.getElementById('mint-wc-pill');
+      if (!inp || !pill) return;
+      const wc = countPlainWords(inp.value);
+      pill.textContent = wc + (wc === 1 ? ' word' : ' words');
+      pill.className = 'wc' + (wc === 0 ? '' : (wc >= 8 ? ' ok' : ' bad'));
+    }
+
+    function checkMainMintSentence() {
+      const sel = document.getElementById('mint-pattern-select');
+      const inp = document.getElementById('mint-sentence-input');
+      const fb = document.getElementById('mint-feedback');
+      if (!sel || !inp || !fb) return;
+      const pat = MINT_PATTERNS.find(p => p.id === Number(sel.value)) || MINT_PATTERNS[0];
+      const res = validateMintSentence(pat.id, inp.value);
+      fb.className = 'grade-feedback ' + res.cls;
+      fb.textContent = res.msg;
+      if (inp.value.trim()) {
+        latestMintedRecord = { pattern: pat.label, sentence: inp.value.trim(), checkNote: res.msg };
+      }
+    }
+
+    function mgSaveInlineMint(id) {
+      const inp = document.getElementById('mg-mint-inp-' + id);
+      if (!inp) return;
+      mgState.minted = mgState.minted || {};
+      mgState.minted[id] = inp.value;
+      mgSave();
+    }
+
+    function checkInlineMint(id) {
+      const inp = document.getElementById('mg-mint-inp-' + id);
+      const fb = document.getElementById('mg-mint-fb-' + id);
+      if (!inp || !fb) return;
+      const pat = MINT_PATTERNS.find(p => p.id === Number(id)) || MINT_PATTERNS[0];
+      const res = validateMintSentence(pat.id, inp.value);
+      fb.className = 'grade-feedback ' + res.cls;
+      fb.textContent = res.msg;
+      mgSaveInlineMint(id);
+      if (inp.value.trim()) {
+        latestMintedRecord = { pattern: pat.label, sentence: inp.value.trim(), checkNote: res.msg };
+      }
+    }
+
+    function gatherMissedItemsSummary() {
+      const lines = [];
+      MG_ITEMS.forEach(it => {
+        const vec = mgState.vectors[it.id];
+        if (Array.isArray(vec) && (vec[0] + vec[1]) < 2) {
+          const ans = (mgState.answers[it.id] || '').trim() || '(blank)';
+          lines.push('- Gauntlet #' + it.id + ' [' + it.key + '] (' + (vec[0] + vec[1]) + '/2, L:' + vec[0] + ' R:' + vec[1] + '): typed "' + ans + '"');
+        }
+      });
+      for (let i = 1; i <= 20; i++) {
+        if (typeof itemScores[i] === 'number' && itemScores[i] < 2) {
+          const box = document.getElementById('item-' + i);
+          const key = box ? box.getAttribute('data-key') : '';
+          const val = box && box.querySelector('.answer-input') ? (box.querySelector('.answer-input').value.trim() || '(blank)') : '(blank)';
+          const vec = itemSplitVectors[i] || [0, 0];
+          lines.push('- Slide Item ' + i + ' [' + key + '] (' + itemScores[i] + '/2, L:' + vec[0] + ' R:' + vec[1] + '): typed "' + val + '"');
+        }
+      }
+      return lines;
+    }
+
+    function gatherMintedSentencesSummary() {
+      const lines = [];
+      const mainInp = document.getElementById('mint-sentence-input');
+      const mainSel = document.getElementById('mint-pattern-select');
+      if (mainInp && mainInp.value.trim()) {
+        const pat = MINT_PATTERNS.find(p => p.id === Number(mainSel ? mainSel.value : 1));
+        lines.push('[' + (pat ? pat.label : 'Mint Panel') + '] ' + mainInp.value.trim());
+      }
+      MG_ITEMS.forEach(it => {
+        const val = mgState.minted && mgState.minted[it.id] ? mgState.minted[it.id].trim() : '';
+        if (val) lines.push('[Gauntlet #' + it.id + ' · ' + it.key + '] ' + val);
+      });
+      return lines;
+    }
+
+    function prefillCpeDesk(focusItemId) {
+      const msgEl = document.getElementById('cpe-desk-message');
+      const fpHidden = document.getElementById('cpe-desk-fp-hidden');
+      const splitHidden = document.getElementById('cpe-desk-split-hidden');
+      const missedHidden = document.getElementById('cpe-desk-missed-hidden');
+      const mintedHidden = document.getElementById('cpe-desk-minted-hidden');
+      const noteEl = document.getElementById('cpe-prefill-note');
+
+      const parts = [];
+      let fpText = 'Not completed yet';
+      if (fpLatestReport) {
+        fpText = fpLatestReport.cefr + ' (' + fpLatestReport.confPct + '% Posterior) | ' + fpLatestReport.tupleSummary;
+        parts.push('Syntactic Fingerprint (L, R): ' + fpText);
+      }
+      const slideSplit = document.getElementById('split-tuple-pill') ? document.getElementById('split-tuple-pill').textContent : 'L:0 | R:0';
+      const mgSplit = document.getElementById('mg-split-pill') ? document.getElementById('mg-split-pill').textContent : 'Gauntlet Split: L:0 // R:0';
+      const splitSummary = 'Slides ' + slideSplit + ' | ' + mgSplit;
+      parts.push('Split-Mark Summary: ' + splitSummary);
+
+      const missedLines = gatherMissedItemsSummary();
+      if (focusItemId) {
+        const it = MG_ITEMS.find(x => x.id === Number(focusItemId));
+        if (it) {
+          const vec = mgState.vectors[it.id] || [0, 0];
+          const ans = (mgState.answers[it.id] || '').trim() || '(blank)';
+          const focusLine = '- Focused Gauntlet #' + it.id + ' [' + it.key + '] (' + (vec[0] + vec[1]) + '/2, L:' + vec[0] + ' R:' + vec[1] + '): typed "' + ans + '"';
+          if (!missedLines.some(l => l.indexOf('#' + it.id + ' ') !== -1)) missedLines.unshift(focusLine);
+        }
+      }
+      if (missedLines.length) {
+        parts.push('Missed Part 4 Item(s):\n' + missedLines.slice(0, 4).join('\n'));
+      }
+
+      const mintedLines = gatherMintedSentencesSummary();
+      if (mintedLines.length) {
+        parts.push('Minted C1/C2 Sentence(s):\n' + mintedLines.join('\n'));
+      }
+
+      parts.push('My question / context (exam target or workplace note): ');
+
+      if (fpHidden) fpHidden.value = fpText;
+      if (splitHidden) splitHidden.value = splitSummary;
+      if (missedHidden) missedHidden.value = missedLines.join(' ; ');
+      if (mintedHidden) mintedHidden.value = mintedLines.join(' ; ');
+      if (msgEl) msgEl.value = parts.join('\n\n');
+      if (noteEl) {
+        noteEl.textContent = '✓ Attached: ' + (fpLatestReport ? '(L, R) Fingerprint, ' : '') + splitSummary + (missedLines.length ? ', ' + missedLines.length + ' missed item(s)' : '') + (mintedLines.length ? ', ' + mintedLines.length + ' minted sentence(s)' : '') + '.';
+      }
+    }
+
+    function prefillAndScrollToDesk(mode, itemId) {
+      if (mode === 'mint') {
+        const sel = document.getElementById('mint-pattern-select');
+        const inp = document.getElementById('mint-sentence-input');
+        if (sel && inp && inp.value.trim()) {
+          const pat = MINT_PATTERNS.find(p => p.id === Number(sel.value));
+          latestMintedRecord = { pattern: pat ? pat.label : '', sentence: inp.value.trim(), checkNote: '' };
+        }
+      }
+      prefillCpeDesk(itemId);
+      const card = document.getElementById('belfast-desk-card');
+      if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function wireCpeDeskForm() {
+      const form = document.getElementById('cpe-desk-form');
+      if (!form) return;
+      form.addEventListener('submit', async (e) => {
+        if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+        if (form.dataset.submitting === 'true') {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+
+        // Ensure hidden diagnostic fields stay populated even if submitted without clicking prefill first
+        const fpHidden = document.getElementById('cpe-desk-fp-hidden');
+        const splitHidden = document.getElementById('cpe-desk-split-hidden');
+        const missedHidden = document.getElementById('cpe-desk-missed-hidden');
+        const mintedHidden = document.getElementById('cpe-desk-minted-hidden');
+        if (fpHidden && !fpHidden.value && fpLatestReport) {
+          fpHidden.value = fpLatestReport.cefr + ' (' + fpLatestReport.confPct + '%) | ' + fpLatestReport.tupleSummary;
+        }
+        if (splitHidden && !splitHidden.value) {
+          const s1 = document.getElementById('split-tuple-pill') ? document.getElementById('split-tuple-pill').textContent : '';
+          const s2 = document.getElementById('mg-split-pill') ? document.getElementById('mg-split-pill').textContent : '';
+          splitHidden.value = 'Slides ' + s1 + ' | ' + s2;
+        }
+        if (missedHidden && !missedHidden.value) missedHidden.value = gatherMissedItemsSummary().join(' ; ');
+        if (mintedHidden && !mintedHidden.value) mintedHidden.value = gatherMintedSentencesSummary().join(' ; ');
+
+        const btn = document.getElementById('cpe-desk-submit-btn');
+        const okEl = document.getElementById('cpe-desk-success');
+        const errEl = document.getElementById('cpe-desk-error');
+        const origLabel = btn ? btn.textContent : 'Send for Free 24h Desk Note →';
+
+        form.dataset.submitting = 'true';
+        if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+        if (okEl) okEl.classList.remove('visible');
+        if (errEl) { errEl.classList.remove('visible'); errEl.textContent = ''; }
+
+        try {
+          const resp = await fetch(form.action || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' }
+          });
+          if (!resp.ok) throw new Error('Formspree returned ' + resp.status);
+          form.reset();
+          if (okEl) okEl.classList.add('visible');
+        } catch (_) {
+          if (errEl) {
+            errEl.innerHTML = 'Your message was not sent yet &mdash; your text above is still saved. Please try again, or email me at <a href="mailto:gareth@garethenglish.com?subject=Free%2024h%20Desk%20Note%20(CPE%20Part%204)" style="color:inherit;text-decoration:underline;">gareth@garethenglish.com</a>.';
+            errEl.classList.add('visible');
+          }
+        } finally {
+          delete form.dataset.submitting;
+          if (btn) { btn.disabled = false; btn.textContent = origLabel; }
+        }
+      });
+    }
+
+    // Initialise HUD score, adaptive diagnostic, Mastery Gauntlet, Mint Panel & Desk Form on page load
     updateTotalScore();
     resetFingerprint();
+    populateMintPanel();
     renderGauntlet();
+    wireCpeDeskForm();
   </script>
   <script src="analytics.js" defer></script>
 </body>

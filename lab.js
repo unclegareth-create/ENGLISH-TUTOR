@@ -302,11 +302,20 @@ const LabObservatory = (() => {
     }
 
     document.querySelectorAll('.lab-wing-section').forEach((sec) => {
-      const secWings = sec.getAttribute('data-wing') || '';
+      const secWings = (sec.getAttribute('data-wing') || '').trim().split(/\s+/).filter(Boolean);
       if (wing === 'all' || secWings.includes(wing)) {
         sec.classList.remove('wing-hidden');
       } else {
         sec.classList.add('wing-hidden');
+      }
+    });
+
+    document.querySelectorAll('.lab-wing-section [data-wing]').forEach((card) => {
+      const cardWings = (card.getAttribute('data-wing') || '').trim().split(/\s+/).filter(Boolean);
+      if (wing === 'all' || cardWings.includes(wing)) {
+        card.classList.remove('wing-hidden');
+      } else {
+        card.classList.add('wing-hidden');
       }
     });
   }
@@ -770,11 +779,180 @@ const LabObservatory = (() => {
     });
   }
 
+  function readDeskDropboxTelemetry() {
+    let lastFreeTool = 'lab';
+    try {
+      lastFreeTool = localStorage.getItem('gm_last_free_tool') || 'lab';
+    } catch (e) {}
+
+    let candidateDossier = '';
+    try {
+      const rawSummary = localStorage.getItem('gm_active_dossier_summary');
+      const rawState = localStorage.getItem('gm_candidate_dossier_v1');
+      let parsedState = null;
+      if (rawState) {
+        try { parsedState = JSON.parse(rawState); } catch (_) {}
+      }
+      const hasUpdatedSkill = Boolean(
+        parsedState &&
+        parsedState.skills &&
+        Object.values(parsedState.skills).some((sk) => sk && sk.lastUpdated)
+      );
+      if (rawSummary) {
+        let summary = null;
+        try { summary = JSON.parse(rawSummary); } catch (_) {}
+        const hasPlayed = Boolean(
+          summary && (
+            (summary.gamesCompleted || 0) > 0 ||
+            (summary.drillsCompleted || 0) > 0 ||
+            hasUpdatedSkill ||
+            (summary.gamesCompleted === undefined && summary.drillsCompleted === undefined && summary.code)
+          )
+        );
+        if (hasPlayed) {
+          const parts = [];
+          if (summary.code) parts.push(summary.code);
+          if (summary.cefrShort || summary.cefrBand) parts.push(summary.cefrShort || summary.cefrBand);
+          if (typeof summary.overallAccuracy === 'number') parts.push(`Overall ${summary.overallAccuracy}%`);
+          if (summary.weakestSkill) {
+            parts.push(
+              `Focus: ${summary.weakestSkill}${typeof summary.weakestAccuracy === 'number' ? ` (${summary.weakestAccuracy}%)` : ''}`
+            );
+          }
+          candidateDossier = parts.join(' | ') || rawSummary.slice(0, 400);
+        }
+      }
+    } catch (e) {}
+
+    return { lastFreeTool, candidateDossier };
+  }
+
+  function initBelfastDeskDropbox() {
+    const deskForm = document.getElementById('belfast-desk-dropbox-form');
+    if (!deskForm) return;
+
+    const lastToolField = document.getElementById('dropbox-last-free-tool');
+    const dossierField = document.getElementById('dropbox-candidate-dossier');
+    const successBanner = document.getElementById('dropbox-success-banner');
+    const resetBtn = document.getElementById('dropbox-reset-btn');
+    const statusEl = document.getElementById('dropbox-form-status');
+    const submitBtn = document.getElementById('dropbox-submit-btn');
+
+    const syncTelemetryInputs = () => {
+      const tel = readDeskDropboxTelemetry();
+      if (lastToolField) lastToolField.value = tel.lastFreeTool;
+      if (dossierField) dossierField.value = tel.candidateDossier;
+    };
+
+    syncTelemetryInputs();
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (successBanner) successBanner.classList.add('hidden');
+        deskForm.classList.remove('hidden');
+        if (statusEl) {
+          statusEl.textContent = '';
+          statusEl.className = 'text-sm font-semibold';
+        }
+        const msgInput = document.getElementById('dropbox-message');
+        if (msgInput) msgInput.focus();
+      });
+    }
+
+    deskForm.addEventListener('submit', async (e) => {
+      if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+      if (deskForm.dataset.submitting === 'true') {
+        e.preventDefault();
+        return;
+      }
+      e.preventDefault();
+
+      const emailInput = deskForm.querySelector('input[name="email"]');
+      const messageInput = deskForm.querySelector('textarea[name="message"]');
+      const emailVal = emailInput ? emailInput.value.trim() : '';
+      const msgVal = messageInput ? messageInput.value.trim() : '';
+
+      if (!emailVal || !emailVal.includes('@')) {
+        if (statusEl) {
+          statusEl.className = 'p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
+          statusEl.textContent = 'Please enter a valid email address so I can send your 24h red-pen note.';
+        }
+        if (emailInput) emailInput.focus();
+        return;
+      }
+
+      if (!msgVal) {
+        if (statusEl) {
+          statusEl.className = 'p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
+          statusEl.textContent = 'Please add your question, short paragraph, or Part 4 attempts first.';
+        }
+        if (messageInput) messageInput.focus();
+        return;
+      }
+
+      syncTelemetryInputs();
+      const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<span>Send to My Belfast Desk (Free 24h Note) &rarr;</span>';
+      deskForm.dataset.submitting = 'true';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending to Gareth...';
+      }
+      if (statusEl) {
+        statusEl.textContent = '';
+        statusEl.className = 'text-sm font-semibold';
+      }
+
+      try {
+        const response = await fetch(deskForm.action || 'https://formspree.io/f/mvkgrwvj', {
+          method: 'POST',
+          body: new FormData(deskForm),
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (!response.ok) {
+          let errorMessage = 'Could not send your message right now.';
+          try {
+            const payload = await response.json();
+            if (payload && Array.isArray(payload.errors) && payload.errors.length) {
+              errorMessage = payload.errors.map((err) => err.message).filter(Boolean).join(' ');
+            }
+          } catch (_) {}
+          throw new Error(errorMessage);
+        }
+
+        if (window.CandidateDossier && typeof window.CandidateDossier.saveEmail === 'function') {
+          window.CandidateDossier.saveEmail(emailVal);
+        }
+        if (typeof window.trackFunnelEvent === 'function') {
+          window.trackFunnelEvent('lab_desk_dropbox_succeeded', { source: 'lab_inline_desk_dropbox' });
+        }
+        deskForm.reset();
+        syncTelemetryInputs();
+        deskForm.classList.add('hidden');
+        if (successBanner) {
+          successBanner.classList.remove('hidden');
+        }
+      } catch (err) {
+        if (statusEl) {
+          statusEl.className = 'p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
+          statusEl.innerHTML = 'Your message was not sent yet \u2014 your text above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Lab%20Free%2024h%20Red-Pen%20Note" class="underline font-bold">gareth@garethenglish.com</a>.';
+        }
+      } finally {
+        delete deskForm.dataset.submitting;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnHtml;
+        }
+      }
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     syncSFXButtons();
     setHolodeck(0);
     initHeroParticles();
     initLeadFormUnlock();
+    initBelfastDeskDropbox();
 
     // Roving tabindex & arrow-key navigation for Hero Holodeck tabs (ARIA role="tablist")
     const tablist = document.querySelector('.holodeck-tabs[role="tablist"]');
@@ -906,10 +1084,7 @@ const LabObservatory = (() => {
       const targetEl = document.querySelector(hash);
       if (!targetEl) return;
       const parentWing = targetEl.closest('.lab-wing-section') || (targetEl.nextElementSibling && targetEl.nextElementSibling.closest('.lab-wing-section'));
-      if (parentWing && parentWing.classList.contains('wing-hidden')) {
-        filterWing('all');
-      } else {
-        // Always ensure all sections are reachable when jumping via anchor links
+      if ((parentWing && parentWing.classList.contains('wing-hidden')) || targetEl.closest('.wing-hidden')) {
         filterWing('all');
       }
       if (hash === '#prosody-lab' || hash === '#professor-west' || targetEl.closest('details.young-learners-quarantine')) {

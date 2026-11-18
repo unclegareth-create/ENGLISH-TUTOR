@@ -189,6 +189,8 @@
   let studentEnvelope = new Float32Array(ENVELOPE_BUCKETS);
   let rhythmTapIndex = 0;
   let synthPulseEnergy = 0;
+  let sessionUsedLiveMic = false;
+  let deskMessageManuallyEdited = false;
 
   function hasSpeechRecognitionSupport() {
     return Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
@@ -265,6 +267,84 @@
       details.young-learners-quarantine[open] > summary .quarantine-chevron {
         transform: rotate(180deg);
       }
+      .prosody-desk-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.52rem 0.95rem;
+        border-radius: 0.65rem;
+        background: #0284c7;
+        color: #ffffff;
+        font-size: 0.78rem;
+        font-weight: 800;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s ease;
+      }
+      .prosody-desk-toggle-btn:hover { background: #0369a1; }
+      .prosody-desk-drawer {
+        margin-top: 0.85rem;
+        padding: 1rem 1.15rem;
+        border-radius: 0.9rem;
+        background: #f8fafc;
+        border: 1.5px solid #cbd5e1;
+        color: #0f172a;
+      }
+      .prosody-desk-drawer.hidden { display: none; }
+      .prosody-desk-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+      @media (max-width: 640px) {
+        .prosody-desk-grid { grid-template-columns: 1fr; }
+      }
+      .prosody-desk-label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+      }
+      .prosody-desk-input, .prosody-desk-textarea {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        background: #ffffff;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 0.55rem;
+        padding: 0.5rem 0.72rem;
+        font-size: 0.85rem;
+        color: #0f172a;
+      }
+      .prosody-desk-input:focus, .prosody-desk-textarea:focus {
+        outline: 2px solid #0284c7;
+        border-color: #0284c7;
+      }
+      .prosody-desk-submit {
+        background: #065f46;
+        color: #ffffff;
+        border: none;
+        border-radius: 999px;
+        padding: 0.55rem 1.15rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .prosody-desk-submit:hover { background: #047857; }
+      .prosody-desk-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+      .prosody-desk-ok, .prosody-desk-err {
+        display: none;
+        margin-top: 0.65rem;
+        padding: 0.65rem 0.85rem;
+        border-radius: 0.55rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+      .prosody-desk-ok { background: #ecfdf5; border: 1.5px solid #10b981; color: #065f46; }
+      .prosody-desk-err { background: #fef2f2; border: 1.5px solid #ef4444; color: #991b1b; }
+      .prosody-desk-ok.visible, .prosody-desk-err.visible { display: block; }
     `;
     document.head.appendChild(style);
   }
@@ -287,8 +367,12 @@
             <span class="text-xs text-slate-300">Pick one of the 5 sentences below:</span>
           </div>
 
-          <!-- Mode Switcher (Live Mic vs Simulated Rhythm Tap / Type Fallback) -->
+          <!-- Mode Switcher (Live Mic vs Simulated Rhythm Tap / Type Fallback) & Connected Speech CTA -->
           <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <a href="connected-speech-lab.html" id="prosody-connected-speech-cta" class="px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/40 text-amber-200 text-xs font-extrabold transition inline-flex items-center gap-1.5">
+              <i class="fa-solid fa-wave-square text-amber-300" aria-hidden="true"></i>
+              <span>Connected Speech Lab &rarr;</span>
+            </a>
             <button type="button" id="prosody-mode-toggle-btn" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-bold transition cursor-pointer flex items-center gap-2">
               <i class="fa-solid fa-sliders text-sky-400" aria-hidden="true"></i>
               <span id="prosody-mode-toggle-label">${fallbackMode ? 'Switch to microphone mode' : 'In a quiet room? Tap rhythm or type instead'}</span>
@@ -410,8 +494,8 @@
                   <i class="fa-solid fa-microphone" id="prosody-record-icon" aria-hidden="true"></i>
                   <span id="prosody-record-label">🎙️ Record yourself and compare (8s)</span>
                 </button>
-                <button type="button" id="prosody-demo-fill-btn" class="px-4 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-emerald-300 text-xs font-bold transition cursor-pointer whitespace-nowrap">
-                  ⚡ See a sample attempt
+                <button type="button" id="prosody-demo-fill-btn" class="px-4 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-sky-300 text-xs font-bold transition cursor-pointer whitespace-nowrap">
+                  👁️ Preview Target Rhythm
                 </button>
               </div>
 
@@ -463,17 +547,63 @@
               <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-slate-800">
                 <div class="flex items-center gap-2.5">
                   <span id="prosody-band-pill" class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
-                    Band 8.5 / C2
+                    Written Stress &amp; Syntax Check
                   </span>
                   <span id="prosody-dossier-sync-badge" class="text-xs text-sky-300">
                     ✓ Saved to your practice log
                   </span>
                 </div>
                 <span id="prosody-metrics-readout" class="text-xs text-slate-300">
-                  Key phrase included • Time: 6.2s
+                  Key phrase check
                 </span>
               </div>
               <p id="prosody-feedback-copy" class="text-xs sm:text-sm text-slate-200 leading-relaxed"></p>
+
+              <div class="pt-2 border-t border-slate-800/90 flex flex-wrap items-center justify-between gap-2">
+                <button type="button" id="prosody-desk-toggle-btn" class="prosody-desk-toggle-btn" aria-expanded="false">
+                  Send this sentence to my desk (free 24h note) &darr;
+                </button>
+                <span class="text-xs text-slate-400">Read personally in Northern Ireland &mdash; no booking needed</span>
+              </div>
+
+              <div id="prosody-desk-drawer" class="prosody-desk-drawer hidden">
+                <p style="font-size:0.8rem; color:#334155; margin-bottom:0.65rem; line-height:1.45;">
+                  An automated browser check cannot judge natural intonation, word choice, or tone. Send your sentence below and I will reply from my desk in Northern Ireland within 24 hours &mdash; free, with no obligation.
+                </p>
+                <form id="prosody-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST">
+                  <input type="hidden" name="_subject" value="Free 24h Desk Note (Speaking Prosody Lab)" />
+                  <input type="hidden" name="source_page" value="prosody-lab.js" />
+                  <input type="hidden" id="prosody-desk-drill-hidden" name="drill_context" value="" />
+                  <input type="hidden" id="prosody-desk-mode-hidden" name="check_mode" value="" />
+                  <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
+
+                  <div class="prosody-desk-grid">
+                    <div>
+                      <label class="prosody-desk-label" for="prosody-desk-name">First Name (Optional)</label>
+                      <input id="prosody-desk-name" class="prosody-desk-input" name="name" type="text" autocomplete="name" placeholder="Your first name" />
+                    </div>
+                    <div>
+                      <label class="prosody-desk-label" for="prosody-desk-email">Email Address</label>
+                      <input id="prosody-desk-email" class="prosody-desk-input" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+                    </div>
+                  </div>
+
+                  <div style="margin-bottom:0.65rem;">
+                    <label class="prosody-desk-label" for="prosody-desk-message">Your Sentence &amp; Context</label>
+                    <textarea id="prosody-desk-message" class="prosody-desk-textarea" name="message" rows="3" required placeholder="Your spoken or typed sentence..."></textarea>
+                  </div>
+
+                  <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.6rem;">
+                    <span style="font-size:0.74rem; color:#475569;">Read personally by Gareth Montgomery &middot; <a href="privacy-policy.html" style="color:#0369a1; text-decoration:underline;">Privacy</a></span>
+                    <button id="prosody-desk-submit-btn" class="prosody-desk-submit" type="submit">Send to My Desk &rarr;</button>
+                  </div>
+
+                  <div id="prosody-desk-ok" class="prosody-desk-ok" role="status" aria-live="polite">
+                    &#10003; Sent! I have received your sentence at my desk in Northern Ireland and will reply within 24 hours.
+                  </div>
+                  <div id="prosody-desk-err" class="prosody-desk-err" role="status" aria-live="polite"></div>
+                </form>
+              </div>
             </div>
 
           </div>
@@ -497,6 +627,8 @@
     currentDrillIndex = ((index % DRILLS.length) + DRILLS.length) % DRILLS.length;
     const drill = getActiveDrill();
     resetEnvelope();
+    sessionUsedLiveMic = false;
+    deskMessageManuallyEdited = false;
 
     document.querySelectorAll('.prosody-drill-tab').forEach((btn, idx) => {
       const active = idx === currentDrillIndex;
@@ -515,6 +647,10 @@
     const padsEl = document.getElementById('prosody-rhythm-pads');
     const inputEl = document.getElementById('prosody-transcript-input');
     const scoreCard = document.getElementById('prosody-score-card');
+    const deskDrawer = document.getElementById('prosody-desk-drawer');
+    const deskToggle = document.getElementById('prosody-desk-toggle-btn');
+    const deskOk = document.getElementById('prosody-desk-ok');
+    const deskErr = document.getElementById('prosody-desk-err');
 
     if (ctxEl) ctxEl.textContent = `Sentence ${drill.num} / 05 • ${drill.context}`;
     if (limpEl) limpEl.textContent = `“${drill.limpB1}”`;
@@ -525,6 +661,10 @@
     if (modelBox) modelBox.classList.add('hidden');
     if (inputEl) inputEl.value = '';
     if (scoreCard) scoreCard.classList.add('hidden');
+    if (deskDrawer) deskDrawer.classList.add('hidden');
+    if (deskToggle) deskToggle.setAttribute('aria-expanded', 'false');
+    if (deskOk) deskOk.classList.remove('visible');
+    if (deskErr) { deskErr.classList.remove('visible'); deskErr.textContent = ''; }
 
     if (keysEl) {
       keysEl.innerHTML = drill.targetKeys
@@ -597,29 +737,17 @@
     const drill = getActiveDrill();
     if (chipEl) chipEl.classList.add('is-hit');
 
-    // Clean syllable hyphens and restore normal casing from model sentence or chunk
     const totalChunks = drill.rhythmChunks.length;
     const normPos = (chunkIdx + 0.5) / totalChunks;
     const peakMatch = drill.peaks[Math.min(chunkIdx, drill.peaks.length - 1)];
     const targetAmp = peakMatch ? peakMatch.amp : 0.85;
 
     injectSyntheticEnvelopePeak(normPos, targetAmp);
-
-    // Append to input or build the model sentence progressively
-    const inputEl = document.getElementById('prosody-transcript-input');
-    if (inputEl) {
-      rhythmTapIndex = Math.max(rhythmTapIndex, chunkIdx + 1);
-      if (rhythmTapIndex >= totalChunks) {
-        inputEl.value = drill.modelC2;
-      } else {
-        const words = drill.modelC2.split(/\s+/);
-        const sliceCount = Math.ceil((rhythmTapIndex / totalChunks) * words.length);
-        inputEl.value = words.slice(0, sliceCount).join(' ');
-      }
-    }
+    rhythmTapIndex = Math.max(rhythmTapIndex, chunkIdx + 1);
 
     playSynthClick(440 + chunkIdx * 55);
     drawCanvasFrame(normPos);
+    updateStatus(`Tapped stress chunk ${chunkIdx + 1}/${totalChunks} — now speak or type your own sentence below`, 'sky');
   }
 
   function playSynthClick(freq) {
@@ -836,11 +964,6 @@
       const avg = sum / (vocalBins - 2);
       const normAmp = Math.min(0.98, (avg / 145) * 1.15);
       studentEnvelope[bucketIdx] = Math.max(studentEnvelope[bucketIdx], normAmp);
-    } else if (fallbackMode && isRecording) {
-      // In fallback simulated mic mode, trace the target curve softly and boost on taps/typing
-      const drill = getActiveDrill();
-      const baseSim = targetCurveAt(normProgress, drill.peaks) * 0.78;
-      studentEnvelope[bucketIdx] = Math.max(studentEnvelope[bucketIdx], baseSim);
     }
   }
 
@@ -890,6 +1013,7 @@
     const inputEl = document.getElementById('prosody-transcript-input');
 
     // Attempt Web Audio getUserMedia unless user explicitly toggled Fallback Mode
+    sessionUsedLiveMic = false;
     if (!fallbackMode && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       try {
         micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -903,13 +1027,16 @@
         micSource.connect(analyser);
         freqData = new Uint8Array(analyser.frequencyBinCount);
         timeData = new Uint8Array(analyser.fftSize);
+        sessionUsedLiveMic = true;
       } catch (err) {
-        // Gracefully switch to Simulated Mic mode if permission declined or unavailable
+        // Gracefully switch to Tap-rhythm / typing mode if permission declined or unavailable
         fallbackMode = true;
+        sessionUsedLiveMic = false;
         syncModeBadge();
       }
     } else {
       fallbackMode = true;
+      sessionUsedLiveMic = false;
       syncModeBadge();
     }
 
@@ -989,12 +1116,11 @@
     if (recordLbl) recordLbl.textContent = '🎙️ Record yourself and compare (8s)';
 
     const inputEl = document.getElementById('prosody-transcript-input');
-    const drill = getActiveDrill();
-    if (inputEl && !inputEl.value.trim() && fallbackMode) {
-      inputEl.value = drill.modelC2;
-    }
-
     drawCanvasFrame(0);
+    if (!inputEl || !inputEl.value.trim()) {
+      updateStatus('No spoken or typed sentence detected — type your own reformulation below and click Check my sentence', 'amber');
+      return;
+    }
     evaluateCurrentAttempt(elapsedSec);
   }
 
@@ -1088,27 +1214,95 @@
     startAnimationLoop();
   }
 
-  function simulateC2Attempt() {
+  function previewTargetRhythm() {
     stopAllActiveProcesses();
-    const drill = getActiveDrill();
     resetEnvelope();
 
-    // Populate envelope with target stress peaks
-    drill.peaks.forEach((p) => {
-      injectSyntheticEnvelopePeak(p.pos, p.amp);
-    });
-
-    const inputEl = document.getElementById('prosody-transcript-input');
-    if (inputEl) {
-      inputEl.value = drill.modelC2;
-    }
+    const modelBox = document.getElementById('prosody-model-reveal-box');
+    const scoreCard = document.getElementById('prosody-score-card');
+    if (modelBox) modelBox.classList.remove('hidden');
+    if (scoreCard) scoreCard.classList.add('hidden');
 
     document.querySelectorAll('.prosody-rhythm-chip').forEach((c) => c.classList.add('is-hit'));
-    playSynthClick(660);
-    setTimeout(() => playSynthClick(880), 80);
+    playSynthClick(520);
+    setTimeout(() => playSynthClick(660), 90);
 
-    drawCanvasFrame(1);
-    evaluateCurrentAttempt(5.8);
+    drawCanvasFrame(0);
+    updateStatus('Target rhythm preview (not scored or logged) — now speak or type your own sentence below', 'amber');
+  }
+
+  function simulateC2Attempt() {
+    previewTargetRhythm();
+  }
+
+  function checkDrillSyntaxOrder(drill, rawText, normText) {
+    const words = normText.split(/\s+/).filter(Boolean);
+    if (words.length < 6) {
+      return { ok: false, reason: 'short', message: `Write a full sentence (at least 6 words — currently ${words.length}) rather than just an isolated phrase.` };
+    }
+    if (drill.id === 'boardroom-inversion') {
+      if (/\bunder\s+no\s+circumstances\b/i.test(normText)) {
+        const invRx = /\bunder\s+no\s+circumstances\s+(?:should|must|can|could|will|would|may|might|shall|do|does|did|are|is|were|was|have|has|had)\s+(?:i|we|you|they|he|she|it|anyone|anybody|staff|management|a\s+[a-z]+|an\s+[a-z]+|the\s+[a-z]+|[a-z]{2,15})\s+[a-z]{2,}/i;
+        if (!invRx.test(normText)) {
+          return {
+            ok: false,
+            reason: 'inversion_order',
+            message: 'You included "under no circumstances", but forgot auxiliary-before-subject inversion right after it (write e.g. "Under no circumstances should we proceed...", never "Under no circumstances we should...").'
+          };
+        }
+      }
+    } else if (drill.id === 'ielts-part3-hedging') {
+      if (/\bwidely\s+believed\s+to\b/i.test(normText)) {
+        const passiveRx = /\b(?:is|are|was|were)\s+(?:always\s+|often\s+|generally\s+|still\s+)?widely\s+believed\s+to\s+[a-z]{2,}/i;
+        if (!passiveRx.test(normText)) {
+          return {
+            ok: false,
+            reason: 'passive_frame',
+            message: 'Pair "widely believed to" with BE ("is / are widely believed to") followed by a base verb (e.g. "are widely believed to erode").'
+          };
+        }
+      }
+    } else if (drill.id === 'cleft-emphasis') {
+      if (/\bwhat\s+(?:[a-z]+\s+)?undermines\b/i.test(normText)) {
+        const cleftRx = /\bwhat\s+(?:[a-z]+\s+)?undermines\b[\s\S]{2,}\b(?:is|are|was|were)\b/i;
+        if (!cleftRx.test(normText)) {
+          return {
+            ok: false,
+            reason: 'cleft_pivot',
+            message: 'A Wh-cleft ("What undermines...") needs a BE verb pivot ("is / was") linking the opening clause to the real focus.'
+          };
+        }
+      }
+    } else if (drill.id === 'participle-consequence') {
+      if (/\bthereby\s+curbing\b/i.test(normText)) {
+        const partRx = /\b[a-z]{2,}[\s\S]{8,}\bthereby\s+curbing\s+[a-z]{2,}/i;
+        if (!partRx.test(normText)) {
+          return {
+            ok: false,
+            reason: 'participle_clause',
+            message: 'Place a complete main clause before ", thereby curbing ..." and follow "curbing" with a clear noun object.'
+          };
+        }
+      }
+    } else if (drill.id === 'diplomatic-pushback') {
+      if (/\brealistically\s+feasible\b/i.test(normText)) {
+        const finiteRx = /\b(?:is|are|was|were|be|seems?|remains?|appears?|looks?)\b/i;
+        if (!finiteRx.test(normText) || words.length < 7) {
+          return {
+            ok: false,
+            reason: 'incomplete_clause',
+            message: 'Build a full diplomatic clause around "realistically feasible" (e.g. "I question whether that timeline is realistically feasible").'
+          };
+        }
+      }
+    }
+    return { ok: true, reason: null, message: '' };
+  }
+
+  function hasWholeTerm(haystack, term) {
+    const escaped = term.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (!escaped) return false;
+    return new RegExp('(^|\\s)' + escaped + '(\\s|$)').test(haystack);
   }
 
   function evaluateCurrentAttempt(durationSec = 5.6) {
@@ -1122,87 +1316,118 @@
       return;
     }
 
-    // 1. Check required target key presence
-    const hasRequiredKey = drill.requiredMatches.some((req) => normText.includes(req.toLowerCase()));
-    const matchedAllKeys = drill.targetKeys.every((k) =>
-      normText.includes(k.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim())
-    );
+    const words = normText.split(/\s+/).filter(Boolean);
 
-    // 2. Check bonus lexical upgrades
+    // 1. Check required target key presence with word boundaries (not raw substrings)
+    const hasRequiredKey = drill.requiredMatches.some((req) => hasWholeTerm(normText, req));
+    const matchedAllKeys = drill.targetKeys.every((k) => hasWholeTerm(normText, k));
+
+    // 2. Check grammatical structure & inversion order where required
+    const syntaxCheck = checkDrillSyntaxOrder(drill, rawText, normText);
+
+    // 3. Check bonus lexical upgrades
     let bonusHits = 0;
     drill.bonusMatches.forEach((bm) => {
-      if (normText.includes(bm.toLowerCase())) bonusHits++;
+      if (hasWholeTerm(normText, bm)) bonusHits++;
     });
 
-    // 3. Calculate prosody envelope activity
+    // 4. Measure real prosody envelope activity (never inject synthetic peaks)
     let activeBuckets = 0;
+    let peakMax = 0;
     for (let i = 0; i < ENVELOPE_BUCKETS; i++) {
       if (studentEnvelope[i] > 0.2) activeBuckets++;
+      if (studentEnvelope[i] > peakMax) peakMax = studentEnvelope[i];
     }
-    if (activeBuckets < 10) {
-      // Synthesize envelope trace from typed words if user typed directly
-      drill.peaks.forEach((p) => injectSyntheticEnvelopePeak(p.pos, p.amp * 0.85));
-      drawCanvasFrame(0);
-    }
+    const isLiveMicRun = sessionUsedLiveMic && activeBuckets >= 10;
 
     let bandNumeric = 6.5;
-    let bandLabel = 'Band 6.5 / B2';
-    let scorePct = 68;
+    let bandLabel = '';
+    let scorePct = 62;
     let feedbackHtml = '';
 
-    if (matchedAllKeys && bonusHits >= 2) {
-      bandNumeric = 8.5;
-      bandLabel = 'Band 8.5 / C2';
-      scorePct = 96;
-      feedbackHtml = `<strong class="text-emerald-300">Spot on!</strong> You kept the exact key phrase (${drill.targetKeys.join(' + ')}), used natural C1/C2 phrasing around it, and delivered it in ${durationSec.toFixed(1)}s.`;
-    } else if (hasRequiredKey || matchedAllKeys) {
-      bandNumeric = 7.5;
-      bandLabel = 'Band 7.5 / C1';
-      scorePct = 84;
-      feedbackHtml = `<strong class="text-sky-300">Good C1 structure!</strong> You used the key phrase (${drill.targetKeys[0]}). Compare yours with the model sentence: <em>“${drill.modelC2}”</em>.`;
-    } else {
+    const modePrefix = isLiveMicRun ? 'Live Mic + Syntax Check' : 'Written Stress & Syntax Check';
+
+    if (!hasRequiredKey) {
+      bandNumeric = 6.0;
+      bandLabel = `${modePrefix} · Key Phrase Missing`;
+      scorePct = 55;
+      feedbackHtml = `<strong class="text-amber-300">Watch the key phrase!</strong> Include <code class="text-amber-200 font-mono">${drill.targetKeys.join(' / ')}</code> without changing the words. Click <strong>👁️ Show answer</strong> on the left if you need the model.`;
+    } else if (!syntaxCheck.ok) {
       bandNumeric = 6.5;
-      bandLabel = 'Key phrase missing';
-      scorePct = 62;
-      feedbackHtml = `<strong class="text-amber-300">Watch the key phrase!</strong> Make sure you build your sentence around <code class="text-amber-200 font-mono">${drill.targetKeys.join(' / ')}</code> without changing the words. Click <strong>👁️ Show answer</strong> on the left to see the model sentence.`;
+      bandLabel = `${modePrefix} · Word-Order / Frame Slip`;
+      scorePct = 65;
+      feedbackHtml = `<strong class="text-amber-300">Check the grammar order:</strong> ${syntaxCheck.message}`;
+    } else if (matchedAllKeys && bonusHits >= 2) {
+      bandNumeric = isLiveMicRun ? 8.0 : 7.5;
+      bandLabel = `${modePrefix} · Frame Verified`;
+      scorePct = isLiveMicRun ? 90 : 86;
+      feedbackHtml = isLiveMicRun
+        ? `<strong class="text-emerald-300">Frame and inversion verified!</strong> Your live mic captured ${Math.round((activeBuckets / ENVELOPE_BUCKETS) * 100)}% active vocal trace across ${durationSec.toFixed(1)}s. Compare your phrasing with the model: <em>“${drill.modelC2}”</em> — send it to my desk below if you want human feedback on rhythm and word choice.`
+        : `<strong class="text-emerald-300">Written Stress &amp; Syntax Check passed!</strong> Your clause order and key structure (${drill.targetKeys.join(' + ')}) are intact across ${words.length} words. Because no live mic audio was captured here, speak it aloud or send your sentence to my desk below for a 24h human check.`;
+    } else {
+      bandNumeric = 7.5;
+      bandLabel = `${modePrefix} · Key Frame Present`;
+      scorePct = 78;
+      feedbackHtml = isLiveMicRun
+        ? `<strong class="text-sky-300">Core key frame present.</strong> Your live mic recorded ${Math.round((activeBuckets / ENVELOPE_BUCKETS) * 100)}% vocal activity in ${durationSec.toFixed(1)}s. Compare your vocabulary and second anchor (${drill.targetKeys.join(' + ')}) against the model: <em>“${drill.modelC2}”</em>.`
+        : `<strong class="text-sky-300">Written Stress &amp; Syntax Check:</strong> Your core structure (${drill.requiredMatches[0]}) is in place. Try including all target anchors (${drill.targetKeys.join(' + ')}) or compare with the model: <em>“${drill.modelC2}”</em>.`;
     }
 
     const scoreCard = document.getElementById('prosody-score-card');
     const bandPill = document.getElementById('prosody-band-pill');
     const metricsEl = document.getElementById('prosody-metrics-readout');
     const feedbackEl = document.getElementById('prosody-feedback-copy');
+    const deskMsg = document.getElementById('prosody-desk-message');
+    const deskDrillHidden = document.getElementById('prosody-desk-drill-hidden');
+    const deskModeHidden = document.getElementById('prosody-desk-mode-hidden');
 
     if (scoreCard) scoreCard.classList.remove('hidden');
     if (bandPill) {
       bandPill.textContent = bandLabel;
       bandPill.className =
-        bandNumeric >= 8.0
+        hasRequiredKey && syntaxCheck.ok && matchedAllKeys && bonusHits >= 2
           ? 'px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40'
-          : bandNumeric >= 7.5
+          : hasRequiredKey && syntaxCheck.ok
           ? 'px-3 py-1 rounded-full text-xs font-extrabold bg-sky-500/20 text-sky-300 border border-sky-400/40'
           : 'px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-300 border border-amber-400/40';
     }
     if (metricsEl) {
-      metricsEl.textContent = `Key phrase: ${matchedAllKeys ? 'Included' : hasRequiredKey ? 'Partial' : 'Missing'} • Time: ${durationSec.toFixed(1)}s`;
+      metricsEl.textContent = isLiveMicRun
+        ? `Live mic (${Math.round((activeBuckets / ENVELOPE_BUCKETS) * 100)}% trace) • Key phrase: ${matchedAllKeys ? 'All present' : hasRequiredKey ? 'Partial' : 'Missing'} • ${durationSec.toFixed(1)}s`
+        : `Written check (no live mic audio) • Key phrase: ${matchedAllKeys ? 'All present' : hasRequiredKey ? 'Partial' : 'Missing'} • ${words.length} words`;
     }
     if (feedbackEl) {
       feedbackEl.innerHTML = feedbackHtml;
     }
 
-    updateStatus(`Checked: ${bandLabel}`, bandNumeric >= 7.5 ? 'emerald' : 'amber');
+    if (deskDrillHidden) deskDrillHidden.value = `Drill ${drill.num}: ${drill.context} (${drill.targetKeys.join(' + ')})`;
+    if (deskModeHidden) deskModeHidden.value = bandLabel;
+    if (deskMsg && !deskMessageManuallyEdited) {
+      deskMsg.value = [
+        `Prosody Lab Drill ${drill.num} (${drill.context})`,
+        `Everyday sentence: "${drill.limpB1}"`,
+        `Required key(s): ${drill.targetKeys.join(' + ')}`,
+        `Check mode: ${bandLabel}`,
+        `My sentence: ${rawText}`,
+        `Question for Gareth: `
+      ].join('\n');
+    }
 
-    // Log attempt to CandidateDossier if present
+    updateStatus(`Checked: ${bandLabel}`, hasRequiredKey && syntaxCheck.ok ? 'emerald' : 'amber');
+
+    // Log real student attempt to CandidateDossier if present
     const payload = {
       category: 'prosody_cadence',
       drillId: drill.id,
       title: drill.context,
       targetKey: drill.targetKeys.join(' / '),
+      mode: isLiveMicRun ? 'live_mic' : 'written_check',
       band: bandNumeric,
       bandScore: bandNumeric,
       bandLabel: bandLabel,
       score: scorePct,
       maxScore: 100,
-      passed: bandNumeric >= 7.5,
+      passed: Boolean(hasRequiredKey && syntaxCheck.ok),
       transcript: rawText,
       durationSec: Number(durationSec.toFixed(1)),
       timestamp: new Date().toISOString()
@@ -1278,10 +1503,10 @@
       recBtn.addEventListener('click', startRecordingSession);
     }
 
-    // Simulate C2 Attempt
+    // Preview Target Rhythm
     const simBtn = document.getElementById('prosody-demo-fill-btn');
     if (simBtn) {
-      simBtn.addEventListener('click', simulateC2Attempt);
+      simBtn.addEventListener('click', previewTargetRhythm);
     }
 
     // Clear trace
@@ -1290,11 +1515,15 @@
       clearBtn.addEventListener('click', () => {
         stopAllActiveProcesses();
         resetEnvelope();
+        sessionUsedLiveMic = false;
+        deskMessageManuallyEdited = false;
         const inputEl = document.getElementById('prosody-transcript-input');
         if (inputEl) inputEl.value = '';
         document.querySelectorAll('.prosody-rhythm-chip').forEach((c) => c.classList.remove('is-hit'));
         const scoreCard = document.getElementById('prosody-score-card');
         if (scoreCard) scoreCard.classList.add('hidden');
+        const deskDrawer = document.getElementById('prosody-desk-drawer');
+        if (deskDrawer) deskDrawer.classList.add('hidden');
         updateStatus('Ready • 8-second practice window', 'sky');
         updateTimerDisplay(0);
         drawCanvasFrame(0);
@@ -1308,16 +1537,78 @@
     }
     const inputEl = document.getElementById('prosody-transcript-input');
     if (inputEl) {
+      inputEl.addEventListener('input', () => {
+        if (!isRecording) {
+          sessionUsedLiveMic = false;
+        }
+      });
       inputEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
           evaluateCurrentAttempt(5.4);
-        } else {
-          // Typing also feeds a subtle acoustic pulse onto the waveform
-          const len = inputEl.value.length;
-          const normPos = Math.min(0.95, (len % 85) / 85);
-          injectSyntheticEnvelopePeak(normPos, 0.72);
-          drawCanvasFrame(normPos);
+        }
+      });
+    }
+
+    // Inline Belfast Desk drawer toggle & Formspree AJAX submit inside #prosody-score-card
+    const deskToggle = document.getElementById('prosody-desk-toggle-btn');
+    const deskDrawer = document.getElementById('prosody-desk-drawer');
+    const deskMsg = document.getElementById('prosody-desk-message');
+    const deskForm = document.getElementById('prosody-desk-form');
+
+    if (deskMsg) {
+      deskMsg.addEventListener('input', () => {
+        deskMessageManuallyEdited = true;
+      });
+    }
+
+    if (deskToggle && deskDrawer) {
+      deskToggle.addEventListener('click', () => {
+        const isHidden = deskDrawer.classList.toggle('hidden');
+        deskToggle.setAttribute('aria-expanded', String(!isHidden));
+        deskToggle.textContent = isHidden
+          ? 'Send this sentence to my desk (free 24h note) ↓'
+          : 'Hide desk note form ↑';
+      });
+    }
+
+    if (deskForm) {
+      deskForm.addEventListener('submit', async (e) => {
+        if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+        if (deskForm.dataset.submitting === 'true') {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+
+        const btn = document.getElementById('prosody-desk-submit-btn');
+        const okEl = document.getElementById('prosody-desk-ok');
+        const errEl = document.getElementById('prosody-desk-err');
+        const origLabel = btn ? btn.textContent : 'Send to My Desk →';
+
+        deskForm.dataset.submitting = 'true';
+        if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+        if (okEl) okEl.classList.remove('visible');
+        if (errEl) { errEl.classList.remove('visible'); errEl.textContent = ''; }
+
+        try {
+          const resp = await fetch(deskForm.action || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(deskForm),
+            headers: { Accept: 'application/json' }
+          });
+          if (!resp.ok) throw new Error('Formspree returned ' + resp.status);
+          deskForm.reset();
+          deskMessageManuallyEdited = false;
+          if (okEl) okEl.classList.add('visible');
+        } catch (_) {
+          if (errEl) {
+            errEl.innerHTML = 'Your note was not sent yet &mdash; your sentence above is still saved. Please try again, or email me at <a href="mailto:gareth@garethenglish.com?subject=Free%2024h%20Desk%20Note%20(Speaking%20Prosody%20Lab)" style="color:inherit;text-decoration:underline;">gareth@garethenglish.com</a>.';
+            errEl.classList.add('visible');
+          }
+        } finally {
+          delete deskForm.dataset.submitting;
+          if (btn) { btn.disabled = false; btn.textContent = origLabel; }
         }
       });
     }
@@ -1351,6 +1642,7 @@
     init,
     selectDrill: populateDrill,
     playModelCadence,
+    previewTargetRhythm,
     simulateC2Attempt,
     evaluateCurrentAttempt,
     DRILLS

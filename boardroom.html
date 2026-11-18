@@ -8,6 +8,77 @@
     <meta name="description" content="A Business English simulation game. Navigate 20 high-stakes corporate negotiations across 4 Acts using C1 diplomatic structures.">
     <link rel="stylesheet" href="assets/fonts/fonts.css">
     <link rel="stylesheet" href="boardroom.css">
+    <style>
+        #lead-form {
+            text-align: left;
+            margin-top: 10px;
+        }
+        #lead-form .desk-form-intro {
+            font-size: 0.85rem;
+            color: #334155;
+            margin-bottom: 8px;
+            line-height: 1.45;
+        }
+        #lead-form input:not([type="checkbox"]),
+        #lead-form textarea {
+            user-select: text;
+            -webkit-user-select: text;
+            text-align: left;
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-dark);
+            padding: 0.65rem 0.75rem;
+            margin-bottom: 0.55rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            outline: none;
+            resize: vertical;
+        }
+        #lead-form input:not([type="checkbox"]):focus,
+        #lead-form textarea:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+        }
+        #lead-form .desk-consent-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: #475569;
+            margin: 4px 0 10px;
+            cursor: pointer;
+            user-select: text;
+        }
+        #lead-form .desk-consent-label input[type="checkbox"] {
+            width: auto;
+            margin: 2px 0 0;
+            flex-shrink: 0;
+        }
+        .desk-form-status {
+            margin: 6px 0 10px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            line-height: 1.45;
+            user-select: text;
+        }
+        .desk-form-status.is-success {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            color: #065f46;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+        .desk-form-status.is-error {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #9f1239;
+            padding: 8px 10px;
+            border-radius: 8px;
+        }
+        .desk-form-status:empty { display: none; }
+    </style>
 </head>
 <body>
 
@@ -56,23 +127,30 @@
             <p style="font-size: 1.25rem; font-weight: 800; margin: 10px 0;">Final Reputation: <span id="final-score" style="color: #10b981;">0</span>%</p>
             
             <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 14px; margin: 14px 0; text-align: left;">
-                <p style="font-size: 0.85rem; color: #334155; margin-bottom: 8px;"><strong>Diagnostic Next Step:</strong> In my 1-to-1 Business English sessions, I roleplay your real upcoming meetings with you and practise spontaneous, diplomatic phrasing so you command authority with international clients.</p>
-                <a href="index.html#book-diagnostic" data-track="boardroom_book_diagnostic" data-tier="trial_live_35" style="display: block; text-align: center; background: #10b981; color: #022c22; font-weight: 800; padding: 10px 16px; border-radius: 9999px; text-decoration: none; font-size: 0.85rem; margin-top: 6px;">Book a £35 Diagnostic Trial &rarr;</a>
+                <p style="font-size: 0.85rem; color: #334155; margin-bottom: 8px;"><strong>1-to-1 Business English:</strong> In my 1-to-1 sessions, I roleplay your real upcoming meetings with you and practise spontaneous, diplomatic phrasing so you command authority with international clients.</p>
+                <a href="index.html#contact" data-track="boardroom_book_diagnostic" data-tier="trial_live_35" style="display: block; text-align: center; background: #10b981; color: #022c22; font-weight: 800; padding: 10px 16px; border-radius: 9999px; text-decoration: none; font-size: 0.85rem; margin-top: 6px;">Book a 30-Min Starter Session (£35) &rarr;</a>
             </div>
 
             <form action="https://formspree.io/f/mvkgrwvj" method="POST" id="lead-form">
-                <input type="hidden" name="_subject" value="Boardroom Pitch Lead!">
-                <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact">
-                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none">
+                <input type="hidden" name="_subject" value="Boardroom Pitch — Real Workplace Message Check">
+                <input type="hidden" name="form_source" value="boardroom_pitch_inline_desk">
+                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
                 <input type="hidden" name="name" id="lead-name">
                 <input type="hidden" name="score" id="lead-score" value="">
-                <input type="email" name="email" id="lead-email" placeholder="Your Email Address..." aria-label="Your Email Address" required style="margin-bottom: 6px;">
-                <label style="display:block; font-size:0.75rem; color:#64748b; margin:8px 0; text-align:left;">
-                    <input type="checkbox" id="lead-consent" required style="width:auto; margin-right:6px;"> I agree to receive executive English debrief notes.
+                <input type="hidden" name="candidate_dossier" id="lead-dossier" value="">
+                <p class="desk-form-intro"><strong>Test a Real Workplace Message</strong> &mdash; paste 1&ndash;3 awkward email/meeting sentences + recipient role for a free 24h British C1 phrasing note from my desk.</p>
+                <input type="text" id="lead-role" name="recipient_role" placeholder="Recipient role (e.g. VP of Product, client, reviewer)..." aria-label="Recipient role (optional)" maxlength="80" autocomplete="off">
+                <textarea id="lead-message" name="message" rows="3" placeholder="Paste 1–3 awkward email or meeting sentences you want to make more diplomatic..." aria-label="Workplace message to check" required></textarea>
+                <input type="email" name="email" id="lead-email" placeholder="Your Email Address..." aria-label="Your Email Address" required>
+                <label class="desk-consent-label">
+                    <input type="checkbox" id="lead-consent" required>
+                    <span>I agree to receive a free C1 phrasing note from Gareth&rsquo;s desk.</span>
                 </label>
-                <button type="submit" id="btn-claim" style="font-size: 0.8rem; opacity: 0.9;">SEND PITCH LOGS FOR FEEDBACK</button>
+                <button type="submit" id="btn-claim">Send Message for Free 24h C1 Note &rarr;</button>
+                <div id="lead-form-status" class="desk-form-status" role="status" aria-live="polite"></div>
             </form>
-            <button id="btn-restart" class="secondary">SCHEDULE ANOTHER MEETING</button>
+            <button type="button" id="btn-view-recall" class="secondary">View Score Breakdown &amp; Recall Vault</button>
+            <button type="button" id="btn-restart" class="secondary">SCHEDULE ANOTHER MEETING</button>
         </div>
     </div>
 

@@ -228,7 +228,7 @@
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <!-- Left Narrative -->
-        <div class="lg:col-span-6 space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed">
+        <div class="lg:col-span-6 space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed" style="min-width:0;">
           <h3 class="text-lg font-bold text-slate-900">Why Rambling 38-Word Sentences Lose Marks Today</h3>
           <p>
             In 1886, Robert Louis Stevenson could write a majestic fifty-word sentence in <em>Dr Jekyll and Mr Hyde</em> stitched together with semicolons, dashes, <em>which</em>, and <em>in proportion as</em>. Readers sat by a coal fire with an entire evening to spare; they enjoyed watching a sentence wind its way down half a page.
@@ -253,8 +253,8 @@
         </div>
 
         <!-- Right Visual Shift Bars + Interactive 5-Novel Selector -->
-        <div class="lg:col-span-6 space-y-5">
-          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4">
+        <div class="lg:col-span-6 space-y-5" style="min-width:0;">
+          <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 space-y-4" style="min-width:0;max-width:100%;">
             <div>
               <span class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">15 Paired Passages (1818–1902 vs 2026)</span>
               <h3 class="text-base font-bold text-slate-900 mt-0.5">The Two-Century Structural Swap</h3>
@@ -316,10 +316,10 @@
           </div>
 
           <!-- Interactive 5-Work + 2026 Sub-Corpus Explorer -->
-          <div class="bg-slate-900 text-white rounded-2xl p-5 space-y-3.5">
-            <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="bg-slate-900 text-white rounded-2xl p-5 space-y-3.5" style="min-width:0;max-width:100%;">
+            <div class="flex flex-wrap items-center justify-between gap-2" style="min-width:0;">
               <span class="text-xs font-bold uppercase tracking-wider text-amber-300 mono-font">Inspect the 7 Sub-Corpora (N = 36 Texts)</span>
-              <select id="epoch-selector" onchange="updateEpochCard()" class="bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1 text-xs font-bold text-white focus:outline-none focus:border-amber-400">
+              <select id="epoch-selector" onchange="updateEpochCard()" class="w-full sm:w-auto bg-slate-800 border border-slate-600 rounded-lg px-2.5 py-1 text-xs font-bold text-white focus:outline-none focus:border-amber-400" style="max-width:100%;">
                 <option value="shelley">1818 · Mary Shelley, Frankenstein (3 Units)</option>
                 <option value="carroll">1865 · Lewis Carroll, Wonderland (3 Units)</option>
                 <option value="stevenson" selected>1886 · R. L. Stevenson, Jekyll &amp; Hyde (3 Units)</option>
@@ -471,7 +471,7 @@
           <button type="button" onclick="runCompressionSandbox(true)" class="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs sm:text-sm font-bold shadow-sm transition">
             Analyse Clause Packing &amp; Compression
           </button>
-          <span class="text-xs text-slate-500">Highlights finite <em>which/because</em> chains in amber and C1 nominal/participial packing in green.</span>
+          <span class="text-xs text-slate-500">100% local in-browser analysis &middot; Zero text uploaded. Highlights finite <em>which/because</em> chains in amber and C1 nominal/participial packing in green.</span>
         </div>
       </div>
 
@@ -536,6 +536,76 @@
       </div>
     </section>
 
+    <!-- ================= EXPLICIT OPT-IN BELFAST DESK DROP-BOX ================= -->
+    <section id="belfast-desk-card" class="bg-white border-2 border-slate-200 rounded-2xl p-6 sm:p-8 md:p-10 shadow-sm space-y-6 scroll-mt-24">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-5">
+        <div class="space-y-1.5">
+          <div class="text-xs font-bold uppercase tracking-wider text-amber-800 mono-font">Explicit Opt-In Only &middot; Zero Automatic Upload</div>
+          <h2 class="text-2xl sm:text-3xl font-bold display-serif text-slate-900">
+            Send to My Belfast Desk (Free 24h Red-Pen Note)
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 max-w-3xl leading-relaxed">
+            The Compression Sandbox above runs 100% locally in your browser (zero text uploaded while you test). If you want my personal red-pen feedback on whether your sentence packing reads naturally or drifts into stiff nominal jargon, load your draft and metrics below.
+          </p>
+        </div>
+        <div class="shrink-0 bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2 text-xs font-bold text-emerald-900 mono-font">
+          24h Human Reply &middot; No Bots
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <button type="button" id="desk-load-btn" onclick="loadStudy4ToolIntoDesk()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">
+          Load my text &amp; metrics from tool above
+        </button>
+        <span id="desk-load-status" class="text-xs font-semibold text-emerald-800" aria-live="polite"></span>
+      </div>
+
+      <div id="desk-success-banner" role="status" aria-live="polite" class="hidden rounded-xl bg-emerald-50 border border-emerald-200 p-5 text-sm text-emerald-950 space-y-2">
+        <div class="font-bold text-base">Sent straight to my Belfast desk</div>
+        <p class="text-slate-700 leading-relaxed">
+          Thank you &mdash; I have received your draft and compression readout, and I will reply with a personal red-pen note within 24 hours.
+        </p>
+        <button type="button" id="desk-reset-btn" class="text-xs font-bold text-amber-800 hover:underline cursor-pointer">
+          Send another sentence or paragraph
+        </button>
+      </div>
+
+      <form id="belfast-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST" class="space-y-4">
+        <input type="hidden" name="_subject" value="Study 4 (Clause Compression) — Free 24h Belfast Desk Red-Pen Note" />
+        <input type="hidden" name="form_source" value="research_study_4_compression" />
+        <input type="hidden" id="desk-metrics-field" name="tool_metrics" value="" />
+        <input type="hidden" id="desk-last-tool-field" name="last_free_tool" value="" />
+        <input type="hidden" id="desk-dossier-field" name="candidate_dossier" value="" />
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="desk-email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your email (required for my 24h note)</label>
+            <input type="email" id="desk-email" name="email" required placeholder="you@example.com" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-amber-700" />
+          </div>
+          <div>
+            <label for="desk-name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your name / target exam (optional)</label>
+            <input type="text" id="desk-name" name="name" placeholder="e.g. Tomasz — C1 Advanced or C2 Proficiency" class="w-full rounded-xl border border-slate-300 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-900 focus:outline-none focus:border-amber-700" />
+          </div>
+        </div>
+
+        <div>
+          <label for="desk-message" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mono-font mb-1">Your draft, compression readout &amp; question</label>
+          <textarea id="desk-message" name="message" rows="5" required placeholder="Click 'Load my text & metrics from tool above' or paste a wordy sentence / short paragraph for a free 24h red-pen note..." class="w-full rounded-xl border border-slate-300 bg-slate-50 p-3.5 text-sm text-slate-900 leading-relaxed focus:outline-none focus:border-amber-700"></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <button type="submit" id="desk-submit-btn" class="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs sm:text-sm font-bold shadow-sm transition cursor-pointer">
+            Send to My Belfast Desk (Free 24h Red-Pen Note) &rarr;
+          </button>
+          <div class="text-xs text-slate-600">
+            Prefer direct email? <a href="mailto:gareth@garethenglish.com?subject=Study%204%20%E2%80%94%20Free%2024h%20Red-Pen%20Note" class="underline font-bold text-amber-800 hover:text-amber-700">gareth@garethenglish.com</a>
+          </div>
+        </div>
+        <div id="desk-form-status" role="status" aria-live="polite" class="text-xs sm:text-sm font-semibold"></div>
+      </form>
+    </section>
+
     <!-- ================= SECTION 4: 6-PART RESEARCH SERIES NAVIGATION & COACHING CTA ================= -->
     <section id="research-series" class="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 space-y-6 shadow-md">
       <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-slate-800 pb-5">
@@ -591,7 +661,7 @@
         </div>
         <div class="flex flex-wrap gap-2.5 shrink-0 text-xs font-bold">
           <a href="dark-academia-index.html" class="px-4 py-2.5 rounded-xl bg-white text-slate-900 hover:bg-slate-100 transition">15-Lesson Literature Course</a>
-          <a href="index.html#services" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white transition">1-to-1 Exam Coaching &rarr;</a>
+          <a href="index.html#contact" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white transition">1-to-1 Exam Coaching &rarr;</a>
         </div>
       </div>
     </section>
@@ -1053,10 +1123,185 @@
       if (el) el.classList.toggle('open');
     }
 
+    function loadStudy4ToolIntoDesk() {
+      const inp = document.getElementById('sandbox-input');
+      const rawText = inp ? inp.value.trim() : '';
+      const res = rawText ? analyzeCompression(rawText) : null;
+
+      const meanLen = res ? res.meanL.toFixed(1) + 'w/sent' : ((document.getElementById('sb-metric-len') && document.getElementById('sb-metric-len').textContent) || '--');
+      const fsdi = res ? res.fsdi.toFixed(1) : ((document.getElementById('sb-metric-fsdi') && document.getElementById('sb-metric-fsdi').textContent) || '--');
+      const npci = res ? res.npci.toFixed(1) : ((document.getElementById('sb-metric-npci') && document.getElementById('sb-metric-npci').textContent) || '--');
+      const kPct = res ? res.kPct.toFixed(0) + '%' : ((document.getElementById('sb-metric-k') && document.getElementById('sb-metric-k').textContent) || '--');
+      const pps = res ? res.pps.toFixed(1) : ((document.getElementById('sb-metric-pps') && document.getElementById('sb-metric-pps').textContent) || '--');
+      const wordsMeta = res ? `${res.W} words, ${res.S} sent(s)` : '';
+
+      const readout = `Mean Sentence Length: ${meanLen} | FSDI: ${fsdi} | NPCI: ${npci} | Compression Share (K): ${kPct} | Ideas/Sent (PPS): ${pps}${wordsMeta ? ' | ' + wordsMeta : ''}`;
+
+      const drills = [];
+      [1, 2, 3, 4, 5].forEach(id => {
+        const dEl = document.getElementById('drill-input-' + id);
+        if (dEl && dEl.value.trim()) {
+          drills.push(`Drill #${id} (${countWords(dEl.value)}w): ${dEl.value.trim()}`);
+        }
+      });
+
+      const msgEl = document.getElementById('desk-message');
+      const metricsEl = document.getElementById('desk-metrics-field');
+      const statusEl = document.getElementById('desk-load-status');
+
+      if (metricsEl) metricsEl.value = readout;
+      if (msgEl) {
+        let body = `[Compression Readout: ${readout}]\n\n`;
+        if (rawText) body += `Sandbox Text:\n${rawText}\n\n`;
+        if (drills.length) body += `My Compression Drills:\n${drills.join('\n')}\n\n`;
+        body += 'Question for Gareth: ';
+        msgEl.value = body;
+        msgEl.focus();
+      }
+      if (statusEl) {
+        statusEl.textContent = 'Loaded sandbox text + sentence length & compression readout.';
+      }
+    }
+
+    function readStudyDossierIfPlayed() {
+      let lastFreeTool = 'english-compression-1818-2026';
+      try {
+        lastFreeTool = localStorage.getItem('gm_last_free_tool') || 'english-compression-1818-2026';
+      } catch (e) {}
+      let candidateDossier = '';
+      try {
+        const rawSummary = localStorage.getItem('gm_active_dossier_summary');
+        const rawState = localStorage.getItem('gm_candidate_dossier_v1');
+        let parsedState = null;
+        if (rawState) {
+          try { parsedState = JSON.parse(rawState); } catch (_) {}
+        }
+        const hasUpdatedSkill = Boolean(
+          parsedState && parsedState.skills &&
+          Object.values(parsedState.skills).some(sk => sk && sk.lastUpdated)
+        );
+        if (rawSummary) {
+          let summary = null;
+          try { summary = JSON.parse(rawSummary); } catch (_) {}
+          const played = Boolean(
+            summary && (
+              (summary.gamesCompleted || 0) > 0 ||
+              (summary.drillsCompleted || 0) > 0 ||
+              hasUpdatedSkill ||
+              (summary.gamesCompleted === undefined && summary.drillsCompleted === undefined && summary.code)
+            )
+          );
+          if (played) {
+            const parts = [];
+            if (summary.code) parts.push(summary.code);
+            if (summary.cefrShort || summary.cefrBand) parts.push(summary.cefrShort || summary.cefrBand);
+            if (summary.weakestSkill) parts.push('Focus: ' + summary.weakestSkill);
+            candidateDossier = parts.join(' | ') || rawSummary.slice(0, 400);
+          }
+        }
+      } catch (e) {}
+      return { lastFreeTool, candidateDossier };
+    }
+
+    function initBelfastDeskForm(articleSlug) {
+      const form = document.getElementById('belfast-desk-form');
+      if (!form) return;
+      const statusEl = document.getElementById('desk-form-status');
+      const successEl = document.getElementById('desk-success-banner');
+      const submitBtn = document.getElementById('desk-submit-btn');
+      const resetBtn = document.getElementById('desk-reset-btn');
+      const lastToolEl = document.getElementById('desk-last-tool-field');
+      const dossierEl = document.getElementById('desk-dossier-field');
+
+      const syncTel = () => {
+        const tel = readStudyDossierIfPlayed();
+        if (lastToolEl) lastToolEl.value = tel.lastFreeTool || articleSlug;
+        if (dossierEl) dossierEl.value = tel.candidateDossier;
+      };
+      syncTel();
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (successEl) successEl.classList.add('hidden');
+          form.classList.remove('hidden');
+          if (statusEl) statusEl.textContent = '';
+        });
+      }
+
+      form.addEventListener('submit', async (e) => {
+        if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+        if (form.dataset.submitting === 'true') {
+          e.preventDefault();
+          return;
+        }
+        e.preventDefault();
+
+        const emailInput = form.querySelector('input[name="email"]');
+        const msgInput = form.querySelector('textarea[name="message"]');
+        const emailVal = emailInput ? emailInput.value.trim() : '';
+        const msgVal = msgInput ? msgInput.value.trim() : '';
+
+        if (!emailVal || !emailVal.includes('@')) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.textContent = 'Please enter a valid email address so I can send your 24h red-pen note.';
+          }
+          if (emailInput) emailInput.focus();
+          return;
+        }
+        if (!msgVal) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.textContent = 'Please load your sandbox text above or paste a sentence or paragraph first.';
+          }
+          if (msgInput) msgInput.focus();
+          return;
+        }
+
+        syncTel();
+        const origHtml = submitBtn ? submitBtn.innerHTML : 'Send to My Belfast Desk (Free 24h Red-Pen Note) &rarr;';
+        form.dataset.submitting = 'true';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending to Gareth...';
+        }
+        if (statusEl) {
+          statusEl.textContent = '';
+          statusEl.className = 'text-xs sm:text-sm font-semibold';
+        }
+
+        try {
+          const response = await fetch(form.action || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { 'Accept': 'application/json' }
+          });
+          if (!response.ok) throw new Error('Submission failed');
+          window.trackFunnelEvent?.('research_desk_dropbox_succeeded', { article: articleSlug });
+          form.reset();
+          syncTel();
+          form.classList.add('hidden');
+          if (successEl) successEl.classList.remove('hidden');
+        } catch (err) {
+          if (statusEl) {
+            statusEl.className = 'rounded-xl bg-rose-50 border border-rose-200 p-3.5 text-xs sm:text-sm font-semibold text-rose-800';
+            statusEl.innerHTML = 'Could not send right now &mdash; your text above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Study%204%20Free%2024h%20Red-Pen%20Note" class="underline font-bold">gareth@garethenglish.com</a>.';
+          }
+        } finally {
+          delete form.dataset.submitting;
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = origHtml;
+          }
+        }
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', function () {
       updateEpochCard();
       renderCompressionDrills();
       loadCompressionPreset('modern_c1', false);
+      initBelfastDeskForm('english-compression-1818-2026');
     });
   </script>
   <script src="analytics.js" defer></script>

@@ -11,6 +11,80 @@
     <style>
       body { font-family: 'JetBrains Mono', ui-monospace, monospace; }
       .morph-formula-row code { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+      #lead-form { text-align: left; margin-top: 10px; }
+      #lead-form .desk-form-intro {
+          font-size: 0.85rem;
+          color: #f5f5f4;
+          margin-bottom: 6px;
+          line-height: 1.45;
+          user-select: text;
+      }
+      #lead-form .desk-run-chips {
+          font-size: 0.78rem;
+          color: #fcd34d;
+          margin-bottom: 8px;
+          line-height: 1.4;
+          user-select: text;
+      }
+      #lead-form input:not([type="checkbox"]),
+      #lead-form textarea {
+          user-select: text;
+          -webkit-user-select: text;
+          text-align: left;
+          width: 100%;
+          background: #1c1917;
+          border: 2px solid var(--iron);
+          color: var(--parchment);
+          padding: 0.6rem 0.75rem;
+          margin-bottom: 0.6rem;
+          font-family: inherit;
+          font-size: 0.9rem;
+          border-radius: 4px;
+          outline: none;
+          resize: vertical;
+      }
+      #lead-form input:not([type="checkbox"]):focus,
+      #lead-form textarea:focus {
+          border-color: var(--brass-light);
+          box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+      }
+      #lead-form .desk-consent-label {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          font-size: 0.76rem;
+          color: #d6d3d1;
+          margin: 4px 0 10px;
+          cursor: pointer;
+          user-select: text;
+      }
+      #lead-form .desk-consent-label input[type="checkbox"] {
+          width: auto;
+          margin: 2px 0 0;
+          flex-shrink: 0;
+      }
+      .desk-form-status {
+          margin: 6px 0 10px;
+          font-size: 0.84rem;
+          font-weight: 700;
+          line-height: 1.45;
+          user-select: text;
+      }
+      .desk-form-status.is-success {
+          background: rgba(22, 163, 74, 0.2);
+          border: 1px solid #4ade80;
+          color: #dcfce7;
+          padding: 8px 10px;
+          border-radius: 6px;
+      }
+      .desk-form-status.is-error {
+          background: rgba(220, 38, 38, 0.2);
+          border: 1px solid #f87171;
+          color: #fecaca;
+          padding: 8px 10px;
+          border-radius: 6px;
+      }
+      .desk-form-status:empty { display: none; }
     </style>
 </head>
 <body>
@@ -61,23 +135,31 @@
             <p style="font-size: 1.25rem; font-weight: 800; margin: 10px 0;">Parts Manufactured: <span id="final-score" style="color: #f59e0b;">0</span></p>
             
             <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 14px; margin: 14px 0; text-align: left;">
-                <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 8px;"><strong>Diagnostic Next Step:</strong> Cambridge Part 3 Word Formation penalises subtle spelling shifts and negative prefixes. In my 1-to-1 sessions, I diagnose your exact patterns and train fast, accurate derivation.</p>
-                <a href="index.html#book-diagnostic" data-track="factory_book_diagnostic" data-tier="trial_live_35" style="display: block; text-align: center; background: #f59e0b; color: #451a03; font-weight: 800; padding: 10px 16px; border-radius: 9999px; text-decoration: none; font-size: 0.85rem; margin-top: 6px;">Book a £35 Diagnostic Trial &rarr;</a>
+                <p style="font-size: 0.85rem; color: #e7e5e4; margin-bottom: 8px;"><strong>1-to-1 Coaching:</strong> Cambridge Part 3 Word Formation penalises subtle spelling shifts and negative prefixes. In my 1-to-1 sessions, I look at your real writing patterns and fix recurring slips.</p>
+                <a href="index.html#contact" data-track="factory_book_diagnostic" data-tier="trial_live_35" style="display: block; text-align: center; background: #f59e0b; color: #451a03; font-weight: 800; padding: 10px 16px; border-radius: 9999px; text-decoration: none; font-size: 0.85rem; margin-top: 6px;">Book a 30-Min Starter Session (£35) &rarr;</a>
             </div>
 
             <form action="https://formspree.io/f/mvkgrwvj" method="POST" id="lead-form">
-                <input type="hidden" name="_subject" value="Word Factory Lead!">
-                <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact">
-                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none">
+                <input type="hidden" name="_subject" value="Word Factory — C1 Word Family Sentence Check">
+                <input type="hidden" name="form_source" value="word_factory_inline_desk">
+                <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
                 <input type="hidden" name="name" id="lead-name">
                 <input type="hidden" name="score" id="lead-score" value="">
-                <input type="email" name="email" id="lead-email" placeholder="Your Email Address..." aria-label="Your Email Address" required style="margin-bottom: 6px;">
-                <label style="display:block; font-size:0.75rem; color:#94a3b8; margin:8px 0; text-align:left;">
-                    <input type="checkbox" id="lead-consent" required style="width:auto; margin-right:6px;"> I agree to receive my score report and exam tips.
+                <input type="hidden" name="run_context" id="lead-run-context" value="">
+                <input type="hidden" name="candidate_dossier" id="lead-dossier" value="">
+                <p class="desk-form-intro"><strong>Write 1 sentence using a word family from this run</strong> (or ask a C1 question) for a free 24h note from my desk.</p>
+                <p id="lead-run-prompt" class="desk-run-chips"></p>
+                <textarea id="lead-message" name="message" rows="3" placeholder="Write 1 sentence using a derived word from this run, or ask me 1 C1 question..." aria-label="Your sentence or C1 question" required></textarea>
+                <input type="email" name="email" id="lead-email" placeholder="Your Email Address..." aria-label="Your Email Address" required>
+                <label class="desk-consent-label">
+                    <input type="checkbox" id="lead-consent" required>
+                    <span>I agree to receive a free 24h note from Gareth&rsquo;s desk.</span>
                 </label>
-                <button type="submit" id="btn-claim" style="font-size: 0.8rem; opacity: 0.9;">SUBMIT TIMESHEET FOR FEEDBACK</button>
+                <button type="submit" id="btn-claim" style="font-size: 0.9rem;">Send Sentence for Free 24h Note &rarr;</button>
+                <div id="lead-form-status" class="desk-form-status" role="status" aria-live="polite"></div>
             </form>
-            <button id="btn-restart" class="secondary">RESTART MACHINERY</button>
+            <button type="button" id="btn-view-recall" class="secondary">View Score Breakdown &amp; Recall Vault</button>
+            <button type="button" id="btn-restart" class="secondary">RESTART MACHINERY</button>
         </div>
     </div>
 

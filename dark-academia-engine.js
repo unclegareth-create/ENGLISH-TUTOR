@@ -1428,9 +1428,22 @@ class DarkAcademiaEngine {
         </div>
       `;
     } else {
+      const existingForm = container.querySelector('#da-desk-form');
+      if (existingForm) {
+        const callout = container.querySelector('#da-completion-score-callout');
+        if (callout) {
+          callout.textContent = `Free Lesson Score: ${this.score} / ${this.totalMarks} Marks (${pct}%)`;
+        }
+        const scoreInput = existingForm.querySelector('#da-desk-score');
+        if (scoreInput) {
+          scoreInput.value = `${this.unitId}: ${this.score}/${this.totalMarks} (${pct}%)`;
+        }
+        return;
+      }
+
       container.innerHTML = `
         <div class="da-completion-top">
-          <span class="da-score-callout">Free Lesson Score: ${this.score} / ${this.totalMarks} Marks (${pct}%)</span>
+          <span class="da-score-callout" id="da-completion-score-callout">Free Lesson Score: ${this.score} / ${this.totalMarks} Marks (${pct}%)</span>
           <span class="badge badge-canon-dracula">C1/C2 Complete Course</span>
         </div>
         <h3 class="da-completion-title">Enjoying the Course? Unlock All 15 Lessons</h3>
@@ -1448,6 +1461,9 @@ class DarkAcademiaEngine {
             <span>Unlock Full 15-Lesson Course — £24</span>
             <span aria-hidden="true">→</span>
           </button>
+          <button type="button" id="da-desk-toggle-btn" class="dossier-pill-btn" style="cursor:pointer;" aria-expanded="false" aria-controls="da-desk-drawer">
+            ✍️ Or send your Lesson Writing Sandbox paragraph to my desk for a free Same-Subject &amp; Register note &rarr;
+          </button>
           <a href="${meta.nextFreeUrl}" class="da-link-secondary">
             Or try ${meta.nextFreeTitle} for free first →
           </a>
@@ -1455,7 +1471,133 @@ class DarkAcademiaEngine {
             🔗 Share this lesson with a study partner (Copy Link)
           </button>
         </div>
+        <div id="da-desk-drawer" hidden style="margin-top:1.35rem; padding-top:1.25rem; border-top:1px dashed rgba(212,175,55,0.35); text-align:left;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.65rem;">
+            <strong style="color:#fef3c7; font-size:0.96rem;">From My Belfast Desk · Free Same-Subject &amp; Register Check (24h)</strong>
+            <span style="font-family:monospace; font-size:0.75rem; color:#fde68a;">Lesson Score Attached</span>
+          </div>
+          <p style="font-size:0.86rem; color:#d6cbb9; margin-bottom:0.85rem; line-height:1.5;">
+            I mark every paragraph personally: I will check your participle subjects (Same-Subject Rule) and flag whether any literary period words slipped into a modern academic draft.
+          </p>
+          <form id="da-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST" style="display:flex; flex-direction:column; gap:0.65rem;">
+            <input type="hidden" name="_subject" value="Dark Academia Free Lesson — Sandbox Paragraph Check">
+            <input type="hidden" name="form_source" value="dark_academia_lesson_sandbox_desk">
+            <input type="hidden" name="unit_id" value="${this.unitId}">
+            <input type="hidden" name="lesson_score" id="da-desk-score" value="${this.unitId}: ${this.score}/${this.totalMarks} (${pct}%)">
+            <input type="hidden" name="same_subject_checked" id="da-desk-same-subject" value="">
+            <input type="hidden" name="candidate_dossier" id="da-desk-dossier" value="">
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none" aria-hidden="true">
+            <textarea id="da-desk-message" name="message" rows="4" required placeholder="Paste your 80–150 word Lesson Writing Sandbox paragraph (or 1–2 sentences)..." style="width:100%; box-sizing:border-box; padding:0.75rem; border-radius:8px; border:1px solid rgba(212,175,55,0.4); background:rgba(15,23,42,0.85); color:#f8fafc; font-family:inherit; font-size:0.92rem; line-height:1.5; resize:vertical;"></textarea>
+            <div style="display:flex; flex-wrap:wrap; gap:0.65rem; align-items:stretch;">
+              <input type="email" id="da-desk-email" name="email" required placeholder="Your email for my 24h red-pen note..." aria-label="Your email address" style="flex:1 1 220px; min-width:0; box-sizing:border-box; padding:0.7rem 0.85rem; border-radius:8px; border:1px solid rgba(212,175,55,0.4); background:rgba(15,23,42,0.85); color:#f8fafc; font-family:inherit; font-size:0.9rem;">
+              <button type="submit" id="da-desk-submit" class="da-btn-gold" style="border:none; cursor:pointer; justify-content:center;">Send Paragraph for Free Note &rarr;</button>
+            </div>
+            <div id="da-desk-status" role="status" aria-live="polite" style="font-size:0.86rem; font-weight:600; line-height:1.45;"></div>
+          </form>
+        </div>
       `;
+
+      const toggleBtn = container.querySelector('#da-desk-toggle-btn');
+      const drawer = container.querySelector('#da-desk-drawer');
+      const deskForm = container.querySelector('#da-desk-form');
+      const msgEl = container.querySelector('#da-desk-message');
+      const statusEl = container.querySelector('#da-desk-status');
+      const submitBtn = container.querySelector('#da-desk-submit');
+
+      const syncDeskPrefill = (forceFill) => {
+        const cap = document.getElementById('capstone-input');
+        if (msgEl && cap && cap.value.trim() && (forceFill || (!msgEl.dataset.userEdited && !msgEl.value.trim()))) {
+          msgEl.value = cap.value.trim();
+        }
+        const ssCheck = document.getElementById('drac1-same-subject-check');
+        const ssHidden = container.querySelector('#da-desk-same-subject');
+        if (ssHidden) {
+          ssHidden.value = ssCheck ? (ssCheck.checked ? 'checked' : 'unchecked') : '';
+        }
+        const dosEl = container.querySelector('#da-desk-dossier');
+        if (dosEl) {
+          try { dosEl.value = localStorage.getItem('gm_active_dossier_summary') || ''; } catch (_) {}
+        }
+      };
+
+      if (msgEl) {
+        msgEl.addEventListener('input', () => {
+          msgEl.dataset.userEdited = 'true';
+        });
+      }
+
+      if (toggleBtn && drawer) {
+        toggleBtn.addEventListener('click', () => {
+          const isOpening = drawer.hasAttribute('hidden');
+          if (isOpening) {
+            drawer.removeAttribute('hidden');
+            toggleBtn.setAttribute('aria-expanded', 'true');
+            syncDeskPrefill(false);
+            if (msgEl) msgEl.focus();
+          } else {
+            drawer.setAttribute('hidden', '');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      if (deskForm) {
+        deskForm.addEventListener('submit', async (e) => {
+          if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+          e.preventDefault();
+          if (deskForm.dataset.submitting === 'true') return;
+
+          const gotcha = deskForm.querySelector('input[name="_gotcha"]');
+          const origText = submitBtn ? submitBtn.textContent : 'Send Paragraph for Free Note →';
+
+          if (gotcha && gotcha.value.trim()) {
+            if (statusEl) {
+              statusEl.style.color = '#86efac';
+              statusEl.textContent = 'Sent to my desk — thank you.';
+            }
+            return;
+          }
+
+          syncDeskPrefill(false);
+          deskForm.dataset.submitting = 'true';
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending to my desk...';
+          }
+          if (statusEl) {
+            statusEl.style.color = '#e2e8f0';
+            statusEl.textContent = '';
+          }
+
+          try {
+            const res = await fetch(deskForm.action || 'https://formspree.io/f/mvkgrwvj', {
+              method: 'POST',
+              body: new FormData(deskForm),
+              headers: { Accept: 'application/json' }
+            });
+            if (!res.ok) throw new Error('Request failed');
+            if (statusEl) {
+              statusEl.style.color = '#86efac';
+              statusEl.textContent = 'Received at my desk in Northern Ireland. I will send personal notes on your Same-Subject Rule and register within 24 hours.';
+            }
+            if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+            if (typeof window.trackFunnelEvent === 'function') {
+              window.trackFunnelEvent('desk_dropbox_submitted', { tool: this.unitId });
+            }
+          } catch (_) {
+            if (statusEl) {
+              statusEl.style.color = '#fca5a5';
+              statusEl.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=Dark%20Academia%20Paragraph%20Check" style="color:#fde68a;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+            }
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = origText;
+            }
+          } finally {
+            deskForm.dataset.submitting = 'false';
+          }
+        });
+      }
     }
   }
 

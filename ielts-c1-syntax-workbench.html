@@ -1010,6 +1010,61 @@
       background: var(--bg-subtle);
       border-left: 3px solid var(--bg-ink);
     }
+    .scanner-prompt-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--accent-sky);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem 1.1rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .scanner-prompt-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+    .scanner-task-select {
+      padding: 0.42rem 0.75rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-paper);
+      color: var(--bg-ink);
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      font-weight: 600;
+      max-width: 100%;
+    }
+    .scanner-prompt-text {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      line-height: 1.5;
+    }
+    .scanner-honesty-note {
+      background: #fffbeb;
+      border: 1px solid var(--accent-amber-border);
+      border-left: 4px solid var(--accent-amber);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.95rem;
+      font-size: 0.82rem;
+      color: #78350f;
+      line-height: 1.5;
+      margin-top: 0.5rem;
+    }
+    .scanner-diagnosis-list li.diag-warn {
+      background: #fef2f2;
+      border-left-color: var(--accent-red);
+      color: #7f1d1d;
+    }
+    .scanner-diagnosis-list li.diag-caution {
+      background: #fffbeb;
+      border-left-color: var(--accent-amber);
+      color: #78350f;
+    }
 
     /* Module 03 Dual-Route & Free Red-Pen Bridge */
     .workbench-bridge {
@@ -1564,11 +1619,25 @@
       </div>
 
       <div class="scanner-presets">
-        <span class="preset-label">Load Sample Draft:</span>
-        <button type="button" class="btn-preset active" data-sample="0">Sample 1: Urban Congestion (Band 6.0)</button>
+        <span class="preset-label">Draft Source:</span>
+        <button type="button" class="btn-preset active" data-sample="clear">Write / Paste My Own Paragraph</button>
+        <button type="button" class="btn-preset" data-sample="0">Sample 1: Urban Congestion (Band 6.0)</button>
         <button type="button" class="btn-preset" data-sample="1">Sample 2: Remote Work Culture (Band 6.0)</button>
         <button type="button" class="btn-preset" data-sample="2">Sample 3: Arts vs STEM Funding (Band 6.5)</button>
-        <button type="button" class="btn-preset" data-sample="clear">Clear &amp; Paste My Own Paragraph</button>
+      </div>
+
+      <div class="scanner-prompt-bar">
+        <div class="scanner-prompt-row">
+          <label for="scanner-task-type" class="preset-label" style="margin-right:0;">Essay Prompt Type:</label>
+          <select id="scanner-task-type" class="scanner-task-select">
+            <option value="advantages-outweigh">Advantages Outweigh Disadvantages</option>
+            <option value="opinion">Opinion (Agree or Disagree)</option>
+            <option value="discussion">Discuss Both Views &amp; Give Opinion</option>
+            <option value="problem-solution">Problem / Cause &amp; Solution</option>
+            <option value="two-part">Two-Part Direct Question</option>
+          </select>
+        </div>
+        <div id="scanner-prompt-display" class="scanner-prompt-text">Prompt: More employees work remotely than before. Do the advantages of this development outweigh the disadvantages?</div>
       </div>
 
       <div class="scanner-workbench">
@@ -1600,6 +1669,9 @@
           </div>
 
           <ul id="scanner-action-list" class="scanner-diagnosis-list"></ul>
+          <div class="scanner-honesty-note">
+            <strong>What Browser Checks Cannot Judge (Error vs Style, Articles &amp; Prepositions):</strong> Rules here can flag repeated openers, pronoun drift, sentence length, and basic C1 patterns, yet only a human marker can check preposition choice, articles with general nouns, whether a change fixes a real grammatical error or only style, and whether your paragraph directly answers the prompt.
+          </div>
         </div>
 
         <!-- Right Pane: Annotated Mirror & Revealable Cambridge Model -->
@@ -1665,7 +1737,7 @@
               <span class="bridge-kicker" style="margin-bottom:0.2rem;">Free 1-Paragraph Note &middot; No Payment Needed</span>
               <h4 style="font-family:var(--font-display);font-size:1.12rem;color:var(--bg-ink);">Or paste 1 short paragraph (up to 150 words) below for a free 24-hour red-pen reply</h4>
             </div>
-            <button type="button" id="btn-copy-scan-to-form" class="redpen-copy-btn">Copy Scanned Paragraph Below &darr;</button>
+            <button type="button" id="btn-copy-scan-to-form" class="redpen-copy-btn">Copy Paragraph + Readout Below &darr;</button>
           </div>
 
           <form id="contact-form" class="redpen-form" action="https://formspree.io/f/mvkgrwvj" method="POST">
@@ -1673,13 +1745,14 @@
             <input type="hidden" name="_next" value="https://garethenglish.com/?submitted=true#contact-form" />
             <input type="hidden" name="source_page" value="ielts-c1-syntax-workbench.html" />
             <input type="hidden" id="drill-score-field" name="drill_progress" value="" />
+            <input type="hidden" id="scanner-diagnostics-field" name="scanner_diagnostics" value="" />
             <input type="hidden" id="candidate-dossier-field" name="candidate_dossier" value="" />
             <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;" />
 
             <div class="redpen-grid-2">
               <div class="redpen-field">
-                <label for="redpen-name">First Name</label>
-                <input id="redpen-name" class="redpen-input" name="name" type="text" required autocomplete="name" placeholder="Your first name" />
+                <label for="redpen-name">First Name (Optional)</label>
+                <input id="redpen-name" class="redpen-input" name="name" type="text" autocomplete="name" placeholder="Your first name (optional)" />
               </div>
               <div class="redpen-field">
                 <label for="redpen-email">Email Address</label>
@@ -1851,8 +1924,8 @@
             '1) <span class="formula-token">What + Clause + BE</span> + Noun Phrase / that-Clause<br/>2) <span class="formula-token">It is + Focused Element + that / who</span> + Remainder of Clause',
           example:
             'Example: <strong>What undermines</strong> public trust <strong>is not</strong> taxation itself, <strong>but</strong> opaque spending.',
-          regexCheck: /(?:\bwhat\s+[\w\s]{3,45}\b(?:is|was|are)\b|\bit\s+(?:is|was)\s+[\w\s,]{2,45}\bthat\b)/i,
-          patternHint: "Use 'What [verb phrase] is...' OR 'It is [focus phrase] that...'",
+          regexCheck: /(?:\bwhat\s+(?!is\b|are\b|was\b|were\b)[a-z][^.?!]{3,110}?\b(?:is|was|are|were)\s+(?:not\b\s+|that\b\s+)?[a-z]|\bit\s+(?:is|was)\s+(?!(?:widely|generally|often|increasingly|commonly|undeniably)?\s*(?:argued|accepted|acknowledged|recognised|recognized|believed|thought|considered|reported|clear|evident|obvious|apparent|true|essential|vital|crucial|important|imperative|likely|unlikely|possible|doubtful|worth)\b)[^.?!]{2,80}?\b(?:that|who)\s+\w+)/i,
+          patternHint: "Use 'What [subject + verb] is...' OR 'It is [focused noun] that...'",
           drills: [
             {
               id: 'b3-d1',
@@ -1888,7 +1961,7 @@
             '<span class="formula-token">Not only / Rarely / Seldom + Auxiliary (do/does/did/have/can) + Subject + Main Verb</span> ...',
           example:
             'Example: <strong>Not only does</strong> congestion charge revenue fund buses, <strong>but it also</strong> cuts nitrogen dioxide levels.',
-          regexCheck: /\b(?:not\s+only|rarely|seldom|little|at\s+no\s+time|under\s+no\s+circumstances|scarcely|hardly)\s+(?:do|does|did|have|has|had|can|could|will|would|should|is|are|was|were)\s+\w+/i,
+          regexCheck: /(?:^|[.!?;]\s*|,\s*(?:yet|and|for)\s+|\b(?:but|and)\s+)(?:not\s+only|rarely|seldom|little|at\s+no\s+time|under\s+no\s+circumstances|scarcely|hardly)\s+(?:do|does|did|have|has|had|can|could|will|would|should|must|is|are|was|were)\s+\w+/i,
           patternHint: "Invert the auxiliary before the subject: 'Not only does/has [Subject]...' or 'Rarely do/have [Subject]...'",
           drills: [
             {
@@ -1925,8 +1998,8 @@
             'Main Clause + <span class="formula-token">, thereby + Present Participle (-ing)</span> + Object / Complement',
           example:
             'Example: Employers have automated routine clerical tasks<strong>, thereby freeing</strong> staff for client-facing work.',
-          regexCheck: /,\s*(?:thereby|thus)?\s*\b\w+ing\b/i,
-          patternHint: "Join the second clause with a comma + ', thereby + [verb]-ing...'",
+          regexCheck: /,\s*(?:(?:thereby|thus|hence)\s+)?(?!(?:thing|something|anything|everything|nothing|morning|evening|spring|king|ring|wing|string|during|ceiling|building|housing|clothing)s?\b)[a-z]{2,}ing\s+[a-z]{2,}/i,
+          patternHint: "Join the second clause with a comma + ', thereby + [present participle -ing] + object'",
           drills: [
             {
               id: 'b5-d1',
@@ -2097,7 +2170,9 @@
 
         const hasPronounTrap = PRONOUN_TRAP_REGEX.test(val);
         const hasSnakeOil = SNAKE_OIL_REGEX.test(val);
-        const matchesStructure = bp.regexCheck.test(val);
+        const hasUninvertedNeg = bp.id === 'bp-4' && /\b(?:not\s+only|rarely|seldom|at\s+no\s+time|under\s+no\s+circumstances)\s+(?!do\b|does\b|did\b|have\b|has\b|had\b|can\b|could\b|will\b|would\b|should\b|must\b|is\b|are\b|was\b|were\b)[a-z]+/i.test(val);
+        const hasInversionInfinitiveSlip = bp.id === 'bp-4' && /\b(?:does|did|can|could|will|would|should)\s+(?:[a-z]+\s+){1,3}(?:generates|exploits|consults|provides|serves|creates|causes|reduces|increases)\b/i.test(val);
+        const matchesStructure = bp.regexCheck.test(val) && !hasUninvertedNeg && !hasInversionInfinitiveSlip;
         const wordCount = val.split(/\s+/).length;
 
         if (hasSnakeOil) {
@@ -2106,6 +2181,9 @@
         } else if (hasPronounTrap) {
           statusEl.className = 'live-status-pill warning';
           statusEl.textContent = '⚠️ Personal Pronoun (I/we/our) Found';
+        } else if (hasUninvertedNeg || hasInversionInfinitiveSlip) {
+          statusEl.className = 'live-status-pill warning';
+          statusEl.textContent = hasUninvertedNeg ? '⚠️ Missing Inversion Order' : '⚠️ Use Base Infinitive After Does/Did';
         } else if (matchesStructure && wordCount >= 7) {
           const wasAlreadySolved = solvedDrills.has(drillId);
           statusEl.className = 'live-status-pill detected';
@@ -2128,10 +2206,14 @@
         if (showDetailedBox) {
           if (matchesStructure && !hasPronounTrap && !hasSnakeOil && wordCount >= 7) {
             feedbackEl.className = 'drill-feedback-box show pass';
-            feedbackEl.innerHTML = `<strong>Spot on!</strong> You have cleanly deployed <em>${bp.title}</em> with zero personal pronouns or thesaurus bloat. Click <strong>👁️ Reveal Cambridge Model</strong> to compare your exact lexical choices with mine.`;
+            feedbackEl.innerHTML = `<strong>Structural frame present:</strong> Your sentence deploys <em>${bp.title}</em> with zero personal pronouns or clichés. Click <strong>👁️ Reveal Cambridge Model</strong> to check agreement, prepositions, and phrasing against mine.`;
           } else {
             const issues = [];
-            if (!matchesStructure) {
+            if (hasUninvertedNeg) {
+              issues.push(`Inversion required: place the auxiliary before the subject (e.g., <em>"Not only does fast fashion..."</em>, not <em>"Not only fast fashion..."</em>).`);
+            } else if (hasInversionInfinitiveSlip) {
+              issues.push(`Verb agreement slip: keep the main verb in the bare infinitive after <em>does / did</em> (e.g., <em>"does fast fashion generate"</em>, not <em>"generates"</em>).`);
+            } else if (!matchesStructure) {
               issues.push(`Target structure not spotted yet (${bp.patternHint}).`);
             }
             if (hasPronounTrap) {
@@ -2225,8 +2307,26 @@
       const scannerModelText = document.getElementById('scanner-model-text');
       const scannerModelNotes = document.getElementById('scanner-model-notes');
       const presetButtons = document.querySelectorAll('.btn-preset');
+      const scannerTaskType = document.getElementById('scanner-task-type');
+      const scannerPromptDisplay = document.getElementById('scanner-prompt-display');
 
-      let currentSampleIndex = 0;
+      const TASK_PROMPTS = {
+        'advantages-outweigh': 'Prompt: More employees work remotely than before. Do the advantages of this development outweigh the disadvantages?',
+        'opinion': 'Prompt: Governments should invest more money in public transport than in building new roads. To what extent do you agree or disagree?',
+        'discussion': 'Prompt: Some people think universities should teach practical skills, while others favour broad academic study. Discuss both views and give your opinion.',
+        'problem-solution': 'Prompt: Urban traffic congestion continues to worsen in major cities. What are the causes of this problem, and what measures can be taken?',
+        'two-part': 'Prompt: Consumers buy clothing far more frequently today and discard items quickly. Why is this happening, and what impact does it have on society?'
+      };
+
+      let currentSampleIndex = -1;
+      let lastScanSummary = '';
+
+      function syncScannerPrompt() {
+        const key = scannerTaskType ? scannerTaskType.value : 'advantages-outweigh';
+        const txt = TASK_PROMPTS[key] || TASK_PROMPTS['advantages-outweigh'];
+        if (scannerPromptDisplay) scannerPromptDisplay.textContent = txt;
+        return { key, text: txt };
+      }
 
       function escapeHtml(str) {
         return str
@@ -2242,12 +2342,13 @@
         if (scannerWordCount) scannerWordCount.textContent = `${words} words`;
 
         if (!raw.trim()) {
-          scannerMirror.innerHTML = '<span style="color:var(--text-muted);">Paste or type a paragraph on the left to see live syntactic highlights here...</span>';
+          scannerMirror.innerHTML = '<span style="color:var(--text-muted);">Paste or type a body paragraph on the left (aim for 90–150 words) to run the Pre-Flight Check and syntactic mirror...</span>';
           metricPronouns.textContent = '0';
           metricCliches.textContent = '0';
           metricC1.textContent = '0';
           metricRegister.textContent = '--';
-          scannerActionList.innerHTML = '<li>Type at least 2–3 sentences to generate your Red Pen diagnostic checklist.</li>';
+          lastScanSummary = '';
+          scannerActionList.innerHTML = '<li>Type or paste 2+ sentences above to check personal pronouns, repeated openers, sentence length spread, and Advantages-Outweigh balance.</li>';
           return;
         }
 
@@ -2261,16 +2362,16 @@
           /\b(It\s+is\s+(?:widely\s+|generally\s+|often\s+|increasingly\s+)?(?:argued|accepted|acknowledged|recognised|recognized|evident|clear|essential|vital)\s+that)\b/gi,
           /\b((?:is|are|was|were)\s+(?:widely\s+|often\s+|generally\s+)?(?:believed|argued|thought|considered|shown|estimated|said)\s+to\s+(?:be|have|\w+))\b/gi,
           /\b(Not\s+only\s+(?:do|does|did|have|has|can|will|is|are)\s+[\w\s]+?,?\s+but\b)/gi,
-          /\b((?:Rarely|Seldom|Little)\s+(?:do|does|did|have|has|can|will)\s+\w+)/gi,
-          /\b(What\s+[\w\s]{3,35}\s+(?:is|was)\b)/gi,
-          /\b(It\s+(?:is|was)\s+through\s+[\w\s]{3,35}\s+that\b)/gi,
-          /(,\s*thereby\s+\w+ing\b)/gi
+          /\b((?:Rarely|Seldom|Little|At\s+no\s+time|Under\s+no\s+circumstances)\s+(?:do|does|did|have|has|can|will|should|must)\s+\w+)/gi,
+          /\b(What\s+(?!is\b|are\b|was\b|were\b)[\w\s'-]{3,65}?\s+(?:is|was|are|were)\b)/gi,
+          /\b(It\s+(?:is|was)\s+through\s+[\w\s]{3,45}\s+that\b)/gi,
+          /(,\s*(?:thereby|thus|hence)\s+(?!morning\b|evening\b|thing\b)[a-z]{2,}ing\b)/gi
         ];
 
         c1Patterns.forEach((pat) => {
           html = html.replace(pat, (match) => {
             c1Count++;
-            return `<span class="hl-c1" title="Verified C1 Syntactic Frame">${match}</span>`;
+            return `<span class="hl-c1" title="C1 Syntactic Frame Pattern">${match}</span>`;
           });
         });
 
@@ -2295,15 +2396,43 @@
 
         scannerMirror.innerHTML = html.replace(/\n/g, '<br/>');
 
+        // Pre-Flight Deterministic Checks
+        const sentences = raw
+          .split(/(?<=[.!?])\s+|\n+/)
+          .map((s) => s.trim())
+          .filter((s) => s.split(/\s+/).filter(Boolean).length >= 3);
+        const sentLengths = sentences.map((s) => s.split(/\s+/).filter(Boolean).length);
+        const minLen = sentLengths.length ? Math.min.apply(null, sentLengths) : 0;
+        const maxLen = sentLengths.length ? Math.max.apply(null, sentLengths) : 0;
+        const longSentences = sentLengths.filter((n) => n > 38);
+        const isFlatChain = sentLengths.length >= 2 && maxLen < 12;
+
+        const openerMatches = [];
+        const mechanicalOpenerRx = /^(first(?:ly)?|second(?:ly)?|third(?:ly)?|nowadays|moreover|in\s+addition|furthermore)\b/i;
+        sentences.forEach((s) => {
+          const m = s.match(mechanicalOpenerRx);
+          if (m) openerMatches.push(m[1]);
+        });
+        const hasRepeatedOpeners = openerMatches.length >= 2;
+
+        const promptInfo = syncScannerPrompt();
+        const isOutweighPrompt = promptInfo.key === 'advantages-outweigh' || /\badvantages\s+outweigh\b/i.test(promptInfo.text);
+        const hedgeHits = raw.match(/\b(both\s+(?:advantages\s+and\s+disadvantages|sides)\b|\bdepends(?:\s+on)?\b|\bto\s+some\s+extent\b|\bboth\s+.*\s+and\b)/i);
+        const hasBalanceWarning = Boolean(isOutweighPrompt && hedgeHits);
+
         metricPronouns.textContent = String(pronounCount);
         metricCliches.textContent = String(clicheCount);
         metricC1.textContent = String(c1Count);
 
         let registerLabel = 'Band 6.0';
-        if (pronounCount === 0 && clicheCount === 0 && c1Count >= 2) {
-          registerLabel = 'C1 / 7.5+';
+        if (words < 35) {
+          registerLabel = 'Short Draft';
+        } else if (hasBalanceWarning || hasRepeatedOpeners || longSentences.length > 0 || isFlatChain) {
+          registerLabel = 'Pre-Flight Flag';
+        } else if (pronounCount === 0 && clicheCount === 0 && c1Count >= 2) {
+          registerLabel = 'Pre-Flight Clean';
         } else if (pronounCount <= 1 && clicheCount === 0 && c1Count >= 1) {
-          registerLabel = 'Band 7.0';
+          registerLabel = 'Band 7.0 Frame';
         } else if (pronounCount > 3 || clicheCount >= 2) {
           registerLabel = 'Band 6.0';
         } else {
@@ -2311,35 +2440,83 @@
         }
         metricRegister.textContent = registerLabel;
 
-        // Build Actionable Red Pen List
-        const actions = [];
+        // Build Actionable Red Pen List (with classes)
+        const actionItems = [];
         if (pronounCount > 0) {
-          actions.push(
-            `<strong>Depersonalise (${pronounCount} pronoun${pronounCount > 1 ? 's' : ''} spotted):</strong> Replace <em>I think / we see / our / you</em> with Preparatory <em>'It is widely recognised that...'</em> or Passive Reporting (<em>'X is considered to...'</em>).`
-          );
+          actionItems.push({
+            cls: 'diag-warn',
+            html: `<strong>Depersonalise (${pronounCount} pronoun${pronounCount > 1 ? 's' : ''} spotted):</strong> Replace <em>I think / we see / our / you</em> with Preparatory <em>'It is widely recognised that...'</em> or Passive Reporting (<em>'X is considered to...'</em>).`
+          });
         } else {
-          actions.push(`<strong>100% Depersonalised:</strong> Zero first- or second-person drift detected. Spot on.`);
+          actionItems.push({
+            cls: '',
+            html: `<strong>100% Depersonalised:</strong> Zero first- or second-person drift detected.`
+          });
         }
 
         if (clicheCount > 0) {
-          actions.push(
-            `<strong>Cut Snake-Oil &amp; Templates (${clicheCount} flagged):</strong> Toss out memorised clichés and forced thesaurus nouns; let clean verbs carry the meaning.`
-          );
+          actionItems.push({
+            cls: 'diag-warn',
+            html: `<strong>Cut Snake-Oil &amp; Templates (${clicheCount} flagged):</strong> Toss out memorised clichés and forced thesaurus nouns; let clean verbs carry the meaning.`
+          });
+        }
+
+        if (hasRepeatedOpeners) {
+          actionItems.push({
+            cls: 'diag-caution',
+            html: `<strong>Mechanical Sentence Openers (${openerMatches.length} found: ${openerMatches.map((x) => '&ldquo;' + escapeHtml(x) + '&rdquo;').join(', ')}):</strong> Examiners spot checklist linking chains right off the bat. Replace at least one with a fronting clause or <em>What... is...</em> cleft.`
+          });
         } else {
-          actions.push(`<strong>Clean Lexis:</strong> No robotic templates or forced thesaurus buzzwords detected.`);
+          actionItems.push({
+            cls: '',
+            html: `<strong>Sentence Openers:</strong> No repeated mechanical opener chain (<em>Firstly/Secondly/Nowadays/Moreover/In addition/Furthermore</em>).`
+          });
+        }
+
+        if (isFlatChain) {
+          actionItems.push({
+            cls: 'diag-caution',
+            html: `<strong>Flat Sentence Length Spread (${minLen}–${maxLen} words):</strong> All sentences stay under 12 words. Join two linked ideas with <em>, thereby + -ing</em> or a relative clause.`
+          });
+        } else if (longSentences.length > 0) {
+          actionItems.push({
+            cls: 'diag-caution',
+            html: `<strong>Overlong Sentence Risk (max ${maxLen} words):</strong> ${longSentences.length} sentence${longSentences.length > 1 ? 's' : ''} run past 38 words. Split or tighten so the grammatical subject stays clear.`
+          });
+        } else if (sentLengths.length > 0) {
+          actionItems.push({
+            cls: '',
+            html: `<strong>Sentence Length Spread (${minLen}–${maxLen} words):</strong> Balanced clause pacing without <12w choppiness or >38w sprawl.`
+          });
+        }
+
+        if (hasBalanceWarning) {
+          actionItems.push({
+            cls: 'diag-warn',
+            html: `<strong>Advantages-Outweigh 50/50 Hedging Check:</strong> Spotted <em>&ldquo;${escapeHtml(hedgeHits[0])}&rdquo;</em>. Never sit on the fence when the prompt asks if advantages outweigh disadvantages — state clearly which side is stronger.`
+          });
         }
 
         if (c1Count === 0) {
-          actions.push(
-            `<strong>Add 2–3 C1 Syntactic Shifts:</strong> No C1 structural frames detected yet. Try adding one <em>Not only... but also...</em> inversion, one <em>What... is...</em> cleft, or a <em>, thereby + -ing</em> participle clause.`
-          );
+          actionItems.push({
+            cls: 'diag-caution',
+            html: `<strong>Add 1–2 C1 Syntactic Shifts:</strong> No C1 structural frame detected yet. Try adding one <em>Not only... but also...</em> inversion, one <em>What... is...</em> cleft, or a <em>, thereby + -ing</em> participle clause.`
+          });
         } else {
-          actions.push(
-            `<strong>C1 Structural Variety (${c1Count} frame${c1Count > 1 ? 's' : ''} active):</strong> High-scoring grammatical range confirmed.`
-          );
+          actionItems.push({
+            cls: '',
+            html: `<strong>C1 Structural Variety (${c1Count} frame${c1Count > 1 ? 's' : ''} matched):</strong> Frame pattern detected; verify agreement and natural collocation with a human eye.`
+          });
         }
 
-        scannerActionList.innerHTML = actions.map((item) => `<li>${item}</li>`).join('');
+        scannerActionList.innerHTML = actionItems.map((item) => `<li class="${item.cls}">${item.html}</li>`).join('');
+
+        const diagFlags = [];
+        if (hasRepeatedOpeners) diagFlags.push('Mechanical openers: ' + openerMatches.join('/'));
+        if (isFlatChain) diagFlags.push('Flat <12w chain');
+        if (longSentences.length > 0) diagFlags.push('Run-on >38w (' + maxLen + 'w)');
+        if (hasBalanceWarning) diagFlags.push('50/50 hedge: "' + hedgeHits[0] + '"');
+        lastScanSummary = `${promptInfo.text} | Words: ${words} | Pronouns: ${pronounCount} | Clichés: ${clicheCount} | C1 frames: ${c1Count} | Range: ${minLen}-${maxLen}w | Status: ${registerLabel}` + (diagFlags.length ? ` | Flags: ${diagFlags.join('; ')}` : '');
 
         // Persist custom candidate scans only (never initial sample or preset drafts)
         if (currentSampleIndex === -1 && words >= 12) {
@@ -2347,10 +2524,12 @@
             const missing = [];
             if (pronounCount > 0) missing.push('Academic Depersonalisation');
             if (clicheCount > 0) missing.push('Remove Template Clichés');
+            if (hasRepeatedOpeners) missing.push('Varied Sentence Openers');
+            if (hasBalanceWarning) missing.push('Decisive Advantages-Outweigh Stance');
             if (c1Count === 0) missing.push('C1 Syntactic Variety');
-            const bandNum = registerLabel === 'C1 / 7.5+' ? '7.5' : registerLabel.replace('Band ', '');
+            const bandNum = registerLabel === 'Pre-Flight Clean' ? '7.5' : (registerLabel === 'Band 7.0 Frame' ? '7.0' : '6.5');
             localStorage.setItem('gm_last_essay_scan', JSON.stringify({
-              cefrLevel: registerLabel === 'C1 / 7.5+' ? 'C1' : 'B2+',
+              cefrLevel: registerLabel === 'Pre-Flight Clean' ? 'C1' : 'B2+',
               ieltsBand: bandNum,
               wordCount: words,
               missingCategories: missing,
@@ -2416,17 +2595,31 @@
         });
       }
 
-      // Initialize with Sample 1 loaded
-      loadSampleParagraph(0);
+      if (scannerTaskType) {
+        scannerTaskType.addEventListener('change', () => {
+          syncScannerPrompt();
+          runLiveScan();
+        });
+      }
 
-      // Copy scanned paragraph helper + Free Red-Pen AJAX + Dual-Route tracking
+      // Initialize with clean empty input + selected prompt
+      syncScannerPrompt();
+      loadSampleParagraph('clear');
+
+      // Copy scanned paragraph + prompt + pre-flight metrics helper + Free Red-Pen AJAX
       const copyScanBtn = document.getElementById('btn-copy-scan-to-form');
       const redpenMessage = document.getElementById('redpen-message');
       if (copyScanBtn && scannerInput && redpenMessage) {
         copyScanBtn.addEventListener('click', () => {
           const text = scannerInput.value.trim();
-          if (!text) return;
-          redpenMessage.value = text.slice(0, 1500);
+          const promptInfo = syncScannerPrompt();
+          if (!text) {
+            redpenMessage.value = `${promptInfo.text}\n\n[Paste your body paragraph here]`;
+            redpenMessage.focus();
+            return;
+          }
+          const header = lastScanSummary ? `[Pre-Flight Check: ${lastScanSummary}]\n\n` : `${promptInfo.text}\n\n`;
+          redpenMessage.value = (header + text).slice(0, 2200);
           redpenMessage.focus();
         });
       }
@@ -2473,9 +2666,11 @@
       if (redpenForm) {
         redpenForm.addEventListener('submit', async (e) => {
           const scoreField = document.getElementById('drill-score-field');
+          const diagField = document.getElementById('scanner-diagnostics-field');
           const dossierField = document.getElementById('candidate-dossier-field');
           const counterEl = document.getElementById('global-drill-counter');
           if (scoreField) scoreField.value = counterEl ? counterEl.textContent : '';
+          if (diagField) diagField.value = lastScanSummary;
           if (dossierField) dossierField.value = readPlayedDossierSummary();
 
           if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
