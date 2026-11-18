@@ -1399,96 +1399,816 @@ html[data-env="web"] .teacher-only { display: none !important; }
 <!-- HABIT-TRACKER-END -->
   <!-- STUDENT-RECENT-WORK-START -->
     <section id="vs-log-section" style="background:var(--surface-card); border:1.5px solid var(--border-hairline); border-radius:18px; padding:24px 26px; margin-bottom:30px; box-shadow:var(--shadow-card);">
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
         <div>
-          <span class="badge-pill badge-purple" style="margin-bottom:6px;">&#128197; Lesson Log &amp; Recent Work Covered</span>
+          <span class="badge-pill badge-purple" style="margin-bottom:6px;">&#128197; Complete Lesson Archive &bull; 149 Sessions (Nov 2023 &ndash; Nov 2026)</span>
           <h3 style="font-family:var(--font-display); font-size:1.3rem; color:var(--ink-950); margin-top:2px;">
-            Work Covered in Lessons &amp; Materials Used
+            All Work Covered in Lessons &amp; Materials Used
           </h3>
           <p style="font-size:0.86rem; color:var(--ink-500); margin-top:2px;">
-            Chronological record of recent session topics, grammar workouts, and study links.
+            Complete chronological record of every session, exam paper, grammar workout, and study link since November 2023.
           </p>
         </div>
       </div>
-      <div style="overflow-x:auto;">
-        <table style="width:100%; border-collapse:collapse; font-size:0.88rem; margin-top:10px;">
-          <thead>
-            <tr style="background:var(--surface-subtle); font-size:0.75rem; text-transform:uppercase; color:var(--ink-500); letter-spacing:0.04em;">
-              <th style="padding:8px 12px; text-align:left; width:110px;">Date</th>
-              <th style="padding:8px 12px; text-align:left;">Topic &amp; Focus Area</th>
-              <th style="padding:8px 12px; text-align:left; width:220px;">Resource Material</th>
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+        <div style="display:flex; gap:6px; flex-wrap:wrap;" id="vs-year-pills">
+          <button type="button" class="vs-dock-tab active" data-yr="all" onclick="filterLogByYear('all', this)">All (149)</button>
+          <button type="button" class="vs-dock-tab" data-yr="2026" onclick="filterLogByYear('2026', this)">2026 (29)</button>
+          <button type="button" class="vs-dock-tab" data-yr="2025" onclick="filterLogByYear('2025', this)">2025 (62)</button>
+          <button type="button" class="vs-dock-tab" data-yr="2024" onclick="filterLogByYear('2024', this)">2024 (47)</button>
+          <button type="button" class="vs-dock-tab" data-yr="2023" onclick="filterLogByYear('2023', this)">2023 (11)</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex:1; max-width:340px; min-width:200px;">
+          <input type="text" id="vs-log-inline-search" class="vs-search-input" style="padding:7px 12px; font-size:0.84rem;" placeholder="Search all 149 lessons..." oninput="applyLogFilters()" />
+          <span id="vs-log-count" style="font-size:0.78rem; font-family:var(--font-mono); color:var(--ink-500); white-space:nowrap;">149 / 149</span>
+        </div>
+      </div>
+      <div style="overflow-x:auto; max-height:680px; overflow-y:auto; border:1px solid var(--border-hairline); border-radius:12px;">
+        <table style="width:100%; border-collapse:collapse; font-size:0.88rem;">
+          <thead style="position:sticky; top:0; z-index:2;">
+            <tr style="background:var(--surface-subtle); font-size:0.75rem; text-transform:uppercase; color:var(--ink-500); letter-spacing:0.04em; border-bottom:1px solid var(--border-hairline);">
+              <th style="padding:10px 12px; text-align:left; width:110px;">Date</th>
+              <th style="padding:10px 12px; text-align:left;">Topic &amp; Focus Area</th>
+              <th style="padding:10px 12px; text-align:left; width:260px;">Resource Material</th>
             </tr>
           </thead>
-          <tbody>
-            
-          <tr class="vs-log-row" style="border-bottom:1px solid var(--border-hairline);">
+          <tbody id="vs-log-tbody">
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
             <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">18/11/2026</td>
             <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Red-Pen Speed-Run · 90-Second C1 Error vs Spoken Slip vs Natural Style Triage Game</td>
-            <td style="padding:10px 12px; vertical-align:top; white-space:nowrap;">
-              <a href="../../red-pen-speedrun.html" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                &#128279; Red-Pen Speed-Run
-              </a>
-            </td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="../../red-pen-speedrun.html" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; Red-Pen Speed-Run</a></td>
           </tr>
-          <tr class="vs-log-row" style="border-bottom:1px solid var(--border-hairline);">
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
             <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">11/11/2026</td>
-            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Let's Negotiate! Tactical Language & Corporate Bargaining · The Office US Buyout, 8 Collocations & Inversions</td>
-            <td style="padding:10px 12px; vertical-align:top; white-space:nowrap;">
-              <a href="lets-negotiate.html" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                &#128279; Let's Negotiate! Interactive Deck
-              </a>
-            </td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Let&#39;s Negotiate! Tactical Language &amp; Corporate Bargaining · The Office US Buyout, 8 Collocations &amp; Inversions</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="lets-negotiate.html" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; Let&#39;s Negotiate! Interactive Deck</a><br/><a href="https://eslbrains.com/negotiation-language/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Negotiation Language</a></td>
           </tr>
-          <tr class="vs-log-row" style="border-bottom:1px solid var(--border-hairline);">
-            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">23/09/2026</td>
-            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Abitur Analytical Masterclass & Function Verbs · Comprehension, PEEL & Sprachmittlung</td>
-            <td style="padding:10px 12px; vertical-align:top; white-space:nowrap;">
-              <a href="abitur-analysis-handout.html" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                &#128279; Abitur Analysis Handout
-              </a>
-            </td>
-          </tr>
-          <tr class="vs-log-row" style="border-bottom:1px solid var(--border-hairline);">
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
             <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">14/10/2026</td>
-            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">OPSEC, OSINT & Sociolinguistic Taboos · Literary Devices & Pragmatics</td>
-            <td style="padding:10px 12px; vertical-align:top; white-space:nowrap;">
-              <a href="https://eslbrains.com/talk-about-swearing/" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                &#128279; ESL Brains: Swearing
-              </a>
-            </td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Abitur task on OPSEC, OSINT &amp; Literary Devices · Sociolinguistic Taboos</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/talk-about-swearing/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Talk About Swearing</a></td>
           </tr>
-          <tr class="vs-log-row" style="border-bottom:1px solid var(--border-hairline);">
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
             <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">07/10/2026</td>
-            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Is Love Just a Chemical Reaction? · Analytical Reading & Discussion</td>
-            <td style="padding:10px 12px; vertical-align:top; white-space:nowrap;">
-              <a href="https://english4tutors.com/lessons/is-love-just-a-chemical-reaction/" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                &#128279; English4Tutors: Love
-              </a>
-            </td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Is Love Just a Chemical Reaction</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/is-love-just-a-chemical-reaction/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Is Love Just a Chemical Reaction</a></td>
           </tr>
-          <tr class="vs-log-row" style="border-bottom:1px solid var(--border-hairline);">
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
             <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">30/09/2026</td>
-            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Is AI Just Burning Money? · Silicon Valley Capital & Compute Economics</td>
-            <td style="padding:10px 12px; vertical-align:top; white-space:nowrap;">
-              <a href="https://english4tutors.com/lessons/is-ai-just-burning-money/" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                &#128279; English4Tutors: AI
-              </a>
-            </td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Is AI Just Burning Money</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/is-ai-just-burning-money/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Is AI Just Burning Money</a></td>
           </tr>
-          <tr class="vs-log-row" style="border-bottom:1px solid var(--border-hairline);">
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">23/09/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Abitur Analytical Masterclass &amp; Function Verbs · Comprehension, PEEL &amp; Sprachmittlung</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="abitur-analysis-handout.html" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; Abitur Analysis Handout</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
             <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">16/09/2026</td>
-            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Wealth Tax & Economic Inequality · Macroeconomic Policy Debate</td>
-            <td style="padding:10px 12px; vertical-align:top; white-space:nowrap;">
-              <a href="https://eslbrains.com/wealth-tax/" target="_blank" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                &#128279; ESL Brains: Wealth Tax
-              </a>
-            </td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Wealth Tax</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/wealth-tax/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Wealth Tax</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">20/04/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Discussing Micro Dramas</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/discussing-micro-dramas/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Discussing Micro Dramas</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">15/04/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">final CPE exam prep – sits it on Friday</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">13/04/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">final exam prep</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">06/04/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">C2 writing guide + speaking hedging</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">01/04/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">CPE Speaking exam 4</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">25/03/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">CPE listening test 1 – finish for hw</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">23/03/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">CPE essay – summary and evaluation phrases + speaking part 2 + 3</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">18/03/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">hw writing check – then finished test 4 ruoe, then looked at listening technique – hw – writing test 2 + a listening test</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">16/03/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">CPE test 4 – hw test 3</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">11/03/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">CPE speaking test 2 + watched video + given practice writing test for hw</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">04/03/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">cpe practice test 4 – ruoe parts 6+7</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">02/03/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">article writing</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">25/02/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">review writing</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">18/02/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">CPE essay – flair structures – also – speaking test 1 and writing test 1 essay</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">16/02/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">cpe ESSAY – EVALUATIVE LANGUAGE</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">11/02/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">doing CPE in April – looked at essay from objective prof – given essay on zoos for hw – next – some c2 structures (cleft sentences, inversion)</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">28/01/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Talking About Delivery</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/talking-about-delivery/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Talking About Delivery</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">21/01/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Discussing Farming</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/discussing-farming/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Discussing Farming</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">14/01/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">c2 Linkers for essay paragraph</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/esl-lesson-on-targeted-advertising/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: ESL Lesson on Targeted Advertising</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">12/01/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">compared CAE and CPE</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">07/01/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">noises people make</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2026" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">05/01/2026</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">ESL Lesson on STEM</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/esl-lesson-on-stem/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: ESL Lesson on STEM</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">29/12/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Talking About Friends</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/talking-about-friends/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Talking About Friends</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">10/12/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">cpe ruoe part 6 – test 1</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/talking-about-resolutions/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Talking About Resolutions</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">08/12/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Speaking Lesson on Posting Online</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/speaking-lesson-on-posting-online/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Speaking Lesson on Posting Online</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">03/12/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">battle of Kursk</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">01/12/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Will and Would for Present and Past Habits</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/will-and-would-for-present-and-past-habits/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Will and Would for Present and Past Habits</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">19/11/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">cpe speaking part 3 – discourse markers + ruoe part 4</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">17/11/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">objective proficiency – essay writing – coincidence or paranormal?</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">05/11/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Speaking Lesson on Pop Culture</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/speaking-lesson-on-pop-culture/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Speaking Lesson on Pop Culture</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">03/11/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">ESL Lesson on Inflation</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/esl-lesson-on-inflation/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: ESL Lesson on Inflation</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">15/10/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Talking About How Devices Work</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/talking-about-how-devices-work/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Talking About How Devices Work</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">13/10/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">ESL Lesson on Pronunciation and Spelling</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/esl-lesson-on-pronunciation-and-spelling/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: ESL Lesson on Pronunciation and Spelling</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">08/10/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">cpe masterclass – focus and emphasis – cleft sentences, inversion – doing CPE in APRIL NEXT YEAR, THEN ielts LATER</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">01/10/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">advanced conjunctions + ‘how tiny tasks become monsters’</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">29/09/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Adorable by Design the Business of Cuteness</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/adorable-by-design-the-business-of-cuteness/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Adorable by Design the Business of Cuteness</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">17/09/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Linguistic Detectives</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/linguistic-detectives/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Linguistic Detectives</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">15/09/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Talking About History</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/talking-about-history/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Talking About History</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">10/09/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Paradise Lost Welcome to Dystopia</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/paradise-lost-welcome-to-dystopia/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Paradise Lost Welcome to Dystopia</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">08/09/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Vocabulary on Global Conflicts</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/vocabulary-on-global-conflicts/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Vocabulary on Global Conflicts</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">03/09/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Architecture Less is More or Less is Bore</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/architecture-less-is-more-or-less-is-bore/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Architecture Less is More or Less is Bore</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">01/09/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">objective proficiency – p./ 11</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">25/08/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">concentrate on CPE writing and grammar</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/esl-lesson-on-transhumanism/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: ESL Lesson on Transhumanism</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">23/07/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Mutiny of the Machines</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/the-mutiny-of-the-machines/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: The Mutiny of the Machines</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">21/07/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">From Coins to Code the Cashless Future</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/from-coins-to-code-the-cashless-future/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: From Coins to Code the Cashless Future</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">02/07/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">epicurus + comparing p. 146</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">25/06/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">objective proficiency – review writing</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">23/06/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">objective proficiency – participle clauses – p. 61</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">18/06/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Civil Unrest</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/civil-unrest/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Civil Unrest</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">11/06/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">inversion – objective proficiency p. 68</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">09/06/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">objective proficiency – p.80-81 – writing essay linkers</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">03/06/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">OBJEctive proficiency p. 25-27 – alertanive conditionals</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">28/05/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Advanced Lesson on Personality Tests</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/advanced-lesson-on-personality-tests/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Advanced Lesson on Personality Tests</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">26/05/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">conditional review</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">21/05/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Speaking Lesson on AI Partners</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/speaking-lesson-on-ai-partners/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Speaking Lesson on AI Partners</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">19/05/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Psychology of Gambling</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/the-psychology-of-gambling/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: The Psychology of Gambling</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">12/05/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">proficiency masterclass – perfect aspect</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">07/05/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">gold advanced report writing – as hw</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">05/05/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">verb patterns</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">28/04/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">MEME culture</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">23/04/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">ESL Lesson on Becoming Adults</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/esl-lesson-on-becoming-adults/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: ESL Lesson on Becoming Adults</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">21/04/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">cpe listening practice – very high score, almost perfect</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">16/04/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">ADVERB ADJECTIVE COLLOCATIONS OF OPINION</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://wordwall.net/resource/17152233/cpe-speaking-part-4" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; wordwall.net/resource/17152233/cpe-speaking-part-4</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">14/04/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">CPE review writing</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/perfect-participle-vs-perfect-infinitive/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Perfect Participle vs Perfect Infinitive</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">09/04/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">RELATIVE CLAUSES</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/esl-lesson-on-ancient-myths/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: ESL Lesson on Ancient Myths</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">07/04/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Cpe listening – wolves</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/talking-about-multitasking/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Talking About Multitasking</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">02/04/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">objective proficiency exam folder 3</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/you-think-this-is-a-joke/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: You Think This is a Joke</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">26/03/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">objective proficiency exam folder 2</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/the-future-of-space-exploration/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: The Future of Space Exploration</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">24/03/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">objective proficiency exam folder 1 – word formation</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/talking-about-bucket-lists/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Talking About Bucket Lists</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">19/03/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">CPE reading part 6 – scored highly - Lanzarote</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">12/03/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">thinking about studying for CPE</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/sleep-more-your-brain-needs-it/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Sleep More Your Brain Needs It</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">10/03/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Climate Change Narratives</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/climate-change-narratives/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Climate Change Narratives</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">05/03/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">writing_task_2_problems_and_solutions_.pdf (HW))</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">26/02/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">C2 MASTERY SPEAKING EXAM 2</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">24/02/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Why Incompetent People Think Theyre Amazing</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/why-incompetent-people-think-theyre-amazing/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Why Incompetent People Think Theyre Amazing</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">19/02/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">IELTS 11 reading passage 2 – falkirk wheel</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">12/02/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">writing for IELTS – introductions</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/prisons-rehabilitation-or-retribution/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Prisons Rehabilitation or Retribution</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">10/02/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Quirky Side of You</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/the-quirky-side-of-you/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: The Quirky Side of You</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">03/02/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Return of Physical Media</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/the-return-of-physical-media/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: The Return of Physical Media</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">22/01/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">NEXT – more writing – he enjoyed his results</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/in-a-league-of-your-own/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: In a League of Your Own</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">15/01/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">– ESSAY ON ‘LIVING IN A COUNTRY SPEAKING A FOREIGN LANGUAGE CAUSE SOCIAL PROBLEMS’.</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://ielts-up.com/writing/to-what-extent-agree-disagree-essay.html" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; File: to-what-extent-agree-disagree-essay.html</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">13/01/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Rockets</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/rockets/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Rockets</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">08/01/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Trust Me Im an Expert</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/trust-me-im-an-expert/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Trust Me Im an Expert</a><br/><a href="https://ielts-up.com/writing/to-what-extent-agree-disagree-essay.html" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; File: to-what-extent-agree-disagree-essay.html</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2025" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">06/01/2025</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">What If It Had Never Been Invented</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/what-if-it-had-never-been-invented/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: What If It Had Never Been Invented</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">30/12/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Geotagging and Nature</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/geotagging-and-nature/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Geotagging and Nature</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">23/12/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Exactly Where are We Now</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/exactly-where-are-we-now/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Exactly Where are We Now</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">16/12/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">spreading christmas joy</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://docs.google.com/presentation/d/1RjgnQhVLEhcCO8qKsxRJP3AdQ3riKawT6ngmTwydcdA/edit#slide=id.g19fa726d23b_0_913" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; Google Slides Presentation</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">11/12/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">ielts speaking test</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/shakespeare-the-be-all-and-end-all/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Shakespeare the Be All and End All</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">04/12/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">IELTS reading test 2, part 1 – uffington horse</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/activism-or-vandalism/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Activism or Vandalism</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">02/12/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Academic ielts 16 – reading test 1, part 2 – pyramids</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/is-crypto-here-to-stay/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Is Crypto Here to Stay</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">27/11/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Inversion After Negative Adverbials</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://learnenglish.britishcouncil.org/grammar/c1-grammar/inversion-after-negative-adverbials" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; British Council: Inversion After Negative Adverbials</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">25/11/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Life Saving Technology</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/life-saving-technology/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Life Saving Technology</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">18/11/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Sharpen Critical Thinking CAE Speaking Part 3 Activities</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/sharpen-critical-thinking-cae-speaking-part-3-activities/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Sharpen Critical Thinking CAE Speaking Part 3 Activities</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">13/11/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Last King of Ireland</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/the-last-king-of-ireland/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: The Last King of Ireland</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">11/11/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Meme Culture</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/the-meme-culture/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: The Meme Culture</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">06/11/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">ielts 13 READING ON BOREDOM</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/quit-your-bellyaching/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Quit Your Bellyaching</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">28/10/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Fatfire Movement</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/the-fatfire-movement/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: The Fatfire Movement</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">16/10/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The World of Sounds Around US</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/the-world-of-sounds-around-us/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: The World of Sounds Around US</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">15/10/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Google Slides Presentation</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://docs.google.com/presentation/d/1L6tmZCmDPmYtaCbyFegq6h7B3fOPK_crTfR4zOJVaIg/edit#slide=id.g308f78a5fe0_0_236" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; Google Slides Presentation</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">09/10/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Dark-matter-students-copy.pdf</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/wp-content/uploads/2024/06/Dark-matter-students-copy.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; File: Dark-matter-students-copy.pdf</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">08/10/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Anti Hero</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/the-anti-hero/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: The Anti Hero</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">02/10/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">me_and_my_brain_ _text.pdf</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://learnenglishteens.britishcouncil.org/sites/teens/files/me_and_my_brain_-_text.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; British Council: me_and_my_brain_ _text.pdf</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">01/10/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Conspiracy Theories</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/conspiracy-theories/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Conspiracy Theories</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">16/07/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">What Time Do You Wake up</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/what-time-do-you-wake-up/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: What Time Do You Wake up</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">10/07/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">How Technology Can Enhance Our Brain</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/how-technology-can-enhance-our-brain/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: How Technology Can Enhance Our Brain</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">09/07/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Is E Sport a Sport</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/is-e-sport-a-sport/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Is E Sport a Sport</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">03/07/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Data Science and the NBA</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/data-science-and-the-nba/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Data Science and the NBA</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">26/06/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">I Get Electricity From</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/i-get-electricity-from/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: I Get Electricity From</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">25/06/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">had to ZOOM – started</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/irregular-plural-nouns/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Irregular Plural Nouns</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">19/06/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Lesson Set</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/lesson-set/expressing-likelihood/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Lesson Set</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">18/06/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Fastest Shoe in the World</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/the-fastest-shoe-in-the-world/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: The Fastest Shoe in the World</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">11/06/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">is micro-living the future?</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">05/06/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">IELTS Lesson 5</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">04/06/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Walk Around the World Travel Phrasals</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/walk-around-the-world-travel-phrasals/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Walk Around the World Travel Phrasals</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">21/05/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Editing DNA</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/editing-dna/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Editing DNA</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">08/05/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Writing Lesson 4</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">07/05/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Phrases to Talk About Memory</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/phrases-to-talk-about-memory/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Phrases to Talk About Memory</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">01/05/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">IELTS Writing Lesson 3</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">30/04/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Has Cancel Culture Gone Too Far</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/has-cancel-culture-gone-too-far/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Has Cancel Culture Gone Too Far</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">24/04/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">writing_lesson_plan_2.pdf</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">23/04/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Financial Crimes</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/financial-crimes/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Financial Crimes</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">17/04/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">NEXT WEEK – FINANCIAL CRIMES</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://takeielts.britishcouncil.org/sites/default/files/writing_lesson_plan_1.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; British Council: writing_lesson_plan_1.pdf</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">16/04/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">What the Stoics Got Right and Wrong</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/what-the-stoics-got-right-and-wrong/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: What the Stoics Got Right and Wrong</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">10/04/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">The Moon Controversy</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/the-moon-controversy/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: The Moon Controversy</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">09/04/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Where are the Aliens</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/where-are-the-aliens/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Where are the Aliens</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">27/03/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">ielts-listening-sample-tasks-2023.pdf</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://s3.eu-west-2.amazonaws.com/ielts-web-static/production/Sample-tests/ielts-listening-sample-tasks-2023.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; File: ielts-listening-sample-tasks-2023.pdf</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">26/03/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Whats the Deal With Art Museums</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/whats-the-deal-with-art-museums/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Whats the Deal With Art Museums</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">19/03/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Wp Content</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://eslbrains.com/wp-content/uploads/premium/ESL-Brains-Survival-skills-we-need-to-know-SV-8994.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; ESL Brains: Wp Content</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">27/02/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Risks of Social Media</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/risks-of-social-media/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Risks of Social Media</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">24/01/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Ready for IELTS 2nd Ed.- HW – P. 124</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2024" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">10/01/2024</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">ESL Brains: Has Cancel Culture Gone Too Far?</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">20/12/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Ready for IELTS 2nd Ed. – P. 113</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">19/12/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Ready for IELTS 2nd Ed. – P. 99</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">11/12/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Collins Writing for IELTS – P. 10 + IELTS Speaking Review- P. 13</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">06/12/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">readrussia.org/readrussiaprize2020-shortlist-excerpts/title/stalingrad</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://readrussia.org/readrussiaprize2020-shortlist-excerpts/title/stalingrad" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; readrussia.org/readrussiaprize2020-shortlist-excerpts/title/stalingrad</a><br/><a href="https://uca.edu/cahss/files/2020/07/2016-11-Liddil-stalingrad-is-hell.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; File: 2016-11-Liddil-stalingrad-is-hell.pdf</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">05/12/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Cambridge IELTS 16 Academic – Writing Test Part 1 – PROCESS</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">28/11/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Cambridge IELTS 16 Academic- reading test 1</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">22/11/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Ready for IELTS 2nd Ed.P. 13 – 15 – HW – IELTS 13 WRITING TASK 1</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">15/11/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Ready for IELTS 2nd Ed. – P. 56+ 57 + IELTS 14 test 4 – writing task 2 for HW</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">14/11/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Does Sport Build Character</td>
+            <td style="padding:10px 12px; vertical-align:top;"><a href="https://english4tutors.com/lessons/does-sport-build-character/" target="_blank" rel="noopener noreferrer" style="color:var(--navy-700); font-weight:700; text-decoration:none; display:inline-flex; align-items:center; gap:4px; margin-bottom:3px;">&#128279; English4Tutors: Does Sport Build Character</a></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">08/11/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">Ready for IELTS 2nd Ed.p. 27 + writing for hw - Cambridge IELTS 16 Academic</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
+          </tr>
+          <tr class="vs-log-row" data-year="2023" style="border-bottom:1px solid var(--border-hairline);">
+            <td style="padding:10px 12px; font-family:var(--font-mono); font-weight:700; color:var(--navy-800); white-space:nowrap; vertical-align:top;">07/11/2023</td>
+            <td style="padding:10px 12px; color:var(--ink-800); line-height:1.5; vertical-align:top;">C2 Proficiency sample paper 1 RUE.pdf(FINISH reading for HW) – next - Ready for IELTS 2nd Ed.- chp 2 – writing</td>
+            <td style="padding:10px 12px; vertical-align:top;"><span style="color:var(--ink-400); font-size:0.82rem;">In-lesson / PDF</span></td>
           </tr>
           </tbody>
         </table>
       </div>
-      
-      
+      <script>
+        (function() {
+          var activeYear = 'all';
+          window.filterLogByYear = function(yr, btn) {
+            activeYear = yr;
+            document.querySelectorAll('#vs-year-pills .vs-dock-tab').forEach(function(b) {
+              b.classList.toggle('active', b === btn);
+            });
+            window.applyLogFilters();
+          };
+          window.applyLogFilters = function() {
+            var q1 = (document.getElementById('vs-log-inline-search') ? document.getElementById('vs-log-inline-search').value : '').toLowerCase().trim();
+            var q2 = (document.getElementById('vs-portal-search') ? document.getElementById('vs-portal-search').value : '').toLowerCase().trim();
+            var term = q1 || q2;
+            var rows = document.querySelectorAll('#vs-log-tbody .vs-log-row');
+            var shown = 0;
+            rows.forEach(function(row) {
+              var yrOk = (activeYear === 'all') || (row.getAttribute('data-year') === activeYear);
+              var txtOk = !term || row.innerText.toLowerCase().indexOf(term) !== -1;
+              var vis = yrOk && txtOk;
+              row.style.display = vis ? '' : 'none';
+              if (vis) shown++;
+            });
+            var cnt = document.getElementById('vs-log-count');
+            if (cnt) cnt.textContent = shown + ' / ' + rows.length;
+          };
+        })();
+      </script>
     </section>
 <!-- STUDENT-RECENT-WORK-END -->
   </main>
