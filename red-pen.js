@@ -841,16 +841,29 @@
         }
 
         if (!inSelfTest) {
-            window.CandidateDossier?.recordAttempt({
-                category: p.dossierCategory,
-                correct: isCorrect,
-                game: 'Red-Pen Speed-Run',
-                prompt: sp.text,
-                keyword: sp.grammarLabel,
-                targetAnswer: sp.correction,
-                userAttempt: choice === 'natural' ? sp.text : choice,
-                explanation: `${sp.formula} — ${sp.explanation}`
-            });
+            if (!isCorrect && sp.verdict !== 'natural') {
+                const rawParts = p.parts.map((part) => (part.id === sp.id ? '___GAP___' : part.text)).join('');
+                const sentenceHit = rawParts.split(/(?<=[.!?])\s+/).find((s) => s.includes('___GAP___')) || rawParts;
+                const spanSentenceFrame = sentenceHit.replace('___GAP___', '________');
+                window.CandidateDossier?.recordAttempt({
+                    category: p.dossierCategory,
+                    correct: false,
+                    game: 'Red-Pen Speed-Run',
+                    prompt: `${p.genre}: Replace "${sp.text}" (${sp.verdict === 'error' ? 'grammar error' : 'spoken slip'})`,
+                    frame: spanSentenceFrame,
+                    keyword: sp.grammarLabel,
+                    targetAnswer: sp.correction,
+                    acceptedAnswers: [sp.correction],
+                    userAttempt: sp.text,
+                    explanation: `${sp.formula} — ${sp.explanation}`
+                });
+            } else {
+                window.CandidateDossier?.recordAttempt({
+                    category: p.dossierCategory,
+                    correct: isCorrect,
+                    game: 'Red-Pen Speed-Run'
+                });
+            }
         }
 
         refreshHud(isRestraintPenalty);
@@ -1866,6 +1879,105 @@
         if ($('btn-copy-duel')) $('btn-copy-duel').addEventListener('click', copyCounterDuelLink);
         if ($('btn-open-diagnostic')) $('btn-open-diagnostic').addEventListener('click', openDiagnosticFromRecap);
         if ($('btn-close-recap')) $('btn-close-recap').addEventListener('click', () => closeRecapModal(true));
+
+        /* ---------------- BELFAST DESK INLINE DRAWER ---------------- */
+        function syncRedPenDeskContext() {
+            const summaryEl = $('redpen-desk-active-summary');
+            const ctxHidden = $('redpen-desk-context-hidden');
+            const dossierEl = $('redpen-desk-dossier');
+            const p = currentParagraph;
+            const m = computeMetrics();
+            const paraLabel = p ? `${p.genre} · ${p.title}` : 'Red-Pen Speed-Run';
+            const scoreLabel = `Judged ${m.totalJudged} · Restraint ${m.restraintPct}% · Precision ${m.precisionPct}%`;
+            if (summaryEl) summaryEl.textContent = `${paraLabel} · ${scoreLabel}`;
+            if (ctxHidden) ctxHidden.value = `${paraLabel} | ${scoreLabel}`;
+            if (dossierEl) {
+                let dossierVal = '';
+                try {
+                    if (window.CandidateDossier && typeof window.CandidateDossier.getSummary === 'function') {
+                        const ds = window.CandidateDossier.getSummary();
+                        if (ds && ds.playedCategories > 0) {
+                            dossierVal = `${ds.code} | ${ds.cefrBand} | Focus: ${ds.weakestSkill || 'Register Control'}`;
+                        }
+                    }
+                } catch (_) {}
+                dossierEl.value = dossierVal;
+            }
+        }
+
+        const toggleDeskBtn = $('btn-toggle-redpen-desk');
+        const deskDrawer = $('redpen-desk-drawer');
+        if (toggleDeskBtn && deskDrawer) {
+            toggleDeskBtn.addEventListener('click', () => {
+                const willOpen = deskDrawer.classList.contains('hidden');
+                deskDrawer.classList.toggle('hidden', !willOpen);
+                toggleDeskBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                if (willOpen) {
+                    syncRedPenDeskContext();
+                    const msgEl = $('redpen-desk-message');
+                    if (msgEl) msgEl.focus();
+                }
+            });
+        }
+
+        const redPenDeskForm = $('redpen-desk-form');
+        if (redPenDeskForm) {
+            redPenDeskForm.addEventListener('submit', async (e) => {
+                if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+                e.preventDefault();
+                if (redPenDeskForm.dataset.submitting === 'true') return;
+
+                const gotcha = redPenDeskForm.querySelector('input[name="_gotcha"]');
+                const statusEl = $('redpen-desk-status');
+                const submitBtn = $('redpen-desk-submit');
+                const origText = submitBtn ? submitBtn.textContent : 'Send to My Desk →';
+
+                if (gotcha && gotcha.value.trim()) {
+                    if (statusEl) {
+                        statusEl.className = 'desk-form-status is-success';
+                        statusEl.textContent = 'Sent to my desk — thank you.';
+                    }
+                    return;
+                }
+
+                syncRedPenDeskContext();
+                redPenDeskForm.dataset.submitting = 'true';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Sending...';
+                }
+                if (statusEl) {
+                    statusEl.className = 'desk-form-status';
+                    statusEl.textContent = '';
+                }
+
+                try {
+                    const res = await fetch(redPenDeskForm.action || 'https://formspree.io/f/mvkgrwvj', {
+                        method: 'POST',
+                        body: new FormData(redPenDeskForm),
+                        headers: { Accept: 'application/json' }
+                    });
+                    if (!res.ok) throw new Error('Request failed');
+                    if (statusEl) {
+                        statusEl.className = 'desk-form-status is-success';
+                        statusEl.textContent = 'Received at my desk in Northern Ireland. I will send a sentence-level Error vs Style note back within 24 hours.';
+                    }
+                    if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+                    trackRedPenEvent('desk_dropbox_submitted', { tool: 'red_pen_speedrun' });
+                } catch (_) {
+                    if (statusEl) {
+                        statusEl.className = 'desk-form-status is-error';
+                        statusEl.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=Red-Pen%20Error%20vs%20Style%20Check" style="color:inherit;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+                    }
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = origText;
+                    }
+                } finally {
+                    redPenDeskForm.dataset.submitting = 'false';
+                }
+            });
+        }
 
         // Keyboard shortcuts: 1=Error, 2=Spoken, 3=Leave Alone, ArrowLeft/Right, Enter
         document.addEventListener('keydown', (e) => {

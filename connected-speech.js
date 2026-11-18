@@ -2424,6 +2424,106 @@
 
     if ($('btn-close-recap')) $('btn-close-recap').addEventListener('click', () => closeRecapModal(true));
 
+    /* ---------------- BELFAST DESK INLINE DRAWER ---------------- */
+    function syncCsDeskContext() {
+      const summaryEl = $('cs-desk-active-summary');
+      const ctxHidden = $('cs-desk-context-hidden');
+      const dossierEl = $('cs-desk-dossier');
+      const d = currentDrill;
+      const drillLabel = d ? `Act ${d.act} · ${d.title} (${d.phoneticRespelling})` : 'Connected Speech Lab';
+      const scoreLabel = lastScoreResult
+        ? `Match ${lastScoreResult.overallPct}% (Peaks ${lastScoreResult.peakPct}% / Weak ${lastScoreResult.valleyPct}%)`
+        : `${state.completedIds.length}/${D.allDrills.length} Clips Mastered`;
+      if (summaryEl) summaryEl.textContent = `${drillLabel} · ${scoreLabel}`;
+      if (ctxHidden) ctxHidden.value = `${drillLabel} | IPA: ${d ? d.weakIpa : ''} | ${scoreLabel}`;
+      if (dossierEl) {
+        let dossierVal = '';
+        try {
+          if (window.CandidateDossier && typeof window.CandidateDossier.getSummary === 'function') {
+            const ds = window.CandidateDossier.getSummary();
+            if (ds && ds.playedCategories > 0) {
+              dossierVal = `${ds.code} | ${ds.cefrBand} | Focus: ${ds.weakestSkill || 'Speaking Prosody'}`;
+            }
+          }
+        } catch (_) {}
+        dossierEl.value = dossierVal;
+      }
+    }
+
+    const toggleCsDeskBtn = $('btn-toggle-cs-desk');
+    const csDeskDrawer = $('cs-desk-drawer');
+    if (toggleCsDeskBtn && csDeskDrawer) {
+      toggleCsDeskBtn.addEventListener('click', () => {
+        const willOpen = csDeskDrawer.classList.contains('hidden');
+        csDeskDrawer.classList.toggle('hidden', !willOpen);
+        toggleCsDeskBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        if (willOpen) {
+          syncCsDeskContext();
+          const msgEl = $('cs-desk-message');
+          if (msgEl) msgEl.focus();
+        }
+      });
+    }
+
+    const csDeskForm = $('cs-desk-form');
+    if (csDeskForm) {
+      csDeskForm.addEventListener('submit', async (e) => {
+        if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+        e.preventDefault();
+        if (csDeskForm.dataset.submitting === 'true') return;
+
+        const gotcha = csDeskForm.querySelector('input[name="_gotcha"]');
+        const statusEl = $('cs-desk-status');
+        const submitBtn = $('cs-desk-submit');
+        const origText = submitBtn ? submitBtn.textContent : 'Send to My Desk →';
+
+        if (gotcha && gotcha.value.trim()) {
+          if (statusEl) {
+            statusEl.className = 'desk-form-status is-success';
+            statusEl.textContent = 'Sent to my desk — thank you.';
+          }
+          return;
+        }
+
+        syncCsDeskContext();
+        csDeskForm.dataset.submitting = 'true';
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+        }
+        if (statusEl) {
+          statusEl.className = 'desk-form-status';
+          statusEl.textContent = '';
+        }
+
+        try {
+          const res = await fetch(csDeskForm.action || 'https://formspree.io/f/mvkgrwvj', {
+            method: 'POST',
+            body: new FormData(csDeskForm),
+            headers: { Accept: 'application/json' }
+          });
+          if (!res.ok) throw new Error('Request failed');
+          if (statusEl) {
+            statusEl.className = 'desk-form-status is-success';
+            statusEl.textContent = 'Received at my desk in Northern Ireland. I will reply within 24 hours with stressed beats, weak-form reductions, and natural rhythm notes.';
+          }
+          if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+          trackEvent('desk_dropbox_submitted', { tool: 'connected_speech_lab' });
+        } catch (_) {
+          if (statusEl) {
+            statusEl.className = 'desk-form-status is-error';
+            statusEl.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=Connected%20Speech%20Lab%20Question" style="color:inherit;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+          }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = origText;
+          }
+        } finally {
+          csDeskForm.dataset.submitting = 'false';
+        }
+      });
+    }
+
     const routed = applyUrlRoute();
     if (!routed) {
       currentDrill = D.allDrills[state.currentIdx] || D.allDrills[0];

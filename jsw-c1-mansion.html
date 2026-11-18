@@ -1318,11 +1318,14 @@
     .btn-desk-secondary {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       padding: 10px 15px;
       border-radius: 9px;
+      font-family: inherit;
       font-size: 0.84rem;
       font-weight: 700;
       text-decoration: none;
+      cursor: pointer;
     }
 
     .btn-desk-primary {
@@ -1331,10 +1334,119 @@
       color: #ffffff;
     }
 
+    .btn-desk-primary:hover {
+      background: #075985;
+    }
+
     .btn-desk-secondary {
       background: var(--paper);
       border: 1px solid #94a3b8;
       color: var(--ink-dark);
+    }
+
+    .btn-desk-secondary:hover {
+      background: #ffe4e6;
+      border-color: var(--crimson);
+      color: var(--crimson);
+    }
+
+    .desk-drawer {
+      flex: 1 0 100%;
+      width: 100%;
+      min-width: 0;
+      margin-top: 6px;
+      padding-top: 16px;
+      border-top: 1px dashed #94a3b8;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .desk-drawer.hidden { display: none; }
+    .desk-drawer-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.9rem;
+      color: var(--ink-dark);
+    }
+    .desk-context-pill {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--sky-dark);
+      background: #e0f2fe;
+      border: 1px solid #7dd3fc;
+      padding: 3px 9px;
+      border-radius: 999px;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+    }
+    .desk-drawer-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .desk-form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .desk-field-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink-body);
+    }
+    .desk-input,
+    .desk-textarea {
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      font-family: inherit;
+      font-size: 0.88rem;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid #94a3b8;
+      background: var(--paper);
+      color: var(--ink-dark);
+      user-select: text;
+      -webkit-user-select: text;
+    }
+    .desk-input:focus,
+    .desk-textarea:focus {
+      outline: none;
+      border-color: var(--sky-dark);
+      box-shadow: 0 0 0 2px rgba(3, 105, 161, 0.16);
+    }
+    .desk-form-footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: stretch;
+    }
+    .desk-email-input {
+      flex: 1 1 200px;
+    }
+    .desk-form-status {
+      font-size: 0.84rem;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+    .desk-form-status:empty { display: none; }
+    .desk-form-status.is-success {
+      background: #d1fae5;
+      border: 1px solid #6ee7b7;
+      color: var(--emerald-text);
+      padding: 9px 12px;
+      border-radius: 8px;
+    }
+    .desk-form-status.is-error {
+      background: #ffe4e6;
+      border: 1px solid #fda4af;
+      color: var(--crimson);
+      padding: 9px 12px;
+      border-radius: 8px;
     }
 
     body.gm-clean-screenshare #belfast-desk-strip,
@@ -1766,19 +1878,50 @@
     </div>
   </main>
 
-  <aside data-course-bridge></aside>
-
   <section id="belfast-desk-strip" class="belfast-desk-strip" aria-label="Belfast Desk Feedback and Coaching">
     <div class="belfast-desk-copy">
       <span class="belfast-desk-kicker">🖋️ From My Belfast Desk</span>
       <h2>Want a red-pen look at your own C1 grammar or essay?</h2>
-      <p>After 19 years of teaching (15 of them at Belfast Met), I see capable candidates drop marks on Part 4 transformations not through missing vocabulary, but through tense drift and altered keywords. Send me an essay for written notes or work through real prompts with me live.</p>
+      <p>After 19 years of teaching (15 of them at Belfast Met), I see capable candidates drop marks on Part 4 transformations not through missing vocabulary, but through tense drift and altered keywords. Send 1–3 tricky transformations below for a free 24h note from my desk.</p>
     </div>
     <div class="belfast-desk-actions">
-      <a href="index.html?offer=live_diagnostic_35#cal-booking-box" class="btn-desk-primary" data-track="jsw_book_diagnostic" data-tier="starter_session_35">Book a 30-Min Starter Session (£35) &rarr;</a>
-      <a href="index.html?offer=async_essay_audit_29#enquiry-card" class="btn-desk-secondary" data-track="jsw_essay_audit" data-tier="async_essay_audit_29">Get Written Essay Feedback (£29) &rarr;</a>
+      <button type="button" id="btn-toggle-jsw-desk" class="btn-desk-primary" aria-expanded="false" aria-controls="jsw-desk-drawer">✍️ Ask About a Tricky Part 4 Transformation &rarr;</button>
+      <a href="index.html?offer=live_diagnostic_35#cal-booking-box" class="btn-desk-secondary" data-track="jsw_book_diagnostic" data-tier="starter_session_35">Book a 30-Min Starter (£35) &rarr;</a>
+      <a href="index.html?offer=async_essay_audit_29#enquiry-card" class="btn-desk-secondary" data-track="jsw_essay_audit" data-tier="async_essay_audit_29">Essay Feedback (£29) &rarr;</a>
+    </div>
+
+    <div id="jsw-desk-drawer" class="desk-drawer hidden">
+      <div class="desk-drawer-head">
+        <strong>Ask About a Tricky Part 4 Transformation (Free 24h Note)</strong>
+        <span id="jsw-desk-active-summary" class="desk-context-pill"></span>
+      </div>
+      <form id="jsw-desk-form" action="https://formspree.io/f/mvkgrwvj" method="POST" class="desk-drawer-form">
+        <input type="hidden" name="_subject" value="JSW C1 Mansion — Part 4 Transformation Question">
+        <input type="hidden" name="form_source" value="jsw_c1_mansion_inline_desk">
+        <input type="hidden" name="active_context" id="jsw-desk-context-hidden" value="">
+        <input type="hidden" name="candidate_dossier" id="jsw-desk-dossier" value="">
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
+
+        <div class="desk-form-row">
+          <label for="jsw-desk-exam" class="desk-field-label">Target exam or Part 4 keyword (optional)</label>
+          <input type="text" id="jsw-desk-exam" name="part4_keyword" class="desk-input" maxlength="120" placeholder="e.g. C1 Advanced Part 4, keyword SOONER / INTENTION / SPITE..." autocomplete="off">
+        </div>
+
+        <div class="desk-form-row">
+          <label for="jsw-desk-message" class="desk-field-label">Your transformation sentence or grammar question (required)</label>
+          <textarea id="jsw-desk-message" name="message" rows="3" class="desk-textarea" required placeholder="Paste Sentence 1, Sentence 2, the keyword, and your 3–6 word attempt you want checked..."></textarea>
+        </div>
+
+        <div class="desk-form-footer">
+          <input type="email" id="jsw-desk-email" name="email" class="desk-input desk-email-input" required placeholder="Your email for my 24h note..." aria-label="Your email address">
+          <button type="submit" id="jsw-desk-submit" class="btn-desk-primary">Send to My Desk &rarr;</button>
+        </div>
+        <div id="jsw-desk-status" class="desk-form-status" role="status" aria-live="polite"></div>
+      </form>
     </div>
   </section>
+
+  <aside data-course-bridge></aside>
 
   <!-- Cambridge C1 Part 4 Riddle Modal -->
   <div id="riddle-modal" class="riddle-modal" role="dialog" aria-modal="true" aria-labelledby="riddle-modal-title">
@@ -3392,7 +3535,12 @@
         renderFrame();
         beep1Bit(1046, 90);
         if (!inSelfTest && SOLVED_RIDDLES.size >= D.riddles.length && window.CandidateDossier && typeof window.CandidateDossier.recordGameCompletion === 'function') {
-          window.CandidateDossier.recordGameCompletion('Jet Set Willy C1 Mansion', SOLVED_RIDDLES.size, D.riddles.length);
+          window.CandidateDossier.recordGameCompletion({
+            gameName: 'Jet Set Willy C1 Mansion',
+            category: 'inversion',
+            score: SOLVED_RIDDLES.size,
+            maxScore: D.riddles.length
+          });
         }
       } else {
         beep1Bit(180, 140, 'sawtooth');
@@ -4023,8 +4171,110 @@
     }
 
     // =========================================================================
-    // 15. BOOT ENGINE AT AUTHENTIC ~14 HZ Z80 GAME LOOP
+    // 15. BELFAST DESK INLINE DRAWER & BOOT ENGINE AT AUTHENTIC ~14 HZ
     // =========================================================================
+    function syncJswDeskContext() {
+      const summaryEl = document.getElementById('jsw-desk-active-summary');
+      const ctxHidden = document.getElementById('jsw-desk-context-hidden');
+      const dossierEl = document.getElementById('jsw-desk-dossier');
+      const rmMeta = D.findRoom(Z80.roomId);
+      const rmName = rmMeta ? `Room ${rmMeta.id}: ${rmMeta.shortName}` : `Room ${Z80.roomId}`;
+      const kwPart = activeRiddle ? ` · Active [${activeRiddle.keyword}]` : '';
+      const solvedStr = `Solved ${SOLVED_RIDDLES.size}/${D.riddles.length} Relics`;
+      if (summaryEl) summaryEl.textContent = `${rmName}${kwPart} · ${solvedStr}`;
+      if (ctxHidden) ctxHidden.value = `${rmName}${kwPart} | ${solvedStr}`;
+      if (dossierEl) {
+        let dossierVal = '';
+        try {
+          if (window.CandidateDossier && typeof window.CandidateDossier.getSummary === 'function') {
+            const ds = window.CandidateDossier.getSummary();
+            if (ds && ds.playedCategories > 0) {
+              dossierVal = `${ds.code} | ${ds.cefrBand} | Focus: ${ds.weakestSkill || 'Part 4 Transforms'}`;
+            }
+          }
+        } catch (_) {}
+        dossierEl.value = dossierVal;
+      }
+    }
+
+    (function initJswDeskDrawer() {
+      const toggleBtn = document.getElementById('btn-toggle-jsw-desk');
+      const drawer = document.getElementById('jsw-desk-drawer');
+      if (toggleBtn && drawer) {
+        toggleBtn.addEventListener('click', () => {
+          const willOpen = drawer.classList.contains('hidden');
+          drawer.classList.toggle('hidden', !willOpen);
+          toggleBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+          if (willOpen) {
+            syncJswDeskContext();
+            const msgEl = document.getElementById('jsw-desk-message');
+            if (msgEl) msgEl.focus();
+          }
+        });
+      }
+
+      const deskForm = document.getElementById('jsw-desk-form');
+      if (deskForm) {
+        deskForm.addEventListener('submit', async (e) => {
+          if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
+          e.preventDefault();
+          if (deskForm.dataset.submitting === 'true') return;
+
+          const gotcha = deskForm.querySelector('input[name="_gotcha"]');
+          const statusEl = document.getElementById('jsw-desk-status');
+          const submitBtn = document.getElementById('jsw-desk-submit');
+          const origText = submitBtn ? submitBtn.textContent : 'Send to My Desk →';
+
+          if (gotcha && gotcha.value.trim()) {
+            if (statusEl) {
+              statusEl.className = 'desk-form-status is-success';
+              statusEl.textContent = 'Sent to my desk — thank you.';
+            }
+            return;
+          }
+
+          syncJswDeskContext();
+          deskForm.dataset.submitting = 'true';
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+          }
+          if (statusEl) {
+            statusEl.className = 'desk-form-status';
+            statusEl.textContent = '';
+          }
+
+          try {
+            const res = await fetch(deskForm.action || 'https://formspree.io/f/mvkgrwvj', {
+              method: 'POST',
+              body: new FormData(deskForm),
+              headers: { Accept: 'application/json' }
+            });
+            if (!res.ok) throw new Error('Request failed');
+            if (statusEl) {
+              statusEl.className = 'desk-form-status is-success';
+              statusEl.textContent = 'Received at my desk in Northern Ireland. I will reply within 24 hours with a step-by-step Part 4 breakdown.';
+            }
+            if (submitBtn) submitBtn.textContent = 'Sent to My Desk ✓';
+            if (typeof window.trackFunnelEvent === 'function') {
+              window.trackFunnelEvent('desk_dropbox_submitted', { tool: 'jsw_c1_mansion' });
+            }
+          } catch (_) {
+            if (statusEl) {
+              statusEl.className = 'desk-form-status is-error';
+              statusEl.innerHTML = 'Something stopped the form from sending. Please email me directly at <a href="mailto:gareth@garethenglish.com?subject=JSW%20C1%20Mansion%20Part%204%20Question" style="color:inherit;text-decoration:underline;font-weight:700;">gareth@garethenglish.com</a>.';
+            }
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = origText;
+            }
+          } finally {
+            deskForm.dataset.submitting = 'false';
+          }
+        });
+      }
+    })();
+
     syncCleanScreenshare();
     initDefaultRooms();
     if (!applyRoomHashIfPresent()) {

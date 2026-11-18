@@ -39,7 +39,7 @@
 
     // Never on the course itself, the compendium, the Young Learners page, or core exam workbenches.
     const EXCLUDED_RE = /(^|\/)((dracula|frankenstein|jekyll|baskerville|alice)-unit\d+[^/]*|poe-unit13-tell-tale-heart[^/]*|dark-academia[^/]*|the-gothic-canon[^/]*|professor-west-study[^/]*)$/i;
-    const EXAM_EXCLUDE_RE = /(^|\/)(c1-50-key-word-transformations-checklist|cae-essay-builder-v2|ielts-essay-masterclass|c1-report-proposal-builder|speaking-part2-arc-trainer|cpe-psychometrics-passives)(\.html)?$/i;
+    const EXAM_EXCLUDE_RE = /(^|\/)(c1-50-key-word-transformations-checklist|cae-essay-builder-v2|ielts-essay-masterclass|c1-report-proposal-builder|speaking-part2-arc-trainer|cpe-psychometrics-passives|connected-speech-lab)(\.html)?$/i;
     if (EXCLUDED_RE.test(path) || EXAM_EXCLUDE_RE.test(path)) return;
 
     const slug = ((path.split('/').pop() || '').split(/[?#]/)[0].replace(/\.html?$/i, '')) || 'index';

@@ -1422,6 +1422,7 @@
       title: drill.context,
       targetKey: drill.targetKeys.join(' / '),
       mode: isLiveMicRun ? 'live_mic' : 'written_check',
+      correct: Boolean(hasRequiredKey && syntaxCheck.ok),
       band: bandNumeric,
       bandScore: bandNumeric,
       bandLabel: bandLabel,
