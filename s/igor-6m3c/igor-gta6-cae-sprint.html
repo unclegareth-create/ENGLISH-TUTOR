@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en-GB" data-theme="paper">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <title>GTA 6, Game Economies &amp; CAE Sprint | Igor S. &middot; GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="paper"] {
+      --bg-base: #f5f3ef;
+      --surface-card: #ffffff;
+      --surface-subtle: #faf8f5;
+      --surface-highlight: #fef3c7;
+      --ink-950: #0c1222;
+      --ink-800: #1e293b;
+      --ink-700: #334155;
+      --ink-500: #64748b;
+      --border-hairline: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --accent: #b45309;
+      --accent-soft: #fef3c7;
+      --navy: #1d4ed8;
+      --navy-dark: #0f2557;
+      --navy-soft: #eff6ff;
+      --emerald: #059669;
+      --emerald-soft: #ecfdf5;
+      --rose: #e11d48;
+      --rose-soft: #fff1f2;
+      --purple: #7c3aed;
+      --purple-soft: #f5f3ff;
+      --shadow-card: 0 8px 24px -4px rgba(12, 18, 34, 0.06);
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    [data-theme="dark"] {
+      --bg-base: #090d16;
+      --surface-card: #111827;
+      --surface-subtle: #182235;
+      --surface-highlight: #3b2a10;
+      --ink-950: #f8fafc;
+      --ink-800: #e2e8f0;
+      --ink-700: #cbd5e1;
+      --ink-500: #94a3b8;
+      --border-hairline: #1e293b;
+      --border-strong: #334155;
+      --accent: #fbbf24;
+      --accent-soft: rgba(251, 191, 36, 0.14);
+      --navy: #60a5fa;
+      --navy-dark: #93c5fd;
+      --navy-soft: rgba(59, 130, 246, 0.15);
+      --emerald: #34d399;
+      --emerald-soft: rgba(16, 185, 129, 0.15);
+      --rose: #fb7185;
+      --rose-soft: rgba(225, 29, 72, 0.15);
+      --purple: #c084fc;
+      --purple-soft: rgba(192, 132, 252, 0.14);
+      --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      padding-bottom: 5rem;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .top-bar {
+      background: var(--surface-card);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 0.85rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .top-bar-inner {
+      max-width: 1020px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-link {
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--navy);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--navy-soft);
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .theme-btn {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 1020px;
+      margin: 2rem auto 0;
+      padding: 0 1.25rem;
+    }
+
+    .hero {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 18px;
+      padding: 2rem 2.2rem;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 1.75rem;
+      display: grid;
+      grid-template-columns: 1.35fr 0.9fr;
+      gap: 1.75rem;
+      align-items: center;
+    }
+
+    @media (max-width: 780px) {
+      .hero { grid-template-columns: 1fr; padding: 1.5rem; }
+    }
+
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.65rem, 3vw, 2.2rem);
+      line-height: 1.2;
+      color: var(--ink-950);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero p {
+      color: var(--ink-700);
+      font-size: 0.96rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .sprint-map {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .sprint-chip {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 8px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      color: var(--ink-800);
+    }
+
+    .hero-visual {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-hairline);
+      background: var(--surface-subtle);
+      aspect-ratio: 16 / 10;
+    }
+
+    .hero-visual img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .section-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 1.75rem;
+    }
+
+    @media (max-width: 640px) {
+      .section-card { padding: 1.35rem 1.25rem; }
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .section-head h2 {
+      font-family: var(--font-serif);
+      font-size: 1.35rem;
+      color: var(--ink-950);
+    }
+
+    .time-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--emerald-soft);
+      color: var(--emerald);
+    }
+
+    .rubric {
+      font-size: 0.93rem;
+      color: var(--ink-700);
+      margin-bottom: 1.2rem;
+    }
+
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .prompt-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-left: 4px solid var(--navy);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+    }
+
+    .prompt-num {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    .prompt-box h3 {
+      font-size: 0.98rem;
+      color: var(--ink-950);
+      margin-bottom: 0.35rem;
+    }
+
+    .prompt-box p {
+      font-size: 0.88rem;
+      color: var(--ink-700);
+    }
+
+    .area-strip {
+      background: var(--navy-soft);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.88rem;
+      color: var(--ink-800);
+      margin-bottom: 1.1rem;
+    }
+
+    .trap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .trap-item {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.84rem;
+    }
+
+    .trap-bad {
+      color: var(--rose);
+      text-decoration: line-through;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .trap-good {
+      color: var(--emerald);
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .formula-box {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--accent);
+      border-radius: 10px;
+      padding: 1rem 1.15rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.9rem;
+    }
+
+    .formula-box code {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+
+    .p4-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .p4-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 0.5rem;
+    }
+
+    .p4-num {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--ink-500);
+    }
+
+    .kw-badge {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      background: var(--ink-950);
+      color: var(--bg-base);
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .p4-s1 {
+      font-size: 0.95rem;
+      color: var(--ink-800);
+      margin-bottom: 0.45rem;
+    }
+
+    .p4-s2 {
+      font-size: 0.95rem;
+      color: var(--ink-950);
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .p4-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .p4-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-950);
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+    }
+
+    .reveal-btn {
+      background: var(--navy);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: var(--font-sans);
+      font-size: 0.83rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .reveal-btn:hover {
+      opacity: 0.92;
+    }
+
+    .model-answer {
+      display: none;
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      background: var(--emerald-soft);
+      border: 1px solid var(--emerald);
+      font-size: 0.88rem;
+      color: var(--ink-950);
+    }
+
+    .model-answer.open {
+      display: block;
+    }
+
+    .writing-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 0.75rem;
+    }
+
+    .timer-display {
+      font-family: var(--font-mono);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--navy-soft);
+      padding: 5px 12px;
+      border-radius: 8px;
+    }
+
+    .word-counter {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--ink-700);
+    }
+
+    .sprint-textarea {
+      width: 100%;
+      min-height: 155px;
+      padding: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-subtle);
+      color: var(--ink-950);
+      font-family: var(--font-sans);
+      font-size: 0.96rem;
+      line-height: 1.6;
+      resize: vertical;
+      margin-bottom: 0.9rem;
+    }
+
+    .btn-secondary {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-950);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: var(--font-sans);
+      font-size: 0.83rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <a class="brand-link" href="index.html">&larr; Back to Igor&rsquo;s Portal</a>
+      <div class="top-actions">
+        <span class="pill-tag">50-Min Live CAE Sprint</span>
+        <span class="pill-tag">Zero Homework</span>
+        <button class="theme-btn" id="themeToggle" type="button">Dark / Paper</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <div class="hero-eyebrow">Cambridge C1 Advanced &middot; Systems &amp; Gaming</div>
+        <!-- STUDENT-PIXEL-BADGE-START -->
+<div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:rgba(15,23,42,0.12); border:1px solid rgba(148,163,184,0.32); margin-bottom:10px; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; font-size:0.78rem; font-weight:700; line-height:1.2;">
+  <img src="avatar.svg" alt="Igor S. (C1 Prep)" style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid rgba(255,255,255,0.28); flex-shrink:0;" />
+  <span>Igor S. (C1 Prep) &bull; Cambridge C1 Advanced (CAE)</span>
+</div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+<h1>GTA 6, Game Economies &amp; Anti-Cheat</h1>
+        <p>One complete 50-minute session built to do all the heavy lifting live: 20 minutes of argument, 12 minutes of Part 4 constraint puzzles, and an 8-minute timed paragraph.</p>
+        <div class="sprint-map">
+          <span class="sprint-chip">0&ndash;20m &middot; Speaking &amp; Repair</span>
+          <span class="sprint-chip">20&ndash;32m &middot; 5 Part 4 Puzzles</span>
+          <span class="sprint-chip">32&ndash;48m &middot; 80w Micro-Writing</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="../../assets/cards/photo-1590602847861-f357a9332bbc.webp" alt="Studio microphone and discussion setup" loading="lazy" onerror="this.style.display='none'" />
+      </div>
+    </section>
+
+    <!-- BLOCK 1: SPEAKING -->
+    <section class="section-card">
+      <div class="section-head">
+        <h2>1. Speaking Debate: Systems, Privacy &amp; Attention</h2>
+        <span class="time-badge">0&ndash;20 mins</span>
+      </div>
+      <p class="rubric">Pick two prompts below and defend a clear position using the A.R.E.A. frame.</p>
+
+      <div class="prompt-grid">
+        <article class="prompt-box">
+          <div class="prompt-num">Prompt A &middot; Security vs Privacy</div>
+          <h3>Kernel-Level Anti-Cheat</h3>
+          <p>Should a game studio be allowed ring-0 access to your operating system simply to stop cheaters in multiplayer lobbies?</p>
+        </article>
+        <article class="prompt-box">
+          <div class="prompt-num">Prompt B &middot; Economics of Scale</div>
+          <h3>The Billion-Dollar Game</h3>
+          <p>When a single release like GTA 6 costs over a billion dollars to build, does that scale stifle creative risk across the industry?</p>
+        </article>
+        <article class="prompt-box">
+          <div class="prompt-num">Prompt C &middot; Virtual Markets</div>
+          <h3>Paid Skins &amp; Status</h3>
+          <p>Why are rational players willing to spend real money on purely cosmetic items that carry zero gameplay advantage?</p>
+        </article>
+        <article class="prompt-box">
+          <div class="prompt-num">Prompt D &middot; Cognitive Bandwidth</div>
+          <h3>Deep Work vs Open Worlds</h3>
+          <p>Can demanding open-world or competitive games coexist with intense academic study, or do they erode sustained focus?</p>
+        </article>
+      </div>
+
+      <div class="area-strip">
+        <strong>A.R.E.A. Anchor:</strong> <strong>A</strong>nswer directly &rarr; <strong>R</strong>eason (<em>because / due to</em>) &rarr; <strong>E</strong>xample (concrete case) &rarr; <strong>A</strong>lternative (<em>admittedly / having said that</em>).
+      </div>
+
+      <div class="trap-grid">
+        <div class="trap-item"><span class="trap-bad">related with</span> &rarr; <span class="trap-good">related to</span></div>
+        <div class="trap-item"><span class="trap-bad">a knowledge about</span> &rarr; <span class="trap-good">knowledge of</span></div>
+        <div class="trap-item"><span class="trap-bad">waiting the release</span> &rarr; <span class="trap-good">waiting for the release</span></div>
+        <div class="trap-item"><span class="trap-bad">medias / informations</span> &rarr; <span class="trap-good">the media / information</span></div>
+        <div class="trap-item"><span class="trap-bad">wonder how does it work</span> &rarr; <span class="trap-good">wonder how it works</span></div>
+        <div class="trap-item"><span class="trap-bad">which creates hype</span> &rarr; <span class="trap-good">, thereby creating hype</span></div>
+      </div>
+    </section>
+
+    <!-- BLOCK 2: PART 4 CONSTRAINT PUZZLES -->
+    <section class="section-card">
+      <div class="section-head">
+        <h2>2. Part 4 Constraint Puzzles</h2>
+        <span class="time-badge">20&ndash;32 mins</span>
+      </div>
+      <p class="rubric">Complete the second sentence using <strong>3 to 6 words</strong>, including the key word. Never change the form of the key word.</p>
+
+      <div class="formula-box">
+        <strong>4-Step Elimination:</strong>
+        <code>1. Strike echoes</code> &rarr; <code>2. Match tense</code> &rarr; <code>3. Check voice</code> &rarr; <code>4. Lock pattern (3&ndash;6 words)</code>
+      </div>
+
+      <div class="p4-card">
+        <div class="p4-top">
+          <span class="p4-num">Puzzle 01</span>
+          <span class="kw-badge">INTENTION</span>
+        </div>
+        <div class="p4-s1">Rockstar Games is not planning to release GTA 6 on PC at launch.</div>
+        <div class="p4-s2">Rockstar Games has ________________________________ GTA 6 on PC at launch.</div>
+        <div class="p4-controls">
+          <input class="p4-input" type="text" placeholder="Type 3–6 words..." aria-label="Puzzle 1 answer" />
+          <button class="reveal-btn" type="button" onclick="toggleModel(this)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="model-answer">
+          <strong>Model (4 words):</strong> <code>no intention of releasing</code> &mdash; Pattern: <em>have no intention of + -ing</em>.
+        </div>
+      </div>
+
+      <div class="p4-card">
+        <div class="p4-top">
+          <span class="p4-num">Puzzle 02</span>
+          <span class="kw-badge">RATHER</span>
+        </div>
+        <div class="p4-s1">Many players think developers should fix server bugs instead of adding paid skins.</div>
+        <div class="p4-s2">Many players ________________________________ server bugs instead of adding paid skins.</div>
+        <div class="p4-controls">
+          <input class="p4-input" type="text" placeholder="Type 3–6 words..." aria-label="Puzzle 2 answer" />
+          <button class="reveal-btn" type="button" onclick="toggleModel(this)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="model-answer">
+          <strong>Model (4 words):</strong> <code>would rather developers fixed</code> &mdash; Pattern: <em>would rather + subject + past simple</em> (present/future preference).
+        </div>
+      </div>
+
+      <div class="p4-card">
+        <div class="p4-top">
+          <span class="p4-num">Puzzle 03</span>
+          <span class="kw-badge">TIME</span>
+        </div>
+        <div class="p4-s1">Players must never share their account credentials with third-party boosting sites.</div>
+        <div class="p4-s2">At ________________________________ share their account credentials with third-party boosting sites.</div>
+        <div class="p4-controls">
+          <input class="p4-input" type="text" placeholder="Type 3–6 words..." aria-label="Puzzle 3 answer" />
+          <button class="reveal-btn" type="button" onclick="toggleModel(this)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="model-answer">
+          <strong>Model (4 words):</strong> <code>no time must players</code> &mdash; Pattern: negative inversion <em>At no time + modal + subject + infinitive</em>.
+        </div>
+      </div>
+
+      <div class="p4-card">
+        <div class="p4-top">
+          <span class="p4-num">Puzzle 04</span>
+          <span class="kw-badge">SPITE</span>
+        </div>
+        <div class="p4-s1">Although kernel-level anti-cheat is controversial, most competitive players still install it.</div>
+        <div class="p4-s2">Most competitive players still install kernel-level anti-cheat ________________________________ controversy.</div>
+        <div class="p4-controls">
+          <input class="p4-input" type="text" placeholder="Type 3–6 words..." aria-label="Puzzle 4 answer" />
+          <button class="reveal-btn" type="button" onclick="toggleModel(this)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="model-answer">
+          <strong>Model (4 words):</strong> <code>in spite of the</code> &mdash; Pattern: <em>in spite of + noun phrase</em> (replacing <em>although + clause</em>).
+        </div>
+      </div>
+
+      <div class="p4-card">
+        <div class="p4-top">
+          <span class="p4-num">Puzzle 05</span>
+          <span class="kw-badge">SAID</span>
+        </div>
+        <div class="p4-s1">People believe the studio spent over a billion dollars developing the game.</div>
+        <div class="p4-s2">The studio ________________________________ over a billion dollars developing the game.</div>
+        <div class="p4-controls">
+          <input class="p4-input" type="text" placeholder="Type 3–6 words..." aria-label="Puzzle 5 answer" />
+          <button class="reveal-btn" type="button" onclick="toggleModel(this)">👁️ Reveal Cambridge Model</button>
+        </div>
+        <div class="model-answer">
+          <strong>Model (5 words):</strong> <code>is said to have spent</code> &mdash; Pattern: passive reporting + perfect infinitive for a completed past action.
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOCK 3: TIMED MICRO-WRITING -->
+    <section class="section-card">
+      <div class="section-head">
+        <h2>3. 8-Minute Micro-Writing Sprint</h2>
+        <span class="time-badge">32&ndash;48 mins</span>
+      </div>
+      <p class="rubric">Write <strong>one 80&ndash;90 word CAE body paragraph</strong> answering the prompt below. Include <strong>one</strong> C1 structure: <code>What + Clause + BE</code>, <code>Not only + aux + subject</code>, or <code>It is widely argued that</code>.</p>
+
+      <div class="formula-box">
+        <strong>Prompt:</strong> Should governments regulate loot boxes and in-game microtransactions, or should game studios be trusted to self-regulate?
+      </div>
+
+      <div class="writing-toolbar">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <span class="timer-display" id="timerDisplay">08:00</span>
+          <button class="btn-secondary" type="button" id="startTimerBtn">Start 8m Timer</button>
+          <button class="btn-secondary" type="button" id="resetTimerBtn">Reset</button>
+        </div>
+        <span class="word-counter" id="wordCounter">0 / 80&ndash;90 words</span>
+      </div>
+
+      <textarea class="sprint-textarea" id="sprintPad" placeholder="Write your single body paragraph here (aim for 80–90 words)..."></textarea>
+
+      <button class="reveal-btn" type="button" onclick="toggleModel(this)">👁️ Reveal Cambridge Model</button>
+      <div class="model-answer" id="writingModel">
+        <strong>Cambridge Model (75 words):</strong><br />
+        It is widely argued that in-game microtransactions should be subject to strict statutory oversight rather than voluntary industry codes. What makes randomised loot boxes particularly problematic is their structural similarity to gambling, thereby exposing younger players to financial risk before they can fully evaluate odds. Admittedly, studios contend that recurring revenue funds ongoing server maintenance and free content updates. Nevertheless, transparent pricing and clear age-verification rules would protect consumers without undermining a studio&rsquo;s commercial viability.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem('ge_theme');
+    if (savedTheme === 'dark' || savedTheme === 'paper') {
+      root.setAttribute('data-theme', savedTheme);
+    }
+
+    document.getElementById('themeToggle').addEventListener('click', () => {
+      const next = root.getAttribute('data-theme') === 'dark' ? 'paper' : 'dark';
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('ge_theme', next);
+    });
+
+    function toggleModel(btn) {
+      const box = btn.closest('.p4-card, .section-card').querySelector('.model-answer');
+      if (!box) return;
+      box.classList.toggle('open');
+      btn.textContent = box.classList.contains('open') ? 'Hide Cambridge Model' : '👁️ Reveal Cambridge Model';
+    }
+
+    const pad = document.getElementById('sprintPad');
+    const wordCounter = document.getElementById('wordCounter');
+    pad.addEventListener('input', () => {
+      const words = pad.value.trim() ? pad.value.trim().split(/\s+/).length : 0;
+      wordCounter.textContent = `${words} / 80–90 words`;
+    });
+
+    let secondsLeft = 480;
+    let timerId = null;
+    const timerDisplay = document.getElementById('timerDisplay');
+    const startBtn = document.getElementById('startTimerBtn');
+    const resetBtn = document.getElementById('resetTimerBtn');
+
+    function renderTimer() {
+      const m = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+      const s = String(secondsLeft % 60).padStart(2, '0');
+      timerDisplay.textContent = `${m}:${s}`;
+    }
+
+    startBtn.addEventListener('click', () => {
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+        startBtn.textContent = 'Resume Timer';
+        return;
+      }
+      startBtn.textContent = 'Pause Timer';
+      timerId = setInterval(() => {
+        if (secondsLeft > 0) {
+          secondsLeft -= 1;
+          renderTimer();
+        } else {
+          clearInterval(timerId);
+          timerId = null;
+          startBtn.textContent = 'Done';
+        }
+      }, 1000);
+    });
+
+    resetBtn.addEventListener('click', () => {
+      clearInterval(timerId);
+      timerId = null;
+      secondsLeft = 480;
+      renderTimer();
+      startBtn.textContent = 'Start 8m Timer';
+    });
+  </script>
+  <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
+  <script src="../../analytics.js" defer></script>
+</body>
+</html>

@@ -9,13 +9,21 @@
     const menu = document.getElementById('mobile-menu');
 
     if (btn && menu) {
-        const icon = btn.querySelector('i');
+        const iconOpen = document.getElementById('menu-icon-open');
+        const iconClose = document.getElementById('menu-icon-close');
+        const MENU_OPEN_SVG = '<svg id="menu-icon-open" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>';
+        const MENU_CLOSE_SVG = '<svg id="menu-icon-close" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
         const setOpen = (open, moveFocus = false) => {
             menu.classList.toggle('hidden', !open);
             menu.setAttribute('aria-hidden', String(!open));
             btn.setAttribute('aria-expanded', String(open));
             btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-            if (icon) icon.className = open ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+            if (iconOpen && iconClose) {
+                iconOpen.classList.toggle('hidden', open);
+                iconClose.classList.toggle('hidden', !open);
+            } else {
+                btn.innerHTML = open ? MENU_CLOSE_SVG : MENU_OPEN_SVG;
+            }
             if (open && moveFocus) {
                 const firstLink = menu.querySelector('a[href], button:not([disabled])');
                 if (firstLink) {
@@ -129,7 +137,7 @@
         const createAlertBox = () => {
             const div = document.createElement('div');
             div.className = 'bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-4 rounded-xl mb-4 text-sm font-semibold shadow-sm flex items-center gap-3';
-            div.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 text-lg" aria-hidden="true"></i> <span>' + successMsg + '</span>';
+            div.innerHTML = '<svg class="w-4 h-4 text-emerald-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11.5 14.5 15.5 9.5"/></svg> <span>' + successMsg + '</span>';
             return div;
         };
 
@@ -162,13 +170,13 @@
             div.className = 'bg-emerald-500/20 border border-emerald-400 text-emerald-100 px-5 py-4 rounded-xl mb-4 text-sm shadow-sm text-left max-w-lg mx-auto space-y-2.5';
             div.innerHTML =
                 '<div class="flex items-center gap-2.5 font-bold text-emerald-300">' +
-                '<i class="fa-solid fa-circle-check text-emerald-400 text-lg shrink-0" aria-hidden="true"></i>' +
+                '<svg class="w-4 h-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11.5 14.5 15.5 9.5"/></svg>' +
                 '<span>Check your inbox! You can also access your guides &amp; PDF immediately below:</span>' +
                 '</div>' +
                 '<div class="flex flex-wrap gap-2 pt-1 text-sm font-semibold">' +
                 '<a href="cpe-inversion.html" class="px-3 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-white border border-emerald-400/40 transition">C1/C2 Inversion Guide &rarr;</a>' +
                 '<a href="c1-c2-common-mistakes.html" class="px-3 py-1.5 rounded-lg bg-emerald-500/30 hover:bg-emerald-500/40 text-white border border-emerald-400/40 transition">10 Common C1 Mistakes &rarr;</a>' +
-                '<a href="ielts-7-syllabus.pdf" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-indigo-500/40 hover:bg-indigo-500/60 text-white border border-indigo-400/40 transition"><i class="fa-solid fa-file-pdf mr-1" aria-hidden="true"></i>Download Study Syllabus PDF</a>' +
+                '<a href="ielts-7-syllabus.pdf" target="_blank" rel="noopener" class="px-3 py-1.5 rounded-lg bg-indigo-500/40 hover:bg-indigo-500/60 text-white border border-indigo-400/40 transition"><svg class="w-4 h-4 inline-block mr-1 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Download Study Syllabus PDF</a>' +
                 '</div>';
             return div;
         };
@@ -256,6 +264,12 @@
         audit_async_29: 'https://buy.stripe.com/aFadR8clu0O0gqV2unb3q02'
     };
 
+    const BADGE_COMMENTS_SVG = '<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+    const BADGE_BAG_SVG = '<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>';
+    const DEFAULT_STRIPE_BTN_CLASS = 'px-4 py-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-sm transition whitespace-nowrap';
+    const PRIMARY_AUDIT_STRIPE_BTN_CLASS = 'px-5 py-2.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-sm shadow-md transition whitespace-nowrap';
+    let activeTierKey = '';
+
     const setEssayUploadVisible = (visible) => {
         const essayUploadGroup = document.getElementById('essay-upload-group');
         const essayDocUrlInput = document.getElementById('essay-doc-url');
@@ -310,6 +324,7 @@
             else if (pkg.includes('Single')) resolvedTier = 'single_85';
         }
         const stripeUrl = (resolvedTier && STRIPE_PAYMENT_LINKS[resolvedTier]) || '';
+        activeTierKey = resolvedTier || '';
 
         if (goalLabel) {
             goalLabel.textContent = isWaitlist
@@ -340,14 +355,14 @@
             formSubtitle.textContent = isWaitlist
                 ? 'No payment needed. Leave your question or goals below (and paste one short paragraph of your writing if you would like a quick free note from me).'
                 : isAudit
-                    ? 'Paste your Google Doc link (or draft up to 350 words) below and click "Pay \u00a329 via Stripe" in one visit, or submit the form first to request Wise or PayPal.'
+                    ? 'Paste your Google Doc link (or draft up to 350 words) below, submit your details, and click "Pay \u00a329 via Stripe Now" to complete everything in one visit (or ask for Wise or PayPal).'
                     : 'Complete your details and preferred days/times below for your Stripe Payment Link (or request Wise / PayPal).';
         }
         if (formBadge) {
             formBadge.className = 'inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-sm font-bold bg-white text-emerald-800 border border-emerald-200 mb-2';
             formBadge.innerHTML = isWaitlist
-                ? '<i class="fa-regular fa-comments" aria-hidden="true"></i> Direct Question &bull; No Payment Required'
-                : '<i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> Package Checkout &amp; Scheduling';
+                ? BADGE_COMMENTS_SVG + ' Direct Question &bull; No Payment Required'
+                : BADGE_BAG_SVG + ' Package Checkout &amp; Scheduling';
         }
         if (pkgBanner && pkgNameEl) {
             if (isWaitlist) {
@@ -362,7 +377,7 @@
                     } else if (resolvedTier === 'pack_5_375') {
                         pkgNextStepEl.textContent = 'Click "Pay via Stripe" to check out now, or submit the form below to confirm weekly lesson times or request Wise/PayPal.';
                     } else if (isAudit) {
-                        pkgNextStepEl.textContent = 'Paste your Google Doc link (or draft up to 350 words) below, click "Pay \u00a329 via Stripe" (opens in a new tab), and send your details in one visit \u2014 or submit first if you prefer Wise or PayPal.';
+                        pkgNextStepEl.textContent = 'Paste your Google Doc link (or draft up to 350 words) below and click "Pay \u00a329 via Stripe Now" (or submit first and pay immediately on the confirmation screen) \u2014 no 24-hour wait for a payment link.';
                     } else {
                         pkgNextStepEl.textContent = stripeUrl
                             ? 'Click "Pay via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
@@ -372,12 +387,13 @@
                 if (stripeBtn) {
                     if (stripeUrl) {
                         stripeBtn.href = stripeUrl;
+                        stripeBtn.className = isAudit ? PRIMARY_AUDIT_STRIPE_BTN_CLASS : DEFAULT_STRIPE_BTN_CLASS;
                         stripeBtn.textContent = resolvedTier === 'sprint_10_650'
                             ? 'Pay Full Pack (£650) via Stripe \u2192'
                             : resolvedTier === 'pack_12_780'
                                 ? 'Pay Full Pack (£780) via Stripe \u2192'
                                 : isAudit
-                                    ? 'Pay £29 via Stripe \u2192'
+                                    ? 'Pay £29 via Stripe Now \u2192'
                                     : 'Pay via Stripe \u2192';
                         stripeBtn.classList.remove('hidden');
                     } else {
@@ -428,6 +444,7 @@
         const enquiryCard = document.getElementById('enquiry-card');
         if (!enquiryCard) return;
 
+        activeTierKey = '';
         setEssayUploadVisible(false);
         if (pkgBanner) pkgBanner.classList.add('hidden');
         if (formBadge) formBadge.classList.add('hidden');
@@ -542,7 +559,11 @@
             if (formBadge) {
                 formBadge.className = 'hidden items-center gap-1.5 px-3.5 py-1 rounded-full text-sm font-bold bg-white text-emerald-800 border border-emerald-200 mb-2';
             }
-            if (stripeBtn) stripeBtn.classList.add('hidden');
+            activeTierKey = '';
+            if (stripeBtn) {
+                stripeBtn.className = DEFAULT_STRIPE_BTN_CLASS;
+                stripeBtn.classList.add('hidden');
+            }
             if (pkgBanner) pkgBanner.classList.add('hidden');
             setEssayUploadVisible(false);
             if (submitBtn) submitBtn.innerHTML = 'Send Message &rarr;';
@@ -570,6 +591,7 @@
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
         contactForm.addEventListener('reset', () => {
+            activeTierKey = '';
             setEssayUploadVisible(false);
         });
         contactForm.addEventListener('submit', async (e) => {
@@ -616,15 +638,55 @@
                 }
 
                 const submittedGoal = (goalInput && goalInput.value.trim()) || 'general_enquiry';
+                const isAuditSubmission = activeTierKey === 'audit_async_29' ||
+                    activeTierKey === 'audit_async_39' ||
+                    /\b(?:written essay feedback|async|audit)\b|\u00a329/i.test(submittedGoal);
+                const auditStripeUrl = STRIPE_PAYMENT_LINKS.audit_async_29 || 'https://buy.stripe.com/aFadR8clu0O0gqV2unb3q02';
+
                 if (typeof window.trackFunnelEvent === 'function') {
                     window.trackFunnelEvent('contact_enquiry_succeeded', { goal: submittedGoal });
                 }
                 contactForm.reset();
+                activeTierKey = '';
                 if (goalInput) {
                     goalInput.classList.remove('ring-2', 'ring-emerald-400', 'border-emerald-400', 'ring-sky-400', 'border-sky-400');
                 }
                 if (pkgBanner) pkgBanner.classList.add('hidden');
                 if (successBanner) {
+                    const successHeading = document.getElementById('form-success-heading');
+                    const successCopy = document.getElementById('form-success-copy');
+                    let successStripeWrap = document.getElementById('form-success-stripe-wrap');
+                    if (!successStripeWrap) {
+                        const bodyContainer = document.getElementById('form-success-body') || successBanner.querySelector('.text-sm') || successBanner;
+                        successStripeWrap = document.createElement('div');
+                        successStripeWrap.id = 'form-success-stripe-wrap';
+                        successStripeWrap.className = 'hidden mt-3';
+                        bodyContainer.appendChild(successStripeWrap);
+                    }
+
+                    if (isAuditSubmission) {
+                        if (successHeading) {
+                            successHeading.textContent = 'Step 1 complete \u2014 your essay details are with me.';
+                        }
+                        if (successCopy) {
+                            successCopy.textContent = 'Complete your \u00a329 payment on Stripe below so I can begin marking right away and return your Google Doc within 24\u201348 hours.';
+                        }
+                        successStripeWrap.innerHTML =
+                            '<a id="form-success-stripe-cta" href="' + auditStripeUrl + '" target="_blank" rel="noopener noreferrer" data-tier="audit_async_29" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-sm shadow-sm transition">' +
+                            'Step 2: Complete £29 Payment on Stripe \u2192</a>' +
+                            '<p class="text-xs text-slate-600 mt-2">Opens Stripe checkout in a new tab. Prefer Wise or PayPal? Reply to your confirmation email instead.</p>';
+                        successStripeWrap.classList.remove('hidden');
+                    } else {
+                        if (successHeading) {
+                            successHeading.textContent = 'Thank you. Your message has been sent.';
+                        }
+                        if (successCopy) {
+                            successCopy.textContent = 'I have received your enquiry and will reply personally from Northern Ireland within 24 hours with your study plan or payment link.';
+                        }
+                        successStripeWrap.innerHTML = '';
+                        successStripeWrap.classList.add('hidden');
+                    }
+
                     successBanner.classList.remove('hidden');
                     setTimeout(() => {
                         successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
