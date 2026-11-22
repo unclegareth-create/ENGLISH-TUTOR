@@ -179,9 +179,12 @@
     .desk-status-err.visible { display: block; }
     @media (max-width: 720px) { .desk-grid-2 { grid-template-columns: 1fr; } .mint-panel, .desk-card { padding: 1.2rem 1rem; } }
     @media print { .top-hud, .nav-bar, .reveal-btn, .check-btn, .answer-row, .mint-inline-drawer, .desk-card { display: none !important; } .slide { display: flex !important; page-break-after: always; } .solution { display: block !important; } }
+    .skip-link{position:absolute;left:-9999px;top:8px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;z-index:9999}
+    .skip-link:focus{left:12px}
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="top-hud">
     <div class="hud-left">
@@ -200,6 +203,7 @@
     </div>
   </div>
 
+  <main id="main" style="display:contents">
   <div class="slide-stage">
     <div class="slide-viewport">
 
@@ -818,6 +822,7 @@
       </form>
     </div>
   </section>
+  </main>
 
   <script>
     let currentSlide = 1;
@@ -1655,7 +1660,7 @@
       const grid = document.getElementById('mg-grid');
       if (!bar || !grid) return;
       bar.innerHTML = MG_ITEMS.map(it =>
-        '<div class="pat-chip" data-mg-chip="' + it.id + '" title="' + it.tag + '" onclick="document.getElementById(\'mg-card-' + it.id + '\').scrollIntoView({behavior:\'smooth\', block:\'center\'})">' + it.chip + '</div>'
+        '<div tabindex="0" role="button" class="pat-chip" data-mg-chip="' + it.id + '" title="' + it.tag + '" onclick="document.getElementById(\'mg-card-' + it.id + '\').scrollIntoView({behavior:\'smooth\', block:\'center\'})">' + it.chip + '</div>'
       ).join('');
       grid.innerHTML = MG_ITEMS.map(it => {
         const num = String(it.id).padStart(2, '0');
@@ -2061,6 +2066,18 @@
         }
       });
     }
+
+    document.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === 'Enter') { e.preventDefault(); t.click(); }
+      else if (e.key === ' ') { e.preventDefault(); }
+    });
+    document.addEventListener('keyup', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === ' ') { e.preventDefault(); t.click(); }
+    });
 
     // Initialise HUD score, adaptive diagnostic, Mastery Gauntlet, Mint Panel & Desk Form on page load
     updateTotalScore();

@@ -283,7 +283,7 @@
       line-height: 1.25;
     }
 
-    .step-pill {
+    .module-step-pill {
       font-family: var(--font-mono);
       font-size: 0.76rem;
       color: var(--text-muted);
@@ -1006,7 +1006,6 @@
 
   <!-- Top HUD -->
   <header class="top-hud">
-  <meta name="robots" content="noindex, nofollow" />
     <div class="brand-group">
       <span class="brand-pill">Media &amp; Rhetoric Lab</span>
       <span class="level-tag">Advanced C1/C2</span>
@@ -1020,19 +1019,19 @@
 
   <!-- Segmented Navigation -->
   <nav class="module-tabs">
-    <div class="tab-btn active" onclick="goToStep(0)">
+    <div class="tab-btn active" onclick="goToStep(0)" role="button" tabindex="0">
       <span class="tab-step">01 · Speaking</span>Hot-Seat Studio
     </div>
-    <div class="tab-btn" onclick="goToStep(1)">
+    <div class="tab-btn" onclick="goToStep(1)" role="button" tabindex="0">
       <span class="tab-step">02 · Discourse</span>Media Lens
     </div>
-    <div class="tab-btn" onclick="goToStep(2)">
+    <div class="tab-btn" onclick="goToStep(2)" role="button" tabindex="0">
       <span class="tab-step">03 · Grammar</span>Text Blueprints
     </div>
-    <div class="tab-btn" onclick="goToStep(3)">
+    <div class="tab-btn" onclick="goToStep(3)" role="button" tabindex="0">
       <span class="tab-step">04 · Games</span>Rhetorical Arena
     </div>
-    <div class="tab-btn" onclick="goToStep(4)">
+    <div class="tab-btn" onclick="goToStep(4)" role="button" tabindex="0">
       <span class="tab-step">05 · Council</span>Planning Simulation
     </div>
   </nav>
@@ -1055,7 +1054,7 @@
 <!-- STUDENT-PIXEL-BADGE-END -->
 <h1 class="sheet-title" id="page-heading">The Hot-Seat Roleplay Arena</h1>
         </div>
-        <div class="step-pill" id="step-pill">Module 1 of 5</div>
+        <div class="module-step-pill" id="step-pill">Module 1 of 5</div>
       </div>
 
       <!-- MODULE 1: HOT-SEAT SPEAKING -->
@@ -1065,7 +1064,7 @@
         <p class="section-prompt">Select a stakeholder identity below. Take the microphone and defend your stance against cross-examination using the live 60-second press conference timer.</p>
 
         <div class="hotseat-grid">
-          <div class="role-card selected" onclick="selectRole('retiree', this)">
+          <div class="role-card selected" onclick="selectRole('retiree', this)" role="button" tabindex="0">
             <div>
               <div class="role-tag retiree">The Transnational Retiree</div>
               <div class="role-title">Dave Cooper (60)</div>
@@ -1073,7 +1072,7 @@
             <div class="role-desc">Relocated from Southern California seeking pastoral serenity for his boxer dog. Alarmed by speeding HGVs.</div>
           </div>
 
-          <div class="role-card" onclick="selectRole('tourism', this)">
+          <div class="role-card" onclick="selectRole('tourism', this)" role="button" tabindex="0">
             <div>
               <div class="role-tag tourism">The Heritage Advocate</div>
               <div class="role-title">Holiday Park Operator</div>
@@ -1081,7 +1080,7 @@
             </div>
           </div>
 
-          <div class="role-card" onclick="selectRole('planner', this)">
+          <div class="role-card" onclick="selectRole('planner', this)" role="button" tabindex="0">
             <div>
               <div class="role-tag planner">The Planning Critic</div>
               <div class="role-title">Policy Researcher</div>
@@ -1089,7 +1088,7 @@
             </div>
           </div>
 
-          <div class="role-card" onclick="selectRole('developer', this)">
+          <div class="role-card" onclick="selectRole('developer', this)" role="button" tabindex="0">
             <div>
               <div class="role-tag developer">The Corporate Director</div>
               <div class="role-title">Liam Davies (Pickstock)</div>
@@ -1246,19 +1245,19 @@
         <p class="section-prompt">Select an interactive mini-game to sharpen your tactical rhetoric and vocabulary speed.</p>
 
         <div class="game-selector-grid">
-          <div class="game-choice-card active" onclick="switchGame('duel', this)">
+          <div class="game-choice-card active" onclick="switchGame('duel', this)" role="button" tabindex="0">
             <div class="game-tag">Game 1 · Speed Match</div>
             <div class="game-title">Rhetorical Duel (45s)</div>
             <div class="game-sub">Pick the sharper C1/C2 upgrade before the buzzer.</div>
           </div>
 
-          <div class="game-choice-card" onclick="switchGame('headline', this)">
+          <div class="game-choice-card" onclick="switchGame('headline', this)" role="button" tabindex="0">
             <div class="game-tag">Game 2 · Register Flip</div>
             <div class="game-title">Headline Re-Framer</div>
             <div class="game-sub">Switch between Tabloid and Diplomatic PR.</div>
           </div>
 
-          <div class="game-choice-card" onclick="switchGame('odd', this)">
+          <div class="game-choice-card" onclick="switchGame('odd', this)" role="button" tabindex="0">
             <div class="game-tag">Game 3 · Collocation Catch</div>
             <div class="game-title">The Odd-Collocation Out</div>
             <div class="game-sub">Spot the unnatural lexical combination.</div>
@@ -1646,5 +1645,33 @@
   </script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>
+
+<script>
+(function(){
+  if (window.__m4cKbdBound) return;
+  window.__m4cKbdBound = true;
+  document.addEventListener('keydown', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === 'Enter') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    } else if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    }
+  });
+})();
+</script>
 </body>
 </html>

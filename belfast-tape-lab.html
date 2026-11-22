@@ -7,8 +7,11 @@
   <meta name="robots" content="noindex, follow" />
   <link rel="canonical" href="https://garethenglish.com/belfast-tape-lab.html" />
   <meta name="description" content="The Belfast Tape Lab: A tactile 1980s polyphonic analog synthesizer, 6-voice post-punk drum machine, Euclidean rhythm generator, 303 bass sequencer, and 4-track cassette dub workstation." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <style>
+    .skip-link{position:absolute;left:-9999px;top:8px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;z-index:9999}
+    .skip-link:focus{left:12px}
     :root {
       --bg-void: #08090c;
       --chassis-dark: #13151a;
@@ -100,8 +103,10 @@
 
     .brand-badge {
       display: flex;
+      flex-wrap: wrap;
       align-items: baseline;
       gap: 10px;
+      min-width: 0;
     }
     .brand-title {
       font-family: var(--font-mono);
@@ -166,12 +171,20 @@
       max-width: 1480px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 26px 1fr 26px;
+      grid-template-columns: 26px minmax(0, 1fr) 26px;
       border-radius: 10px;
       box-shadow:
         0 28px 70px rgba(0,0,0,0.85),
         0 0 0 1px rgba(255,255,255,0.06);
       overflow: hidden;
+    }
+    @media (max-width: 640px) {
+      .hardware-workstation {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .wood-cheek {
+        display: none;
+      }
     }
 
     .wood-cheek {
@@ -214,6 +227,8 @@
     }
 
     .chassis-core {
+      min-width: 0;
+      max-width: 100%;
       background:
         repeating-linear-gradient(
           0deg,
@@ -312,18 +327,20 @@
     /* 8 Studio Cartridge Selector Rack */
     .cartridge-rack {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
       padding: 10px 12px;
       background: #0e1015;
       border: 1px solid rgba(226, 218, 205, 0.12);
       border-radius: 6px;
+      width: 100%;
+      min-width: 0;
     }
     @media (max-width: 1100px) {
-      .cartridge-rack { grid-template-columns: repeat(2, 1fr); }
+      .cartridge-rack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     @media (max-width: 640px) {
-      .cartridge-rack { grid-template-columns: 1fr; }
+      .cartridge-rack { grid-template-columns: minmax(0, 1fr); }
     }
 
     .cartridge-slot {
@@ -331,6 +348,9 @@
       align-items: center;
       gap: 9px;
       padding: 7px 10px;
+      min-width: 0;
+      max-width: 100%;
+      width: 100%;
       background: linear-gradient(180deg, #1e222b 0%, #151820 100%);
       border: 1px solid rgba(255,255,255,0.08);
       border-left: 3px solid var(--muted-silk);
@@ -360,39 +380,43 @@
       padding: 3px 6px;
       border-radius: 3px;
       border: 1px solid rgba(245, 158, 11, 0.25);
+      flex-shrink: 0;
     }
     .cart-meta {
+      display: block;
+      flex: 1;
+      min-width: 0;
       overflow: hidden;
     }
     .cart-name {
+      display: block;
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 700;
       letter-spacing: 0.04em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-wrap: anywhere;
     }
     .cart-desc {
+      display: block;
       font-size: 10px;
       color: var(--muted-silk);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      overflow-wrap: anywhere;
     }
 
     /* Upper Synth & CRT Row */
     .upper-deck-grid {
       display: grid;
-      grid-template-columns: 1.35fr 1fr 1.15fr;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1.15fr);
       gap: 12px;
     }
     @media (max-width: 1240px) {
-      .upper-deck-grid { grid-template-columns: 1fr; }
+      .upper-deck-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
     /* Hardware Module Panel */
     .hw-module {
+      min-width: 0;
+      max-width: 100%;
       background: linear-gradient(180deg, var(--chassis-panel) 0%, #14171e 100%);
       border: 1px solid rgba(226, 218, 205, 0.14);
       border-radius: 6px;
@@ -408,10 +432,14 @@
 
     .module-header {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
+      gap: 6px;
       border-bottom: 1px solid rgba(226, 218, 205, 0.12);
       padding-bottom: 6px;
+      min-width: 0;
+      max-width: 100%;
     }
     .module-title {
       font-family: var(--font-mono);
@@ -421,8 +449,11 @@
       text-transform: uppercase;
       color: var(--cream-silk);
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 7px;
+      min-width: 0;
+      max-width: 100%;
     }
     .module-tag {
       font-family: var(--font-mono);
@@ -433,15 +464,18 @@
       color: var(--amber-glow);
       border: 1px solid rgba(245, 158, 11, 0.3);
       letter-spacing: 0.06em;
+      max-width: 100%;
     }
 
     .sub-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr));
       gap: 8px;
     }
 
     .sub-box {
+      min-width: 0;
+      max-width: 100%;
       background: rgba(10, 12, 16, 0.55);
       border: 1px solid rgba(226, 218, 205, 0.09);
       border-radius: 5px;
@@ -531,15 +565,19 @@
     /* Waveform & Filter Pill Buttons */
     .wave-selector {
       display: flex;
+      flex-wrap: wrap;
       gap: 4px;
       margin-bottom: 7px;
+      max-width: 100%;
     }
     .wave-btn {
-      flex: 1;
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: 100%;
       font-family: var(--font-mono);
       font-size: 9.5px;
       font-weight: 700;
-      padding: 4px 4px;
+      padding: 4px 6px;
       background: #12151c;
       color: var(--muted-silk);
       border: 1px solid rgba(255,255,255,0.1);
@@ -557,7 +595,7 @@
     /* Vertical Fader Sliders for ADSR */
     .fader-bank {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 6px;
       padding-top: 4px;
     }
@@ -605,12 +643,13 @@
     .crt-canvas {
       display: block;
       width: 100%;
+      max-width: 100%;
       height: 170px;
     }
 
     .vu-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 8px;
     }
     .vu-box {
@@ -623,6 +662,7 @@
     .vu-canvas {
       display: block;
       width: 100%;
+      max-width: 100%;
       height: 68px;
     }
 
@@ -638,16 +678,22 @@
     .cassette-canvas {
       display: block;
       width: 100%;
+      max-width: 100%;
       height: 118px;
     }
 
     /* 4-Track Tape Looper Strips */
     .four-track-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 6px;
     }
+    @media (max-width: 640px) {
+      .four-track-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
     .tape-track-strip {
+      min-width: 0;
+      max-width: 100%;
       background: #0e1117;
       border: 1px solid rgba(226, 218, 205, 0.12);
       border-radius: 5px;
@@ -708,7 +754,7 @@
     }
     .drum-row {
       display: grid;
-      grid-template-columns: 118px 215px 125px 1fr;
+      grid-template-columns: minmax(0, 118px) minmax(0, 215px) minmax(0, 125px) minmax(0, 1fr);
       align-items: center;
       gap: 8px;
       background: rgba(11, 13, 18, 0.72);
@@ -718,13 +764,15 @@
     }
     @media (max-width: 1180px) {
       .drum-row {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         gap: 6px;
       }
     }
 
     .drum-voice-head {
       display: flex;
+      flex-wrap: wrap;
+      min-width: 0;
       align-items: center;
       justify-content: space-between;
       gap: 4px;
@@ -750,6 +798,8 @@
 
     .drum-params-inline {
       display: flex;
+      flex-wrap: wrap;
+      min-width: 0;
       align-items: center;
       gap: 6px;
       font-family: var(--font-mono);
@@ -770,6 +820,8 @@
 
     .euclid-box {
       display: flex;
+      flex-wrap: wrap;
+      min-width: 0;
       align-items: center;
       gap: 4px;
       font-family: var(--font-mono);
@@ -779,8 +831,13 @@
     /* 16-Step Roland TR-808 Style Step Buttons */
     .step-grid-16 {
       display: grid;
-      grid-template-columns: repeat(16, 1fr);
+      grid-template-columns: repeat(16, minmax(0, 1fr));
       gap: 4px;
+    }
+    @media (max-width: 640px) {
+      .step-grid-16 {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+      }
     }
     .step-btn {
       height: 30px;
@@ -861,7 +918,7 @@
     }
     .seq303-toggles {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 2px;
       width: 100%;
     }
@@ -884,12 +941,12 @@
     /* Bottom Row: 2-Octave Playable Synthesizer Keyboard & Performance Deck */
     .keyboard-deck {
       display: grid;
-      grid-template-columns: 230px 1fr;
+      grid-template-columns: minmax(0, 230px) minmax(0, 1fr);
       gap: 12px;
       align-items: stretch;
     }
     @media (max-width: 960px) {
-      .keyboard-deck { grid-template-columns: 1fr; }
+      .keyboard-deck { grid-template-columns: minmax(0, 1fr); }
     }
 
     .piano-bed {
@@ -971,11 +1028,11 @@
     /* EXPANSION ROW: MODULE 06 (KAOSS MATRIX) + MODULE 07 (OMNICHORD STRUM) + MODULE 08 (SHORTWAVE RADIO & TAPE BRAKE) */
     .performance-expansion-grid {
       display: grid;
-      grid-template-columns: 1.15fr 1.15fr 1.15fr;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.15fr) minmax(0, 1.15fr);
       gap: 12px;
     }
     @media (max-width: 1240px) {
-      .performance-expansion-grid { grid-template-columns: 1fr; }
+      .performance-expansion-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
     .kaoss-bezel {
@@ -993,16 +1050,22 @@
     .kaoss-canvas {
       display: block;
       width: 100%;
+      max-width: 100%;
       height: 186px;
     }
 
     /* Module 07: 8 Chord Memory Pads & Harp Strumplate */
     .chord-pad-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 6px;
     }
+    @media (max-width: 520px) {
+      .chord-pad-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
     .chord-pad {
+      min-width: 0;
+      max-width: 100%;
       background: linear-gradient(180deg, #262b38 0%, #171a22 100%);
       border: 1px solid rgba(245, 158, 11, 0.28);
       border-top: 3px solid var(--amber);
@@ -1061,16 +1124,22 @@
     .strumplate-canvas {
       display: block;
       width: 100%;
+      max-width: 100%;
       height: 82px;
     }
 
     /* Module 08: Shortwave Radio MPC Pads & Turntable Brake */
     .mpc-pad-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 6px;
     }
+    @media (max-width: 520px) {
+      .mpc-pad-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
     .mpc-pad {
+      min-width: 0;
+      max-width: 100%;
       background: linear-gradient(180deg, #2b303d 0%, #1b1e28 100%);
       border: 1px solid rgba(255,255,255,0.14);
       border-bottom: 3px solid var(--cyan-accent);
@@ -1154,22 +1223,25 @@
     .dub-chop-canvas {
       display: block;
       width: 100%;
+      max-width: 100%;
       height: 132px;
       touch-action: none;
       cursor: pointer;
     }
     .dub-chop-pad-grid {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
+      grid-template-columns: repeat(8, minmax(0, 1fr));
       gap: 6px;
     }
     @media (max-width: 1180px) {
-      .dub-chop-pad-grid { grid-template-columns: repeat(4, 1fr); }
+      .dub-chop-pad-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     }
     @media (max-width: 640px) {
-      .dub-chop-pad-grid { grid-template-columns: repeat(2, 1fr); }
+      .dub-chop-pad-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
     .dub-chop-pad {
+      min-width: 0;
+      max-width: 100%;
       background: linear-gradient(180deg, #272c38 0%, #171a22 100%);
       border: 1px solid rgba(255,255,255,0.14);
       border-bottom: 3px solid var(--amber);
@@ -1228,13 +1300,15 @@
     }
     .dub-chop-seq-grid {
       display: grid;
-      grid-template-columns: repeat(16, 1fr);
+      grid-template-columns: repeat(16, minmax(0, 1fr));
       gap: 4px;
     }
     @media (max-width: 960px) {
-      .dub-chop-seq-grid { grid-template-columns: repeat(8, 1fr); }
+      .dub-chop-seq-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
     }
     .dub-seq-step {
+      min-width: 0;
+      max-width: 100%;
       height: 38px;
       border-radius: 4px;
       border: 1px solid #08090c;
@@ -1298,13 +1372,15 @@
     }
     .mod10-steel-grid {
       display: grid;
-      grid-template-columns: 1.08fr 1.14fr 0.96fr;
+      grid-template-columns: minmax(0, 1.08fr) minmax(0, 1.14fr) minmax(0, 0.96fr);
       gap: 10px;
     }
     @media (max-width: 1180px) {
-      .mod10-steel-grid { grid-template-columns: 1fr; }
+      .mod10-steel-grid { grid-template-columns: minmax(0, 1fr); }
     }
     .mod10-rack-box {
+      min-width: 0;
+      max-width: 100%;
       background: linear-gradient(180deg, rgba(13, 17, 23, 0.9), rgba(8, 10, 14, 0.96));
       border: 1px solid rgba(148, 163, 184, 0.22);
       border-top: 1px solid rgba(203, 213, 225, 0.28);
@@ -1324,12 +1400,15 @@
       border-bottom: 1px dashed rgba(74, 222, 128, 0.22);
       padding-bottom: 4px;
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       gap: 6px;
     }
     .mod10-slider-row {
       display: flex;
+      flex-wrap: wrap;
+      min-width: 0;
       align-items: center;
       justify-content: space-between;
       gap: 7px;
@@ -1342,7 +1421,9 @@
       color: var(--muted-silk);
     }
     .mod10-slider-row input[type="range"] {
-      flex: 1;
+      flex: 1 1 120px;
+      min-width: 0;
+      max-width: 100%;
       accent-color: var(--crt-phosphor);
       cursor: pointer;
     }
@@ -1375,6 +1456,7 @@
     .mod10-scope-canvas {
       display: block;
       width: 100%;
+      max-width: 100%;
       height: 148px;
     }
     .mod10-kick-btn {
@@ -1439,7 +1521,9 @@
     .mod10-codeword-select {
       color: var(--amber-glow);
       border-color: rgba(245, 158, 11, 0.45);
-      min-width: 146px;
+      min-width: 0;
+      max-width: 100%;
+      flex: 1 1 146px;
     }
     .mod10-action-row {
       display: flex;
@@ -1681,7 +1765,8 @@
       font-size: 12px;
       padding: 4px 8px;
       border-radius: 4px;
-      min-width: 210px;
+      min-width: min(210px, 100%);
+      max-width: 100%;
       user-select: text;
       -webkit-user-select: text;
     }
@@ -1698,6 +1783,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- TOP STUDIO UTILITY BAR -->
   <header class="studio-topbar">
@@ -1705,7 +1791,7 @@
       <a href="dark-academia-index.html" class="back-link">&larr; Study Archive</a>
       <a href="midnight-radio.html" class="back-link">&#128251; Midnight Radio</a>
       <div class="brand-badge">
-        <span class="brand-title">BELFAST <span>TAPE LAB</span> · MK-IV</span>
+        <h1 class="brand-title" style="margin:0;">BELFAST <span>TAPE LAB</span> · MK-IV</h1>
         <span class="brand-sub">POLYPHONIC SYNTH · EUCLIDEAN DRUM MACHINE · 4-TRACK CASSETTE WORKSTATION</span>
       </div>
     </div>
@@ -1725,7 +1811,7 @@
   </header>
 
   <!-- MAIN HARDWARE WORKSTATION WITH MAHOGANY END-CHEEKS -->
-  <main class="hardware-workstation">
+  <main id="main" class="hardware-workstation">
     <!-- Left Mahogany Cheek -->
     <div class="wood-cheek">
       <div class="rack-screw"></div>
@@ -1787,7 +1873,7 @@
 
       <!-- 12 PRE-PROGRAMMED STUDIO CARTRIDGES -->
       <section aria-label="Studio Tape Cartridges">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; padding:0 4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:5px; padding:0 4px;">
           <span style="font-family:var(--font-mono); font-size:10px; color:var(--amber); letter-spacing:0.09em; text-transform:uppercase;">
             &#128252; 12 STUDIO TAPE CARTRIDGES · INSTANT 1-CLICK FULL TRACKS (DRUMS + 303 BASSLINE + SYNTH PATCH + DUB FX)
           </span>
@@ -1898,9 +1984,9 @@
 
           <!-- ADSR ENVELOPE SLIDERS + INTERACTIVE ENVELOPE CURVE CANVAS -->
           <div class="sub-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:4px;">
               <span class="sub-box-title" style="margin:0; border:none;">VCA / VCF ADSR ENVELOPE GENERATOR &amp; NOISE</span>
-              <div style="display:flex; gap:6px; align-items:center;">
+              <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
                 <span style="font-family:var(--font-mono); font-size:9px; color:var(--muted-silk);">LFO DEST:</span>
                 <select id="lfoTargetSelect" class="seq303-select" style="width:88px;">
                   <option value="cutoff">VCF CUTOFF</option>
@@ -1909,7 +1995,7 @@
                 </select>
               </div>
             </div>
-            <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:10px; align-items:center;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap:10px; align-items:center;">
               <div class="fader-bank">
                 <div class="fader-col">
                   <input type="range" class="v-fader" id="adsrA" min="0.005" max="1.5" step="0.005" value="0.015">
@@ -1958,7 +2044,7 @@
               <span class="led-dot active-green"></span>
               MODULE 05 · TEKTRONIX 465B CRT &amp; VU BRIDGE
             </div>
-            <div class="wave-selector" style="margin:0; width:175px;" id="crtModeGroup">
+            <div class="wave-selector" style="margin:0; max-width:100%;" id="crtModeGroup">
               <button class="wave-btn active" data-crt="scope">SCOPE</button>
               <button class="wave-btn" data-crt="fft">64-FFT</button>
               <button class="wave-btn" data-crt="xy">X-Y VEC</button>
@@ -1980,7 +2066,7 @@
           </div>
 
           <!-- Live Telemetry Bar -->
-          <div class="sub-box" style="display:flex; justify-content:space-between; align-items:center; font-family:var(--font-mono); font-size:10px;">
+          <div class="sub-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-family:var(--font-mono); font-size:10px;">
             <span>PEAK dBFS: <strong id="peakDbReadout" style="color:var(--amber-glow)">-&#8734; dB</strong></span>
             <span>TAPE IPS: <strong id="ipsReadout" style="color:var(--crt-phosphor)">30 IPS (HI-FI)</strong></span>
             <span>KEY: <strong id="lastNoteReadout" style="color:var(--cyan-accent)">C3 (130.8Hz)</strong></span>
@@ -1994,7 +2080,7 @@
               <span class="led-dot active-amber"></span>
               MODULE 04 · &ldquo;SPRUCEFIELD 424&rdquo; TAPE &amp; DUB FX
             </div>
-            <div class="wave-selector" style="margin:0; width:135px;" id="tapeSpeedGroup">
+            <div class="wave-selector" style="margin:0; max-width:100%;" id="tapeSpeedGroup">
               <button class="wave-btn active" data-speed="1">30 IPS</button>
               <button class="wave-btn" data-speed="0.5">15 IPS (HALF)</button>
             </div>
@@ -2064,7 +2150,7 @@
               <span class="led-dot active-green"></span>
               MODULE 06 · &ldquo;BELFAST KAOSS MATRIX&rdquo; 2D X-Y PAD
             </div>
-            <div style="display:flex; gap:4px;">
+            <div style="display:flex; gap:4px; flex-wrap:wrap; max-width:100%;">
               <button class="mini-btn" id="kaossLatchBtn" style="padding:3px 7px;" title="Hold/Latch X-Y Position on Release">HOLD</button>
               <button class="mini-btn rec-arm" id="kaossRecMotionBtn" style="padding:3px 7px;" title="Record &amp; Loop 2-Bar X-Y Gesture Path">&#9679; MOTION REC</button>
               <button class="mini-btn" id="kaossClearMotionBtn" style="padding:3px 7px;" title="Clear Recorded Gesture Loop">CLR</button>
@@ -2082,7 +2168,7 @@
             <canvas id="kaossPadCanvas" class="kaoss-canvas" width="420" height="186"></canvas>
           </div>
 
-          <div class="sub-box" style="display:flex; justify-content:space-between; align-items:center; font-family:var(--font-mono); font-size:9.5px;">
+          <div class="sub-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-family:var(--font-mono); font-size:9.5px;">
             <span id="kaossAxisReadout" style="color:var(--crt-phosphor)">X: 50% (CUTOFF) · Y: 50% (RESONANCE)</span>
             <span id="kaossMotionStatus" style="color:var(--amber-glow)">GESTURE: MANUAL LIVE</span>
           </div>
@@ -2095,7 +2181,7 @@
               <span class="led-dot active-amber"></span>
               MODULE 07 · OMNICHORD STRUM &amp; CHORD MEMORY
             </div>
-            <div style="display:flex; gap:5px; align-items:center;">
+            <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap; max-width:100%;">
               <button class="mini-btn play-loop" id="chordDroneLatchBtn" style="padding:3px 8px;" title="Sustain Chord Drone Continuously">DRONE LATCH: OFF</button>
               <button class="mini-btn" id="autoStrumBtn" style="padding:3px 8px; color:var(--amber-glow);" title="Auto-Arpeggiate Harp Strings">&#9835; AUTO-STRUM</button>
             </div>
@@ -2105,7 +2191,7 @@
             <!-- Populated by JS: 8 Post-Punk / Darkwave / Synthwave Chord Pads (Keys 1-8) -->
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; font-family:var(--font-mono); font-size:9.5px; color:var(--muted-silk); padding:0 2px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-family:var(--font-mono); font-size:9.5px; color:var(--muted-silk); padding:0 2px;">
             <span>&#127931; 12-STRING BRASS HARP STRUMPLATE (SWIPE CURSOR OR TOUCH ACROSS STRINGS)</span>
             <span id="activeChordReadout" style="color:var(--amber-glow)">CHORD: i Min9 (Belfast Rain)</span>
           </div>
@@ -2122,8 +2208,8 @@
               <span class="led-dot active-red"></span>
               MODULE 08 · MULTILINGUAL SHORTWAVE (JA/TR/LT/EN), SAMPLER &amp; BRAKE
             </div>
-            <div style="display:flex; gap:5px; align-items:center;">
-              <button class="mini-btn active" id="swBankTrilingualBtn" style="padding:3px 7px; color:var(--amber-glow);" title="Toggle between Multilingual (Yokohama JA / Beyoğlu TR / Kaunas-Belfast LT Ingrida / E11) and Classic Belfast Shortwave Banks">🇯🇵🇹🇷🇱🇹🇬🇧 BANK: MULTILINGUAL DX</button>
+            <div style="display:flex; gap:5px; align-items:center; flex-wrap:wrap; max-width:100%;">
+              <button class="mini-btn active" id="swBankTrilingualBtn" style="padding:3px 7px; color:var(--amber-glow); max-width:100%; overflow-wrap:anywhere;" title="Toggle between Multilingual (Yokohama JA / Beyoğlu TR / Kaunas-Belfast LT Ingrida / E11) and Classic Belfast Shortwave Banks">🇯🇵🇹🇷🇱🇹🇬🇧 BANK: MULTILINGUAL DX</button>
               <a href="midnight-radio.html" target="_blank" class="mini-btn" style="padding:3px 7px; text-decoration:none; color:var(--crt-phosphor);" title="Open Full Superheterodyne Midnight Shortwave Receiver" rel="noopener noreferrer">📻 TUNER &rarr;</a>
             </div>
           </div>
@@ -2179,15 +2265,15 @@
           </div>
 
           <div class="sub-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; font-family:var(--font-mono); font-size:9px;">
-              <label style="flex:1; display:flex; align-items:center; gap:5px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px; font-family:var(--font-mono); font-size:9px;">
+              <label style="flex:1 1 140px; min-width:0; display:flex; align-items:center; gap:5px;">
                 PITCH: <strong id="radioPitchVal" style="color:var(--amber-glow)">1.00x</strong>
-                <input type="range" id="radioPitchSlider" min="0.5" max="1.5" step="0.02" value="1.0" style="flex:1; accent-color:var(--cyan-accent);">
+                <input type="range" id="radioPitchSlider" min="0.5" max="1.5" step="0.02" value="1.0" style="flex:1; min-width:0; accent-color:var(--cyan-accent);">
               </label>
               <button class="mini-btn" id="radioReverseBtn" style="flex:none; padding:4px 8px;" title="Reverse Radio &amp; Mic Sample Buffer">&#8634; REV: OFF</button>
               <button class="mini-btn active" id="radioAmFilterBtn" style="flex:none; padding:4px 8px; color:var(--amber-glow);" title="Toggle Shortwave AM Bandpass &amp; Dub Echo Send">AM + DUB: ON</button>
             </div>
-            <div style="display:flex; gap:5px;">
+            <div style="display:flex; flex-wrap:wrap; gap:5px;">
               <button class="hw-btn" id="stutter8Btn" style="flex:1; justify-content:center; padding:5px; font-size:9.5px;" title="Hold for 1/8th Note Beat Repeat">
                 &#9889; BEAT STUTTER 1/8
               </button>
@@ -2281,13 +2367,13 @@
           <button class="hw-btn dub-siren-btn" id="dubChopThrowBtn" style="padding:6px 11px; font-size:10px;" title="Hold to blast active slice into dubFilter with feedback swell">
             🔥 DUB ECHO THROW
           </button>
-          <label style="display:flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:9.5px; color:var(--cream-silk); min-width:155px; flex:1;">
+          <label style="display:flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:9.5px; color:var(--cream-silk); min-width:min(155px, 100%); max-width:100%; flex:1 1 155px;">
             DUB SEND: <strong id="dubChopSendVal" style="color:var(--cyan-accent)">42%</strong>
-            <input type="range" id="dubChopSendSlider" min="0" max="100" step="1" value="42" style="flex:1; accent-color:var(--cyan-accent);">
+            <input type="range" id="dubChopSendSlider" min="0" max="100" step="1" value="42" style="flex:1; min-width:0; accent-color:var(--cyan-accent);">
           </label>
-          <label style="display:flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:9.5px; color:var(--cream-silk); min-width:165px; flex:1;">
+          <label style="display:flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:9.5px; color:var(--cream-silk); min-width:min(165px, 100%); max-width:100%; flex:1 1 165px;">
             CHOP PITCH: <strong id="dubChopPitchVal" style="color:var(--amber-glow)">1.00x</strong>
-            <input type="range" id="dubChopPitchSlider" min="0.50" max="1.50" step="0.02" value="1.00" style="flex:1; accent-color:var(--amber);">
+            <input type="range" id="dubChopPitchSlider" min="0.50" max="1.50" step="0.02" value="1.00" style="flex:1; min-width:0; accent-color:var(--amber);">
           </label>
           <button class="mini-btn active" id="dubChopWobbleBtn" style="flex:none; padding:5px 9px; color:var(--amber-glow);" title="LFO analog tape pitch drift">TAPE WOBBLE: ON</button>
           <button class="mini-btn active" id="dubChopGritBtn" style="flex:none; padding:5px 9px; color:var(--amber-glow);" title="1983 Pirate AM bandpass &amp; warm saturation">AM 1983 GRIT: ON</button>
@@ -2362,7 +2448,7 @@
               <strong id="mod10CarrierFreqVal">185 Hz</strong>
             </label>
 
-            <div style="display:flex; gap:6px; align-items:center;">
+            <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
               <button class="mini-btn" id="mod10WobbleToggleBtn" style="flex:none; padding:5px 9px;" title="Sweep Carrier Frequency with Radiophonic Wobbulator LFO">WOBBULATOR: OFF</button>
               <label class="mod10-slider-row" style="flex:1;">
                 <span style="min-width:54px;">RATE</span>
@@ -2401,7 +2487,7 @@
               <strong id="mod10SpringTensionVal">58%</strong>
             </label>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(min(120px, 100%), 1fr)); gap:8px;">
               <label class="mod10-slider-row">
                 <span style="min-width:58px;">DAMPING</span>
                 <input type="range" id="mod10SpringDampSlider" min="0" max="100" step="1" value="42">
@@ -4554,10 +4640,10 @@
         btn.className = `cartridge-slot ${idx === state.activeCartridge ? 'active' : ''}`;
         btn.innerHTML = `
           <span class="cart-num">&#128252; ${cart.num}</span>
-          <div class="cart-meta">
-            <div class="cart-name">${cart.name}</div>
-            <div class="cart-desc">${cart.desc}</div>
-          </div>
+          <span class="cart-meta">
+            <span class="cart-name">${cart.name}</span>
+            <span class="cart-desc">${cart.desc}</span>
+          </span>
         `;
         btn.addEventListener('click', () => loadCartridge(idx, true));
         rack.appendChild(btn);

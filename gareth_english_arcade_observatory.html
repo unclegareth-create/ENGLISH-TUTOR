@@ -4,12 +4,15 @@
   <link rel="canonical" href="https://garethenglish.com/gareth_english_arcade_observatory.html" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23050814'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='36' fill='%2338bdf8'%3EG%3C/text%3E%3C/svg%3E" />
   <meta name="robots" content="noindex, nofollow" />
   <title>Gareth English · The Prezi Arcade & Lesson Observatory</title>
   <meta name="description" content="Interactive C1/C2 & IELTS Cambridge Exam Lab harvested from 253 Prezi Masterclasses. Built by Gareth Montgomery." />
   <meta name="theme-color" content="#050814" />
   
   <style>
+    .skip-link{position:absolute;left:-9999px;top:8px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;z-index:9999}
+    .skip-link:focus{left:12px}
     /* ==========================================================================
        GARETH ENGLISH DESIGN SYSTEM (lab.css & prezi visual language)
        ========================================================================== */
@@ -63,6 +66,7 @@
       border-bottom: 1px solid var(--lab-border);
       padding: 14px 28px;
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       gap: 16px;
@@ -70,8 +74,10 @@
 
     .brand-wrap {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 12px;
+      min-width: 0;
     }
 
     .brand-logo {
@@ -129,6 +135,7 @@
 
     .nav-actions {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 12px;
     }
@@ -721,11 +728,20 @@
     }
 
     .calibration-workbench {
+      min-width: 0;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
       background: rgba(15, 23, 42, 0.85);
       border: 1px solid var(--lab-border);
       border-radius: 12px;
       padding: 22px;
       margin-bottom: 22px;
+    }
+    @media (max-width: 520px) {
+      .container { padding: 12px; }
+      .starchart-shell { padding: 14px; }
+      .calibration-workbench { padding: 14px; }
     }
 
     .obs-echo {
@@ -763,8 +779,10 @@
     }
 
     .obs-text-input {
-      flex: 1;
-      min-width: 240px;
+      flex: 1 1 180px;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
       background: #050814;
       border: 2px solid var(--lab-cyan);
       border-radius: 8px;
@@ -827,14 +845,14 @@
   </style>
 </head>
 <body class="lab-grid-backdrop">
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ================= STICKY HEADER ================= -->
   <header class="lab-navbar">
-  <link rel="canonical" href="https://garethenglish.com/gareth_english_arcade_observatory.html" />
     <div class="brand-wrap">
       <div class="brand-logo">G</div>
       <div>
-        <div class="brand-text">Gareth Montgomery<span>.</span></div>
+        <h1 class="brand-text" style="margin:0;">Gareth Montgomery<span>.</span></h1>
         <div style="font-size: 0.72rem; color: #94a3b8;">CELTA Tutor · Belfast Met (15 yrs) · IELTS 7.0–8.5 & C1/C2</div>
       </div>
       <div class="brand-pill">
@@ -852,49 +870,49 @@
     </div>
   </header>
 
-  <div class="container">
+  <main id="main" class="container">
 
     <!-- ================= PREZI SPATIAL ZOOMING CANVAS ================= -->
     <div class="prezi-canvas-stage">
       <div id="orbitField" class="prezi-orbit-field">
 
         <!-- Central Sun Node -->
-        <div class="sun-node" onclick="zoomToModule('all')">
+        <div tabindex="0" role="button" class="sun-node" onclick="zoomToModule('all')">
           <div class="sun-title">Prezi Archive</div>
           <div class="sun-count">253 Presentations</div>
           <div style="font-size: 0.65rem; color: #94a3b8; margin-top: 2px;">Click to Re-center</div>
         </div>
 
         <!-- Node 1: Negative Inversion Reactor -->
-        <div class="world-node node-inversion" onclick="zoomToModule('inversion')">
+        <div tabindex="0" role="button" class="world-node node-inversion" onclick="zoomToModule('inversion')">
           <div class="node-icon">⚡</div>
           <div class="node-title">Inversion Reactor</div>
           <div class="node-sub">C1/C2 Syntax Duel</div>
         </div>
 
         <!-- Node 2: Passives & Psychometrics -->
-        <div class="world-node node-passives" onclick="zoomToModule('passives')">
+        <div tabindex="0" role="button" class="world-node node-passives" onclick="zoomToModule('passives')">
           <div class="node-icon">🔍</div>
           <div class="node-title">Causative Dossier</div>
           <div class="node-sub">Have / Get Passives</div>
         </div>
 
         <!-- Node 3: Grammar Crypt Runes -->
-        <div class="world-node node-crypt" onclick="zoomToModule('crypt')">
+        <div tabindex="0" role="button" class="world-node node-crypt" onclick="zoomToModule('crypt')">
           <div class="node-icon">🏛️</div>
           <div class="node-title">Grammar Crypt</div>
           <div class="node-sub">Syntax Rune Forging</div>
         </div>
 
         <!-- Node 4: Speaking Holodeck (3-Act Arc) -->
-        <div class="world-node node-speaking" onclick="zoomToModule('speaking')">
+        <div tabindex="0" role="button" class="world-node node-speaking" onclick="zoomToModule('speaking')">
           <div class="node-icon">🎙️</div>
           <div class="node-title">3-Act Holodeck</div>
           <div class="node-sub">IELTS Speaking Part 2</div>
         </div>
 
         <!-- Node 5: Gothic Dark Academia -->
-        <div class="world-node node-gothic" onclick="zoomToModule('gothic')">
+        <div tabindex="0" role="button" class="world-node node-gothic" onclick="zoomToModule('gothic')">
           <div class="node-icon">🕯️</div>
           <div class="node-title">Dark Academia</div>
           <div class="node-sub">Gothic Literature C1</div>
@@ -981,10 +999,10 @@
           </div>
 
           <div class="runes-field" id="runesField">
-            <div class="rune-stone" onclick="placeRune(this, 'What fundamentally enhances')">What fundamentally enhances</div>
-            <div class="rune-stone" onclick="placeRune(this, 'is')">is</div>
-            <div class="rune-stone" onclick="placeRune(this, 'cognitive flexibility')">cognitive flexibility</div>
-            <div class="rune-stone" onclick="placeRune(this, 'sustained bilingual immersion')">sustained bilingual immersion</div>
+            <div tabindex="0" role="button" class="rune-stone" onclick="placeRune(this, 'What fundamentally enhances')">What fundamentally enhances</div>
+            <div tabindex="0" role="button" class="rune-stone" onclick="placeRune(this, 'is')">is</div>
+            <div tabindex="0" role="button" class="rune-stone" onclick="placeRune(this, 'cognitive flexibility')">cognitive flexibility</div>
+            <div tabindex="0" role="button" class="rune-stone" onclick="placeRune(this, 'sustained bilingual immersion')">sustained bilingual immersion</div>
           </div>
 
           <div style="display: flex; justify-content: center; gap: 12px;">
@@ -1209,7 +1227,7 @@
       </div>
     </section>
 
-  </div>
+  </main>
 
   <!-- ================= WEB AUDIO SYNTHESIZER (No External Sound Files) ================= -->
   <script>
@@ -1751,6 +1769,18 @@
         grid.appendChild(card);
       });
     }
+
+    document.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === 'Enter') { e.preventDefault(); t.click(); }
+      else if (e.key === ' ') { e.preventDefault(); }
+    });
+    document.addEventListener('keyup', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === ' ') { e.preventDefault(); t.click(); }
+    });
 
     window.addEventListener('DOMContentLoaded', () => {
       renderStarChart();

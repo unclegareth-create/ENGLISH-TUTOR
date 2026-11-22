@@ -236,7 +236,7 @@
 
     .monument-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(305px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 305px), 1fr));
       gap: 12px;
       margin-bottom: 24px;
     }
@@ -314,6 +314,7 @@
     }
 
     .monument-title {
+      display: block;
       font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
       font-size: 14px;
       font-weight: 600;
@@ -321,6 +322,7 @@
     }
 
     .monument-meta {
+      display: block;
       font-size: 12px;
       color: var(--text-dim);
     }
@@ -339,7 +341,14 @@
       }
     }
 
+    .workbench-grid > *,
+    .dashboard-grid > *,
+    .sandbox-grid > * {
+      min-width: 0;
+    }
+
     .panel-box {
+      min-width: 0;
       background: var(--bg-panel);
       border: 1px solid var(--border-gold);
       border-radius: 12px;
@@ -623,6 +632,7 @@
     }
 
     .beam-full-text {
+      min-width: 0;
       color: var(--text-secondary);
       overflow: hidden;
       text-overflow: ellipsis;
@@ -718,6 +728,19 @@
       gap: 10px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
+    }
+    @media (max-width: 560px) {
+      .geo-row {
+        grid-template-columns: 28px minmax(0, 1fr) 52px;
+        gap: 6px;
+      }
+      .geo-row .geo-bar-wrap {
+        grid-column: 1 / -1;
+      }
+      .raking-controls,
+      .markup-cards {
+        grid-template-columns: 1fr;
+      }
     }
 
     .geo-row.top-geo {
@@ -927,6 +950,9 @@
     }
 
     .select-dark {
+      max-width: 100%;
+      min-width: 0;
+      text-overflow: ellipsis;
       background: var(--bg-study);
       color: var(--text-parchment);
       border: 1px solid var(--border-gold);
@@ -1142,7 +1168,9 @@
       font-size: 13.5px;
       font-weight: 600;
       padding: 7px 12px;
-      min-width: 265px;
+      min-width: 0;
+      width: 100%;
+      max-width: 340px;
       text-align: center;
     }
     .stela-input:focus {
@@ -1259,7 +1287,7 @@
 
     .cloze-notes-grid {
       display: none;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
       gap: 10px;
       margin-top: 14px;
     }
@@ -1276,8 +1304,11 @@
       color: var(--text-secondary);
     }
   </style>
+  <style>.skip-link{position:fixed;top:-100px;left:16px;z-index:9999;background:#0f172a;color:#fff;padding:8px 14px;border-radius:6px;font-weight:700;text-decoration:none;}.skip-link:focus{top:12px;}</style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- Top Navigation Bar -->
   <nav class="top-bar">
@@ -1299,7 +1330,7 @@
     </div>
   </nav>
 
-  <main class="container">
+  <main id="main" class="container">
     <!-- Hero Banner -->
     <header class="hero-banner">
       <div>

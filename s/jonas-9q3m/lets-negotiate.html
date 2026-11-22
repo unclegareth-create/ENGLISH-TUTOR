@@ -611,35 +611,35 @@
       <p style="font-size:0.88rem; color:var(--ink-500); margin-bottom:10px;">Select any 3 topics below to examine the negotiating parties, conflicts of interest, and required compromises:</p>
       
       <div class="topics-grid">
-        <div class="topic-card" onclick="toggleTopic(this)">
+        <div class="topic-card" onclick="toggleTopic(this)" role="button" tabindex="0">
           <div class="topic-name">&#9992;&#65039; Holidays</div>
           <p style="font-size:0.8rem; color:var(--ink-500); margin-top:4px;">Destination, budget &amp; downtime</p>
         </div>
-        <div class="topic-card" onclick="toggleTopic(this)">
+        <div class="topic-card" onclick="toggleTopic(this)" role="button" tabindex="0">
           <div class="topic-name">&#128296; Renovations</div>
           <p style="font-size:0.8rem; color:var(--ink-500); margin-top:4px;">Timelines, materials &amp; contractors</p>
         </div>
-        <div class="topic-card" onclick="toggleTopic(this)">
+        <div class="topic-card" onclick="toggleTopic(this)" role="button" tabindex="0">
           <div class="topic-name">&#129539; Household Chores</div>
           <p style="font-size:0.8rem; color:var(--ink-500); margin-top:4px;">Division of labor &amp; standards</p>
         </div>
-        <div class="topic-card" onclick="toggleTopic(this)">
+        <div class="topic-card" onclick="toggleTopic(this)" role="button" tabindex="0">
           <div class="topic-name">&#128176; Family Budget</div>
           <p style="font-size:0.8rem; color:var(--ink-500); margin-top:4px;">Discretionary spend vs savings</p>
         </div>
-        <div class="topic-card" onclick="toggleTopic(this)">
+        <div class="topic-card" onclick="toggleTopic(this)" role="button" tabindex="0">
           <div class="topic-name">&#128722; Buying Something</div>
           <p style="font-size:0.8rem; color:var(--ink-500); margin-top:4px;">Second-hand goods, cars, electronics</p>
         </div>
-        <div class="topic-card" onclick="toggleTopic(this)">
+        <div class="topic-card" onclick="toggleTopic(this)" role="button" tabindex="0">
           <div class="topic-name">&#128241; Screen Time</div>
           <p style="font-size:0.8rem; color:var(--ink-500); margin-top:4px;">Productivity boundaries vs leisure</p>
         </div>
-        <div class="topic-card" onclick="toggleTopic(this)">
+        <div class="topic-card" onclick="toggleTopic(this)" role="button" tabindex="0">
           <div class="topic-name">&#127870; Going Out</div>
           <p style="font-size:0.8rem; color:var(--ink-500); margin-top:4px;">Curfews, group plans &amp; logistics</p>
         </div>
-        <div class="topic-card" onclick="toggleTopic(this)">
+        <div class="topic-card" onclick="toggleTopic(this)" role="button" tabindex="0">
           <div class="topic-name">&#128197; Work Schedules</div>
           <p style="font-size:0.8rem; color:var(--ink-500); margin-top:4px;">Remote flexibility, overtime &amp; shifts</p>
         </div>
@@ -676,15 +676,15 @@
       <p style="font-size:0.88rem; color:var(--ink-500); margin-bottom:12px;">Watch the initial exchange and determine the correct sequence of events:</p>
 
       <div class="choice-group">
-        <div class="choice-item" onclick="checkChoice(this, false, 'part1')">
+        <div class="choice-item" onclick="checkChoice(this, false, 'part1')" role="button" tabindex="0">
           <span class="choice-letter">A</span>
           <div>The negotiation starts with a low offer, which is immediately accepted, but one side later asks for more money.</div>
         </div>
-        <div class="choice-item" onclick="checkChoice(this, false, 'part1')">
+        <div class="choice-item" onclick="checkChoice(this, false, 'part1')" role="button" tabindex="0">
           <span class="choice-letter">B</span>
           <div>The negotiation starts with a high offer, but both sides gradually lower their demands until they agree on a price.</div>
         </div>
-        <div class="choice-item" onclick="checkChoice(this, true, 'part1')">
+        <div class="choice-item" onclick="checkChoice(this, true, 'part1')" role="button" tabindex="0">
           <span class="choice-letter">C</span>
           <div>The negotiation starts with a very low offer ($12,000), both sides argue that they have the stronger position, and the other side eventually makes a much higher offer ($60,000).</div>
         </div>
@@ -1076,6 +1076,34 @@
       }
     }
   </script>
+
+<script>
+(function(){
+  if (window.__m4cKbdBound) return;
+  window.__m4cKbdBound = true;
+  document.addEventListener('keydown', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === 'Enter') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    } else if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    }
+  });
+})();
+</script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>
 </body>

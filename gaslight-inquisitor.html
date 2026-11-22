@@ -7,8 +7,11 @@
   <title>The Gaslight Inquisitor · 14 Linen Hall Street, Belfast (1894) | GarethEnglish</title>
   <meta name="robots" content="noindex, follow" />
   <meta name="description" content="Interactive 1894 Belfast detective mystery and Cambridge C1/C2 Part 4 transformation game set on Linen Hall Street. Solve witness dossiers and unlock syntactic clues." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="assets/fonts/fonts.css" />
   <style>
+    .skip-link{position:absolute;left:-9999px;top:8px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;z-index:9999}
+    .skip-link:focus{left:12px}
     :root {
       --bg-obsidian: #0a0806;
       --bg-mahogany: #140e0a;
@@ -202,6 +205,18 @@
       align-items: start;
     }
 
+    .inquisitor-workspace > *,
+    .center-stage,
+    .right-column {
+      min-width: 0;
+    }
+    .crime-scene-img-wrap img {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
     @media (max-width: 1280px) {
       .inquisitor-workspace {
         grid-template-columns: 1fr;
@@ -210,6 +225,7 @@
 
     /* Shared Victorian Panel Frame */
     .victorian-panel {
+      min-width: 0;
       background: linear-gradient(180deg, rgba(29, 20, 14, 0.95) 0%, rgba(18, 12, 8, 0.97) 100%);
       border: 1px solid var(--brass-border);
       border-radius: 10px;
@@ -262,6 +278,7 @@
 
     /* LEFT COLUMN: Crime Scene + Suspect Selector + Galvanometer */
     .left-column {
+      min-width: 0;
       display: flex;
       flex-direction: column;
       gap: 1.1rem;
@@ -368,11 +385,13 @@
     }
 
     .suspect-meta {
+      display: block;
       flex: 1;
       min-width: 0;
     }
 
     .suspect-name {
+      display: block;
       font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
       font-size: 0.9rem;
       font-weight: 700;
@@ -383,6 +402,7 @@
     }
 
     .suspect-role {
+      display: block;
       font-size: 0.8rem;
       color: var(--text-muted);
       font-style: italic;
@@ -429,7 +449,8 @@
     #galvanometerCanvas {
       display: block;
       width: 100%;
-      height: 175px;
+      max-width: 100%;
+      height: auto;
     }
 
     .galv-readouts {
@@ -800,6 +821,7 @@
     /* Live Voice & C1 Rhetorical Input Strip */
     .voice-bar {
       display: flex;
+      flex-wrap: wrap;
       gap: 0.6rem;
       align-items: center;
       background: rgba(9, 6, 4, 0.8);
@@ -809,13 +831,19 @@
     }
 
     .voice-input {
-      flex: 1;
+      flex: 1 1 180px;
+      min-width: 0;
+      max-width: 100%;
       background: transparent;
       border: none;
       color: var(--text-ivory);
       font-family: 'EB Garamond', serif;
       font-size: 1.05rem;
       outline: none;
+    }
+
+    .voice-bar .brass-pill {
+      max-width: 100%;
     }
 
     .voice-input::placeholder {
@@ -1066,6 +1094,7 @@
 
     .hotspot-stage img {
       width: 100%;
+      height: auto;
       display: block;
     }
 
@@ -1204,7 +1233,7 @@
 
     .cipher-grid-view {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr));
       gap: 1.1rem;
     }
 
@@ -1225,6 +1254,8 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 0.75rem;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .cipher-echo-del {
@@ -1245,13 +1276,19 @@
 
     .cipher-step-strip {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 0.55rem;
       font-size: 0.84rem;
       background: rgba(28, 19, 11, 0.07);
       border: 1px solid rgba(124, 92, 35, 0.35);
       border-radius: 6px;
       padding: 0.55rem 0.75rem;
+    }
+
+    @media (max-width: 560px) {
+      .cipher-step-strip {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
 
     .cipher-input-wrap {
@@ -1262,8 +1299,9 @@
     }
 
     .cipher-text-input {
-      flex: 1;
-      min-width: 210px;
+      flex: 1 1 180px;
+      min-width: 0;
+      width: 100%;
       padding: 0.5rem 0.75rem;
       border-radius: 6px;
       border: 1.5px solid #7c5c23;
@@ -1313,6 +1351,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- Procedural Rain Canvas & Lightning Flash -->
   <canvas id="rainCanvas"></canvas>
@@ -1349,15 +1388,15 @@
   </header>
 
   <!-- Main 3-Column Detective Interrogation Workspace -->
-  <main class="inquisitor-workspace">
+  <main id="main" class="inquisitor-workspace">
 
     <!-- LEFT COLUMN: Crime Scene + Suspects + Live Galvanometer -->
     <section class="left-column">
 
       <!-- Crime Scene Preview Card -->
-      <div class="victorian-panel crime-scene-card" onclick="openCrimeSceneModal()">
+      <div tabindex="0" role="button" class="victorian-panel crime-scene-card" onclick="openCrimeSceneModal()">
         <div class="crime-scene-img-wrap">
-          <img src="assets/inquisitor/crime_scene_study.webp" alt="Lord Ravenscroft's Locked Study at 14 Linen Hall Street" />
+          <img src="assets/inquisitor/crime_scene_study.webp" alt="Lord Ravenscroft's Locked Study at 14 Linen Hall Street" width="1376" height="768" fetchpriority="high" decoding="async" />
           <div class="crime-scene-overlay">
             <div class="crime-scene-tag">🔍 Click to Inspect 6 Forensic Hotspots</div>
             <div class="crime-scene-title">Lord Ravenscroft's Mahogany Study</div>
@@ -1418,7 +1457,7 @@
         <div class="portrait-stage">
           <!-- Suspect Portrait -->
           <div class="portrait-frame" id="portraitFrame">
-            <img id="activeSuspectImg" src="assets/inquisitor/suspect_blackwood.webp" alt="Active Suspect Portrait" />
+            <img id="activeSuspectImg" src="assets/inquisitor/suspect_blackwood.webp" alt="Active Suspect Portrait" width="896" height="1200" fetchpriority="high" decoding="async" />
             <div class="portrait-status-pill">
               <span id="suspectComposureLabel">COMPOSURE: GUARDED</span>
               <span id="suspectAudioWave" style="color:var(--brass-bright);">● READY</span>
@@ -1592,7 +1631,7 @@
   </main>
 
   <!-- MODAL 1: Crime Scene Interactive Inspection (crime_scene_study.png) -->
-  <div class="modal-backdrop" id="crimeSceneModal" onclick="if(event.target===this) closeCrimeSceneModal()">
+  <div class="modal-backdrop" id="crimeSceneModal">
     <div class="modal-dialog">
       <div class="panel-header">
         <div class="panel-title"><span>🕯️</span> Crime Scene Reconstruction · 14 Linen Hall Street Study (11:42 PM)</div>
@@ -1600,7 +1639,7 @@
       </div>
       <div class="modal-body">
         <div class="hotspot-stage">
-          <img src="assets/inquisitor/crime_scene_study.webp" alt="Lord Ravenscroft's Locked Study" />
+          <img src="assets/inquisitor/crime_scene_study.webp" alt="Lord Ravenscroft's Locked Study" width="1376" height="768" loading="lazy" decoding="async" />
           <button class="hotspot-pin" style="left: 36%; top: 76%;" onclick="inspectExhibit('A')" title="Exhibit A: Shattered Silver Pocket Watch">A</button>
           <button class="hotspot-pin" style="left: 82%; top: 68%;" onclick="inspectExhibit('B')" title="Exhibit B: Lagan Towpath Bootprint">B</button>
           <button class="hotspot-pin" style="left: 18%; top: 64%;" onclick="inspectExhibit('C')" title="Exhibit C: Half-Burned Liverpool Telegram">C</button>
@@ -1616,7 +1655,7 @@
   </div>
 
   <!-- MODAL 2: Magnifying Glass Forensic Exhibit Inspector -->
-  <div class="modal-backdrop" id="exhibitModal" onclick="if(event.target===this) closeExhibitModal()">
+  <div class="modal-backdrop" id="exhibitModal">
     <div class="modal-dialog" style="max-width: 600px;">
       <div class="panel-header">
         <div class="panel-title" id="modalExhibitHeader"><span>🔎</span> Forensic Magnifying Glass</div>
@@ -1627,7 +1666,7 @@
   </div>
 
   <!-- MODAL 3: Royal Irish Constabulary Arrest Warrant & Timeline Reconstruction -->
-  <div class="modal-backdrop" id="warrantModal" onclick="if(event.target===this) closeWarrantModal()">
+  <div class="modal-backdrop" id="warrantModal">
     <div class="modal-dialog">
       <div class="panel-header">
         <div class="panel-title"><span>📜</span> Royal Irish Constabulary · Official Arrest Warrant (1894)</div>
@@ -2247,18 +2286,18 @@
         }).join('');
 
         return `
-          <button class="suspect-tab ${idx === currentSuspectIdx ? 'active' : ''}" onclick="selectSuspect(${idx})">
-            <img class="suspect-thumb" src="${s.portrait}" alt="${s.name}" />
-            <div class="suspect-meta">
-              <div class="suspect-name">${s.name}</div>
-              <div class="suspect-role">${s.role.split('·')[0]}</div>
-              <div class="suspect-crack-meter">
+          <button type="button" class="suspect-tab ${idx === currentSuspectIdx ? 'active' : ''}" onclick="selectSuspect(${idx})">
+            <img class="suspect-thumb" src="${s.portrait}" alt="${s.name}" width="896" height="1200" loading="lazy" decoding="async" />
+            <span class="suspect-meta">
+              <span class="suspect-name">${s.name}</span>
+              <span class="suspect-role">${s.role.split('·')[0]}</span>
+              <span class="suspect-crack-meter">
                 ${pipsHtml}
                 <span style="color:${crackedLies.length === lies.length ? '#fca5a5' : 'var(--text-muted)'}">
                   ${crackedLies.length}/${lies.length} Alibis Cracked
                 </span>
-              </div>
-            </div>
+              </span>
+            </span>
           </button>
         `;
       }).join('');
@@ -2350,7 +2389,7 @@
         const isSelected = ex.id === selectedExhibitId;
         const isUsed = exposedContradictions.has(ex.id);
         return `
-          <div class="exhibit-card ${isSelected ? 'selected' : ''} ${isUsed ? 'used' : ''}" onclick="armExhibit('${ex.id}')">
+          <div tabindex="0" role="button" class="exhibit-card ${isSelected ? 'selected' : ''} ${isUsed ? 'used' : ''}" onclick="armExhibit('${ex.id}')">
             <div class="exhibit-icon-box">${ex.icon}</div>
             <div class="exhibit-info">
               <div class="exhibit-code">
@@ -3211,7 +3250,7 @@
           <div class="cipher-item-card" id="cipher-card-${item.id}">
             <div>
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.5rem;">
-                <div>
+                <div style="display:flex; flex-wrap:wrap; gap:0.35rem; min-width:0;">
                   <span class="cipher-status-pill" style="background:#1c130b; color:#e5c158; border-color:#c59b27;">
                     DOSSIER #${item.id} · ${item.typeLabel.toUpperCase()}
                   </span>
@@ -3288,7 +3327,25 @@
     /***********************************************************************
      * 12. INITIALIZE ENGINE ON LOAD
      ***********************************************************************/
+    document.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === 'Enter') { e.preventDefault(); t.click(); }
+      else if (e.key === ' ') { e.preventDefault(); }
+    });
+    document.addEventListener('keyup', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === ' ') { e.preventDefault(); t.click(); }
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
+      const m1 = document.getElementById('crimeSceneModal');
+      if (m1) m1.addEventListener('click', (e) => { if (e.target === m1) closeCrimeSceneModal(); });
+      const m2 = document.getElementById('exhibitModal');
+      if (m2) m2.addEventListener('click', (e) => { if (e.target === m2) closeExhibitModal(); });
+      const m3 = document.getElementById('warrantModal');
+      if (m3) m3.addEventListener('click', (e) => { if (e.target === m3) closeWarrantModal(); });
       resizeRain();
       animateRain();
       renderAll();

@@ -144,10 +144,7 @@
   <link rel="stylesheet" href="lab.css" />
 </head>
 <body class="lab-observatory antialiased selection:bg-sky-500 selection:text-slate-950">
-
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-sky-500 focus:text-slate-950 focus:rounded-lg focus:font-bold">
-    Skip to main content
-  </a>
+  <a class="skip-link" href="#main-content">Skip to content</a>
 
   <!-- ================= STICKY HEADER ================= -->
   <header class="sticky top-0 z-40 lab-navbar">
@@ -201,12 +198,12 @@
 
       <!-- Action Buttons + Tablet/Mobile Hamburger -->
       <div class="flex items-center gap-2 shrink-0">
-        <button type="button" onclick="TeacherVaultApp.focusLicenseBox()" class="px-3 sm:px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 text-xs font-extrabold transition cursor-pointer whitespace-nowrap flex items-center gap-1.5" title="Enter your teacher license key">
+        <button type="button" onclick="TeacherVaultApp.focusLicenseBox()" class="hidden sm:flex px-3 sm:px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 text-xs font-extrabold transition cursor-pointer whitespace-nowrap items-center gap-1.5" title="Enter your teacher license key">
           <i class="fa-solid fa-key text-xs"></i>
           <span id="nav-license-status">Enter Key</span>
         </button>
-        <a href="#pricing" class="inline-flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-500/25 transition shrink-0 whitespace-nowrap">
-          <span>Instant Unlock (£49)</span>
+        <a href="#pricing" class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-500/25 transition shrink-0 whitespace-nowrap">
+          <span><span class="hidden sm:inline">Instant </span>Unlock (£49)</span>
           <i class="fa-solid fa-bolt text-xs" aria-hidden="true"></i>
         </a>
         <button id="teacher-menu-btn" type="button" aria-expanded="false" aria-controls="teacher-mobile-menu" aria-label="Open menu" class="xl:hidden p-2.5 rounded-xl border border-slate-700 text-slate-200 hover:bg-slate-800 transition">
@@ -227,6 +224,9 @@
       <a href="#bespoke-commission" onclick="document.getElementById('teacher-mobile-menu').classList.add('hidden')" class="block py-2 text-sm font-semibold text-slate-400 hover:text-white">🛠️ 7. Custom HTML5 Lesson Commission (£195)</a>
       <a href="#faq" onclick="document.getElementById('teacher-mobile-menu').classList.add('hidden')" class="block py-2 text-sm font-semibold text-sky-300 hover:text-white">❓ 8. Teacher Licensing &amp; Classroom FAQ</a>
       <div class="pt-3 border-t border-slate-800 flex flex-col gap-2.5">
+        <button type="button" onclick="document.getElementById('teacher-mobile-menu').classList.add('hidden'); TeacherVaultApp.focusLicenseBox();" class="block w-full text-center py-2.5 rounded-xl bg-slate-900 text-amber-300 border border-amber-400/40 font-bold text-xs hover:bg-slate-800 transition cursor-pointer">
+          🔑 Enter License Key
+        </button>
         <a href="lab.html" class="block w-full text-center py-2.5 rounded-xl bg-slate-900 text-slate-200 border border-slate-700 font-bold text-xs hover:bg-slate-800 transition">
           &larr; View Student Learning Lab
         </a>
@@ -714,9 +714,9 @@
         <div class="grid lg:grid-cols-12 gap-8 items-stretch">
 
           <!-- Left Column: Simulated Student Exercise View -->
-          <div class="lg:col-span-6 rounded-3xl bg-slate-950 border-2 border-sky-500/40 p-6 sm:p-7 flex flex-col justify-between shadow-2xl">
-            <div class="space-y-5">
-              <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-800">
+          <div class="lg:col-span-6 min-w-0 rounded-3xl bg-slate-950 border-2 border-sky-500/40 p-6 sm:p-7 flex flex-col justify-between shadow-2xl">
+            <div class="space-y-5 min-w-0">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                   <span class="text-xs font-mono font-extrabold uppercase tracking-wider text-sky-400">
@@ -760,7 +760,7 @@
                   &ldquo;As soon as the auditors arrived, the director shredded the ledger.&rdquo;
                 </p>
                 <div class="flex gap-2">
-                  <input id="demo-student-boss-input" type="text" data-sync-label="⚡ Boss Challenge [SOONER]" placeholder="Student types live Boss Challenge response..." class="flex-1 bg-slate-950 border border-amber-400/60 rounded-xl px-3.5 py-2 text-white font-mono text-xs sm:text-sm focus:outline-none focus:border-amber-300" />
+                  <input id="demo-student-boss-input" type="text" data-sync-label="⚡ Boss Challenge [SOONER]" placeholder="Student types live Boss Challenge response..." class="flex-1 min-w-0 max-w-full bg-slate-950 border border-amber-400/60 rounded-xl px-3.5 py-2 text-white font-mono text-xs sm:text-sm focus:outline-none focus:border-amber-300" />
                 </div>
                 <div id="demo-student-feedback-banner" class="hidden p-2.5 rounded-xl text-xs font-bold"></div>
               </div>
@@ -773,9 +773,9 @@
           </div>
 
           <!-- Right Column: Live Tutor Presenter HUD Monitor & Boss Injector -->
-          <div class="lg:col-span-6 rounded-3xl bg-slate-950 border-2 border-emerald-500/50 p-6 sm:p-7 flex flex-col justify-between shadow-2xl" data-sync-ignore="true">
-            <div class="space-y-5">
-              <div class="flex items-center justify-between gap-2 pb-3 border-b border-slate-800">
+          <div class="lg:col-span-6 min-w-0 rounded-3xl bg-slate-950 border-2 border-emerald-500/50 p-6 sm:p-7 flex flex-col justify-between shadow-2xl" data-sync-ignore="true">
+            <div class="space-y-5 min-w-0">
+              <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-800">
                 <div>
                   <span class="text-xs font-mono font-extrabold uppercase tracking-wider text-emerald-400 block">
                     2. Live Tutor Presenter HUD (Your Screen)
@@ -788,7 +788,7 @@
 
               <!-- Real-time Keystroke Stream Monitor -->
               <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-                <div class="flex items-center justify-between text-xs">
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
                   <span id="demo-hud-field-label" class="font-mono font-bold text-sky-400">
                     ✍️ Live Stream: Part 4 [INTENTION]
                   </span>
@@ -801,11 +801,11 @@
 
               <!-- Tutor Live Boss Prompt / Custom Vocab Injector -->
               <div class="p-4 rounded-2xl bg-slate-900 border border-amber-500/30 space-y-3">
-                <div class="flex items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center justify-between gap-2">
                   <span class="text-xs font-mono font-extrabold uppercase tracking-wider text-amber-300">
                     ⚡ Push Live Boss Prompt / Custom Vocab to Student
                   </span>
-                  <select id="demo-boss-preset-select" onchange="TeacherVaultApp.loadDemoBossPreset(this.value)" aria-label="Load preset C1/C2 Boss Prompt" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-200 font-mono">
+                  <select id="demo-boss-preset-select" onchange="TeacherVaultApp.loadDemoBossPreset(this.value)" aria-label="Load preset C1/C2 Boss Prompt" class="max-w-full min-w-0 bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-xs text-slate-200 font-mono">
                     <option value="0">Preset 1: INTENTION (C1)</option>
                     <option value="1" selected>Preset 2: SOONER (Inversion)</option>
                     <option value="2">Preset 3: THOUGHT (C2 Passive)</option>
@@ -1193,7 +1193,7 @@
             <strong class="text-amber-300">Lost your licence key, didn’t get redirected, or need billing/refund help?</strong>
             <span class="text-slate-300"> Please contact me directly first rather than opening a bank dispute—I resolve all key, receipt, and refund enquiries personally within 24 hours.</span>
           </div>
-          <a href="index.html?support=billing#enquiry-card" class="shrink-0 px-4 py-2.5 rounded-xl bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40 font-extrabold text-xs whitespace-nowrap transition">
+          <a href="index.html?support=billing#enquiry-card" class="sm:shrink-0 max-w-full text-center px-4 py-2.5 rounded-xl bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-400/40 font-extrabold text-xs sm:whitespace-nowrap transition">
             Billing, Licence Key &amp; Refund Help (Resolved Within 24 Hours) &rarr;
           </a>
         </div>
@@ -1430,7 +1430,7 @@
       { file: 'c1-part4-deconstructor.html', type: 'engine', badge: '⚡ Micro-Engine • C1 Part 4', title: 'C1 Part 4 Deconstructor & 4-Step Echo-Striker', focus: 'Strike Out Echoes • Tense Harmony • Voice Shift • 3–6 Word Guard', desc: 'Interactive 4-step Key Word Transformation workbench with live echo-striking, unchanged keyword guard, and 1 mark // 1 mark split.', tags: 'c1 part4 deconstructor key word transformation echo striker cambridge cae cpe' },
       { file: 'ielts-c1-syntax-workbench.html', type: 'engine', badge: '⚡ Micro-Engine • IELTS 7.5–8.5', title: 'IELTS C1 Syntax Workbench (5 Structural Shifts)', focus: 'Preparatory It • Passive Reporting • Clefts • Inversions • Participles', desc: 'Live sentence upgrade workbench training the 5 high-scoring C1 grammatical devices over unnatural thesaurus vocabulary.', tags: 'ielts c1 syntax workbench cleft inversion participle passive reporting writing task 2' },
       { file: 'speaking-part2-arc-trainer.html', type: 'engine', badge: '⚡ Micro-Engine • Speaking Part 2', title: 'Speaking Part 2 Long Turn & 3-Act Arc Trainer', focus: '4 Trigger Keywords (1-Min Prep) • 30s Past → 45s Scene → 45s Reflection', desc: 'Active Speaking Warm-Up engine with 1-minute 4-keyword margin notepad and live 3-Act Story Arc pacing timer.', tags: 'speaking part 2 arc trainer cue card 1 minute note 3 act story cambridge anchor ielts' },
-      { file: 'connected-speech-lab.html', type: 'engine', badge: '⚡ Micro-Engine • Speaking Prosody', title: 'Connected Speech & Weak-Form Spectrogram Lab', focus: '12 Piper Clips • Live Mic Envelope Overlay • Weak Forms & Elision', desc: 'Compare spoken rhythm against 12 British English models on an offline STFT spectrogram with live stress-peak vs schwa-valley feedback (?wl=1 clean mode ready).', tags: 'connected speech weak form spectrogram lab prosody ahv-bin elision past modals ielts c1 c2 wl=1' },
+      { file: 'connected-speech-lab.html', type: 'engine', badge: '⚡ Micro-Engine • Speaking Prosody', title: 'Connected Speech & Weak-Form Spectrogram Lab', focus: '24 Piper Clips • Live Mic Envelope Overlay • Weak Forms & Elision', desc: 'Compare spoken rhythm against 24 British English models on an offline STFT spectrogram with live stress-peak vs schwa-valley feedback (?wl=1 clean mode ready).', tags: 'connected speech weak form spectrogram lab prosody ahv-bin elision past modals ielts c1 c2 wl=1' },
       { file: 'red-pen-speedrun.html', type: 'engine', badge: '⚡ Micro-Engine • Error vs Style', title: 'Red-Pen Speed-Run: Spot the Slip vs Style', focus: '90s Clock • 20 C1 Paragraphs / 60 Spans • Restraint Score & Ledger', desc: 'Triage genuine grammar errors, spoken-register slips, and clean C1 prose to spare without over-correcting (?wl=1 clean mode & Timed Duels ready).', tags: 'red pen speedrun spot the slip vs style restraint c1 grammar audit desk wl=1' },
       { file: 'between-the-lines.html', type: 'engine', badge: '⚡ Micro-Engine • C1/C2 Pragmatics', title: 'Between the Lines: C1/C2 Subtext & Surgical Politeness', focus: '24 Exchanges • Understatement, Stonewalling & 3–6 Word Forges', desc: 'Decode British understatement, diplomatic stonewalling, academic peer review, and verbal fencing, then assemble 3–6 word surgical replies (?wl=1 ready).', tags: 'between the lines subtext surgical politeness c1 c2 pragmatics litotes duel wl=1' },
       { file: 'jsw-c1-mansion.html', type: 'engine', badge: '⚡ Micro-Engine • ZX Spectrum C1', title: 'Jet Set Willy: C1 Mansion & 8-Bit Room Builder', focus: '8 Rooms (14 Hz Z80) • 16 Part 4 Riddles • 8 Piper Clues & Builder', desc: 'Playable 8-room ZX Spectrum C1 Mansion with 16 Key Word Transformations, Xbox/touch controls, and shareable custom room builder (?wl=1 clean mode ready).', tags: 'jet set willy jsw c1 mansion zx spectrum part 4 room builder riddles audio clues wl=1' },

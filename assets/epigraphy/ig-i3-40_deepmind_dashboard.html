@@ -65,9 +65,14 @@ section { background: white; border-radius: 8px; padding: 24px; margin-bottom: 2
 .metadata a { color: #007bff; text-decoration: none; }
 .score-bar-container { width: 100%; height: 6px; background: #e9ecef; border-radius: 3px; margin-top: 8px; overflow: hidden; }
 .score-bar { height: 100%; background: #ffc107; border-radius: 3px; }
+.skip-link { position: fixed; top: -100px; left: 16px; z-index: 9999; background: #212529; color: #fff; padding: 8px 14px; border-radius: 4px; font-weight: 700; text-decoration: none; }
+.skip-link:focus { top: 12px; }
 </style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
+<main id="main">
 
 <h1>Predicting The Past — Results</h1>
 
@@ -271,7 +276,7 @@ Contextualizing ancient texts with generative neural networks.
         <div class="card" id="card-0">
           
           <div>
-            <div class="plus-button" onclick="toggleCard(this)">+</div>
+            <div class="plus-button" role="button" tabindex="0" aria-expanded="false" aria-label="Toggle full inscription text" onclick="toggleCard(this)">+</div>
             <p class="card-text">ἔδοξεν τῆι βουλῆι καὶ τῶι δήμωι ... κατὰ τάδε τὸν ὅρκον ὀμόσαι Ἀθηναίων τὴν βουλὴν...</p>
           </div>
           <div class="metadata">
@@ -288,7 +293,7 @@ Contextualizing ancient texts with generative neural networks.
         <div class="card" id="card-1">
           
           <div>
-            <div class="plus-button" onclick="toggleCard(this)">+</div>
+            <div class="plus-button" role="button" tabindex="0" aria-expanded="false" aria-label="Toggle full inscription text" onclick="toggleCard(this)">+</div>
             <p class="card-text">ἔδοξεν τῆι βουλῆι καὶ τῶι δήμωι, Κεκροπὶς ἐπρυτάνευε, Μνησίθεος ἐγραμμάτευε...</p>
           </div>
           <div class="metadata">
@@ -305,7 +310,7 @@ Contextualizing ancient texts with generative neural networks.
         <div class="card" id="card-2">
           
           <div>
-            <div class="plus-button" onclick="toggleCard(this)">+</div>
+            <div class="plus-button" role="button" tabindex="0" aria-expanded="false" aria-label="Toggle full inscription text" onclick="toggleCard(this)">+</div>
             <p class="card-text">ἔδοξεν τῆι βουλῆι καὶ τῶι δήμωι, Ἐρεχθηὶς ἐπρυτάνευε, Σκόπας ἐγραμμάτευε, Τιμωνίδης ἐπεστάτει...</p>
           </div>
           <div class="metadata">
@@ -368,6 +373,7 @@ the original data sources.
 </p>
 </div>
 </section>
+</main>
 
 <script>
 function toggleCard(btn) {
@@ -375,8 +381,19 @@ function toggleCard(btn) {
   if (card) {
     const expanded = card.classList.toggle('is-expanded');
     btn.textContent = expanded ? '−' : '+';
+    btn.setAttribute('aria-expanded', String(expanded));
   }
 }
+document.addEventListener('keydown', (e) => {
+  const el = e.target.closest('.plus-button[role="button"]');
+  if (!el) return;
+  if (e.key === 'Enter') { e.preventDefault(); el.click(); }
+  else if (e.key === ' ') { e.preventDefault(); }
+});
+document.addEventListener('keyup', (e) => {
+  const el = e.target.closest('.plus-button[role="button"]');
+  if (el && e.key === ' ') { e.preventDefault(); el.click(); }
+});
 </script>
 </body>
 </html>

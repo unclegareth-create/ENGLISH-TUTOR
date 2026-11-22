@@ -7,6 +7,7 @@
   <meta name="description" content="Step inside Professor West's Study with his clever cat, Pencil! Watch the animated intro, listen to classical music, and play fun English word digs, stone puzzles, torchlight searches, and adventure stories for kids." />
   <meta name="theme-color" content="#24140e" />
   <link rel="canonical" href="https://garethenglish.com/professor-west-study.html" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
 
   <!-- 100% Self-Contained Typography & Icons (Zero Third-Party Requests — UK ICO Children's Code Compliant) -->
   <style>
@@ -648,7 +649,9 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     }
 
-    .station-card h2 {
+    .station-card h2,
+    .station-card .station-title {
+      display: block;
       font-family: var(--font-serif);
       font-size: 1.42rem;
       font-weight: 800;
@@ -658,7 +661,9 @@
       text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
     }
 
-    .station-card p {
+    .station-card p,
+    .station-card .station-desc {
+      display: block;
       font-size: 0.92rem;
       color: #f5e8cc;
       line-height: 1.48;
@@ -2321,9 +2326,12 @@
         transition-duration: 0.01ms !important;
       }
     }
+    .skip-link{position:absolute;left:-9999px;top:8px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;z-index:9999}
+    .skip-link:focus{left:12px}
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ================= STICKY TOP HUD ================= -->
   <header class="study-hud">
@@ -2405,7 +2413,7 @@
     </div>
   </header>
 
-  <main class="study-main">
+  <main id="main" class="study-main">
 
     <!-- ================= TEACHER / 1-TO-1 LIVE LESSON BAR ================= -->
     <section id="teacher-live-bar" class="teacher-bar" aria-label="Teacher Live Lesson Controls">
@@ -2509,7 +2517,7 @@
         <g id="hotspot-window" class="study-hotspot" role="button" tabindex="0"
            aria-label="Study Lamp &amp; Dark Corner: Play Pencil's Torch Game"
            onclick="StudyHub.openStation('night-watch')"
-           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('night-watch');}"
+           data-kbd="study-hotspot"
            onmouseenter="StudyHub.previewHotspot('window')">
           <rect class="hotspot-aura" x="115" y="235" width="220" height="235" rx="26" fill="url(#emeraldAura)" stroke="rgba(52, 211, 153, 0.55)" stroke-width="2.5" stroke-dasharray="8 6" />
           <circle cx="228" cy="285" r="28" fill="rgba(16, 185, 129, 0.18)" stroke="#34d399" stroke-width="2" />
@@ -2523,7 +2531,7 @@
         <g id="hotspot-map" class="study-hotspot" role="button" tabindex="0"
            aria-label="The World Map: Open the Treasure Map"
            onclick="StudyHub.openStation('expedition-map')"
-           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('expedition-map');}"
+           data-kbd="study-hotspot"
            onmouseenter="StudyHub.previewHotspot('map')">
           <rect class="hotspot-aura" x="195" y="32" width="215" height="200" rx="22" fill="url(#goldAura)" stroke="rgba(251, 191, 36, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
           <path d="M240,125 Q285,95 325,130 T370,145" fill="none" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="7 5" />
@@ -2539,7 +2547,7 @@
         <g id="hotspot-curio" class="study-hotspot" role="button" tabindex="0"
            aria-label="The Treasure Shelf: See your prizes and dress up Pencil"
            onclick="StudyHub.openStation('curio-cabinet')"
-           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('curio-cabinet');}"
+           data-kbd="study-hotspot"
            onmouseenter="StudyHub.previewHotspot('curio')">
           <rect class="hotspot-aura" x="985" y="28" width="200" height="190" rx="22" fill="url(#goldAura)" stroke="rgba(251, 191, 36, 0.6)" stroke-width="2.5" stroke-dasharray="8 6" />
           <!-- Living Study Shelf Artefacts: physically appear in the room as the student completes games! -->
@@ -2581,7 +2589,7 @@
         <g id="hotspot-rosetta" class="study-hotspot" role="button" tabindex="0"
            aria-label="The Stone Tablet on the Desk: Play The Stone Puzzle"
            onclick="StudyHub.openStation('rosetta-cipher')"
-           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('rosetta-cipher');}"
+           data-kbd="study-hotspot"
            onmouseenter="StudyHub.previewHotspot('rosetta')">
           <rect class="hotspot-aura" x="465" y="505" width="235" height="145" rx="22" fill="url(#goldAura)" stroke="rgba(251, 191, 36, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
           <!-- Interactive Carved Stone Tablet & Magnifying Glass Overlay on Foreground Desk -->
@@ -2599,7 +2607,7 @@
         <g id="hotspot-journal" class="study-hotspot" role="button" tabindex="0"
            aria-label="Open Story Book: Read Choose the Story Adventures"
            onclick="StudyHub.openStation('field-journal')"
-           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('field-journal');}"
+           data-kbd="study-hotspot"
            onmouseenter="StudyHub.previewHotspot('journal')">
           <rect class="hotspot-aura" x="148" y="478" width="305" height="158" rx="24" fill="url(#emeraldAura)" stroke="rgba(52, 211, 153, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
           <g class="hotspot-label-pill">
@@ -2612,7 +2620,7 @@
         <g id="hotspot-gramophone" class="study-hotspot" role="button" tabindex="0"
            aria-label="The Gramophone: Listen to Professor West's Voice Messages"
            onclick="StudyHub.openStation('field-logs')"
-           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('field-logs');}"
+           data-kbd="study-hotspot"
            onmouseenter="StudyHub.previewHotspot('gramophone')">
           <rect class="hotspot-aura" x="975" y="218" width="205" height="198" rx="24" fill="url(#goldAura)" stroke="rgba(251, 191, 36, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
           <text x="1015" y="255" fill="#fde68a" font-size="24" font-weight="900">♪</text>
@@ -2627,7 +2635,7 @@
         <g id="hotspot-crate" class="study-hotspot" role="button" tabindex="0"
            aria-label="The Wooden Crate: Play The Word Dig"
            onclick="StudyHub.openStation('lexicon-dig')"
-           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.openStation('lexicon-dig');}"
+           data-kbd="study-hotspot"
            onmouseenter="StudyHub.previewHotspot('crate')">
           <rect class="hotspot-aura" x="885" y="428" width="265" height="218" rx="24" fill="url(#emeraldAura)" stroke="rgba(52, 211, 153, 0.65)" stroke-width="2.5" stroke-dasharray="8 6" />
           <g class="hotspot-label-pill">
@@ -2640,7 +2648,7 @@
         <g id="pencil-study-rig" role="button" tabindex="0"
            aria-label="Pencil the Cat. Click to pet Pencil or dress her up!"
            onclick="StudyHub.interactWithPencil()"
-           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();StudyHub.interactWithPencil();}">
+           data-kbd="study-hotspot">
           <!-- Invisible interactive hitbox covering Pencil on the desk -->
           <rect x="385" y="210" width="215" height="285" rx="30" fill="rgba(255,255,255,0.001)" />
 
@@ -2720,7 +2728,7 @@
     <!-- ================= PENCIL'S INTERACTIVE DIALOGUE & GUIDE BAR ================= -->
     <section class="pencil-dialogue-bar" aria-live="polite">
       <div class="dialogue-left">
-        <div class="pencil-avatar-badge" onclick="StudyHub.interactWithPencil()" title="Click to pet Pencil!" role="button" aria-label="Pet Pencil the Cat"></div>
+        <div tabindex="0" class="pencil-avatar-badge" onclick="StudyHub.interactWithPencil()" title="Click to pet Pencil!" role="button" aria-label="Pet Pencil the Cat"></div>
         <div class="dialogue-content">
           <div class="dialogue-speaker-row">
             <span class="dialogue-speaker-name">Pencil the Cat</span>
@@ -2890,110 +2898,110 @@
     <section aria-label="Study Games" class="stations-grid">
       <!-- 1. The Word Dig -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('lexicon-dig')">
-        <div class="station-pixar-banner" data-pixar-plate="0" style="background-position: 28% 58%;">
-          <div class="station-top">
-            <div class="station-icon"><i class="fa-solid fa-trowel" aria-hidden="true"></i></div>
+        <span class="station-pixar-banner" data-pixar-plate="0" style="background-position: 28% 58%;">
+          <span class="station-top">
+            <span class="station-icon"><i class="fa-solid fa-trowel" aria-hidden="true"></i></span>
             <span class="station-tag">Wooden Crate • Spelling Game</span>
-          </div>
-        </div>
-        <div class="station-body-copy">
-          <h2>The Word Dig</h2>
-          <p>Use the Heavy Pickaxe to break grey rocks and the Soft Brush to sweep yellow sand. Watch out—hitting sand with the pickaxe cracks the tile until you glue it back together!</p>
-        </div>
-        <div class="station-cta">
+          </span>
+        </span>
+        <span class="station-body-copy" style="display:block;">
+          <span class="station-title">The Word Dig</span>
+          <span class="station-desc">Use the Heavy Pickaxe to break grey rocks and the Soft Brush to sweep yellow sand. Watch out—hitting sand with the pickaxe cracks the tile until you glue it back together!</span>
+        </span>
+        <span class="station-cta">
           <span>Start Digging</span>
           <span>&rarr;</span>
-        </div>
+        </span>
       </button>
 
       <!-- 2. The Stone Puzzle -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('rosetta-cipher')">
-        <div class="station-pixar-banner" data-pixar-plate="2" style="background-position: 70% 42%;">
-          <div class="station-top">
-            <div class="station-icon"><i class="fa-solid fa-scroll" aria-hidden="true"></i></div>
+        <span class="station-pixar-banner" data-pixar-plate="2" style="background-position: 70% 42%;">
+          <span class="station-top">
+            <span class="station-icon"><i class="fa-solid fa-scroll" aria-hidden="true"></i></span>
             <span class="station-tag">The Desk • Sentence Game</span>
-          </div>
-        </div>
-        <div class="station-body-copy">
-          <h2>The Stone Puzzle</h2>
-          <p>Professor West found old stone tablets with a missing word! Pick the right word stone to finish the sentence and unlock the secret door.</p>
-        </div>
-        <div class="station-cta">
+          </span>
+        </span>
+        <span class="station-body-copy" style="display:block;">
+          <span class="station-title">The Stone Puzzle</span>
+          <span class="station-desc">Professor West found old stone tablets with a missing word! Pick the right word stone to finish the sentence and unlock the secret door.</span>
+        </span>
+        <span class="station-cta">
           <span>Solve Stone Puzzles</span>
           <span>&rarr;</span>
-        </div>
+        </span>
       </button>
 
       <!-- 3. Pencil's Torch Game -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('night-watch')">
-        <div class="station-pixar-banner" data-pixar-plate="1" style="background-position: 50% 30%;">
-          <div class="station-top">
-            <div class="station-icon"><i class="fa-solid fa-eye" aria-hidden="true"></i></div>
+        <span class="station-pixar-banner" data-pixar-plate="1" style="background-position: 50% 30%;">
+          <span class="station-top">
+            <span class="station-icon"><i class="fa-solid fa-eye" aria-hidden="true"></i></span>
             <span class="station-tag">Study Lamp • Find Objects</span>
-          </div>
-        </div>
-        <div class="station-body-copy">
-          <h2>Pencil’s Torch Game</h2>
-          <p>The lights are out! Move Pencil’s glowing flashlight circle around the dark room to find 4 hidden treasures.</p>
-        </div>
-        <div class="station-cta">
+          </span>
+        </span>
+        <span class="station-body-copy" style="display:block;">
+          <span class="station-title">Pencil’s Torch Game</span>
+          <span class="station-desc">The lights are out! Move Pencil’s glowing flashlight circle around the dark room to find 4 hidden treasures.</span>
+        </span>
+        <span class="station-cta">
           <span>Shine the Torch</span>
           <span>&rarr;</span>
-        </div>
+        </span>
       </button>
 
       <!-- 4. Choose the Story -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('field-journal')">
-        <div class="station-pixar-banner" data-pixar-plate="3" style="background-position: 32% 78%;">
-          <div class="station-top">
-            <div class="station-icon"><i class="fa-solid fa-book-open" aria-hidden="true"></i></div>
+        <span class="station-pixar-banner" data-pixar-plate="3" style="background-position: 32% 78%;">
+          <span class="station-top">
+            <span class="station-icon"><i class="fa-solid fa-book-open" aria-hidden="true"></i></span>
             <span class="station-tag">Story Book • Reading Game</span>
-          </div>
-        </div>
-        <div class="station-body-copy">
-          <h2>Choose the Story</h2>
-          <p>Read an adventure story with Professor West and Pencil! Solve fun riddles, follow the compass, and choose polite answers to pass the Temple Guard.</p>
-        </div>
-        <div class="station-cta">
+          </span>
+        </span>
+        <span class="station-body-copy" style="display:block;">
+          <span class="station-title">Choose the Story</span>
+          <span class="station-desc">Read an adventure story with Professor West and Pencil! Solve fun riddles, follow the compass, and choose polite answers to pass the Temple Guard.</span>
+        </span>
+        <span class="station-cta">
           <span>Open Story Book</span>
           <span>&rarr;</span>
-        </div>
+        </span>
       </button>
 
       <!-- 5. Professor West's Voice Messages -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('field-logs')">
-        <div class="station-pixar-banner" data-pixar-plate="3" style="background-position: 86% 45%;">
-          <div class="station-top">
-            <div class="station-icon"><i class="fa-solid fa-record-vinyl" aria-hidden="true"></i></div>
+        <span class="station-pixar-banner" data-pixar-plate="3" style="background-position: 86% 45%;">
+          <span class="station-top">
+            <span class="station-icon"><i class="fa-solid fa-record-vinyl" aria-hidden="true"></i></span>
             <span class="station-tag">Gramophone • Listening Game</span>
-          </div>
-        </div>
-        <div class="station-body-copy">
-          <h2>Voice Messages</h2>
-          <p>Listen to Professor West’s recorded voice messages from the jungle and the desert, then answer 3 fun questions!</p>
-        </div>
-        <div class="station-cta">
+          </span>
+        </span>
+        <span class="station-body-copy" style="display:block;">
+          <span class="station-title">Voice Messages</span>
+          <span class="station-desc">Listen to Professor West’s recorded voice messages from the jungle and the desert, then answer 3 fun questions!</span>
+        </span>
+        <span class="station-cta">
           <span>Listen Now</span>
           <span>&rarr;</span>
-        </div>
+        </span>
       </button>
 
       <!-- 6. The World Treasure Map -->
       <button type="button" class="station-card" onclick="StudyHub.openStation('expedition-map')">
-        <div class="station-pixar-banner" data-pixar-plate="0" style="background-position: 52% 28%;">
-          <div class="station-top">
-            <div class="station-icon"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i></div>
+        <span class="station-pixar-banner" data-pixar-plate="0" style="background-position: 52% 28%;">
+          <span class="station-top">
+            <span class="station-icon"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i></span>
             <span class="station-tag">Wall Map • Adventure Board</span>
-          </div>
-        </div>
-        <div class="station-body-copy">
-          <h2>The World Treasure Map</h2>
-          <p>Move Professor West and Pencil across 6 exciting places around the world as you play games or practise speaking with Gareth!</p>
-        </div>
-        <div class="station-cta">
+          </span>
+        </span>
+        <span class="station-body-copy" style="display:block;">
+          <span class="station-title">The World Treasure Map</span>
+          <span class="station-desc">Move Professor West and Pencil across 6 exciting places around the world as you play games or practise speaking with Gareth!</span>
+        </span>
+        <span class="station-cta">
           <span>Open World Map</span>
           <span>&rarr;</span>
-        </div>
+        </span>
       </button>
     </section>
 
@@ -3024,6 +3032,10 @@
               id="pixar-img-0"
               data-asset="assets/study/act1_desert.jpg"
               src="assets/study/act1_desert.jpg"
+              width="960"
+              height="540"
+              loading="lazy"
+              decoding="async"
               alt="Pixar 3D scene of Professor West in the Egyptian desert at sunset examining a glowing golden scarab with his brass magnifying glass while Pencil sits on a crate beside him"
             />
           </div>
@@ -3037,6 +3049,10 @@
               id="pixar-img-1"
               data-asset="assets/study/act2_pencil.jpg"
               src="assets/study/act2_pencil.jpg"
+              width="960"
+              height="540"
+              loading="lazy"
+              decoding="async"
               alt="Pixar 3D close-up of Pencil the cat wearing her tiny explorer hat with big glowing green eyes and her pencil-tipped tail curled beside a brass compass"
             />
           </div>
@@ -3050,6 +3066,10 @@
               id="pixar-img-2"
               data-asset="assets/study/act3_cavern.jpg"
               src="assets/study/act3_cavern.jpg"
+              width="960"
+              height="540"
+              loading="lazy"
+              decoding="async"
               alt="Pixar 3D scene inside a torchlit temple cavern where Professor West holds up a brass lantern while Pencil shines a glowing emerald beam from her eyes onto floating golden letters"
             />
           </div>
@@ -3063,6 +3083,10 @@
               id="pixar-img-3"
               data-asset="assets/study/act4_study.jpg"
               src="assets/study/act4_study.jpg"
+              width="960"
+              height="540"
+              loading="lazy"
+              decoding="async"
               alt="Pixar 3D scene inside Professor West's warm mahogany study with a glowing green desk lamp, open adventure book, gramophone, and Pencil sitting on the desk"
             />
           </div>
@@ -6225,10 +6249,10 @@
                       <button type="button" class="accessory-card-btn ${isOn ? 'equipped' : ''}"
                         onclick="StudyHub.toggleAccessory('${acc.id}')">
                         <span class="acc-icon-bubble">${acc.icon}</span>
-                        <div>
-                          <div style="font-weight:900; font-size:0.9rem;">${acc.name}</div>
-                          <div style="font-size:0.74rem; opacity:0.85; font-weight:700;">${isOn ? '✓ Wearing Now' : 'Click to Wear'}</div>
-                        </div>
+                        <span style="display:block;">
+                          <span style="display:block; font-weight:900; font-size:0.9rem;">${acc.name}</span>
+                          <span style="display:block; font-size:0.74rem; opacity:0.85; font-weight:700;">${isOn ? '✓ Wearing Now' : 'Click to Wear'}</span>
+                        </span>
                       </button>
                     `;
                   }).join('')}
@@ -7725,6 +7749,18 @@
         resetSpeakingTimer
       };
     })();
+
+    document.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === 'Enter') { e.preventDefault(); if (typeof t.click === 'function') t.click(); else t.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })); }
+      else if (e.key === ' ') { e.preventDefault(); }
+    });
+    document.addEventListener('keyup', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === ' ') { e.preventDefault(); if (typeof t.click === 'function') t.click(); else t.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true })); }
+    });
 
     document.addEventListener('DOMContentLoaded', StudyHub.init);
   </script>

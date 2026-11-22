@@ -7,6 +7,7 @@
   <title>The Language Architecture Arcade | 4 Interactive C1/C2 Worlds — Gareth English</title>
   <meta name="description" content="Explore 4 interactive Cambridge C1/C2 & IELTS game worlds created for Gareth Montgomery's advanced Cambridge C1/C2 & IELTS masterclasses: The Abyssal Bathysphere, Darjeeling Signal Box, Pencil's Midnight Study, and The Blueprint Vault." />
   <meta name="theme-color" content="#050814" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
   <style>
     /* ==========================================================================
        GARETH ENGLISH — FLAGSHIP ARCADE & OBSERVATORY ENGINE
@@ -168,6 +169,7 @@
     /* HUD Stats & Audio Controls */
     .hud-Cluster {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 10px;
     }
@@ -409,6 +411,8 @@
       border-radius: 12px;
       padding: 22px 24px;
       margin-bottom: 20px;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .context-tag {
@@ -1061,13 +1065,15 @@
       color: #fda4af;
       background: rgba(244, 63, 94, 0.16);
     }
+    .skip-link{position:absolute;left:-9999px;top:8px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;z-index:9999}
+    .skip-link:focus{left:12px}
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ================= STICKY HEADER HUD ================= -->
   <header class="arcade-navbar">
-  <link rel="canonical" href="https://garethenglish.com/c1_arcade_showcase.html" />
     <div class="navbar-inner">
       <div class="brand-cluster">
         <a href="lab.html" class="brand-g" title="Return to Interactive Lab">G</a>
@@ -1117,7 +1123,7 @@
     </div>
   </header>
 
-  <main class="arcade-container">
+  <main id="main" class="arcade-container">
 
     <!-- ================= FLAGSHIP INTERACTIVE ENGINES & 3D WORLDS DIRECTORY ================= -->
     <section class="flagship-launch-deck" aria-label="Flagship Interactive Engines">
@@ -1222,7 +1228,7 @@
             <span style="color:var(--cyan);">SONAR TELEMETRY • CLICK CANVAS TO PING SONAR</span>
             <span id="bathy-depth-readout" style="color:var(--gold-bright);">DEPTH: 50m (SUNLIGHT ZONE)</span>
           </div>
-          <canvas id="canvas-bathysphere" class="stage-canvas" width="760" height="310" style="cursor:pointer;" onclick="ArcadeEngine.triggerCanvasInteract('bathysphere')" title="Click to fire an acoustic Sonar Ping into the trench!"></canvas>
+          <canvas tabindex="0" role="button" aria-label="Fire acoustic sonar ping in bathysphere world" id="canvas-bathysphere" class="stage-canvas" width="760" height="310" style="cursor:pointer;" onclick="ArcadeEngine.triggerCanvasInteract('bathysphere')" title="Click to fire an acoustic Sonar Ping into the trench!"></canvas>
           <div class="canvas-caption-bar">
             <span>Visual Concept: <em>Arctic Iceberg &amp; Deep Siren (Mixed Conditionals)</em></span>
             <span id="bathy-hull-status" style="color:var(--emerald);">HULL INTEGRITY: 100%</span>
@@ -1318,7 +1324,7 @@
             <span style="color:var(--gold-bright);">HIMALAYAN SIGNAL TOWER • CLICK TRAIN FOR STEAM WHISTLE</span>
             <span id="rail-junction-readout" style="color:var(--emerald);">JUNCTION 1 / 10</span>
           </div>
-          <canvas id="canvas-railway" class="stage-canvas" width="760" height="310" style="cursor:pointer;" onclick="ArcadeEngine.triggerCanvasInteract('railway')" title="Click to sound the Darjeeling Brass Steam Whistle!"></canvas>
+          <canvas tabindex="0" role="button" aria-label="Sound the Darjeeling steam whistle" id="canvas-railway" class="stage-canvas" width="760" height="310" style="cursor:pointer;" onclick="ArcadeEngine.triggerCanvasInteract('railway')" title="Click to sound the Darjeeling Brass Steam Whistle!"></canvas>
           <div class="canvas-caption-bar">
             <span>Visual Concept: <em>Himalayan Viaduct &amp; Clause Coupling (Participles)</em></span>
             <span id="rail-status-readout" style="color:var(--gold-bright);">SEMAPHORE: AWAITING SWITCH</span>
@@ -1419,7 +1425,7 @@
             <span style="color:var(--emerald);">BANKER'S LAMP DESK • CLICK PENCIL THE CAT TO PURR</span>
             <span id="study-case-readout" style="color:var(--gold-bright);">DRAFT 1 / 10</span>
           </div>
-          <canvas id="canvas-study" class="stage-canvas" width="760" height="310" style="cursor:pointer;" onclick="ArcadeEngine.triggerCanvasInteract('study')" title="Click Pencil the Cat to hear him purr!"></canvas>
+          <canvas tabindex="0" role="button" aria-label="Pet Pencil the Cat to hear him purr" id="canvas-study" class="stage-canvas" width="760" height="310" style="cursor:pointer;" onclick="ArcadeEngine.triggerCanvasInteract('study')" title="Click Pencil the Cat to hear him purr!"></canvas>
           <div class="canvas-caption-bar">
             <span>Visual Concept: <em>Midnight Study &amp; Proofreading Cat (Error Pruning)</em></span>
             <span id="study-cat-mood" style="color:var(--emerald);">PENCIL'S CLAWS: POISED 🐾</span>
@@ -1494,7 +1500,7 @@
             <span style="color:var(--violet);">ZURICH BLUEPRINT VAULT • CLICK WHEEL TO SPIN</span>
             <span id="vault-mission-readout" style="color:var(--gold-bright);">DOSSIER 1 / 10</span>
           </div>
-          <canvas id="canvas-vault" class="stage-canvas" width="760" height="310" style="cursor:pointer;" onclick="ArcadeEngine.triggerCanvasInteract('vault')" title="Click to spin the brass combination wheel!"></canvas>
+          <canvas tabindex="0" role="button" aria-label="Spin the brass vault combination wheel" id="canvas-vault" class="stage-canvas" width="760" height="310" style="cursor:pointer;" onclick="ArcadeEngine.triggerCanvasInteract('vault')" title="Click to spin the brass combination wheel!"></canvas>
           <div class="canvas-caption-bar">
             <span>Visual Concept: <em>Zurich Strongroom &amp; Draughting Blueprint (Causatives)</em></span>
             <span id="vault-lock-status" style="color:var(--rose);">BOLTS ENGAGED: LOCKED 🔒</span>
@@ -1640,7 +1646,7 @@
           <span id="gauntlet-formula-hint" style="font-family:var(--font-mono); font-size:0.78rem; color:var(--cyan);">Blueprint: Subject + have + no + intention + of + V-ing</span>
         </div>
 
-        <div id="gauntlet-s2-stem" style="font-family:var(--font-serif); font-size:1.22rem; color:#fff; font-weight:700;"></div>
+        <div id="gauntlet-s2-stem" style="font-family:var(--font-serif); font-size:1.22rem; color:#fff; font-weight:700; overflow-wrap:anywhere; word-break:break-word;"></div>
       </div>
 
       <!-- Gareth's 4-Step Diagnostic Strip -->
@@ -3573,6 +3579,18 @@
       updateHUD();
       requestAnimationFrame(masterAnimationLoop);
     }
+
+    document.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === 'Enter') { e.preventDefault(); t.click(); }
+      else if (e.key === ' ') { e.preventDefault(); }
+    });
+    document.addEventListener('keyup', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === ' ') { e.preventDefault(); t.click(); }
+    });
 
     window.addEventListener('DOMContentLoaded', init);
 

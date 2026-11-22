@@ -51,6 +51,8 @@
 
   // Playback / recording state
   let isPlayingRef = false;
+  let isPlayRefPending = false;
+  let playRefSeq = 0;
   let isPlayingMine = false;
   let isComparing = false;
   let isRecording = false;
@@ -80,6 +82,12 @@
   let userAudioBuffer = null;
   let userAudioUrl = '';
   let lastScoreResult = null;
+  let takeBaseStreak = null;
+  let takeAttemptRecorded = false;
+  let takeSolveSfxPlayed = false;
+  let takeDailyWritten = false;
+  let takeDuelWritten = false;
+  let takeFinalized = false;
 
   // Modes
   let dailyActive = false;
@@ -213,6 +221,7 @@
   /* ---------------- CLEAN SCREENSHARE / WHITE-LABEL GUARD ---------------- */
   function isCleanMode(forceClean) {
     if (forceClean === true) return true;
+    if (forceClean === false) return false;
     try {
       if (localStorage.getItem(CLEAN_KEY) === 'true') return true;
     } catch (_) {}
@@ -856,17 +865,25 @@
 
     // 1. Peak Energy Hits on stressed syllables
     let peakSum = 0;
+    let hitPeaks = 0;
     drill.peaks.forEach((p) => {
-      peakSum += sampleEnvelopeWindow(normStu, p.pos, 0.065).max;
+      const peakVal = sampleEnvelopeWindow(normStu, p.pos, 0.065).max;
+      peakSum += peakVal;
+      if (peakVal >= 0.28) hitPeaks++;
     });
     const peakMean = peakSum / Math.max(1, drill.peaks.length);
+    const peakCov = hitPeaks / Math.max(1, drill.peaks.length);
 
     // 2. Weak-form / schwa valley compression (lower valley energy = stronger contrast!)
     let valleySum = 0;
+    let hitValleys = 0;
     drill.valleys.forEach((v) => {
-      valleySum += sampleEnvelopeWindow(normStu, v.pos, 0.05).mean;
+      const win = sampleEnvelopeWindow(normStu, v.pos, 0.05);
+      valleySum += win.mean;
+      if (win.max >= 0.02) hitValleys++;
     });
     const valleyMean = valleySum / Math.max(1, drill.valleys.length);
+    const valleyCov = hitValleys / Math.max(1, drill.valleys.length);
 
     // 3. Stress-vs-Weak Contrast Ratio & Envelope Alignment
     const contrast = Math.max(0, peakMean - valleyMean);
@@ -875,8 +892,9 @@
     const peakPct = Math.round(Math.max(15, Math.min(100, peakMean * 104)));
     const valleyPct = Math.round(Math.max(15, Math.min(100, (1 - Math.max(0, valleyMean - 0.14) / 0.72) * 100)));
     const contrastBoost = Math.min(1, contrast / 0.52);
+    const coverageScale = Math.pow(peakCov, 1.8) * (0.85 + 0.15 * valleyCov);
     const overallPct = Math.round(
-      Math.max(25, Math.min(99, sim * 46 + contrastBoost * 34 + (peakPct / 100) * 12 + (valleyPct / 100) * 8))
+      Math.max(25, Math.min(99, (sim * 46 + contrastBoost * 34 + (peakPct / 100) * 12 + (valleyPct / 100) * 8) * coverageScale))
     );
 
     const passed = overallPct >= 75 && contrast >= 0.22;
@@ -892,11 +910,11 @@
       };
     }
 
-    if (overallPct >= 86 && contrast >= 0.35) {
+    if (overallPct >= 86 && contrast >= 0.35 && peakCov === 1) {
       feedback = `Spot on! Your stressed peaks (${peakPct}%) stand sharply above your reduced /ə/ valleys (${valleyPct}% compression), giving this sentence genuine British stress-timing.`;
     } else if (valleyMean > 0.56) {
       feedback = `Your stressed words landed well, yet your weak forms stayed too loud (${valleyPct}% valley contrast). Let the unstressed syllables in "${drill.phoneticRespelling.split(' ')[0]}" drop almost to a whisper so the main verbs and nouns pop.`;
-    } else if (peakMean < 0.58) {
+    } else if (peakMean < 0.58 || peakCov < 1) {
       feedback = `Good light valleys, though your main stress peaks need a firmer lift. Lean harder into the capitalised beats: ${drill.peaks.map((p) => p.label).join(' · ')}.`;
     } else {
       feedback = `Solid C1 rhythm (${overallPct}%). Listen once more at 0.85x and try exaggerating the gap between the loud peaks and the relaxed schwa valleys.`;
@@ -905,7 +923,7 @@
     return { overallPct, peakPct, valleyPct, contrast, passed, feedback };
   }
 
-  function applyScoreToUI(res, modeLabel) {
+  function applyScoreToUI(res, modeLabel, options = {}) {
     lastScoreResult = res;
     const card = $('score-card');
     const badge = $('score-badge');
@@ -923,48 +941,62 @@
       badge.textContent = `${res.overallPct}% Match · ${res.passed ? 'Strong C1 Contrast' : 'Keep Tightening Weak Forms'}`;
     }
     if (syncNote) {
-      syncNote.textContent = modeLabel || '✓ Saved to your practice log';
+      syncNote.textContent = options.finalizeTake === false
+        ? 'Preview · Tap remaining pad to log this take'
+        : (modeLabel || '✓ Saved to your practice log');
     }
     if (overallEl) overallEl.textContent = `${res.overallPct}%`;
     if (peaksEl) peaksEl.textContent = `${res.peakPct}%`;
     if (valleysEl) valleysEl.textContent = `${res.valleyPct}%`;
     if (fbEl) fbEl.textContent = res.feedback;
 
-    if (res.overallPct > 0) {
-      if (!inSelfTest) {
-        if (res.passed) {
-          state.streak += 1;
-          if (!state.completedIds.includes(currentDrill.id)) {
-            state.completedIds.push(currentDrill.id);
-          }
-        } else {
-          state.streak = 0;
+    if (res.overallPct > 0 && options.finalizeTake !== false) {
+      takeFinalized = true;
+      if (takeBaseStreak === null) {
+        takeBaseStreak = state.streak;
+      }
+      if (res.passed) {
+        state.streak = takeBaseStreak + 1;
+        if (!inSelfTest && !state.completedIds.includes(currentDrill.id)) {
+          state.completedIds.push(currentDrill.id);
         }
+      } else {
+        state.streak = 0;
+      }
+      if (!inSelfTest) {
         const prevBest = state.bestScores[currentDrill.id] || 0;
         if (res.overallPct > prevBest) state.bestScores[currentDrill.id] = res.overallPct;
         saveState();
-        updateHudUI();
+      }
+      updateHudUI();
+
+      if (res.passed && !takeSolveSfxPlayed) {
+        takeSolveSfxPlayed = true;
+        sfx('solve');
       }
 
-      if (res.passed) sfx('solve');
+      if (!takeAttemptRecorded) {
+        takeAttemptRecorded = true;
+        recordDossierAttempt(res);
+      }
 
-      recordDossierAttempt(res);
-
-      if (dailyActive && dailyResults[dailyStep] == null) {
+      if (dailyActive && (dailyResults[dailyStep] == null || takeDailyWritten)) {
         dailyResults[dailyStep] = {
           id: currentDrill.id,
           pct: res.overallPct,
           passed: res.passed,
           simulated: isSimulatedTake
         };
+        takeDailyWritten = true;
       }
-      if (duelActive && duelResults[duelStep] == null) {
+      if (duelActive && (duelResults[duelStep] == null || takeDuelWritten)) {
         duelResults[duelStep] = {
           id: currentDrill.id,
           pct: res.overallPct,
           passed: res.passed,
           simulated: isSimulatedTake
         };
+        takeDuelWritten = true;
         if (res.passed) pauseDuelTimer();
       }
     }
@@ -1026,9 +1058,23 @@
     if (compareBtn) compareBtn.disabled = !canReplay;
   }
 
+  function ensureFallbackAudioEl() {
+    if (!fallbackAudioEl && typeof Audio !== 'undefined') {
+      fallbackAudioEl = new Audio();
+      fallbackAudioEl.addEventListener('error', () => {
+        if (isPlayingRef || isPlayingMine) {
+          updateWellStatus('Audio unavailable · Rhythm envelope sweep active.', 'play');
+        }
+      });
+    }
+    return fallbackAudioEl;
+  }
+
   function stopAllAudioAndAnim() {
     compareAbort = true;
     isPlayingRef = false;
+    isPlayRefPending = false;
+    playRefSeq += 1;
     isPlayingMine = false;
     isComparing = false;
 
@@ -1072,6 +1118,7 @@
   }
 
   async function playReferenceClip(onFinishedCallback) {
+    if (isPlayRefPending) return;
     if (isPlayingRef && !onFinishedCallback) {
       stopAllAudioAndAnim();
       updateWellStatus('Ready · Listen, then shadow with your mic or tap rhythm.', 'ready');
@@ -1080,7 +1127,16 @@
     }
     if (!onFinishedCallback) stopAllAudioAndAnim();
 
-    const analysis = await ensureDrillAnalysis(currentDrill);
+    const mySeq = ++playRefSeq;
+    isPlayRefPending = true;
+    let analysis;
+    try {
+      analysis = await ensureDrillAnalysis(currentDrill);
+    } finally {
+      isPlayRefPending = false;
+    }
+    if (mySeq !== playRefSeq || (onFinishedCallback && compareAbort)) return;
+
     const ctx = getPlayCtx();
     const startOffset = Math.max(0, (analysis.activeStartSec || 0) - 0.02);
     const activeDur = Math.max(0.5, (analysis.activeEndSec || analysis.durationSec) - startOffset);
@@ -1111,18 +1167,28 @@
     }
     if (!playedViaNode && typeof Audio !== 'undefined') {
       try {
-        if (!fallbackAudioEl) fallbackAudioEl = new Audio();
-        fallbackAudioEl.src = currentDrill.audioSrc;
-        fallbackAudioEl.playbackRate = playbackSpeed;
-        fallbackAudioEl.play().catch(() => {});
+        const audioEl = ensureFallbackAudioEl();
+        if (audioEl) {
+          audioEl.src = currentDrill.audioSrc;
+          audioEl.playbackRate = playbackSpeed;
+          audioEl.onloadedmetadata = () => {
+            if (isPlayingRef && Number.isFinite(audioEl.duration) && audioEl.duration > 0.4) {
+              playTotalMs = (audioEl.duration / playbackSpeed) * 1000;
+            }
+          };
+          audioEl.play().catch(() => {});
+        }
       } catch (_) {}
     }
 
     startSweepLoop(
-      (prog, elapsed) => updateWellTimer(elapsed / 1000, scaledMs / 1000),
+      (prog, elapsed) => updateWellTimer(elapsed / 1000, playTotalMs / 1000),
       () => {
         isPlayingRef = false;
         activeSourceNode = null;
+        if (!playedViaNode && fallbackAudioEl) {
+          try { fallbackAudioEl.pause(); fallbackAudioEl.currentTime = 0; } catch (_) {}
+        }
         if (playLbl) playLbl.textContent = 'Listen to British Model';
         if (playBtn) playBtn.classList.remove('is-playing');
         drawLiveLayer(0);
@@ -1412,22 +1478,76 @@
     hasStudentTrace = true;
   }
 
-  function handleRhythmPadTap(chunk, btnEl) {
+  function injectEnvelopeSpanFloor(spanStart, spanEnd, floorVal = 0.15) {
+    const b0 = Math.max(0, Math.round(spanStart * (ENVELOPE_BUCKETS - 1)));
+    const b1 = Math.min(ENVELOPE_BUCKETS - 1, Math.round(spanEnd * (ENVELOPE_BUCKETS - 1)));
+    for (let b = b0; b <= b1; b++) {
+      if (floorVal > studentEnvelope[b]) {
+        studentEnvelope[b] = floorVal;
+      }
+    }
+    hasStudentTrace = true;
+  }
+
+  function getStressChunkPeaks(drill, targetChunkIdx) {
+    const chunks = drill.rhythmChunks || [];
+    const stressChunks = chunks
+      .map((c, idx) => ({ chunk: c, idx }))
+      .filter((item) => item.chunk.role === 'stress');
+    if (!stressChunks.length) return [];
+
+    return (drill.peaks || []).filter((p) => {
+      let nearestIdx = stressChunks[0].idx;
+      let nearestDist = Math.abs(stressChunks[0].chunk.pos - p.pos);
+      for (let i = 1; i < stressChunks.length; i++) {
+        const dist = Math.abs(stressChunks[i].chunk.pos - p.pos);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          nearestIdx = stressChunks[i].idx;
+        }
+      }
+      return nearestIdx === targetChunkIdx;
+    });
+  }
+
+  function handleRhythmPadTap(chunk, btnEl, chunkIdx) {
     if (btnEl) btnEl.classList.add('is-hit');
+    const chunks = currentDrill.rhythmChunks || [];
+    const idx = typeof chunkIdx === 'number' ? chunkIdx : chunks.indexOf(chunk);
+    const spanStart = idx > 0 ? (chunks[idx - 1].pos + chunk.pos) / 2 : 0;
+    const spanEnd = idx >= 0 && idx < chunks.length - 1 ? (chunk.pos + chunks[idx + 1].pos) / 2 : 1;
+
+    injectEnvelopeSpanFloor(spanStart, spanEnd, 0.15);
+
     const isStress = chunk.role === 'stress';
-    injectEnvelopeGaussian(chunk.pos, isStress ? (chunk.amp || 0.9) : 0.28, isStress ? 7 : 5);
+    if (isStress) {
+      const assignedPeaks = idx >= 0 ? getStressChunkPeaks(currentDrill, idx) : [];
+      const pulseAmp = chunk.amp || 0.9;
+      if (assignedPeaks.length > 0) {
+        assignedPeaks.forEach((p) => injectEnvelopeGaussian(p.pos, pulseAmp, 5));
+      } else {
+        injectEnvelopeGaussian(chunk.pos, pulseAmp, 5);
+      }
+    } else {
+      injectEnvelopeGaussian(chunk.pos, 0.19, 5);
+    }
+
     sfx(isStress ? 'stress' : 'weak');
     isSimulatedTake = true;
     syncActionButtons();
     drawLiveLayer(chunk.pos);
 
     const hitCount = document.querySelectorAll('#rhythm-pads .rhythm-pad.is-hit').length;
-    if (hitCount >= Math.max(2, currentDrill.rhythmChunks.length - 1)) {
+    const isFinalPad = hitCount >= chunks.length;
+    if (hitCount >= Math.max(2, chunks.length - 1)) {
       const res = scoreStudentTrace(currentDrill, studentEnvelope);
-      applyScoreToUI(res, '✓ Tap-rhythm pattern scored');
-      updateWellStatus(`Rhythm tapped · ${res.overallPct}% Match`, res.passed ? 'ok' : 'ready');
+      applyScoreToUI(res, '✓ Tap-rhythm pattern scored', { finalizeTake: isFinalPad });
+      updateWellStatus(
+        isFinalPad ? `Rhythm tapped · ${res.overallPct}% Match` : `Preview · ${res.overallPct}% Match (tap remaining pad)`,
+        isFinalPad && res.passed ? 'ok' : 'ready'
+      );
     } else {
-      updateWellStatus(`Tapped "${chunk.text}" (${hitCount}/${currentDrill.rhythmChunks.length})`, 'ready');
+      updateWellStatus(`Tapped "${chunk.text}" (${hitCount}/${chunks.length})`, 'ready');
     }
   }
 
@@ -1468,6 +1588,12 @@
     hasStudentTrace = false;
     isSimulatedTake = false;
     lastScoreResult = null;
+    takeBaseStreak = null;
+    takeAttemptRecorded = false;
+    takeSolveSfxPlayed = false;
+    takeDailyWritten = false;
+    takeDuelWritten = false;
+    takeFinalized = false;
     userAudioBuffer = null;
     if (userAudioUrl) {
       try { URL.revokeObjectURL(userAudioUrl); } catch (_) {}
@@ -1537,6 +1663,7 @@
     toggleBlueprint(false);
 
     const d = currentDrill;
+    const globalNum = Math.max(1, D.allDrills.findIndex((item) => item.id === d.id) + 1);
     updateHudUI();
     syncActPills();
     updateModeBadge();
@@ -1544,10 +1671,10 @@
     if ($('drill-meta-tag')) {
       const stepLabel = duelActive && duelSpec
         ? `DUEL ${duelStep + 1}/${duelSpec.steps.length}`
-        : (dailyActive && dailyData ? `DAILY ${dailyStep + 1}/${dailyData.steps.length}` : `CLIP ${d.num}/${D.allDrills.length}`);
+        : (dailyActive && dailyData ? `DAILY ${dailyStep + 1}/${dailyData.steps.length}` : `CLIP ${String(globalNum).padStart(2, '0')}/${D.allDrills.length}`);
       $('drill-meta-tag').textContent = `ACT ${d.act} · ${d.cefr} · ${stepLabel}`;
     }
-    if ($('drill-title')) $('drill-title').textContent = d.title;
+    if ($('drill-title')) $('drill-title').textContent = `${globalNum}. ${d.title.replace(/^\d+\.\s*/, '')}`;
     if ($('scene-context')) $('scene-context').textContent = d.context;
     if ($('target-feature-badge')) $('target-feature-badge').textContent = d.targetFeature;
 
@@ -1572,12 +1699,12 @@
     const padsWrap = $('rhythm-pads');
     if (padsWrap) {
       padsWrap.textContent = '';
-      d.rhythmChunks.forEach((chunk) => {
+      d.rhythmChunks.forEach((chunk, idx) => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = `rhythm-pad ${chunk.role === 'stress' ? 'pad-stress' : 'pad-weak'}`;
         btn.textContent = chunk.text;
-        btn.addEventListener('click', () => handleRhythmPadTap(chunk, btn));
+        btn.addEventListener('click', () => handleRhythmPadTap(chunk, btn, idx));
         padsWrap.appendChild(btn);
       });
     }
@@ -1597,7 +1724,7 @@
       } else if (dailyActive && dailyData && dailyStep === dailyData.steps.length - 1) {
         $('btn-next').textContent = 'Finish Daily 5 →';
       } else if (!dailyActive && !duelActive && state.currentIdx === D.allDrills.length - 1) {
-        $('btn-next').textContent = 'Finish All 12 Clips →';
+        $('btn-next').textContent = `Finish All ${D.allDrills.length} Clips →`;
       } else {
         $('btn-next').textContent = 'Next Clip →';
       }
@@ -1627,12 +1754,13 @@
   }
 
   function nextClip() {
+    const committedScore = takeFinalized ? lastScoreResult : null;
     if (duelActive && duelSpec) {
       if (duelResults[duelStep] == null) {
         duelResults[duelStep] = {
           id: currentDrill.id,
-          pct: lastScoreResult ? lastScoreResult.overallPct : 0,
-          passed: Boolean(lastScoreResult && lastScoreResult.passed),
+          pct: committedScore ? committedScore.overallPct : 0,
+          passed: Boolean(committedScore && committedScore.passed),
           simulated: isSimulatedTake
         };
       }
@@ -1652,8 +1780,8 @@
       if (dailyResults[dailyStep] == null) {
         dailyResults[dailyStep] = {
           id: currentDrill.id,
-          pct: lastScoreResult ? lastScoreResult.overallPct : 0,
-          passed: Boolean(lastScoreResult && lastScoreResult.passed),
+          pct: committedScore ? committedScore.overallPct : 0,
+          passed: Boolean(committedScore && committedScore.passed),
           simulated: isSimulatedTake
         };
       }
@@ -1819,7 +1947,8 @@
         D.allDrills.filter((d) => d.act === actMeta.act).forEach((d) => {
           const opt = document.createElement('option');
           opt.value = d.id;
-          opt.textContent = `${d.num} · ${d.writtenText.slice(0, 32)} (${d.cefr})`;
+          const globalNum = String(D.allDrills.findIndex((item) => item.id === d.id) + 1).padStart(2, '0');
+          opt.textContent = `${globalNum} · ${d.writtenText.slice(0, 32)} (${d.cefr})`;
           grp.appendChild(opt);
         });
         sel.appendChild(grp);
@@ -1848,10 +1977,21 @@
   }
 
   function updateDuelPreview() {
+    const ids = getSelectedDuelIds();
+    const uniqueIds = [...new Set(ids)];
+    const statusEl = $('duel-forge-status');
+    if (statusEl) {
+      if (uniqueIds.length < ids.length) {
+        const dupCount = ids.length - uniqueIds.length;
+        statusEl.textContent = `${uniqueIds.length} distinct clips selected (${dupCount} duplicate slot${dupCount > 1 ? 's' : ''} omitted).`;
+      } else if (/distinct clips selected/i.test(statusEl.textContent)) {
+        statusEl.textContent = '';
+      }
+    }
     const preview = $('duel-preview-list');
     if (!preview || preview.classList.contains('hidden')) return;
     preview.textContent = '';
-    getSelectedDuelIds().forEach((id, idx) => {
+    ids.forEach((id, idx) => {
       const d = D.findById(id);
       if (!d) return;
       const line = document.createElement('div');
@@ -1944,12 +2084,15 @@
       const cleanCount = steps.filter((s) => s.passed).length;
       let verdict = null;
       if (duelSpec.avgPct > 0 || duelSpec.sec > 0) {
-        const won = avgPct > duelSpec.avgPct || (avgPct === duelSpec.avgPct && sec <= duelSpec.sec);
+        const won = duelSpec.sec > 0
+          ? (avgPct > duelSpec.avgPct || (avgPct === duelSpec.avgPct && sec <= duelSpec.sec))
+          : (avgPct >= duelSpec.avgPct);
+        const timePart = duelSpec.sec > 0 ? ` in ${formatClock(duelSpec.sec)}` : '';
         verdict = {
           kind: won ? 'win' : 'loss',
           text: won
             ? `🏆 You beat ${duelSpec.by || 'the challenger'} (${avgPct}% vs ${duelSpec.avgPct}%)!`
-            : `Target was ${duelSpec.avgPct}% in ${formatClock(duelSpec.sec)} — run again or copy a counter-duel!`
+            : `Target was ${duelSpec.avgPct}%${timePart} — run again or copy a counter-duel!`
         };
       }
       return {
@@ -2029,7 +2172,7 @@
       if (copyDailyBtn) copyDailyBtn.classList.add('hidden');
       if (copyDuelBtn) copyDuelBtn.classList.remove('hidden');
     } else {
-      if (heading) heading.textContent = '🏆 All 12 Connected Speech Clips Complete!';
+      if (heading) heading.textContent = `🏆 All ${D.allDrills.length} Connected Speech Clips Complete!`;
       if (summary) summary.textContent = `${stats.score}/${stats.maxScore} Clips Mastered · Average Match: ${stats.avgPct}%`;
       if (copyDailyBtn) copyDailyBtn.classList.add('hidden');
       if (copyDuelBtn) copyDuelBtn.classList.add('hidden');
@@ -2087,6 +2230,16 @@
       startDailyMode();
       return true;
     }
+    const clipRaw = params.get('clip');
+    if (clipRaw) {
+      const idx = D.allDrills.findIndex((d) => d.id.toLowerCase() === clipRaw.trim().toLowerCase());
+      if (idx >= 0) {
+        state.currentIdx = idx;
+        currentDrill = D.allDrills[idx];
+        renderCurrentDrill();
+        return true;
+      }
+    }
     if (params.has('act')) {
       const actNum = parseInt(params.get('act'), 10);
       if (actNum >= 1 && actNum <= 4) {
@@ -2116,7 +2269,7 @@
       const dataRes = D.dataTests();
       record('dataTests', dataRes.pass, dataRes.lines.join(' | '));
 
-      // Verify all 12 audio buffers decode + STFT spectrogram + RMS envelope
+      // Verify all audio buffers decode + STFT spectrogram + RMS envelope
       let decodedOk = 0;
       const decodeErrors = [];
       for (let i = 0; i < D.allDrills.length; i++) {
@@ -2134,10 +2287,26 @@
         }
       }
       record(
-        'audioDecodeAndSpectrogram12',
-        decodedOk === 12,
-        `${decodedOk}/12 decoded with ${SPEC_COLS}x${SPEC_BANDS} STFT (${window.location.protocol})${decodeErrors.length ? ' err=' + decodeErrors.join(',') : ''}`
+        'audioDecodeAndSpectrogram',
+        decodedOk === D.allDrills.length,
+        `${decodedOk}/${D.allDrills.length} decoded with ${SPEC_COLS}x${SPEC_BANDS} STFT (${window.location.protocol})${decodeErrors.length ? ' err=' + decodeErrors.join(',') : ''}`
       );
+
+      // Verify Act jumping (1..4) walks 6 sequential clips per Act
+      let actJumpOk = true;
+      const actSummary = [];
+      for (let aNum = 1; aNum <= D.acts.length; aNum++) {
+        jumpToAct(aNum);
+        const seenInAct = [];
+        for (let step = 0; step < 6; step++) {
+          if (!currentDrill || currentDrill.act !== aNum) actJumpOk = false;
+          else seenInAct.push(currentDrill.id);
+          if (step < 5) nextClip();
+        }
+        if (new Set(seenInAct).size !== 6) actJumpOk = false;
+        actSummary.push(`A${aNum}:${seenInAct[0]}..${seenInAct[seenInAct.length - 1]}`);
+      }
+      record('actJumpNavigation', actJumpOk, actSummary.join(' '));
 
       // Verify drill rendering, speed toggle, blueprint toggle, simulation + scoring
       state.currentIdx = 0;
@@ -2169,18 +2338,52 @@
         `match=${lastScoreResult ? lastScoreResult.overallPct : 0}% contrast=${lastScoreResult ? lastScoreResult.contrast.toFixed(2) : 0}`
       );
 
-      // Verify quiet-room tap rhythm pads
+      // Verify quiet-room tap rhythm pads across all 24 drills + single +1 streak per full take
+      state.streak = 0;
+      let tapAllOk = true;
+      const tapScores = [];
+      const tapFails = [];
+      for (let i = 0; i < D.allDrills.length; i++) {
+        state.currentIdx = i;
+        currentDrill = D.allDrills[i];
+        await renderCurrentDrill();
+        const prevStreak = state.streak;
+        const pads = Array.from(document.querySelectorAll('#rhythm-pads .rhythm-pad'));
+        pads.forEach((p) => p.click());
+        const okDrill = Boolean(
+          pads.length >= 3 &&
+          hasStudentTrace &&
+          !$('score-card').classList.contains('hidden') &&
+          lastScoreResult &&
+          lastScoreResult.passed === true &&
+          lastScoreResult.overallPct >= 75 &&
+          state.streak === prevStreak + 1
+        );
+        if (!okDrill) {
+          tapAllOk = false;
+          tapFails.push(`${currentDrill.id}:${lastScoreResult ? lastScoreResult.overallPct : 0}%/s=${state.streak}`);
+        }
+        tapScores.push(`${currentDrill.id}:${lastScoreResult ? lastScoreResult.overallPct : 0}%`);
+      }
+      // Verify partial pad taps (only first 2 pads on last drill) stay < 75%
       resetStudentTraceOnly();
-      const pads = Array.from(document.querySelectorAll('#rhythm-pads .rhythm-pad'));
-      pads.forEach((p) => p.click());
-      record('tapRhythmPads', pads.length >= 3 && hasStudentTrace && !$('score-card').classList.contains('hidden'), `pads=${pads.length}`);
+      const partialPads = Array.from(document.querySelectorAll('#rhythm-pads .rhythm-pad')).slice(0, 2);
+      partialPads.forEach((p) => p.click());
+      const partialRes = scoreStudentTrace(currentDrill, studentEnvelope);
+      const partialRejected = !partialRes.passed && partialRes.overallPct < 75;
+      if (!partialRejected) tapAllOk = false;
+      record(
+        'tapRhythmPads',
+        tapAllOk && state.streak === D.allDrills.length,
+        `${D.allDrills.length}/${D.allDrills.length} passed (${tapScores[0]}..${tapScores[tapScores.length - 1]}) streak=${state.streak} partial2=${partialRes.overallPct}%${tapFails.length ? ' fail=' + tapFails.join(',') : ''}`
+      );
 
       // Verify Daily 5
       startDailyMode();
       record('daily5Mode', dailyActive && dailyData && dailyData.steps.length === 5, `seed=${dailyData ? dailyData.seed : ''}`);
 
-      // Verify Duel mode + recap modal
-      const tok = D.encodeDuel({ ids: ['cs1', 'cs4', 'cs7', 'cs10', 'cs12'], avgPct: 86, sec: 40, by: 'Igor' });
+      // Verify Duel mode + recap modal (including new cs13..cs24 IDs)
+      const tok = D.encodeDuel({ ids: ['cs1', 'cs13', 'cs16', 'cs19', 'cs24'], avgPct: 86, sec: 40, by: 'Igor' });
       const spec = D.decodeDuel(tok);
       startDuelMode(spec);
       simulateC1Shadowing();
@@ -2281,12 +2484,17 @@
 
     document.querySelectorAll('.speed-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
+        const wasPlaying = isPlayingRef || isPlayingMine || isComparing || isPlayRefPending;
+        if (wasPlaying) stopAllAudioAndAnim();
         const spd = Number(btn.dataset.speed) || 1.0;
         playbackSpeed = spd;
         document.querySelectorAll('.speed-btn').forEach((b) => b.classList.toggle('is-active', b === btn));
         drawReferenceLayer();
         const cached = analysisCache.get(currentDrill.id);
         updateWellTimer(0, (cached ? cached.activeSpanSec : 2.1) / playbackSpeed);
+        if (wasPlaying) {
+          updateWellStatus(`Speed set to ${spd.toFixed(spd === 1 ? 1 : 2)}x · Click Listen to replay.`, 'ready');
+        }
       });
     });
 
@@ -2355,7 +2563,7 @@
         const tok = D.encodeDuel({ ids: uniqueIds, avgPct: 0, sec: 0, by: state.playerName });
         const url = buildDuelUrl(tok);
         copyTextWithFallback(url, () => {
-          if ($('duel-forge-status')) $('duel-forge-status').textContent = '✓ Instant duel link copied!';
+          if ($('duel-forge-status')) $('duel-forge-status').textContent = `✓ ${uniqueIds.length}-clip instant duel link copied!`;
         });
       });
     }
@@ -2423,6 +2631,16 @@
     }
 
     if ($('btn-close-recap')) $('btn-close-recap').addEventListener('click', () => closeRecapModal(true));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = $('recap-modal');
+        if (modal && modal.classList.contains('open')) {
+          e.preventDefault();
+          closeRecapModal(true);
+        }
+      }
+    });
 
     /* ---------------- BELFAST DESK INLINE DRAWER ---------------- */
     function syncCsDeskContext() {

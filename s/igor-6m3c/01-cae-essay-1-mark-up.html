@@ -1193,7 +1193,7 @@
         </div>
       </div>
       <div class="hud-right">
-        <span class="hud-score-pill" id="hud-drill-pill" onclick="switchTab(4)">&#10003; <span id="drill-solved-count">0</span> / 8 Drills Solved</span>
+        <span class="hud-score-pill" id="hud-drill-pill" onclick="switchTab(4)" role="button" tabindex="0">&#10003; <span id="drill-solved-count">0</span> / 8 Drills Solved</span>
         <button class="hud-btn" id="btn-all-view" onclick="toggleAllInOne()">&#128450;&#65039; All-in-One View</button>
         <button class="hud-btn" id="btn-theme-toggle" onclick="toggleTheme()">&#127769; Dark</button>
       </div>
@@ -1467,7 +1467,7 @@
           <p class="explain-line">
             In Lesson 2 speaking, we tracked three preposition slips on your live scratchpad (<strong>related TO</strong>, <strong>knowledge OF</strong>, <strong>waiting FOR</strong>). Notice that all three grammatical preposition slips in this essay follow the exact same habit: choosing the wrong partner preposition after a key noun or verb.
           </p>
-          <table class="studio-table">
+          <div tabindex="0" role="region" aria-label="Data table" style="overflow-x:auto;"><table class="studio-table">
             <thead>
               <tr>
                 <th>Sentence</th>
@@ -1496,14 +1496,14 @@
                 <td>Use <em>by + -ing verb</em> (<em>by singing</em>), or <em>through / using + noun</em> (<em>through patterns</em>).</td>
               </tr>
             </tbody>
-          </table>
+          </table></div>
         </div>
 
         <!-- Priority 3 -->
         <div class="improve-block">
           <span class="badge-chip badge-navy">Priority 3 &middot; Parallelism &amp; Universal Truth Tense</span>
           <h3 style="font-size:1.08rem; margin-bottom:6px;">Match Noun/Gerund Forms &amp; Keep General Facts in Present Simple</h3>
-          <table class="studio-table">
+          <div tabindex="0" role="region" aria-label="Data table" style="overflow-x:auto;"><table class="studio-table">
             <thead>
               <tr>
                 <th>Sentence</th>
@@ -1526,7 +1526,7 @@
                 <td>You are describing how young children generally learn, not a single finished event in the past. Use Present Simple throughout.</td>
               </tr>
             </tbody>
-          </table>
+          </table></div>
         </div>
 
         <!-- Priority 4 -->
@@ -1536,7 +1536,7 @@
           <p class="explain-line">
             Notice these replacements are not showy dictionary words: they are short, everyday academic phrases that raise <strong>Communicative Achievement</strong> while cutting word count.
           </p>
-          <table class="studio-table">
+          <div tabindex="0" role="region" aria-label="Data table" style="overflow-x:auto;"><table class="studio-table">
             <thead>
               <tr>
                 <th>Spoken B1 in Your Draft</th>
@@ -1571,7 +1571,7 @@
                 <td>Natural paragraph transitions instead of numbered textbook labels.</td>
               </tr>
             </tbody>
-          </table>
+          </table></div>
         </div>
       </div>
 
@@ -2124,6 +2124,34 @@
       if (btn) btn.innerHTML = hidden ? '&#10024; Show Fix Highlights' : '&#10024; Hide Fix Highlights';
     }
   </script>
+
+<script>
+(function(){
+  if (window.__m4cKbdBound) return;
+  window.__m4cKbdBound = true;
+  document.addEventListener('keydown', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === 'Enter') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    } else if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    }
+  });
+})();
+</script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>
 </body>

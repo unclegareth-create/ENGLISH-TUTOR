@@ -44,7 +44,10 @@
       audioSrc: 'assets/audio/tts/prosody-02-ielts-part3-hedging.mp3',
       context: 'IELTS Part 3 Hedging • Impersonal Passive Reporting',
       limpB1: 'Everyone knows that social media makes teenagers less focused.',
-      targetKeys: ['WIDELY BELIEVED TO', 'ATTENTION SPAN'],
+      targetKeys: ['WIDELY BELIEVED TO', 'ATTENTION SPANS'],
+      keyVariants: {
+        'ATTENTION SPANS': ['attention spans', 'attention span']
+      },
       requiredMatches: ['widely believed to'],
       bonusMatches: ['attention span', 'attention spans', 'erode', 'algorithmic', 'adolescent'],
       modelC2: 'Algorithmic feeds are widely believed to erode adolescent attention spans.',
@@ -75,6 +78,9 @@
       context: 'Cleft Emphasis • Structural Contrast Pivot',
       limpB1: 'The main problem isn’t the budget, it’s the lack of clear leadership.',
       targetKeys: ['WHAT UNDERMINES'],
+      keyVariants: {
+        'WHAT UNDERMINES': ['what undermines', 'what truly undermines']
+      },
       requiredMatches: ['what undermines', 'what truly undermines'],
       bonusMatches: ['budgetary', 'constraint', 'decisive', 'leadership', 'is not'],
       modelC2: 'What truly undermines the project is not budgetary constraint, but a lack of decisive leadership.',
@@ -385,12 +391,12 @@
           ${DRILLS.map((d, idx) => `
             <button type="button" role="tab" id="prosody-tab-${idx}" aria-selected="${idx === 0 ? 'true' : 'false'}" data-drill-idx="${idx}"
               class="prosody-drill-tab ${idx === 0 ? 'is-active' : ''} text-left p-3 rounded-xl bg-slate-900/90 border border-slate-800 text-slate-300">
-              <div class="flex items-center justify-between text-xs text-sky-300 font-bold mb-1">
+              <span class="flex items-center justify-between text-xs text-sky-300 font-bold mb-1">
                 <span>Sentence ${d.num}</span>
                 <span class="text-amber-300">C1/C2</span>
-              </div>
-              <div class="text-xs font-extrabold text-white truncate">${d.context.split('•')[0].trim()}</div>
-              <div class="text-xs text-slate-400 truncate mt-0.5">${d.targetKeys[0]}</div>
+              </span>
+              <span class="block text-xs font-extrabold text-white truncate">${d.context.split('•')[0].trim()}</span>
+              <span class="block text-xs text-slate-400 truncate mt-0.5">${d.targetKeys[0]}</span>
             </button>
           `).join('')}
         </div>
@@ -1305,6 +1311,14 @@
     return new RegExp('(^|\\s)' + escaped + '(\\s|$)').test(haystack);
   }
 
+  function matchesTargetKey(drill, normText, key) {
+    const variants = drill.keyVariants && drill.keyVariants[key];
+    if (Array.isArray(variants) && variants.length > 0) {
+      return variants.some((v) => hasWholeTerm(normText, v));
+    }
+    return hasWholeTerm(normText, key);
+  }
+
   function evaluateCurrentAttempt(durationSec = 5.6) {
     const drill = getActiveDrill();
     const inputEl = document.getElementById('prosody-transcript-input');
@@ -1320,7 +1334,7 @@
 
     // 1. Check required target key presence with word boundaries (not raw substrings)
     const hasRequiredKey = drill.requiredMatches.some((req) => hasWholeTerm(normText, req));
-    const matchedAllKeys = drill.targetKeys.every((k) => hasWholeTerm(normText, k));
+    const matchedAllKeys = drill.targetKeys.every((k) => matchesTargetKey(drill, normText, k));
 
     // 2. Check grammatical structure & inversion order where required
     const syntaxCheck = checkDrillSyntaxOrder(drill, rawText, normText);

@@ -160,8 +160,11 @@
       .cursor, .shake { animation: none; }
     }
   </style>
+  <style>.skip-link{position:fixed;top:-100px;left:16px;z-index:9999;background:#0f172a;color:#fff;padding:8px 14px;border-radius:6px;font-weight:700;text-decoration:none;}.skip-link:focus{top:12px;}</style>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
 </head>
 <body>
+  <a class="skip-link" href="#game">Skip to content</a>
 
   <!-- 1. TOP BAR -->
   <header class="top-bar">
@@ -2363,9 +2366,9 @@
       const t = e.target, onBtn = t && t.closest && t.closest('button, a, input, select, textarea');
       const locked = performance.now() < S.inputLockUntil;
       if (k === 'Enter' || k === ' ') {
+        if (onBtn) return;
         if (locked) { e.preventDefault(); return; }
         if (TW.typing) { e.preventDefault(); completeTyping(); return; }
-        if (onBtn) return;
         if (TW.queue.length) { e.preventDefault(); nextPage(); return; }
         if (S.phase === 'result_ok' || S.phase === 'dice_done') { e.preventDefault(); advanceScene(); return; }
         if (S.phase === 'dice') { e.preventDefault(); rollHazardCheck(); }

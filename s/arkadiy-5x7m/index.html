@@ -401,14 +401,8 @@
       font-weight: 800;
     }
 
-    .rules-trio {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border-hairline);
-    }
+    
+    @media (max-width: 640px) { .rules-trio { grid-template-columns: 1fr; } }
 
     .rule-item {
       font-size: 0.74rem;
@@ -484,7 +478,7 @@
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 16px;
       margin-bottom: 32px;
     }
@@ -860,12 +854,14 @@
       background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(14, 165, 233, 0.16));
       border: 1px solid rgba(56, 189, 248, 0.35);
       color: var(--navy-800);
-      white-space: nowrap;
+      white-space: normal;
+      max-width: 100%;
+      line-height: 1.3;
     }
 
     .vs-search-wrap {
       flex: 1;
-      min-width: 240px;
+      min-width: min(100%, 240px);
       position: relative;
     }
 
@@ -925,6 +921,17 @@
 
     @media (max-width: 860px) {
       .vs-nav-dock { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .vs-nav-dock { grid-template-columns: 1fr; }
+      .rules-trio { grid-template-columns: 1fr !important; }
+      .cards-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)) !important; }
+      .hero-meta-cluster, .nav-actions, .section-head { flex-wrap: wrap !important; }
+      .portal-hero { padding: 20px 18px !important; }
+      .container { padding: 0 12px !important; }
+      .formula-blueprint, .syntax-code { overflow-wrap: anywhere; max-width: 100%; }
+      .meta-box { text-align: left !important; }
     }
 
     .vs-dock-tab {
@@ -1292,7 +1299,7 @@
 <!-- VISUAL-STUDIO-DOCK-END -->
 <!-- ACTIVE-LESSON-SPOTLIGHT-START -->
     <section class="lesson-spotlight-card" style="background:var(--surface-card); border:1.5px solid var(--border-strong); border-left:4px solid var(--emerald); border-radius:12px; padding:22px 26px; margin-bottom:24px; box-shadow:var(--shadow-card); display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap;">
-      <div style="flex:1; min-width:280px;">
+      <div style="flex:1; min-width:min(100%, 280px);">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
           <span class="badge-pill badge-emerald">&#128640; TODAY'S ACTIVE LESSON &bull; THU 12 NOV 2026 (16:00 UK)</span>
           <span style="font-size:0.75rem; font-family:var(--font-mono); color:var(--ink-500);">Physical Computing, Automata &amp; C1 Cleft Sentences</span>
@@ -1710,7 +1717,7 @@
           <span>&#128218; View Complete Historical Archive (73 Total Lessons Taught)</span>
           <span style="font-size:0.75rem; background:var(--navy-100); color:var(--navy-800); padding:2px 8px; border-radius:999px;">Click to Collapse / Expand &darr;</span>
         </summary>
-        <div style="margin-top:12px; max-height:480px; overflow-y:auto; border-top:1px solid var(--border-hairline); padding-top:10px;">
+        <div tabindex="0" role="region" aria-label="Complete historical lesson archive" style="margin-top:12px; max-height:480px; overflow-x:auto; overflow-y:auto; border-top:1px solid var(--border-hairline); padding-top:10px;">
           <table style="width:100%; border-collapse:collapse; font-size:0.84rem;">
             <thead>
               <tr style="font-size:0.72rem; text-transform:uppercase; color:var(--ink-500); letter-spacing:0.04em; background:var(--surface-card);">
@@ -2387,7 +2394,6 @@
         document.documentElement.setAttribute('data-theme', savedTheme);
       }
       renderCustomResources();
-      renderRepairTable_arkadiy_d();
     })();
     const DEFAULT_ROWS_arkadiy_d = [
     {
@@ -2587,6 +2593,7 @@
         renderRepairTable_arkadiy_d();
       }
     }
+      renderRepairTable_arkadiy_d();
   </script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>

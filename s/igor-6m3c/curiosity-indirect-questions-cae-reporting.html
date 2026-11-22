@@ -2014,7 +2014,7 @@
           <button class="filter-pill" onclick="highlightPattern('subj', this)">Verb + that + Bare Inf</button>
         </div>
 
-        <table class="pattern-table" id="pattern-table">
+        <div tabindex="0" role="region" aria-label="Data table" style="overflow-x:auto;"><table class="pattern-table" id="pattern-table">
           <thead>
             <tr>
               <th>Verb Pattern</th>
@@ -2049,7 +2049,7 @@
               <td>Peter <strong>suggested that Mary try</strong> on the jacket.</td>
             </tr>
           </tbody>
-        </table>
+        </table></div>
       </div>
 
       <div class="card">
@@ -2831,7 +2831,7 @@
     function wrapEchoWords(text) {
       return text.split(/(\s+)/).map(tok => {
         if (/^\s+$/.test(tok)) return tok;
-        return `<span class="echo-word" onclick="this.classList.toggle('struck')">${tok}</span>`;
+        return `<span class="echo-word" onclick="this.classList.toggle('struck')" role="button" tabindex="0">${tok}</span>`;
       }).join('');
     }
 
@@ -3016,6 +3016,34 @@
       refreshScorecard();
     }
   </script>
+
+<script>
+(function(){
+  if (window.__m4cKbdBound) return;
+  window.__m4cKbdBound = true;
+  document.addEventListener('keydown', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === 'Enter') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    } else if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    }
+  });
+})();
+</script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>
 </body>

@@ -356,7 +356,7 @@
           <div class="text-[11px] font-mono uppercase text-amber-400 mb-1">Item ${idx + 1}</div>
           <div class="text-sm text-slate-200">${c.orig}</div>
         </div>
-        <div class="reveal-box bg-slate-900 border border-emerald-500/30 rounded-lg p-3" onclick="this.classList.add('revealed')">
+        <div class="reveal-box bg-slate-900 border border-emerald-500/30 rounded-lg p-3" onclick="this.classList.add('revealed')" role="button" tabindex="0">
           <div class="text-sm text-emerald-300">${c.fix}</div>
           <div class="text-xs text-slate-400 mt-1">${c.why}</div>
         </div>
@@ -380,6 +380,34 @@
       document.querySelectorAll('.reveal-box').forEach(b => b.classList.add('revealed'));
     }
   </script>
+
+<script>
+(function(){
+  if (window.__m4cKbdBound) return;
+  window.__m4cKbdBound = true;
+  document.addEventListener('keydown', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === 'Enter') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    } else if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    }
+  });
+})();
+</script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>
 </body>

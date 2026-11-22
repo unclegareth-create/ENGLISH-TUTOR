@@ -1250,8 +1250,10 @@
       color: #a7f3d0;
     }
   </style>
+  <style>.skip-link{position:fixed;top:-100px;left:16px;z-index:9999;background:#0f172a;color:#fff;padding:8px 14px;border-radius:6px;font-weight:700;text-decoration:none;}.skip-link:focus{top:12px;}</style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- WebGL 3D Canvas -->
   <canvas id="webgl-canvas" role="img" aria-label="3D crypt: an altar with sentence slots and floating word runes. Use the rune buttons and slot buttons below to play with a keyboard or screen reader."></canvas>
@@ -1312,6 +1314,7 @@
         </div>
       </header>
 
+      <main id="main" style="display:contents">
       <!-- Boss Arena Notice -->
       <div class="boss-arena-hud interactive-element" id="bossArenaHud">
         <div class="boss-name" id="bossName">Boss Encounter</div>
@@ -1330,6 +1333,7 @@
       </section>
 
       <div class="feedback-strip" id="feedback" role="status" aria-live="polite"></div>
+      </main>
     </div>
 
     <!-- Bottom Tray -->
@@ -2464,8 +2468,8 @@
         card.type = 'button';
         card.dataset.relicKey = String(k);
         card.className = 'relic-item-card' + (unlocked ? '' : ' locked');
-        const em = document.createElement('div'); em.className = 'relic-emoji'; em.textContent = m.emoji; em.setAttribute('aria-hidden', 'true');
-        const det = document.createElement('div'); det.className = 'relic-details';
+        const em = document.createElement('span'); em.className = 'relic-emoji'; em.textContent = m.emoji; em.setAttribute('aria-hidden', 'true');
+        const det = document.createElement('span'); det.className = 'relic-details';
         const st = document.createElement('strong'); st.textContent = m.name;
         const sp = document.createElement('span'); sp.textContent = unlocked ? m.desc : `Floor ${parseInt(k, 10) + 1} Relic · Click to inspect blueprint`;
         det.append(st, sp); card.append(em, det);
@@ -2500,11 +2504,11 @@
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'map-floor-btn' + (isCurr ? ' current' : '') + (cleared ? ' cleared' : '') + (fl.boss ? ' boss-node' : '');
-          const top = document.createElement('div');
+          const top = document.createElement('span');
           top.className = 'map-floor-top';
           const badge = stars > 0 ? ' ' + '★'.repeat(stars) : (cleared ? ' ✓' : '');
           top.textContent = `F${f + 1} · ${fl.cefr}` + (fl.boss ? ' 💀' : '') + badge;
-          const name = document.createElement('div');
+          const name = document.createElement('span');
           name.className = 'map-floor-title';
           name.textContent = fl.title;
           btn.append(top, name);

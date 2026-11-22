@@ -669,11 +669,11 @@
       </p>
 
       <div class="groups-row">
-        <div class="group-chip" onclick="this.classList.toggle('selected')">your family</div>
-        <div class="group-chip" onclick="this.classList.toggle('selected')">your colleagues</div>
-        <div class="group-chip" onclick="this.classList.toggle('selected')">your friends</div>
-        <div class="group-chip" onclick="this.classList.toggle('selected')">your neighbours</div>
-        <div class="group-chip" onclick="this.classList.toggle('selected')">your classmates</div>
+        <div class="group-chip" onclick="this.classList.toggle('selected')" role="button" tabindex="0">your family</div>
+        <div class="group-chip" onclick="this.classList.toggle('selected')" role="button" tabindex="0">your colleagues</div>
+        <div class="group-chip" onclick="this.classList.toggle('selected')" role="button" tabindex="0">your friends</div>
+        <div class="group-chip" onclick="this.classList.toggle('selected')" role="button" tabindex="0">your neighbours</div>
+        <div class="group-chip" onclick="this.classList.toggle('selected')" role="button" tabindex="0">your classmates</div>
       </div>
 
       <ul style="margin:0.5rem 0 0 1.25rem; color:var(--ink-800); font-size:0.95rem;">
@@ -963,14 +963,14 @@
       </div>
 
       <div class="scenarios-grid">
-        <div class="scenario-box" onclick="this.classList.toggle('picked')">You wear the same colour or a very similar outfit as someone else at work without planning it.</div>
-        <div class="scenario-box" onclick="this.classList.toggle('picked')">You predict that two friends will break up. They do two weeks later.</div>
-        <div class="scenario-box" onclick="this.classList.toggle('picked')">You think about pizza at lunchtime and then see three pizza ads online.</div>
-        <div class="scenario-box" onclick="this.classList.toggle('picked')">You have a bad feeling before getting on a plane. The flight experiences severe turbulence.</div>
-        <div class="scenario-box" onclick="this.classList.toggle('picked')">Three members of the same family independently buy each other the same present for Christmas.</div>
-        <div class="scenario-box" onclick="this.classList.toggle('picked')">You meet someone at a conference who went to your university.</div>
-        <div class="scenario-box" onclick="this.classList.toggle('picked')">You discover that three people in your English class have the same name.</div>
-        <div class="scenario-box" onclick="this.classList.toggle('picked')">You meet a stranger on holiday abroad and discover that you live in the same neighbourhood.</div>
+        <div class="scenario-box" onclick="this.classList.toggle('picked')" role="button" tabindex="0">You wear the same colour or a very similar outfit as someone else at work without planning it.</div>
+        <div class="scenario-box" onclick="this.classList.toggle('picked')" role="button" tabindex="0">You predict that two friends will break up. They do two weeks later.</div>
+        <div class="scenario-box" onclick="this.classList.toggle('picked')" role="button" tabindex="0">You think about pizza at lunchtime and then see three pizza ads online.</div>
+        <div class="scenario-box" onclick="this.classList.toggle('picked')" role="button" tabindex="0">You have a bad feeling before getting on a plane. The flight experiences severe turbulence.</div>
+        <div class="scenario-box" onclick="this.classList.toggle('picked')" role="button" tabindex="0">Three members of the same family independently buy each other the same present for Christmas.</div>
+        <div class="scenario-box" onclick="this.classList.toggle('picked')" role="button" tabindex="0">You meet someone at a conference who went to your university.</div>
+        <div class="scenario-box" onclick="this.classList.toggle('picked')" role="button" tabindex="0">You discover that three people in your English class have the same name.</div>
+        <div class="scenario-box" onclick="this.classList.toggle('picked')" role="button" tabindex="0">You meet a stranger on holiday abroad and discover that you live in the same neighbourhood.</div>
       </div>
     </section>
 
@@ -1154,5 +1154,33 @@
   </script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>
+
+<script>
+(function(){
+  if (window.__m4cKbdBound) return;
+  window.__m4cKbdBound = true;
+  document.addEventListener('keydown', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === 'Enter') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    } else if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    }
+  });
+})();
+</script>
 </body>
 </html>

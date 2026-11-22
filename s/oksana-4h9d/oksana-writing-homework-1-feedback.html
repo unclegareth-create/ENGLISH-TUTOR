@@ -367,7 +367,7 @@
             <textarea rows="2" placeholder="Type your corrected sentence here..." class="w-full rounded-lg bg-slate-950 border border-slate-800 px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-amber-400"></textarea>
           </td>
           <td class="py-3.5 px-3">
-            <div onclick="this.classList.toggle('revealed')" title="Click to reveal model answer" class="reveal-box rounded-lg bg-emerald-500/10 border border-emerald-500/30 p-2.5 text-emerald-300 font-medium leading-relaxed">
+            <div onclick="this.classList.toggle('revealed')" title="Click to reveal model answer" class="reveal-box rounded-lg bg-emerald-500/10 border border-emerald-500/30 p-2.5 text-emerald-300 font-medium leading-relaxed" role="button" tabindex="0">
               ${item.model}
             </div>
           </td>
@@ -411,5 +411,33 @@
   </script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>
+
+<script>
+(function(){
+  if (window.__m4cKbdBound) return;
+  window.__m4cKbdBound = true;
+  document.addEventListener('keydown', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === 'Enter') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    } else if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    }
+  });
+})();
+</script>
 </body>
 </html>

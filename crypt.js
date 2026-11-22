@@ -632,7 +632,7 @@
                 + (bossInfo ? ' boss-floor' : '');
             btn.dataset.floorIdx = String(idx);
 
-            const top = document.createElement('div');
+            const top = document.createElement('span');
             top.className = 'floor-card-top';
             const num = document.createElement('span');
             num.className = 'floor-card-num';
@@ -642,11 +642,11 @@
             cefr.textContent = fl.cefr;
             top.append(num, cefr);
 
-            const title = document.createElement('div');
+            const title = document.createElement('span');
             title.className = 'floor-card-title';
             title.textContent = fl.title;
 
-            const meta = document.createElement('div');
+            const meta = document.createElement('span');
             meta.className = 'floor-card-meta';
             const starsCount = Math.min(3, Math.max(0, Number((state.floorStars && state.floorStars[idx]) || 0)));
             const starsEl = document.createElement('span');

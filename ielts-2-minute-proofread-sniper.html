@@ -34,9 +34,8 @@
   }
   </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
   <style>
     :root {
       --bg: #f5f3ef;
@@ -60,7 +59,7 @@
       --amber: #b45309;
       --amber-soft: #fffbeb;
       --amber-border: #fde68a;
-      --font-display: 'Fraunces', Georgia, serif;
+      --font-display: 'Playfair Display', 'EB Garamond', Georgia, serif;
       --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --radius: 14px;
@@ -79,7 +78,7 @@
       padding-bottom: 64px;
     }
 
-    :where(a, button, summary, input):focus-visible {
+    :where(a, button, summary, input, [tabindex="0"]):focus-visible {
       outline: 3px solid var(--blue);
       outline-offset: 3px;
     }
@@ -164,10 +163,13 @@
       margin: 0 auto;
       padding: 28px 20px 0;
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
       gap: 24px;
     }
+    .container > * { min-width: 0; }
 
     .card {
+      min-width: 0;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -299,11 +301,12 @@
     /* HUD */
     .hud {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
       gap: 12px;
       margin-bottom: 16px;
     }
     .hud-box {
+      min-width: 0;
       background: var(--surface-soft);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -483,11 +486,12 @@
     }
     .fix-options {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
       gap: 10px;
       margin-top: 10px;
     }
     .opt-btn {
+      min-width: 0;
       font-family: var(--font-sans);
       font-size: 0.94rem;
       font-weight: 700;
@@ -544,11 +548,12 @@
 
     .summary-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
       gap: 12px;
       margin: 16px 0;
     }
     .summary-stat {
+      min-width: 0;
       background: var(--surface-soft);
       border: 1px solid var(--border);
       border-radius: 10px;
@@ -556,7 +561,10 @@
     }
 
     /* Error Map Table */
-    .table-wrap { overflow-x: auto; }
+    .table-wrap {
+      overflow-x: auto;
+      max-inline-size: 100%;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -604,11 +612,12 @@
     /* Speaking Part 2 Bonus */
     .rule-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
       gap: 14px;
       margin: 16px 0 22px;
     }
     .rule-card {
+      min-width: 0;
       background: var(--surface-soft);
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -668,6 +677,7 @@
       justify-content: space-between;
       gap: 18px;
     }
+    .cta-card > * { min-width: 0; }
     .cta-card h2 { color: #ffffff; margin-bottom: 6px; }
     .cta-card p { color: #cbd5e1; margin: 0; max-width: 60ch; font-size: 0.94rem; }
     .cta-actions { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -849,9 +859,9 @@
         Most candidates assume they need rarer vocabulary to break past Band 6.5. In the cold light of day, fixing these five surface habits does far more for your score.
       </p>
 
-      <div class="table-wrap">
+      <div class="table-wrap" tabindex="0" role="region" aria-labelledby="error-map-caption">
         <table>
-          <caption>Five highest-impact IELTS Writing proofreading targets</caption>
+          <caption id="error-map-caption">Five highest-impact IELTS Writing proofreading targets</caption>
           <thead>
             <tr>
               <th scope="col">Rank &amp; Habit</th>

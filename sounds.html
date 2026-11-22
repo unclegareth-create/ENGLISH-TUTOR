@@ -8,6 +8,7 @@
   <meta name="robots" content="noindex, follow" />
   <meta name="description" content="Master British English C1 connected speech, intrusive liaison, elision, nuclear stress on cleft sentences and negative inversions, and academic syllable stress shifts at the Belfast Desk." />
   <meta name="theme-color" content="#1c1613" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c1613'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='36' fill='%23d4af37'%3EG%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="assets/fonts/fonts.css" />
   <style>
     :root {
@@ -560,14 +561,18 @@
     }
     .audio-player-top {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 0.35rem;
       font-family: var(--font-mono);
       font-size: 0.74rem;
       color: var(--accent-gold-bright);
     }
     .audio-player-wrap audio {
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
       height: 38px;
     }
     .shadow-bar {
@@ -799,9 +804,66 @@
       color: var(--accent-gold-bright);
       text-decoration: none;
     }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+    }
+    .skip-link:focus {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 999;
+      background: var(--bg-mahogany);
+      color: var(--accent-gold-bright);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 2px solid var(--accent-gold-bright);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .hero-inner > *,
+    .audio-deck-card,
+    .metronome-grid > *,
+    .quiz-card {
+      min-width: 0;
+    }
+    .metro-header-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 0.85rem;
+    }
+    .metro-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      max-width: 100%;
+    }
+    #metro-pattern {
+      max-width: 100%;
+      min-width: 0;
+      white-space: normal;
+    }
+    .quiz-card .audio-player-wrap {
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 520px) {
+      .beat-lamps {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .metronome-panel {
+        padding: 1.25rem;
+      }
+      .quiz-card {
+        padding: 1.15rem;
+      }
+    }
   </style>
 </head>
 <body class="show-stress">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
   <!-- Top Navigation -->
   <header class="studio-topbar">
@@ -853,7 +915,7 @@
           <span>PROSODIC CONTOUR · WH-CLEFT FOCUS</span>
           <span>[↘↗ ─── ↘]</span>
         </div>
-        <svg viewBox="0 0 420 120" width="100%" height="120" role="img" aria-label="Intonation pitch curve showing fall-rise on the Wh-clause and decisive nuclear fall on syntactic control">
+        <svg viewBox="0 0 420 120" width="100%" height="120" style="max-width:100%;height:auto;" role="img" aria-label="Intonation pitch curve showing fall-rise on the Wh-clause and decisive nuclear fall on syntactic control">
           <rect width="420" height="120" rx="8" fill="#1e1714" />
           <line x1="20" y1="35" x2="400" y2="35" stroke="rgba(212,175,55,0.15)" stroke-dasharray="4 4" />
           <line x1="20" y1="65" x2="400" y2="65" stroke="rgba(212,175,55,0.15)" stroke-dasharray="4 4" />
@@ -873,7 +935,7 @@
     </div>
   </section>
 
-  <main class="studio-container">
+  <main id="main-content" class="studio-container">
 
     <!-- SECTION 1: ACTIVE VOICE FIRST SPEAKING WARM-UP -->
     <section id="warmup-section" aria-labelledby="warmup-heading">
@@ -1176,13 +1238,13 @@
       <div class="metronome-panel">
         <div class="metronome-grid">
           <div>
-            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <div class="metro-header-row">
               <div>
                 <span style="font-family:var(--font-mono);font-size:0.76rem;color:#cbbba0;text-transform:uppercase;">Stress-Group Tempo</span>
                 <div class="bpm-display"><span id="bpm-val">88</span> <small style="font-size:1rem;font-weight:400;">BPM</small></div>
               </div>
-              <div style="display:flex;gap:0.6rem;">
-                <button type="button" class="btn btn-primary" id="btn-metro-toggle">▶ Start Metronome</button>
+              <div class="metro-controls">
+                <button type="button" class="btn btn-primary" id="btn-metro-toggle" aria-pressed="false">▶ Start Metronome</button>
                 <select id="metro-pattern" class="btn" style="background:#2a211d;color:#f7f3eb;border-color:rgba(212,175,55,0.4);">
                   <option value="4">4-Beat Academic Clause (STRONG - weak - Med - weak)</option>
                   <option value="3">3-Beat Cleft Cadence (STRONG - weak - NUCLEAR)</option>
@@ -1257,7 +1319,7 @@
           <strong style="font-family:var(--font-serif);font-size:1.25rem;">Live Studio Score: <span id="quiz-score-val">0</span> / 10</strong>
           <span style="display:block;font-size:0.85rem;color:var(--ink-secondary);">Select an option to test your ear, or open the Cambridge Model drawer to inspect the phonetic rule.</span>
         </div>
-        <div style="display:flex;gap:0.6rem;">
+        <div style="display:flex;flex-wrap:wrap;gap:0.6rem;">
           <button type="button" class="btn" id="btn-reveal-all-quiz">👁️ Reveal All 10 Models</button>
           <button type="button" class="btn" id="btn-reset-quiz">↺ Reset Workout</button>
         </div>
@@ -1267,6 +1329,13 @@
         <article class="quiz-card" data-quiz-id="1">
           <div class="quiz-meta"><span>ITEM 01 / 10</span><span>Intrusive /r/ Liaison</span></div>
           <h3 class="quiz-prompt">In rapid British academic delivery of “The idea of it is that law and order must go on”, where does an intrusive /r/ naturally appear?</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 01 · sounds-quiz-01-intrusive-r.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-01-intrusive-r.mp3" aria-label="Listen to Quiz Item 1 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">Between “idea‿of” (/aɪˈdɪə.r‿əv/) and “law‿and” (/ˈlɔː.r‿ənd/)</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">Between “must‿go” (/mʌst.r‿ɡəʊ/)</button>
@@ -1283,6 +1352,13 @@
         <article class="quiz-card" data-quiz-id="2">
           <div class="quiz-meta"><span>ITEM 02 / 10</span><span>Bilabial /w/ Liaison</span></div>
           <h3 class="quiz-prompt">Which connected glide links the two vowels in “must go on” (/ˈɡəʊ ɒn/) in natural British speech?</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 02 · sounds-quiz-02-bilabial-w.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-02-bilabial-w.mp3" aria-label="Listen to Quiz Item 2 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">A linking /w/ glide: /ˈɡəʊ.w‿ɒn/</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">A palatal /j/ glide: /ˈɡəʊ.j‿ɒn/</button>
@@ -1299,6 +1375,13 @@
         <article class="quiz-card" data-quiz-id="3">
           <div class="quiz-meta"><span>ITEM 03 / 10</span><span>Alveolar Plosive Elision</span></div>
           <h3 class="quiz-prompt">In the clause “postpone the next meeting”, why do native speakers pronounce “next meeting” as /ˈneks ˈmiː.tɪŋ/?</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 03 · sounds-quiz-03-plosive-elision.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-03-plosive-elision.mp3" aria-label="Listen to Quiz Item 3 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">Alveolar /t/ elides when trapped between two consonants (/ks/ + /t/ + /m/)</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">The word “next” has a silent “t” in dictionary citation form</button>
@@ -1315,6 +1398,13 @@
         <article class="quiz-card" data-quiz-id="4">
           <div class="quiz-meta"><span>ITEM 04 / 10</span><span>Wh-Cleft Nuclear Stress</span></div>
           <h3 class="quiz-prompt">In the Wh-cleft “What really unravels a weak paragraph is the lack of syntactic control”, how should your pitch behave?</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 04 · sounds-quiz-04-cleft-nuclear.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-04-cleft-nuclear.mp3" aria-label="Listen to Quiz Item 4 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">Fall-rise (↘↗) on “paragraph”, followed by decisive nuclear fall (↘) on “syntactic control”</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">Flat monotone throughout, rising sharply at the full stop</button>
@@ -1331,6 +1421,13 @@
         <article class="quiz-card" data-quiz-id="5">
           <div class="quiz-meta"><span>ITEM 05 / 10</span><span>Negative Inversion Tonic Stress</span></div>
           <h3 class="quiz-prompt">When you open a sentence with “Seldom have examiners witnessed…”, how do you signal the inversion vocally?</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 05 · sounds-quiz-05-inversion-stress.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-05-inversion-stress.mp3" aria-label="Listen to Quiz Item 5 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">Place emphatic tonic pitch on “SELDOM” (/ˈsel.dəm/) with a micro-pause before the auxiliary “have”</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">Stress “HAVE” as strongly as possible while rushing past “seldom”</button>
@@ -1347,6 +1444,13 @@
         <article class="quiz-card" data-quiz-id="6">
           <div class="quiz-meta"><span>ITEM 06 / 10</span><span>Participle Clause Boundary Rhythm</span></div>
           <h3 class="quiz-prompt">In “Having dismantled the template, the candidate wrote with genuine authority”, what happens at the comma after “template”?</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 06 · sounds-quiz-06-participle-boundary.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-06-participle-boundary.mp3" aria-label="Listen to Quiz Item 6 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">A continuation rise (↗) on “template” followed by a clean pause before “the candidate”</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">A full terminal drop (↘) as if the sentence has ended</button>
@@ -1363,6 +1467,13 @@
         <article class="quiz-card" data-quiz-id="7">
           <div class="quiz-meta"><span>ITEM 07 / 10</span><span>C1 Stress Shift · RECORD</span></div>
           <h3 class="quiz-prompt">Choose the accurate British IPA contrast between “a detailed record” (noun) and “to record the data” (verb):</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 07 · sounds-quiz-07-record-shift.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-07-record-shift.mp3" aria-label="Listen to Quiz Item 7 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">Noun: /ˈrek.ɔːd/ (first-syllable stress) · Verb: /rɪˈkɔːd/ (second-syllable stress)</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">Noun: /rɪˈkɔːd/ · Verb: /ˈrek.ɔːd/</button>
@@ -1379,6 +1490,13 @@
         <article class="quiz-card" data-quiz-id="8">
           <div class="quiz-meta"><span>ITEM 08 / 10</span><span>C1 Stress Shift · ATTRIBUTE</span></div>
           <h3 class="quiz-prompt">How does the vowel in the first syllable change between the noun “a leadership attribute” and the verb “to attribute success to hard work”?</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 08 · sounds-quiz-08-attribute-shift.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-08-attribute-shift.mp3" aria-label="Listen to Quiz Item 8 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">Noun uses full /ˈæt.rɪ.bjuːt/; Verb reduces the first syllable to schwa /əˈtrɪb.juːt/</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">Both begin with a stressed /ˈæt/ syllable</button>
@@ -1395,6 +1513,13 @@
         <article class="quiz-card" data-quiz-id="9">
           <div class="quiz-meta"><span>ITEM 09 / 10</span><span>C1 Stress Shift · PROJECT</span></div>
           <h3 class="quiz-prompt">In the sentence “This research project is designed to project long-term trends”, which stress pattern is correct?</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 09 · sounds-quiz-09-project-shift.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-09-project-shift.mp3" aria-label="Listen to Quiz Item 9 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">PROject (/ˈprɒdʒ.ekt/) for the noun, followed by proJECT (/prəˈdʒekt/) for the verb</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">proJECT for the noun, followed by PROject for the verb</button>
@@ -1411,6 +1536,13 @@
         <article class="quiz-card" data-quiz-id="10">
           <div class="quiz-meta"><span>ITEM 10 / 10</span><span>Weak Form Reduction in C1 Clauses</span></div>
           <h3 class="quiz-prompt">In “the lack of syntactic control”, how are the function words “the” and “of” pronounced in natural British prosody?</h3>
+          <div class="audio-player-wrap">
+            <div class="audio-player-top">
+              <span>🎧 QUIZ AUDIO 10 · sounds-quiz-10-weak-forms.mp3</span>
+              <span>EN-GB NEURAL STUDIO</span>
+            </div>
+            <audio controls preload="metadata" src="assets/audio/tts/sounds-quiz-10-weak-forms.mp3" aria-label="Listen to Quiz Item 10 audio example"></audio>
+          </div>
           <div class="quiz-options">
             <button type="button" class="quiz-opt-btn" data-idx="0" data-correct="true">Reduced weak forms with schwa: /ðə læk əv sɪnˈtæk.tɪk kənˈtrəʊl/</button>
             <button type="button" class="quiz-opt-btn" data-idx="1">Full citation vowels: /ðiː læk ɒv sɪnˈtæk.tɪk kənˈtrəʊl/</button>
@@ -1590,25 +1722,35 @@
       });
 
       const speedSelect = document.getElementById('global-speed-select');
+      function applyGlobalPlaybackRate(aud) {
+        const rate = parseFloat(speedSelect.value) || 1;
+        if (aud) {
+          aud.defaultPlaybackRate = rate;
+          aud.playbackRate = rate;
+        }
+      }
       speedSelect.addEventListener('change', () => {
         const rate = parseFloat(speedSelect.value) || 1;
         document.querySelectorAll('audio').forEach((aud) => {
+          aud.defaultPlaybackRate = rate;
           aud.playbackRate = rate;
         });
       });
 
       document.querySelectorAll('.btn-shadow-start').forEach((btn) => {
         let shadowTimer = null;
+        const secAttr = parseInt(btn.getAttribute('data-seconds') || '20', 10) || 20;
+        const defaultStartLabel = `🎙️ Start ${secAttr}s Shadowing Drill`;
         btn.addEventListener('click', () => {
           const statusEl = btn.parentElement.querySelector('.shadow-status');
           if (shadowTimer) {
             clearInterval(shadowTimer);
             shadowTimer = null;
-            btn.textContent = '🎙️ Start 20s Shadowing Drill';
+            btn.textContent = defaultStartLabel;
             statusEl.textContent = 'Ready to shadow';
             return;
           }
-          let sec = parseInt(btn.getAttribute('data-seconds') || '20', 10);
+          let sec = secAttr;
           playBellChime(587.33, 0.25);
           btn.textContent = '⏹ Stop Shadowing';
           statusEl.textContent = `🎙️ Shadowing aloud: ${sec}s remaining...`;
@@ -1686,8 +1828,16 @@
         if (metroInterval) restartMetronomeLoop();
       });
 
+      function syncMetroLampVisibility() {
+        const patternCount = parseInt(metroPattern.value, 10) || 4;
+        lamps.forEach((lamp, idx) => {
+          lamp.style.display = idx < patternCount ? 'block' : 'none';
+        });
+      }
+
       metroPattern.addEventListener('change', () => {
         currentBeat = 0;
+        syncMetroLampVisibility();
         if (metroInterval) stepMetronome();
       });
 
@@ -1696,6 +1846,7 @@
           clearInterval(metroInterval);
           metroInterval = null;
           metroBtn.textContent = '▶ Start Metronome';
+          metroBtn.setAttribute('aria-pressed', 'false');
           lamps.forEach((l) => l.classList.remove('active-strong', 'active-weak'));
         } else {
           currentBeat = 0;
@@ -1703,6 +1854,7 @@
           const bpm = parseInt(bpmSlider.value, 10) || 88;
           metroInterval = setInterval(stepMetronome, Math.round(60000 / bpm));
           metroBtn.textContent = '⏹ Stop Metronome';
+          metroBtn.setAttribute('aria-pressed', 'true');
         }
       });
 
@@ -1712,6 +1864,8 @@
       const quizItems = [
         {
           id: 1,
+          audio: 'assets/audio/tts/sounds-quiz-01-intrusive-r.mp3',
+          audioFile: 'sounds-quiz-01-intrusive-r.mp3',
           category: 'Intrusive /r/ Liaison',
           prompt: 'In rapid British academic delivery of “The idea of it is that law and order must go on”, where does an intrusive /r/ naturally appear?',
           options: [
@@ -1724,6 +1878,8 @@
         },
         {
           id: 2,
+          audio: 'assets/audio/tts/sounds-quiz-02-bilabial-w.mp3',
+          audioFile: 'sounds-quiz-02-bilabial-w.mp3',
           category: 'Bilabial /w/ Liaison',
           prompt: 'Which connected glide links the two vowels in “must go on” (/ˈɡəʊ ɒn/) in natural British speech?',
           options: [
@@ -1736,6 +1892,8 @@
         },
         {
           id: 3,
+          audio: 'assets/audio/tts/sounds-quiz-03-plosive-elision.mp3',
+          audioFile: 'sounds-quiz-03-plosive-elision.mp3',
           category: 'Alveolar Plosive Elision',
           prompt: 'In the clause “postpone the next meeting”, why do native speakers pronounce “next meeting” as /ˈneks ˈmiː.tɪŋ/?',
           options: [
@@ -1744,10 +1902,12 @@
             'Only informal slang drops the /t/'
           ],
           correct: 0,
-          model: 'In standard C1/C2 connected speech, medial <code>/t/</code> and <code>/d/</code> routinely elide between consonant clusters (<code>post(t)pone</code>, <code>nex(t) meeting</code>) so the speaker preserves stress-timed rhythm without robotic consonantrelease.'
+          model: 'In standard C1/C2 connected speech, medial <code>/t/</code> and <code>/d/</code> routinely elide between consonant clusters (<code>pos(t)pone</code>, <code>nex(t) meeting</code>) so the speaker preserves stress-timed rhythm without robotic consonant release.'
         },
         {
           id: 4,
+          audio: 'assets/audio/tts/sounds-quiz-04-cleft-nuclear.mp3',
+          audioFile: 'sounds-quiz-04-cleft-nuclear.mp3',
           category: 'Wh-Cleft Nuclear Stress',
           prompt: 'In the Wh-cleft “What really unravels a weak paragraph is the lack of syntactic control”, how should your pitch behave?',
           options: [
@@ -1760,6 +1920,8 @@
         },
         {
           id: 5,
+          audio: 'assets/audio/tts/sounds-quiz-05-inversion-stress.mp3',
+          audioFile: 'sounds-quiz-05-inversion-stress.mp3',
           category: 'Negative Inversion Tonic Stress',
           prompt: 'When you open a sentence with “Seldom have examiners witnessed…”, how do you signal the inversion vocally?',
           options: [
@@ -1772,6 +1934,8 @@
         },
         {
           id: 6,
+          audio: 'assets/audio/tts/sounds-quiz-06-participle-boundary.mp3',
+          audioFile: 'sounds-quiz-06-participle-boundary.mp3',
           category: 'Participle Clause Boundary Rhythm',
           prompt: 'In “Having dismantled the template, the candidate wrote with genuine authority”, what happens at the comma after “template”?',
           options: [
@@ -1784,6 +1948,8 @@
         },
         {
           id: 7,
+          audio: 'assets/audio/tts/sounds-quiz-07-record-shift.mp3',
+          audioFile: 'sounds-quiz-07-record-shift.mp3',
           category: 'C1 Stress Shift · RECORD',
           prompt: 'Choose the accurate British IPA contrast between “a detailed record” (noun) and “to record the data” (verb):',
           options: [
@@ -1796,6 +1962,8 @@
         },
         {
           id: 8,
+          audio: 'assets/audio/tts/sounds-quiz-08-attribute-shift.mp3',
+          audioFile: 'sounds-quiz-08-attribute-shift.mp3',
           category: 'C1 Stress Shift · ATTRIBUTE',
           prompt: 'How does the vowel in the first syllable change between the noun “a leadership attribute” and the verb “to attribute success to hard work”?',
           options: [
@@ -1808,6 +1976,8 @@
         },
         {
           id: 9,
+          audio: 'assets/audio/tts/sounds-quiz-09-project-shift.mp3',
+          audioFile: 'sounds-quiz-09-project-shift.mp3',
           category: 'C1 Stress Shift · PROJECT',
           prompt: 'In the sentence “This research project is designed to project long-term trends”, which stress pattern is correct?',
           options: [
@@ -1820,6 +1990,8 @@
         },
         {
           id: 10,
+          audio: 'assets/audio/tts/sounds-quiz-10-weak-forms.mp3',
+          audioFile: 'sounds-quiz-10-weak-forms.mp3',
           category: 'Weak Form Reduction in C1 Clauses',
           prompt: 'In “the lack of syntactic control”, how are the function words “the” and “of” pronounced in natural British prosody?',
           options: [
@@ -1841,19 +2013,27 @@
         quizItems.forEach((item) => {
           const card = document.createElement('article');
           card.className = 'quiz-card';
+          card.setAttribute('data-quiz-id', String(item.id));
           card.innerHTML = `
             <div class="quiz-meta">
               <span>ITEM ${String(item.id).padStart(2, '0')} / 10</span>
               <span>${item.category}</span>
             </div>
             <h3 class="quiz-prompt">${item.prompt}</h3>
+            <div class="audio-player-wrap">
+              <div class="audio-player-top">
+                <span>🎧 QUIZ AUDIO ${String(item.id).padStart(2, '0')} · ${item.audioFile}</span>
+                <span>EN-GB NEURAL STUDIO</span>
+              </div>
+              <audio controls preload="metadata" src="${item.audio}" aria-label="Listen to Quiz Item ${item.id} audio example"></audio>
+            </div>
             <div class="quiz-options">
               ${item.options.map((opt, idx) => `
                 <button type="button" class="quiz-opt-btn" data-idx="${idx}">${opt}</button>
               `).join('')}
             </div>
             <div class="quiz-feedback" aria-live="polite"></div>
-            <button type="button" class="btn btn-reveal-model">👁️ Reveal Cambridge Model</button>
+            <button type="button" class="btn btn-reveal-model" aria-expanded="false">👁️ Reveal Cambridge Model</button>
             <div class="reveal-drawer">
               <strong>Cambridge C1 Phonetics &amp; Prosody Model:</strong><br/>
               ${item.model}
@@ -1880,7 +2060,10 @@
                 optBtns[item.correct].classList.add('correct');
                 feedbackEl.style.color = 'var(--accent-red)';
                 feedbackEl.textContent = '✗ Not quite — inspect the highlighted model below.';
+                answeredCorrect.delete(item.id);
                 drawer.classList.add('open');
+                revealBtn.setAttribute('aria-expanded', 'true');
+                revealBtn.textContent = '🙈 Hide Cambridge Model';
                 playBellChime(329.63, 0.25);
               }
               scoreVal.textContent = String(answeredCorrect.size);
@@ -1889,18 +2072,54 @@
 
           revealBtn.addEventListener('click', () => {
             const isOpen = drawer.classList.toggle('open');
+            revealBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
             revealBtn.textContent = isOpen ? '🙈 Hide Cambridge Model' : '👁️ Reveal Cambridge Model';
           });
 
           quizContainer.appendChild(card);
         });
+
+        const currentRate = parseFloat(speedSelect.value) || 1;
+        quizContainer.querySelectorAll('audio').forEach((aud) => {
+          aud.defaultPlaybackRate = currentRate;
+          aud.playbackRate = currentRate;
+        });
       }
+
+      document.addEventListener('loadedmetadata', (e) => {
+        if (e.target && e.target.tagName === 'AUDIO') {
+          applyGlobalPlaybackRate(e.target);
+        }
+      }, true);
+
+      document.addEventListener('play', (e) => {
+        if (e.target && e.target.tagName === 'AUDIO') {
+          applyGlobalPlaybackRate(e.target);
+          document.querySelectorAll('audio').forEach((aud) => {
+            if (aud !== e.target && !aud.paused) aud.pause();
+          });
+        }
+      }, true);
+
+      document.addEventListener('error', (e) => {
+        if (e.target && e.target.tagName === 'AUDIO') {
+          const wrap = e.target.parentElement;
+          if (wrap && !wrap.querySelector('.audio-error-fallback')) {
+            const note = document.createElement('div');
+            note.className = 'audio-error-fallback';
+            note.style.cssText = 'font-size:0.78rem;color:#991b1b;font-weight:700;margin-top:0.35rem;';
+            note.textContent = 'Audio unavailable — read the IPA and model breakdown.';
+            wrap.appendChild(note);
+          }
+        }
+      }, true);
 
       renderQuiz();
 
       document.getElementById('btn-reveal-all-quiz').addEventListener('click', () => {
         document.querySelectorAll('#quiz-container .reveal-drawer').forEach((d) => d.classList.add('open'));
         document.querySelectorAll('#quiz-container .btn-reveal-model').forEach((b) => {
+          b.setAttribute('aria-expanded', 'true');
           b.textContent = '🙈 Hide Cambridge Model';
         });
       });

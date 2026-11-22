@@ -96,6 +96,31 @@
       color: #ffffff !important;
       border-color: #0f766e !important;
     }
+    .tts-audio-box {
+      margin-top: 0.75rem;
+      margin-bottom: 0.5rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 0.75rem;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      box-sizing: border-box;
+      max-width: 100%;
+    }
+    .tts-audio-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #334155;
+      margin-bottom: 0.4rem;
+    }
+    .tts-audio-box audio {
+      width: 100%;
+      max-width: 100%;
+      height: 40px;
+      display: block;
+    }
   </style>
 </head>
 <body class="font-sans text-slate-800 bg-white antialiased">
@@ -372,7 +397,7 @@
 
           <!-- Reveal Band 8.5 3-Act Model Transcript -->
           <div>
-            <button type="button" id="p2-reveal-model-btn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold transition cursor-pointer">
+            <button type="button" id="p2-reveal-model-btn" aria-expanded="false" aria-controls="p2-model-drawer" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-bold transition cursor-pointer">
               👁️ Reveal Cambridge Model
             </button>
             <div id="p2-model-drawer" class="sn-reveal-drawer mt-3 p-5 rounded-2xl bg-white border border-teal-200 text-xs sm:text-sm text-slate-800 space-y-3 shadow-xs">
@@ -477,6 +502,7 @@
     (function() {
       var cueCards = [
         {
+          audioSlug: "sn-cue-01-practical-skill",
           badge: "Part 2 Cue Card #1 · Practical Craft",
           title: "Describe a practical skill you learned from an older person.",
           bullets: [
@@ -497,6 +523,7 @@
           act3: "“Looking back, what makes that weekend stick in my mind isn't just the bookshelf—which is still standing in my hallway, by the way—it's the mindset behind it. In a world where we're constantly rushing through screens, learning to slow down and do a physical job properly was a genuinely grounding lesson.”"
         },
         {
+          audioSlug: "sn-cue-02-journey-wrong",
           badge: "Part 2 Cue Card #2 · Travel & Adaptability",
           title: "Describe a journey that did not go as planned.",
           bullets: [
@@ -517,6 +544,7 @@
           act3: "“If you think about it, had the trains run on time, I probably would have forgotten that trip years ago. What could have been a proper disaster actually turned into the warmest memory of our university years, mainly because of a stranger's kindness.”"
         },
         {
+          audioSlug: "sn-cue-03-quiet-place",
           badge: "Part 2 Cue Card #3 · Environment & Focus",
           title: "Describe a quiet place where you enjoy spending time.",
           bullets: [
@@ -537,6 +565,7 @@
           act3: "“What draws me back there week after week is the complete absence of digital noise. Not only does the fresh air blow the cobwebs away after a long week at my desk, but I almost always come home with a much clearer perspective on whatever problem I was wrestling with.”"
         },
         {
+          audioSlug: "sn-cue-04-good-advice",
           badge: "Part 2 Cue Card #4 · Mentorship & Perspective",
           title: "Describe a piece of good advice someone gave you.",
           bullets: [
@@ -582,8 +611,13 @@
           if (el) el.textContent = lbl;
         });
         if (modelDrawer) {
+          modelDrawer.querySelectorAll('audio').forEach(function(a) { a.pause(); });
           modelDrawer.innerHTML =
             '<div class="text-xs font-extrabold uppercase tracking-wider text-teal-800">✓ Band 8.5 Cambridge 3-Act Transcript (' + c.title + ')</div>' +
+            '<div class="tts-audio-box">' +
+              '<span class="tts-audio-label">Listen: Band 8.5 3-Act British Spoken Model</span>' +
+              '<audio controls preload="metadata" src="assets/audio/tts/' + c.audioSlug + '.mp3" aria-label="Band 8.5 spoken model for ' + c.title + '"></audio>' +
+            '</div>' +
             '<div class="p-3 rounded-xl bg-teal-50/70 border border-teal-200">' +
               '<div class="text-[11px] font-extrabold uppercase tracking-wider text-teal-900 mb-0.5">Act 1 · Past Context (0:00–0:30)</div>' +
               '<p class="text-slate-800 leading-relaxed">' + c.act1 + '</p>' +
@@ -675,9 +709,12 @@
           var isOpen = modelDrawer.classList.contains('open');
           if (isOpen) {
             modelDrawer.classList.remove('open');
+            modelDrawer.querySelectorAll('audio').forEach(function(a) { a.pause(); });
+            revealModelBtn.setAttribute('aria-expanded', 'false');
             revealModelBtn.textContent = '👁️ Reveal Cambridge Model';
           } else {
             modelDrawer.classList.add('open');
+            revealModelBtn.setAttribute('aria-expanded', 'true');
             revealModelBtn.textContent = '🙈 Hide Cambridge Model';
           }
         });
@@ -776,6 +813,7 @@
       var rewriterItems = [
         {
           id: 1,
+          audioSlug: "sn-rw-01-thinking-time",
           category: "Buying Thinking Time",
           robotic: "“Wait please. I need to calculate the answer to your difficult question.”",
           blueprint: "[Natural Stalling Opener: That's a tough one / Off the top of my head] + , I'd say...",
@@ -785,6 +823,7 @@
         },
         {
           id: 2,
+          audioSlug: "sn-rw-02-social-refusal",
           category: "Warm Social Refusal",
           robotic: "“I cannot attend your gathering tonight because I have excessive domestic duties.”",
           blueprint: "Ah, I'd love to, but I'm [tied up with / snowed under] + [Rain check question]",
@@ -794,6 +833,7 @@
         },
         {
           id: 3,
+          audioSlug: "sn-rw-03-hedging-price",
           category: "Hedging Price & Cost",
           robotic: "“This restaurant meal is too expensive and unreasonable.”",
           blueprint: "It's a bit on the [pricey / steep] side, really.",
@@ -803,6 +843,7 @@
         },
         {
           id: 4,
+          audioSlug: "sn-rw-04-disagreement",
           category: "Diplomatic Disagreement",
           robotic: "“I disagree with your proposal because it will fail.”",
           blueprint: "I see where you're coming from, though I'm [not entirely convinced] that...",
@@ -812,6 +853,7 @@
         },
         {
           id: 5,
+          audioSlug: "sn-rw-05-tech-fault",
           category: "Everyday Tech / Practical Fault",
           robotic: "“My audio equipment is malfunctioning during our conversation.”",
           blueprint: "Sorry, my [noun] seems to be [acting up / playing up] a bit.",
@@ -821,6 +863,7 @@
         },
         {
           id: 6,
+          audioSlug: "sn-rw-06-core-dilemma",
           category: "Focusing the Core Dilemma",
           robotic: "“The principal obstacle is that we lack sufficient time.”",
           blueprint: "The thing is, what it really [comes down to / boils down to] is...",
@@ -830,6 +873,7 @@
         },
         {
           id: 7,
+          audioSlug: "sn-rw-07-qualification",
           category: "Nuanced Part 3 Qualification",
           robotic: "“Your statement is partially correct, but it is not always true.”",
           blueprint: "[Up to a point, certainly], though it really depends on...",
@@ -839,6 +883,7 @@
         },
         {
           id: 8,
+          audioSlug: "sn-rw-08-validation",
           category: "Active Listener Validation",
           robotic: "“I understand your explanation and I agree that it is logical.”",
           blueprint: "[Spot on / Fair enough] — that makes total sense.",
@@ -848,6 +893,7 @@
         },
         {
           id: 9,
+          audioSlug: "sn-rw-09-time-rounding",
           category: "Natural Vagueness & Time Rounding",
           robotic: "“Let us meet outside the cinema at approximately 19:00.”",
           blueprint: "Let's meet around [seven-ish], give or take.",
@@ -857,6 +903,7 @@
         },
         {
           id: 10,
+          audioSlug: "sn-rw-10-self-correction",
           category: "Spontaneous Self-Correction",
           robotic: "“I made an error in my previous sentence. I will now state my meaning accurately.”",
           blueprint: "[Or rather, to put it more plainly], what I mean is...",
@@ -873,14 +920,14 @@
           return '<div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">' +
             '<div class="flex flex-wrap items-center justify-between gap-2 mb-2">' +
               '<span class="text-xs font-extrabold uppercase tracking-wider text-indigo-800 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-md">Item ' + item.id + ' of 10 &bull; ' + item.category + '</span>' +
-              '<code class="text-[11px] font-mono bg-slate-900 text-teal-300 px-2.5 py-0.5 rounded">' + item.blueprint + '</code>' +
+              '<code class="text-[11px] font-mono bg-slate-900 text-teal-300 px-2.5 py-0.5 rounded" style="max-width:100%;overflow-wrap:anywhere;">' + item.blueprint + '</code>' +
             '</div>' +
             '<p class="text-xs sm:text-sm text-rose-700 font-medium mb-2.5"><strong>Robotic Textbook:</strong> ' + item.robotic + '</p>' +
             '<div class="flex flex-col sm:flex-row gap-2 my-2">' +
               '<input type="text" id="sn-rw-inp-' + item.id + '" aria-label="Natural C1 rewrite for item ' + item.id + '" placeholder="Type your natural spoken C1 rewrite using the blueprint above..." class="flex-1 rounded-xl border border-slate-300 px-3 py-2 text-xs sm:text-sm text-slate-900 font-medium focus:border-indigo-600 focus:outline-none" />' +
-              '<div class="flex items-center gap-2 shrink-0">' +
+              '<div class="flex flex-wrap items-center gap-2 shrink-0">' +
                 '<button type="button" data-check-id="' + item.id + '" class="sn-rw-check px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition cursor-pointer">Check Cadence</button>' +
-                '<button type="button" data-model-id="' + item.id + '" class="sn-rw-reveal px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>' +
+                '<button type="button" data-model-id="' + item.id + '" aria-expanded="false" aria-controls="sn-rw-model-' + item.id + '" class="sn-rw-reveal px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition cursor-pointer">👁️ Reveal Cambridge Model</button>' +
               '</div>' +
             '</div>' +
             '<div id="sn-rw-fb-' + item.id + '" class="hidden mt-2 p-2.5 rounded-xl text-xs"></div>' +
@@ -888,6 +935,10 @@
               '<div class="font-extrabold text-emerald-900 uppercase tracking-wider text-[10px]">✓ Natural C1 Spoken Model:</div>' +
               '<p class="text-sm font-bold text-slate-900">' + item.model + '</p>' +
               '<p class="text-slate-600">' + item.why + '</p>' +
+              '<div class="tts-audio-box">' +
+                '<span class="tts-audio-label">Listen: Natural C1 Spoken Cadence</span>' +
+                '<audio controls preload="metadata" src="assets/audio/tts/' + item.audioSlug + '.mp3" aria-label="Natural C1 spoken model for item ' + item.id + ': ' + item.category + '"></audio>' +
+              '</div>' +
             '</div>' +
           '</div>';
         }).join('');
@@ -923,14 +974,37 @@
             if (!drawer) return;
             if (drawer.classList.contains('open')) {
               drawer.classList.remove('open');
+              drawer.querySelectorAll('audio').forEach(function(a) { a.pause(); });
+              btn.setAttribute('aria-expanded', 'false');
               btn.textContent = '👁️ Reveal Cambridge Model';
             } else {
               drawer.classList.add('open');
+              btn.setAttribute('aria-expanded', 'true');
               btn.textContent = '🙈 Hide Cambridge Model';
             }
           });
         });
       }
+
+      document.addEventListener('play', function(e) {
+        if (e.target && e.target.tagName === 'AUDIO') {
+          document.querySelectorAll('audio').forEach(function(a) {
+            if (a !== e.target && !a.paused) a.pause();
+          });
+        }
+      }, true);
+
+      document.addEventListener('error', function(e) {
+        if (e.target && e.target.tagName === 'AUDIO') {
+          var parent = e.target.parentElement;
+          if (parent && !parent.querySelector('.audio-error-fallback')) {
+            var note = document.createElement('div');
+            note.className = 'audio-error-fallback text-xs font-semibold text-rose-800 mt-1';
+            note.textContent = 'Audio unavailable — inspect the model text above.';
+            parent.appendChild(note);
+          }
+        }
+      }, true);
 
       renderActiveCueCard();
       renderRewriterList();
@@ -944,7 +1018,7 @@
         <span class="font-bold text-white block sm:inline">Preparing for Cambridge C1/C2 or IELTS?</span>
         <span class="text-slate-300 hidden md:inline">&mdash; Try 5 free Dark Academia lessons (£24 full 15-lesson course) or book a 30-min starter session (£35).</span>
       </div>
-      <div class="flex items-center gap-2 shrink-0">
+      <div class="flex flex-wrap items-center gap-2 min-w-0 max-w-full" style="min-width:0;max-width:100%;">
         <a href="dark-academia-index.html" class="px-4 py-2 rounded-full bg-slate-800 hover:bg-slate-700 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
           <span>&#128367;&#65039; 15-Lesson Course (5 Free)</span>
         </a>

@@ -586,12 +586,12 @@
           : '';
         return `
         <button class="monument-card ${active}" data-id="${m.id}">
-          <div class="monument-card-top">
+          <span class="monument-card-top">
             <span class="monument-code">${m.code}</span>
-            <div class="badge-row">${verifiedBadge}${langBadge}</div>
-          </div>
-          <div class="monument-title">${m.title}</div>
-          <div class="monument-meta">${m.provenance} · ${m.date_label}</div>
+            <span class="badge-row">${verifiedBadge}${langBadge}</span>
+          </span>
+          <span class="monument-title">${m.title}</span>
+          <span class="monument-meta">${m.provenance} · ${m.date_label}</span>
         </button>`;
       })
       .join('');

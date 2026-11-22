@@ -15,6 +15,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
+    .skip-link{position:absolute;left:-9999px;top:8px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;z-index:9999}
+    .skip-link:focus{left:12px}
     @font-face {
       font-family: 'Cormorant Garamond';
       src: url('assets/fonts/cormorant-garamond-normal-latin.woff2') format('woff2');
@@ -85,6 +87,7 @@
       right: 18px;
       z-index: 20;
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
@@ -92,6 +95,8 @@
     }
     .top-hud > * {
       pointer-events: auto;
+      min-width: 0;
+      max-width: 100%;
     }
 
     .brand-pill {
@@ -116,16 +121,19 @@
     .brand-pill a:hover {
       color: #fff;
     }
-    .brand-pill span {
+    .brand-pill h1, .brand-pill span {
       font-family: var(--font-display);
       font-size: 1.2rem;
       font-weight: 700;
       color: #fff;
+      margin: 0;
     }
 
     /* Fast-Travel Pavilion Bar */
     .pavilion-nav {
       display: flex;
+      flex-wrap: wrap;
+      max-width: 100%;
       gap: 5px;
       background: var(--ink-deep);
       border: 1px solid rgba(255, 255, 255, 0.14);
@@ -167,6 +175,8 @@
 
     .right-hud {
       display: flex;
+      flex-wrap: wrap;
+      max-width: 100%;
       align-items: center;
       gap: 8px;
     }
@@ -724,6 +734,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <canvas id="world-canvas" aria-label="3D Interactive Grammar Courtyard"></canvas>
 
@@ -731,7 +742,7 @@
   <header class="top-hud">
     <div class="brand-pill">
       <a href="index.html">&larr; Study Desk</a>
-      <span>The Grammar Courtyard</span>
+      <h1>The Grammar Courtyard</h1>
     </div>
 
     <nav class="pavilion-nav" aria-label="Grammar Pavilions">
@@ -767,6 +778,7 @@
   </aside>
 
   <!-- Compact Bottom Game Console (Never Obstructs the 3D Stage!) -->
+  <main id="main" style="display:contents">
   <section class="game-console" aria-live="polite">
     <div class="console-modes-bar">
       <div class="mode-pills" id="mode-pills"></div>
@@ -1060,6 +1072,7 @@
       </div>
     </div>
   </div>
+  </main>
 
   <script>
     /* ==========================================================================

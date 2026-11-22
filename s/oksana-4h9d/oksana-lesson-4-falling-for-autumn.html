@@ -675,7 +675,7 @@
     /* Idiom Cards */
     .idiom-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
       gap: 14px;
     }
 
@@ -1199,7 +1199,7 @@
         <span class="score-note" id="maze-status">Step 1 / 12 &bull; Start: hate</span>
       </div>
 
-      <div class="maze-grid" id="maze-grid"></div>
+      <div tabindex="0" role="region" aria-label="Gerund maze" style="overflow-x:auto;"><div class="maze-grid" id="maze-grid"></div></div>
       <div id="maze-feedback" style="min-height:24px; font-size:0.85rem; font-weight:600; color:var(--amber); margin-top:6px;"></div>
 
       <div class="action-bar">
@@ -1265,7 +1265,7 @@
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(265px, 1fr)); gap:12px;">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(min(100%, 265px), 1fr)); gap:12px;">
         <div style="background:var(--subtle); border:1px solid var(--border); border-left:3.5px solid var(--rose); border-radius:10px; padding:13px 15px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; gap:6px;">
             <strong style="font-size:0.95rem;">can&rsquo;t stand + -ing &amp; housework</strong>
@@ -1829,7 +1829,7 @@
     function renderIdiomPrompts() {
       const grid = document.getElementById('idiom-prompts-grid');
       grid.innerHTML = idiomPart3Prompts.map((p, i) => `
-        <div class="prompt-box" onclick="toggleDiscussed(this)">
+        <div class="prompt-box" onclick="toggleDiscussed(this)" role="button" tabindex="0">
           <div class="prompt-num">
             <span>Prompt 0${i + 1}</span>
             <span class="prompt-tick" style="font-size:0.7rem; color:var(--muted);">Share + follow-up</span>
@@ -2024,7 +2024,7 @@
           if (onPath) classes.push('on-path');
           if (isCur) classes.push('is-current');
           html += `
-            <div class="${classes.join(' ')}" id="mcell-${r}-${c}" onclick="stepMaze(${r}, ${c})">
+            <div class="${classes.join(' ')}" id="mcell-${r}-${c}" onclick="stepMaze(${r}, ${c})" role="button" tabindex="0">
               ${cell.tag ? `<span class="maze-tag">${cell.tag}</span>` : ''}
               <span>${cell.word}</span>
             </div>
@@ -2230,7 +2230,7 @@
 
     function renderEx4() {
       const bank = document.getElementById('ex4-word-bank');
-      bank.innerHTML = ex4WordBank.map(w => `<span class="word-chip" id="chip-${w}" onclick="toggleChip(this)">${w}</span>`).join('');
+      bank.innerHTML = ex4WordBank.map(w => `<span class="word-chip" id="chip-${w}" onclick="toggleChip(this)" role="button" tabindex="0">${w}</span>`).join('');
 
       const list = document.getElementById('ex4-part1-list');
       list.innerHTML = ex4Sentences.map((s, idx) => `
@@ -2310,6 +2310,34 @@
     renderEx3Part2();
     renderEx4();
   </script>
+
+<script>
+(function(){
+  if (window.__m4cKbdBound) return;
+  window.__m4cKbdBound = true;
+  document.addEventListener('keydown', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === 'Enter') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    } else if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    }
+  });
+})();
+</script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>
 </body>

@@ -15,7 +15,7 @@
     --mono: 'JetBrains Mono', monospace; --disp: 'Orbitron', sans-serif; --sans: 'Plus Jakarta Sans', sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.6; min-height: 100vh; }
   /* Animated grid + scanline */
   body::before { content: ""; position: fixed; inset: 0; z-index: -2;
     background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
@@ -90,7 +90,7 @@
   .found span { font-family: var(--mono); font-size: .8rem; padding: 3px 9px; border-radius: 20px; border: 1px solid var(--neon); color: var(--neon); }
 
   /* Cards / riddles */
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 14px; }
   .card { border: 1px solid var(--line); border-radius: 14px; padding: 16px; background: rgba(0,0,0,.3); }
   .card .q { font-weight: 600; margin-bottom: 10px; }
   .card .q u { text-decoration-color: var(--neon2); text-decoration-thickness: 2px; text-underline-offset: 3px; }
@@ -134,7 +134,7 @@
   .big:hover { background: rgba(0,255,200,.2); }
 
   /* Role-play */
-  .roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 14px; }
   .dossier { border: 1px solid var(--amber); border-radius: 14px; padding: 18px; background: rgba(255,201,60,.05); }
   .dossier h3 { font-family: var(--disp); color: var(--amber); font-size: 1rem; margin-bottom: 8px; letter-spacing: .08em; }
   .ticks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
@@ -234,10 +234,10 @@
     <div class="tag">MISSION 03 · INTEL BRIEFING</div>
     <h2>📡 Where Can Each Word Go?</h2>
     <p class="brief">Click each cell. Decide first: ✔ or ✘? Then the system shows you the truth.</p>
-    <table>
+    <div tabindex="0" role="region" aria-label="Data table" style="overflow-x:auto;"><table>
       <thead><tr><th>CODE</th><th>✚ POSITIVE</th><th>✖ NEGATIVE</th><th>? QUESTION</th></tr></thead>
       <tbody id="rules"></tbody>
-    </table>
+    </table></div>
     <p class="note">* <b>any-</b> in a positive sentence = "it doesn't matter which": <i>You can sit <u>anywhere</u>.</i> &nbsp;·&nbsp; * <b>some-</b> in questions = offers &amp; requests: <i>Would you like <u>something</u> to drink?</i></p>
 
     <div class="formula" style="margin-top:22px"><b>EVERYBODY / NOBODY / SOMEONE …</b> + <em>SINGULAR VERB</em> (is · has · knows · was)

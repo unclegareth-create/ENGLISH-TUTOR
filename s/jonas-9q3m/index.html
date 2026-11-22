@@ -389,14 +389,8 @@
       font-weight: 800;
     }
 
-    .rules-trio {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border-hairline);
-    }
+    
+    @media (max-width: 640px) { .rules-trio { grid-template-columns: 1fr; } }
 
     .rule-item {
       font-size: 0.74rem;
@@ -485,7 +479,7 @@
 
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
       gap: 16px;
       margin-bottom: 32px;
     }
@@ -761,12 +755,14 @@ html[data-env="web"] .teacher-only { display: none !important; }
       background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(14, 165, 233, 0.16));
       border: 1px solid rgba(56, 189, 248, 0.35);
       color: var(--navy-800);
-      white-space: nowrap;
+      white-space: normal;
+      max-width: 100%;
+      line-height: 1.3;
     }
 
     .vs-search-wrap {
       flex: 1;
-      min-width: 240px;
+      min-width: min(100%, 240px);
       position: relative;
     }
 
@@ -826,6 +822,17 @@ html[data-env="web"] .teacher-only { display: none !important; }
 
     @media (max-width: 860px) {
       .vs-nav-dock { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .vs-nav-dock { grid-template-columns: 1fr; }
+      .rules-trio { grid-template-columns: 1fr !important; }
+      .cards-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)) !important; }
+      .hero-meta-cluster, .nav-actions, .section-head { flex-wrap: wrap !important; }
+      .portal-hero { padding: 20px 18px !important; }
+      .container { padding: 0 12px !important; }
+      .formula-blueprint, .syntax-code { overflow-wrap: anywhere; max-width: 100%; }
+      .meta-box { text-align: left !important; }
     }
 
     .vs-dock-tab {
@@ -1194,7 +1201,7 @@ html[data-env="web"] .teacher-only { display: none !important; }
 <!-- BESPOKE-LAB-TOOLS-END -->
 <!-- ACTIVE LESSON SPOTLIGHT -->
     <section class="lesson-spotlight-card">
-      <div style="flex:1; min-width:280px;">
+      <div style="flex:1; min-width:min(100%, 280px);">
         <span class="badge-pill badge-amber" style="margin-bottom:8px;">Active Lesson Spotlight &bull; Wednesday 11 November 2026</span>
         <h2 style="font-size:1.35rem; font-family:var(--font-display); color:var(--ink-950); margin-bottom:6px;">
           Let's Negotiate! Tactical Language &amp; Corporate Bargaining

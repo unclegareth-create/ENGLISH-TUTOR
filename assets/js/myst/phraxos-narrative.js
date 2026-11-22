@@ -627,7 +627,7 @@
           ? 'Seal illuminated — click to visit ' + seal.headland
           : 'Unsealed — solve at least 1 truth at ' + seal.headland + ' to illuminate') +
         '">' +
-        '<div class="cipher-seal-top">' +
+        '<span class="cipher-seal-top">' +
         '<span class="cipher-seal-greek">' +
         seal.roman +
         ' &bull; ' +
@@ -636,15 +636,15 @@
         '<span class="cipher-seal-lamp">' +
         (isLit ? '✦ LIT' : '◇ UNSEALED') +
         '</span>' +
-        '</div>' +
-        '<div class="cipher-seal-quote">“' +
+        '</span>' +
+        '<span class="cipher-seal-quote">“' +
         (isLit ? seal.fullEpigraph : seal.shortLine.split('·')[1].trim()) +
-        '”</div>' +
-        '<div class="cipher-seal-meta">' +
+        '”</span>' +
+        '<span class="cipher-seal-meta">' +
         seal.headland +
         ' &bull; ' +
         seal.mastery +
-        '</div>' +
+        '</span>' +
         '</button>'
       );
     }).join('');

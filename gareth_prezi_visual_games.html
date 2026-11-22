@@ -6,8 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Gareth Prezi Visual World Games · Interactive Teaching Arena</title>
-  <meta name="description" content="Six interactive visual grammar and IELTS speaking worlds covering mixed conditionals, third conditionals, causative passives, and A.R.E.A. responses." />
+  <meta name="description" content="Eight interactive visual grammar, Cambridge Part 4 deconstruction, and IELTS speaking worlds covering mixed conditionals, third conditionals, causative passives, and 3-Act speaking." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
   <style>
+    .skip-link{position:absolute;left:-9999px;top:8px;background:#0f172a;color:#fff;padding:10px 16px;border-radius:8px;font-weight:700;text-decoration:none;z-index:9999}
+    .skip-link:focus{left:12px}
     :root {
       --bg: #090d16;
       --panel: #111827;
@@ -175,9 +178,21 @@
     /* Specific Game 1: The Iceberg Bingo Board */
     .bingo-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
       margin: 20px 0;
+    }
+
+    @media (max-width: 720px) {
+      .bingo-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 420px) {
+      .bingo-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
     }
 
     .bingo-tile {
@@ -190,10 +205,25 @@
       font-weight: 600;
       cursor: pointer;
       min-height: 80px;
+      min-width: 0;
+      overflow-wrap: anywhere;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.2s;
+    }
+
+    .dolmen-area-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .dolmen-area-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     .bingo-tile:hover {
@@ -434,13 +464,17 @@
 
     .decon-steps-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
       margin: 16px 0;
     }
 
     @media (max-width: 820px) {
-      .decon-steps-grid { grid-template-columns: repeat(2, 1fr); }
+      .decon-steps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 480px) {
+      .decon-steps-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
     .decon-step-box {
@@ -450,17 +484,19 @@
       border-radius: 10px;
       padding: 12px;
       font-size: 0.82rem;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .act-pillars-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
       margin: 18px 0;
     }
 
     @media (max-width: 820px) {
-      .act-pillars-grid { grid-template-columns: 1fr; }
+      .act-pillars-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
     .act-pillar {
@@ -469,6 +505,8 @@
       border-radius: 12px;
       padding: 16px;
       transition: all 0.25s ease;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .act-pillar.active-act {
@@ -479,13 +517,17 @@
 
     .note-margin-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
       margin: 14px 0;
     }
 
     @media (max-width: 720px) {
-      .note-margin-grid { grid-template-columns: repeat(2, 1fr); }
+      .note-margin-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 420px) {
+      .note-margin-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
     .note-trigger-box {
@@ -498,15 +540,115 @@
       font-size: 0.9rem;
       text-align: center;
       width: 100%;
+      min-width: 0;
+    }
+
+    .note-trigger-slot {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .part4-drill-panel,
+    .s3a-panel {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
+      min-width: 0;
+    }
+
+    .part4-input-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      background: #090d16;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 14px;
+      margin: 12px 0;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .part4-input {
+      background: #1e293b;
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 8px 12px;
+      min-width: 0;
+      flex: 1 1 200px;
+      max-width: 100%;
+    }
+
+    .part4-input:focus,
+    .note-trigger-box:focus {
+      outline: 2px solid var(--gold);
+      outline-offset: 1px;
+    }
+
+    .part4-meta-row,
+    .s3a-controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .part4-step-diag {
+      display: none;
+      background: #1e293b;
+      border-left: 3px solid var(--gold);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 12px 0;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      line-height: 1.55;
+    }
+
+    .part4-step-diag.show { display: block; }
+
+    .part4-feedback {
+      display: none;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-top: 12px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .part4-feedback.show { display: block; }
+
+    @media (max-width: 640px) {
+      .stage-overlay {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .game-body {
+        padding: 18px;
+      }
+      .main-stage {
+        padding: 14px;
+      }
     }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <header>
     <div class="brand">
       <div>
-        <div class="brand-title">Gareth Montgomery · Prezi Visual Masterclass Games</div>
+        <h1 class="brand-title" style="margin:0;">Gareth Montgomery · Prezi Visual Masterclass Games</h1>
         <div class="brand-sub">Crafted from Authentic Prezi Backdrops & Visual Metaphors · Zero Generic UI</div>
       </div>
     </div>
@@ -527,7 +669,7 @@
     <button class="world-btn" data-world="speaking3act" onclick="switchWorld('speaking3act')">🎙️ VIII. 1-Minute Note Secret & 3-Act Timer</button>
   </nav>
 
-  <main class="main-stage">
+  <main id="main" class="main-stage">
 
     <!-- ================= ZOOMABLE 8-NODE PREZI CONSTELLATION MAP ================= -->
     <section class="prezi-node-overview" aria-label="Zoomable Prezi Nodes I to VIII">
@@ -547,42 +689,42 @@
       </div>
 
       <div id="preziZoomPlane" class="prezi-zoom-plane">
-        <div class="zoom-node-card active-node" data-node="iceberg" onclick="switchWorld('iceberg')">
+        <div tabindex="0" role="button" class="zoom-node-card active-node" data-node="iceberg" onclick="switchWorld('iceberg')">
           <span class="node-num-tag">Node I · Mixed Conditionals</span>
           <strong style="font-size: 0.92rem; color: #fff;">🧊 The Arctic Iceberg</strong>
           <span style="font-size: 0.76rem; color: var(--muted);">Submerged Counterfactuals &amp; Bingo</span>
         </div>
-        <div class="zoom-node-card" data-node="trail" onclick="switchWorld('trail')">
+        <div tabindex="0" role="button" class="zoom-node-card" data-node="trail" onclick="switchWorld('trail')">
           <span class="node-num-tag">Node II · Narrative Arc</span>
           <strong style="font-size: 0.92rem; color: #fff;">🚂 Darjeeling Trail</strong>
           <span style="font-size: 0.76rem; color: var(--muted);">5-Stop Expedition &amp; Inversions</span>
         </div>
-        <div class="zoom-node-card" data-node="cat" onclick="switchWorld('cat')">
+        <div tabindex="0" role="button" class="zoom-node-card" data-node="cat" onclick="switchWorld('cat')">
           <span class="node-num-tag">Node III · Past Criticism</span>
           <strong style="font-size: 0.92rem; color: #fff;">🐾 Silhouette Desk &amp; Cat</strong>
           <span style="font-size: 0.76rem; color: var(--muted);">Third Conditional Regret Flipper</span>
         </div>
-        <div class="zoom-node-card" data-node="dolmen" onclick="switchWorld('dolmen')">
+        <div tabindex="0" role="button" class="zoom-node-card" data-node="dolmen" onclick="switchWorld('dolmen')">
           <span class="node-num-tag">Node IV · Part 3 Depth</span>
           <strong style="font-size: 0.92rem; color: #fff;">🪨 Celtic Portal Dolmen</strong>
           <span style="font-size: 0.76rem; color: var(--muted);">A.R.E.A. Philosophical Builder</span>
         </div>
-        <div class="zoom-node-card" data-node="book" onclick="switchWorld('book')">
+        <div tabindex="0" role="button" class="zoom-node-card" data-node="book" onclick="switchWorld('book')">
           <span class="node-num-tag">Node V · Idiomatic Prose</span>
           <strong style="font-size: 0.92rem; color: #fff;">📖 Flying Pages</strong>
           <span style="font-size: 0.76rem; color: var(--muted);">C1 Literary Collocations</span>
         </div>
-        <div class="zoom-node-card" data-node="vault" onclick="switchWorld('vault')">
+        <div tabindex="0" role="button" class="zoom-node-card" data-node="vault" onclick="switchWorld('vault')">
           <span class="node-num-tag">Node VI · C2 Passives</span>
           <strong style="font-size: 0.92rem; color: #fff;">🏦 The Blueprint Vault</strong>
           <span style="font-size: 0.76rem; color: var(--muted);">Strip-in-a-Box Causatives</span>
         </div>
-        <div class="zoom-node-card" data-node="part4" onclick="switchWorld('part4')">
+        <div tabindex="0" role="button" class="zoom-node-card" data-node="part4" onclick="switchWorld('part4')">
           <span class="node-num-tag" style="color: var(--gold);">Node VII · Exam Strategy</span>
           <strong style="font-size: 0.92rem; color: #fff;">✂️ 4-Step Part 4 Engine</strong>
           <span style="font-size: 0.76rem; color: var(--muted);">Echo Strike &amp; 3–6 Word Deconstructor</span>
         </div>
-        <div class="zoom-node-card" data-node="speaking3act" onclick="switchWorld('speaking3act')">
+        <div tabindex="0" role="button" class="zoom-node-card" data-node="speaking3act" onclick="switchWorld('speaking3act')">
           <span class="node-num-tag" style="color: var(--emerald);">Node VIII · Active Voice First</span>
           <strong style="font-size: 0.92rem; color: #fff;">🎙️ 1-Min Note &amp; 3-Act Timer</strong>
           <span style="font-size: 0.76rem; color: var(--muted);">4 Trigger Keywords &amp; Live Part 2 Pacer</span>
@@ -593,7 +735,7 @@
     <!-- ================= WORLD 1: THE ARCTIC ICEBERG ================= -->
     <div id="world-iceberg" class="stage-card">
       <div class="prezi-backdrop-container">
-        <img src="prezi_visuals/Mixed_conditionals_overview.png" alt="Mixed Conditionals Iceberg and Sea Siren" class="prezi-backdrop-img">
+        <img src="prezi_visuals/Mixed_conditionals_overview.png" alt="Mixed Conditionals Iceberg and Sea Siren" class="prezi-backdrop-img" width="269" height="160" fetchpriority="high" decoding="async">
         <div class="stage-overlay">
           <div>
             <div class="stage-title">The Arctic Iceberg & Deep Siren</div>
@@ -621,28 +763,28 @@
         </p>
 
         <div class="bingo-grid">
-          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+          <div tabindex="0" role="button" class="bingo-tile" onclick="this.classList.toggle('marked')">
             If + Had V3 ...<br>Would + V1 (Present)
           </div>
-          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+          <div tabindex="0" role="button" class="bingo-tile" onclick="this.classList.toggle('marked')">
             If + Past Simple ...<br>Would have + V3 (Past)
           </div>
-          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+          <div tabindex="0" role="button" class="bingo-tile" onclick="this.classList.toggle('marked')">
             "Had I known..."<br>(Inversion)
           </div>
-          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+          <div tabindex="0" role="button" class="bingo-tile" onclick="this.classList.toggle('marked')">
             "Were it not for..."<br>(Present Trait)
           </div>
-          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+          <div tabindex="0" role="button" class="bingo-tile" onclick="this.classList.toggle('marked')">
             "Provided that..."<br>(Alternative to If)
           </div>
-          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+          <div tabindex="0" role="button" class="bingo-tile" onclick="this.classList.toggle('marked')">
             "Unless I..."<br>(Condition)
           </div>
-          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+          <div tabindex="0" role="button" class="bingo-tile" onclick="this.classList.toggle('marked')">
             "Even if I try..."<br>(Contrast)
           </div>
-          <div class="bingo-tile" onclick="this.classList.toggle('marked')">
+          <div tabindex="0" role="button" class="bingo-tile" onclick="this.classList.toggle('marked')">
             "..., thereby preventing..."<br>(Participle Result)
           </div>
         </div>
@@ -658,7 +800,7 @@
     <!-- ================= WORLD 2: DARJEELING FOOTPRINT TRAIL ================= -->
     <div id="world-trail" class="stage-card" style="display: none;">
       <div class="prezi-backdrop-container">
-        <img src="prezi_visuals/Travel__tourism_overview.png" alt="Travel and Tourism Footprint Trail" class="prezi-backdrop-img">
+        <img src="prezi_visuals/Travel__tourism_overview.png" alt="Travel and Tourism Footprint Trail" class="prezi-backdrop-img" width="269" height="160" loading="lazy" decoding="async">
         <div class="stage-overlay">
           <div>
             <div class="stage-title">The Darjeeling Footprint Expedition</div>
@@ -671,11 +813,11 @@
       <div class="game-body">
         <div class="trail-container">
           <div class="trail-line"></div>
-          <div id="trail-1" class="trail-step active" onclick="setTrailStep(1)">1</div>
-          <div id="trail-2" class="trail-step" onclick="setTrailStep(2)">2</div>
-          <div id="trail-3" class="trail-step" onclick="setTrailStep(3)">3</div>
-          <div id="trail-4" class="trail-step" onclick="setTrailStep(4)">4</div>
-          <div id="trail-5" class="trail-step" onclick="setTrailStep(5)">5</div>
+          <div tabindex="0" role="button" aria-label="Expedition stop 1" id="trail-1" class="trail-step active" onclick="setTrailStep(1)">1</div>
+          <div tabindex="0" role="button" aria-label="Expedition stop 2" id="trail-2" class="trail-step" onclick="setTrailStep(2)">2</div>
+          <div tabindex="0" role="button" aria-label="Expedition stop 3" id="trail-3" class="trail-step" onclick="setTrailStep(3)">3</div>
+          <div tabindex="0" role="button" aria-label="Expedition stop 4" id="trail-4" class="trail-step" onclick="setTrailStep(4)">4</div>
+          <div tabindex="0" role="button" aria-label="Expedition stop 5" id="trail-5" class="trail-step" onclick="setTrailStep(5)">5</div>
         </div>
 
         <div id="trailCardContent" class="trail-card">
@@ -700,7 +842,7 @@
     <!-- ================= WORLD 3: SILHOUETTE DESK & BLACK CAT ================= -->
     <div id="world-cat" class="stage-card" style="display: none;">
       <div class="prezi-backdrop-container">
-        <img src="prezi_visuals/The_Third_Conditional_overview.png" alt="Third Conditional Silhouette Hands and Black Cat" class="prezi-backdrop-img">
+        <img src="prezi_visuals/The_Third_Conditional_overview.png" alt="Third Conditional Silhouette Hands and Black Cat" class="prezi-backdrop-img" width="269" height="160" loading="lazy" decoding="async">
         <div class="stage-overlay">
           <div>
             <div class="stage-title">The Silhouette Desk & Black Cat</div>
@@ -719,7 +861,7 @@
         </p>
 
         <div class="desk-regrets-grid">
-          <div class="regret-card" onclick="this.classList.toggle('flipped')">
+          <div tabindex="0" role="button" class="regret-card" onclick="this.classList.toggle('flipped')">
             <div style="font-size: 0.75rem; font-weight: 800; color: var(--rose);">SITUATION A:</div>
             <div style="font-weight: 700; margin: 6px 0;">You left late and got stuck in heavy rush-hour traffic.</div>
             <div style="color: var(--muted); font-size: 0.85rem; font-style: italic; border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 8px;">
@@ -727,7 +869,7 @@
             </div>
           </div>
 
-          <div class="regret-card" onclick="this.classList.toggle('flipped')">
+          <div tabindex="0" role="button" class="regret-card" onclick="this.classList.toggle('flipped')">
             <div style="font-size: 0.75rem; font-weight: 800; color: var(--rose);">SITUATION B:</div>
             <div style="font-weight: 700; margin: 6px 0;">You didn't check the mountain forecast and got stranded in dense fog.</div>
             <div style="color: var(--muted); font-size: 0.85rem; font-style: italic; border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 8px;">
@@ -735,7 +877,7 @@
             </div>
           </div>
 
-          <div class="regret-card" onclick="this.classList.toggle('flipped')">
+          <div tabindex="0" role="button" class="regret-card" onclick="this.classList.toggle('flipped')">
             <div style="font-size: 0.75rem; font-weight: 800; color: var(--rose);">SITUATION C:</div>
             <div style="font-weight: 700; margin: 6px 0;">You argued fiercely with the manager and got yourself dismissed.</div>
             <div style="color: var(--muted); font-size: 0.85rem; font-style: italic; border-top: 1px dashed var(--border); padding-top: 8px; margin-top: 8px;">
@@ -749,7 +891,7 @@
     <!-- ================= WORLD 4: CELTIC PORTAL DOLMEN ================= -->
     <div id="world-dolmen" class="stage-card" style="display: none;">
       <div class="prezi-backdrop-container">
-        <img src="prezi_visuals/The_selfish_giant_overview.png" alt="Celtic Portal Dolmen in the Burren" class="prezi-backdrop-img">
+        <img src="prezi_visuals/The_selfish_giant_overview.png" alt="Celtic Portal Dolmen in the Burren" class="prezi-backdrop-img" width="269" height="160" loading="lazy" decoding="async">
         <div class="stage-overlay">
           <div>
             <div class="stage-title">The Celtic Portal Dolmen</div>
@@ -767,7 +909,7 @@
           <div id="dolmenPrompt" style="font-size: 1.25rem; font-weight: 700; color: #fff; margin: 8px 0;">
             "Is genuine altruism possible in modern competitive societies, or are all human actions fundamentally driven by self-interest?"
           </div>
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px;">
+          <div class="dolmen-area-grid">
             <div style="background: #1e293b; padding: 10px; border-radius: 6px; font-size: 0.8rem; text-align: center;">
               <strong>[A]ssertion</strong> (5s)
             </div>
@@ -788,7 +930,7 @@
     <!-- ================= WORLD 5: THE BATTLE AGAINST BOREDOM ================= -->
     <div id="world-book" class="stage-card" style="display: none;">
       <div class="prezi-backdrop-container">
-        <img src="prezi_visuals/Copy_of_Literature_Lesson_overview.png" alt="Open Book with Flying Pages" class="prezi-backdrop-img">
+        <img src="prezi_visuals/Copy_of_Literature_Lesson_overview.png" alt="Open Book with Flying Pages" class="prezi-backdrop-img" width="269" height="160" loading="lazy" decoding="async">
         <div class="stage-overlay">
           <div>
             <div class="stage-title">The Battle Against Boredom</div>
@@ -822,7 +964,7 @@
     <!-- ================= WORLD 6: THE BLUEPRINT VAULT ================= -->
     <div id="world-vault" class="stage-card" style="display: none;">
       <div class="prezi-backdrop-container">
-        <img src="prezi_visuals/Money_Matters_overview.png" alt="Money Matters Blueprint Grid and Gold" class="prezi-backdrop-img">
+        <img src="prezi_visuals/Money_Matters_overview.png" alt="Money Matters Blueprint Grid and Gold" class="prezi-backdrop-img" width="269" height="160" loading="lazy" decoding="async">
         <div class="stage-overlay">
           <div>
             <div class="stage-title">The Blueprint Vault</div>
@@ -858,16 +1000,229 @@
       </div>
     </div>
 
+    <!-- ================= WORLD 7: GARETH'S 4-STEP PART 4 DECONSTRUCTOR ================= -->
+    <div id="world-part4" class="stage-card" style="display: none;">
+      <div class="prezi-backdrop-container">
+        <img src="prezi_visuals/FCE_7319_Participle_clauses_overview.png" alt="Cambridge C1 Key Word Transformation Blueprint" class="prezi-backdrop-img" width="269" height="160" loading="lazy" decoding="async">
+        <div class="stage-overlay">
+          <div>
+            <div class="stage-title">Gareth's 4-Step Part 4 Deconstructor</div>
+            <div class="stage-caption">Cambridge C1 Key Word Transformation · Echo Elimination &amp; 3–6 Word Precision</div>
+          </div>
+          <button type="button" class="btn btn-gold" onclick="nextPreziPart4Item()">🎲 Next Transformation Item</button>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <h3 style="font-size: 1.08rem; margin-bottom: 6px; color: var(--gold);">
+          ✂️ Gareth's 4-Step Elimination &amp; Deconstruction Strategy
+        </h3>
+        <p style="color: var(--muted); font-size: 0.88rem; margin-bottom: 10px;">
+          Before writing a word into the gap, strip away the repeated language from Sentence 1 so you can see the exact grammar transformation left behind.
+        </p>
+
+        <div class="decon-steps-grid">
+          <div class="decon-step-box">
+            <div style="font-weight: 800; color: var(--accent); margin-bottom: 4px;">1. Strike Out the Echoes</div>
+            <div style="color: #cbd5e1;">Cross out words from Sentence 1 already repeated in Sentence 2 to isolate the exact meaning gap.</div>
+          </div>
+          <div class="decon-step-box" style="border-top-color: var(--gold);">
+            <div style="font-weight: 800; color: var(--gold); margin-bottom: 4px;">2. Inspect Tense Harmony</div>
+            <div style="color: #cbd5e1;">Match Sentence 1's time frame and aspect (past, perfect, or hypothetical) to the new stem.</div>
+          </div>
+          <div class="decon-step-box" style="border-top-color: var(--rose);">
+            <div style="font-weight: 800; color: var(--rose); margin-bottom: 4px;">3. Check Voice Shift</div>
+            <div style="color: #cbd5e1;">Spot active-to-passive shifts or fronted inversions triggered by the opening words.</div>
+          </div>
+          <div class="decon-step-box" style="border-top-color: var(--emerald);">
+            <div style="font-weight: 800; color: var(--emerald); margin-bottom: 4px;">4. Solve the Pattern</div>
+            <div style="color: #cbd5e1;">Fit <strong>3 to 6 words</strong> using the keyword <strong>unchanged</strong> (contractions = 2 words, <code>cannot</code> = 1).</div>
+          </div>
+        </div>
+
+        <div class="part4-drill-panel">
+          <div class="part4-meta-row" style="margin-bottom: 12px;">
+            <span id="part4ItemBadge" style="font-size: 0.8rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">Item 1 of 4 · Past Subjunctive Preference</span>
+            <span id="part4KeywordBadge" style="background: #1e293b; border: 1px solid var(--gold); color: var(--gold); padding: 4px 12px; border-radius: 999px; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.05em;">KEYWORD: RATHER</span>
+          </div>
+
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-bottom: 6px;">Sentence 1 (Click Step 1 below to isolate the gap):</div>
+          <div id="part4S1Display" style="font-size: 1.08rem; font-weight: 600; color: #fff; line-height: 1.7; margin-bottom: 12px;"></div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+            <button type="button" id="part4EchoBtn" class="btn btn-gold" onclick="togglePreziPart4Echoes()">✂️ Step 1: Strike Out the Echoes</button>
+            <button type="button" id="part4StepsBtn" class="btn" onclick="togglePreziPart4Steps()">🔍 Steps 2–4: Tense, Voice &amp; Frame</button>
+          </div>
+
+          <div id="part4StepsDiag" class="part4-step-diag"></div>
+
+          <div style="font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-top: 12px;">Sentence 2 (3 to 6 words · keep keyword unchanged):</div>
+          <div class="part4-input-row">
+            <span id="part4Pre" style="color: #e2e8f0;"></span>
+            <input type="text" id="part4Input" class="part4-input" aria-label="Part 4 transformation answer" placeholder="Type 3 to 6 words..." oninput="updatePreziPart4Counter()" />
+            <span id="part4Post" style="color: #e2e8f0;"></span>
+          </div>
+
+          <div class="part4-meta-row" style="font-size: 0.8rem; color: var(--muted); margin-bottom: 14px;">
+            <span id="part4WordCount">0 words (Target: 3–6 Cambridge words)</span>
+            <span id="part4KwGuard">Keyword RATHER: waiting</span>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+            <button type="button" class="btn btn-accent" onclick="checkPreziPart4Answer()">✅ Check Answer</button>
+            <button type="button" class="btn" onclick="toggleReveal('part4Reveal')">👁️ Reveal Cambridge Model</button>
+          </div>
+
+          <div id="part4Feedback" class="part4-feedback"></div>
+          <div id="part4Reveal" class="reveal-box"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= WORLD 8: 1-MINUTE NOTE SECRET & 3-ACT TIMER ================= -->
+    <div id="world-speaking3act" class="stage-card" style="display: none;">
+      <div class="prezi-backdrop-container">
+        <img src="prezi_visuals/Techniques_for_the_speaking_exam__CPE_13515_overview.png" alt="Speaking Exam Techniques and 3-Act Structure Overview" class="prezi-backdrop-img" width="269" height="160" loading="lazy" decoding="async">
+        <div class="stage-overlay">
+          <div>
+            <div class="stage-title">1-Minute Note Secret &amp; 3-Act Timer</div>
+            <div class="stage-caption">Active Voice First · 4 Trigger Keywords &amp; 2-Minute Part 2 Long Turn</div>
+          </div>
+          <button type="button" class="btn btn-emerald" onclick="nextSpeaking3ActCard()">🎲 Next Cue Card</button>
+        </div>
+      </div>
+
+      <div class="game-body">
+        <div style="background: #0f172a; border-left: 4px solid var(--emerald); padding: 18px; border-radius: 10px; margin-bottom: 18px;">
+          <div id="s3aCardLabel" style="font-size: 0.78rem; font-weight: 800; color: var(--emerald); text-transform: uppercase;">
+            IELTS SPEAKING PART 2 CUE CARD (1 OF 3)
+          </div>
+          <h3 id="s3aCardTitle" style="font-size: 1.18rem; font-weight: 800; color: #fff; margin: 6px 0 10px;">
+            Describe a journey that changed the way you look at something.
+          </h3>
+          <ul id="s3aCardBullets" style="color: #cbd5e1; font-size: 0.9rem; padding-left: 18px; line-height: 1.65;"></ul>
+          <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 0.82rem; color: var(--muted);">
+            <strong style="color: var(--gold);">The Cambridge Anchor:</strong> Bullet points are springboards, not an interrogation checklist. If finished early, deepen the reflection and comparison until halted.
+          </div>
+        </div>
+
+        <div class="s3a-panel">
+          <div class="s3a-controls-row" style="margin-bottom: 10px;">
+            <div>
+              <h4 style="font-size: 1rem; font-weight: 800; color: var(--accent);">1. The 1-Minute Note Secret (4 Single Trigger Keywords)</h4>
+              <p style="font-size: 0.83rem; color: var(--muted);">Write only 4 single trigger keywords down the margin (one per bullet); never write full sentences.</p>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <button type="button" class="btn" style="padding: 8px 14px; font-size: 0.84rem;" onclick="fillSampleTriggers()">✨ Sample 4 Keywords</button>
+              <button type="button" class="btn btn-gold" style="padding: 8px 14px; font-size: 0.84rem;" onclick="startSpeakingTimer('prep')">⏱️ 1-Min Prep (60s)</button>
+            </div>
+          </div>
+
+          <div class="note-margin-grid">
+            <div class="note-trigger-slot">
+              <label for="s3aNote1" style="font-size: 0.74rem; color: var(--muted); font-weight: 700;">Bullet 1 Trigger</label>
+              <input type="text" id="s3aNote1" class="note-trigger-box" placeholder="1 keyword..." oninput="validateTriggerWord(this, 's3aWarn1')" />
+              <span id="s3aWarn1" style="font-size: 0.72rem; color: var(--gold); min-height: 1em;"></span>
+            </div>
+            <div class="note-trigger-slot">
+              <label for="s3aNote2" style="font-size: 0.74rem; color: var(--muted); font-weight: 700;">Bullet 2 Trigger</label>
+              <input type="text" id="s3aNote2" class="note-trigger-box" placeholder="1 keyword..." oninput="validateTriggerWord(this, 's3aWarn2')" />
+              <span id="s3aWarn2" style="font-size: 0.72rem; color: var(--gold); min-height: 1em;"></span>
+            </div>
+            <div class="note-trigger-slot">
+              <label for="s3aNote3" style="font-size: 0.74rem; color: var(--muted); font-weight: 700;">Bullet 3 Trigger</label>
+              <input type="text" id="s3aNote3" class="note-trigger-box" placeholder="1 keyword..." oninput="validateTriggerWord(this, 's3aWarn3')" />
+              <span id="s3aWarn3" style="font-size: 0.72rem; color: var(--gold); min-height: 1em;"></span>
+            </div>
+            <div class="note-trigger-slot">
+              <label for="s3aNote4" style="font-size: 0.74rem; color: var(--muted); font-weight: 700;">Bullet 4 Trigger</label>
+              <input type="text" id="s3aNote4" class="note-trigger-box" placeholder="1 keyword..." oninput="validateTriggerWord(this, 's3aWarn4')" />
+              <span id="s3aWarn4" style="font-size: 0.72rem; color: var(--gold); min-height: 1em;"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="s3a-panel">
+          <div class="s3a-controls-row" style="margin-bottom: 12px;">
+            <div>
+              <h4 style="font-size: 1rem; font-weight: 800; color: var(--emerald);">2. The 3-Act Story Arc &amp; Live 2-Minute Pacer</h4>
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 6px;">
+                <span id="s3aTimerDisplay" style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1.35rem; font-weight: 800; color: #fff;">00:00 / 02:00</span>
+                <span id="s3aPhaseBadge" style="background: #1e293b; border: 1px solid var(--border); color: var(--accent); padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 700;">Ready · Choose Prep or 3-Act Turn</span>
+              </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <button type="button" class="btn btn-emerald" onclick="startSpeakingTimer('turn')">🎙️ Start 3-Act Turn (2:00)</button>
+              <button type="button" class="btn" onclick="pauseSpeakingTimer()">⏸️ Pause</button>
+              <button type="button" class="btn" onclick="resetSpeakingTimer()">↺ Reset</button>
+            </div>
+          </div>
+
+          <div class="act-pillars-grid">
+            <div id="actPillar1" class="act-pillar">
+              <div style="font-size: 0.75rem; font-weight: 800; color: var(--accent); text-transform: uppercase;">Act 1 · 0:00–0:30 (30s)</div>
+              <div style="font-size: 1rem; font-weight: 800; color: #fff; margin: 4px 0;">Past Context</div>
+              <p style="font-size: 0.83rem; color: var(--muted); line-height: 1.5;">Anchor when and where it happened, plus your mindset before the turning point.</p>
+            </div>
+            <div id="actPillar2" class="act-pillar">
+              <div style="font-size: 0.75rem; font-weight: 800; color: var(--gold); text-transform: uppercase;">Act 2 · 0:30–1:15 (45s)</div>
+              <div style="font-size: 1rem; font-weight: 800; color: #fff; margin: 4px 0;">Sensory Snapshot / Core Scene</div>
+              <p style="font-size: 0.83rem; color: var(--muted); line-height: 1.5;">Zoom into one concrete moment: sights, voices, and the exact friction or surprise.</p>
+            </div>
+            <div id="actPillar3" class="act-pillar">
+              <div style="font-size: 0.75rem; font-weight: 800; color: var(--emerald); text-transform: uppercase;">Act 3 · 1:15–2:00 (45s)</div>
+              <div style="font-size: 1rem; font-weight: 800; color: #fff; margin: 4px 0;">Reflection / 'So What?'</div>
+              <p style="font-size: 0.83rem; color: var(--muted); line-height: 1.5;">Step back to weigh long-term impact and contrast past assumptions with present insight.</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn" onclick="toggleReveal('speaking3actReveal')">👁️ Reveal Cambridge Model</button>
+          <div id="speaking3actReveal" class="reveal-box"></div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <script>
+    const PREZI_NODE_LABELS = {
+      iceberg: 'NODE I',
+      trail: 'NODE II',
+      cat: 'NODE III',
+      dolmen: 'NODE IV',
+      book: 'NODE V',
+      vault: 'NODE VI',
+      part4: 'NODE VII',
+      speaking3act: 'NODE VIII'
+    };
+
     function switchWorld(worldKey) {
       document.querySelectorAll('.stage-card').forEach(c => c.style.display = 'none');
-      document.querySelectorAll('.world-btn').forEach(b => b.classList.remove('active'));
-      
+      document.querySelectorAll('.world-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-world') === worldKey);
+      });
+      document.querySelectorAll('.zoom-node-card').forEach(n => {
+        n.classList.toggle('active-node', n.getAttribute('data-node') === worldKey);
+      });
+
       const target = document.getElementById('world-' + worldKey);
       if (target) target.style.display = 'block';
-      event.currentTarget.classList.add('active');
+
+      const readout = document.getElementById('preziZoomReadout');
+      if (readout) {
+        const label = PREZI_NODE_LABELS[worldKey] || 'NODE I';
+        readout.textContent = `ACTIVE: ${label} (FOCUSED)`;
+      }
+    }
+
+    function resetPreziOverviewZoom() {
+      const plane = document.getElementById('preziZoomPlane');
+      if (plane) plane.style.transform = 'scale(1)';
+      const activeBtn = document.querySelector('.world-btn.active');
+      const activeKey = activeBtn ? activeBtn.getAttribute('data-world') : 'iceberg';
+      const label = PREZI_NODE_LABELS[activeKey] || 'NODE I';
+      const readout = document.getElementById('preziZoomReadout');
+      if (readout) readout.textContent = `ACTIVE: ${label} (100% ZOOM)`;
     }
 
     const dilemmas = [
@@ -996,6 +1351,447 @@
       const el = document.getElementById(id);
       if (el) el.classList.toggle('show');
     }
+
+    /* ================= WORLD 7: GARETH'S 4-STEP PART 4 DECONSTRUCTOR ================= */
+    const PART4_ITEMS = [
+      {
+        id: 1,
+        pattern: "Past Subjunctive Preference",
+        keyword: "RATHER",
+        s1Tokens: [
+          { t: "I", echo: true },
+          { t: "would prefer you not to discuss", echo: false },
+          { t: "the confidential proposal outside this room.", echo: true }
+        ],
+        pre: "I",
+        post: "the confidential proposal outside this room.",
+        canonical: "would rather you did not discuss",
+        accepted: [
+          "would rather you did not discuss",
+          "would rather you didn't discuss"
+        ],
+        step2Tense: "Present preference about another speaker ('would prefer you not to...') shifts into the past simple subjunctive ('did not discuss').",
+        step3Voice: "Active voice remains ('you ... discuss'); the infinitive drops and becomes finite past.",
+        step4Frame: "would rather + [new subject] + past simple (negative)",
+        explanation: "Because the subject changes from 'I' to 'you', 'would rather' triggers the past subjunctive: 'would rather you did not discuss' (6 words, RATHER unchanged)."
+      },
+      {
+        id: 2,
+        pattern: "Fixed Noun Collocation",
+        keyword: "INTENTION",
+        s1Tokens: [
+          { t: "The committee", echo: true },
+          { t: "does not plan to revise", echo: false },
+          { t: "the assessment criteria before June.", echo: true }
+        ],
+        pre: "The committee",
+        post: "the assessment criteria before June.",
+        canonical: "has no intention of revising",
+        accepted: [
+          "has no intention of revising"
+        ],
+        step2Tense: "Present simple ('does not plan') stays in present simple ('has no intention').",
+        step3Voice: "Active voice remains ('The committee'); verb 'revise' shifts to gerund 'revising' after 'of'.",
+        step4Frame: "have no intention of + -ing",
+        explanation: "'does not plan to revise' maps cleanly to 'has no intention of revising' (5 words, INTENTION unchanged)."
+      },
+      {
+        id: 3,
+        pattern: "Passive Reporting Perfect Infinitive",
+        keyword: "SAID",
+        s1Tokens: [
+          { t: "People believe that", echo: false },
+          { t: "the medieval manuscript", echo: true },
+          { t: "survived", echo: false },
+          { t: "the warehouse fire.", echo: true }
+        ],
+        pre: "The medieval manuscript",
+        post: "the warehouse fire.",
+        canonical: "is said to have survived",
+        accepted: [
+          "is said to have survived"
+        ],
+        step2Tense: "Present reporting ('believe') + completed past event ('survived') requires the perfect infinitive ('to have survived').",
+        step3Voice: "Active reporting ('People believe that...') becomes impersonal passive ('is said to...').",
+        step4Frame: "be said to have + past participle",
+        explanation: "Fronting 'The medieval manuscript' pairs passive reporting with a perfect infinitive: 'is said to have survived' (5 words, SAID unchanged)."
+      },
+      {
+        id: 4,
+        pattern: "Fronted Negative Inversion",
+        keyword: "TIME",
+        s1Tokens: [
+          { t: "She never doubted", echo: false },
+          { t: "that the talks would succeed.", echo: true }
+        ],
+        pre: "At",
+        post: "that the talks would succeed.",
+        canonical: "no time did she doubt",
+        accepted: [
+          "no time did she doubt"
+        ],
+        step2Tense: "Past simple ('never doubted') requires past auxiliary inversion ('did she doubt').",
+        step3Voice: "Active voice with subject-auxiliary inversion triggered after 'At no time'.",
+        step4Frame: "At no time + did + [subject] + bare infinitive",
+        explanation: "Completing the stem 'At...' with 'no time' triggers negative inversion: 'no time did she doubt' (5 words, TIME unchanged)."
+      }
+    ];
+
+    let part4Idx = 0;
+    let part4EchoesStruck = false;
+
+    function countCambridgeWords(text) {
+      const nonPossessiveBases = new Set([
+        'it', 'that', 'there', 'what', 'who', 'where', 'how', 'he', 'she', 'let', 'here', 'this', 'when', 'why',
+        'someone', 'somebody', 'everyone', 'everybody', 'nobody', 'everything'
+      ]);
+      const norm = String(text || '').replace(/[\u2018\u2019\u02BC]/g, "'").replace(/\s+/g, ' ').trim();
+      if (!norm) return 0;
+      const tokens = norm.split(/[\s\u2014\u2013\/]+/).map(tok => {
+        let t = tok.replace(/^[^A-Za-z0-9']+|[^A-Za-z0-9']+$/g, '').replace(/'+$/, '');
+        if (!/^'(?:d|m|re|ve|ll|s)$/i.test(t)) t = t.replace(/^'+/, '');
+        return t;
+      }).filter(Boolean);
+      let n = 0;
+      for (const tok of tokens) {
+        const w = tok.toLowerCase();
+        if (/[a-z]n't$/.test(w) || /[a-z]'(ve|d|ll|re|m)$/.test(w)) {
+          n += 2;
+        } else if (/'s$/.test(w) && nonPossessiveBases.has(w.slice(0, -2))) {
+          n += 2;
+        } else {
+          n += 1;
+        }
+      }
+      return n;
+    }
+
+    function renderPreziPart4Item() {
+      const item = PART4_ITEMS[part4Idx];
+      if (!item) return;
+      part4EchoesStruck = false;
+
+      document.getElementById('part4ItemBadge').textContent = `Item ${part4Idx + 1} of ${PART4_ITEMS.length} · ${item.pattern}`;
+      document.getElementById('part4KeywordBadge').textContent = `KEYWORD: ${item.keyword}`;
+      document.getElementById('part4S1Display').innerHTML = item.s1Tokens.map(tok =>
+        tok.echo
+          ? `<span class="prezi-echo-token">${tok.t}</span>`
+          : `<span class="prezi-deficit-token">${tok.t}</span>`
+      ).join(' ');
+
+      document.getElementById('part4EchoBtn').textContent = '✂️ Step 1: Strike Out the Echoes';
+      const diag = document.getElementById('part4StepsDiag');
+      diag.classList.remove('show');
+      diag.innerHTML =
+        `<div><strong style="color: var(--gold);">Step 2 (Tense Harmony):</strong> ${item.step2Tense}</div>` +
+        `<div style="margin-top: 4px;"><strong style="color: var(--rose);">Step 3 (Voice Shift):</strong> ${item.step3Voice}</div>` +
+        `<div style="margin-top: 4px;"><strong style="color: var(--emerald);">Step 4 (C1 Frame):</strong> <code>${item.step4Frame}</code></div>`;
+
+      document.getElementById('part4Pre').textContent = item.pre;
+      document.getElementById('part4Post').textContent = item.post;
+      const inp = document.getElementById('part4Input');
+      inp.value = '';
+      inp.placeholder = `3 to 6 words using ${item.keyword}...`;
+
+      const fb = document.getElementById('part4Feedback');
+      fb.classList.remove('show');
+      fb.innerHTML = '';
+
+      const rev = document.getElementById('part4Reveal');
+      rev.classList.remove('show');
+      const wc = countCambridgeWords(item.canonical);
+      rev.innerHTML = `<strong>Cambridge Model (${wc} Words):</strong><br>${item.pre} <strong style="color: #fff; text-decoration: underline;">${item.canonical}</strong> ${item.post}<br><span style="display:block; margin-top:6px; font-size:0.85rem; color:#cbd5e1;">${item.explanation}</span>`;
+
+      updatePreziPart4Counter();
+    }
+
+    function nextPreziPart4Item() {
+      part4Idx = (part4Idx + 1) % PART4_ITEMS.length;
+      renderPreziPart4Item();
+    }
+
+    function togglePreziPart4Echoes() {
+      part4EchoesStruck = !part4EchoesStruck;
+      document.querySelectorAll('#part4S1Display .prezi-echo-token').forEach(el => {
+        el.classList.toggle('struck', part4EchoesStruck);
+      });
+      document.querySelectorAll('#part4S1Display .prezi-deficit-token').forEach(el => {
+        el.classList.toggle('isolated', part4EchoesStruck);
+      });
+      document.getElementById('part4EchoBtn').textContent = part4EchoesStruck
+        ? '↺ Restore Sentence 1'
+        : '✂️ Step 1: Strike Out the Echoes';
+    }
+
+    function togglePreziPart4Steps() {
+      const diag = document.getElementById('part4StepsDiag');
+      if (diag) diag.classList.toggle('show');
+    }
+
+    function updatePreziPart4Counter() {
+      const item = PART4_ITEMS[part4Idx];
+      const inp = document.getElementById('part4Input');
+      const wcEl = document.getElementById('part4WordCount');
+      const kwEl = document.getElementById('part4KwGuard');
+      if (!item || !inp || !wcEl || !kwEl) return;
+
+      const val = inp.value.trim();
+      const wc = countCambridgeWords(val);
+      wcEl.textContent = `${wc} ${wc === 1 ? 'word' : 'words'} (Target: 3–6 Cambridge words)`;
+      wcEl.style.color = (wc >= 3 && wc <= 6) ? 'var(--emerald)' : (wc === 0 ? 'var(--muted)' : 'var(--gold)');
+
+      const hasKw = new RegExp('\\b' + item.keyword + '\\b', 'i').test(val);
+      if (!val) {
+        kwEl.textContent = `Keyword ${item.keyword}: waiting`;
+        kwEl.style.color = 'var(--muted)';
+      } else if (hasKw) {
+        kwEl.textContent = `✓ ${item.keyword} unchanged`;
+        kwEl.style.color = 'var(--emerald)';
+      } else {
+        kwEl.textContent = `Keep ${item.keyword} unchanged`;
+        kwEl.style.color = 'var(--rose)';
+      }
+    }
+
+    function checkPreziPart4Answer() {
+      const item = PART4_ITEMS[part4Idx];
+      const inp = document.getElementById('part4Input');
+      const fb = document.getElementById('part4Feedback');
+      if (!item || !inp || !fb) return;
+
+      const raw = inp.value.replace(/[\u2018\u2019\u02BC]/g, "'").replace(/\s+/g, ' ').trim();
+      const wc = countCambridgeWords(raw);
+      fb.classList.add('show');
+
+      if (!new RegExp('\\b' + item.keyword + '\\b', 'i').test(raw)) {
+        fb.style.background = 'rgba(244, 63, 94, 0.14)';
+        fb.style.border = '1px solid rgba(244, 63, 94, 0.45)';
+        fb.style.color = '#fecdd3';
+        fb.innerHTML = `<strong>Keyword Check:</strong> Include the exact unchanged word <strong>${item.keyword}</strong> without changing its ending or tense.`;
+        return;
+      }
+
+      if (wc < 3 || wc > 6) {
+        fb.style.background = 'rgba(245, 158, 11, 0.14)';
+        fb.style.border = '1px solid rgba(245, 158, 11, 0.45)';
+        fb.style.color = '#fde68a';
+        fb.innerHTML = `<strong>Word Count Check:</strong> Your answer counts as <strong>${wc}</strong> Cambridge words (contractions = 2 words, <code>cannot</code> = 1). Keep it between <strong>3 and 6 words</strong>.`;
+        return;
+      }
+
+      const norm = raw.toLowerCase();
+      const matched = item.accepted.some(ans => ans.toLowerCase() === norm);
+      if (matched) {
+        fb.style.background = 'rgba(16, 185, 129, 0.14)';
+        fb.style.border = '1px solid rgba(16, 185, 129, 0.45)';
+        fb.style.color = '#a7f3d0';
+        fb.innerHTML = `<strong>Spot on (2/2 marks)!</strong> ${item.explanation}`;
+      } else {
+        fb.style.background = 'rgba(245, 158, 11, 0.14)';
+        fb.style.border = '1px solid rgba(245, 158, 11, 0.45)';
+        fb.style.color = '#fde68a';
+        fb.innerHTML = `<strong>Not quite the C1 pattern yet:</strong> Try clicking <em>✂️ Step 1: Strike Out the Echoes</em> and <em>🔍 Steps 2–4</em>, or check <em>👁️ Reveal Cambridge Model</em>.`;
+      }
+    }
+
+    /* ================= WORLD 8: 1-MINUTE NOTE SECRET & 3-ACT TIMER ================= */
+    const SPEAKING_3ACT_CARDS = [
+      {
+        title: "Describe a journey that changed the way you look at something.",
+        bullets: [
+          "where and when you went",
+          "who you travelled with",
+          "what unexpected moment happened along the way",
+          "and explain how that journey shifted your perspective."
+        ],
+        sampleTriggers: ["Galway", "Solo", "Storm", "Unscripted"],
+        modelHtml:
+          `<strong>3-Act Model Response (C1 Control):</strong><br>` +
+          `<em><strong>[Act 1 · Past Context]</strong> Three autumns ago, I took a solo regional bus across Connemara to Galway after a chaotic work quarter, convinced that a tight itinerary was the only way to travel efficiently.<br>` +
+          `<strong>[Act 2 · Core Scene]</strong> Scarcely had we passed Maam Cross when a sudden Atlantic squall flooded the coastal road, stranding twenty passengers inside a stone roadside café with no mobile signal.<br>` +
+          `<strong>[Act 3 · Reflection]</strong> What made that delay unforgettable was how quickly strangers started trading stories over turf smoke; had my schedule held together, I would have missed the calmest afternoon of my year.</em>`
+      },
+      {
+        title: "Describe a difficult decision that eventually paid off.",
+        bullets: [
+          "what the decision was",
+          "why it felt risky at the time",
+          "how you followed through on it",
+          "and explain what you learned from the outcome."
+        ],
+        sampleTriggers: ["Resigned", "Savings", "Night-school", "Autonomy"],
+        modelHtml:
+          `<strong>3-Act Model Response (C1 Control):</strong><br>` +
+          `<em><strong>[Act 1 · Past Context]</strong> Four years ago, I turned down a permanent promotion in logistics to retrain part-time in acoustic engineering, despite having only six months of savings.<br>` +
+          `<strong>[Act 2 · Core Scene]</strong> I still remember sitting in an empty evening studio at ten o'clock, wondering whether I had thrown away a predictable career for an uncertain gamble.<br>` +
+          `<strong>[Act 3 · Reflection]</strong> Not only did that leap lead to work I genuinely value, but it also taught me that short-term discomfort is far easier to live with than long-term stagnation.</em>`
+      },
+      {
+        title: "Describe a practical skill you learned outside school or university.",
+        bullets: [
+          "what the skill is",
+          "who or what helped you learn it",
+          "what challenges you faced at first",
+          "and explain why this skill remains useful to you today."
+        ],
+        sampleTriggers: ["Joinery", "Grandfather", "Chisel", "Patience"],
+        modelHtml:
+          `<strong>3-Act Model Response (C1 Control):</strong><br>` +
+          `<em><strong>[Act 1 · Past Context]</strong> When I was seventeen, my grandfather taught me basic timber joinery in his backyard shed every Saturday morning.<br>` +
+          `<strong>[Act 2 · Core Scene]</strong> My first mortise joint split down the grain because I rushed the mallet strokes, forcing me to plane a fresh beech rail from scratch in dead silence.<br>` +
+          `<strong>[Act 3 · Reflection]</strong> Were it not for those stubborn Saturday mornings, I would never have developed the patience to measure twice before committing to complex tasks at work today.</em>`
+      }
+    ];
+
+    let s3aCardIdx = 0;
+    let s3aInterval = null;
+    let s3aMode = 'idle'; // 'prep' | 'turn' | 'idle'
+    let s3aSeconds = 0;
+
+    function formatTimeSec(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function updateActHighlight(elapsedTurnSec) {
+      const p1 = document.getElementById('actPillar1');
+      const p2 = document.getElementById('actPillar2');
+      const p3 = document.getElementById('actPillar3');
+      [p1, p2, p3].forEach(p => { if (p) p.classList.remove('active-act'); });
+
+      if (s3aMode !== 'turn') return;
+      if (elapsedTurnSec < 30 && p1) p1.classList.add('active-act');
+      else if (elapsedTurnSec < 75 && p2) p2.classList.add('active-act');
+      else if (p3) p3.classList.add('active-act');
+    }
+
+    function renderTimerUi() {
+      const disp = document.getElementById('s3aTimerDisplay');
+      const badge = document.getElementById('s3aPhaseBadge');
+      if (!disp || !badge) return;
+
+      if (s3aMode === 'prep') {
+        disp.textContent = `${formatTimeSec(s3aSeconds)} / 01:00`;
+        badge.textContent = s3aSeconds > 0
+          ? '1-Min Prep Active · Write 4 single keywords only'
+          : 'Prep Complete · Start your 3-Act Long Turn!';
+      } else if (s3aMode === 'turn') {
+        disp.textContent = `${formatTimeSec(s3aSeconds)} / 02:00`;
+        if (s3aSeconds < 30) badge.textContent = 'Act 1 Active · Past Context (0:00–0:30)';
+        else if (s3aSeconds < 75) badge.textContent = 'Act 2 Active · Core Scene (0:30–1:15)';
+        else if (s3aSeconds < 120) badge.textContent = "Act 3 Active · Reflection / 'So What?' (1:15–2:00)";
+        else badge.textContent = '2:00 Complete · Keep reflecting until examiner halts';
+        updateActHighlight(s3aSeconds);
+      } else {
+        disp.textContent = '00:00 / 02:00';
+        badge.textContent = 'Ready · Choose Prep or 3-Act Turn';
+        updateActHighlight(0);
+      }
+    }
+
+    function startSpeakingTimer(mode) {
+      if (s3aInterval) { clearInterval(s3aInterval); s3aInterval = null; }
+      s3aMode = mode;
+      s3aSeconds = mode === 'prep' ? 60 : 0;
+      renderTimerUi();
+
+      s3aInterval = setInterval(() => {
+        if (s3aMode === 'prep') {
+          if (s3aSeconds > 0) {
+            s3aSeconds--;
+            renderTimerUi();
+          } else {
+            clearInterval(s3aInterval);
+            s3aInterval = null;
+          }
+        } else if (s3aMode === 'turn') {
+          if (s3aSeconds < 120) {
+            s3aSeconds++;
+            renderTimerUi();
+          } else {
+            clearInterval(s3aInterval);
+            s3aInterval = null;
+          }
+        }
+      }, 1000);
+    }
+
+    function pauseSpeakingTimer() {
+      if (s3aInterval) {
+        clearInterval(s3aInterval);
+        s3aInterval = null;
+        const badge = document.getElementById('s3aPhaseBadge');
+        if (badge) badge.textContent = 'Paused · Click Start to continue or Reset';
+      }
+    }
+
+    function resetSpeakingTimer() {
+      if (s3aInterval) { clearInterval(s3aInterval); s3aInterval = null; }
+      s3aMode = 'idle';
+      s3aSeconds = 0;
+      renderTimerUi();
+    }
+
+    function validateTriggerWord(inputEl, warnId) {
+      const warn = document.getElementById(warnId);
+      if (!inputEl || !warn) return;
+      const parts = inputEl.value.trim().split(/\s+/).filter(Boolean);
+      warn.textContent = parts.length > 1 ? 'Keep to 1 trigger keyword!' : '';
+    }
+
+    function fillSampleTriggers() {
+      const card = SPEAKING_3ACT_CARDS[s3aCardIdx];
+      if (!card) return;
+      card.sampleTriggers.forEach((word, idx) => {
+        const inp = document.getElementById(`s3aNote${idx + 1}`);
+        const warn = document.getElementById(`s3aWarn${idx + 1}`);
+        if (inp) inp.value = word;
+        if (warn) warn.textContent = '';
+      });
+    }
+
+    function renderSpeaking3ActCard() {
+      const card = SPEAKING_3ACT_CARDS[s3aCardIdx];
+      if (!card) return;
+      document.getElementById('s3aCardLabel').textContent = `IELTS SPEAKING PART 2 CUE CARD (${s3aCardIdx + 1} OF ${SPEAKING_3ACT_CARDS.length})`;
+      document.getElementById('s3aCardTitle').textContent = card.title;
+      document.getElementById('s3aCardBullets').innerHTML = card.bullets.map(b => `<li>${b}</li>`).join('');
+      for (let i = 1; i <= 4; i++) {
+        const inp = document.getElementById(`s3aNote${i}`);
+        const warn = document.getElementById(`s3aWarn${i}`);
+        if (inp) inp.value = '';
+        if (warn) warn.textContent = '';
+      }
+      const rev = document.getElementById('speaking3actReveal');
+      if (rev) {
+        rev.classList.remove('show');
+        rev.innerHTML = card.modelHtml;
+      }
+      resetSpeakingTimer();
+    }
+
+    function nextSpeaking3ActCard() {
+      s3aCardIdx = (s3aCardIdx + 1) % SPEAKING_3ACT_CARDS.length;
+      renderSpeaking3ActCard();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === 'Enter') { e.preventDefault(); t.click(); }
+      else if (e.key === ' ') { e.preventDefault(); }
+    });
+    document.addEventListener('keyup', (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches('[role="button"][tabindex="0"]')) return;
+      if (e.key === ' ') { e.preventDefault(); t.click(); }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPreziPart4Item();
+      renderSpeaking3ActCard();
+    });
   </script>
   <script src="analytics.js" defer></script>
 </body>

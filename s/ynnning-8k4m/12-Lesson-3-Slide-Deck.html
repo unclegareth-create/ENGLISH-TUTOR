@@ -41,7 +41,6 @@
       display: flex;
       flex-direction: column;
       user-select: none;
-      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -218,6 +217,7 @@
       margin-bottom: 1rem;
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 0.75rem;
     }
     .formula-badge {
@@ -237,6 +237,8 @@
       font-weight: 700;
       color: var(--navy-900);
       letter-spacing: 0.02em;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     /* Comparison Boxes */
@@ -272,6 +274,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
       margin-bottom: 0.65rem;
     }
     .practice-tag {
@@ -378,6 +382,7 @@
       .slide { display: flex !important; page-break-after: always !important; }
       .practice-solution { display: block !important; }
     }
+      @media (max-width: 768px) { .grid-2col, .grid-3col, .grid-4col, .keyword-grid { grid-template-columns: 1fr; } .top-hud { flex-wrap: wrap; gap: 0.6rem; padding: 0.65rem 1rem; } .timer-box { flex-wrap: wrap; } .slide-viewport { padding: 1.25rem 1rem; } .slide-stage { padding: 1rem 0.75rem; } .mini-card { min-width: 0; overflow-wrap: anywhere; } .formula-badge, .reveal-btn { white-space: normal; max-width: 100%; text-align: center; } }
   </style>
 </head>
 <body>
@@ -662,7 +667,7 @@
           <h2 class="slide-title">Your Turn: Permanent Error Eradication</h2>
           <p class="slide-desc">Let's lock these rules into muscle memory right now before we move to reading:</p>
 
-          <table class="error-table">
+          <div tabindex="0" role="region" aria-label="Data table" style="overflow-x:auto;"><table class="error-table">
             <thead>
               <tr>
                 <th style="width: 25%;">The Original Slip</th>
@@ -697,7 +702,7 @@
                 <td><em>"Automated workflows <strong>provide a substantial boost to</strong> productivity."</em></td>
               </tr>
             </tbody>
-          </table>
+          </table></div>
         </div>
       </div>
 
@@ -997,7 +1002,7 @@
           </div>
 
           <!-- Tracker Launch Banner -->
-          <div class="mini-card emerald" style="padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; border-width: 2px;">
+          <div class="mini-card emerald" style="padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; border-width: 2px;">
             <div>
               <div style="font-weight: 800; font-size: 1rem; color: var(--navy-900); margin-bottom: 0.2rem;">
                 🚀 Your Living Reading &amp; Listening Band Tracker
@@ -1006,7 +1011,7 @@
                 Interactive score calculator, question breakdown, and Cambridge practice test logging portal.
               </div>
             </div>
-            <a href="11-IELTS-Reading-Listening-Band-Tracker.html" target="_blank" style="background: var(--navy-800); color: #ffffff; text-decoration: none; font-size: 0.82rem; font-weight: 800; padding: 0.55rem 1.15rem; border-radius: 6px; white-space: nowrap; display: inline-flex; align-items: center; gap: 0.4rem;">
+            <a href="11-IELTS-Reading-Listening-Band-Tracker.html" target="_blank" style="background: var(--navy-800); color: #ffffff; text-decoration: none; font-size: 0.82rem; font-weight: 800; padding: 0.55rem 1.15rem; border-radius: 6px; max-width: 100%; display: inline-flex; align-items: center; gap: 0.4rem;">
               📈 Open Band Tracker &rarr;
             </a>
           </div>
@@ -1027,19 +1032,19 @@
           </div>
 
           <div class="grid-4col">
-            <div class="speaking-card active" onclick="selectSpeakingCard(this)">
+            <div class="speaking-card active" onclick="selectSpeakingCard(this)" role="button" tabindex="0">
               <div style="font-weight: 800; color: var(--navy-700);">A &bull; Answer</div>
               <div style="font-size: 0.8rem; color: var(--ink-700); margin-top:0.3rem;">Stance via passive reporting: <em>"It is widely maintained that..."</em></div>
             </div>
-            <div class="speaking-card" onclick="selectSpeakingCard(this)">
+            <div class="speaking-card" onclick="selectSpeakingCard(this)" role="button" tabindex="0">
               <div style="font-weight: 800; color: var(--navy-700);">R &bull; Reason</div>
               <div style="font-size: 0.8rem; color: var(--ink-700); margin-top:0.3rem;">Cause via cleft emphasis: <em>"What makes grading art unique is..."</em></div>
             </div>
-            <div class="speaking-card" onclick="selectSpeakingCard(this)">
+            <div class="speaking-card" onclick="selectSpeakingCard(this)" role="button" tabindex="0">
               <div style="font-weight: 800; color: var(--emerald-text);">E &bull; Example</div>
               <div style="font-size: 0.8rem; color: var(--ink-700); margin-top:0.3rem;">Illustration via inversion: <em>"Not only can algorithms misjudge nuance..."</em></div>
             </div>
-            <div class="speaking-card" onclick="selectSpeakingCard(this)">
+            <div class="speaking-card" onclick="selectSpeakingCard(this)" role="button" tabindex="0">
               <div style="font-weight: 800; color: var(--amber-text);">A &bull; Alternative</div>
               <div style="font-size: 0.8rem; color: var(--ink-700); margin-top:0.3rem;">Evaluative counter: <em>"Nevertheless, for routine testing, algorithms..."</em></div>
             </div>
@@ -1099,12 +1104,12 @@
           </div>
 
           <!-- Bottom Submission Anchor -->
-          <div class="mini-card" style="border: 1.5px solid #bfdbfe; background: var(--navy-50); padding: 0.65rem 1rem; margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: 0.84rem; color: var(--navy-900);">
+          <div class="mini-card" style="border: 1.5px solid #bfdbfe; background: var(--navy-50); padding: 0.65rem 1rem; margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <div style="font-size: 0.84rem; color: var(--navy-900); min-width: 0; flex: 1 1 240px;">
               📬 <strong>Submission Standard:</strong> Send me your first draft—strictly no spell check or AI—a day before our next lesson!
             </div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem; flex-shrink: 0;">
-              <span style="background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); font-size: 0.72rem; font-weight: 800; padding: 0.3rem 0.65rem; border-radius: 6px; white-space: nowrap;">Due 24h Before Lesson 4</span>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; max-width: 100%;">
+              <span style="background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); font-size: 0.72rem; font-weight: 800; padding: 0.3rem 0.65rem; border-radius: 6px; max-width: 100%;">Due 24h Before Lesson 4</span>
             </div>
           </div>
         </div>
@@ -1268,5 +1273,33 @@
   </script>
   <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
   <script src="../../analytics.js" defer></script>
+
+<script>
+(function(){
+  if (window.__m4cKbdBound) return;
+  window.__m4cKbdBound = true;
+  document.addEventListener('keydown', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === 'Enter') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    } else if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    var t = e.target && e.target.closest ? e.target.closest('[role="button"][tabindex="0"]') : null;
+    if (!t) return;
+    if (e.key === ' ') {
+      if (e.target !== t && e.target.closest('button, a, input, select, textarea, summary')) return;
+      e.preventDefault();
+      t.click();
+    }
+  });
+})();
+</script>
 </body>
 </html>
