@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Anna · C2 Proficiency: Reading &amp; Use of English</title>
+<style>
+:root{--bg:#faf7f2;--card:#fff;--ink:#1c2430;--mute:#5b6675;--line:#e4ddd0;--accent:#0f6e6e;--accent2:#c2410c;--soft:#e8f3f1;--warm:#fdf0e6}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);overflow:hidden}
+.deck{height:100vh;position:relative}
+.slide{position:absolute;inset:0;padding:5vh 6vw 9vh;display:none;flex-direction:column;overflow-y:auto}
+.slide.on{display:flex}
+.kicker{font:700 .8rem/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2vh}
+h1{font-size:clamp(2.2rem,5.4vw,4.2rem);line-height:1.08;margin-bottom:2vh}
+h2{font-size:clamp(1.6rem,3.4vw,2.6rem);line-height:1.15;margin-bottom:2vh}
+p,li{font-size:clamp(1rem,1.7vw,1.3rem);line-height:1.5}
+.sans{font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+.lead{color:var(--mute);max-width:60ch;margin-bottom:2vh}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:800px){.g2,.g3{grid-template-columns:1fr}}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:18px 22px}
+.card.soft{background:var(--soft);border-color:#c5e0dc}
+.card.warm{background:var(--warm);border-color:#f2d3b8}
+.card h3{font-size:1.15rem;margin-bottom:6px}
+.cue{background:#fff;border:2px solid var(--ink);border-radius:6px;padding:26px 32px;max-width:760px;box-shadow:6px 6px 0 var(--accent)}
+.cue h3{font-size:1.5rem;margin-bottom:10px}
+.cue ul{margin:8px 0 0 22px}
+.pill{display:inline-block;font:700 .75rem system-ui,sans-serif;padding:4px 10px;border-radius:99px;background:var(--soft);color:var(--accent);margin-right:6px}
+.pill.o{background:var(--warm);color:var(--accent2)}
+table{border-collapse:collapse;width:100%;font-family:system-ui,sans-serif;font-size:clamp(.85rem,1.4vw,1.1rem)}
+th,td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+td.win{background:var(--soft);font-weight:600}
+.parts{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:2vh 0}
+@media(max-width:900px){.parts{grid-template-columns:repeat(2,1fr)}}
+.part{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:14px 12px;cursor:pointer;font-family:system-ui,sans-serif;transition:.15s;text-align:left}
+.part:hover{border-color:var(--accent)}
+.part.fav{background:var(--soft);border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.part b{display:block;font:700 1.5rem Georgia,serif;color:var(--accent)}
+.part span{font-size:.82rem;color:var(--mute);display:block;margin-top:4px;line-height:1.35}
+.part em{font-style:normal;font-size:.72rem;font-weight:700;color:var(--accent2);display:block;margin-top:8px}
+.bar{display:flex;height:34px;border-radius:8px;overflow:hidden;font:700 .8rem system-ui;margin-top:1vh}
+.bar div{display:flex;align-items:center;justify-content:center;color:#fff}
+.formula{font:600 1rem/1.4 'Consolas','Courier New',monospace;background:#1c2430;color:#f6e7c8;border-radius:10px;padding:12px 18px;margin:1.2vh 0;display:inline-block}
+.drill{background:var(--card);border:1.5px solid var(--line);border-left:5px solid var(--accent2);border-radius:12px;padding:16px 22px;margin-top:1.4vh}
+.item{padding:8px 0;border-bottom:1px dashed var(--line)}
+.item:last-child{border:0}
+.q{font-size:clamp(1rem,1.7vw,1.25rem)}
+.q .n{font:700 .85rem system-ui;color:var(--accent2);margin-right:8px}
+.gap{display:inline-block;min-width:90px;border-bottom:2px solid var(--ink);margin:0 4px}
+.opts{font-family:system-ui,sans-serif;font-size:.95rem;color:var(--mute);margin-top:4px}
+.ans{display:none;margin-top:6px;padding:8px 12px;background:var(--soft);border-radius:8px;font-family:system-ui,sans-serif;font-size:.95rem;color:#0b4f4f}
+.ans.show{display:block}
+.btn{font:700 .9rem system-ui,sans-serif;padding:9px 16px;border-radius:99px;border:1.5px solid var(--accent);background:var(--card);color:var(--accent);cursor:pointer;margin-top:1.2vh}
+.btn:hover{background:var(--accent);color:#fff}
+.excerpt{font-size:clamp(1rem,1.55vw,1.2rem);line-height:1.6;background:var(--card);border-left:4px solid var(--accent);padding:16px 22px;border-radius:0 12px 12px 0;max-width:80ch}
+mark{background:#fde9a8;padding:0 2px}
+.nav{position:fixed;left:0;right:0;bottom:0;height:7vh;min-height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 3vw;background:rgba(250,247,242,.94);border-top:1px solid var(--line);font-family:system-ui,sans-serif;z-index:5}
+.nav button{font:700 .9rem system-ui;border:1.5px solid var(--ink);background:#fff;border-radius:99px;padding:7px 18px;cursor:pointer}
+.dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:var(--line)}.dots i.on{background:var(--accent)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:2vh}
+.viewer{position:fixed;inset:0;background:rgba(28,36,48,.88);z-index:20;display:none;flex-direction:column;padding:2vh 2vw}
+.viewer.on{display:flex}
+.vbar{display:flex;gap:10px;align-items:center;justify-content:space-between;color:#fff;font:700 1rem system-ui,sans-serif;padding-bottom:1vh}
+.vbar button,.vbar a{font:700 .9rem system-ui;border:0;background:#fff;color:var(--ink);border-radius:99px;padding:8px 16px;cursor:pointer;text-decoration:none}
+.viewer iframe{flex:1;width:100%;border:0;border-radius:10px;background:#fff}
+.paperbtn{align-self:flex-start;font:700 .95rem system-ui,sans-serif;padding:10px 18px;border-radius:99px;border:0;background:var(--accent2);color:#fff;cursor:pointer;margin-top:1.4vh}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- 1 TITLE -->
+<section class="slide on">
+  <div class="kicker">Anna · Lesson 5</div>
+  <!-- STUDENT-PIXEL-BADGE-START -->
+<div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:rgba(15,23,42,0.12); border:1px solid rgba(148,163,184,0.32); margin-bottom:10px; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; font-size:0.78rem; font-weight:700; line-height:1.2;">
+  <img src="avatar.svg" alt="Anna S." style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid rgba(255,255,255,0.28); flex-shrink:0;" />
+  <span>Anna S. &bull; B2/C1 General & IELTS Prep</span>
+</div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+<h1>C2 Proficiency:<br>Reading &amp; Use of English</h1>
+  <p class="lead">A walk through the paper, part by part, with real questions from the Cambridge sample test.</p>
+  <div class="toc"><span class="pill">7 parts</span><span class="pill">53 questions</span><span class="pill">1 hour 30 minutes</span><span class="pill o">A certificate that never expires</span></div>
+</section>
+
+<!-- 2 WARM-UP -->
+<section class="slide">
+  <div class="kicker">Warm-up · Speaking Part 2 · 1 minute to prepare, 2 minutes to speak</div>
+  <div class="cue">
+    <h3>Describe a song or an album you keep coming back to.</h3>
+    <p>You should say:</p>
+    <ul>
+      <li>when you first heard it</li>
+      <li>where and when you usually listen to it</li>
+      <li>how your feelings about it have changed over the years</li>
+    </ul>
+    <p style="margin-top:12px">and explain why it has stayed with you.</p>
+  </div>
+  <div class="grid g3" style="margin-top:2.4vh">
+    <div class="card soft"><h3>1 · The 1-minute note</h3><p>Four single trigger words down the margin, one per bullet. Never full sentences.</p></div>
+    <div class="card soft"><h3>2 · The 3-act arc</h3><p>Past context (30s) → the core scene (45s) → reflection, the &ldquo;so what?&rdquo; (45s).</p></div>
+    <div class="card soft"><h3>3 · The Cambridge anchor</h3><p>The bullets are springboards, not a checklist. Finished early? Deepen the reflection and keep going.</p></div>
+  </div>
+</section>
+
+<!-- 3 WHY -->
+<section class="slide">
+  <div class="kicker">Why look at this paper</div>
+  <h2>Two ways to prove your English</h2>
+  <table>
+    <tr><th></th><th>IELTS Academic</th><th>C2 Proficiency</th></tr>
+    <tr><td><b>How long it lasts</b></td><td>Results are normally treated as valid for 2 years</td><td class="win">The certificate has no expiry date</td></tr>
+    <tr><td><b>Reading paper</b></td><td>Three long passages</td><td class="win">Seven different tasks in one paper</td></tr>
+    <tr><td><b>Grammar and vocabulary</b></td><td>Marked indirectly, through your writing and speaking</td><td class="win">Tested head-on in four dedicated parts</td></tr>
+    <tr><td><b>Level</b></td><td>Band score from 1 to 9</td><td class="win">Top of the European scale (C2)</td></tr>
+  </table>
+  <div class="card warm" style="margin-top:2.4vh;max-width:70ch"><p><b>Worth knowing:</b> always check what your university, employer or visa route accepts before choosing a test. Many people start with C1 Advanced, which has exactly the same format at a slightly lower level.</p></div>
+</section>
+
+<!-- 4 PAPER MAP -->
+<section class="slide">
+  <div class="kicker">The paper at a glance</div>
+  <h2>Seven parts. Tap the ones that look interesting.</h2>
+  <div class="parts" id="parts">
+    <button class="part"><b>1</b>Multiple-choice cloze<span>Choose the word that fits</span><em>8 questions</em></button>
+    <button class="part"><b>2</b>Open cloze<span>One missing word, no options</span><em>8 questions</em></button>
+    <button class="part"><b>3</b>Word formation<span>Build the word from a root</span><em>8 questions</em></button>
+    <button class="part"><b>4</b>Key word transformation<span>Rewrite a sentence, 3 to 8 words</span><em>6 questions · up to 2 marks</em></button>
+    <button class="part"><b>5</b>Multiple choice<span>A novel extract</span><em>6 questions · 2 marks</em></button>
+    <button class="part"><b>6</b>Gapped text<span>Put the paragraphs back</span><em>7 questions · 2 marks</em></button>
+    <button class="part"><b>7</b>Multiple matching<span>Scan 5 texts for ideas</span><em>10 questions</em></button>
+  </div>
+  <div class="bar"><div style="flex:30;background:#0f6e6e">Parts 1–4 · Words &amp; grammar · 30 questions</div><div style="flex:23;background:#c2410c">Parts 5–7 · Reading · 23 questions</div></div>
+  <p class="lead" style="margin-top:2vh">Reading and Use of English is one of four papers and carries the most marks of the four.</p>
+</section>
+
+<!-- 5 PART 1 -->
+<section class="slide">
+  <div class="kicker">Part 1 · Multiple-choice cloze</div>
+  <h2>Which word is the natural partner?</h2>
+  <p class="lead">The article is called <i>Adventure Travel</i>. All four options mean roughly the same thing, but only one belongs in the phrase.</p>
+  <div class="formula">Fixed phrase = Word A + Word B   (beaten + ____)</div>
+  <div class="drill">
+    <div class="item"><div class="q"><span class="n">3</span>…exploring not only some exotic <span class="gap"></span> of the globe, but also…</div><div class="opts">A corner &nbsp; B edge &nbsp; C angle &nbsp; D pocket</div><div class="ans">A · <b>corner</b>: &ldquo;a corner of the world&rdquo; is the set phrase.</div></div>
+    <div class="item"><div class="q"><span class="n">4</span>…anyone willing to forsake the beaten <span class="gap"></span>…</div><div class="opts">A path &nbsp; B road &nbsp; C track &nbsp; D course</div><div class="ans">C · <b>track</b>: &ldquo;off the beaten track&rdquo; is the only fixed phrase.</div></div>
+    <button class="btn" data-reveal>👁️ Reveal Cambridge Model</button>
+  </div>
+</section>
+
+<!-- 6 PART 2 -->
+<section class="slide">
+  <div class="kicker">Part 2 · Open cloze</div>
+  <h2>One word. No options.</h2>
+  <p class="lead">From a text on mobile email. You are almost always looking for a small grammar word.</p>
+  <div class="formula">Gap = preposition | pronoun | auxiliary | linker | question word</div>
+  <div class="drill">
+    <div class="item"><div class="q"><span class="n">9</span>And <span class="gap"></span> should they want to?</div></div>
+    <div class="item"><div class="q"><span class="n">10</span><span class="gap"></span> all, the ability to send and receive emails from a mobile device means they can stay in touch…</div></div>
+    <div class="item"><div class="q"><span class="n">15</span>…and, <span class="gap"></span> a result, a general expectation that efficiency and productivity…</div></div>
+    <div class="item"><div class="q"><span class="n">16</span>…necessarily take <span class="gap"></span> within the four walls of a physical office.</div></div>
+    <button class="btn" data-reveal>👁️ Reveal Cambridge Model</button>
+    <div class="ans"><b>9 WHY</b> (question word) · <b>10 AFTER</b> (&ldquo;after all&rdquo;, a linker) · <b>15 AS</b> (&ldquo;as a result&rdquo;) · <b>16 PLACE</b> (&ldquo;take place&rdquo;)</div>
+  </div>
+</section>
+
+<!-- 7 PART 3 -->
+<section class="slide">
+  <div class="kicker">Part 3 · Word formation</div>
+  <h2>Same root, new job in the sentence.</h2>
+  <p class="lead">From a text on power naps. Decide the word class first, then add the prefix or suffix.</p>
+  <div class="formula">Gap = adjective | noun (singular / plural / person) | verb | adverb &nbsp;+&nbsp; check for a negative prefix</div>
+  <div class="drill">
+    <div class="item"><div class="q"><span class="n">17</span>…a sleep which dramatically improves <span class="gap"></span>. &nbsp;<span class="pill">ALERT</span></div></div>
+    <div class="item"><div class="q"><span class="n">18</span>…those with a demanding schedule such as travelling business <span class="gap"></span>. &nbsp;<span class="pill">EXECUTE</span></div></div>
+    <div class="item"><div class="q"><span class="n">22</span>…if you find it difficult to wake up at the <span class="gap"></span> time. &nbsp;<span class="pill">DESIGN</span></div></div>
+    <div class="item"><div class="q"><span class="n">24</span>…simply represents the <span class="gap"></span> experienced in the attempt to compensate for a poor sleep routine. &nbsp;<span class="pill">DESPAIR</span></div></div>
+    <button class="btn" data-reveal>👁️ Reveal Cambridge Model</button>
+    <div class="ans"><b>17 ALERTNESS</b> (noun) · <b>18 EXECUTIVES</b> (plural person noun) · <b>22 DESIGNATED</b> (adjective, &ldquo;the designated time&rdquo;) · <b>24 DESPERATION</b> (noun, a different root form from <i>despair</i>)</div>
+  </div>
+</section>
+
+<!-- 8 PART 4 a -->
+<section class="slide">
+  <div class="kicker">Part 4 · Key word transformation · Questions 25–27</div>
+  <h2>Same meaning, different structure.</h2>
+  <p class="lead">Use the word given, unchanged, and write between three and eight words.</p>
+  <div class="formula">Strike out the echoes → check the tense → check the voice → fit the pattern</div>
+  <div class="drill">
+    <div class="item"><div class="q"><span class="n">25</span>It is impossible to predict how long it will take to do this job. <span class="pill">TELLING</span><br>There is <span class="gap" style="min-width:260px"></span> will take.</div><div class="ans"><b>no telling how long this job</b> (or <i>no way of telling how long this job</i>)<br>Pattern: <i>There is no telling + question word</i></div></div>
+    <div class="item"><div class="q"><span class="n">26</span>Not many people buy that particular product these days. <span class="pill">DEMAND</span><br>There <span class="gap" style="min-width:260px"></span> that particular product these days.</div><div class="ans"><b>is not much demand for</b><br>Pattern: <i>There is + little / not much + demand for</i></div></div>
+    <div class="item"><div class="q"><span class="n">27</span>For me, his skill as a negotiator was most impressive. <span class="pill">HOW</span><br>I was most <span class="gap" style="min-width:260px"></span> negotiator he was.</div><div class="ans"><b>impressed by how skilled a</b><br>Pattern: <i>impressed by how + adjective + a + noun</i></div></div>
+    <button class="btn" data-reveal>👁️ Reveal Cambridge Model</button>
+  </div>
+</section>
+
+<!-- 9 PART 4 b -->
+<section class="slide">
+  <div class="kicker">Part 4 · Key word transformation · Questions 28–30</div>
+  <h2>Three more.</h2>
+  <div class="formula">came + as + a + noun + to + person &nbsp;|&nbsp; no + noun + whatsoever &nbsp;|&nbsp; at the height of + noun</div>
+  <div class="drill">
+    <div class="item"><div class="q"><span class="n">28</span>Nobody expected Natalia to resign. <span class="pill">CAME</span><br><span class="gap" style="min-width:300px"></span> everyone.</div><div class="ans"><b>Natalia&rsquo;s resignation came as a surprise to</b></div></div>
+    <div class="item"><div class="q"><span class="n">29</span>The area was completely devoid of vegetation. <span class="pill">WHATSOEVER</span><br>There <span class="gap" style="min-width:300px"></span> the area.</div><div class="ans"><b>was no vegetation whatsoever in</b></div></div>
+    <div class="item"><div class="q"><span class="n">30</span>When he was at his most successful, the President had enormous influence. <span class="pill">HEIGHT</span><br>At <span class="gap" style="min-width:300px"></span>, the President had enormous influence.</div><div class="ans"><b>the height of his success</b></div></div>
+    <button class="btn" data-reveal>👁️ Reveal Cambridge Model</button>
+  </div>
+</section>
+
+<!-- 10 PART 5 -->
+<section class="slide">
+  <div class="kicker">Part 5 · Multiple choice · A novel extract</div>
+  <h2>Read for the idea, not the word.</h2>
+  <div class="excerpt">Anxiously, she scoured the press for hints of impending issues. In this trade, she saw, you needed <mark>not so much to be abreast of things as ahead of them</mark>, lying in wait for circumstance, ready to pounce.</div>
+  <div class="drill">
+    <div class="q"><span class="n">32</span>Lucy thinks the secret of success as a freelance journalist is to</div>
+    <div class="opts" style="line-height:1.7">A keep yourself informed about current affairs.<br>B adopt a controversial style of writing.<br>C identify future newsworthy situations.<br>D make as many contacts as possible.</div>
+    <button class="btn" data-reveal>👁️ Reveal Cambridge Model</button>
+    <div class="ans"><b>C</b> · &ldquo;Ahead of&rdquo; things means spotting what is coming. A is the trap: &ldquo;abreast of things&rdquo; is exactly what the text says is <i>not enough</i>.</div>
+  </div>
+</section>
+
+<!-- 11 PART 6 -->
+<section class="slide">
+  <div class="kicker">Part 6 · Gapped text · <i>The fog forest</i></div>
+  <h2>A bare island where rain never falls could soon be covered with trees.</h2>
+  <p class="lead">Seven paragraphs have been removed from the article. Your job is to put them back. Clues hide in the first and last lines.</p>
+  <div class="grid g2">
+    <div class="card"><div class="kicker" style="color:var(--accent2)">Paragraph H</div><p>The bare hills in this region have been… Despite numerous attempts in the past decade, <mark>all replanting schemes have so far been unsuccessful</mark>. With limited water supplies on the island, the newly planted trees dried out and died.</p></div>
+    <div class="card"><div class="kicker" style="color:var(--accent2)">The gap is followed by</div><p>&ldquo;For years Riebold watched <mark>these failed efforts</mark> by local foresters. Then he read about a successful research project in Chile…&rdquo;</p></div>
+  </div>
+  <button class="btn" data-reveal style="align-self:flex-start">👁️ Reveal Cambridge Model</button>
+  <div class="ans"><b>The link:</b> &ldquo;<i>these</i> failed efforts&rdquo; points straight back to &ldquo;unsuccessful replanting schemes&rdquo;. Reference words (<i>this, these, such, that</i>) and repeated ideas are your best clues. There is one extra paragraph you will not use.</div>
+</section>
+
+<!-- 12 PART 7 -->
+<section class="slide">
+  <div class="kicker">Part 7 · Multiple matching · Five texts on photography</div>
+  <h2>Scan for ideas. Do not hunt for words.</h2>
+  <p class="lead">You read five short sections, A to E. For each statement, decide which section mentions it. Sections can be used more than once.</p>
+  <div class="grid g3">
+    <div class="card"><span class="pill o">44</span><p>the possibility that photography can directly influence events in the world</p></div>
+    <div class="card"><span class="pill o">45</span><p>the possibility that the photographic image has become redundant</p></div>
+    <div class="card"><span class="pill o">46</span><p>images being interpreted in a similar way by different societies</p></div>
+  </div>
+  <div class="formula" style="margin-top:2.4vh">Statement → paraphrase in the text, never the same words</div>
+</section>
+
+<!-- 13 YOUR TURN -->
+<section class="slide">
+  <div class="kicker">Over to you</div>
+  <h2>Which parts would you enjoy most?</h2>
+  <div class="grid g2" style="margin-top:1vh">
+    <div class="card soft"><h3>Which part felt the most fun?</h3><p>Which felt the hardest? Say why in two sentences.</p></div>
+    <div class="card soft"><h3>If you chose this paper</h3><p>What would you want the certificate to do for you in five years, and in ten?</p></div>
+  </div>
+  <div class="card warm" style="margin-top:2vh;max-width:70ch"><h3>A simple first step</h3><p>Try Parts 2, 3 and 4 at home this week. They take about 25 minutes together and show you exactly where your grammar stands.</p></div>
+</section>
+
+<!-- 14 KEY -->
+<section class="slide">
+  <div class="kicker">Cambridge answer key · Sample Test 1</div>
+  <h2>Answers for the parts that need a full key</h2>
+  <div class="grid g2">
+    <div class="card"><h3>Part 1</h3><p>1 B · 2 C · 3 A · 4 C · 5 B · 6 B · 7 A · 8 C</p></div>
+    <div class="card"><h3>Part 2</h3><p>9 why · 10 after · 11 between · 12 time · 13 on · 14 more · 15 as · 16 place</p></div>
+    <div class="card"><h3>Part 3</h3><p>17 alertness · 18 executives · 19 maximise · 20 disorientation · 21 comparatively · 22 designated · 23 accompany · 24 desperation</p></div>
+    <div class="card"><h3>Part 5</h3><p>31 C · 32 C · 33 D · 34 B · 35 A · 36 C</p></div>
+    <div class="card"><h3>Part 6</h3><p>37 D · 38 H · 39 F · 40 B · 41 A · 42 E · 43 G</p></div>
+    <div class="card"><h3>Part 7</h3><p>44 D · 45 E · 46 C · 47 B · 48 A · 49 E · 50 B · 51 D · 52 A · 53 C</p></div>
+  </div>
+</section>
+
+</div>
+
+<div class="nav">
+  <button id="prev">← Back</button>
+  <div class="dots" id="dots"></div>
+  <button id="next">Next →</button>
+</div>
+
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide')),dots=document.getElementById('dots'),i=0;
+  slides.forEach(function(_,k){var d=document.createElement('i');dots.appendChild(d);});
+  function show(n){i=Math.max(0,Math.min(slides.length-1,n));slides.forEach(function(s,k){s.classList.toggle('on',k===i)});[].forEach.call(dots.children,function(d,k){d.classList.toggle('on',k===i)});location.hash=i+1;}
+  document.getElementById('next').onclick=function(){show(i+1)};
+  document.getElementById('prev').onclick=function(){show(i-1)};
+  document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='PageDown')show(i+1);if(e.key==='ArrowLeft'||e.key==='PageUp')show(i-1);});
+  [].forEach.call(document.querySelectorAll('[data-reveal]'),function(b){b.onclick=function(){
+    var host=b.parentNode,answers=host.querySelectorAll('.ans');
+    if(!answers.length)answers=b.parentNode.parentNode.querySelectorAll('.ans');
+    var open=!answers[0].classList.contains('show');
+    [].forEach.call(answers,function(a){a.classList.toggle('show',open)});
+    b.textContent=open?'🙈 Hide':'👁️ Reveal Cambridge Model';};});
+  [].forEach.call(document.querySelectorAll('.part'),function(p){p.onclick=function(){p.classList.toggle('fav')}});
+  var h=parseInt(location.hash.slice(1),10);show(isNaN(h)?0:h-1);
+})();
+</script>
+<div class="viewer" id="viewer"><div class="vbar"><span id="vtitle">Exam paper</span><span><a id="vnew" href="#" target="_blank" rel="noopener">Open in new tab</a> <button id="vclose">Close ✕ (Esc)</button></span></div><iframe id="vframe" title="C2 Proficiency Reading and Use of English sample paper"></iframe></div>
+<script>
+(function(){
+  var PDF="C2-Proficiency-RUE-Sample-Paper-1.pdf",pages={1:2,2:4,3:5,4:6,5:8,6:10,7:12},v=document.getElementById("viewer"),f=document.getElementById("vframe");
+  window.paperOpen=function(n){var u=PDF+"#page="+pages[n]+"&zoom=page-width";f.src=u;document.getElementById("vnew").href=u;document.getElementById("vtitle").textContent="Part "+n+" · full exam pages";v.classList.add("on");};
+  function close(){v.classList.remove("on");f.src="about:blank";}
+  document.getElementById("vclose").onclick=close;
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")close();},true);
+  document.addEventListener("keydown",function(e){if(v.classList.contains("on")&&e.key.indexOf("Arrow")===0)e.stopImmediatePropagation();},true);
+  [].forEach.call(document.querySelectorAll(".slide .kicker"),function(k){var m=/^Part (\d)/.exec(k.textContent);if(!m)return;var b=document.createElement("button");b.className="paperbtn";b.textContent="📄 Open full Part "+m[1]+" from the exam paper";b.onclick=function(){paperOpen(m[1])};k.parentNode.appendChild(b);});
+})();
+</script>
+  <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
+  <script src="../../analytics.js" defer></script>
+</body>
+</html>
