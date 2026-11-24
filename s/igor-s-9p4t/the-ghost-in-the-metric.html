@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    try {
+      const saved = localStorage.getItem('ge-metric-color-scheme');
+      if (saved === 'light' || saved === 'dark') {
+        document.querySelector('meta[name="color-scheme"]').content = saved;
+      }
+    } catch (_e) {}
+  </script>
+  <title>The Ghost in the Metric · Goodhart&rsquo;s Law &amp; Unintended Consequences | Igor S. · GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light dark;
+      interpolate-size: allow-keywords;
+
+      /* Swiss Instrument & Natural History Monograph Palette */
+      --paper-light: #f4f3ee;
+      --paper-dark: #0d131b;
+      --card-light: #ffffff;
+      --card-dark: #141d29;
+      --subtle-light: #eae8df;
+      --subtle-dark: #1b2736;
+      --ink-strong-light: #101d2e;
+      --ink-strong-dark: #f2f5f8;
+      --ink-body-light: #304156;
+      --ink-body-dark: #c5d1df;
+      --ink-muted-light: #617287;
+      --ink-muted-dark: #8899ad;
+      --signal-light: #c43e24;
+      --signal-dark: #f27054;
+      --signal-soft-light: rgba(196, 62, 36, 0.08);
+      --signal-soft-dark: rgba(242, 112, 84, 0.14);
+      --cobalt-light: #155575;
+      --cobalt-dark: #5fb4dd;
+      --cobalt-soft-light: rgba(21, 85, 117, 0.09);
+      --cobalt-soft-dark: rgba(95, 180, 221, 0.14);
+      --emerald-light: #146c53;
+      --emerald-dark: #45c79f;
+      --emerald-soft-light: rgba(20, 108, 83, 0.09);
+      --emerald-soft-dark: rgba(69, 199, 159, 0.14);
+      --line-light: rgba(16, 29, 46, 0.12);
+      --line-dark: rgba(242, 245, 248, 0.12);
+      --line-strong-light: rgba(16, 29, 46, 0.24);
+      --line-strong-dark: rgba(242, 245, 248, 0.24);
+      --grid-dot-light: rgba(16, 29, 46, 0.06);
+      --grid-dot-dark: rgba(242, 245, 248, 0.05);
+      --topbar-light: rgba(244, 243, 238, 0.90);
+      --topbar-dark: rgba(13, 19, 27, 0.90);
+      --shadow-light: 0 18px 40px -20px rgba(16, 29, 46, 0.14);
+      --shadow-dark: 0 22px 48px -18px rgba(0, 0, 0, 0.68);
+
+      /* Fallback token values for browsers without light-dark() */
+      --bg-canvas: var(--paper-light);
+      --bg-card: var(--card-light);
+      --bg-subtle: var(--subtle-light);
+      --ink-strong: var(--ink-strong-light);
+      --ink-body: var(--ink-body-light);
+      --ink-muted: var(--ink-muted-light);
+      --accent-signal: var(--signal-light);
+      --accent-signal-soft: var(--signal-soft-light);
+      --accent-cobalt: var(--cobalt-light);
+      --accent-cobalt-soft: var(--cobalt-soft-light);
+      --accent-emerald: var(--emerald-light);
+      --accent-emerald-soft: var(--emerald-soft-light);
+      --border-hairline: var(--line-light);
+      --border-strong: var(--line-strong-light);
+      --grid-dot: var(--grid-dot-light);
+      --bg-topbar: var(--topbar-light);
+      --shadow-elevated: var(--shadow-light);
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-canvas: var(--paper-dark);
+        --bg-card: var(--card-dark);
+        --bg-subtle: var(--subtle-dark);
+        --ink-strong: var(--ink-strong-dark);
+        --ink-body: var(--ink-body-dark);
+        --ink-muted: var(--ink-muted-dark);
+        --accent-signal: var(--signal-dark);
+        --accent-signal-soft: var(--signal-soft-dark);
+        --accent-cobalt: var(--cobalt-dark);
+        --accent-cobalt-soft: var(--cobalt-soft-dark);
+        --accent-emerald: var(--emerald-dark);
+        --accent-emerald-soft: var(--emerald-soft-dark);
+        --border-hairline: var(--line-dark);
+        --border-strong: var(--line-strong-dark);
+        --grid-dot: var(--grid-dot-dark);
+        --bg-topbar: var(--topbar-dark);
+        --shadow-elevated: var(--shadow-dark);
+      }
+    }
+
+    :root:has(> head > meta[name="color-scheme"][content="dark"]) {
+      color-scheme: dark;
+      --bg-canvas: var(--paper-dark);
+      --bg-card: var(--card-dark);
+      --bg-subtle: var(--subtle-dark);
+      --ink-strong: var(--ink-strong-dark);
+      --ink-body: var(--ink-body-dark);
+      --ink-muted: var(--ink-muted-dark);
+      --accent-signal: var(--signal-dark);
+      --accent-signal-soft: var(--signal-soft-dark);
+      --accent-cobalt: var(--cobalt-dark);
+      --accent-cobalt-soft: var(--cobalt-soft-dark);
+      --accent-emerald: var(--emerald-dark);
+      --accent-emerald-soft: var(--emerald-soft-dark);
+      --border-hairline: var(--line-dark);
+      --border-strong: var(--line-strong-dark);
+      --grid-dot: var(--grid-dot-dark);
+      --bg-topbar: var(--topbar-dark);
+      --shadow-elevated: var(--shadow-dark);
+    }
+
+    :root:has(> head > meta[name="color-scheme"][content="light"]) {
+      color-scheme: light;
+      --bg-canvas: var(--paper-light);
+      --bg-card: var(--card-light);
+      --bg-subtle: var(--subtle-light);
+      --ink-strong: var(--ink-strong-light);
+      --ink-body: var(--ink-body-light);
+      --ink-muted: var(--ink-muted-light);
+      --accent-signal: var(--signal-light);
+      --accent-signal-soft: var(--signal-soft-light);
+      --accent-cobalt: var(--cobalt-light);
+      --accent-cobalt-soft: var(--cobalt-soft-light);
+      --accent-emerald: var(--emerald-light);
+      --accent-emerald-soft: var(--emerald-soft-light);
+      --border-hairline: var(--line-light);
+      --border-strong: var(--line-strong-light);
+      --grid-dot: var(--grid-dot-light);
+      --bg-topbar: var(--topbar-light);
+      --shadow-elevated: var(--shadow-light);
+    }
+
+    @supports (color: light-dark(white, black)) {
+      :root {
+        --bg-canvas: light-dark(var(--paper-light), var(--paper-dark));
+        --bg-card: light-dark(var(--card-light), var(--card-dark));
+        --bg-subtle: light-dark(var(--subtle-light), var(--subtle-dark));
+        --ink-strong: light-dark(var(--ink-strong-light), var(--ink-strong-dark));
+        --ink-body: light-dark(var(--ink-body-light), var(--ink-body-dark));
+        --ink-muted: light-dark(var(--ink-muted-light), var(--ink-muted-dark));
+        --accent-signal: light-dark(var(--signal-light), var(--signal-dark));
+        --accent-signal-soft: light-dark(var(--signal-soft-light), var(--signal-soft-dark));
+        --accent-cobalt: light-dark(var(--cobalt-light), var(--cobalt-dark));
+        --accent-cobalt-soft: light-dark(var(--cobalt-soft-light), var(--cobalt-soft-dark));
+        --accent-emerald: light-dark(var(--emerald-light), var(--emerald-dark));
+        --accent-emerald-soft: light-dark(var(--emerald-soft-light), var(--emerald-soft-dark));
+        --border-hairline: light-dark(var(--line-light), var(--line-dark));
+        --border-strong: light-dark(var(--line-strong-light), var(--line-strong-dark));
+        --grid-dot: light-dark(var(--grid-dot-light), var(--grid-dot-dark));
+        --bg-topbar: light-dark(var(--topbar-light), var(--topbar-dark));
+      }
+    }
+
+    html {
+      accent-color: var(--accent-cobalt);
+      scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-canvas);
+      background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--ink-body);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      min-height: 100vh;
+      padding-bottom: 6rem;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Scroll Progress Indicator (Modern Web Guidance: scroll-progress-indicator) */
+    #reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-cobalt), var(--accent-signal));
+      transform-origin: 0 50%;
+      transform: scaleX(0);
+      z-index: 300;
+      pointer-events: none;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      @supports (animation-timeline: scroll()) {
+        @keyframes grow-reading-progress {
+          from { transform: scaleX(0); }
+          to { transform: scaleX(1); }
+        }
+        #reading-progress {
+          animation: grow-reading-progress auto linear;
+          animation-timeline: scroll();
+        }
+      }
+    }
+
+    /* Instrument Top Bar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--bg-topbar);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .topbar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0.7rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .portal-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      color: var(--ink-strong);
+      font-weight: 700;
+      font-size: 0.84rem;
+      padding: 0.36rem 0.78rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-card);
+      transition: border-color 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .portal-back:hover {
+      border-color: var(--accent-cobalt);
+      color: var(--accent-cobalt);
+    }
+
+    .stage-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .stage-nav::-webkit-scrollbar { display: none; }
+
+    .stage-link {
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      padding: 0.34rem 0.68rem;
+      border-radius: 7px;
+      white-space: nowrap;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .stage-link:hover,
+    .stage-link.active {
+      background: var(--accent-cobalt-soft);
+      color: var(--accent-cobalt);
+    }
+
+    .theme-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.36rem 0.78rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--ink-strong);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .theme-btn:hover {
+      border-color: var(--accent-cobalt);
+      color: var(--accent-cobalt);
+    }
+
+    /* Non-color branching for theme button label (dark-mode-toggle guidance) */
+    .theme-btn .mode-to-light { display: none; }
+    .theme-btn .mode-to-dark { display: inline-flex; align-items: center; gap: 0.35rem; }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .theme-btn .mode-to-dark { display: none; }
+      :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .theme-btn .mode-to-light { display: inline-flex; align-items: center; gap: 0.35rem; }
+    }
+
+    :root:has(> head > meta[name="color-scheme"][content="dark"]) .theme-btn .mode-to-dark { display: none; }
+    :root:has(> head > meta[name="color-scheme"][content="dark"]) .theme-btn .mode-to-light { display: inline-flex; align-items: center; gap: 0.35rem; }
+    :root:has(> head > meta[name="color-scheme"][content="light"]) .theme-btn .mode-to-light { display: none; }
+    :root:has(> head > meta[name="color-scheme"][content="light"]) .theme-btn .mode-to-dark { display: inline-flex; align-items: center; gap: 0.35rem; }
+
+    /* Monograph Shell */
+    .page-shell {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 2.25rem 1.5rem 0;
+    }
+
+    /* Monograph Hero */
+    .monograph-hero {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-top: 3px solid var(--accent-cobalt);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: var(--shadow-elevated);
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.15fr);
+      gap: 2.2rem;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+
+    @media (max-width: 860px) {
+      .monograph-hero {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+      }
+    }
+
+    .student-badge-mono {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.25rem 0.8rem 0.25rem 0.3rem;
+      border-radius: 8px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--ink-strong);
+      margin-bottom: 1rem;
+    }
+
+    .student-badge-mono img {
+      width: 24px;
+      height: 24px;
+      border-radius: 5px;
+      image-rendering: pixelated;
+      border: 1px solid var(--border-strong);
+    }
+
+    .catalogue-code {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-signal);
+      display: block;
+      margin-bottom: 0.65rem;
+    }
+
+    .monograph-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.25rem, 4.6vw, 3.35rem);
+      font-weight: 600;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      color: var(--ink-strong);
+      margin-bottom: 0.95rem;
+    }
+
+    .monograph-hero h1 em {
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent-cobalt);
+    }
+
+    .epigraph-box {
+      border-left: 2.5px solid var(--accent-signal);
+      padding: 0.2rem 0 0.2rem 1rem;
+      margin-bottom: 1.35rem;
+    }
+
+    .epigraph-box p {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.04rem;
+      color: var(--ink-strong);
+      line-height: 1.5;
+    }
+
+    .epigraph-box cite {
+      display: block;
+      font-style: normal;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-muted);
+      margin-top: 0.35rem;
+    }
+
+    .mono-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border-hairline);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-muted);
+    }
+
+    .mono-meta strong { color: var(--ink-strong); }
+
+    .specimen-plate {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 0.65rem;
+    }
+
+    .specimen-frame {
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 16 / 10;
+      background: var(--bg-canvas);
+    }
+
+    .specimen-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .specimen-caption {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0.25rem 0.1rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--ink-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* Stage Headings */
+    .stage-section {
+      margin-bottom: 3.75rem;
+      scroll-margin-top: 4.5rem;
+    }
+
+    .stage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.5rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .stage-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-cobalt);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .stage-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.55rem, 3vw, 2rem);
+      font-weight: 600;
+      color: var(--ink-strong);
+      line-height: 1.18;
+    }
+
+    .stage-rubric {
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      max-width: 44ch;
+    }
+
+    /* Stage 1: Warm-Up & Long Turn */
+    .sparks-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.6rem;
+    }
+
+    @media (max-width: 780px) {
+      .sparks-grid { grid-template-columns: 1fr; }
+    }
+
+    .spark-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-family: var(--font-sans);
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .spark-card:hover { border-color: var(--accent-cobalt); }
+
+    .spark-card[aria-pressed="true"] {
+      background: var(--accent-emerald-soft);
+      border-color: var(--accent-emerald);
+    }
+
+    .spark-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--accent-cobalt);
+      letter-spacing: 0.06em;
+    }
+
+    .spark-card[aria-pressed="true"] .spark-top { color: var(--accent-emerald); }
+
+    .spark-q {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--ink-strong);
+      font-weight: 500;
+    }
+
+    .long-turn-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      box-shadow: var(--shadow-elevated);
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) 256px;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    @media (max-width: 820px) {
+      .long-turn-panel { grid-template-columns: 1fr; padding: 1.4rem; }
+    }
+
+    .cue-pill {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-signal);
+      background: var(--accent-signal-soft);
+      padding: 0.2rem 0.65rem;
+      border-radius: 6px;
+      margin-bottom: 0.7rem;
+    }
+
+    .cue-heading {
+      font-family: var(--font-display);
+      font-size: 1.38rem;
+      line-height: 1.28;
+      color: var(--ink-strong);
+      margin-bottom: 0.85rem;
+    }
+
+    .cue-list {
+      list-style: none;
+      display: grid;
+      gap: 0.42rem;
+      margin-bottom: 1.2rem;
+      font-size: 0.92rem;
+      color: var(--ink-body);
+    }
+
+    .cue-list li {
+      padding-left: 1.2rem;
+      position: relative;
+    }
+
+    .cue-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.62em;
+      width: 7px;
+      height: 2px;
+      background: var(--accent-signal);
+    }
+
+    .rules-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.65rem;
+    }
+
+    @media (max-width: 640px) {
+      .rules-strip { grid-template-columns: 1fr; }
+    }
+
+    .rule-tile {
+      background: var(--bg-subtle);
+      border-radius: 8px;
+      padding: 0.7rem 0.85rem;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--ink-muted);
+    }
+
+    .rule-tile strong {
+      display: block;
+      color: var(--ink-strong);
+      font-size: 0.8rem;
+      margin-bottom: 0.15rem;
+    }
+
+    /* Ring Timer */
+    .timer-card {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.8rem;
+    }
+
+    .timer-ring-wrap {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      display: grid;
+      place-items: center;
+    }
+
+    .timer-ring-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .timer-ring-track {
+      fill: none;
+      stroke: var(--border-strong);
+      stroke-width: 4;
+    }
+
+    .timer-ring-fill {
+      fill: none;
+      stroke: var(--accent-cobalt);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 339.292;
+      stroke-dashoffset: 0;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .timer-ring-fill {
+        transition: stroke-dashoffset 0.35s linear, stroke 0.2s ease;
+      }
+    }
+
+    .timer-readout {
+      font-family: var(--font-mono);
+      font-size: 1.72rem;
+      font-weight: 700;
+      color: var(--ink-strong);
+    }
+
+    .timer-mode-caption {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+    }
+
+    .timer-btn-row {
+      display: flex;
+      gap: 0.4rem;
+      width: 100%;
+    }
+
+    .btn-ctrl {
+      flex: 1;
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.46rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--ink-strong);
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-ctrl:hover {
+      border-color: var(--accent-cobalt);
+      color: var(--accent-cobalt);
+    }
+
+    .btn-ctrl.active,
+    .btn-ctrl.primary {
+      background: var(--accent-cobalt);
+      border-color: var(--accent-cobalt);
+      color: #ffffff;
+    }
+
+    .btn-ctrl.primary:hover { opacity: 0.92; color: #ffffff; }
+
+    /* Native <details> Accordion (Modern Web Guidance: accordion + animate-to-intrinsic-sizes) */
+    details.mono-drawer {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      margin-top: 0.85rem;
+    }
+
+    details.mono-drawer > summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.68rem 0.95rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ink-strong);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    details.mono-drawer > summary::-webkit-details-marker { display: none; }
+
+    details.mono-drawer > summary::before {
+      content: "";
+      inline-size: 0.95em;
+      block-size: 0.95em;
+      flex-shrink: 0;
+      background-color: var(--accent-signal);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M4 6l4 4 4-4'/%3E%3C/svg%3E") no-repeat center / contain;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' d='M4 6l4 4 4-4'/%3E%3C/svg%3E") no-repeat center / contain;
+      rotate: -90deg;
+    }
+
+    details.mono-drawer[open] > summary::before { rotate: 0deg; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      details.mono-drawer > summary::before { transition: rotate 0.2s ease; }
+    }
+
+    details.mono-drawer::details-content {
+      interpolate-size: allow-keywords;
+      overflow: clip;
+      contain: layout;
+    }
+
+    details.mono-drawer:not([open])::details-content { block-size: 0; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      details.mono-drawer::details-content {
+        transition: block-size, content-visibility, display;
+        transition-duration: 0.28s;
+        transition-timing-function: ease-in-out;
+        transition-behavior: allow-discrete;
+      }
+    }
+
+    .drawer-body {
+      padding: 0 1rem 0.95rem;
+      font-size: 0.89rem;
+      color: var(--ink-body);
+      line-height: 1.62;
+    }
+
+    /* Stage 2: Museum of Backfires Exhibits */
+    .exhibit-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.85rem;
+    }
+
+    .exhibit-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-elevated);
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.25fr);
+    }
+
+    .exhibit-card.flip .exhibit-media { order: 2; }
+    .exhibit-card.flip .exhibit-body { order: 1; }
+
+    @media (max-width: 820px) {
+      .exhibit-card { grid-template-columns: 1fr; }
+      .exhibit-card.flip .exhibit-media,
+      .exhibit-card.flip .exhibit-body { order: initial; }
+    }
+
+    .exhibit-media {
+      position: relative;
+      min-height: 270px;
+      background: var(--bg-subtle);
+      overflow: hidden;
+    }
+
+    .exhibit-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .exhibit-media img {
+        transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      .exhibit-card:hover .exhibit-media img { transform: scale(1.035); }
+    }
+
+    .exhibit-stamp {
+      position: absolute;
+      top: 0.85rem;
+      left: 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      background: rgba(13, 19, 27, 0.82);
+      color: #f2f5f8;
+      backdrop-filter: blur(8px);
+    }
+
+    .exhibit-body {
+      padding: 1.75rem 1.95rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.9rem;
+    }
+
+    .exhibit-meta {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-cobalt);
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+
+    .exhibit-title {
+      font-family: var(--font-display);
+      font-size: 1.48rem;
+      font-weight: 600;
+      color: var(--ink-strong);
+      line-height: 1.22;
+      margin-bottom: 0.7rem;
+    }
+
+    .exhibit-setup {
+      font-size: 0.95rem;
+      color: var(--ink-body);
+      line-height: 1.65;
+    }
+
+    .predict-strip {
+      background: var(--accent-signal-soft);
+      border-left: 3px solid var(--accent-signal);
+      border-radius: 0 8px 8px 0;
+      padding: 0.7rem 0.95rem;
+      font-size: 0.88rem;
+      color: var(--ink-strong);
+      font-weight: 600;
+    }
+
+    .exhibit-followup {
+      margin-top: 0.75rem;
+      padding-top: 0.65rem;
+      border-top: 1px dashed var(--border-strong);
+      color: var(--ink-strong);
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+
+    /* Stage 3: Lexis & Precision Radar */
+    .lexis-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .lexis-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 720px) {
+      .lexis-grid { grid-template-columns: 1fr; }
+    }
+
+    .lexis-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 1.15rem 1.25rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.42rem;
+      text-align: left;
+      font-family: var(--font-sans);
+      transition: border-color 0.15s ease;
+    }
+
+    .lexis-card:hover { border-color: var(--accent-cobalt); }
+
+    .lexis-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .lexis-phrase {
+      font-family: var(--font-display);
+      font-size: 1.16rem;
+      font-weight: 600;
+      color: var(--ink-strong);
+    }
+
+    .lexis-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-cobalt);
+      background: var(--accent-cobalt-soft);
+      padding: 0.14rem 0.5rem;
+      border-radius: 5px;
+      flex-shrink: 0;
+    }
+
+    .lexis-detail {
+      font-size: 0.88rem;
+      color: var(--ink-body);
+      line-height: 1.55;
+      transition: filter 0.2s ease, opacity 0.2s ease;
+    }
+
+    .lexis-example {
+      font-style: italic;
+      color: var(--ink-muted);
+      font-size: 0.83rem;
+      margin-top: 0.2rem;
+      display: block;
+    }
+
+    .self-test-active .lexis-card:not(.revealed) .lexis-detail {
+      filter: blur(6px);
+      opacity: 0.35;
+      user-select: none;
+    }
+
+    /* Precision Radar (Live Distinction Check) */
+    .radar-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-left: 3.5px solid var(--accent-cobalt);
+      border-radius: 14px;
+      padding: 1.5rem 1.75rem;
+      box-shadow: var(--shadow-elevated);
+    }
+
+    .radar-panel h3 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--ink-strong);
+      margin-bottom: 0.25rem;
+    }
+
+    .radar-list {
+      display: grid;
+      gap: 0.9rem;
+      margin-top: 1.1rem;
+    }
+
+    .radar-item {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 0.95rem 1.1rem;
+    }
+
+    .radar-label {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-cobalt);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .radar-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.55rem;
+    }
+
+    @media (max-width: 680px) {
+      .radar-options { grid-template-columns: 1fr; }
+    }
+
+    .radar-opt {
+      text-align: left;
+      font-family: var(--font-sans);
+      font-size: 0.86rem;
+      line-height: 1.45;
+      padding: 0.65rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--ink-strong);
+      cursor: pointer;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .radar-opt:hover { border-color: var(--accent-cobalt); }
+    .radar-opt.correct { background: var(--accent-emerald-soft); border-color: var(--accent-emerald); }
+    .radar-opt.wrong { background: var(--accent-signal-soft); border-color: var(--accent-signal); }
+
+    .radar-note {
+      font-size: 0.82rem;
+      color: var(--ink-muted);
+      margin-top: 0.55rem;
+      display: none;
+    }
+
+    .radar-note.visible { display: block; }
+
+    /* Stage 4: Structural Power & KWT */
+    .blueprint-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.1rem;
+      margin-bottom: 1.75rem;
+    }
+
+    @media (max-width: 760px) {
+      .blueprint-grid { grid-template-columns: 1fr; }
+    }
+
+    .blueprint-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-top: 3px solid var(--accent-cobalt);
+      border-radius: 12px;
+      padding: 1.3rem 1.45rem;
+    }
+
+    .blueprint-card.signal { border-top-color: var(--accent-signal); }
+
+    .blueprint-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-cobalt);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .blueprint-card.signal .blueprint-tag { color: var(--accent-signal); }
+
+    .formula-line {
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--ink-strong);
+      background: var(--bg-subtle);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
+      margin: 0.45rem 0 0.75rem;
+      overflow-wrap: anywhere;
+    }
+
+    .blueprint-ex {
+      font-size: 0.9rem;
+      color: var(--ink-body);
+      line-height: 1.55;
+    }
+
+    .kwt-stack { display: grid; gap: 1.1rem; }
+
+    .kwt-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 1.35rem 1.5rem;
+      box-shadow: var(--shadow-elevated);
+    }
+
+    .kwt-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .kwt-num {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+    }
+
+    .kwt-key {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--accent-signal);
+      background: var(--accent-signal-soft);
+      border: 1px solid var(--accent-signal);
+      padding: 0.14rem 0.65rem;
+      border-radius: 6px;
+    }
+
+    .kwt-s1 {
+      font-size: 0.96rem;
+      color: var(--ink-strong);
+      font-weight: 600;
+      margin-bottom: 0.55rem;
+    }
+
+    .kwt-s2 {
+      font-size: 0.95rem;
+      color: var(--ink-body);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.45rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .kwt-input {
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 0.42rem 0.75rem;
+      border-radius: 8px;
+      border: 1.5px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--ink-strong);
+      min-width: 240px;
+      flex: 1;
+      max-width: 360px;
+    }
+
+    .kwt-input:focus {
+      outline: none;
+      border-color: var(--accent-cobalt);
+      background: var(--bg-card);
+    }
+
+    .kwt-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem;
+    }
+
+    .btn-check,
+    .btn-reveal {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--ink-strong);
+      transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-check:hover { border-color: var(--accent-emerald); color: var(--accent-emerald); }
+
+    .btn-reveal {
+      background: var(--accent-cobalt-soft);
+      border-color: transparent;
+      color: var(--accent-cobalt);
+    }
+
+    .btn-reveal:hover {
+      background: var(--accent-cobalt);
+      color: #ffffff;
+    }
+
+    .kwt-feedback {
+      font-size: 0.84rem;
+      font-weight: 600;
+      margin-top: 0.6rem;
+      min-height: 1.2em;
+    }
+
+    .kwt-feedback.ok { color: var(--accent-emerald); }
+    .kwt-feedback.no { color: var(--accent-signal); }
+
+    .kwt-model {
+      display: none;
+      margin-top: 0.7rem;
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      background: var(--accent-emerald-soft);
+      border-left: 3px solid var(--accent-emerald);
+      font-size: 0.9rem;
+      color: var(--ink-strong);
+    }
+
+    .kwt-model.open { display: block; }
+
+    /* Stage 5: Design It & Break It Arena */
+    .arena-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.15rem;
+      margin-bottom: 1.75rem;
+    }
+
+    @media (max-width: 780px) {
+      .arena-grid { grid-template-columns: 1fr; }
+    }
+
+    .arena-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 1.4rem 1.5rem;
+      box-shadow: var(--shadow-elevated);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.85rem;
+    }
+
+    .arena-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .arena-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent-signal);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .role-switch {
+      display: inline-flex;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 7px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .role-btn {
+      font-family: var(--font-mono);
+      font-size: 0.67rem;
+      font-weight: 700;
+      padding: 0.24rem 0.55rem;
+      border-radius: 5px;
+      border: none;
+      background: transparent;
+      color: var(--ink-muted);
+      cursor: pointer;
+    }
+
+    .role-btn.active {
+      background: var(--accent-cobalt);
+      color: #ffffff;
+    }
+
+    .role-btn.active.saboteur {
+      background: var(--accent-signal);
+      color: #ffffff;
+    }
+
+    .arena-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.24rem;
+      color: var(--ink-strong);
+      margin-bottom: 0.35rem;
+    }
+
+    .arena-prompt {
+      font-size: 0.9rem;
+      color: var(--ink-body);
+      line-height: 1.58;
+    }
+
+    .scratchpad-textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      background: var(--bg-card);
+      color: var(--ink-strong);
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      resize: vertical;
+      margin-top: 0.5rem;
+    }
+
+    .scratchpad-textarea:focus {
+      outline: none;
+      border-color: var(--accent-cobalt);
+    }
+
+    .scratchpad-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.6rem;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-colophon {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-hairline);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+
+    .footer-colophon a {
+      color: var(--ink-strong);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .footer-colophon a:hover { color: var(--accent-cobalt); }
+  </style>
+</head>
+<body>
+  <div id="reading-progress" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="portal-back">&larr; Igor&rsquo;s Portal</a>
+      <nav class="stage-nav" aria-label="Lesson stages">
+        <a href="#stage-1" class="stage-link active">01 Warm-Up</a>
+        <a href="#stage-2" class="stage-link">02 Exhibits</a>
+        <a href="#stage-3" class="stage-link">03 Lexis &amp; Radar</a>
+        <a href="#stage-4" class="stage-link">04 Inversion</a>
+        <a href="#stage-5" class="stage-link">05 Arena</a>
+      </nav>
+      <button type="button" class="theme-btn" id="theme-toggle">
+        <span class="mode-to-dark">&#9790; Night <span class="sr-only">Switch to dark theme</span></span>
+        <span class="mode-to-light">&#9728; Daylight <span class="sr-only">Switch to light theme</span></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="page-shell">
+    <!-- Monograph Cover Header -->
+    <section class="monograph-hero">
+      <div>
+<!-- STUDENT-PIXEL-BADGE-START -->
+        <div class="student-badge-mono">
+          <img src="avatar.svg" alt="Igor S." width="24" height="24" />
+          <span>Igor S. &middot; C1/C2 Conversation &amp; Precision</span>
+        </div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+        <span class="catalogue-code">Monograph 04 &middot; Tuesday 24 November</span>
+        <h1>The Ghost in the <em>Metric</em></h1>
+        <blockquote class="epigraph-box">
+          <p>&ldquo;When a measure becomes a target, it ceases to be a good measure.&rdquo;</p>
+          <cite>&mdash; Charles Goodhart, Bank of England, 1975</cite>
+        </blockquote>
+        <div class="mono-meta">
+          <span><strong>Session:</strong> 45 min live</span>
+          <span><strong>Focus:</strong> Goodhart&rsquo;s Law, Idioms &amp; Inversion</span>
+          <span><strong>By:</strong> GarethEnglish</span>
+        </div>
+      </div>
+
+      <figure class="specimen-plate">
+        <div class="specimen-frame">
+          <img
+            src="igor-metric-hero.jpg"
+            alt="Overhead still life of a vintage brass Vernier caliper, an optical glass prism refracting light across ivory archival paper, and a carved walnut chess knight"
+            width="1376"
+            height="768"
+            fetchpriority="high"
+          />
+        </div>
+        <figcaption class="specimen-caption">
+          <span>FIG. 01 &mdash; CALIPER, PRISM &amp; KNIGHT</span>
+          <span>MEASUREMENT VS. REALITY</span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- STAGE 1: ACTIVE VOICE FIRST -->
+    <section id="stage-1" class="stage-section">
+      <div class="stage-header">
+        <div>
+          <span class="stage-kicker">Stage 01 &middot; Active Voice First</span>
+          <h2 class="stage-title">When the Scoreboard Takes Over</h2>
+        </div>
+        <p class="stage-rubric">Warm up with a quick catch-up spark, then take the two-minute speaking challenge.</p>
+      </div>
+
+      <div class="sparks-grid">
+        <button type="button" class="spark-card" aria-pressed="false" onclick="toggleSpark(this)">
+          <span class="spark-top"><span>SPARK 01</span><span class="spark-state">Tap to tick</span></span>
+          <span class="spark-q">What have you been tinkering with or reading outside work over the past week?</span>
+        </button>
+        <button type="button" class="spark-card" aria-pressed="false" onclick="toggleSpark(this)">
+          <span class="spark-top"><span>SPARK 02</span><span class="spark-state">Tap to tick</span></span>
+          <span class="spark-q">Have you ever watched a sensible workplace or university target quietly push smart people into absurd behaviour?</span>
+        </button>
+        <button type="button" class="spark-card" aria-pressed="false" onclick="toggleSpark(this)">
+          <span class="spark-top"><span>SPARK 03</span><span class="spark-state">Tap to tick</span></span>
+          <span class="spark-q">In research or software, what is one metric everyone quotes even though nobody truly trusts it anymore?</span>
+        </button>
+      </div>
+
+      <div class="long-turn-panel">
+        <div>
+          <span class="cue-pill">2-Minute Long Turn</span>
+          <h3 class="cue-heading">Describe a rule, target, or scoring system that produced an unintended result.</h3>
+          <ul class="cue-list">
+            <li>what the rule or metric was meant to measure or reward</li>
+            <li>how people quietly adapted their behaviour around it</li>
+            <li>what became ridiculous or counter-productive as a result</li>
+            <li>and how you would have redesigned the incentive instead.</li>
+          </ul>
+          <div class="rules-strip">
+            <div class="rule-tile">
+              <strong>1. The 1-Minute Note Secret</strong>
+              Jot four single trigger words in the margin &mdash; never full sentences.
+            </div>
+            <div class="rule-tile">
+              <strong>2. The 3-Act Story Arc</strong>
+              Setup (30s) &rarr; The Loophole Scene (45s) &rarr; Lesson Learned (45s).
+            </div>
+            <div class="rule-tile">
+              <strong>3. The Cambridge Anchor</strong>
+              Treat bullets as springboards. Keep deepening the contrast until halted.
+            </div>
+          </div>
+        </div>
+
+        <div class="timer-card" aria-label="Speaking timer">
+          <div class="timer-ring-wrap">
+            <svg class="timer-ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="timer-ring-track" cx="60" cy="60" r="54"></circle>
+              <circle class="timer-ring-fill" id="timer-ring" cx="60" cy="60" r="54"></circle>
+            </svg>
+            <div>
+              <div class="timer-readout" id="timer-display">01:00</div>
+              <div class="timer-mode-caption" id="timer-caption">1 Min Prep</div>
+            </div>
+          </div>
+          <div class="timer-btn-row">
+            <button type="button" class="btn-ctrl active" id="mode-prep" onclick="setTimer(60, '1 Min Prep', this)">1m Prep</button>
+            <button type="button" class="btn-ctrl" id="mode-speak" onclick="setTimer(120, '2 Min Speak', this)">2m Speak</button>
+          </div>
+          <div class="timer-btn-row">
+            <button type="button" class="btn-ctrl primary" id="timer-start" onclick="toggleTimer()">Start</button>
+            <button type="button" class="btn-ctrl" onclick="resetTimer()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 2: MUSEUM OF BACKFIRES -->
+    <section id="stage-2" class="stage-section">
+      <div class="stage-header">
+        <div>
+          <span class="stage-kicker">Stage 02 &middot; Museum of Backfires</span>
+          <h2 class="stage-title">Predict the Loophole Before You Open the Plate</h2>
+        </div>
+        <p class="stage-rubric">Three true historical cases. Read the rule, guess how humans gamed it, then open the archive record.</p>
+      </div>
+
+      <div class="exhibit-stack">
+        <!-- Exhibit 01 -->
+        <article class="exhibit-card">
+          <div class="exhibit-media">
+            <img
+              src="igor-fossil-tray.jpg"
+              alt="Overhead museum specimen tray holding pale prehistoric fossilised bone pieces on linen"
+              width="1200"
+              height="896"
+              loading="lazy"
+            />
+            <span class="exhibit-stamp">EXH. 01 &middot; PALAEONTOLOGY</span>
+          </div>
+          <div class="exhibit-body">
+            <div>
+              <span class="exhibit-meta">Piece-Rate Bounties &middot; Late 19th Century</span>
+              <h3 class="exhibit-title">The Fossil Hunters</h3>
+              <p class="exhibit-setup">
+                Foreign palaeontologists excavating in rural China wanted local diggers to search hillsides quickly and thoroughly. To reward diligence, they announced a crisp piece-rate bounty: <strong>cash paid for every individual prehistoric bone fragment brought to camp.</strong>
+              </p>
+            </div>
+            <div class="predict-strip">Pause &amp; Predict: How did enterprising diggers maximise their daily pay?</div>
+            <details class="mono-drawer">
+              <summary>Open Archive Outcome</summary>
+              <div class="drawer-body">
+                Diggers quickly spotted the maths: one rare, intact skeleton earned a single modest fee, whereas taking a hammer to it turned one skeleton into thirty lucrative fragments. Priceless specimens arrived in buckets of rubble.
+                <div class="exhibit-followup">Where do you still see &ldquo;paying per fragment&rdquo; in modern technical or academic life?</div>
+              </div>
+            </details>
+          </div>
+        </article>
+
+        <!-- Exhibit 02 -->
+        <article class="exhibit-card flip">
+          <div class="exhibit-media">
+            <img
+              src="igor-pitch-geometry.jpg"
+              alt="Top-down aerial view of the corner of an emerald football pitch with white chalk lines and a single corner flag casting a long geometric shadow"
+              width="1200"
+              height="896"
+              loading="lazy"
+            />
+            <span class="exhibit-stamp">EXH. 02 &middot; BARBADOS VS. GRENADA, 1994</span>
+          </div>
+          <div class="exhibit-body">
+            <div>
+              <span class="exhibit-meta">Tournament Rule Design &middot; Caribbean Cup</span>
+              <h3 class="exhibit-title">The Team That Defended Both Goals</h3>
+              <p class="exhibit-setup">
+                To discourage cautious draws, tournament officials invented a dramatic rule: <strong>any &ldquo;golden goal&rdquo; scored in extra time counted as two goals.</strong> In the deciding match against Grenada, Barbados needed to win by two clear goals. By the 83rd minute, Barbados led 2&ndash;1 &mdash; one short, with the clock almost gone.
+              </p>
+            </div>
+            <div class="predict-strip">Pause &amp; Predict: What bizarre move did Barbados make in the 87th minute?</div>
+            <details class="mono-drawer">
+              <summary>Open Archive Outcome</summary>
+              <div class="drawer-body">
+                Barbados calmly turned around and <strong>scored an own goal</strong> to tie the match at 2&ndash;2, forcing extra time where a single golden goal would count as two and send them through. Realising they could now qualify by scoring in <em>either</em> net, Grenada sprinted toward their own goal &mdash; forcing Barbados to spend the final minutes furiously defending <strong>both ends of the pitch at once</strong>.
+                <div class="exhibit-followup">When someone exploits a clean loophole like this, do you admire their sharpness or blame the rule-makers?</div>
+              </div>
+            </details>
+          </div>
+        </article>
+
+        <!-- Exhibit 03 -->
+        <article class="exhibit-card">
+          <div class="exhibit-media">
+            <img
+              src="igor-tally-hourglass.jpg"
+              alt="Polished mechanical hand tally counter resting beside a clear glass hourglass with fine dark obsidian sand on pale limestone"
+              width="1200"
+              height="896"
+              loading="lazy"
+            />
+            <span class="exhibit-stamp">EXH. 03 &middot; LEADERBOARDS &amp; PROXIES</span>
+          </div>
+          <div class="exhibit-body">
+            <div>
+              <span class="exhibit-meta">Benchmark Saturation &middot; Present Day</span>
+              <h3 class="exhibit-title">The Benchmark Mirage</h3>
+              <p class="exhibit-setup">
+                From engineering teams judged on lines of code committed each week to AI research labs spending years climbing half a percentage point on a static public leaderboard, modern organisations adore a single headline number. It looks tidy on a slide &mdash; right until it stops tracking reality.
+              </p>
+            </div>
+            <div class="predict-strip">Pause &amp; Predict: Once a proxy score becomes someone&rsquo;s bonus or press release, what quietly disappears?</div>
+            <details class="mono-drawer">
+              <summary>Open Archive Outcome</summary>
+              <div class="drawer-body">
+                Teams pad elegant fixes into sprawl, models overfit public test suites without real reasoning gains, and everyone optimises for what is easy to tally rather than what genuinely matters. As sociologist William Bruce Cameron wrote: <em>&ldquo;Not everything that can be counted counts, and not everything that counts can be counted.&rdquo;</em>
+                <div class="exhibit-followup">In AI research today, is there any evaluation benchmark left that still surprises you in an honest way?</div>
+              </div>
+            </details>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- STAGE 3: LEXIS & PRECISION RADAR -->
+    <section id="stage-3" class="stage-section">
+      <div class="stage-header">
+        <div>
+          <span class="stage-kicker">Stage 03 &middot; Vocabulary &amp; Error Clinic</span>
+          <h2 class="stage-title">Language of Unintended Consequences</h2>
+        </div>
+        <p class="stage-rubric">Eight sharp idioms for dissecting broken rules, plus a four-point Precision Radar drawn from recent lessons.</p>
+      </div>
+
+      <div class="lexis-toolbar">
+        <span style="font-size:0.86rem; color:var(--ink-muted);">Use Self-Test Mode to test active recall, then click individual cards to check.</span>
+        <button type="button" class="btn-ctrl" style="flex:none; padding:0.45rem 0.95rem;" id="self-test-btn" onclick="toggleSelfTest()">Self-Test Mode: Hide Meanings</button>
+      </div>
+
+      <div class="lexis-grid" id="lexis-grid">
+        <button type="button" class="lexis-card" onclick="revealLexis(this)">
+          <span class="lexis-head"><span class="lexis-phrase">game the system</span><span class="lexis-tag">Idiom</span></span>
+          <span class="lexis-detail">Exploit the literal rules of a setup for personal gain while defeating its actual purpose.
+            <span class="lexis-example">&ldquo;Once bonuses were tied to closed tickets, people started gaming the system within a week.&rdquo;</span>
+          </span>
+        </button>
+        <button type="button" class="lexis-card" onclick="revealLexis(this)">
+          <span class="lexis-head"><span class="lexis-phrase">a perverse incentive</span><span class="lexis-tag">Collocation</span></span>
+          <span class="lexis-detail">A reward structure that accidentally encourages the exact behaviour it meant to prevent.
+            <span class="lexis-example">&ldquo;Paying per bug patched creates a perverse incentive to ship fragile code first.&rdquo;</span>
+          </span>
+        </button>
+        <button type="button" class="lexis-card" onclick="revealLexis(this)">
+          <span class="lexis-head"><span class="lexis-phrase">the letter vs. the spirit</span><span class="lexis-tag">Law &amp; Rules</span></span>
+          <span class="lexis-detail">Obeying the exact wording of a rule while violating what the rule was meant to achieve.
+            <span class="lexis-example">&ldquo;Scoring an own goal followed the letter of the rules while mocking their spirit.&rdquo;</span>
+          </span>
+        </button>
+        <button type="button" class="lexis-card" onclick="revealLexis(this)">
+          <span class="lexis-head"><span class="lexis-phrase">miss the wood for the trees</span><span class="lexis-tag">British Idiom</span></span>
+          <span class="lexis-detail">Focus so narrowly on small scores or details that you lose sight of the overall picture.
+            <span class="lexis-example">&ldquo;Chasing a 0.2% leaderboard bump can make a lab miss the wood for the trees.&rdquo;</span>
+          </span>
+        </button>
+        <button type="button" class="lexis-card" onclick="revealLexis(this)">
+          <span class="lexis-head"><span class="lexis-phrase">cut corners</span><span class="lexis-tag">Idiom</span></span>
+          <span class="lexis-detail">Do something hastily or carelessly to hit a deadline or cost target faster.
+            <span class="lexis-example">&ldquo;Unrealistic quarterly quotas practically invite tired teams to cut corners.&rdquo;</span>
+          </span>
+        </button>
+        <button type="button" class="lexis-card" onclick="revealLexis(this)">
+          <span class="lexis-head"><span class="lexis-phrase">move the goalposts</span><span class="lexis-tag">Idiom</span></span>
+          <span class="lexis-detail">Change the target or criteria mid-way through a process to make success harder.
+            <span class="lexis-example">&ldquo;The moment a model passes an old exam, critics simply move the goalposts.&rdquo;</span>
+          </span>
+        </button>
+        <button type="button" class="lexis-card" onclick="revealLexis(this)">
+          <span class="lexis-head"><span class="lexis-phrase">diminishing returns</span><span class="lexis-tag">Economics</span></span>
+          <span class="lexis-detail">The point where extra effort or spending brings progressively smaller real gains.
+            <span class="lexis-example">&ldquo;Beyond a certain scale, tuning the same static dataset hits diminishing returns.&rdquo;</span>
+          </span>
+        </button>
+        <button type="button" class="lexis-card" onclick="revealLexis(this)">
+          <span class="lexis-head"><span class="lexis-phrase">backfire</span><span class="lexis-tag">Verb</span></span>
+          <span class="lexis-detail">Produce the exact opposite, undesirable consequence of what was intended.
+            <span class="lexis-example">&ldquo;The colonial cobra bounty backfired the day locals began breeding snakes at home.&rdquo;</span>
+          </span>
+        </button>
+      </div>
+
+      <!-- Precision Radar (recycling Igor's real recent notes cleanly) -->
+      <div class="radar-panel">
+        <h3>Precision Radar &middot; Four Quick Distinctions</h3>
+        <p style="font-size:0.86rem; color:var(--ink-muted);">Click the crisper, natural option in each pair.</p>
+
+        <div class="radar-list">
+          <div class="radar-item">
+            <span class="radar-label">01 &middot; Countability (Many vs. Much)</span>
+            <div class="radar-options">
+              <button type="button" class="radar-opt" onclick="pickRadar(this, false)">&ldquo;We don&rsquo;t have much reliable metrics left, nor many patience for another dashboard.&rdquo;</button>
+              <button type="button" class="radar-opt" onclick="pickRadar(this, true)">&ldquo;We don&rsquo;t have many reliable metrics left, nor much patience for another dashboard.&rdquo;</button>
+            </div>
+            <p class="radar-note">Spot on: plural countable nouns (<em>meetings, metrics, benchmarks</em>) take <strong>many</strong>; uncountable nouns (<em>patience, time, noise</em>) take <strong>much</strong>.</p>
+          </div>
+
+          <div class="radar-item">
+            <span class="radar-label">02 &middot; Word Pair (Human vs. Humane)</span>
+            <div class="radar-options">
+              <button type="button" class="radar-opt" onclick="pickRadar(this, true)">&ldquo;An automated system can pass a human test without making a humane judgement.&rdquo;</button>
+              <button type="button" class="radar-opt" onclick="pickRadar(this, false)">&ldquo;An automated system can pass a humane test without making a human judgement.&rdquo;</button>
+            </div>
+            <p class="radar-note">Exactly right: <strong>human</strong> = relating to people; <strong>humane</strong> = showing compassion and mercy.</p>
+          </div>
+
+          <div class="radar-item">
+            <span class="radar-label">03 &middot; Connected Rhythm (Present Perfect Continuous)</span>
+            <div class="radar-options">
+              <button type="button" class="radar-opt" onclick="pickRadar(this, true)">&ldquo;I&rsquo;ve been watching this benchmark for months, and it&rsquo;s been drifting ever since.&rdquo;</button>
+              <button type="button" class="radar-opt" onclick="pickRadar(this, false)">&ldquo;I am watching this benchmark since six months, and it drifts ever since.&rdquo;</button>
+            </div>
+            <p class="radar-note">Clean continuous aspect &mdash; in natural British speech, compress <em>I&rsquo;ve been</em> cleanly into a smooth <code>Ahv-bin</code>.</p>
+          </div>
+
+          <div class="radar-item">
+            <span class="radar-label">04 &middot; Proportion Clause (No Comma Splice)</span>
+            <div class="radar-options">
+              <button type="button" class="radar-opt" onclick="pickRadar(this, false)">&ldquo;They proposed twelve targets, most of them measured speed rather than judgement.&rdquo;</button>
+              <button type="button" class="radar-opt" onclick="pickRadar(this, true)">&ldquo;They proposed twelve targets, most of which measured speed rather than judgement.&rdquo;</button>
+            </div>
+            <p class="radar-note">Yes: linking two clauses with just a comma and <em>most of them</em> creates a comma splice. Use <strong>, most of which</strong> (or a full stop).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 4: C1 STRUCTURAL POWER & PART 4 -->
+    <section id="stage-4" class="stage-section">
+      <div class="stage-header">
+        <div>
+          <span class="stage-kicker">Stage 04 &middot; C1 Structural Power</span>
+          <h2 class="stage-title">Negative Inversion &amp; Quantifying Clauses</h2>
+        </div>
+        <p class="stage-rubric">Two crisp devices for dry irony and analytical punch, followed by four Cambridge C1 transformations (3&ndash;6 words, key word unchanged).</p>
+      </div>
+
+      <div class="blueprint-grid">
+        <div class="blueprint-card">
+          <span class="blueprint-tag">Frame A &middot; Negative / Restrictive Inversion</span>
+          <div class="formula-line">Little / Rarely / Not only + [Auxiliary] + [Subject] + [Base Verb]</div>
+          <p class="blueprint-ex">
+            &ldquo;<strong>Little did the officials realise</strong> that the extra-time rule would turn the match upside down.&rdquo;
+          </p>
+        </div>
+        <div class="blueprint-card signal">
+          <span class="blueprint-tag">Frame B &middot; Quantifying Relative Clause</span>
+          <div class="formula-line">[Main Clause], + [half / many / none] of which + [Verb]</div>
+          <p class="blueprint-ex">
+            &ldquo;The committee retired six legacy benchmarks, <strong>half of which</strong> had already been saturated.&rdquo;
+          </p>
+        </div>
+      </div>
+
+      <div class="kwt-stack">
+        <!-- KWT 1 -->
+        <div class="kwt-card" data-valid="Little did the officials realise|Little did the officials realize|Little did the officials know">
+          <div class="kwt-meta">
+            <span class="kwt-num">TRANSFORMATION 01 &middot; 3&ndash;6 WORDS</span>
+            <span class="kwt-key">LITTLE</span>
+          </div>
+          <p class="kwt-s1">The officials had no idea that Barbados would score an own goal.</p>
+          <div class="kwt-s2">
+            <input type="text" class="kwt-input" aria-label="Transformation 1 answer" placeholder="3 to 6 words including LITTLE..." />
+            <span>that Barbados would score an own goal.</span>
+          </div>
+          <div class="kwt-actions">
+            <button type="button" class="btn-check" onclick="checkKwt(this)">Check Answer</button>
+            <button type="button" class="btn-reveal" onclick="toggleKwtModel(this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="kwt-feedback" aria-live="polite"></div>
+          <div class="kwt-model">
+            <strong>Cambridge Model (5 words):</strong> <strong>Little did the officials realise</strong> (or <strong>know</strong>) that Barbados would score an own goal.
+          </div>
+          <details class="mono-drawer">
+            <summary>4-Step Deconstruction Clue</summary>
+            <div class="drawer-body">
+              <strong>1. Strike the echoes:</strong> <em>that Barbados would score an own goal</em> is already placed.<br />
+              <strong>2. Inspect tense:</strong> Sentence 1 is Past Simple (<em>had no idea</em>), so the inverted auxiliary is <em>did</em>.<br />
+              <strong>3. Pattern:</strong> <code>Little + did + Subject + base verb (know / realise)</code>.
+            </div>
+          </details>
+        </div>
+
+        <!-- KWT 2 -->
+        <div class="kwt-card" data-valid="only did the bounty fail">
+          <div class="kwt-meta">
+            <span class="kwt-num">TRANSFORMATION 02 &middot; 3&ndash;6 WORDS</span>
+            <span class="kwt-key">ONLY</span>
+          </div>
+          <p class="kwt-s1">The bounty failed to solve the problem and it actually made things worse.</p>
+          <div class="kwt-s2">
+            <span>Not</span>
+            <input type="text" class="kwt-input" aria-label="Transformation 2 answer" placeholder="3 to 6 words including ONLY..." />
+            <span>to solve the problem, but it also made things worse.</span>
+          </div>
+          <div class="kwt-actions">
+            <button type="button" class="btn-check" onclick="checkKwt(this)">Check Answer</button>
+            <button type="button" class="btn-reveal" onclick="toggleKwtModel(this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="kwt-feedback" aria-live="polite"></div>
+          <div class="kwt-model">
+            <strong>Cambridge Model (5 words):</strong> Not <strong>only did the bounty fail</strong> to solve the problem, but it also made things worse.
+          </div>
+          <details class="mono-drawer">
+            <summary>4-Step Deconstruction Clue</summary>
+            <div class="drawer-body">
+              <strong>1. Strike the echoes:</strong> <em>Not</em> is already before the gap; <em>to solve the problem</em> follows it.<br />
+              <strong>2. Invert Past Simple:</strong> <em>failed</em> splits into <code>did + the bounty + fail</code>.<br />
+              <strong>3. Count words:</strong> 5 words including unchanged <em>only</em>.
+            </div>
+          </details>
+        </div>
+
+        <!-- KWT 3 -->
+        <div class="kwt-card" data-valid="half of which were">
+          <div class="kwt-meta">
+            <span class="kwt-num">TRANSFORMATION 03 &middot; 3&ndash;6 WORDS</span>
+            <span class="kwt-key">WHICH</span>
+          </div>
+          <p class="kwt-s1">The researchers built eight new tests, and half of them were cracked within a month.</p>
+          <div class="kwt-s2">
+            <span>The researchers built eight new tests,</span>
+            <input type="text" class="kwt-input" aria-label="Transformation 3 answer" placeholder="3 to 6 words including WHICH..." />
+            <span>cracked within a month.</span>
+          </div>
+          <div class="kwt-actions">
+            <button type="button" class="btn-check" onclick="checkKwt(this)">Check Answer</button>
+            <button type="button" class="btn-reveal" onclick="toggleKwtModel(this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="kwt-feedback" aria-live="polite"></div>
+          <div class="kwt-model">
+            <strong>Cambridge Model (4 words):</strong> The researchers built eight new tests, <strong>half of which were</strong> cracked within a month.
+          </div>
+          <details class="mono-drawer">
+            <summary>4-Step Deconstruction Clue</summary>
+            <div class="drawer-body">
+              <strong>1. Spot the shift:</strong> <em>and half of them were</em> collapses cleanly after the comma.<br />
+              <strong>2. Apply the proportion frame:</strong> swap <em>and half of them</em> for <code>half of which</code>.<br />
+              <strong>3. Keep passive auxiliary:</strong> plural <em>were</em> matches <em>eight new tests</em>.
+            </div>
+          </details>
+        </div>
+
+        <!-- KWT 4 -->
+        <div class="kwt-card" data-valid="tempted to cut corners">
+          <div class="kwt-meta">
+            <span class="kwt-num">TRANSFORMATION 04 &middot; 3&ndash;6 WORDS</span>
+            <span class="kwt-key">CORNERS</span>
+          </div>
+          <p class="kwt-s1">When deadlines are too tight, even experienced engineers are tempted to work carelessly.</p>
+          <div class="kwt-s2">
+            <span>When deadlines are too tight, even experienced engineers are</span>
+            <input type="text" class="kwt-input" aria-label="Transformation 4 answer" placeholder="3 to 6 words including CORNERS..." />
+            <span>.</span>
+          </div>
+          <div class="kwt-actions">
+            <button type="button" class="btn-check" onclick="checkKwt(this)">Check Answer</button>
+            <button type="button" class="btn-reveal" onclick="toggleKwtModel(this)">👁️ Reveal Cambridge Model</button>
+          </div>
+          <div class="kwt-feedback" aria-live="polite"></div>
+          <div class="kwt-model">
+            <strong>Cambridge Model (4 words):</strong> When deadlines are too tight, even experienced engineers are <strong>tempted to cut corners</strong>.
+          </div>
+          <details class="mono-drawer">
+            <summary>4-Step Deconstruction Clue</summary>
+            <div class="drawer-body">
+              <strong>1. Strike the echoes:</strong> Everything up to <em>are</em> is already printed.<br />
+              <strong>2. Match the idiom:</strong> <em>work carelessly to save time</em> &rarr; <em>cut corners</em>.<br />
+              <strong>3. Preserve structure:</strong> <code>tempted to + base verb</code> &rarr; 4 words.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 5: DESIGN IT & BREAK IT ARENA -->
+    <section id="stage-5" class="stage-section">
+      <div class="stage-header">
+        <div>
+          <span class="stage-kicker">Stage 05 &middot; The Systems Judge Arena</span>
+          <h2 class="stage-title">Design a Fair Metric &mdash; Then Sabotage It</h2>
+        </div>
+        <p class="stage-rubric">Toggle between Designer and Saboteur on any card, speak for 60 seconds, then check the real-world twist.</p>
+      </div>
+
+      <div class="arena-grid">
+        <!-- Arena 1 -->
+        <article class="arena-card" data-idx="0">
+          <div>
+            <div class="arena-top">
+              <span class="arena-num">Case 01 &middot; Medicine</span>
+              <div class="role-switch" role="group" aria-label="Switch perspective for Case 1">
+                <button type="button" class="role-btn active" onclick="setRole(0, 'designer', this)">Designer</button>
+                <button type="button" class="role-btn" onclick="setRole(0, 'saboteur', this)">Saboteur</button>
+              </div>
+            </div>
+            <h3>Hospital Survival League Tables</h3>
+            <p class="arena-prompt" id="arena-text-0">A health ministry publishes public league tables ranking heart surgeons by 30-day patient survival rates. How would you design a fairer way to judge surgical quality?</p>
+          </div>
+          <details class="mono-drawer">
+            <summary>Real-World Twist</summary>
+            <div class="drawer-body">
+              When New York and UK surgical scorecards went public, several hospitals quietly turned away the sickest, highest-risk emergency patients so those cases would not drag down their published survival rate.
+            </div>
+          </details>
+        </article>
+
+        <!-- Arena 2 -->
+        <article class="arena-card" data-idx="1">
+          <div>
+            <div class="arena-top">
+              <span class="arena-num">Case 02 &middot; Software</span>
+              <div class="role-switch" role="group" aria-label="Switch perspective for Case 2">
+                <button type="button" class="role-btn active" onclick="setRole(1, 'designer', this)">Designer</button>
+                <button type="button" class="role-btn" onclick="setRole(1, 'saboteur', this)">Saboteur</button>
+              </div>
+            </div>
+            <h3>The Open-Source Bug Bounty</h3>
+            <p class="arena-prompt" id="arena-text-1">A company decides to pay contributors $200 for every closed bug ticket. What measure would reward genuinely cleaner code instead?</p>
+          </div>
+          <details class="mono-drawer">
+            <summary>Real-World Twist</summary>
+            <div class="drawer-body">
+              Contributors split one minor issue into six separate micro-tickets &mdash; or quietly introduce brittle code on Monday so they can heroically patch it on Thursday.
+            </div>
+          </details>
+        </article>
+
+        <!-- Arena 3 -->
+        <article class="arena-card" data-idx="2">
+          <div>
+            <div class="arena-top">
+              <span class="arena-num">Case 03 &middot; Education</span>
+              <div class="role-switch" role="group" aria-label="Switch perspective for Case 3">
+                <button type="button" class="role-btn active" onclick="setRole(2, 'designer', this)">Designer</button>
+                <button type="button" class="role-btn" onclick="setRole(2, 'saboteur', this)">Saboteur</button>
+              </div>
+            </div>
+            <h3>Smart-Card Lecture Sensors</h3>
+            <p class="arena-prompt" id="arena-text-2">A university ties 20% of final grades to electronic card tap-ins at the lecture-hall door. How would you measure genuine engagement instead?</p>
+          </div>
+          <details class="mono-drawer">
+            <summary>Real-World Twist</summary>
+            <div class="drawer-body">
+              One friend walks through the door tapping six student ID cards in a row &mdash; or students show up physically, put on noise-cancelling headphones, and work on something else for an hour.
+            </div>
+          </details>
+        </article>
+
+        <!-- Arena 4 -->
+        <article class="arena-card" data-idx="3">
+          <div>
+            <div class="arena-top">
+              <span class="arena-num">Case 04 &middot; Assessment</span>
+              <div class="role-switch" role="group" aria-label="Switch perspective for Case 4">
+                <button type="button" class="role-btn active" onclick="setRole(3, 'designer', this)">Designer</button>
+                <button type="button" class="role-btn" onclick="setRole(3, 'saboteur', this)">Saboteur</button>
+              </div>
+            </div>
+            <h3>The Automated AI Essay Detector</h3>
+            <p class="arena-prompt" id="arena-text-3">A college automatically fails any essay flagged above 40% &ldquo;machine-like phrasing&rdquo;. How would you assess authentic thinking without a brittle detector?</p>
+          </div>
+          <details class="mono-drawer">
+            <summary>Real-World Twist</summary>
+            <div class="drawer-body">
+              Polished non-native writers who rely on clean textbook structures are disproportionately flagged, while careless students deliberately sprinkle awkward grammar mistakes into drafts to look &ldquo;human&rdquo;.
+            </div>
+          </details>
+        </article>
+      </div>
+
+      <details class="mono-drawer">
+        <summary>Live Session Scratchpad &amp; Error Notes (Auto-saved locally)</summary>
+        <div class="drawer-body">
+          <textarea
+            id="igor-live-pad"
+            class="scratchpad-textarea"
+            placeholder="Capture live vocabulary upgrades, pronunciation notes, or natural rewrites during today's session..."
+          ></textarea>
+          <div class="scratchpad-bar">
+            <span id="pad-status" style="font-size:0.78rem; color:var(--ink-muted);">Saved in this browser</span>
+            <button type="button" class="btn-check" onclick="copyPad()">Copy Notes</button>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <footer class="footer-colophon">
+      <span>Prepared for Igor S. &middot; <a href="https://garethenglish.com" target="_blank" rel="noopener noreferrer">GarethEnglish.com</a></span>
+      <a href="index.html">&larr; Return to Igor&rsquo;s Resource Portal</a>
+    </footer>
+  </main>
+
+  <script>
+    // 1. Scroll progress fallback when scroll-driven animations are unsupported
+    if (!CSS.supports('animation-timeline', 'scroll()')) {
+      const bar = document.getElementById('reading-progress');
+      const updateBar = () => {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+        bar.style.transform = `scaleX(${pct})`;
+      };
+      window.addEventListener('scroll', updateBar, { passive: true });
+      updateBar();
+    }
+
+    // 2. Two-state dark mode toggle (modern-web-guidance: dark-mode-toggle)
+    const THEME_KEY = 'ge-metric-color-scheme';
+    const metaScheme = document.querySelector('meta[name="color-scheme"]');
+    const systemDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function getSystemScheme() {
+      return systemDarkQuery.matches ? 'dark' : 'light';
+    }
+
+    function applyScheme(value) {
+      metaScheme.content = value === 'light' || value === 'dark' ? value : 'light dark';
+    }
+
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      let stored = null;
+      try { stored = localStorage.getItem(THEME_KEY); } catch (_e) {}
+      const rendered = stored === 'light' || stored === 'dark' ? stored : getSystemScheme();
+      const target = rendered === 'dark' ? 'light' : 'dark';
+      if (target === getSystemScheme()) {
+        try { localStorage.removeItem(THEME_KEY); } catch (_e) {}
+        applyScheme('light dark');
+      } else {
+        try { localStorage.setItem(THEME_KEY, target); } catch (_e) {}
+        applyScheme(target);
+      }
+    });
+
+    window.addEventListener('storage', (e) => {
+      if (e.key === THEME_KEY) applyScheme(e.newValue);
+    });
+
+    systemDarkQuery.addEventListener('change', () => {});
+
+    // 3. Stage nav active sync
+    const navLinks = Array.from(document.querySelectorAll('.stage-link'));
+    const sections = navLinks.map((a) => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            navLinks.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+          }
+        });
+      }, { rootMargin: '-28% 0px -58% 0px' });
+      sections.forEach((sec) => io.observe(sec));
+    }
+
+    // 4. Warm-Up Sparks
+    function toggleSpark(btn) {
+      const pressed = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', String(!pressed));
+      btn.querySelector('.spark-state').textContent = !pressed ? 'Discussed' : 'Tap to tick';
+    }
+
+    // 5. Minimalist Ring Timer
+    const RING_CIRC = 339.292;
+    let totalSeconds = 60;
+    let remaining = 60;
+    let timerId = null;
+
+    function renderTimer() {
+      const mins = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const secs = String(remaining % 60).padStart(2, '0');
+      document.getElementById('timer-display').textContent = `${mins}:${secs}`;
+      const progress = totalSeconds > 0 ? (totalSeconds - remaining) / totalSeconds : 0;
+      const ring = document.getElementById('timer-ring');
+      ring.style.strokeDashoffset = String(RING_CIRC * progress);
+      ring.style.stroke = remaining <= 15 && remaining > 0 ? 'var(--accent-signal)' : 'var(--accent-cobalt)';
+    }
+
+    function setTimer(seconds, label, btn) {
+      clearInterval(timerId);
+      timerId = null;
+      totalSeconds = seconds;
+      remaining = seconds;
+      document.getElementById('timer-caption').textContent = label;
+      document.getElementById('timer-start').textContent = 'Start';
+      document.getElementById('mode-prep').classList.remove('active');
+      document.getElementById('mode-speak').classList.remove('active');
+      btn.classList.add('active');
+      renderTimer();
+    }
+
+    function toggleTimer() {
+      const startBtn = document.getElementById('timer-start');
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+        startBtn.textContent = 'Resume';
+        return;
+      }
+      if (remaining <= 0) remaining = totalSeconds;
+      startBtn.textContent = 'Pause';
+      timerId = setInterval(() => {
+        remaining = Math.max(0, remaining - 1);
+        renderTimer();
+        if (remaining === 0) {
+          clearInterval(timerId);
+          timerId = null;
+          startBtn.textContent = 'Done';
+        }
+      }, 1000);
+    }
+
+    function resetTimer() {
+      clearInterval(timerId);
+      timerId = null;
+      remaining = totalSeconds;
+      document.getElementById('timer-start').textContent = 'Start';
+      renderTimer();
+    }
+
+    renderTimer();
+
+    // 6. Lexis Self-Test Mode
+    let selfTestOn = false;
+    function toggleSelfTest() {
+      selfTestOn = !selfTestOn;
+      const grid = document.getElementById('lexis-grid');
+      const btn = document.getElementById('self-test-btn');
+      grid.classList.toggle('self-test-active', selfTestOn);
+      grid.querySelectorAll('.lexis-card').forEach((c) => c.classList.remove('revealed'));
+      btn.textContent = selfTestOn ? 'Exit Self-Test Mode' : 'Self-Test Mode: Hide Meanings';
+    }
+
+    function revealLexis(card) {
+      if (selfTestOn) card.classList.toggle('revealed');
+    }
+
+    // 7. Precision Radar
+    function pickRadar(btn, isCorrect) {
+      const item = btn.closest('.radar-item');
+      item.querySelectorAll('.radar-opt').forEach((b) => b.classList.remove('correct', 'wrong'));
+      btn.classList.add(isCorrect ? 'correct' : 'wrong');
+      item.querySelector('.radar-note').classList.add('visible');
+    }
+
+    // 8. Part 4 KWT Check & Reveal
+    function normalise(str) {
+      return String(str || '')
+        .toLowerCase()
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[.,!?;:]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function checkKwt(btn) {
+      const card = btn.closest('.kwt-card');
+      const input = card.querySelector('.kwt-input');
+      const fb = card.querySelector('.kwt-feedback');
+      const key = card.querySelector('.kwt-key').textContent.trim().toLowerCase();
+      const validList = (card.getAttribute('data-valid') || '').split('|').map(normalise);
+      const attempt = normalise(input.value);
+
+      if (!attempt) {
+        fb.className = 'kwt-feedback no';
+        fb.textContent = 'Type 3 to 6 words before checking.';
+        return;
+      }
+      if (!attempt.split(' ').includes(key)) {
+        fb.className = 'kwt-feedback no';
+        fb.textContent = `Remember to keep the exact key word "${key.toUpperCase()}" unchanged.`;
+        return;
+      }
+      if (validList.includes(attempt)) {
+        fb.className = 'kwt-feedback ok';
+        fb.textContent = 'Spot on \u2014 sharp C1 syntax and exact keyword control.';
+      } else {
+        fb.className = 'kwt-feedback no';
+        fb.textContent = 'Close \u2014 check the 4-step clue or compare against the Cambridge model.';
+      }
+    }
+
+    function toggleKwtModel(btn) {
+      const card = btn.closest('.kwt-card');
+      const model = card.querySelector('.kwt-model');
+      const isOpen = model.classList.toggle('open');
+      btn.textContent = isOpen ? '👁️ Hide Cambridge Model' : '👁️ Reveal Cambridge Model';
+    }
+
+    // 9. Arena Designer vs. Saboteur Switch
+    const ARENA_PROMPTS = [
+      {
+        designer: 'A health ministry publishes public league tables ranking heart surgeons by 30-day patient survival rates. How would you design a fairer way to judge surgical quality?',
+        saboteur: 'Put on your Saboteur hat: if your department is ranked strictly on 30-day survival percentages, how would a cynical administrator game that scoreboard within a month?'
+      },
+      {
+        designer: 'A company decides to pay contributors $200 for every closed bug ticket. What measure would reward genuinely cleaner code instead?',
+        saboteur: 'Put on your Saboteur hat: if you are paid $200 per closed issue, how could you multiply your payout legally without making the software noticeably better?'
+      },
+      {
+        designer: 'A university ties 20% of final grades to electronic card tap-ins at the lecture-hall door. How would you measure genuine engagement instead?',
+        saboteur: 'Put on your Saboteur hat: how will students effortlessly satisfy the door sensor while obeying the letter of the policy and ignoring the spirit?'
+      },
+      {
+        designer: 'A college automatically fails any essay flagged above 40% \u201Cmachine-like phrasing\u201D. How would you assess authentic thinking without a brittle detector?',
+        saboteur: 'Put on your Saboteur hat: if a crude detector penalises clean, predictable phrasing, how will students game it \u2014 and who gets unfairly caught in the crossfire?'
+      }
+    ];
+
+    function setRole(idx, role, btn) {
+      const group = btn.closest('.role-switch');
+      group.querySelectorAll('.role-btn').forEach((b) => b.classList.remove('active', 'saboteur'));
+      btn.classList.add('active');
+      if (role === 'saboteur') btn.classList.add('saboteur');
+      document.getElementById(`arena-text-${idx}`).textContent = ARENA_PROMPTS[idx][role];
+    }
+
+    // 10. Auto-Saved Live Scratchpad
+    const PAD_KEY = 'ge-igor-metric-pad';
+    const padEl = document.getElementById('igor-live-pad');
+    try {
+      const savedPad = localStorage.getItem(PAD_KEY);
+      if (savedPad) padEl.value = savedPad;
+    } catch (_e) {}
+
+    padEl.addEventListener('input', () => {
+      try {
+        localStorage.setItem(PAD_KEY, padEl.value);
+        document.getElementById('pad-status').textContent = 'Saved just now';
+      } catch (_e) {}
+    });
+
+    function copyPad() {
+      navigator.clipboard.writeText(padEl.value || '').then(() => {
+        document.getElementById('pad-status').textContent = 'Copied to clipboard';
+      });
+    }
+  </script>
+  <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
+  <script src="../../analytics.js" defer></script>
+</body>
+</html>
