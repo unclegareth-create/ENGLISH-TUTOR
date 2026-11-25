@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    try {
+      document.querySelector('meta[name="color-scheme"]').content = localStorage.getItem('color-scheme') ?? 'light dark';
+    } catch (e) {}
+  </script>
+  <title>Cambridge Maths Interview Studio: Thinking Aloud in English | Igor S. &middot; GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg-base: light-dark(#f6f3ec, #0b101b);
+      --bg-grid: light-dark(rgba(18, 38, 79, 0.04), rgba(148, 163, 184, 0.05));
+      --surface-card: light-dark(#ffffff, #131b2b);
+      --surface-subtle: light-dark(#faf8f3, #192338);
+      --surface-elevated: light-dark(rgba(246, 243, 236, 0.92), rgba(11, 16, 27, 0.92));
+      --ink-950: light-dark(#0c1527, #f8fafc);
+      --ink-800: light-dark(#1e293b, #e2e8f0);
+      --ink-700: light-dark(#334155, #cbd5e1);
+      --ink-500: light-dark(#5b687c, #94a3b8);
+      --border-hairline: light-dark(#e3dfd5, rgba(255, 255, 255, 0.1));
+      --border-strong: light-dark(#cbc5b7, rgba(255, 255, 255, 0.2));
+      --navy: light-dark(#163a70, #7cb3ff);
+      --navy-solid: light-dark(#12264f, #2563eb);
+      --navy-soft: light-dark(#edf3fc, rgba(59, 130, 246, 0.14));
+      --teal: light-dark(#0f766e, #2dd4bf);
+      --teal-soft: light-dark(#edfaf8, rgba(45, 212, 191, 0.14));
+      --amber: light-dark(#a1520a, #fbbf24);
+      --amber-soft: light-dark(#fef6e4, rgba(251, 191, 36, 0.14));
+      --emerald: light-dark(#047857, #34d399);
+      --emerald-soft: light-dark(#ecfdf5, rgba(52, 211, 153, 0.14));
+      --rose: light-dark(#b91c3c, #fb7185);
+      --rose-soft: light-dark(#fff1f4, rgba(251, 113, 133, 0.14));
+      --shadow-card: light-dark(0 10px 28px -6px rgba(12, 21, 39, 0.07), 0 14px 34px -8px rgba(0, 0, 0, 0.52));
+      --shadow-lift: light-dark(0 16px 36px -8px rgba(18, 38, 79, 0.14), 0 18px 40px -8px rgba(0, 0, 0, 0.65));
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    :root:has(> head > meta[name="color-scheme"][content="dark"]) {
+      color-scheme: dark;
+    }
+
+    :root:has(> head > meta[name="color-scheme"][content="light"]) {
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      background-image:
+        linear-gradient(to right, var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--bg-grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      padding-bottom: 88px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sticky Top Chrome */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: var(--surface-elevated);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .back-link {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: var(--navy-soft);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .back-link:hover {
+      border-color: var(--navy);
+    }
+
+    .brand-tag {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--ink-500);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .radar-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--teal-soft);
+      color: var(--teal);
+      border: 1px solid var(--border-hairline);
+      border-radius: 999px;
+      padding: 4px 11px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+
+    .topbar-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .timer-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-family: var(--font-mono);
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--ink-950);
+    }
+
+    .timer-pill.alert-pulse {
+      border-color: var(--rose);
+      color: var(--rose);
+    }
+
+    .ctrl-btn {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-800);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-family: var(--font-sans);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+    }
+
+    .ctrl-btn:hover {
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+
+    .ctrl-btn.primary {
+      background: var(--navy-solid);
+      color: #ffffff;
+      border-color: var(--navy-solid);
+    }
+
+    .ctrl-btn.primary:hover {
+      opacity: 0.92;
+      color: #ffffff;
+    }
+
+    /* Main Shell */
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 26px 20px 0;
+    }
+
+    /* Editorial Split Hero */
+    .hero-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+    }
+
+    @media (max-width: 820px) {
+      .hero-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hero-body {
+      padding: 32px 32px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 10px;
+    }
+
+    .hero-body h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.75rem, 3vw, 2.35rem);
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--ink-950);
+      margin-bottom: 12px;
+    }
+
+    .hero-lead {
+      font-size: 0.98rem;
+      color: var(--ink-700);
+      margin-bottom: 18px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-hairline);
+      background: var(--surface-subtle);
+      color: var(--ink-700);
+    }
+
+    .badge.accent {
+      background: var(--navy-soft);
+      color: var(--navy);
+      border-color: transparent;
+    }
+
+    .hero-media {
+      position: relative;
+      background: var(--surface-subtle);
+      min-height: 250px;
+    }
+
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* 5-Stage Navigation */
+    .stage-nav {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 860px) {
+      .stage-nav {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stage-tab {
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 12px 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+    }
+
+    .stage-tab:hover {
+      border-color: var(--navy);
+      transform: translateY(-1px);
+    }
+
+    .stage-tab[aria-selected="true"] {
+      border-color: var(--navy);
+      background: var(--navy-soft);
+      box-shadow: 0 6px 18px -6px rgba(22, 58, 112, 0.22);
+    }
+
+    .stage-num {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .stage-title {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      display: block;
+    }
+
+    .stage-sub {
+      font-size: 0.75rem;
+      color: var(--ink-500);
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* Stage Panels */
+    .stage-panel {
+      display: none;
+    }
+
+    .stage-panel.active {
+      display: block;
+    }
+
+    /* Cards & Editorial Typography */
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 18px;
+      padding: 28px 30px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-card);
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 20px 18px;
+      }
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .card h2 {
+      font-family: var(--font-serif);
+      font-size: 1.48rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      line-height: 1.22;
+    }
+
+    .card h3 {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      margin-bottom: 8px;
+    }
+
+    .card-subtitle {
+      color: var(--ink-500);
+      font-size: 0.94rem;
+      margin-top: 4px;
+    }
+
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .pill-navy { background: var(--navy-soft); color: var(--navy); }
+    .pill-teal { background: var(--teal-soft); color: var(--teal); }
+    .pill-amber { background: var(--amber-soft); color: var(--amber); }
+    .pill-emerald { background: var(--emerald-soft); color: var(--emerald); }
+    .pill-rose { background: var(--rose-soft); color: var(--rose); }
+
+    /* Grids */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    @media (max-width: 780px) {
+      .grid-3, .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .info-tile {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-top: 3px solid var(--navy);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+
+    .info-tile.teal { border-top-color: var(--teal); }
+    .info-tile.amber { border-top-color: var(--amber); }
+    .info-tile.emerald { border-top-color: var(--emerald); }
+
+    .tile-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--navy);
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .info-tile.teal .tile-kicker { color: var(--teal); }
+    .info-tile.amber .tile-kicker { color: var(--amber); }
+    .info-tile.emerald .tile-kicker { color: var(--emerald); }
+
+    .tile-text {
+      font-size: 0.9rem;
+      color: var(--ink-700);
+    }
+
+    /* Supervision Code Checklist */
+    .habit-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 720px) {
+      .habit-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .habit-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.9rem;
+    }
+
+    .habit-num {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--navy-soft);
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Callout Strip */
+    .formula-strip {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--teal);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+
+    .formula-code {
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--teal);
+      background: var(--teal-soft);
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    /* Native Accessible Accordions (modern-web-guidance: accordion) */
+    .disclosure-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    details.ed-details {
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      background: var(--surface-subtle);
+      overflow: hidden;
+    }
+
+    details.ed-details.hint-box {
+      border-color: light-dark(rgba(161, 82, 10, 0.35), rgba(251, 191, 36, 0.35));
+      background: var(--amber-soft);
+    }
+
+    details.ed-details.solution-box {
+      border-color: light-dark(rgba(4, 120, 87, 0.35), rgba(52, 211, 153, 0.35));
+      background: var(--emerald-soft);
+    }
+
+    details.ed-details > summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 16px;
+      font-weight: 700;
+      font-size: 0.93rem;
+      color: var(--ink-950);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    details.ed-details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    details.ed-details > summary::before {
+      content: "";
+      inline-size: 0.7em;
+      block-size: 0.7em;
+      flex-shrink: 0;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(-45deg);
+      margin-right: 2px;
+    }
+
+    details.ed-details[open] > summary::before {
+      transform: rotate(45deg);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      details.ed-details > summary::before {
+        transition: transform 0.2s ease;
+      }
+
+      details.ed-details::details-content {
+        transition: block-size 0.28s ease, content-visibility 0.28s ease allow-discrete;
+      }
+    }
+
+    details.ed-details::details-content {
+      interpolate-size: allow-keywords;
+      overflow: clip;
+      contain: layout;
+    }
+
+    details.ed-details:not([open])::details-content {
+      block-size: 0;
+    }
+
+    .details-body {
+      padding: 0 18px 16px 36px;
+      font-size: 0.93rem;
+      color: var(--ink-800);
+    }
+
+    /* Click-to-Stamp Spoken Phrase Chips */
+    .phrase-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 8px;
+    }
+
+    .phrase-chip {
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-strong);
+      color: var(--ink-800);
+      border-radius: 10px;
+      padding: 8px 13px;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .phrase-chip:hover {
+      border-color: var(--teal);
+    }
+
+    .phrase-chip[aria-pressed="true"] {
+      background: var(--emerald-soft);
+      border-color: var(--emerald);
+      color: var(--ink-950);
+      font-weight: 700;
+    }
+
+    .phrase-chip[aria-pressed="true"]::before {
+      content: "Used aloud: ";
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--emerald);
+      text-transform: uppercase;
+    }
+
+    /* Upgrade Drills & Reveal Buttons */
+    .drill-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .drill-item {
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 16px 18px;
+      background: var(--surface-subtle);
+    }
+
+    .drill-weak {
+      font-size: 0.96rem;
+      color: var(--rose);
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .reveal-btn {
+      background: var(--surface-card);
+      border: 1.5px solid var(--navy);
+      color: var(--navy);
+      font-family: var(--font-sans);
+      font-size: 0.84rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 9px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .reveal-btn:hover {
+      background: var(--navy-solid);
+      color: #ffffff;
+    }
+
+    .reveal-btn.teal {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .reveal-btn.teal:hover {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .reveal-box {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: var(--emerald-soft);
+      border: 1px solid light-dark(rgba(4, 120, 87, 0.25), rgba(52, 211, 153, 0.3));
+      color: var(--ink-950);
+      font-size: 0.94rem;
+    }
+
+    .reveal-box.open {
+      display: block;
+    }
+
+    /* Quick Edge-Case Probe Bar */
+    .probe-bar {
+      background: var(--surface-card);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .probe-label {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--ink-500);
+    }
+
+    .probe-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .probe-chip {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      color: var(--ink-800);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .probe-chip[aria-pressed="true"] {
+      background: var(--navy-soft);
+      border-color: var(--navy);
+      color: var(--navy);
+    }
+
+    /* Problem Split Layout */
+    .problem-layout {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 22px;
+      align-items: start;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 800px) {
+      .problem-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .math-statement {
+      background: var(--navy-soft);
+      border: 1.5px solid light-dark(rgba(22, 58, 112, 0.2), rgba(124, 179, 255, 0.25));
+      border-radius: 14px;
+      padding: 20px 22px;
+      font-size: 1.03rem;
+      color: var(--ink-950);
+    }
+
+    .visual-stage {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .visual-caption {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--ink-500);
+    }
+
+    .parity-readout {
+      display: flex;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .followup-list {
+      list-style: none;
+      margin: 12px 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .followup-list li {
+      padding: 9px 13px;
+      border-left: 3px solid var(--teal);
+      background: var(--surface-subtle);
+      border-radius: 0 8px 8px 0;
+      font-size: 0.92rem;
+    }
+
+    /* Interactive Canvas Sketch Pad */
+    .sketch-wrap {
+      position: relative;
+      width: 280px;
+      height: 220px;
+      border-radius: 10px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-strong);
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .sketch-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .sketch-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    .curve-hidden {
+      display: none;
+    }
+
+    /* Mod 3 Interactive Tester */
+    .mod-controls {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .mod-readout {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 8px;
+      padding: 8px 12px;
+      width: 100%;
+      color: var(--ink-950);
+    }
+
+    /* Plain-English Pivot Media Figure */
+    .editorial-figure {
+      margin: 16px 0;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-subtle);
+    }
+
+    .editorial-figure img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .editorial-figure figcaption {
+      padding: 10px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--ink-500);
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    /* Non-Specialist Roulette Card */
+    .roulette-stage {
+      background: var(--surface-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 16px;
+      padding: 22px 24px;
+      margin-top: 14px;
+    }
+
+    .roulette-title {
+      font-family: var(--font-serif);
+      font-size: 1.32rem;
+      font-weight: 700;
+      color: var(--ink-950);
+      margin-bottom: 8px;
+    }
+
+    .roulette-prompt {
+      font-size: 0.96rem;
+      color: var(--ink-700);
+      margin-bottom: 14px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    /* Live Scratchpad */
+    .scratchpad-form {
+      display: grid;
+      grid-template-columns: 1fr 175px auto;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    @media (max-width: 680px) {
+      .scratchpad-form {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface-subtle);
+      color: var(--ink-950);
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+    }
+
+    .log-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .log-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      background: var(--surface-subtle);
+      font-size: 0.92rem;
+    }
+
+    .log-empty {
+      color: var(--ink-500);
+    }
+
+    .del-btn {
+      background: transparent;
+      border: none;
+      color: var(--rose);
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.84rem;
+    }
+
+    .copy-feedback {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--emerald);
+      font-weight: 700;
+    }
+
+    .footer-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-hairline);
+      flex-wrap: wrap;
+    }
+
+    .section-space {
+      margin-top: 20px;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--surface-subtle);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .math-statement code {
+      background: light-dark(rgba(255, 255, 255, 0.72), rgba(11, 16, 27, 0.55));
+    }
+
+    /* Two-state theme toggle icons */
+    .theme-label-dark { display: inline; }
+    .theme-label-light { display: none; }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .theme-label-dark { display: none; }
+      :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .theme-label-light { display: inline; }
+    }
+
+    :root:has(> head > meta[name="color-scheme"][content="dark"]) .theme-label-dark { display: none; }
+    :root:has(> head > meta[name="color-scheme"][content="dark"]) .theme-label-light { display: inline; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="back-link" href="index.html">&larr; Portal</a>
+      <span class="brand-tag">Cambridge Maths Interview Studio</span>
+      <span class="radar-pill" id="phrase-counter">Phrases Used: 0 / 20</span>
+    </div>
+    <div class="topbar-controls">
+      <div class="timer-pill" id="timer-pill">
+        <span id="timer-display">02:00</span>
+        <button type="button" class="ctrl-btn" data-timer-set="120">2m</button>
+        <button type="button" class="ctrl-btn" data-timer-set="300">5m</button>
+        <button type="button" class="ctrl-btn primary" id="timer-toggle">Start</button>
+        <button type="button" class="ctrl-btn" id="timer-reset">Reset</button>
+      </div>
+      <button type="button" class="ctrl-btn" id="sound-toggle" aria-pressed="true">Sound: On</button>
+      <button type="button" class="ctrl-btn" id="theme-toggle">
+        <span class="theme-label-dark">Dark Mode</span>
+        <span class="theme-label-light">Light Mode</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero-card" aria-label="Session overview">
+      <div class="hero-body">
+        <div class="hero-kicker">Cambridge Mathematics Preparation &middot; Igor S. &middot; 25 Nov 2026</div>
+        <!-- STUDENT-PIXEL-BADGE-START -->
+<div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:rgba(15,23,42,0.12); border:1px solid rgba(148,163,184,0.32); margin-bottom:10px; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; font-size:0.78rem; font-weight:700; line-height:1.2;">
+  <img src="avatar.svg" alt="Igor S. (C1 Prep)" style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid rgba(255,255,255,0.28); flex-shrink:0;" />
+  <span>Igor S. (C1 Prep) &bull; Cambridge C1 Advanced (CAE)</span>
+</div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+<h1>Cambridge Maths Interview: Thinking Aloud in English</h1>
+        <p class="hero-lead">
+          Cambridge admissions interviews are short, interactive supervisions. Tutors are not looking for silent mental arithmetic; they want to hear how you test ideas, respond to hints, and justify each step in clear spoken English.
+        </p>
+        <div class="hero-badges">
+          <span class="badge accent">Window: 7 to 15 Dec</span>
+          <span class="badge">25-Min Supervision Format</span>
+          <span class="badge">Whiteboard + Live Speech</span>
+          <span class="badge">Plain-English Pivot Included</span>
+        </div>
+      </div>
+      <div class="hero-media">
+        <img
+          src="cambridge-supervision-hero.jpg"
+          alt="Sunlit Cambridge supervision desk with an open mathematics notebook, fountain pen, and view of limestone college architecture"
+          width="1200"
+          height="675"
+          fetchpriority="high"
+        />
+      </div>
+    </section>
+
+    <nav class="stage-nav" role="tablist" aria-label="Lesson stages">
+      <button type="button" role="tab" class="stage-tab" aria-selected="true" data-stage="0">
+        <span class="stage-num">Stage 1 &middot; 5 min</span>
+        <span class="stage-title">Interview Briefing</span>
+        <span class="stage-sub">Format &amp; 10 Habits</span>
+      </button>
+      <button type="button" role="tab" class="stage-tab" aria-selected="false" data-stage="1">
+        <span class="stage-num">Stage 2 &middot; 12 min</span>
+        <span class="stage-title">Pitch &amp; Phrasebook</span>
+        <span class="stage-sub">20 Bridges + Drills</span>
+      </button>
+      <button type="button" role="tab" class="stage-tab" aria-selected="false" data-stage="2">
+        <span class="stage-num">Stage 3 &middot; 18 min</span>
+        <span class="stage-title">3 Maths Rounds</span>
+        <span class="stage-sub">Interactive Visuals</span>
+      </button>
+      <button type="button" role="tab" class="stage-tab" aria-selected="false" data-stage="3">
+        <span class="stage-num">Stage 4 &middot; Flex</span>
+        <span class="stage-title">Plain-English Pivot</span>
+        <span class="stage-sub">Fermi 747 &amp; Roulette</span>
+      </button>
+      <button type="button" role="tab" class="stage-tab" aria-selected="false" data-stage="4">
+        <span class="stage-num">Stage 5 &middot; 8 min</span>
+        <span class="stage-title">Precision Log</span>
+        <span class="stage-sub">Debrief &amp; Friday Prep</span>
+      </button>
+    </nav>
+
+    <!-- STAGE 1: INTERVIEW BRIEFING -->
+    <section class="stage-panel active" id="stage-0" role="tabpanel">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>How a Cambridge Mathematics Interview Works</h2>
+            <p class="card-subtitle">Most applicants sit 2 separate online interviews of 20 to 30 minutes each, working on a shared virtual whiteboard while speaking aloud.</p>
+          </div>
+          <span class="pill pill-navy">25-Minute Blueprint</span>
+        </div>
+
+        <div class="grid-3">
+          <div class="info-tile">
+            <span class="tile-kicker">Minutes 0 to 2 &middot; Opening</span>
+            <h3>Brief Settling-In</h3>
+            <p class="tile-text">Minimal small talk. Unlike humanities interviews, Maths tutors rarely linger on your personal statement; they move straight into live reasoning.</p>
+          </div>
+          <div class="info-tile teal">
+            <span class="tile-kicker">Minutes 2 to 22 &middot; Core</span>
+            <h3>2 to 3 Escalating Problems</h3>
+            <p class="tile-text">Starts with an accessible warm-up, then pushes until you get stuck on purpose so the tutor can drop a hint and watch how quickly you adapt.</p>
+          </div>
+          <div class="info-tile amber">
+            <span class="tile-kicker">Minutes 22 to 25 &middot; Close</span>
+            <h3>Quick Wrap-Up</h3>
+            <p class="tile-text">A short chance to ask one concise question. Not formally scored, so keep it calm, genuine, and brief.</p>
+          </div>
+        </div>
+
+        <div class="grid-2 section-space">
+          <div class="info-tile emerald">
+            <span class="tile-kicker">What Tutors Reward</span>
+            <h3>Teachability &amp; Audible Logic</h3>
+            <p class="tile-text">Listening closely to a hint, starting with small cases before seeing the whole proof, stating assumptions explicitly, and explaining why a dead end failed.</p>
+          </div>
+          <div class="info-tile">
+            <span class="tile-kicker">What Does Not Matter</span>
+            <h3>No Rehearsed Speeches</h3>
+            <p class="tile-text">Memorised personal-statement scripts, showy vocabulary, or sitting in 45 seconds of silence trying to produce a flawless final answer in your head.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>The 10 Supervision Habits</h2>
+            <p class="card-subtitle">Treat the interview like a live conversation at a whiteboard, not a silent written exam.</p>
+          </div>
+          <span class="pill pill-teal">Supervision Code</span>
+        </div>
+
+        <div class="habit-grid">
+          <div class="habit-item"><span class="habit-num">01</span><div><strong>Keep the 10-second rule:</strong> Never calculate silently for more than 10 seconds. Say what you are checking right now.</div></div>
+          <div class="habit-item"><span class="habit-num">02</span><div><strong>Ban the word "obviously":</strong> Every step needs a spoken reason, even when the algebra feels simple to you.</div></div>
+          <div class="habit-item"><span class="habit-num">03</span><div><strong>State your plan before writing:</strong> Announce your strategy in one sentence before touching the whiteboard.</div></div>
+          <div class="habit-item"><span class="habit-num">04</span><div><strong>Take hints cleanly:</strong> Pause, acknowledge the nudge (<em>"Good point, let me check..."</em>), and run with it immediately.</div></div>
+          <div class="habit-item"><span class="habit-num">05</span><div><strong>Test the 4 universal edge cases:</strong> Check <code>x = 0</code>, <code>n = 1</code>, negative numbers, and very large values.</div></div>
+          <div class="habit-item"><span class="habit-num">06</span><div><strong>Diagnose dead ends out loud:</strong> If you cross something out, explain clearly why that approach broke down.</div></div>
+          <div class="habit-item"><span class="habit-num">07</span><div><strong>Pause for plain English:</strong> Every couple of minutes, summarise what you have proved without symbols.</div></div>
+          <div class="habit-item"><span class="habit-num">08</span><div><strong>Stay steady under challenge:</strong> When asked <em>"Are you sure about that sign?"</em>, check calmly rather than rushing.</div></div>
+          <div class="habit-item"><span class="habit-num">09</span><div><strong>Read neutral faces calmly:</strong> Interviewers stay deadpan by design; a quiet <em>"Okay, keep going"</em> is normal.</div></div>
+          <div class="habit-item"><span class="habit-num">10</span><div><strong>Move on without regret:</strong> If a tutor cuts a problem short after 7 minutes, reset cleanly for the next one.</div></div>
+        </div>
+
+        <div class="footer-nav">
+          <span></span>
+          <button type="button" class="reveal-btn" data-go-stage="1">Next: Opening Pitch &amp; Phrasebook &rarr;</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- STAGE 2: PITCH & PHRASEBOOK -->
+    <section class="stage-panel" id="stage-1" role="tabpanel">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Part A: Active 2-Minute Opening Pitch</h2>
+            <p class="card-subtitle">Start the <code>2m</code> timer above and answer one prompt naturally without reading from notes.</p>
+          </div>
+          <span class="pill pill-teal">Active Voice First &middot; 2:00</span>
+        </div>
+
+        <div class="grid-3">
+          <div class="info-tile">
+            <span class="tile-kicker">Prompt 1</span>
+            <h3>Why Pure Maths?</h3>
+            <p class="tile-text">Why choose Mathematics at university rather than Physics or Computer Science?</p>
+          </div>
+          <div class="info-tile teal">
+            <span class="tile-kicker">Prompt 2</span>
+            <h3>A Favourite Problem</h3>
+            <p class="tile-text">Describe a theorem or competition problem you enjoyed recently and why its proof surprised you.</p>
+          </div>
+          <div class="info-tile amber">
+            <span class="tile-kicker">Prompt 3</span>
+            <h3>First 30 Seconds Stuck</h3>
+            <p class="tile-text">What do you actually do in the first 30 seconds when you meet a problem with no clear starting point?</p>
+          </div>
+        </div>
+
+        <div class="formula-strip">
+          <div class="formula-code">C1 Arc: Hook (15s) &rarr; Concrete Example (45s) &rarr; Mathematical Payoff (30s)</div>
+          <p class="tile-text">
+            Useful openings: <em>"What first drew me to..."</em> &middot; <em>"What I find compelling about..."</em> &middot; <em>"Rather than memorising a method, I wanted to see why..."</em>
+          </p>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Part B: Thinking-Aloud Phrasebook (Click to Stamp Live)</h2>
+            <p class="card-subtitle">Click any phrase as you use it aloud during today's session to track your spoken signposting range.</p>
+          </div>
+          <span class="pill pill-emerald">20 Target Phrases</span>
+        </div>
+
+        <section class="disclosure-group" aria-label="Thinking-aloud phrase categories">
+          <details class="ed-details" open>
+            <summary>1. Opening &amp; Buying Time (First 15 Seconds)</summary>
+            <div class="details-body">
+              <div class="phrase-grid">
+                <button type="button" class="phrase-chip" aria-pressed="false">"Let me read the conditions carefully to make sure I have not missed a constraint."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"My first instinct is to check whether..."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"I do not see the full proof yet, so let me start with a simpler case."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"Let me pause for a moment to check the boundary case."</button>
+              </div>
+            </div>
+          </details>
+
+          <details class="ed-details" open>
+            <summary>2. Testing Small Cases &amp; Spotting Patterns</summary>
+            <div class="details-body">
+              <div class="phrase-grid">
+                <button type="button" class="phrase-chip" aria-pressed="false">"Let me try n = 1, 2, 3 first to get a feel for how this behaves."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"That suggests a pattern, though I still need to prove it holds in general."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"Let us see what happens in the extreme case where x is very large or negative."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"Testing a counterexample might rule out that guess straight away."</button>
+              </div>
+            </div>
+          </details>
+
+          <details class="ed-details">
+            <summary>3. Stating Assumptions &amp; Justifying Steps</summary>
+            <div class="details-body">
+              <div class="phrase-grid">
+                <button type="button" class="phrase-chip" aria-pressed="false">"Without loss of generality, suppose that..."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"Suppose, for the sake of contradiction, that..."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"It follows immediately from the previous step that..."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"There are three exhaustive cases to check..."</button>
+              </div>
+            </div>
+          </details>
+
+          <details class="ed-details">
+            <summary>4. Backtracking &amp; Handling Getting Stuck</summary>
+            <div class="details-body">
+              <div class="phrase-grid">
+                <button type="button" class="phrase-chip" aria-pressed="false">"Wait, that route hits a dead end because..."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"Actually, let me backtrack: I dropped a negative sign in the previous line."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"That does not quite close the gap, so let me reframe the condition as..."</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"Could I double-check one assumption before I take this further?"</button>
+              </div>
+            </div>
+          </details>
+
+          <details class="ed-details">
+            <summary>5. High-Frequency Maths English (Common Preposition &amp; Verb Traps)</summary>
+            <div class="details-body">
+              <div class="phrase-grid">
+                <button type="button" class="phrase-chip" aria-pressed="false">"n is divisible by 6" (not "can divide by 6")</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"substitute x = 1 into the equation" (not "put x in")</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"as x tends to infinity, y approaches zero from above"</button>
+                <button type="button" class="phrase-chip" aria-pressed="false">"x satisfies the equation / the identity holds for all integers n"</button>
+              </div>
+            </div>
+          </details>
+        </section>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Part C: Live Upgrade Drill (Informal &rarr; Interview English)</h2>
+            <p class="card-subtitle">Say an upgraded Cambridge version out loud before revealing the model.</p>
+          </div>
+          <span class="pill pill-navy">6 Rapid Repairs</span>
+        </div>
+
+        <div class="drill-list">
+          <div class="drill-item">
+            <div class="drill-weak">1. "Maybe I put x = 1 and see what happens."</div>
+            <button type="button" class="reveal-btn" data-reveal-next>&#128065;&#65039; Reveal Cambridge Model</button>
+            <div class="reveal-box"><strong>Model:</strong> "Let me test a small case first, say <code>x = 1</code>, to see whether a pattern emerges."</div>
+          </div>
+
+          <div class="drill-item">
+            <div class="drill-weak">2. "Wait, no, this is wrong, I forgot minus sign."</div>
+            <button type="button" class="reveal-btn" data-reveal-next>&#128065;&#65039; Reveal Cambridge Model</button>
+            <div class="reveal-box"><strong>Model:</strong> "Actually, let me backtrack: I dropped a negative sign in the previous line, which reverses the inequality."</div>
+          </div>
+
+          <div class="drill-item">
+            <div class="drill-weak">3. "It's obvious that it goes to zero."</div>
+            <button type="button" class="reveal-btn" data-reveal-next>&#128065;&#65039; Reveal Cambridge Model</button>
+            <div class="reveal-box"><strong>Model:</strong> "As <code>x</code> tends to infinity, the exponential decay dominates the linear term, so the expression tends to zero from above."</div>
+          </div>
+
+          <div class="drill-item">
+            <div class="drill-weak">4. "We can't do this because of the colours."</div>
+            <button type="button" class="reveal-btn" data-reveal-next>&#128065;&#65039; Reveal Cambridge Model</button>
+            <div class="reveal-box"><strong>Model:</strong> "This tiling is impossible because each domino covers one square of each colour, whereas the mutilated board has an unequal number of black and white squares."</div>
+          </div>
+
+          <div class="drill-item">
+            <div class="drill-weak">5. "This number can divide by 6 for any n."</div>
+            <button type="button" class="reveal-btn" data-reveal-next>&#128065;&#65039; Reveal Cambridge Model</button>
+            <div class="reveal-box"><strong>Model:</strong> "This expression is divisible by 6 for every integer <code>n</code>, since it is divisible by both 2 and 3, which are coprime."</div>
+          </div>
+
+          <div class="drill-item">
+            <div class="drill-weak">6. "I have no idea how to start this one."</div>
+            <button type="button" class="reveal-btn" data-reveal-next>&#128065;&#65039; Reveal Cambridge Model</button>
+            <div class="reveal-box"><strong>Model:</strong> "I do not see the full route yet, so let me reframe the condition and test the boundary cases first."</div>
+          </div>
+        </div>
+
+        <div class="footer-nav">
+          <button type="button" class="reveal-btn teal" data-go-stage="0">&larr; Stage 1</button>
+          <button type="button" class="reveal-btn" data-go-stage="2">Next: 3 Interactive Maths Rounds &rarr;</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- STAGE 3: 3 INTERACTIVE MATHS ROUNDS -->
+    <section class="stage-panel" id="stage-2" role="tabpanel">
+      <div class="probe-bar" aria-label="Universal edge-case checks">
+        <span class="probe-label">Edge-Case Stress Checks:</span>
+        <div class="probe-chips">
+          <button type="button" class="probe-chip" aria-pressed="false">What if x = 0?</button>
+          <button type="button" class="probe-chip" aria-pressed="false">Negative values?</button>
+          <button type="button" class="probe-chip" aria-pressed="false">Small case n = 1?</button>
+          <button type="button" class="probe-chip" aria-pressed="false">As x &rarr; &infin;?</button>
+          <button type="button" class="probe-chip" aria-pressed="false">Missed a case?</button>
+          <button type="button" class="probe-chip" aria-pressed="false">Say it in plain English</button>
+        </div>
+        <button type="button" class="reveal-btn teal" data-go-stage="3">Switch to Plain-English Pivot &rarr;</button>
+      </div>
+
+      <!-- ROUND 1 -->
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Round 1: The Mutilated Chessboard (Invariants)</h2>
+            <p class="card-subtitle">Visual proof without algebra. Narrate your logic clearly from the very first sentence.</p>
+          </div>
+          <span class="pill pill-emerald">5:00 Timer &middot; Logic &amp; Parity</span>
+        </div>
+
+        <div class="problem-layout">
+          <div>
+            <div class="math-statement">
+              Take a standard <strong>8 &times; 8 chessboard</strong> and remove <strong>two opposite corner squares</strong> (leaving 62 squares).<br /><br />
+              Can you tile all 62 remaining squares using <strong>31 standard 2 &times; 1 dominoes</strong> with no overlaps and nothing hanging off the board?
+            </div>
+
+            <h3 class="section-space">Follow-Up Stress Questions</h3>
+            <ul class="followup-list">
+              <li>"Before checking the whole board, what property does any single 2 &times; 1 domino always preserve?"</li>
+              <li>"What changes if I remove two adjacent corners along the same edge instead?"</li>
+              <li>"Can you compress the entire proof into two clean spoken sentences?"</li>
+            </ul>
+
+            <div class="disclosure-group">
+              <details class="ed-details hint-box">
+                <summary>Checkpoint Hint (Small Nudge)</summary>
+                <div class="details-body">
+                  Check the colours of the two missing corners. Are they the same colour or opposite colours? Now compare that with the colours covered by a single domino.
+                </div>
+              </details>
+
+              <details class="ed-details solution-box">
+                <summary>Complete Proof &amp; Plain-English Walkthrough</summary>
+                <div class="details-body">
+                  <strong>Answer: Impossible.</strong><br />
+                  <strong>Plain-English Idea:</strong> On an 8 &times; 8 board, opposite corners are always the <strong>same colour</strong> (here, both white). Removing them leaves <strong>32 black squares</strong> and only <strong>30 white squares</strong>. Every 2 &times; 1 domino lies on two touching squares, so it must cover exactly 1 black and 1 white square. Therefore, 31 dominoes would always cover 31 black and 31 white squares, which can never match 32 and 30.
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div class="visual-stage">
+            <svg width="248" height="248" viewBox="0 0 248 248" role="img" aria-label="Interactive 8 by 8 chessboard with top-left and bottom-right corners removed">
+              <g id="chess-grid"></g>
+            </svg>
+            <div class="parity-readout">
+              <span id="black-count">Black left: 32</span>
+              <span id="white-count">White left: 30</span>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="ctrl-btn" id="chess-reset">Reset Dominoes</button>
+            </div>
+            <span class="visual-caption">Click two touching squares to place a test domino.</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- ROUND 2 -->
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Round 2: Divisibility &amp; Exhaustive Cases</h2>
+            <p class="card-subtitle">Practise announcing your factorisation and walking through every case systematically.</p>
+          </div>
+          <span class="pill pill-amber">5:00 Timer &middot; Number Theory</span>
+        </div>
+
+        <div class="problem-layout">
+          <div>
+            <div class="math-statement">
+              <strong>Part A:</strong> Prove that for every integer <code>n</code>, <code>n<sup>3</sup> &minus; n</code> is divisible by <code>6</code>.<br /><br />
+              <strong>Part B:</strong> Can <code>n<sup>2</sup> + 1</code> ever be divisible by <code>3</code> for any integer <code>n</code>?
+            </div>
+
+            <h3 class="section-space">Follow-Up Stress Questions</h3>
+            <ul class="followup-list">
+              <li>"In Part A, why does divisibility by both 2 and 3 guarantee divisibility by 6? Would the same logic work for 4 and 6 giving 24?"</li>
+              <li>"How do you know your three cases in Part B cover every integer, including negative numbers?"</li>
+              <li>"What if we replace 3 with 5 in Part B? Can <code>n<sup>2</sup> + 1</code> be divisible by 5?"</li>
+            </ul>
+
+            <div class="disclosure-group">
+              <details class="ed-details hint-box">
+                <summary>Checkpoint Hint (Small Nudge)</summary>
+                <div class="details-body">
+                  For Part A, factorise <code>n<sup>3</sup> &minus; n</code> into three brackets. For Part B, write any integer <code>n</code> by its remainder when divided by 3: <code>3k</code>, <code>3k + 1</code>, or <code>3k + 2</code>.
+                </div>
+              </details>
+
+              <details class="ed-details solution-box">
+                <summary>Complete Proof &amp; Plain-English Walkthrough</summary>
+                <div class="details-body">
+                  <strong>Part A (Plain English):</strong> Factorising gives <code>(n &minus; 1) &middot; n &middot; (n + 1)</code>, which is three consecutive whole numbers in a row. Any three numbers in a row must include at least one even number (multiple of 2) and exactly one multiple of 3. Because 2 and 3 share no common factor (they are coprime), multiplying them means the product is always a multiple of 6.<br /><br />
+                  <strong>Part B (Plain English):</strong> No. Every whole number leaves a remainder of 0, 1, or 2 when divided by 3. Squaring those remainders gives 0, 1, or 4 (which leaves remainder 1). Adding 1 gives remainders of 1 or 2, never 0. (Bonus check: for 5, YES, because <code>2<sup>2</sup> + 1 = 5</code>.)
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div class="visual-stage">
+            <svg width="240" height="176" viewBox="0 0 240 176" role="img" aria-label="Modulo 3 remainder table for n, n squared, and n squared plus 1">
+              <rect x="6" y="8" width="228" height="160" rx="10" fill="none" stroke="currentColor" stroke-opacity="0.22" />
+              <text x="24" y="34" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="currentColor">n mod 3</text>
+              <text x="102" y="34" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="currentColor">n&sup2; mod 3</text>
+              <text x="174" y="34" font-family="JetBrains Mono, monospace" font-size="12" font-weight="700" fill="currentColor">n&sup2;+1</text>
+              <line x1="16" y1="45" x2="224" y2="45" stroke="currentColor" stroke-opacity="0.2" />
+              <text x="42" y="76" font-family="JetBrains Mono, monospace" font-size="14" fill="currentColor">0</text>
+              <text x="120" y="76" font-family="JetBrains Mono, monospace" font-size="14" fill="currentColor">0</text>
+              <text x="188" y="76" font-family="JetBrains Mono, monospace" font-size="14" fill="#b91c3c" font-weight="700">1</text>
+              <text x="42" y="114" font-family="JetBrains Mono, monospace" font-size="14" fill="currentColor">1</text>
+              <text x="120" y="114" font-family="JetBrains Mono, monospace" font-size="14" fill="currentColor">1</text>
+              <text x="188" y="114" font-family="JetBrains Mono, monospace" font-size="14" fill="#b91c3c" font-weight="700">2</text>
+              <text x="42" y="152" font-family="JetBrains Mono, monospace" font-size="14" fill="currentColor">2</text>
+              <text x="120" y="152" font-family="JetBrains Mono, monospace" font-size="14" fill="currentColor">1</text>
+              <text x="188" y="152" font-family="JetBrains Mono, monospace" font-size="14" fill="#b91c3c" font-weight="700">2</text>
+            </svg>
+            <div class="mod-controls">
+              <button type="button" class="ctrl-btn" data-mod-test="0">n = 0</button>
+              <button type="button" class="ctrl-btn" data-mod-test="1">n = 1</button>
+              <button type="button" class="ctrl-btn" data-mod-test="2">n = 2</button>
+              <button type="button" class="ctrl-btn" data-mod-test="-4">n = -4</button>
+            </div>
+            <div class="mod-readout" id="mod-readout">Click a sample integer to inspect both expressions.</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- ROUND 3 -->
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Round 3: Live Curve Sketching Studio</h2>
+            <p class="card-subtitle">A classic Cambridge staple: deduce the shape out loud before sketching directly onto the axes.</p>
+          </div>
+          <span class="pill pill-navy">5:00 Timer &middot; Interactive Sketch Pad</span>
+        </div>
+
+        <div class="problem-layout">
+          <div>
+            <div class="math-statement">
+              Sketch the curve <strong><code>y = x e<sup>&minus;x</sup></code></strong> for all real numbers <code>x</code>.<br /><br />
+              Talk through four checks aloud before drawing: <strong>(1)</strong> intercepts, <strong>(2)</strong> behaviour as <code>x &rarr; +&infin;</code> and <code>x &rarr; &minus;&infin;</code>, <strong>(3)</strong> turning points, and <strong>(4)</strong> where the slope changes concavity.
+            </div>
+
+            <h3 class="section-space">Follow-Up Stress Questions</h3>
+            <ul class="followup-list">
+              <li>"As x becomes huge and positive, x gets big while e<sup>&minus;x</sup> gets tiny. Why does the exponential win?"</li>
+              <li>"How do you prove x = 1 is a maximum rather than a minimum or flat inflection?"</li>
+              <li>"Does the curve ever touch or cross the x-axis again after the origin?"</li>
+            </ul>
+
+            <div class="disclosure-group">
+              <details class="ed-details hint-box">
+                <summary>Checkpoint Hint (Small Nudge)</summary>
+                <div class="details-body">
+                  Differentiate with the product rule to get <code>dy/dx = (1 &minus; x)e<sup>&minus;x</sup></code>. Notice that <code>e<sup>&minus;x</sup></code> is always strictly positive, so the sign of <code>y</code> matches the sign of <code>x</code>.
+                </div>
+              </details>
+
+              <details class="ed-details solution-box">
+                <summary>Complete Proof &amp; Plain-English Walkthrough</summary>
+                <div class="details-body">
+                  <strong>Plain-English Shape:</strong><br />
+                  &bull; <strong>Crosses axes:</strong> Only at <code>(0, 0)</code>, because <code>e<sup>&minus;x</sup></code> is never zero.<br />
+                  &bull; <strong>Left side (x negative):</strong> Both pieces pull downward fast, so the curve plunges steeply to <code>&minus;&infin;</code>.<br />
+                  &bull; <strong>Peak:</strong> Rises smoothly through <code>(0, 0)</code> to a single global maximum at <code>(1, 1/e) &approx; (1, 0.37)</code>.<br />
+                  &bull; <strong>Right tail (x very large):</strong> Exponential decay beats linear growth, so the curve slopes gently down (inflection at <code>x = 2</code>) and glides just above the x-axis toward <code>0</code> without ever touching it.
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div class="visual-stage">
+            <div class="sketch-wrap">
+              <svg class="sketch-svg" viewBox="0 0 280 220" aria-hidden="true">
+                <line x1="18" y1="115" x2="264" y2="115" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.45" />
+                <line x1="95" y1="16" x2="95" y2="206" stroke="currentColor" stroke-width="1.4" stroke-opacity="0.45" />
+                <text x="256" y="108" font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor">x</text>
+                <text x="102" y="26" font-family="JetBrains Mono, monospace" font-size="11" fill="currentColor">y</text>
+                <circle cx="95" cy="115" r="3" fill="currentColor" />
+                <path id="exact-curve" class="curve-hidden" d="M 66 206 C 74 176 84 142 95 115 C 109 80 123 64 137 64 C 154 64 166 78 179 89 C 204 106 232 112 262 114" fill="none" stroke="#163a70" stroke-width="3" stroke-linecap="round" />
+                <circle id="exact-max-dot" class="curve-hidden" cx="137" cy="64" r="4.5" fill="#047857" />
+                <text id="exact-max-txt" class="curve-hidden" x="124" y="50" font-family="JetBrains Mono, monospace" font-size="10" font-weight="700" fill="#047857">(1, 1/e)</text>
+                <circle id="exact-inf-dot" class="curve-hidden" cx="179" cy="89" r="3.8" fill="#a1520a" />
+                <text id="exact-inf-txt" class="curve-hidden" x="184" y="83" font-family="JetBrains Mono, monospace" font-size="9.5" font-weight="700" fill="#a1520a">(2, 2/e&sup2;)</text>
+              </svg>
+              <canvas id="sketch-canvas" class="sketch-canvas" width="280" height="220" aria-label="Interactive drawing canvas for sketching y equals x e to the minus x"></canvas>
+            </div>
+            <div class="btn-row">
+              <button type="button" class="ctrl-btn" id="clear-sketch">Clear Sketch</button>
+              <button type="button" class="ctrl-btn primary" id="toggle-exact-curve">Reveal Exact Curve</button>
+            </div>
+            <span class="visual-caption">Draw directly on the grid with mouse or stylus, then compare with the exact curve.</span>
+          </div>
+        </div>
+
+        <div class="footer-nav">
+          <button type="button" class="reveal-btn teal" data-go-stage="1">&larr; Stage 2</button>
+          <button type="button" class="reveal-btn" data-go-stage="3">Next: Plain-English Pivot &amp; Fermi 747 &rarr;</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- STAGE 4: PLAIN-ENGLISH PIVOT (ZERO-FORMULA ARENA) -->
+    <section class="stage-panel" id="stage-3" role="tabpanel">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Challenge A: The Boeing 747 Tennis-Ball Fermi Challenge</h2>
+            <p class="card-subtitle">Pure structured estimation in plain English. No algebra required: state every assumption transparently and justify your order of magnitude.</p>
+          </div>
+          <span class="pill pill-amber">Fermi Estimation &middot; 5:00</span>
+        </div>
+
+        <figure class="editorial-figure">
+          <img
+            src="fermi-747-visual.jpg"
+            alt="Minimalist editorial blueprint cutaway of a Boeing 747 cabin packed with yellow tennis balls"
+            width="1200"
+            height="675"
+            loading="lazy"
+          />
+          <figcaption>How many tennis balls fit inside a Boeing 747? Break the cabin into rough geometry, estimate packing efficiency, and state what you exclude.</figcaption>
+        </figure>
+
+        <div class="grid-2">
+          <div class="info-tile">
+            <span class="tile-kicker">Step 1 &amp; 2</span>
+            <h3>Define the Question &amp; Volume</h3>
+            <p class="tile-text">Clarify first: passenger cabin only, or cargo hold and wings too? Model the fuselage as a rough cylinder (about 60 to 70 m long, 6 m wide).</p>
+          </div>
+          <div class="info-tile teal">
+            <span class="tile-kicker">Step 3 &amp; 4</span>
+            <h3>Ball Size &amp; Packing Deduction</h3>
+            <p class="tile-text">A tennis ball is roughly 6.5 cm across. Spheres do not fill 100% of space (random packing is ~64%, tight packing ~74%), and seats/galleys take space too.</p>
+          </div>
+        </div>
+
+        <div class="disclosure-group">
+          <details class="ed-details solution-box">
+            <summary>Plain-English Sanity Check (Order of Magnitude)</summary>
+            <div class="details-body">
+              <strong>Rough cylinder volume:</strong> <code>&pi; &times; 3<sup>2</sup> &times; 60 &approx; 1,700 m<sup>3</sup></code> (usable passenger cabin alone is roughly <code>800 to 1,000 m<sup>3</sup></code>).<br />
+              <strong>One tennis ball:</strong> Volume of a 6.5 cm sphere is about <code>145 cm<sup>3</sup></code> (roughly 6,900 balls per cubic metre with zero gaps, or <strong>~4,500 balls per cubic metre</strong> at ~65% random packing).<br />
+              <strong>Reasonable answer range:</strong> Around <strong>4 million to 8 million</strong> for a furnished passenger cabin, up to <strong>10 to 20 million</strong> for an empty fuselage including cargo space. Any answer in the millions backed by explicit assumptions passes cleanly.
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Challenge B: "Explain It Without Symbols" Roulette</h2>
+            <p class="card-subtitle">Draw a famous mathematical idea and explain why it is true in 90 seconds of crystal-clear English, with zero formulas on screen.</p>
+          </div>
+          <span class="pill pill-teal">Non-Specialist Test</span>
+        </div>
+
+        <div class="roulette-stage">
+          <div class="tile-kicker" id="roulette-index">Card 1 of 5 &middot; Classic Proof Intuition</div>
+          <div class="roulette-title" id="roulette-title">Why Are There Infinitely Many Prime Numbers?</div>
+          <p class="roulette-prompt" id="roulette-prompt">
+            Imagine someone claims they have written down the complete, final list of every prime number that exists. Explain in plain English how Euclid proves their list must be missing at least one prime.
+          </p>
+          <div class="btn-row">
+            <button type="button" class="reveal-btn" id="roulette-next">Draw Next Card &rarr;</button>
+            <button type="button" class="reveal-btn teal" id="roulette-reveal-btn">&#128065;&#65039; Reveal Plain-English Core Idea</button>
+          </div>
+          <div class="reveal-box" id="roulette-answer">
+            <strong>Core Idea:</strong> Multiply every prime on their supposedly complete list together, then add 1. That new number leaves a remainder of 1 whenever you divide by any prime on the list. So either the new number is itself a brand-new prime, or it is divisible by some prime that was not on the list. Either way, the list was incomplete.
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Challenge C: Pressure &amp; Recovery Roleplays</h2>
+            <p class="card-subtitle">Practise handling awkward interview moments aloud before checking the Cambridge model.</p>
+          </div>
+          <span class="pill pill-rose">Interview Composure</span>
+        </div>
+
+        <div class="drill-list">
+          <div class="drill-item">
+            <div class="drill-weak">Scenario 1: You realise the last 3 minutes of work were based on a false assumption.</div>
+            <button type="button" class="reveal-btn" data-reveal-next>&#128065;&#65039; Reveal Cambridge Model</button>
+            <div class="reveal-box"><strong>Model:</strong> "Hold on, I just noticed I assumed <code>n</code> had to be positive, which is not stated in the question. Let me cross out that line and recheck whether negative integers change the result."</div>
+          </div>
+
+          <div class="drill-item">
+            <div class="drill-weak">Scenario 2: The interviewer gives a hint, and you still do not immediately see where it leads.</div>
+            <button type="button" class="reveal-btn" data-reveal-next>&#128065;&#65039; Reveal Cambridge Model</button>
+            <div class="reveal-box"><strong>Model:</strong> "That is helpful. So if I look at the symmetry you mentioned, I should compare the left-hand side for positive and negative values first. Let me write that down and see what cancels."</div>
+          </div>
+
+          <div class="drill-item">
+            <div class="drill-weak">Scenario 3: You have actually seen a very similar problem in a Polish competition before.</div>
+            <button type="button" class="reveal-btn" data-reveal-next>&#128065;&#65039; Reveal Cambridge Model</button>
+            <div class="reveal-box"><strong>Model:</strong> "I have seen a related parity argument before, though with slightly different constraints. Would you like me to talk through the proof from scratch, or should we jump to a harder variation?"</div>
+          </div>
+        </div>
+
+        <div class="footer-nav">
+          <button type="button" class="reveal-btn teal" data-go-stage="2">&larr; Stage 3</button>
+          <button type="button" class="reveal-btn" data-go-stage="4">Next: Live Precision Log &amp; Friday Plan &rarr;</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- STAGE 5: LIVE PRECISION LOG & FRIDAY HOMEWORK -->
+    <section class="stage-panel" id="stage-4" role="tabpanel">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Live Grammar, Signposting &amp; Precision Log</h2>
+            <p class="card-subtitle">Capture live slips and upgraded C1 phrasing during the mock. Saved automatically in your browser.</p>
+          </div>
+          <span class="pill pill-emerald">Auto-Saving Scratchpad</span>
+        </div>
+
+        <form class="scratchpad-form" id="log-form">
+          <input type="text" id="log-text" placeholder="e.g. 'can divide by 6' -> 'is divisible by 6'" required aria-label="Correction or phrase note" />
+          <select id="log-tag" aria-label="Category tag">
+            <option value="Grammar">Grammar</option>
+            <option value="Signposting">Signposting</option>
+            <option value="Maths Collocation">Maths Collocation</option>
+            <option value="Pronunciation">Pronunciation</option>
+            <option value="Clarity Win">Clarity Win</option>
+          </select>
+          <button type="submit" class="reveal-btn">+ Log Item</button>
+        </form>
+
+        <ul class="log-list" id="log-list"></ul>
+
+        <div class="btn-row">
+          <button type="button" class="reveal-btn teal" id="copy-log-btn">Copy Debrief for Chat</button>
+          <button type="button" class="ctrl-btn" id="clear-log-btn">Clear Log</button>
+          <span class="copy-feedback" id="copy-feedback" role="status" aria-live="polite"></span>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2>Homework for Friday's Session (27 Nov)</h2>
+            <p class="card-subtitle">Bring your own solved mathematics so we can train live whiteboard explanation at full interview speed.</p>
+          </div>
+          <span class="pill pill-navy">Teach-Back Assignment</span>
+        </div>
+
+        <div class="formula-strip">
+          <div class="formula-code">Friday Brief: Bring 2 Past Cambridge / STEP / MAT Problems You Already Know</div>
+          <p class="tile-text">
+            Choose two problems you have already solved on paper. On Friday, share your whiteboard screen and teach each proof from scratch in spoken English as if explaining it to a sharp non-specialist interviewer, using at least 6 signposting phrases from Stage 2.
+          </p>
+        </div>
+
+        <div class="footer-nav">
+          <button type="button" class="reveal-btn teal" data-go-stage="3">&larr; Stage 4</button>
+          <a class="reveal-btn" href="index.html">Return to Igor's Portal &rarr;</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const LOG_KEY = 'igor_cambridge_maths_interview_log_v2';
+      const PHRASE_KEY = 'igor_cambridge_maths_phrases_v2';
+
+      let timerSeconds = 120;
+      let initialSeconds = 120;
+      let timerInterval = null;
+      let soundOn = true;
+
+      /* Subtle Web Audio micro-clicks */
+      function playClick(freq = 540, dur = 0.045) {
+        if (!soundOn) return;
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          const ctx = new AudioCtx();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.045, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + dur);
+        } catch (e) {}
+      }
+
+      /* Two-state Dark Mode Toggle (modern-web-guidance: dark-mode-toggle) */
+      const colorSchemeMeta = document.querySelector('meta[name="color-scheme"]');
+      const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
+      function getEffectiveScheme() {
+        const stored = colorSchemeMeta.content;
+        if (stored === 'dark' || stored === 'light') return stored;
+        return darkMedia.matches ? 'dark' : 'light';
+      }
+
+      document.getElementById('theme-toggle').addEventListener('click', () => {
+        const current = getEffectiveScheme();
+        const target = current === 'dark' ? 'light' : 'dark';
+        const systemScheme = darkMedia.matches ? 'dark' : 'light';
+        try {
+          if (target === systemScheme) {
+            localStorage.removeItem('color-scheme');
+            colorSchemeMeta.content = 'light dark';
+          } else {
+            localStorage.setItem('color-scheme', target);
+            colorSchemeMeta.content = target;
+          }
+        } catch (e) {
+          colorSchemeMeta.content = target;
+        }
+        playClick(490);
+      });
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'color-scheme') {
+          colorSchemeMeta.content = e.newValue ?? 'light dark';
+        }
+      });
+
+      /* Sound toggle */
+      const soundBtn = document.getElementById('sound-toggle');
+      soundBtn.addEventListener('click', () => {
+        soundOn = !soundOn;
+        soundBtn.textContent = soundOn ? 'Sound: On' : 'Sound: Off';
+        soundBtn.setAttribute('aria-pressed', String(soundOn));
+      });
+
+      /* Stage Navigation */
+      const stageTabs = document.querySelectorAll('.stage-tab');
+      const stagePanels = document.querySelectorAll('.stage-panel');
+
+      function goStage(idx) {
+        stageTabs.forEach((tab, i) => {
+          tab.setAttribute('aria-selected', String(i === idx));
+        });
+        stagePanels.forEach((panel, i) => {
+          panel.classList.toggle('active', i === idx);
+        });
+        playClick(580);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      stageTabs.forEach((tab) => {
+        tab.addEventListener('click', () => goStage(Number(tab.dataset.stage)));
+      });
+
+      document.querySelectorAll('[data-go-stage]').forEach((btn) => {
+        btn.addEventListener('click', () => goStage(Number(btn.dataset.goStage)));
+      });
+
+      /* Timer Controls */
+      const timerDisplay = document.getElementById('timer-display');
+      const timerToggle = document.getElementById('timer-toggle');
+      const timerPill = document.getElementById('timer-pill');
+
+      function renderTimer() {
+        const m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+        const s = String(timerSeconds % 60).padStart(2, '0');
+        timerDisplay.textContent = `${m}:${s}`;
+        timerPill.classList.toggle('alert-pulse', timerSeconds === 0);
+      }
+
+      function setTimer(sec) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        initialSeconds = sec;
+        timerSeconds = sec;
+        timerToggle.textContent = 'Start';
+        renderTimer();
+        playClick(520);
+      }
+
+      document.querySelectorAll('[data-timer-set]').forEach((btn) => {
+        btn.addEventListener('click', () => setTimer(Number(btn.dataset.timerSet)));
+      });
+
+      timerToggle.addEventListener('click', () => {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          timerToggle.textContent = 'Start';
+        } else {
+          if (timerSeconds === 0) timerSeconds = initialSeconds;
+          timerToggle.textContent = 'Pause';
+          timerInterval = setInterval(() => {
+            if (timerSeconds > 0) {
+              timerSeconds--;
+              renderTimer();
+              if (timerSeconds === 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerToggle.textContent = 'Start';
+                playClick(880, 0.28);
+              }
+            }
+          }, 1000);
+        }
+      });
+
+      document.getElementById('timer-reset').addEventListener('click', () => setTimer(initialSeconds));
+
+      /* Reveal Cambridge Model buttons */
+      document.querySelectorAll('[data-reveal-next]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const box = btn.nextElementSibling;
+          const isOpen = box.classList.toggle('open');
+          playClick(isOpen ? 660 : 440);
+        });
+      });
+
+      /* Probe chips */
+      document.querySelectorAll('.probe-chip').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          const next = chip.getAttribute('aria-pressed') !== 'true';
+          chip.setAttribute('aria-pressed', String(next));
+          playClick(next ? 600 : 450);
+        });
+      });
+
+      /* Spoken Phrase Tracker (auto-saved) */
+      const phraseChips = Array.from(document.querySelectorAll('.phrase-chip'));
+      const phraseCounter = document.getElementById('phrase-counter');
+
+      function loadUsedPhrases() {
+        try { return new Set(JSON.parse(localStorage.getItem(PHRASE_KEY) || '[]')); } catch { return new Set(); }
+      }
+
+      const usedPhrases = loadUsedPhrases();
+
+      function updatePhraseUI() {
+        phraseChips.forEach((chip, i) => {
+          chip.setAttribute('aria-pressed', String(usedPhrases.has(i)));
+        });
+        phraseCounter.textContent = `Phrases Used: ${usedPhrases.size} / ${phraseChips.length}`;
+      }
+
+      phraseChips.forEach((chip, idx) => {
+        chip.addEventListener('click', () => {
+          if (usedPhrases.has(idx)) {
+            usedPhrases.delete(idx);
+            playClick(430);
+          } else {
+            usedPhrases.add(idx);
+            playClick(680);
+          }
+          try { localStorage.setItem(PHRASE_KEY, JSON.stringify(Array.from(usedPhrases))); } catch (e) {}
+          updatePhraseUI();
+        });
+      });
+
+      updatePhraseUI();
+
+      /* Round 1: Interactive Mutilated Chessboard */
+      const chessGroup = document.getElementById('chess-grid');
+      const blackCountEl = document.getElementById('black-count');
+      const whiteCountEl = document.getElementById('white-count');
+      let selectedSquare = null;
+      const dominoPairs = [];
+      const occupied = new Set();
+
+      function renderChessboard() {
+        chessGroup.innerHTML = '';
+        const size = 29;
+        const offset = 8;
+
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 8; c++) {
+            if ((r === 0 && c === 0) || (r === 7 && c === 7)) continue;
+            const key = `${r},${c}`;
+            const isDark = (r + c) % 2 === 1;
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            rect.setAttribute('x', String(offset + c * size));
+            rect.setAttribute('y', String(offset + r * size));
+            rect.setAttribute('width', String(size));
+            rect.setAttribute('height', String(size));
+            rect.setAttribute('fill', selectedSquare === key ? '#0f766e' : (isDark ? '#1e293b' : '#ffffff'));
+            rect.setAttribute('stroke', '#94a3b8');
+            rect.setAttribute('stroke-width', '0.8');
+            rect.style.cursor = 'pointer';
+            rect.addEventListener('click', () => handleSquareClick(r, c));
+            chessGroup.appendChild(rect);
+          }
+        }
+
+        dominoPairs.forEach(([a, b]) => {
+          const minC = Math.min(a.c, b.c);
+          const minR = Math.min(a.r, b.r);
+          const horiz = a.r === b.r;
+          const dom = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          dom.setAttribute('x', String(offset + minC * size + 3));
+          dom.setAttribute('y', String(offset + minR * size + 3));
+          dom.setAttribute('width', String(horiz ? size * 2 - 6 : size - 6));
+          dom.setAttribute('height', String(horiz ? size - 6 : size * 2 - 6));
+          dom.setAttribute('rx', '5');
+          dom.setAttribute('fill', '#d97706');
+          dom.setAttribute('fill-opacity', '0.88');
+          dom.setAttribute('stroke', '#ffffff');
+          dom.setAttribute('stroke-width', '1.5');
+          dom.style.pointerEvents = 'none';
+          chessGroup.appendChild(dom);
+        });
+
+        const covered = dominoPairs.length;
+        blackCountEl.textContent = `Black left: ${32 - covered}`;
+        whiteCountEl.textContent = `White left: ${30 - covered}`;
+      }
+
+      function handleSquareClick(r, c) {
+        const key = `${r},${c}`;
+        if (occupied.has(key)) return;
+        if (!selectedSquare) {
+          selectedSquare = key;
+          playClick(520);
+        } else if (selectedSquare === key) {
+          selectedSquare = null;
+          playClick(420);
+        } else {
+          const [sr, sc] = selectedSquare.split(',').map(Number);
+          const adjacent = Math.abs(sr - r) + Math.abs(sc - c) === 1;
+          if (adjacent) {
+            occupied.add(selectedSquare);
+            occupied.add(key);
+            dominoPairs.push([{ r: sr, c: sc }, { r, c }]);
+            selectedSquare = null;
+            playClick(690);
+          } else {
+            selectedSquare = key;
+            playClick(460);
+          }
+        }
+        renderChessboard();
+      }
+
+      document.getElementById('chess-reset').addEventListener('click', () => {
+        dominoPairs.length = 0;
+        occupied.clear();
+        selectedSquare = null;
+        renderChessboard();
+        playClick(440);
+      });
+
+      renderChessboard();
+
+      /* Round 2: Mod 3 Tester */
+      const modReadout = document.getElementById('mod-readout');
+      document.querySelectorAll('[data-mod-test]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const n = Number(btn.dataset.modTest);
+          const partA = n * n * n - n;
+          const partB = n * n + 1;
+          const rem3 = ((partB % 3) + 3) % 3;
+          modReadout.textContent = `n = ${n}: n^3 - n = ${partA} (= 6 x ${partA / 6}) | n^2 + 1 = ${partB} (rem ${rem3} mod 3)`;
+          playClick(610);
+        });
+      });
+
+      /* Round 3: Interactive Curve Sketching Canvas */
+      const canvas = document.getElementById('sketch-canvas');
+      const ctx = canvas.getContext('2d');
+      let drawing = false;
+
+      function getCanvasPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return {
+          x: (e.clientX - rect.left) * (canvas.width / rect.width),
+          y: (e.clientY - rect.top) * (canvas.height / rect.height)
+        };
+      }
+
+      canvas.addEventListener('pointerdown', (e) => {
+        drawing = true;
+        canvas.setPointerCapture(e.pointerId);
+        const pos = getCanvasPos(e);
+        ctx.strokeStyle = '#0f766e';
+        ctx.lineWidth = 2.6;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+      });
+
+      canvas.addEventListener('pointermove', (e) => {
+        if (!drawing) return;
+        const pos = getCanvasPos(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      });
+
+      function stopDrawing() {
+        drawing = false;
+      }
+
+      canvas.addEventListener('pointerup', stopDrawing);
+      canvas.addEventListener('pointercancel', stopDrawing);
+
+      document.getElementById('clear-sketch').addEventListener('click', () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        playClick(430);
+      });
+
+      const exactIds = ['exact-curve', 'exact-max-dot', 'exact-max-txt', 'exact-inf-dot', 'exact-inf-txt'];
+      const curveBtn = document.getElementById('toggle-exact-curve');
+      let curveVisible = false;
+
+      curveBtn.addEventListener('click', () => {
+        curveVisible = !curveVisible;
+        exactIds.forEach((id) => {
+          document.getElementById(id).classList.toggle('curve-hidden', !curveVisible);
+        });
+        curveBtn.textContent = curveVisible ? 'Hide Exact Curve' : 'Reveal Exact Curve';
+        playClick(curveVisible ? 690 : 450);
+      });
+
+      /* Stage 4: Non-Specialist Proof Roulette */
+      const rouletteCards = [
+        {
+          title: 'Why Are There Infinitely Many Prime Numbers?',
+          prompt: 'Imagine someone claims they have written down the complete, final list of every prime number that exists. Explain in plain English how Euclid proves their list must be missing at least one prime.',
+          answer: 'Multiply every prime on their supposedly complete list together, then add 1. That new number leaves a remainder of 1 whenever you divide by any prime on the list. So either the new number is itself a brand-new prime, or it is divisible by some prime that was not on the list. Either way, the list was incomplete.'
+        },
+        {
+          title: 'Why Can the Square Root of 2 Never Be a Fraction?',
+          prompt: 'Explain the proof by contradiction for the irrationality of root 2 to a bright listener who dislikes dense algebra.',
+          answer: 'Suppose root 2 equals a fraction a/b simplified to its lowest terms, so a and b are not both even. Squaring gives a^2 = 2b^2, so a^2 is even, which forces a to be even. Writing a = 2k gives 4k^2 = 2b^2, so b^2 = 2k^2, forcing b to be even too. Both are even, contradicting lowest terms.'
+        },
+        {
+          title: 'The Birthday Paradox (Why 23 People Is Enough)',
+          prompt: 'Why is there a greater than 50% chance that two people in a room of just 23 share a birthday, even though there are 365 days in a year?',
+          answer: 'People mistakenly compare everyone against their own birthday (only 22 pairs). In fact, any two people in the room can match, which creates 253 separate pairs (23 x 22 / 2). Computing the chance that all 23 avoid matching shrinks below 50% by the 23rd person.'
+        },
+        {
+          title: 'The Monty Hall Problem (Why Switching Doubles Your Odds)',
+          prompt: 'Three doors hide one car and two goats. You pick Door 1; the host (who knows where the car is) opens Door 3 to show a goat. Explain clearly why switching to Door 2 gives a 2/3 chance of winning.',
+          answer: 'Your initial pick had a 1/3 chance of being right and a 2/3 chance of being wrong. The host always removes a goat from the other two doors, concentrating that entire 2/3 probability onto the single remaining unopened door. Switching only loses if you guessed the car on turn one.'
+        },
+        {
+          title: 'Hilbert\'s Grand Hotel (How Infinity Absorbs New Guests)',
+          prompt: 'A hotel with infinitely many rooms (1, 2, 3, ...) is completely full. A new guest arrives. Explain cleanly how the manager fits them in without kicking anyone out.',
+          answer: 'Ask every guest in Room n to move to Room n + 1. Because there is no last room, every existing guest gets a room, and Room 1 becomes free for the newcomer. You can even fit infinitely many new guests by moving each existing guest from Room n to Room 2n, freeing all odd-numbered rooms.'
+        }
+      ];
+
+      let rouletteIdx = 0;
+      const rIndexEl = document.getElementById('roulette-index');
+      const rTitleEl = document.getElementById('roulette-title');
+      const rPromptEl = document.getElementById('roulette-prompt');
+      const rAnswerEl = document.getElementById('roulette-answer');
+
+      function renderRoulette() {
+        const card = rouletteCards[rouletteIdx];
+        rIndexEl.textContent = `Card ${rouletteIdx + 1} of ${rouletteCards.length} · Classic Proof Intuition`;
+        rTitleEl.textContent = card.title;
+        rPromptEl.textContent = card.prompt;
+        rAnswerEl.innerHTML = `<strong>Core Idea:</strong> ${card.answer}`;
+        rAnswerEl.classList.remove('open');
+      }
+
+      document.getElementById('roulette-next').addEventListener('click', () => {
+        rouletteIdx = (rouletteIdx + 1) % rouletteCards.length;
+        renderRoulette();
+        playClick(570);
+      });
+
+      document.getElementById('roulette-reveal-btn').addEventListener('click', () => {
+        const open = rAnswerEl.classList.toggle('open');
+        playClick(open ? 660 : 440);
+      });
+
+      /* Stage 5: Auto-Saving Live Scratchpad */
+      const logList = document.getElementById('log-list');
+      const logForm = document.getElementById('log-form');
+      const logInput = document.getElementById('log-text');
+      const logTag = document.getElementById('log-tag');
+      const copyFeedback = document.getElementById('copy-feedback');
+
+      function loadLog() {
+        try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); } catch { return []; }
+      }
+
+      function saveLog(items) {
+        try { localStorage.setItem(LOG_KEY, JSON.stringify(items)); } catch (e) {}
+      }
+
+      function renderLog() {
+        logList.innerHTML = '';
+        const items = loadLog();
+        if (!items.length) {
+          const empty = document.createElement('li');
+          empty.className = 'log-item log-empty';
+          empty.textContent = 'No notes logged yet. Capture spoken slips and strong C1 phrases live during the session.';
+          logList.appendChild(empty);
+          return;
+        }
+
+        items.forEach((item, idx) => {
+          const li = document.createElement('li');
+          li.className = 'log-item';
+
+          const left = document.createElement('div');
+          const badge = document.createElement('span');
+          badge.className = item.tag === 'Clarity Win' ? 'pill pill-emerald' : 'pill pill-navy';
+          badge.textContent = item.tag;
+          left.appendChild(badge);
+          left.appendChild(document.createTextNode(' ' + item.text));
+
+          const del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'del-btn';
+          del.textContent = 'Remove';
+          del.addEventListener('click', () => {
+            const current = loadLog();
+            current.splice(idx, 1);
+            saveLog(current);
+            renderLog();
+          });
+
+          li.appendChild(left);
+          li.appendChild(del);
+          logList.appendChild(li);
+        });
+      }
+
+      logForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = logInput.value.trim();
+        if (!text) return;
+        const items = loadLog();
+        items.unshift({ tag: logTag.value, text });
+        saveLog(items);
+        logInput.value = '';
+        renderLog();
+        playClick(640);
+      });
+
+      document.getElementById('copy-log-btn').addEventListener('click', async () => {
+        const items = loadLog();
+        if (!items.length) return;
+        const text = items.map((i) => `[${i.tag}] ${i.text}`).join('\n');
+        try {
+          await navigator.clipboard.writeText(text);
+          copyFeedback.textContent = 'Copied debrief notes to clipboard.';
+          setTimeout(() => { copyFeedback.textContent = ''; }, 3000);
+          playClick(720);
+        } catch (e) {
+          copyFeedback.textContent = 'Clipboard unavailable in this context.';
+        }
+      });
+
+      document.getElementById('clear-log-btn').addEventListener('click', () => {
+        saveLog([]);
+        renderLog();
+        playClick(420);
+      });
+
+      renderLog();
+      renderTimer();
+    })();
+  </script>
+  <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
+  <script src="../../analytics.js" defer></script>
+</body>
+</html>
