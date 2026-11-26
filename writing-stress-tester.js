@@ -154,7 +154,7 @@
       kind: 'weak',
       label: 'Colloquial Noun (B1)',
       replacement: 'materials / commodities / provisions / aspects',
-      note: 'Never let "stuff" slip into an exam script—it triggers an immediate register penalty under Communicative Achievement and Lexical Resource.'
+      note: 'Never let "stuff" slip into an exam script: it triggers an immediate register penalty under Communicative Achievement and Lexical Resource.'
     },
     {
       id: 'weak-small',
@@ -339,7 +339,41 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  // Sentence splitter & variance calculator
+  // Sentence opener classifier (aligned with Study 3: opener variety separates real C1 prose from templates)
+  function classifySentenceOpener(sentence) {
+    const s = sentence.trim().replace(/^["'“‘(]+/, '');
+    const lower = s.toLowerCase();
+    const firstWord = (lower.match(/^[a-z]+(?:['’-][a-z]+)?/) || [''])[0];
+
+    const isCanned =
+      /^(nowadays|moreover|furthermore|firstly|secondly|thirdly|last but not least|in a nutshell|in conclusion|to sum up|needless to say|on the one hand|on the other hand|it is undeniable|every coin has two sides|in today's|with the rapid development)\b/i.test(lower);
+
+    if (/\?$/.test(s)) {
+      return { code: 'QUESTION', label: 'Question / Direct', salient: false, canned: false, firstWord };
+    }
+    if (/^(not only|seldom|rarely|never before|at no time|under no circumstances|little did|little do|little does|no sooner|hardly had|scarcely had|not until|only by|only when|only after|only if|nor do|nor does|nor did|nor should|nor can|were [a-z-]+ to|had [a-z-]+ (?:not )?[a-z-]+ed)\b/i.test(lower)) {
+      return { code: 'INVERSION', label: 'Inversion', salient: true, canned: false, firstWord };
+    }
+    if (/^(what\s+[a-z-]+(?:\s+[a-z-]+){1,4}\s+(?:is|was|are|were)\b|what\s+(?:is|was|makes|distinguishes)\b|it\s+(?:is|was)\s+(?:widely|often|generally|commonly|sometimes|clear|evident|worth|not until)|it\s+(?:is|was)\s+[^,]{2,35}\s+(?:that|who)\b)/i.test(lower)) {
+      return { code: 'CLEFT', label: 'Cleft / Preparatory It', salient: true, canned: isCanned, firstWord };
+    }
+    if (isCanned || /^(however|nevertheless|nonetheless|consequently|therefore|meanwhile|finally|additionally|similarly|conversely|undoubtedly|admittedly|unfortunately|ultimately|by contrast|in contrast|as a result|for example|for instance)\s*,/i.test(lower)) {
+      return { code: 'LINKER', label: isCanned ? 'Canned Linker' : 'Discourse Linker', salient: false, canned: isCanned, firstWord };
+    }
+    if (/^(although|though|even though|while|whilst|whereas|because|since|if|unless|once|when|whenever|wherever|provided that|given that|whether)\b/i.test(lower)) {
+      return { code: 'SUBORDINATE', label: 'Subordinate Clause', salient: false, canned: false, firstWord };
+    }
+    const gerundSubject = /^([a-z-]+ing)\s+(?:[a-z-]+\s+){0,3}(?:is|are|was|were|has|can|may|will|would|requires|remains|creates|reduces|helps|enriches)\b/i.test(lower);
+    if (!gerundSubject && /^(having\s+[a-z-]+|being\s+[a-z-]+|faced\s+with|driven\s+by|equipped\s+with|left\s+unchecked|viewed\s+from|compared\s+with|coupled\s+with|stripped\s+of|designed\s+to|backed\s+by|supported\s+by|[a-z]{4,}ing\s+[^,]{2,60},)/i.test(lower)) {
+      return { code: 'PARTICIPLE', label: 'Participle Clause', salient: true, canned: false, firstWord };
+    }
+    if (/^(in|on|at|across|within|beyond|despite|in spite of|throughout|during|over|under|without|through|amid|behind|between|among|from|after|before|unlike|rather than|owing to|due to|following|with|for|by)\b[^.!?]{2,60},/i.test(lower)) {
+      return { code: 'PREPOSITIONAL', label: 'Prepositional Phrase', salient: false, canned: false, firstWord };
+    }
+    return { code: 'PLAIN_SVO', label: 'Plain Subject-Verb', salient: false, canned: isCanned, firstWord };
+  }
+
+  // Sentence splitter & opener-variety analyzer
   function analyzeSentenceRhythm(text) {
     const cleaned = text
       .replace(/\b(e\.g|i\.e|mr|mrs|ms|dr|prof|vs|etc|st|uk|u\.k|u\.s)\./gi, '$1\u0000')
@@ -351,11 +385,15 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
         sentenceCount: 0,
         wordCount: 0,
         meanLength: 0,
-        stdDev: 0,
+        uniqueOpenerTypes: 0,
+        cannedOpenerCount: 0,
+        repeatedStarterCount: 0,
+        openerVarietyPct: 0,
+        openerSummary: '0 types',
         cadenceCode: 'empty',
         cadenceLabel: 'Awaiting Text',
         cadenceBadgeClass: 'bg-slate-100 text-slate-700 border-slate-200',
-        cadenceAdvice: 'Paste a paragraph or full essay to measure your sentence-length standard deviation (σ).'
+        cadenceAdvice: 'Paste a paragraph or full essay to inspect your sentence-opener variety and check for canned template linkers.'
       };
     }
 
@@ -366,9 +404,15 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
       const restored = part.replace(/\u0000/g, '.').trim();
       const words = restored.split(/\s+/).filter((w) => /[a-zA-Z0-9]/.test(w));
       if (words.length >= 2) {
+        const opener = classifySentenceOpener(restored);
         sentences.push({
           text: restored,
-          wordCount: words.length
+          wordCount: words.length,
+          openerCode: opener.code,
+          openerLabel: opener.label,
+          openerSalient: opener.salient,
+          openerCanned: opener.canned,
+          firstWord: opener.firstWord
         });
       }
     });
@@ -382,36 +426,100 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
         sentenceCount: 0,
         wordCount: totalWords,
         meanLength: totalWords,
-        stdDev: 0,
+        uniqueOpenerTypes: 0,
+        cannedOpenerCount: 0,
+        repeatedStarterCount: 0,
+        openerVarietyPct: 0,
+        openerSummary: '0 types',
         cadenceCode: 'short',
         cadenceLabel: 'Too Few Sentences',
         cadenceBadgeClass: 'bg-amber-50 text-amber-800 border-amber-200',
-        cadenceAdvice: 'Write at least 3–4 full sentences so I can calculate your sentence rhythm and standard deviation.'
+        cadenceAdvice: 'Write at least 3-4 full sentences so I can evaluate your sentence-opener variety and clause rhythm.'
       };
     }
 
     const mean = sentences.reduce((acc, s) => acc + s.wordCount, 0) / count;
-    const variance = sentences.reduce((acc, s) => acc + Math.pow(s.wordCount - mean, 2), 0) / count;
-    const stdDev = Math.sqrt(variance);
-
     const roundedMean = Math.round(mean * 10) / 10;
-    const roundedStd = Math.round(stdDev * 10) / 10;
+
+    // Count distinct opener archetypes, canned openers, starter repeats, and streaks
+    const typeCounts = {};
+    const starterCounts = {};
+    const cannedExamples = [];
+    let cannedOpenerCount = 0;
+    let salientCount = 0;
+    let maxStreak = 1;
+    let currStreak = 1;
+
+    sentences.forEach((s, idx) => {
+      typeCounts[s.openerCode] = (typeCounts[s.openerCode] || 0) + 1;
+      if (s.firstWord) {
+        starterCounts[s.firstWord] = (starterCounts[s.firstWord] || 0) + 1;
+      }
+      if (s.openerCanned) {
+        cannedOpenerCount++;
+        const leadPhrase = s.text.split(/[,.;:]/)[0].trim().split(/\s+/).slice(0, 4).join(' ');
+        if (cannedExamples.length < 3 && !cannedExamples.includes(leadPhrase)) {
+          cannedExamples.push(leadPhrase);
+        }
+      }
+      if (s.openerSalient) {
+        salientCount++;
+      }
+      if (idx > 0 && s.openerCode === sentences[idx - 1].openerCode) {
+        currStreak++;
+        if (currStreak > maxStreak) maxStreak = currStreak;
+      } else {
+        currStreak = 1;
+      }
+    });
+
+    const uniqueOpenerTypes = Object.keys(typeCounts).length;
+    const repeatedStarters = Object.entries(starterCounts)
+      .filter(([, n]) => n >= 2)
+      .sort((a, b) => b[1] - a[1]);
+    const repeatedStarterCount = repeatedStarters.reduce((acc, [, n]) => acc + (n - 1), 0);
+    const maxStarterRepeat = repeatedStarters.length > 0 ? repeatedStarters[0][1] : 1;
+
+    const plainSvoRatio = (typeCounts.PLAIN_SVO || 0) / count;
+    const cannedRatio = cannedOpenerCount / count;
+    const salientRatio = salientCount / count;
+    const uniqueStarterRatio = Object.keys(starterCounts).length / count;
+
+    // Composite opener variety percentage (0-100) rewarding distinct clause frames and penalising canned/repeated starts
+    const targetTypes = Math.min(5, Math.max(3, count));
+    const typeScore = Math.min(1, uniqueOpenerTypes / targetTypes);
+    const rawVariety = (typeScore * 0.55 + uniqueStarterRatio * 0.45) * (1 - Math.min(0.65, cannedRatio * 0.9));
+    const openerVarietyPct = Math.max(0, Math.min(100, Math.round(rawVariety * 100)));
+    const openerSummary = `${uniqueOpenerTypes} type${uniqueOpenerTypes === 1 ? '' : 's'} (${openerVarietyPct}%)`;
 
     let cadenceCode = 'balanced';
-    let cadenceLabel = 'Balanced Academic Cadence';
+    let cadenceLabel = 'Varied Opener Rhythm';
     let cadenceBadgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-300';
-    let cadenceAdvice = `Spot on (σ = ${roundedStd} words). Your sentence lengths rise and fall naturally, pairing concise topic claims with multi-clause academic explanations.`;
+    let cadenceAdvice = `Spot on (${uniqueOpenerTypes} distinct opener types across ${count} sentences, ${openerVarietyPct}% variety). Your openings shift cleanly between direct statements and subordinate, prepositional, or C1 clause frames.`;
 
-    if (stdDev < 4.5) {
+    if (count < 3) {
+      cadenceCode = 'short';
+      cadenceLabel = 'Short Sample';
+      cadenceBadgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
+      cadenceAdvice = `Only ${count} sentence${count === 1 ? '' : 's'} scanned (${uniqueOpenerTypes} opener type${uniqueOpenerTypes === 1 ? '' : 's'}). Paste a full 150-300 word paragraph or essay for a reliable opener-variety check.`;
+    } else if (cannedRatio >= 0.28 || cannedOpenerCount >= 4) {
       cadenceCode = 'monotonous';
-      cadenceLabel = 'Monotonous / Robotic';
+      cadenceLabel = 'Canned Template Openers';
       cadenceBadgeClass = 'bg-amber-50 text-amber-900 border-amber-300';
-      cadenceAdvice = `Metronomic flatness detected (σ = ${roundedStd} < 4.5). Nearly all your sentences march at ~${Math.round(mean)} words. Break the robotic rhythm: follow a crisp 10–12 word claim with a 24–28 word subordinate or participial sentence.`;
-    } else if (stdDev > 11) {
-      cadenceCode = 'sprawling';
-      cadenceLabel = 'Fragmented / Over-sprawling';
+      cadenceAdvice = `${cannedOpenerCount} of ${count} sentences open with memorised linkers (${cannedExamples.map((e) => `"${e}"`).join(', ')}). Replace mechanical signposts with subordinate clauses ("While..."), prepositional frames ("Across..."), or participle openers.`;
+    } else if (uniqueOpenerTypes <= 2 || plainSvoRatio > 0.72 || maxStreak >= 3 || (count >= 6 && maxStarterRepeat >= 3)) {
+      cadenceCode = 'monotonous';
+      cadenceLabel = 'Repetitive Sentence Openers';
+      cadenceBadgeClass = 'bg-amber-50 text-amber-900 border-amber-300';
+      const repeatHint = repeatedStarters.length > 0
+        ? ` Repeated starter word: "${repeatedStarters[0][0]}" (${repeatedStarters[0][1]}x).`
+        : '';
+      cadenceAdvice = `Narrow opener range (${uniqueOpenerTypes} type${uniqueOpenerTypes === 1 ? '' : 's'} across ${count} sentences).${repeatHint} Break up repeated subject-first streaks by opening two sentences with a subordinate clause, prepositional phrase, or participle.`;
+    } else if (count >= 5 && salientRatio > 0.45) {
+      cadenceCode = 'overworked';
+      cadenceLabel = 'Overworked C1 Openers';
       cadenceBadgeClass = 'bg-rose-50 text-rose-800 border-rose-300';
-      cadenceAdvice = `Extreme length swings detected (σ = ${roundedStd} > 11). Watch out for breathless 38+ word run-on sentences where clause control unravels, or abrupt 4-word fragments.`;
+      cadenceAdvice = `${Math.round(salientRatio * 100)}% of your sentences open with showy C1 frames (inversions, clefts, or participles). Ground your paragraphs with calm subject-verb anchors so your C1 pivots sound natural.`;
     }
 
     return {
@@ -419,7 +527,11 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
       sentenceCount: count,
       wordCount: totalWords,
       meanLength: roundedMean,
-      stdDev: roundedStd,
+      uniqueOpenerTypes,
+      cannedOpenerCount,
+      repeatedStarterCount,
+      openerVarietyPct,
+      openerSummary,
       cadenceCode,
       cadenceLabel,
       cadenceBadgeClass,
@@ -595,7 +707,7 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
     }
 
     ceilingReasons.push(
-      `Sentence Rhythm: Mean ${rhythm.meanLength} words/sentence with standard deviation σ = ${rhythm.stdDev} (${rhythm.cadenceLabel}).`
+      `Sentence-Opener Variety: ${rhythm.uniqueOpenerTypes} opener type${rhythm.uniqueOpenerTypes === 1 ? '' : 's'} across ${rhythm.sentenceCount} sentences, ${rhythm.openerVarietyPct}% variety (${rhythm.cadenceLabel}).`
     );
 
     return {
@@ -604,7 +716,11 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
       sentenceCount: rhythm.sentenceCount,
       sentences: rhythm.sentences,
       meanLength: rhythm.meanLength,
-      stdDev: rhythm.stdDev,
+      uniqueOpenerTypes: rhythm.uniqueOpenerTypes,
+      cannedOpenerCount: rhythm.cannedOpenerCount,
+      repeatedStarterCount: rhythm.repeatedStarterCount,
+      openerVarietyPct: rhythm.openerVarietyPct,
+      openerSummary: rhythm.openerSummary,
       cadenceCode: rhythm.cadenceCode,
       cadenceLabel: rhythm.cadenceLabel,
       cadenceBadgeClass: rhythm.cadenceBadgeClass,
@@ -643,13 +759,13 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
       const isSelected = activeSpanIndex === span.spanIndex;
       if (span.type === 'amber') {
         const ringClass = isSelected ? 'ring-2 ring-amber-600 bg-amber-200/90' : 'bg-amber-100 hover:bg-amber-200/80';
-        html += `<button type="button" data-stress-span="${span.spanIndex}" class="stress-token stress-token-amber inline items-baseline gap-1 px-1.5 py-0.5 mx-0.5 rounded border border-amber-400 text-amber-950 font-semibold text-left transition cursor-pointer ${ringClass}" title="${escapeHtml(span.label + ' — Click for Gareth\'s Belfast Desk replacement')}">` +
+        html += `<button type="button" data-stress-span="${span.spanIndex}" class="stress-token stress-token-amber inline items-baseline gap-1 px-1.5 py-0.5 mx-0.5 rounded border border-amber-400 text-amber-950 font-semibold text-left transition cursor-pointer ${ringClass}" title="${escapeHtml(span.label + ': Click for Gareth\'s Belfast Desk replacement')}">` +
           `<span class="underline decoration-amber-600 decoration-wavy underline-offset-2">${escapeHtml(span.matchedText)}</span>` +
           `<span class="ml-1 inline-flex items-center justify-center px-1 rounded bg-amber-600 text-white text-[10px] font-bold uppercase tracking-tighter">Fix</span>` +
           `</button>`;
       } else {
         const ringClass = isSelected ? 'ring-2 ring-emerald-700 bg-emerald-200/90' : 'bg-emerald-100/90 hover:bg-emerald-200/80';
-        html += `<button type="button" data-stress-span="${span.spanIndex}" class="stress-token stress-token-emerald inline items-baseline gap-1 px-1.5 py-0.5 mx-0.5 rounded border border-emerald-400 text-emerald-950 font-semibold text-left transition cursor-pointer ${ringClass}" title="${escapeHtml(span.label + ' — Verified C1/C2 Structural Pivot')}">` +
+        html += `<button type="button" data-stress-span="${span.spanIndex}" class="stress-token stress-token-emerald inline items-baseline gap-1 px-1.5 py-0.5 mx-0.5 rounded border border-emerald-400 text-emerald-950 font-semibold text-left transition cursor-pointer ${ringClass}" title="${escapeHtml(span.label + ': Verified C1/C2 Structural Pivot')}">` +
           `<span>${escapeHtml(span.matchedText)}</span>` +
           `<span class="ml-1 inline-flex items-center justify-center px-1 rounded bg-emerald-600 text-white text-[10px] font-bold uppercase tracking-tighter">C1+</span>` +
           `</button>`;
@@ -692,7 +808,9 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
         wordCount: result.wordCount,
         sentenceCount: result.sentenceCount,
         meanSentenceLength: result.meanLength,
-        stdDevSentenceLength: result.stdDev,
+        openerTypes: result.uniqueOpenerTypes,
+        openerVarietyPct: result.openerVarietyPct,
+        cannedOpenerCount: result.cannedOpenerCount,
         cadenceDiagnosis: result.cadenceLabel,
         amberCount: result.amberMatches.length,
         clicheCount: result.clicheCount,
@@ -734,7 +852,8 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
             cefrLevel: result.cefrCode,
             amberCount: result.amberMatches.length,
             emeraldCount: result.emeraldMatches.length,
-            stdDev: result.stdDev,
+            openerTypes: result.uniqueOpenerTypes,
+            openerVarietyPct: result.openerVarietyPct,
             trigger: triggerSource
           });
         }
@@ -901,7 +1020,7 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
                 Test Your Own Essay: Live Syntax &amp; Cliché Stress-Tester
               </h3>
               <p class="text-xs sm:text-sm text-slate-300 mt-1">
-                Paste a 150–350 word IELTS Task 2 or Cambridge C1 essay below—or test one of my 3 calibrated benchmark drafts with a single click.
+                Paste a 150-350 word IELTS Task 2 or Cambridge C1 essay below, or test one of my 3 calibrated benchmark drafts with a single click.
               </p>
             </div>
 
@@ -1000,8 +1119,8 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
                   <div class="text-[11px] text-slate-400 leading-tight">C1/C2 Structural Pivots</div>
                 </div>
                 <div class="p-2.5 rounded-xl bg-slate-900/90 border border-indigo-400/30">
-                  <div id="gm-stat-sigma" class="text-lg sm:text-xl font-black text-indigo-300">0.0</div>
-                  <div class="text-[11px] text-slate-400 leading-tight">Sentence Rhythm (&sigma;)</div>
+                  <div id="gm-stat-sigma" class="text-lg sm:text-xl font-black text-indigo-300">0%</div>
+                  <div class="text-[11px] text-slate-400 leading-tight">Opener Variety</div>
                 </div>
               </div>
 
@@ -1087,16 +1206,16 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
           </div>
         </div>
 
-        <!-- Sentence Length Variance & Rhythm Sparkline Bar -->
+        <!-- Sentence-Opener Variety & Clause Rhythm Sparkline Bar -->
         <div class="p-5 sm:p-7 bg-slate-50 border-b border-slate-200">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
             <div>
               <div class="flex flex-wrap items-center gap-2.5">
                 <h4 class="text-sm sm:text-base font-bold text-slate-900">
-                  Sentence Length Variance &amp; Rhythm Analyzer
+                  Sentence-Opener Variety &amp; Clause Rhythm Analyzer
                 </h4>
                 <span id="gm-cadence-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold border">
-                  Balanced Academic Cadence
+                  Varied Opener Rhythm
                 </span>
               </div>
               <p id="gm-cadence-advice" class="text-xs sm:text-sm text-slate-600 mt-1">
@@ -1109,26 +1228,27 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
               </div>
               <div class="h-6 w-px bg-slate-200"></div>
               <div>
-                <span class="text-slate-400 block text-[10px] uppercase">Std Dev (&sigma;)</span>
-                <span id="gm-rhythm-sigma" class="font-bold text-indigo-600">&sigma; = 0.0</span>
+                <span class="text-slate-400 block text-[10px] uppercase">Opener Mix</span>
+                <span id="gm-rhythm-sigma" class="font-bold text-indigo-600">0 types (0%)</span>
               </div>
               <div class="h-6 w-px bg-slate-200"></div>
               <div>
                 <span class="text-slate-400 block text-[10px] uppercase">Target Zone</span>
-                <span class="font-bold text-emerald-700">4.5 &le; &sigma; &le; 11.0</span>
+                <span class="font-bold text-emerald-700">4+ types &middot; &le;2 canned</span>
               </div>
             </div>
           </div>
 
           <!-- Visual Bar-Chart Sparkline -->
           <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-inner">
-            <div id="gm-sparkline-bars" class="gm-sparkline-grid" aria-label="Sentence length sparkline chart">
+            <div id="gm-sparkline-bars" class="gm-sparkline-grid" aria-label="Sentence opener and length sparkline chart">
             </div>
             <div class="mt-2 pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
-              <span>Each bar = 1 sentence in your draft (hover a bar to inspect sentence &amp; word count)</span>
-              <div class="flex items-center gap-3">
-                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-indigo-500"></span> 12–28w (Optimal Academic Clause)</span>
-                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span> &lt;12w (Short Punch) or &gt;28w (Long Complex)</span>
+              <span>Each bar = 1 sentence (hover a bar to inspect its opener type &amp; word count)</span>
+              <div class="flex flex-wrap items-center gap-3">
+                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-indigo-500"></span> Direct / Subordinate / Prepositional</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-600"></span> C1 Opener (Inversion / Cleft / Participle)</span>
+                <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span> Canned / Repeated Linker</span>
               </div>
             </div>
           </div>
@@ -1378,7 +1498,7 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
           .join('');
         amberPillsWrap.innerHTML = `
           <div class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-            Flagged Crutches &amp; Clichés (${currentResult.amberMatches.length}) — Click to Inspect Upgrade:
+            Flagged Crutches &amp; Clichés (${currentResult.amberMatches.length}): Click to Inspect Upgrade:
           </div>
           <div class="flex flex-wrap gap-1.5">${pillsHtml}</div>
         `;
@@ -1405,7 +1525,7 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
           `emerald=${currentResult.emeraldMatches.length}`,
           `c1_pillars=${currentResult.c1CategoriesHit}/5`,
           `mean=${currentResult.meanLength}`,
-          `stdDev=${currentResult.stdDev}`
+          `openers=${currentResult.uniqueOpenerTypes}types(${currentResult.openerVarietyPct}%)`
         ].join(' | ');
       }
       if (deskDossierInput) {
@@ -1456,7 +1576,7 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
 
       statAmber.textContent = String(currentResult.amberMatches.length);
       statEmerald.textContent = String(currentResult.emeraldMatches.length);
-      statSigma.textContent = String(currentResult.stdDev);
+      statSigma.textContent = `${currentResult.openerVarietyPct}%`;
 
       ceilingReasonsList.innerHTML = currentResult.ceilingReasons
         .map(
@@ -1504,25 +1624,26 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
         })
         .join('');
 
-      // Rhythm & Sparkline
+      // Opener Variety & Sparkline
       cadenceBadge.className = `px-2.5 py-0.5 rounded-full text-xs font-bold border ${currentResult.cadenceBadgeClass}`;
       cadenceBadge.textContent = currentResult.cadenceLabel;
       cadenceAdvice.textContent = currentResult.cadenceAdvice;
       rhythmMean.textContent = `${currentResult.meanLength} words`;
-      rhythmSigma.textContent = `\u03C3 = ${currentResult.stdDev}`;
+      rhythmSigma.textContent = currentResult.openerSummary;
 
       if (currentResult.sentences.length === 0) {
-        sparklineBars.innerHTML = `<div class="text-xs text-slate-400 italic py-6 mx-auto">Add at least two sentences to render your sentence-length sparkline.</div>`;
+        sparklineBars.innerHTML = `<div class="text-xs text-slate-400 italic py-6 mx-auto">Add at least two sentences to inspect your sentence-opener sparkline.</div>`;
       } else {
         const maxWords = Math.max(34, ...currentResult.sentences.map((s) => s.wordCount));
         sparklineBars.innerHTML = currentResult.sentences
           .map((s, idx) => {
             const pct = Math.max(12, Math.min(100, Math.round((s.wordCount / maxWords) * 100)));
-            const isOptimal = s.wordCount >= 12 && s.wordCount <= 28;
-            const barColor = isOptimal ? 'bg-indigo-600' : 'bg-amber-500';
+            const barColor = s.openerCanned
+              ? 'bg-amber-500'
+              : (s.openerSalient ? 'bg-emerald-600' : 'bg-indigo-600');
             const preview = s.text.length > 90 ? s.text.slice(0, 87) + '...' : s.text;
             return `
-              <div class="gm-spark-col" title="Sentence ${idx + 1} (${s.wordCount} words): ${escapeHtml(preview)}">
+              <div class="gm-spark-col" title="Sentence ${idx + 1} (${s.wordCount} words · ${escapeHtml(s.openerLabel)}): ${escapeHtml(preview)}">
                 <span class="text-[10px] font-mono font-bold text-slate-600 mb-1">${s.wordCount}w</span>
                 <div class="gm-spark-bar ${barColor}" style="height: ${pct}%"></div>
                 <span class="text-[10px] font-mono text-slate-400 mt-1">S${idx + 1}</span>
@@ -1639,7 +1760,7 @@ Ultimately, infrastructural investment must precede taxation. When rapid transit
           '=== GARETH MONTGOMERY ESSAY DIAGNOSTIC REPORT ===',
           `Estimated Structural Ceiling: ${currentResult.ceilingScore}`,
           `Word Count: ${currentResult.wordCount} words (${currentResult.sentenceCount} sentences)`,
-          `Sentence Rhythm: Mean ${currentResult.meanLength}w | Std Dev σ = ${currentResult.stdDev} (${currentResult.cadenceLabel})`,
+          `Sentence-Opener Variety: ${currentResult.openerSummary} | Mean ${currentResult.meanLength}w (${currentResult.cadenceLabel})`,
           `Amber Flags (Clichés / B1 Crutches): ${currentResult.amberMatches.length}`,
           `Emerald C1/C2 Structural Pivots: ${currentResult.emeraldMatches.length} (${currentResult.c1CategoriesHit}/5 pillars)`,
           '',

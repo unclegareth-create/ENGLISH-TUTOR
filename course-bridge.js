@@ -1,5 +1,5 @@
 /* ==========================================================================
-   course-bridge.js — "Try it through a story" end card
+   course-bridge.js: "Try it through a story" end card
    --------------------------------------------------------------------------
    A small, dependency-free card that closes each free Lab tool with a gentle
    door into Lesson 1 of the Dark Academia C1/C2 course, so no free drill ends
@@ -126,7 +126,7 @@
 
         card.appendChild(el('p', 'gmcb-text',
             'I teach the same C1/C2 grammar through Dracula, Frankenstein, Jekyll & Hyde, ' +
-            'The Hound of the Baskervilles and Alice \u2014 real extracts, unpicked clause by clause. ' +
+            'The Hound of the Baskervilles and Alice: real extracts, unpicked clause by clause. ' +
             'Lesson 1 is free, so you can see whether it suits you.'));
 
         const actions = el('div', 'gmcb-actions');

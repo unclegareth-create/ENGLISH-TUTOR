@@ -71,17 +71,311 @@
     ]
   }
   </script>
-  <link rel="stylesheet" href="dark-academia.css">
-  <style>
+  <link rel="stylesheet" href="assets/fonts/fonts.css" />
+  <style id="da-kwt-helper-styles">
     :root {
-      --ielts-blue: #0284c7;
-      --ielts-blue-bright: #38bdf8;
-      --ielts-blue-glow: rgba(56, 189, 248, 0.22);
+      --bg-paper: #faf8f5;
+      --bg-card: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --bg-warm: #f8fafc;
+      --text-main: #0f172a;
+      --text-body: #334155;
+      --text-muted: #475569;
+      --border-light: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --ielts-blue: #1d4ed8;
+      --ielts-blue-hover: #1e40af;
+      --ielts-blue-soft: #eff6ff;
+      --ielts-blue-border: #bfdbfe;
+      --green: #047857;
+      --green-soft: #ecfdf5;
+      --green-border: #a7f3d0;
+      --green-text: #047857;
+      --red: #b91c1c;
+      --red-soft: #fef2f2;
+      --red-border: #fecaca;
+      --red-text: #b91c1c;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --amber-border: #fde68a;
+      --font-display: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 16px -2px rgba(15, 23, 42, 0.07);
     }
-    header.ielts-theme {
-      background: linear-gradient(135deg, #082f49 0%, #0f172a 55%, #064e3b 100%);
-      border-color: rgba(56, 189, 248, 0.35);
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-paper);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    *:focus-visible {
+      outline: 3px solid var(--ielts-blue);
+      outline-offset: 2px;
+    }
+
+    /* Hide Dark Academia gothic overlays on this daylight IELTS workbench */
+    .da-scholar-hud,
+    .da-lesson-vfx-canvas {
+      display: none !important;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: -100px;
+      left: 16px;
+      z-index: 9999;
+      background: var(--text-main);
+      color: #ffffff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      top: 12px;
+    }
+
+    /* Sticky Daylight Editorial Top Nav */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(250, 248, 245, 0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-light);
+      padding: 0.8rem 1.25rem;
+    }
+    .site-nav-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .site-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: -0.01em;
+    }
+    .site-brand-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--ielts-blue);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+    .site-nav-links {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.86rem;
+      font-weight: 600;
+    }
+    .site-nav-links a {
+      color: var(--text-body);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .site-nav-links a:hover {
+      color: var(--ielts-blue);
+    }
+    .site-nav-cta {
+      background: var(--ielts-blue);
+      color: #ffffff !important;
+      padding: 0.45rem 0.95rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.82rem;
+    }
+    .site-nav-cta:hover {
+      background: var(--ielts-blue-hover);
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 1.75rem 1.25rem 3.5rem;
+    }
+
+    /* Breadcrumb */
+    .nav-breadcrumb {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .nav-breadcrumb a {
+      color: var(--ielts-blue);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .nav-breadcrumb a:hover {
+      text-decoration: underline;
+    }
+
+    /* Daylight Editorial Hero Header */
+    header.unit-header.ielts-theme {
+      background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+      border: 1px solid var(--ielts-blue-border);
+      border-top: 4px solid var(--ielts-blue);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      box-shadow: var(--shadow-md);
+    }
+    .header-badges {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .badge-ielts {
+      background: var(--ielts-blue-soft);
+      color: var(--ielts-blue);
+      border: 1px solid var(--ielts-blue-border);
+    }
+    .badge-cefr {
+      background: var(--green-soft);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+    .badge-time {
+      background: var(--amber-soft);
+      color: var(--amber);
+      border: 1px solid var(--amber-border);
+    }
+    header.unit-header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(1.7rem, 3vw, 2.35rem);
+      line-height: 1.18;
+      margin-bottom: 0.55rem;
+      color: var(--text-main);
+      letter-spacing: -0.015em;
+    }
+    header.unit-header p {
+      color: var(--text-body);
+      font-size: 0.96rem;
+      max-width: 650px;
+    }
+
+    /* Masterclass Score Box */
+    .score-box {
+      background: var(--bg-card);
+      border: 1px solid var(--ielts-blue-border);
+      padding: 1rem 1.5rem;
+      border-radius: 14px;
+      text-align: center;
+      min-width: 168px;
+      box-shadow: var(--shadow-sm);
+    }
+    .score-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.07em;
+      font-weight: 700;
+    }
+    .score-display {
+      font-family: var(--font-display);
+      font-size: 2.15rem;
+      font-weight: 800;
+      color: var(--ielts-blue);
+      line-height: 1.15;
+      margin-top: 0.2rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Cards & Section Headers */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 16px;
+      padding: 1.85rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 0.9rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .card-header h2 {
+      font-family: var(--font-display);
+      font-size: 1.38rem;
+      color: var(--text-main);
+      line-height: 1.25;
+    }
+    .pill {
+      background: var(--ielts-blue-soft);
+      border: 1px solid var(--ielts-blue-border);
+      color: var(--ielts-blue);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pill-emerald {
+      background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      color: var(--green);
+    }
+
+    /* 5-Type Blueprint Grid */
     .blueprint-grid-5 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -89,75 +383,449 @@
       margin-top: 1.15rem;
     }
     .type-blueprint-card {
-      background: #090e1a;
-      border: 1px solid #1e293b;
-      border-top: 3px solid var(--ielts-blue-bright);
+      background: var(--bg-warm);
+      border: 1px solid var(--border-light);
+      border-top: 3px solid var(--ielts-blue);
       border-radius: 12px;
       padding: 1.15rem;
     }
     .type-blueprint-card h3 {
-      font-size: 1.05rem;
-      color: #ffffff;
-      margin-bottom: 0.35rem;
+      font-size: 1rem;
+      color: var(--text-main);
+      margin-bottom: 0.45rem;
+      line-height: 1.35;
     }
     .type-trigger {
       display: inline-block;
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 700;
-      color: #7dd3fc;
-      background: rgba(2, 132, 199, 0.2);
-      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--ielts-blue);
+      background: var(--ielts-blue-soft);
+      border: 1px solid var(--ielts-blue-border);
       padding: 0.18rem 0.55rem;
       border-radius: 6px;
-      margin-bottom: 0.65rem;
+      margin-bottom: 0.6rem;
     }
     .type-plan-list {
       list-style: none;
       font-size: 0.84rem;
-      color: #cbd5e1;
+      color: var(--text-body);
       line-height: 1.55;
     }
     .type-plan-list li {
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.32rem;
     }
     .type-plan-list strong {
-      color: #fde68a;
+      color: var(--text-main);
     }
-    .model-tabs {
+
+    /* Sort Task */
+    .sort-instruction {
+      font-size: 0.92rem;
+      color: var(--text-body);
+      margin: 1rem 0 0.85rem;
+    }
+    .sort-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .sort-row {
+      background: var(--bg-warm);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .sort-word {
+      font-weight: 700;
+      color: var(--text-main);
+      min-width: 220px;
+      flex: 1;
+      font-size: 0.94rem;
+    }
+    .sort-word small {
+      display: block;
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      margin-top: 0.2rem;
+    }
+    .sort-controls,
+    .sort-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
-      margin-bottom: 1.25rem;
     }
-    .model-tab-btn {
-      background: #0f172a;
-      border: 1px solid #334155;
-      color: #cbd5e1;
+    .btn-sort {
       padding: 0.5rem 0.95rem;
       border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      min-height: 40px;
+      transition: all 0.15s;
+    }
+    .btn-sort:hover:not(:disabled) {
+      border-color: var(--ielts-blue);
+      background: var(--ielts-blue-soft);
+      color: var(--ielts-blue);
+    }
+    .btn-sort.correct {
+      background: var(--green-soft);
+      border-color: var(--green);
+      color: var(--green-text);
+    }
+    .btn-sort.wrong {
+      background: var(--red-soft);
+      border-color: var(--red);
+      color: var(--red-text);
+    }
+    .sort-feedback {
+      width: 100%;
+      margin-top: 0.35rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    /* Diagnostic MCQs */
+    .section-subheading {
+      font-size: 1.06rem;
+      font-weight: 700;
+      margin: 1.75rem 0 0.95rem;
+      color: var(--text-main);
+    }
+    .mc-block {
+      background: var(--bg-warm);
+      border: 1px solid var(--border-light);
+      padding: 1.35rem;
+      border-radius: 12px;
+      margin-bottom: 1.15rem;
+    }
+    .mc-prompt {
+      font-weight: 600;
+      margin-bottom: 0.9rem;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      line-height: 1.55;
+    }
+    .mc-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .mc-btn {
+      text-align: left;
+      padding: 0.85rem 1.1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      transition: all 0.15s;
+      min-height: 44px;
+    }
+    .mc-btn:hover:not(:disabled) {
+      border-color: var(--ielts-blue);
+      background: var(--ielts-blue-soft);
+    }
+    .mc-btn.correct {
+      background: var(--green-soft);
+      border-color: var(--green);
+      color: var(--green-text);
+      font-weight: 600;
+    }
+    .mc-btn.wrong {
+      background: var(--red-soft);
+      border-color: var(--red);
+      color: var(--red-text);
+    }
+    .feedback-box {
+      font-size: 0.88rem;
+      margin-top: 0.8rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      display: none;
+      line-height: 1.55;
+      font-weight: 500;
+    }
+    .feedback-box.correct {
+      display: block;
+      background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      color: var(--green-text);
+    }
+    .feedback-box.wrong {
+      display: block;
+      background: var(--red-soft);
+      border: 1px solid var(--red-border);
+      color: var(--red-text);
+    }
+    .feedback-box.partial {
+      display: block;
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      color: var(--amber);
+    }
+
+    /* Section 3: Key Word Transformations */
+    .kwt-card {
+      background: var(--bg-warm);
+      border: 1px solid var(--border-light);
+      padding: 1.35rem;
+      border-radius: 12px;
+      margin-bottom: 1.2rem;
+    }
+    .kwt-original {
+      font-size: 0.96rem;
+      color: var(--text-main);
+      font-weight: 600;
+      margin-bottom: 0.45rem;
+    }
+    .kwt-key {
+      display: inline-block;
+      background: var(--text-main);
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 0.28rem 0.8rem;
+      border-radius: 6px;
+      margin: 0.35rem 0 0.5rem;
+      letter-spacing: 0.08em;
+    }
+    .kwt-input-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.65rem;
+      margin-top: 0.45rem;
+      color: var(--text-body);
+      font-size: 0.94rem;
+    }
+    .kwt-input {
+      flex: 1;
+      min-width: 240px;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-strong);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      padding: 0.68rem 0.95rem;
+      border-radius: 8px;
+      font-size: 0.94rem;
+      font-weight: 600;
+      min-height: 44px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .kwt-input:focus {
+      border-color: var(--ielts-blue);
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+      outline: none;
+    }
+    .kwt-helper-wrap {
+      margin-top: 0.8rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--border-strong);
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .kwt-helper-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .kwt-helper-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .kwt-helper-actions {
+      display: flex;
+      gap: 0.45rem;
+      align-items: center;
+    }
+    .word-counter-pill {
+      background: var(--text-main);
+      color: #f8fafc;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+    }
+    .kwt-mini-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      color: var(--text-body);
+      font-family: var(--font-sans);
+      padding: 0.28rem 0.68rem;
+      border-radius: 6px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .kwt-mini-btn:hover:not(:disabled) {
+      background: var(--ielts-blue-soft);
+      border-color: var(--ielts-blue);
+      color: var(--ielts-blue);
+    }
+    .kwt-mini-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .kwt-tiles-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.42rem;
+    }
+    .kwt-word-tile {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .kwt-word-tile:hover:not(:disabled) {
+      background: var(--ielts-blue-soft);
+      border-color: var(--ielts-blue);
+      color: var(--ielts-blue);
+      transform: translateY(-1px);
+    }
+    .kwt-word-tile.used {
+      opacity: 0.45;
+      background: var(--bg-subtle);
+      border-style: dashed;
+      text-decoration: line-through;
+    }
+    .kwt-hint-box {
+      display: none;
+      font-size: 0.84rem;
+      color: var(--amber);
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      border-left: 3px solid var(--amber);
+      padding: 0.55rem 0.8rem;
+      border-radius: 6px;
+    }
+    .kwt-hint-box.visible {
+      display: block;
+    }
+
+    /* Buttons */
+    .btn-main {
+      background: var(--ielts-blue);
+      color: #ffffff;
+      border: none;
+      padding: 0.68rem 1.25rem;
+      border-radius: 9px;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      min-height: 42px;
+      transition: background 0.15s, transform 0.15s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
+    .btn-main:hover:not(:disabled) {
+      background: var(--ielts-blue-hover);
+      transform: translateY(-1px);
+    }
+    .btn-main:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-emerald {
+      background: var(--green);
+      color: #ffffff;
+    }
+    .btn-emerald:hover:not(:disabled) {
+      background: #065f46;
+    }
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-strong);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-subtle);
+      color: var(--text-main);
+    }
+    .btn-slate {
+      background: var(--text-main);
+      color: #ffffff;
+    }
+    .btn-slate:hover:not(:disabled) {
+      background: #1e293b;
+    }
+
+    /* Model Tabs & Essay Box */
+    .model-tabs,
+    .wb-type-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+    .model-tab-btn,
+    .wb-tab-btn {
+      background: var(--bg-warm);
+      border: 1px solid var(--border-strong);
+      color: var(--text-body);
+      font-family: var(--font-sans);
+      padding: 0.52rem 0.95rem;
+      border-radius: 9px;
       font-size: 0.84rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s;
     }
-    .model-tab-btn:hover {
-      border-color: var(--ielts-blue-bright);
-      color: #fff;
+    .model-tab-btn:hover,
+    .wb-tab-btn:hover {
+      border-color: var(--ielts-blue);
+      color: var(--ielts-blue);
+      background: var(--ielts-blue-soft);
     }
-    .model-tab-btn.active {
+    .model-tab-btn.active,
+    .wb-tab-btn.active {
       background: var(--ielts-blue);
-      border-color: var(--ielts-blue-bright);
-      color: #fff;
+      border-color: var(--ielts-blue);
+      color: #ffffff;
     }
     .model-essay-box {
-      background: #070b14;
-      border: 1px solid #1e293b;
-      border-left: 4px solid var(--ielts-blue-bright);
+      background: var(--bg-warm);
+      border: 1px solid var(--border-light);
+      border-left: 4px solid var(--ielts-blue);
       border-radius: 12px;
       padding: 1.5rem;
-      font-size: 1rem;
+      font-size: 0.98rem;
       line-height: 1.8;
-      color: #e2e8f0;
+      color: var(--text-main);
     }
     .model-essay-box p {
       margin-bottom: 1rem;
@@ -165,45 +833,69 @@
     .model-essay-box p:last-child {
       margin-bottom: 0;
     }
-    .para-tag {
-      display: inline-block;
-      font-family: monospace;
-      font-size: 0.74rem;
+    .model-meta-header {
+      margin-bottom: 0.95rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .model-meta-title {
+      font-size: 0.78rem;
+      color: var(--ielts-blue);
       font-weight: 800;
       text-transform: uppercase;
-      background: rgba(56, 189, 248, 0.16);
-      color: #7dd3fc;
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      padding: 0.1rem 0.45rem;
-      border-radius: 4px;
+      letter-spacing: 0.06em;
+    }
+    .model-meta-prompt {
+      font-size: 0.93rem;
+      color: var(--text-body);
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+    .para-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: var(--ielts-blue-soft);
+      color: var(--ielts-blue);
+      border: 1px solid var(--ielts-blue-border);
+      padding: 0.12rem 0.45rem;
+      border-radius: 5px;
       margin-right: 0.45rem;
     }
-    .wb-type-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1.25rem;
+
+    /* Section 6: Paragraph Upgrade Workbench */
+    .wb-prompt-banner {
+      margin-bottom: 1rem;
+      padding: 1rem 1.15rem;
+      background: var(--ielts-blue-soft);
+      border: 1px solid var(--ielts-blue-border);
+      border-left: 4px solid var(--ielts-blue);
+      border-radius: 10px;
     }
-    .wb-tab-btn {
-      background: #0f172a;
-      border: 1px solid #334155;
-      color: #cbd5e1;
-      padding: 0.55rem 1rem;
-      border-radius: 8px;
-      font-size: 0.84rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
+    .wb-prompt-type {
+      font-size: 0.76rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--ielts-blue);
+      letter-spacing: 0.06em;
     }
-    .wb-tab-btn:hover {
-      border-color: var(--ielts-blue-bright);
-      color: #fff;
+    .wb-prompt-text {
+      font-size: 0.92rem;
+      color: var(--text-main);
+      font-style: italic;
+      margin-top: 0.25rem;
     }
-    .wb-tab-btn.active {
-      background: var(--ielts-blue);
-      border-color: var(--ielts-blue-bright);
-      color: #fff;
-      box-shadow: 0 0 14px rgba(2, 132, 199, 0.35);
+    .wb-formula-box {
+      margin-top: 0.6rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-main);
+      background: var(--bg-card);
+      border: 1px solid var(--ielts-blue-border);
+      padding: 0.4rem 0.7rem;
+      border-radius: 6px;
     }
     .wb-grid {
       display: grid;
@@ -216,34 +908,50 @@
       }
     }
     .wb-panel {
-      background: #070b14;
-      border: 1px solid #1e293b;
+      background: var(--bg-warm);
+      border: 1px solid var(--border-light);
       border-radius: 12px;
       padding: 1.25rem;
     }
     .wb-panel-bad {
-      border-top: 3px solid #f43f5e;
+      border-top: 3px solid var(--red);
     }
     .wb-panel-good {
-      border-top: 3px solid #10b981;
+      border-top: 3px solid var(--green);
+    }
+    .wb-bad-quote {
+      font-size: 0.93rem;
+      color: var(--text-main);
+      line-height: 1.7;
+      background: var(--bg-card);
+      padding: 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--red-border);
+    }
+    .wb-diagnosis {
+      font-size: 0.84rem;
+      color: var(--red-text);
+      margin-top: 0.75rem;
+      line-height: 1.55;
     }
     .wb-textarea {
       width: 100%;
       min-height: 125px;
-      background: #0f172a;
-      border: 1px solid #334155;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-strong);
       border-radius: 10px;
-      color: #f8fafc;
+      color: var(--text-main);
       padding: 0.85rem 1rem;
-      font-family: inherit;
-      font-size: 0.94rem;
+      font-family: var(--font-sans);
+      font-size: 0.93rem;
       line-height: 1.65;
       resize: vertical;
       margin-top: 0.5rem;
     }
     .wb-textarea:focus {
-      outline: 2px solid var(--ielts-blue-bright);
-      border-color: transparent;
+      outline: none;
+      border-color: var(--ielts-blue);
+      box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.14);
     }
     .c1-badge-row {
       display: flex;
@@ -252,63 +960,74 @@
       margin-top: 0.75rem;
     }
     .c1-detector-pill {
-      font-size: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 700;
       padding: 0.25rem 0.65rem;
       border-radius: 999px;
-      border: 1px solid #334155;
-      background: #0f172a;
-      color: #94a3b8;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-muted);
       transition: all 0.2s;
     }
     .c1-detector-pill.detected {
-      background: rgba(16, 185, 129, 0.18);
-      border-color: #10b981;
-      color: #6ee7b7;
+      background: var(--green-soft);
+      border-color: var(--green);
+      color: var(--green-text);
     }
     .c1-detector-pill.warn {
-      background: rgba(244, 63, 94, 0.18);
-      border-color: #f43f5e;
-      color: #fda4af;
+      background: var(--red-soft);
+      border-color: var(--red);
+      color: var(--red-text);
     }
     .wb-model-reveal {
       display: none;
       margin-top: 1rem;
       padding: 1.2rem;
       border-radius: 10px;
-      background: rgba(6, 78, 59, 0.25);
-      border: 1px solid rgba(16, 185, 129, 0.45);
-      color: #ecfdf5;
+      background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      border-left: 4px solid var(--green);
+      color: var(--text-main);
       font-size: 0.94rem;
       line-height: 1.75;
     }
     .wb-model-reveal.open {
       display: block;
     }
+    .wb-gareth-note {
+      font-size: 0.85rem;
+      color: var(--text-body);
+      background: var(--bg-card);
+      padding: 0.75rem 0.95rem;
+      border-radius: 8px;
+      border-left: 3px solid var(--green);
+      margin-top: 0.75rem;
+    }
     .wb-starter-chip {
-      background: #1e293b;
-      border: 1px solid #334155;
-      color: #bae6fd;
+      background: var(--bg-card);
+      border: 1px solid var(--ielts-blue-border);
+      color: var(--ielts-blue);
+      font-family: var(--font-sans);
       font-size: 0.75rem;
       font-weight: 600;
-      padding: 0.25rem 0.6rem;
+      padding: 0.28rem 0.62rem;
       border-radius: 6px;
       cursor: pointer;
       transition: all 0.15s;
     }
     .wb-starter-chip:hover {
-      background: #0284c7;
+      background: var(--ielts-blue);
       color: #ffffff;
-      border-color: #38bdf8;
+      border-color: var(--ielts-blue);
     }
     .wb-preflight-box {
       margin-top: 0.85rem;
       padding: 0.85rem 0.95rem;
       border-radius: 10px;
-      background: #0f172a;
-      border: 1px solid #334155;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
       font-size: 0.83rem;
-      color: #cbd5e1;
+      color: var(--text-body);
       line-height: 1.55;
     }
     .wb-preflight-list {
@@ -318,23 +1037,38 @@
       flex-direction: column;
       gap: 0.35rem;
     }
-    .wb-preflight-list li.warn { color: #fda4af; }
-    .wb-preflight-list li.ok { color: #86efac; }
+    .wb-preflight-list li.warn { color: var(--red-text); }
+    .wb-preflight-list li.ok { color: var(--green-text); }
     .wb-honesty-note {
       padding: 0.65rem 0.8rem;
       border-radius: 8px;
-      background: rgba(245, 158, 11, 0.1);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      color: #fde68a;
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      color: var(--amber);
       font-size: 0.79rem;
       line-height: 1.5;
     }
+    .wb-sample-warn {
+      display: none;
+      margin-top: 0.65rem;
+      font-size: 0.8rem;
+      color: var(--amber);
+      background: var(--amber-soft);
+      border: 1px solid var(--amber-border);
+      padding: 0.55rem 0.75rem;
+      border-radius: 8px;
+    }
+
+    /* Inline Belfast Desk Free Red-Pen Check */
     .wb-desk-card {
       margin-top: 1.5rem;
-      background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
-      border: 1px solid #10b981;
-      border-radius: 14px;
-      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      border-top: 4px solid var(--green);
+      border-radius: 16px;
+      padding: 1.65rem;
+      box-shadow: var(--shadow-sm);
     }
     .wb-desk-grid {
       display: grid;
@@ -342,27 +1076,36 @@
       gap: 0.85rem;
       margin-bottom: 0.85rem;
     }
+    .wb-desk-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 0.35rem;
+    }
     .wb-desk-input {
       width: 100%;
-      background: #070b14;
-      border: 1px solid #334155;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-strong);
       border-radius: 8px;
-      color: #f8fafc;
+      color: var(--text-main);
+      font-family: var(--font-sans);
       padding: 0.65rem 0.85rem;
       font-size: 0.92rem;
     }
     .wb-desk-input:focus {
-      outline: 2px solid #34d399;
-      border-color: transparent;
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.14);
     }
     .wb-desk-ok {
       display: none;
       margin-top: 0.85rem;
       padding: 0.85rem 1rem;
       border-radius: 8px;
-      background: rgba(16, 185, 129, 0.16);
-      border: 1px solid #34d399;
-      color: #d1fae5;
+      background: var(--bg-card);
+      border: 1px solid var(--green);
+      color: var(--green-text);
       font-size: 0.9rem;
       font-weight: 600;
     }
@@ -372,19 +1115,122 @@
       margin-top: 0.85rem;
       padding: 0.85rem 1rem;
       border-radius: 8px;
-      background: rgba(244, 63, 94, 0.16);
-      border: 1px solid #fb7185;
-      color: #fecdd3;
+      background: var(--red-soft);
+      border: 1px solid var(--red-border);
+      color: var(--red-text);
       font-size: 0.88rem;
       font-weight: 600;
     }
     .wb-desk-err.visible { display: block; }
+
+    /* Conversion Card */
+    .da-completion-card {
+      background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+      border: 1px solid var(--ielts-blue-border);
+      border-radius: 16px;
+      padding: 1.85rem;
+      margin: 1.75rem 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .da-completion-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 0.8rem;
+    }
+    .da-score-callout {
+      display: inline-flex;
+      align-items: center;
+      background: var(--green-soft);
+      border: 1px solid var(--green-border);
+      color: var(--green-text);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 999px;
+    }
+    .da-completion-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--text-main);
+      margin-bottom: 0.55rem;
+    }
+    .da-completion-body {
+      color: var(--text-body);
+      font-size: 0.95rem;
+      max-width: 760px;
+      line-height: 1.65;
+      margin-bottom: 1.2rem;
+    }
+    .da-completion-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      align-items: center;
+    }
+    .dossier-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.62rem 1.05rem;
+      border-radius: 9px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-card);
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .dossier-pill-btn:hover {
+      border-color: var(--ielts-blue);
+      color: var(--ielts-blue);
+      background: var(--ielts-blue-soft);
+    }
+
+    /* Footer */
+    .footer-bar {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      padding: 1.45rem 1.75rem;
+      border-radius: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    @media print {
+      body { background: #ffffff !important; color: #000000 !important; }
+      .site-nav, .nav-breadcrumb, .btn-main, .btn-sort, .mc-btn, .footer-bar, .score-box, .wb-desk-card { display: none !important; }
+      .card, header.unit-header { box-shadow: none !important; border: 1px solid #cbd5e1 !important; page-break-inside: avoid; }
+    }
   </style>
-  <style>.skip-link{position:fixed;top:-100px;left:16px;z-index:9999;background:#0f172a;color:#fff;padding:8px 14px;border-radius:6px;font-weight:700;text-decoration:none;}.skip-link:focus{top:12px;}</style>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230369a1'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4ed8'/%3E%3Ctext x='16' y='23' font-family='Arial' font-size='20' font-weight='800' text-anchor='middle' fill='white'%3EG%3C/text%3E%3C/svg%3E" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav class="site-nav" aria-label="Primary">
+    <div class="site-nav-inner">
+      <a href="index.html" class="site-brand">
+        <span class="site-brand-mark" aria-hidden="true">G</span>
+        <span>Gareth Montgomery</span>
+      </a>
+      <div class="site-nav-links">
+        <a href="index.html">Home</a>
+        <a href="blog.html">Guides</a>
+        <a href="lab.html">Interactive Lab</a>
+        <a href="how-i-mark.html">How I Mark</a>
+        <a href="index.html#contact" class="site-nav-cta">Book starter (£35)</a>
+      </div>
+    </div>
+  </nav>
 
 <div class="container">
   <!-- Breadcrumb -->
@@ -400,7 +1246,7 @@
   <header class="unit-header ielts-theme">
     <div>
       <div class="header-badges">
-        <span class="badge" style="background:rgba(2,132,199,0.3);color:#7dd3fc;border:1px solid #38bdf8;">IELTS Academic &amp; General Training</span>
+        <span class="badge badge-ielts">IELTS Academic &amp; General Training</span>
         <span class="badge badge-cefr">Target Band 7.0 – 8.5</span>
         <span class="badge badge-time">⏱ 20 Mins Interactive</span>
       </div>
@@ -497,11 +1343,11 @@
     </div>
     <div class="sort-container" id="sorting-container"></div>
 
-    <h3 style="font-size:1.08rem; margin:1.75rem 0 0.95rem; color:#f1f5f9;">Task 2: Match the Exam Prompt to the Correct Paragraph Plan (Questions 5–7 • 3 Marks)</h3>
+    <h3 class="section-subheading">Task 2: Match the Exam Prompt to the Correct Paragraph Plan (Questions 5–7 • 3 Marks)</h3>
 
     <!-- MCQ 5 -->
     <div class="mc-block" data-correct="1">
-      <div class="mc-prompt">5. <strong>Exam Prompt:</strong> <em>"In many cities, fewer people know their neighbours than in the past. What are the causes of this trend, and how can community spirit be improved?"</em> — Which paragraph plan will score Band 7.5+ for Task Response?</div>
+      <div class="mc-prompt">5. <strong>Exam Prompt:</strong> <em>"In many cities, fewer people know their neighbours than in the past. What are the causes of this trend, and how can community spirit be improved?"</em> Which paragraph plan will score Band 7.5+ for Task Response?</div>
       <div class="mc-options">
         <button class="mc-btn" onclick="darkEngine.handleMC(this, 0, 'Not quite: This is a Causes & Solutions prompt, not an Agree/Disagree prompt. Arguing whether neighbours are good or bad misses the question.')">
           A) Body 1: Why I strongly agree that knowing neighbours is vital. • Body 2: Why modern privacy concerns justify keeping one’s distance.
@@ -518,16 +1364,16 @@
 
     <!-- MCQ 6 -->
     <div class="mc-block" data-correct="2">
-      <div class="mc-prompt">6. <strong>Exam Prompt:</strong> <em>"More and more young adults are choosing to rent rather than buy a home. Why is this the case? Do you think this is a positive or negative development?"</em> — What type of essay is this, and how should you organise Body 1 and Body 2?</div>
+      <div class="mc-prompt">6. <strong>Exam Prompt:</strong> <em>"More and more young adults are choosing to rent rather than buy a home. Why is this the case? Do you think this is a positive or negative development?"</em> What type of essay is this, and how should you organise Body 1 and Body 2?</div>
       <div class="mc-options">
         <button class="mc-btn" onclick="darkEngine.handleMC(this, 0, 'Not quite: If you put both reasons AND positive/negative judgements into both paragraphs, your coherence becomes muddled.')">
-          A) Discussion Essay — Body 1 outlines the financial benefits of buying a family home; Body 2 explores the flexibility of private tenancy before choosing a side.
+          A) Discussion Essay: Body 1 outlines the financial benefits of buying a family home; Body 2 explores the flexibility of private tenancy before choosing a side.
         </button>
         <button class="mc-btn" onclick="darkEngine.handleMC(this, 1, 'Not quite: The prompt does not ask for solutions to housing prices; its second question asks whether the trend is positive or negative.')">
-          B) Problem/Solution Essay — Body 1 details why modern mortgage rates remain unaffordable; Body 2 proposes government subsidies and public housing initiatives.
+          B) Problem/Solution Essay: Body 1 details why modern mortgage rates remain unaffordable; Body 2 proposes government subsidies and public housing initiatives.
         </button>
         <button class="mc-btn" onclick="darkEngine.handleMC(this, 2, 'Exactly right! In a Two-Part Direct Question, Body 1 answers Question 1 (Why is this the case?) and Body 2 answers Question 2 (Is it positive or negative?).')">
-          C) Two-Part Direct Question — Body 1 explains the reasons behind the shift to renting; Body 2 evaluates why it is largely a negative (or positive) development.
+          C) Two-Part Direct Question: Body 1 explains the reasons behind the shift to renting; Body 2 evaluates why it is largely a negative (or positive) development.
         </button>
       </div>
       <div class="feedback-box"></div>
@@ -535,9 +1381,9 @@
 
     <!-- MCQ 7 -->
     <div class="mc-block" data-correct="0">
-      <div class="mc-prompt">7. <strong>Exam Prompt:</strong> <em>"Some people think universities should only teach practical job skills, while others believe universities should provide broad academic knowledge. Discuss both views and give your opinion."</em> — What is the biggest mistake students make in this essay type?</div>
+      <div class="mc-prompt">7. <strong>Exam Prompt:</strong> <em>"Some people think universities should only teach practical job skills, while others believe universities should provide broad academic knowledge. Discuss both views and give your opinion."</em> What is the biggest mistake students make in this essay type?</div>
       <div class="mc-options">
-        <button class="mc-btn" onclick="darkEngine.handleMC(this, 0, 'Correct! Under IELTS Task Response descriptors, if a &quot;Discuss both views&quot; essay only argues one side—or fails to address both perspectives fully—it cannot achieve Band 7.0+.')">
+        <button class="mc-btn" onclick="darkEngine.handleMC(this, 0, 'Correct! Under IELTS Task Response descriptors, if a &quot;Discuss both views&quot; essay only argues one side (or fails to address both perspectives fully), it cannot achieve Band 7.0+.')">
           A) Only presenting arguments for the side they personally support, while completely ignoring the opposing perspective.
         </button>
         <button class="mc-btn" onclick="darkEngine.handleMC(this, 1, 'Actually, stating your opinion in the introduction and developing the side you support in Body 2 is ideal practice.')">
@@ -606,7 +1452,7 @@
       <div class="kwt-input-row">
         <input type="text" class="kwt-input" placeholder="Tap tiles or type..." aria-label="Transformation answer for question 11">
         <span>affordable public transport, urban congestion would fall dramatically.</span>
-        <button class="btn-main" onclick="darkEngine.handleKWT(this, 'Were governments to invest heavily in', 'Uses an inverted second conditional (\"Were + subject + to + verb\")—an instant Band 8.0 Grammatical Range marker.')">Check</button>
+        <button class="btn-main" onclick="darkEngine.handleKWT(this, 'Were governments to invest heavily in', 'Uses an inverted second conditional (\"Were + subject + to + verb\"), an instant Band 8.0 Grammatical Range marker.')">Check</button>
       </div>
       <div class="feedback-box"></div>
     </div>
@@ -664,7 +1510,7 @@
       <span class="pill">Live C1 Syntax Detector + Side-by-Side Models</span>
     </div>
     <p style="font-size:0.94rem; color:var(--text-muted); margin-bottom:1.1rem;">
-      In nineteen years of teaching—including fifteen years lecturing at Belfast Metropolitan College—the single biggest leap I see at my desk happens when a candidate stops stuffing memorised thesaurus words (<em>plethora, conundrum, ubiquitous, paramount</em>) into flat B2 sentences and starts rebuilding the paragraph's spine. Select any of the <strong>5 core essay types</strong> below, rewrite the flat Band 6.5 draft using the C1 structural blueprint, inspect the Pre-Flight Diagnostics below, and click <strong>👁️ Reveal Cambridge Model</strong> to compare against my Band 8.0+ rewrite.
+      In nineteen years of teaching (including fifteen years lecturing at Belfast Metropolitan College), the single biggest leap I see at my desk happens when a candidate stops stuffing memorised thesaurus words (<em>plethora, conundrum, ubiquitous, paramount</em>) into flat B2 sentences and starts rebuilding the paragraph's spine. Select any of the <strong>5 core essay types</strong> below, rewrite the flat Band 6.5 draft using the C1 structural blueprint, inspect the Pre-Flight Diagnostics below, and click <strong>👁️ Reveal Cambridge Model</strong> to compare against my Band 8.0+ rewrite.
     </p>
 
     <div class="wb-type-tabs" role="tablist" aria-label="Paragraph Upgrade Essay Types">
@@ -682,12 +1528,12 @@
   <section id="free-redpen-check" class="wb-desk-card" aria-labelledby="wb-desk-heading">
     <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem; margin-bottom:0.85rem;">
       <div>
-        <span class="pill" style="background:rgba(16,185,129,0.2);color:#a7f3d0;border-color:#34d399;">Free 1-Paragraph Note · 24h Turnaround</span>
-        <h2 id="wb-desk-heading" style="color:#ffffff; font-size:1.35rem; margin-top:0.35rem;">Send Your Workbench Paragraph to My Belfast Desk</h2>
+        <span class="pill pill-emerald">Free 1-Paragraph Note · 24h Turnaround</span>
+        <h2 id="wb-desk-heading" style="color:var(--text-main); font-family:var(--font-display); font-size:1.38rem; margin-top:0.4rem;">Send Your Workbench Paragraph to My Belfast Desk</h2>
       </div>
-      <button type="button" id="btn-pull-wb-to-desk" class="btn-main" style="background:#0284c7; font-size:0.82rem;">Pull Workbench Draft + Readout ↓</button>
+      <button type="button" id="btn-pull-wb-to-desk" class="btn-main" style="font-size:0.82rem;">Pull Workbench Draft + Readout ↓</button>
     </div>
-    <p style="font-size:0.9rem; color:#d1fae5; margin-bottom:1rem; line-height:1.6;">
+    <p style="font-size:0.9rem; color:var(--text-body); margin-bottom:1rem; line-height:1.6;">
       Automated rules can spot repeated openers and C1 frame patterns, yet only a human marker can check article precision, prepositions, Task Response stance, and whether a wording issue is a real error or just style. Pull your paragraph below (or paste up to 150 words) for a free 24-hour note from my desk in Northern Ireland.
     </p>
 
@@ -702,23 +1548,23 @@
 
       <div class="wb-desk-grid">
         <div>
-          <label for="redpen-name" style="display:block;font-size:0.78rem;font-weight:700;color:#d1fae5;margin-bottom:0.35rem;">First Name (Optional)</label>
+          <label for="redpen-name" class="wb-desk-label">First Name (Optional)</label>
           <input id="redpen-name" class="wb-desk-input" name="name" type="text" autocomplete="name" placeholder="Your first name (optional)" />
         </div>
         <div>
-          <label for="redpen-email" style="display:block;font-size:0.78rem;font-weight:700;color:#d1fae5;margin-bottom:0.35rem;">Email Address</label>
+          <label for="redpen-email" class="wb-desk-label">Email Address</label>
           <input id="redpen-email" class="wb-desk-input" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
         </div>
       </div>
 
       <div style="margin-bottom:0.9rem;">
-        <label for="redpen-message" style="display:block;font-size:0.78rem;font-weight:700;color:#d1fae5;margin-bottom:0.35rem;">Your Body Paragraph (Up to 150 Words) or Essay Question</label>
+        <label for="redpen-message" class="wb-desk-label">Your Body Paragraph (Up to 150 Words) or Essay Question</label>
         <textarea id="redpen-message" class="wb-textarea" name="message" rows="4" required style="margin-top:0; min-height:110px;" placeholder="Click 'Pull Workbench Draft + Readout' above, or paste your own Task 2 paragraph + target band..."></textarea>
       </div>
 
       <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem;">
-        <span style="font-size:0.8rem; color:#cbd5e1;">Read personally by Gareth Montgomery · <a href="privacy-policy.html" style="color:#a7f3d0; font-weight:600;">Privacy Policy</a></span>
-        <button id="redpen-submit-btn" type="submit" class="btn-main" style="background:#10b981; color:#052e16; font-weight:800;">Send 1 Paragraph Free →</button>
+        <span style="font-size:0.82rem; color:var(--text-muted);">Read personally by Gareth Montgomery · <a href="privacy-policy.html" style="color:var(--green); font-weight:700;">Privacy Policy</a></span>
+        <button id="redpen-submit-btn" type="submit" class="btn-main btn-emerald">Send 1 Paragraph Free →</button>
       </div>
 
       <div id="redpen-success-banner" class="wb-desk-ok" role="status" aria-live="polite">
@@ -729,27 +1575,27 @@
   </section>
 
   <!-- Conversion Banner for IELTS Students -->
-  <div class="da-completion-card" style="background:linear-gradient(135deg,#082f49 0%,#0f172a 55%,#064e3b 100%);">
+  <div class="da-completion-card">
     <div class="da-completion-top">
       <span class="da-score-callout">Want Personalised Feedback on Your IELTS Writing?</span>
-      <span class="badge" style="background:rgba(56,189,248,0.2);color:#7dd3fc;border:1px solid #38bdf8;">24–48h Turnaround</span>
+      <span class="badge badge-ielts">24–48h Turnaround</span>
     </div>
     <h3 class="da-completion-title">Get Your Task 2 Essay Marked Line-by-Line by Gareth</h3>
     <p class="da-completion-body">
       Preparing for IELTS? Submit a practice Task 2 essay for <strong>Written Essay Feedback (£29)</strong> (line-by-line markup, estimated band scores across all four criteria, and Band 8.0+ rewrites returned within 24–48 hours), book a <strong>30-minute 1-to-1 Starter Session (£35)</strong>, or master C1/C2 sentence structures inside my <strong>15-Lesson Dark Academia Course (5 lessons free, full course £24)</strong>.
     </p>
     <div class="da-completion-actions">
-      <a href="index.html?package=Written+essay+feedback+(%C2%A329)&tier=audit_async_29#enquiry-card" class="btn-main" style="background:#0284c7;text-decoration:none;">
+      <a href="index.html?package=Written+essay+feedback+(%C2%A329)&tier=audit_async_29#enquiry-card" class="btn-main">
         Request Written Essay Feedback (£29) →
       </a>
-      <a href="index.html#pricing" class="dossier-pill-btn" style="text-decoration:none;">
+      <a href="index.html#pricing" class="dossier-pill-btn">
         Book 30-Min Starter (£35)
       </a>
-      <a href="dark-academia-index.html" class="dossier-pill-btn" style="text-decoration:none;border-color:rgba(245,158,11,0.45);color:#fde68a;">
-        🕯️ 15-Lesson C1/C2 Course (5 Free · £24)
+      <a href="dark-academia-index.html" class="dossier-pill-btn">
+        15-Lesson C1/C2 Course (5 Free · £24)
       </a>
-      <a href="ielts-writing-task-2.html" class="dossier-pill-btn" style="text-decoration:none;">
-        📖 Task 2 Guide
+      <a href="ielts-writing-task-2.html" class="dossier-pill-btn">
+        Task 2 Guide
       </a>
     </div>
   </div>
@@ -757,15 +1603,15 @@
 
   <footer class="footer-bar">
     <div>
-      <strong style="color:white; font-size:1.05rem;">IELTS Writing Task 2 Masterclass</strong>
-      <p style="font-size:0.85rem; color:#cbd5e1; margin-top:0.25rem;">
-        Want to push your grammar into C1/C2 territory? Explore the <a href="dark-academia-index.html" style="color:#fde68a;font-weight:700;text-decoration:none;">15-Lesson Dark Academia Course (5 Free · £24) →</a> or try <a href="dracula-unit1-carpathian-threshold.html" style="color:#38bdf8;font-weight:700;text-decoration:none;">Dracula Lesson 1 (Participle Clauses) →</a>
+      <strong style="color:var(--text-main); font-size:1.02rem;">IELTS Writing Task 2 Masterclass</strong>
+      <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.25rem;">
+        Want to sharpen your sentence structure further? Open the <a href="ielts-c1-syntax-workbench.html" style="color:var(--ielts-blue);font-weight:700;text-decoration:none;">IELTS &amp; C1 Syntax Workbench →</a> or explore <a href="lab.html" style="color:var(--ielts-blue);font-weight:700;text-decoration:none;">The Interactive Lab →</a>
       </p>
     </div>
-    <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
-      <a href="index.html" class="btn-main" style="background:#334155; text-decoration:none;">← Home</a>
-      <button class="btn-main" style="background:#475569;" onclick="resetAll()">Reset Exercises</button>
-      <button class="btn-main" style="background:#0284c7;" onclick="window.print()">Print / Save PDF</button>
+    <div style="display:flex; gap:0.65rem; flex-wrap:wrap;">
+      <a href="index.html" class="btn-main btn-secondary">← Home</a>
+      <button class="btn-main btn-secondary" onclick="resetAll()">Reset Exercises</button>
+      <button class="btn-main" onclick="window.print()">Print / Save PDF</button>
     </div>
   </footer>
 </div>
@@ -777,7 +1623,7 @@
       word: "While there is some merit to this view, ...",
       sub: "Conceding a point smoothly before giving your own argument.",
       type: "arsenal",
-      exp: "Natural Band 8.0+ concession phrase—ideal for Discussion and Opinion essays."
+      exp: "Natural Band 8.0+ concession phrase: ideal for Discussion and Opinion essays."
     },
     {
       word: "With the rapid development of modern society and technology...",
@@ -801,7 +1647,7 @@
 
   const shiftData = [
     {
-      prompt: "<strong>[Discussion + Opinion Essay]</strong> <em>Prompt: Some people think governments should spend money on space exploration, while others think it should be spent on public services. Discuss both views and give your opinion.</em> — Choose the best <strong>Band 8.5 Thesis Statement</strong>:",
+      prompt: "<strong>[Discussion + Opinion Essay]</strong> <em>Prompt: Some people think governments should spend money on space exploration, while others think it should be spent on public services. Discuss both views and give your opinion.</em> Choose the best <strong>Band 8.5 Thesis Statement</strong>:",
       options: [
         "While satellite research has yielded valuable technological spin-offs, I believe that funding essential healthcare and education must take priority while millions still lack basic services.",
         "In this essay, I will discuss both sides of space exploration and public services and give my final opinion in the conclusion.",
@@ -811,7 +1657,7 @@
       exp: "Option A acknowledges the opposing view ('While satellite research has yielded...') and states a clear, reasoned position right in the introduction."
     },
     {
-      prompt: "<strong>[Problem &amp; Solution Essay]</strong> <em>Prompt: Many historic buildings are being demolished to make way for modern flats. What are the reasons for this, and how can historic buildings be protected?</em> — Choose the best <strong>Body Paragraph 2 (Solutions) Topic Sentence</strong>:",
+      prompt: "<strong>[Problem &amp; Solution Essay]</strong> <em>Prompt: Many historic buildings are being demolished to make way for modern flats. What are the reasons for this, and how can historic buildings be protected?</em> Choose the best <strong>Body Paragraph 2 (Solutions) Topic Sentence</strong>:",
       options: [
         "The most effective way to halt this loss of heritage is for municipal authorities to combine strict preservation laws with tax incentives for developers who renovate older structures.",
         "I strongly agree that old buildings are much prettier than ugly glass apartment blocks.",
@@ -821,7 +1667,7 @@
       exp: "Option A clearly signals the shift to Solutions and names the specific agent ('municipal authorities') and action ('preservation laws + tax incentives')."
     },
     {
-      prompt: "<strong>[Two-Part Direct Question]</strong> <em>Prompt: Nowadays, many people change jobs several times during their careers instead of staying with one employer. Why does this happen? Is it a positive or negative development?</em> — Choose the best <strong>Introduction</strong>:",
+      prompt: "<strong>[Two-Part Direct Question]</strong> <em>Prompt: Nowadays, many people change jobs several times during their careers instead of staying with one employer. Why does this happen? Is it a positive or negative development?</em> Choose the best <strong>Introduction</strong>:",
       options: [
         "Job-hopping has largely replaced lifelong employment in the modern labour market. This shift is driven by faster industry turnover and employees seeking better pay, and on balance it is a positive development that rewards adaptability.",
         "I completely agree that changing jobs is a very popular trend in modern society today.",
@@ -849,7 +1695,7 @@
       paragraphs: [
         `<span class="para-tag">Intro</span> The ideal age at which children should enter formal education remains a subject of lively debate. <strong>While some argue that</strong> starting school at four gives pupils an early academic head start, <strong>I share the view that</strong> delaying formal instruction until age seven fosters stronger emotional and cognitive development.`,
         `<span class="para-tag">Body 1 (Other View)</span> <strong>Proponents of early schooling point out that</strong> structured classrooms expose four-year-olds to literacy and numeracy during a period of rapid brain plasticity. In households where both parents work full-time, early primary enrolment also guarantees professional supervision and narrows the vocabulary gap between children from different socio-economic backgrounds.`,
-        `<span class="para-tag">Body 2 (Your View)</span> <strong>However, there is compelling evidence that</strong> play-based learning between the ages of four and six is far more beneficial than sitting at desks taking tests. In countries such as Finland, where formal schooling begins at seven, children develop self-regulation, curiosity, and social skills through guided play first—and consistently outperform earlier starters in reading comprehension by age eleven.`,
+        `<span class="para-tag">Body 2 (Your View)</span> <strong>However, there is compelling evidence that</strong> play-based learning between the ages of four and six is far more beneficial than sitting at desks taking tests. In countries such as Finland, where formal schooling begins at seven, children develop self-regulation, curiosity, and social skills through guided play first, and consistently outperform earlier starters in reading comprehension by age eleven.`,
         `<span class="para-tag">Conclusion</span> <strong>In conclusion,</strong> although early classrooms offer practical childcare benefits, replacing play with formal lessons at age four is counterproductive; funded kindergartens followed by formal schooling at seven is the healthier model.`
       ]
     },
@@ -880,7 +1726,7 @@
         `<span class="para-tag">Intro</span> The rise of 'fast fashion' has transformed clothing from a durable necessity into a disposable commodity. <strong>This shift has been fuelled by ultra-cheap global manufacturing and social-media micro-trends, and it inflicts serious financial and environmental damage on both consumers and wider society.</strong>`,
         `<span class="para-tag">Body 1 (Question 1: Why is this happening?)</span> <strong>Two main factors explain why</strong> consumers purchase and discard garments so rapidly today. First, automated supply chains and synthetic fabrics have driven retail prices so low that buying a new outfit often costs less than repairing an old one. Second, platforms such as Instagram and TikTok accelerate fashion cycles from seasons into weeks, pressuring young people not to be seen photographed in the same outfit twice.`,
         `<span class="para-tag">Body 2 (Question 2: Impact on individuals & society)</span> <strong>The consequences of this throwaway habit are severe at both a personal and societal level.</strong> For individuals, impulse buying drains disposable savings while delivering only fleeting psychological satisfaction. For society as a whole, millions of tonnes of non-biodegradable polyester end up in landfills or incinerators each year, while textile dyeing pollutes river systems in manufacturing nations.`,
-        `<span class="para-tag">Conclusion</span> <strong>In conclusion,</strong> cheap production and algorithmic marketing have normalised disposable clothing, creating a cycle of personal overspending and ecological harm that urgently needs to be curbed.`
+        `<span class="para-tag">Conclusion</span> <strong>In conclusion,</strong> cheap production and targeted online marketing have normalised disposable clothing, creating a cycle of personal overspending and ecological harm that urgently needs to be curbed.`
       ]
     }
   ];
@@ -902,7 +1748,7 @@
       garethNote: "Notice how I tossed out 'a plethora of cars' and 'and this means that'. A Wh-cleft opens the paragraph with clear authority ('What makes... is...'), an inverted conditional handles the policy solution ('Were municipal authorities to redirect...'), and a trailing participle clause (', thereby curbing...') delivers the result without a single wasted word."
     },
     {
-      typeLabel: "2. Discussion + Opinion (Body Paragraph 2 — Your Side Pivot)",
+      typeLabel: "2. Discussion + Opinion (Body Paragraph 2: Your Side Pivot)",
       prompt: "Prompt: Some people think universities should only teach practical job skills, while others believe universities should provide broad academic knowledge. Discuss both views and give your opinion.",
       blueprint: "While it is widely argued that + [Clause], + what + [Verb] + is + [Noun Phrase] ...",
       band65Draft: "On the other hand, every coin has two sides. I strongly believe that universities must teach broad knowledge too. Jobs change very fast nowadays. If students only learn one job skill, they will have a big conundrum when technology changes, so they need critical thinking.",
@@ -917,7 +1763,7 @@
       garethNote: "Instead of 'every coin has two sides', the paragraph opens with an impersonal passive reporting concession ('While it is widely argued that...') that pivots straight into a Wh-cleft spotlight ('what equips young people... is...'). That single sentence bridges Body 1 and Body 2 seamlessly."
     },
     {
-      typeLabel: "3. Problem & Solution (Body Paragraph 2 — Targeted Remedies)",
+      typeLabel: "3. Problem & Solution (Body Paragraph 2: Targeted Remedies)",
       prompt: "Prompt: In many cities, fewer people know their neighbours than in the past. What are the causes of this trend, and how can community spirit be improved?",
       blueprint: "Were + [Subject] + to + [Infinitive Verb], [Subject] would ... + , thereby + [-ing participle]",
       band65Draft: "To solve this paramount problem, the government should raise awareness about neighbours. Also, if city planners build more parks and community centres in apartment blocks, people will meet each other more often, and this will make the neighbourhood friendlier.",
@@ -932,7 +1778,7 @@
       garethNote: "Examiners are tired of reading 'the government should raise awareness'. Name the specific agent ('municipal planners') and the concrete measure ('shared green courtyards and libraries'), framed inside an inverted second conditional ('Were municipal planners to mandate...')."
     },
     {
-      typeLabel: "4. Two-Part Direct Question (Body Paragraph 2 — Evaluating Impact)",
+      typeLabel: "4. Two-Part Direct Question (Body Paragraph 2: Evaluating Impact)",
       prompt: "Prompt: Nowadays, many people buy clothes far more frequently than in the past and throw them away after only a few wears. Why is this happening? What impact does this have on individuals and society?",
       blueprint: "Not only does + [Subject + Base Verb], but it also + [Verb] ... + , thereby + [-ing participle]",
       band65Draft: "This fast fashion trend is ubiquitous and has many bad effects on people and society. Firstly, people waste a lot of their money on cheap clothes they don't need. Secondly, throwing away millions of shirts causes a lot of rubbish in landfills and pollutes the rivers.",
@@ -947,7 +1793,7 @@
       garethNote: "In a Two-Part question that asks about 'individuals and society', 'Not only does... [personal impact], but it also... [societal impact]' is the cleanest structural bridge you can build. It answers both halves of the prompt inside one balanced C1 period."
     },
     {
-      typeLabel: "5. Advantages Outweigh? (Body Paragraph 2 — Decisive Verdict)",
+      typeLabel: "5. Advantages Outweigh? (Body Paragraph 2: Decisive Verdict)",
       prompt: "Prompt: In many countries, employees work from home more frequently than in the past. Do the advantages of this trend outweigh the disadvantages?",
       blueprint: "While [Concession Clause], + what tips the balance is + [Stronger Claim] ... + , thereby + [-ing participle]",
       band65Draft: "Nowadays, working from home has both advantages and disadvantages and it depends on the job. Firstly, commuters save hours every week. Secondly, some staff feel isolated at home. To some extent, both sides are balanced.",
@@ -980,34 +1826,34 @@
     if (!container || !item) return;
 
     container.innerHTML = `
-      <div style="margin-bottom:1rem; padding:0.95rem 1.15rem; background:#090e1a; border:1px solid #1e293b; border-left:4px solid #38bdf8; border-radius:10px;">
-        <div style="font-size:0.76rem; font-weight:800; text-transform:uppercase; color:#38bdf8; letter-spacing:0.06em;">${item.typeLabel}</div>
-        <div style="font-size:0.92rem; color:#f1f5f9; font-style:italic; margin-top:0.25rem;">${item.prompt}</div>
-        <div style="margin-top:0.6rem; font-family:monospace; font-size:0.8rem; color:#fde68a; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); padding:0.35rem 0.65rem; border-radius:6px;">
+      <div class="wb-prompt-banner">
+        <div class="wb-prompt-type">${item.typeLabel}</div>
+        <div class="wb-prompt-text">${item.prompt}</div>
+        <div class="wb-formula-box">
           <strong>Target C1 Formula:</strong> ${item.blueprint}
         </div>
       </div>
 
       <div class="wb-grid">
         <div class="wb-panel wb-panel-bad">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:#fda4af; letter-spacing:0.05em;">⚠️ Band 6.5 Baseline Draft</span>
-            <span style="font-size:0.72rem; color:#94a3b8;">Flat B2 Syntax + Clichés</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.55rem;">
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--red-text); letter-spacing:0.05em;">⚠️ Band 6.5 Baseline Draft</span>
+            <span style="font-size:0.72rem; color:var(--text-muted); font-weight:600;">Flat B2 Syntax + Clichés</span>
           </div>
-          <p style="font-size:0.93rem; color:#e2e8f0; line-height:1.7; background:#0f172a; padding:0.9rem; border-radius:8px; border:1px solid #1e293b;">
+          <p class="wb-bad-quote">
             "${item.band65Draft}"
           </p>
-          <p style="font-size:0.82rem; color:#fda4af; margin-top:0.7rem; line-height:1.55;">
+          <p class="wb-diagnosis">
             <strong>Gareth's Red-Pen Diagnosis:</strong> ${item.diagnosis}
           </p>
         </div>
 
         <div class="wb-panel wb-panel-good">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:#6ee7b7; letter-spacing:0.05em;">✍️ Your Band 7.5+ C1 Paragraph Upgrade</span>
-            <span id="wb-word-count" style="font-size:0.74rem; font-family:monospace; color:#94a3b8;">0 words</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.45rem;">
+            <span style="font-size:0.75rem; font-weight:800; text-transform:uppercase; color:var(--green-text); letter-spacing:0.05em;">✍️ Your Band 7.5+ C1 Paragraph Upgrade</span>
+            <span id="wb-word-count" style="font-size:0.74rem; font-family:var(--font-mono); color:var(--text-muted); font-weight:600;">0 words</span>
           </div>
-          <div style="font-size:0.78rem; color:#cbd5e1; margin-bottom:0.45rem;">Click a C1 structural frame to insert, or type your own upgrade below:</div>
+          <div style="font-size:0.79rem; color:var(--text-body); margin-bottom:0.45rem;">Click a C1 structural frame to insert, or type your own upgrade below:</div>
           <div style="display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:0.4rem;">
             ${item.starters.map((s) => `<button type="button" class="wb-starter-chip" onclick="insertWbStarter(${ JSON.stringify(s).replace(/"/g, '&quot;') })">+ ${s}</button>`).join('')}
           </div>
@@ -1022,32 +1868,32 @@
           </div>
 
           <div class="wb-preflight-box" id="wb-preflight-panel">
-            <div style="font-size:0.74rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:#7dd3fc;">Pre-Flight Essay Check</div>
+            <div style="font-size:0.74rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;color:var(--ielts-blue);">Pre-Flight Essay Check</div>
             <ul class="wb-preflight-list" id="wb-preflight-list">
               <li>Type 2+ sentences above to check repeated mechanical openers, sentence length spread, and Advantages-Outweigh balance.</li>
             </ul>
             <div class="wb-honesty-note">
-              <strong>What Browser Checks Cannot Judge (Error vs Style, Articles &amp; Prepositions):</strong> Rules here only flag surface structure and opener chains — a human marker is still needed to judge preposition precision, general-plural articles, Error-vs-Style choices, and whether your paragraph directly answers the prompt.
+              <strong>What Browser Checks Cannot Judge (Error vs Style, Articles &amp; Prepositions):</strong> Rules here only flag surface structure and opener chains; a human marker is still needed to judge preposition precision, general-plural articles, Error-vs-Style choices, and whether your paragraph directly answers the prompt.
             </div>
           </div>
 
           <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.95rem;">
-            <button type="button" class="btn-main" style="background:#059669;" onclick="toggleWbModel(this)">👁️ Reveal Cambridge Model</button>
-            <button type="button" class="btn-main" style="background:#334155;" onclick="loadWbSampleIntoEditor()">Compare Model Text in Editor</button>
-            <button type="button" class="btn-main" style="background:#1e293b; border:1px solid #475569;" onclick="clearWbEditor()">Clear Editor</button>
+            <button type="button" class="btn-main btn-emerald" onclick="toggleWbModel(this)">👁️ Reveal Cambridge Model</button>
+            <button type="button" class="btn-main btn-slate" onclick="loadWbSampleIntoEditor()">Compare Model Text in Editor</button>
+            <button type="button" class="btn-main btn-secondary" onclick="clearWbEditor()">Clear Editor</button>
           </div>
-          <div id="wb-sample-warning" style="display:none; margin-top:0.65rem; font-size:0.8rem; color:#fde68a; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.35); padding:0.55rem 0.75rem; border-radius:8px;">
+          <div id="wb-sample-warning" class="wb-sample-warn">
             <strong>Model text loaded for comparison:</strong> Study how the clauses join, then click <strong>Clear Editor</strong> before writing your own paragraph.
           </div>
         </div>
       </div>
 
       <div id="wb-model-box" class="wb-model-reveal">
-        <div style="font-size:0.76rem; font-weight:800; text-transform:uppercase; color:#6ee7b7; letter-spacing:0.06em; margin-bottom:0.4rem;">
+        <div style="font-size:0.76rem; font-weight:800; text-transform:uppercase; color:var(--green-text); letter-spacing:0.06em; margin-bottom:0.4rem;">
           ✓ Band 8.0+ Cambridge Model Paragraph (Side-by-Side Reference)
         </div>
-        <p style="margin-bottom:0.75rem; color:#ffffff;">${item.modelParagraph}</p>
-        <div style="font-size:0.84rem; color:#d1fae5; background:rgba(6, 78, 59, 0.45); padding:0.75rem 0.95rem; border-radius:8px; border-left:3px solid #34d399;">
+        <p style="margin-bottom:0.75rem; color:var(--text-main);">${item.modelParagraph}</p>
+        <div class="wb-gareth-note">
           <strong>From Gareth's Desk:</strong> ${item.garethNote}
         </div>
       </div>
@@ -1161,7 +2007,7 @@
     }
 
     if (flatChain) {
-      rows.push(`<li class="warn">⚠️ <strong>Flat sentence-length spread (${minLen}–${maxLen}w):</strong> All sentences are under 12 words — fuse linked points.</li>`);
+      rows.push(`<li class="warn">⚠️ <strong>Flat sentence-length spread (${minLen}–${maxLen}w):</strong> All sentences are under 12 words: fuse linked points.</li>`);
     } else if (longSents.length > 0) {
       rows.push(`<li class="warn">⚠️ <strong>Run-on risk (${maxLen} words max):</strong> Break sentences longer than 38 words so the grammatical subject stays crisp.</li>`);
     } else if (lengths.length > 0) {
@@ -1169,7 +2015,7 @@
     }
 
     if (balanceWarn) {
-      rows.push(`<li class="warn">⚠️ <strong>50/50 Hedging Check (Advantages Outweigh):</strong> Avoid sitting on the fence (&ldquo;${hedgeMatch[0]}&rdquo;) — state clearly which side outweighs the other.</li>`);
+      rows.push(`<li class="warn">⚠️ <strong>50/50 Hedging Check (Advantages Outweigh):</strong> Avoid sitting on the fence (&ldquo;${hedgeMatch[0]}&rdquo;): state clearly which side outweighs the other.</li>`);
     } else if (isOutweighPrompt) {
       rows.push(`<li class="ok">✓ <strong>Advantages-Outweigh Stance:</strong> No obvious 50/50 hedging phrases detected (confirm clarity of verdict by eye).</li>`);
     }
@@ -1211,9 +2057,9 @@
     const box = document.getElementById('essay-model-display');
     if (!box || !m) return;
     box.innerHTML = `
-      <div style="margin-bottom:0.9rem;padding-bottom:0.75rem;border-bottom:1px solid #1e293b;">
-        <div style="font-size:0.78rem;color:#38bdf8;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;">${m.title}</div>
-        <div style="font-size:0.92rem;color:#cbd5e1;font-style:italic;margin-top:0.25rem;">${m.prompt}</div>
+      <div class="model-meta-header">
+        <div class="model-meta-title">${m.title}</div>
+        <div class="model-meta-prompt">${m.prompt}</div>
       </div>
       ${m.paragraphs.map((p) => `<p>${p}</p>`).join('')}
     `;
@@ -1259,7 +2105,7 @@
         const ta = document.getElementById('wb-user-input');
         const item = workbenchCases[currentWbIndex];
         const draft = ta ? ta.value.trim() : '';
-        const prefix = (isWbSamplePreview ? '[Model Preview Active — Replace With Your Own Sentences]\n' : '') + (item ? item.prompt + '\n' : '');
+        const prefix = (isWbSamplePreview ? '[Model Preview Active: Replace With Your Own Sentences]\n' : '') + (item ? item.prompt + '\n' : '');
         if (!draft) {
           msgEl.value = prefix + '\n[Paste your own Band 7.5+ paragraph upgrade here]';
         } else {
@@ -1312,7 +2158,7 @@
           if (successBanner) successBanner.classList.add('visible');
         } catch (_) {
           if (formStatus) {
-            formStatus.innerHTML = 'Your paragraph was not sent yet &mdash; your draft above is still saved. Please try again, or email me at <a href="mailto:gareth@garethenglish.com?subject=IELTS%20Free%20Red-Pen%20Note" style="color:#a7f3d0;text-decoration:underline;">gareth@garethenglish.com</a>.';
+            formStatus.innerHTML = 'Your paragraph was not sent yet: your draft above is still saved. Please try again, or email me at <a href="mailto:gareth@garethenglish.com?subject=IELTS%20Free%20Red-Pen%20Note" style="color:var(--red-text);text-decoration:underline;">gareth@garethenglish.com</a>.';
             formStatus.classList.add('visible');
           }
         } finally {

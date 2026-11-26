@@ -75,46 +75,50 @@
         });
     }
 
-    /* ---------- Legacy Anchor Hash Mapping (Replaces hacky -top-20 empty divs) ---------- */
+    /* ---------- Legacy Anchor Hash Mapping (Home page only) ---------- */
+    const pathName = (window.location.pathname || '').toLowerCase();
+    const isHomePage = (pathName === '/' || /(^|\/)index\.html?$/.test(pathName)) && Boolean(document.getElementById('services'));
     const LEGACY_HASH_MAP = {
         '#writing-markup': '#gareth-writing-markup',
         '#sample-markup': '#gareth-writing-markup',
         '#coaching': '#services',
-        '#courses': '#resources',
-        '#gothic-course': '#resources',
+        '#courses': '#pricing',
+        '#gothic-course': '#pricing',
         '#self-study-course': '#pricing',
-        '#exam-lab': '#resources',
-        '#interactive-tools': '#resources',
+        '#exam-lab': '#services',
+        '#interactive-tools': '#services',
         '#cal-booking': '#cal-booking-box',
         '#cal-embed': '#contact',
         '#booking': '#contact'
     };
 
     const resolveLegacyHash = (hash) => {
-        if (!hash || !LEGACY_HASH_MAP[hash]) return;
+        if (!isHomePage || !hash || !LEGACY_HASH_MAP[hash]) return;
         const targetEl = document.querySelector(LEGACY_HASH_MAP[hash]);
         if (targetEl) {
             targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     };
 
-    if (window.location.hash && LEGACY_HASH_MAP[window.location.hash]) {
+    if (isHomePage && window.location.hash && LEGACY_HASH_MAP[window.location.hash]) {
         setTimeout(() => resolveLegacyHash(window.location.hash), 100);
     }
 
-    document.addEventListener('click', (e) => {
-        const link = e.target.closest('a[href^="#"]');
-        if (!link) return;
-        const href = link.getAttribute('href');
-        if (href && LEGACY_HASH_MAP[href] && !document.getElementById(href.slice(1))) {
-            const mappedTarget = document.querySelector(LEGACY_HASH_MAP[href]);
-            if (mappedTarget) {
-                e.preventDefault();
-                mappedTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                history.pushState(null, '', href);
+    if (isHomePage) {
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('a[href^="#"]');
+            if (!link) return;
+            const href = link.getAttribute('href');
+            if (href && LEGACY_HASH_MAP[href] && !document.getElementById(href.slice(1))) {
+                const mappedTarget = document.querySelector(LEGACY_HASH_MAP[href]);
+                if (mappedTarget) {
+                    e.preventDefault();
+                    mappedTarget.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    history.pushState(null, '', href);
+                }
             }
-        }
-    });
+        });
+    }
 
     /* ---------- Copyright Year ---------- */
     const yearEl = document.getElementById('year');
@@ -158,6 +162,7 @@
     }
 
     if (urlParams.get('subscribed') === 'true') {
+        window.__GM_SUBSCRIBED = true;
         const existingBanner = document.getElementById('subscribed-success-banner');
         const hashId = (window.location.hash || '').replace('#', '');
         const targetSection = (hashId && document.getElementById(hashId)) || document.getElementById('cheat-sheet') || document.getElementById('arcade-signup');
@@ -191,8 +196,15 @@
             if (targetSection) targetSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 150);
 
-        // Clean up the URL
-        window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+        // Clean up the URL after DOMContentLoaded so other scripts (e.g. lab.js) can read ?subscribed=true first
+        const cleanSubscribedUrl = () => {
+            window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+        };
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => setTimeout(cleanSubscribedUrl, 0), { once: true });
+        } else {
+            setTimeout(cleanSubscribedUrl, 0);
+        }
     }
 
     /* ---------- Sticky Mobile CTA visibility ---------- */
@@ -377,11 +389,11 @@
                     } else if (resolvedTier === 'pack_5_375') {
                         pkgNextStepEl.textContent = 'Click "Pay via Stripe" to check out now, or submit the form below to confirm weekly lesson times or request Wise/PayPal.';
                     } else if (isAudit) {
-                        pkgNextStepEl.textContent = 'Paste your Google Doc link (or draft up to 350 words) below and click "Pay \u00a329 via Stripe Now" (or submit first and pay immediately on the confirmation screen) \u2014 no 24-hour wait for a payment link.';
+                        pkgNextStepEl.textContent = 'Paste your Google Doc link (or draft up to 350 words) below and click "Pay \u00a329 via Stripe Now" (or submit first and pay immediately on the confirmation screen), with no 24-hour wait for a payment link.';
                     } else {
                         pkgNextStepEl.textContent = stripeUrl
                             ? 'Click "Pay via Stripe" to check out now, or submit the form below to request Wise/PayPal or confirm times first.'
-                            : 'Enter your name, email, and time zone below \u2014 I will send your Stripe Payment Link (or Wise/PayPal details on request) and confirm your schedule.';
+                            : 'Enter your name, email, and time zone below; I will send your Stripe Payment Link (or Wise/PayPal details on request) and confirm your schedule.';
                     }
                 }
                 if (stripeBtn) {
@@ -416,7 +428,7 @@
         }
         if (messageInput) {
             messageInput.placeholder = isWaitlist
-                ? 'Tell me your target exam or goal and time zone \u2014 and paste one short paragraph of your writing (up to 150 words) if you would like a quick free note from me...'
+                ? 'Tell me your target exam or goal and time zone, and paste one short paragraph of your writing (up to 150 words) if you would like a quick free note from me...'
                 : isAudit
                     ? 'Tell me which exam (IELTS, C1, C2) or work text this is, paste your draft (up to 350 words) if you are not sharing a Google Doc above, and note if you prefer Wise or PayPal...'
                     : 'Let me know your target exam or goal, your time zone, preferred days/times, and if you prefer Stripe, Wise, or PayPal...';
@@ -477,7 +489,7 @@
             messageInput.value = prefillTemplate;
         }
 
-        const bannerHtml = '<span class="text-emerald-900 font-extrabold text-sm sm:text-base leading-relaxed">✓ Help with a receipt, access code or refund — send your details below and I’ll reply within 24 hours.</span>';
+        const bannerHtml = '<span class="text-emerald-900 font-extrabold text-sm sm:text-base leading-relaxed">✓ Help with a receipt, access code or refund: send your details below and I’ll reply within 24 hours.</span>';
         let supportBanner = document.getElementById('billing-support-banner');
         if (!supportBanner) {
             supportBanner = document.createElement('div');
@@ -555,7 +567,7 @@
             if (messageLabel) messageLabel.textContent = 'Your Question, Target Exam, or Short Writing Paragraph';
             if (subjectInput) subjectInput.value = 'New Student Enquiry (Website)';
             if (formTitle) formTitle.textContent = 'Ask a Question, Send 1 Paragraph, or Reserve a Pack';
-            if (formSubtitle) formSubtitle.textContent = 'Leave a quick question below \u2014 or paste one short paragraph (up to 150 words) for a free look. If you already have a pack in mind, let me know your preferred days and times.';
+            if (formSubtitle) formSubtitle.textContent = 'Leave a quick question below, or paste one short paragraph (up to 150 words) for a free look. If you already have a pack in mind, let me know your preferred days and times.';
             if (formBadge) {
                 formBadge.className = 'hidden items-center gap-1.5 px-3.5 py-1 rounded-full text-sm font-bold bg-white text-emerald-800 border border-emerald-200 mb-2';
             }
@@ -572,7 +584,7 @@
                 enquiryCard.classList.add('border-slate-200');
             }
             if (messageInput) {
-                messageInput.placeholder = 'Ask your question, share your target exam and time zone \u2014 or paste up to 150 words from an essay if you would like a quick free look...';
+                messageInput.placeholder = 'Ask your question, share your target exam and time zone, or paste up to 150 words from an essay if you would like a quick free look...';
             }
         });
     }
@@ -666,7 +678,7 @@
 
                     if (isAuditSubmission) {
                         if (successHeading) {
-                            successHeading.textContent = 'Step 1 complete \u2014 your essay details are with me.';
+                            successHeading.textContent = 'Step 1 complete: your essay details are with me.';
                         }
                         if (successCopy) {
                             successCopy.textContent = 'Complete your \u00a329 payment on Stripe below so I can begin marking right away and return your Google Doc within 24\u201348 hours.';
@@ -692,13 +704,13 @@
                         successBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     }, 100);
                 } else if (formStatus) {
-                    formStatus.textContent = 'Thank you. Your message has been sent \u2014 I will reply within 24 hours.';
+                    formStatus.textContent = 'Thank you. Your message has been sent. I will reply within 24 hours.';
                     formStatus.className = 'mt-3 p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold';
                 }
             } catch (err) {
                 if (formStatus) {
                     formStatus.className = 'mt-3 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
-                    formStatus.innerHTML = 'Your message was not sent yet \u2014 your text above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Website%20Enquiry" class="underline font-bold">gareth@garethenglish.com</a>.';
+                    formStatus.innerHTML = 'Your message was not sent yet, and your text above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Website%20Enquiry" class="underline font-bold">gareth@garethenglish.com</a>.';
                 }
             } finally {
                 delete contactForm.dataset.submitting;

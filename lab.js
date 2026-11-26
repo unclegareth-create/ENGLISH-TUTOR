@@ -1,157 +1,132 @@
 /* ==========================================================================
-   Gareth English Interactive Lab — Controller (lab.js)
+   Gareth English Interactive Lab: 4-Door Track Controller (lab.js)
    ========================================================================== */
-const LabObservatory = (() => {
+const LabStudio = (() => {
   'use strict';
 
   const SFX_STORAGE_KEY = 'gm_lab_sfx';
-  const SYLLABUS_UNLOCK_KEY = 'gm_syllabus_unlocked_v1';
-  // Default sound effects to OFF unless the user previously enabled them
+  const VALID_TRACKS = ['overview', 'ielts', 'cae', 'c2', 'games'];
+
+  const VALID_CODE_HASHES = [
+    'df3a72ff4ff87f6d',
+    '410a91742e314132',
+    '36d29a47ba9eca49',
+    'ba6766737503c529'
+  ];
+
+  const LEGACY_HASH_ROUTES = {
+    '#exam-lab': { track: 'cae', scrollTarget: '#lab-panels' },
+    '#arcade': { track: 'games', scrollTarget: '#lab-panels' },
+    '#chronicle-88': { track: 'games', scrollTarget: '#lab-panels' },
+    '#interactive-tools': { track: 'games', scrollTarget: '#lab-panels' },
+    '#bespoke-samples': { track: 'games', scrollTarget: '#bespoke-samples' },
+    '#professor-west': { track: 'games', scrollTarget: '#professor-west' },
+    '#courses': { track: 'c2', scrollTarget: '#gothic-course' },
+    '#gothic-course': { track: 'c2', scrollTarget: '#gothic-course' },
+    '#study-guides': { track: 'overview', scrollTarget: '#study-guides-bridge' },
+    '#classroom-research': { track: 'overview', scrollTarget: '#study-guides-bridge' },
+    '#resources': { track: 'overview', scrollTarget: '#study-guides-bridge' },
+    '#belfast-desk-dropbox': { openDesk: true, scrollTarget: '#belfast-desk-dropbox' }
+  };
+
+  const SAMPLE_QUIZZES = [
+    {
+      track: 'ielts',
+      trackLabel: 'Open IELTS 7.0 to 8.5 track',
+      tag: 'IELTS Syntax: Passive Reporting',
+      toolTitle: 'IELTS & C1 Syntax Workbench',
+      toolSummary: 'Replace memorised thesaurus padding with the five C1 sentence structures examiners actually credit at Band 7.5+.',
+      toolUrl: 'ielts-c1-syntax-workbench.html',
+      prompt: 'Rewrite without "People": "People widely believe that urban green spaces reduce stress." -> "Urban green spaces _______ reduce stress."',
+      options: [
+        {
+          text: 'A) are widely believed to',
+          correct: true,
+          explain: 'Spot on. Subject + passive reporting verb ("are widely believed") + to-infinitive is a crisp Band 8.0+ / C1 academic shift.'
+        },
+        {
+          text: 'B) widely believe to',
+          correct: false,
+          explain: 'Careful: "spaces" are the subject of the belief, not the thinker, so you need the passive form "are widely believed to".'
+        }
+      ]
+    },
+    {
+      track: 'cae',
+      trackLabel: 'Open Cambridge C1 (CAE) track',
+      tag: 'CAE Part 4: Key Word Transformation (WORD: CHANCE)',
+      toolTitle: 'C1 Part 4 Deconstructor (40 Items)',
+      toolSummary: 'Practise my 4-Step Strike Out the Echoes method with strict 3 to 6 word guardrails and instant error hints.',
+      toolUrl: 'c1-part4-deconstructor.html',
+      prompt: '"I happened to meet my old lecturer on the train." -> "I met my old lecturer _______ on the train." (Use CHANCE, unchanged)',
+      options: [
+        {
+          text: 'A) purely by chance',
+          correct: true,
+          explain: 'Spot on (2/2 marks). "Purely by chance" keeps CHANCE unchanged, fits 3 to 6 words, and captures "happened to".'
+        },
+        {
+          text: 'B) by a pure chance',
+          correct: false,
+          explain: 'Watch the article: the fixed Cambridge phrase is "by chance" (no "a"), so "purely by chance" or "entirely by chance" scores full marks.'
+        }
+      ]
+    },
+    {
+      track: 'c2',
+      trackLabel: 'Open Cambridge C2 (CPE) track',
+      tag: 'CPE Subtext: British Understatement',
+      toolTitle: 'Between the Lines: C1/C2 Subtext',
+      toolSummary: 'Decode polite hedging, diplomatic pushback, and quiet irony across high-level C2 reading, listening, and workplace exchanges.',
+      toolUrl: 'between-the-lines.html',
+      prompt: 'In a project review, a senior colleague says: "That is certainly an ambitious timeline." What are they actually signalling?',
+      options: [
+        {
+          text: 'A) The deadline looks unrealistic and needs revision.',
+          correct: true,
+          explain: 'Spot on. In British professional English, "certainly ambitious" paired with steady tone is polite code for "this schedule will slip".'
+        },
+        {
+          text: 'B) They are thrilled by the speed of the plan.',
+          correct: false,
+          explain: 'Watch the hedge: "certainly" softens a sceptical judgement rather than praising the deadline.'
+        }
+      ]
+    },
+    {
+      track: 'games',
+      trackLabel: 'Open Games & Bespoke Studio',
+      tag: 'Chronicle \'88: Narrative Tenses',
+      toolTitle: 'Chronicle \'88 (5 Playable Tapes)',
+      toolSummary: 'Interrogate suspects, catch broken alibis, and roll the dice under pressure across five retro detective episodes (B1 to C2).',
+      toolUrl: 'chronicle-88.html',
+      prompt: 'Which suspect was ALREADY out of the vault when the 23:15 alarm went off?',
+      options: [
+        {
+          text: 'A) "When the alarm went off, I left the vault."',
+          correct: false,
+          explain: 'Past Simple ("I left") puts their exit AFTER the alarm sounded. Caught red-handed.'
+        },
+        {
+          text: 'B) "When the alarm went off, I had already left the vault."',
+          correct: true,
+          explain: 'Alibi confirmed. Past Perfect ("had already left") places the exit cleanly before the 23:15 alarm.'
+        }
+      ]
+    }
+  ];
+
+  // Default SFX to OFF unless explicitly enabled by the visitor
   let sfxOn = false;
   try {
     sfxOn = localStorage.getItem(SFX_STORAGE_KEY) === 'on';
-  } catch (e) {}
+  } catch (_) {}
 
   let audioCtx = null;
-  let sampleAudio = null;
-  let currentGothicIdx = 0;
-  let currentProfWestIdx = 3;
+  let activeTrack = 'overview';
+  let activeQuizIdx = 0;
 
-  const HOLODECK_WORLDS = [
-    {
-      badge: 'Cambridge B2–C2 & IELTS 7.0–8.5 • Free Modules',
-      title: 'C1 Part 4 Deconstructor, Syntax Workbench & IELTS Task 2',
-      desc: 'Practise the 4-Step Part 4 elimination method, upgrade B2 sentences to natural C1 syntax, and build timed exam paragraphs.',
-      img: 'assets/arcade/boardroom_pitch.svg',
-      alt: 'Interactive Exam Lab screen showing C1/C2 sentence upgrading and live Band 8.0+ essay feedback',
-      url: '#exam-lab',
-      quizTag: 'Quick one: C1 passive reporting',
-      prompt: 'Rewrite without “People”: “People widely believe that urban green spaces reduce stress.” → “Urban green spaces _______ reduce stress.”',
-      options: [
-        { text: 'A) are widely believed to', correct: true, explain: 'Spot on! Subject + passive reporting verb (“are widely believed”) + to-infinitive is a classic Band 8.0+ / C1 academic structure.' },
-        { text: 'B) widely believe to', correct: false, explain: 'Careful—“spaces” are the receiver of the belief, so you need the passive voice: “are widely believed to”.' }
-      ]
-    },
-    {
-      badge: 'Grammar & Vocabulary Games • 2D & 3D',
-      title: 'Grammar Crypt, Phrasal Reactor & Word Factory',
-      desc: 'Build sentences from word-runes in the Crypt, choose the right phrasal verb particle, or practise Cambridge Part 3 prefixes.',
-      img: 'assets/arcade/grammar_crypt.svg',
-      alt: 'Grammar Crypt dungeon vault with glowing syntax runes, floating embers, and the Arch-Lich boss',
-      url: 'grammar-crypt-3d.html',
-      quizTag: 'Quick one: Phrasal verbs',
-      prompt: '“The new transport policy is expected to bring _______ a major drop in emissions.”',
-      options: [
-        { text: 'A) about (cause to happen)', correct: true, explain: 'Spot on! “Bring about” means to cause or produce a significant result.' },
-        { text: 'B) around (persuade)', correct: false, explain: '“Bring around” means to persuade someone or restore consciousness. Use “about” (“bring about”) for results!' }
-      ]
-    },
-    {
-      badge: 'Teens (B1–B2) • Retro detective game',
-      title: 'Chronicle ’88: A retro detective game for teens',
-      desc: 'Question suspects, spot whose alibi doesn’t add up, and use B1–B2 grammar to crack the case across three short episodes.',
-      img: 'assets/arcade/c88_neon_alibi.svg',
-      alt: 'Chronicle 88 Episode 1: Neon Alibi 1989 detective interrogation scene with Inspector Deck',
-      url: 'chronicle-88.html',
-      quizTag: 'Quick one: B2 narrative tenses',
-      prompt: 'Which suspect was ALREADY out of the room when the 23:15 alarm went off?',
-      options: [
-        { text: 'A) “When the alarm went off, I left the vault.”', correct: false, explain: 'Past Simple (“I left”) means they left AFTER the alarm sounded—caught red-handed!' },
-        { text: 'B) “When the alarm went off, I had already left the vault.”', correct: true, explain: 'Alibi confirmed! Past Perfect (“had already left”) proves the action was complete BEFORE the 23:15 alarm.' }
-      ]
-    },
-    {
-      badge: 'C1/C2 Gothic Course • 15 lessons (5 free)',
-      title: 'Dark Academia: C1/C2 English Through Classic Gothic & Victorian Stories',
-      desc: 'Three lessons each from Dracula, Frankenstein, Jekyll & Hyde, Baskervilles, and Alice in Wonderland, with British narration and 15 practice questions per lesson (including 5 Part 4 transformations).',
-      img: 'assets/gothic/dracula_carpathian.webp',
-      alt: 'Caspar David Friedrich — Abbey in the Oakwood (1809–1810), illustrating Dracula Lesson 1',
-      url: 'dark-academia-index.html',
-      quizTag: 'Quick one: C1 inversion',
-      prompt: '“_______ had Jonathan Harker crossed the bridge than the wolves began to howl.”',
-      options: [
-        { text: 'A) No sooner', correct: true, explain: 'Spot on! “No sooner + had + subject + past participle ... than” is a high-scoring C1/C2 negative inversion.' },
-        { text: 'B) Hardly when', correct: false, explain: 'Close—remember “Hardly/Scarcely” pairs with “when”, whereas “than” requires “No sooner”!' },
-        { text: 'C) Not only', correct: false, explain: '“Not only” pairs with “but also”. For immediate sequence with “than”, use “No sooner”.' }
-      ]
-    }
-  ];
-
-  const GOTHIC_BOOKS = [
-    {
-      tag: 'Caspar David Friedrich, Abbey in the Oakwood (1809–10)',
-      grammar: 'Bram Stoker’s Dracula (Lessons 1–3): Participle Clauses & Negative Inversion',
-      img: 'assets/gothic/dracula_carpathian.webp',
-      alt: 'Caspar David Friedrich, Abbey in the Oakwood (1809–1810) — Dracula',
-      audio: 'assets/audio/gothic_act1_dracula.mp3?v=2',
-      freeUrl: 'dracula-unit1-carpathian-threshold.html',
-      freeLabel: 'Try Lesson 1 Free (Dracula) →'
-    },
-    {
-      tag: 'Joseph Wright of Derby, Experiment on a Bird in the Air Pump (1768)',
-      grammar: 'Mary Shelley’s Frankenstein (Lessons 4–6): Inverted Conditionals & Cleft Sentences',
-      img: 'assets/gothic/frankenstein_lab.webp',
-      alt: 'Joseph Wright of Derby, An Experiment on a Bird in the Air Pump (1768) — Frankenstein',
-      audio: 'assets/audio/gothic_act2_frankenstein.mp3?v=2',
-      freeUrl: 'frankenstein-unit1-spark-of-being.html',
-      freeLabel: 'Try Lesson 4 Free (Frankenstein) →'
-    },
-    {
-      tag: 'John Atkinson Grimshaw, Reflections on the Thames (1880)',
-      grammar: 'Stevenson’s Dr Jekyll & Mr Hyde (Lessons 7–9): Concessive Clauses & Time Inversion',
-      img: 'assets/gothic/jekyll_apothecary.webp',
-      alt: 'John Atkinson Grimshaw, Reflections on the Thames, Westminster (1880) — Dr Jekyll and Mr Hyde',
-      audio: 'assets/audio/gothic_act3_jekyll.mp3?v=2',
-      freeUrl: 'jekyll-unit1-soho-threshold.html',
-      freeLabel: 'Try Lesson 7 Free (Jekyll & Hyde) →'
-    },
-    {
-      tag: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819)',
-      grammar: 'Conan Doyle’s Baskervilles (Lessons 10–12): Past Modals of Deduction & Place Inversion',
-      img: 'assets/gothic/baskerville_moor.webp',
-      alt: 'Caspar David Friedrich, Two Men Contemplating the Moon (1819) — The Hound of the Baskervilles',
-      audio: 'assets/audio/gothic_act4_baskerville.mp3?v=2',
-      freeUrl: 'baskerville-unit1-curse-of-the-moors.html',
-      freeLabel: 'Try Lesson 10 Free (Baskervilles) →'
-    },
-    {
-      tag: 'Sir John Tenniel, Original Wood-Engraved Plate (1865)',
-      grammar: 'Lewis Carroll’s Alice in Wonderland (Lessons 13–15): Negative Inversion & Subjunctives',
-      img: 'assets/gothic/alice_unit1.webp',
-      alt: 'Sir John Tenniel, Alice in Wonderland (1865) — Down the Rabbit-Hole',
-      audio: 'assets/audio/gothic_act1_dracula.mp3?v=2',
-      freeUrl: 'alice-unit13-down-the-rabbit-hole.html',
-      freeLabel: 'Try Lesson 13 Free (Alice) →'
-    }
-  ];
-
-  const PROF_WEST_ACTS = [
-    {
-      tag: 'Act 1 of 4 • The Egyptian Desert Excavation',
-      title: 'Professor West & Pencil Unearth the Golden Scarab',
-      img: 'assets/study/act1_desert.jpg',
-      alt: 'Act 1: Professor West and Pencil the Cat at the Egyptian Desert Excavation at sunset'
-    },
-    {
-      tag: 'Act 2 of 4 • Pencil the Cat Spots the Clue',
-      title: 'Decoding the Ancient Hieroglyphs by Lantern Light',
-      img: 'assets/study/act2_pencil.jpg',
-      alt: 'Act 2: Close-up of Pencil the Cat wearing her explorer hat and spotting a golden clue'
-    },
-    {
-      tag: 'Act 3 of 4 • Inside the Hidden Cavern',
-      title: 'Unlocking the Secret Vault of Forgotten Words',
-      img: 'assets/study/act3_cavern.jpg',
-      alt: 'Act 3: Professor West holding up a brass lantern inside the ancient hieroglyphic cavern'
-    },
-    {
-      tag: 'Act 4 of 4 • Inside the 3D Study',
-      title: 'Watch 4-Act Intro & Launch 3D Interactive Room',
-      img: 'assets/study/act4_study.jpg',
-      alt: 'Act 4: Professor West and Pencil the Cat inside the interactive 3D Study'
-    }
-  ];
-
+  /* ---------- Click-Only Web Audio Feedback ---------- */
   function ensureAudio() {
     if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
       const Ctx = window.AudioContext || window.webkitAudioContext;
@@ -178,11 +153,8 @@ const LabObservatory = (() => {
       gain.connect(audioCtx.destination);
       osc.start(now);
       osc.stop(now + dur + 0.01);
-    } catch (e) {}
+    } catch (_) {}
   }
-
-  // Click-only sound: hoverBlip is intentionally silent so hovering cards never annoys visitors
-  function hoverBlip() {}
 
   function syncSFXButtons() {
     document.querySelectorAll('[data-sfx-toggle]').forEach((btn) => {
@@ -191,7 +163,7 @@ const LabObservatory = (() => {
       const lbl = btn.querySelector('[data-sfx-label]');
       const icon = btn.querySelector('[data-sfx-icon]');
       if (lbl) lbl.textContent = sfxOn ? 'SFX: ON' : 'SFX: OFF';
-      if (icon) icon.className = sfxOn ? 'fa-solid fa-volume-high text-sm' : 'fa-solid fa-volume-xmark text-sm';
+      if (icon) icon.className = sfxOn ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
     });
   }
 
@@ -199,260 +171,298 @@ const LabObservatory = (() => {
     sfxOn = !sfxOn;
     try {
       localStorage.setItem(SFX_STORAGE_KEY, sfxOn ? 'on' : 'off');
-    } catch (e) {}
+    } catch (_) {}
     syncSFXButtons();
-    if (sfxOn) playTone(880, 0.06, 'triangle', 0.04);
+    if (sfxOn) playTone(880, 0.06, 'triangle', 0.035);
   }
 
-  function setHolodeck(idx, focusTab = false) {
-    const len = HOLODECK_WORLDS.length;
-    const safeIdx = ((idx % len) + len) % len;
-    const w = HOLODECK_WORLDS[safeIdx];
-    playTone(540 + safeIdx * 90, 0.06, 'triangle', 0.035);
+  /* ---------- Track Switcher & URL State Sync ---------- */
+  function normalizeTrack(raw) {
+    const clean = String(raw || '').trim().toLowerCase();
+    return VALID_TRACKS.includes(clean) ? clean : 'overview';
+  }
 
-    document.querySelectorAll('.holodeck-tab').forEach((t, i) => {
-      const isSelected = i === safeIdx;
-      t.classList.toggle('active', isSelected);
-      t.setAttribute('aria-selected', String(isSelected));
-      t.setAttribute('tabindex', isSelected ? '0' : '-1');
-      if (focusTab && isSelected) {
-        t.focus();
+  function buildTrackUrl(track) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('wing');
+    if (track === 'overview') {
+      url.searchParams.delete('track');
+    } else {
+      url.searchParams.set('track', track);
+    }
+    url.hash = '';
+    return url.pathname + (url.search ? url.search : '');
+  }
+
+  function selectTrack(track, options = {}) {
+    const {
+      updateHistory = true,
+      replaceHistory = false,
+      scrollToPanels = false,
+      focusTab = false,
+      silent = false
+    } = options;
+
+    const targetTrack = normalizeTrack(track);
+    activeTrack = targetTrack;
+
+    if (!silent) {
+      playTone(targetTrack === 'overview' ? 520 : 640, 0.05, 'triangle', 0.03);
+    }
+
+    // 1. Update single-row Track Tablist (ARIA + roving tabindex + scrollIntoView)
+    const tablist = document.getElementById('lab-track-tablist');
+    if (tablist) {
+      tablist.querySelectorAll('[role="tab"]').forEach((tab) => {
+        const isSelected = tab.dataset.track === targetTrack;
+        tab.setAttribute('aria-selected', String(isSelected));
+        tab.setAttribute('tabindex', isSelected ? '0' : '-1');
+        if (isSelected) {
+          try {
+            tab.scrollIntoView({ block: 'nearest', inline: 'nearest', container: 'nearest' });
+          } catch (_) {
+            tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          }
+          if (focusTab) tab.focus();
+        }
+      });
+    }
+
+    // 2. Sync the 4 Entry Door cards
+    document.querySelectorAll('.lab-door[data-door]').forEach((door) => {
+      const isSelected = door.dataset.door === targetTrack;
+      door.classList.toggle('is-active', isSelected);
+      door.setAttribute('aria-pressed', String(isSelected));
+    });
+
+    // 3. Toggle panels using hidden="until-found" for inactive panels
+    document.querySelectorAll('#lab-panels > .track-panel').forEach((panel) => {
+      if (panel.dataset.panel === targetTrack) {
+        panel.removeAttribute('hidden');
+      } else {
+        panel.hidden = 'until-found';
       }
     });
 
-    const panel = document.getElementById('holodeck-panel');
-    if (panel) {
-      panel.setAttribute('aria-labelledby', `holodeck-tab-${safeIdx}`);
+    // 4. Sync URL query param (?track=)
+    if (updateHistory && window.history && typeof window.history.pushState === 'function') {
+      const nextUrl = buildTrackUrl(targetTrack);
+      const currentUrl = window.location.pathname + window.location.search;
+      if (nextUrl !== currentUrl) {
+        if (replaceHistory) {
+          window.history.replaceState({ track: targetTrack }, '', nextUrl);
+        } else {
+          window.history.pushState({ track: targetTrack }, '', nextUrl);
+        }
+      }
     }
 
-    const img = document.getElementById('holodeck-img');
-    const badge = document.getElementById('holodeck-badge');
-    const title = document.getElementById('holodeck-title');
-    const desc = document.getElementById('holodeck-desc');
-    const link = document.getElementById('holodeck-launch-link');
-    const qTag = document.getElementById('holodeck-quiz-tag');
-    const qPrompt = document.getElementById('holodeck-quiz-prompt');
-    const qOpts = document.getElementById('holodeck-quiz-options');
-    const qFeed = document.getElementById('holodeck-quiz-feedback');
-    const qStatus = document.getElementById('holodeck-quiz-status');
-
-    if (img) {
-      img.src = w.img;
-      img.alt = w.alt;
+    if (scrollToPanels) {
+      const anchor = document.getElementById('lab-track-nav');
+      if (anchor) {
+        anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
-    if (badge) badge.textContent = w.badge;
-    if (title) title.textContent = w.title;
-    if (desc) desc.textContent = w.desc;
-    if (link) link.href = w.url;
-    if (qTag) qTag.textContent = w.quizTag;
-    if (qPrompt) qPrompt.textContent = w.prompt;
-    if (qStatus) qStatus.textContent = 'Have a go';
-    if (qFeed) {
-      qFeed.classList.add('hidden');
-      qFeed.textContent = '';
-    }
+  }
 
-    if (qOpts) {
-      qOpts.innerHTML = '';
-      w.options.forEach((opt) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'holodeck-choice-btn';
-        btn.textContent = opt.text;
-        btn.addEventListener('click', () => {
-          qOpts.querySelectorAll('.holodeck-choice-btn').forEach((b) => {
-            b.classList.remove('correct', 'wrong');
-          });
-          btn.classList.add(opt.correct ? 'correct' : 'wrong');
-          if (opt.correct) {
-            playTone(660, 0.08, 'triangle', 0.05);
-            setTimeout(() => playTone(880, 0.12, 'triangle', 0.05), 70);
-            if (qStatus) qStatus.textContent = '✓ Solved!';
-          } else {
-            playTone(220, 0.12, 'sawtooth', 0.04);
-            if (qStatus) qStatus.textContent = '↺ Try again';
-          }
-          if (qFeed) {
-            qFeed.textContent = opt.explain;
-            qFeed.classList.remove('hidden');
-          }
+  /* ---------- Keyboard Roving Focus (Selection by Activation) ---------- */
+  function initTrackTablist() {
+    const tablist = document.getElementById('lab-track-tablist');
+    if (!tablist) return;
+
+    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+
+    tablist.addEventListener('click', (e) => {
+      const tab = e.target.closest('[role="tab"]');
+      if (!tab || !tab.dataset.track) return;
+      selectTrack(tab.dataset.track, { updateHistory: true, scrollToPanels: false });
+    });
+
+    tablist.addEventListener('keydown', (e) => {
+      const current = e.target.closest('[role="tab"]');
+      if (!current) return;
+      const idx = tabs.indexOf(current);
+      if (idx === -1) return;
+
+      let nextIdx = null;
+      if (e.key === 'ArrowRight') {
+        nextIdx = (idx + 1) % tabs.length;
+      } else if (e.key === 'ArrowLeft') {
+        nextIdx = (idx - 1 + tabs.length) % tabs.length;
+      } else if (e.key === 'Home') {
+        nextIdx = 0;
+      } else if (e.key === 'End') {
+        nextIdx = tabs.length - 1;
+      }
+
+      if (nextIdx !== null) {
+        e.preventDefault();
+        tabs.forEach((t, i) => t.setAttribute('tabindex', i === nextIdx ? '0' : '-1'));
+        tabs[nextIdx].focus();
+      }
+    });
+
+    // Return roving tabindex to the selected tab when focus leaves the tablist
+    tablist.addEventListener('focusout', (e) => {
+      if (!tablist.contains(e.relatedTarget)) {
+        tabs.forEach((t) => {
+          const isSelected = t.getAttribute('aria-selected') === 'true';
+          t.setAttribute('tabindex', isSelected ? '0' : '-1');
         });
-        qOpts.appendChild(btn);
+      }
+    });
+
+    // IntersectionObserver fallback for edge scroll fades when scroll-driven animations are unsupported
+    if (typeof CSS !== 'undefined' && typeof CSS.supports === 'function' && !CSS.supports('animation-timeline', 'scroll()') && 'IntersectionObserver' in window) {
+      const first = tablist.firstElementChild;
+      const last = tablist.lastElementChild;
+      if (first && last) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach(({ target, intersectionRatio }) => {
+              tablist.classList.toggle(target === first ? 'more-start' : 'more-end', intersectionRatio < 1);
+            });
+          },
+          { root: tablist, threshold: 1, rootMargin: '1px' }
+        );
+        observer.observe(first);
+        observer.observe(last);
+      }
+    }
+  }
+
+  /* ---------- Find-in-Page beforematch Sync (search-hidden-content) ---------- */
+  function initBeforeMatchSync() {
+    const panelsRoot = document.getElementById('lab-panels');
+    if (!panelsRoot) return;
+
+    if ('onbeforematch' in HTMLElement.prototype) {
+      panelsRoot.addEventListener('beforematch', (e) => {
+        const matchedPanel = e.target && e.target.closest ? e.target.closest('.track-panel') : null;
+        if (!matchedPanel || !matchedPanel.dataset.panel) return;
+        selectTrack(matchedPanel.dataset.panel, {
+          updateHistory: true,
+          replaceHistory: true,
+          scrollToPanels: false,
+          focusTab: false,
+          silent: true
+        });
       });
     }
   }
 
-  function filterWing(wing, btnEl) {
-    playTone(620, 0.05, 'triangle', 0.035);
-    const pills = document.querySelectorAll('.wing-pill');
-    pills.forEach((b) => {
-      const bWing = b.getAttribute('data-wing-btn');
-      const isMatch = btnEl ? b === btnEl : bWing === wing;
-      b.classList.toggle('active', isMatch);
-      b.setAttribute('aria-pressed', String(isMatch));
+  /* ---------- Overview Section B: 4-Track Live Sample Question ---------- */
+  function renderSampleQuiz(idx, focusTab = false, silent = false) {
+    const safeIdx = ((idx % SAMPLE_QUIZZES.length) + SAMPLE_QUIZZES.length) % SAMPLE_QUIZZES.length;
+    activeQuizIdx = safeIdx;
+    const item = SAMPLE_QUIZZES[safeIdx];
+
+    if (!silent) {
+      playTone(540 + safeIdx * 70, 0.05, 'triangle', 0.03);
+    }
+
+    const tabs = document.querySelectorAll('#sample-quiz-tablist [role="tab"]');
+    tabs.forEach((tab, i) => {
+      const selected = i === safeIdx;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.setAttribute('tabindex', selected ? '0' : '-1');
+      if (focusTab && selected) tab.focus();
     });
 
-    const youngWrapper = document.getElementById('young-learners-wrapper');
-    const youngDrawer = document.querySelector('details.young-learners-quarantine');
-    if (youngWrapper) {
-      youngWrapper.classList.remove('wing-hidden');
+    const panel = document.getElementById('sample-quiz-panel');
+    if (panel) panel.setAttribute('aria-labelledby', `sample-quiz-tab-${safeIdx}`);
+
+    const tagEl = document.getElementById('sample-quiz-tag');
+    const statusEl = document.getElementById('sample-quiz-status');
+    const promptEl = document.getElementById('sample-quiz-prompt');
+    const optionsEl = document.getElementById('sample-quiz-options');
+    const feedbackEl = document.getElementById('sample-quiz-feedback');
+    const asideTitle = document.getElementById('sample-quiz-tool-title');
+    const asideDesc = document.getElementById('sample-quiz-tool-desc');
+    const trackBtn = document.getElementById('sample-quiz-track-btn');
+    const toolLink = document.getElementById('sample-quiz-tool-link');
+
+    if (tagEl) tagEl.textContent = item.tag;
+    if (statusEl) statusEl.textContent = 'Pick one option';
+    if (promptEl) promptEl.textContent = item.prompt;
+    if (asideTitle) asideTitle.textContent = item.toolTitle;
+    if (asideDesc) asideDesc.textContent = item.toolSummary;
+    if (trackBtn) {
+      trackBtn.textContent = item.trackLabel;
+      trackBtn.dataset.trackJump = item.track;
     }
-    if (youngDrawer && wing === 'kids') {
-      youngDrawer.open = true;
+    if (toolLink) toolLink.href = item.toolUrl;
+
+    if (feedbackEl) {
+      feedbackEl.classList.add('hidden');
+      feedbackEl.textContent = '';
     }
 
-    document.querySelectorAll('.lab-wing-section').forEach((sec) => {
-      const secWings = (sec.getAttribute('data-wing') || '').trim().split(/\s+/).filter(Boolean);
-      if (wing === 'all' || secWings.includes(wing)) {
-        sec.classList.remove('wing-hidden');
-      } else {
-        sec.classList.add('wing-hidden');
+    if (optionsEl) {
+      optionsEl.innerHTML = '';
+      item.options.forEach((opt) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'quiz-option-btn';
+        btn.textContent = opt.text;
+        btn.addEventListener('click', () => {
+          optionsEl.querySelectorAll('.quiz-option-btn').forEach((b) => {
+            b.classList.remove('is-correct', 'is-wrong');
+          });
+          btn.classList.add(opt.correct ? 'is-correct' : 'is-wrong');
+          if (statusEl) statusEl.textContent = opt.correct ? 'Correct' : 'Try the other option';
+          if (feedbackEl) {
+            feedbackEl.textContent = opt.explain;
+            feedbackEl.classList.remove('hidden');
+          }
+          if (opt.correct) {
+            playTone(660, 0.08, 'triangle', 0.045);
+            setTimeout(() => playTone(880, 0.1, 'triangle', 0.045), 70);
+          } else {
+            playTone(230, 0.1, 'sawtooth', 0.035);
+          }
+        });
+        optionsEl.appendChild(btn);
+      });
+    }
+  }
+
+  function initSampleQuiz() {
+    const tablist = document.getElementById('sample-quiz-tablist');
+    if (!tablist) return;
+
+    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+
+    tablist.addEventListener('click', (e) => {
+      const tab = e.target.closest('[role="tab"]');
+      if (!tab) return;
+      const idx = Number(tab.dataset.quiz);
+      if (!Number.isNaN(idx)) renderSampleQuiz(idx, false, false);
+    });
+
+    // Selection follows focus on the instant micro-quiz (no URL side effects)
+    tablist.addEventListener('keydown', (e) => {
+      const current = e.target.closest('[role="tab"]');
+      if (!current) return;
+      const idx = tabs.indexOf(current);
+      if (idx === -1) return;
+
+      let nextIdx = null;
+      if (e.key === 'ArrowRight') nextIdx = (idx + 1) % tabs.length;
+      else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + tabs.length) % tabs.length;
+      else if (e.key === 'Home') nextIdx = 0;
+      else if (e.key === 'End') nextIdx = tabs.length - 1;
+
+      if (nextIdx !== null) {
+        e.preventDefault();
+        renderSampleQuiz(nextIdx, true, false);
       }
     });
 
-    document.querySelectorAll('.lab-wing-section [data-wing]').forEach((card) => {
-      const cardWings = (card.getAttribute('data-wing') || '').trim().split(/\s+/).filter(Boolean);
-      if (wing === 'all' || cardWings.includes(wing)) {
-        card.classList.remove('wing-hidden');
-      } else {
-        card.classList.add('wing-hidden');
-      }
-    });
+    renderSampleQuiz(0, false, true);
   }
 
-  function selectGothicBook(idx) {
-    currentGothicIdx = idx % GOTHIC_BOOKS.length;
-    const b = GOTHIC_BOOKS[currentGothicIdx];
-    playTone(480 + currentGothicIdx * 70, 0.05, 'triangle', 0.035);
-
-    const img = document.getElementById('da-spotlight-img');
-    const tag = document.getElementById('da-spotlight-tag');
-    const gram = document.getElementById('da-spotlight-grammar');
-    const freeLink = document.getElementById('da-spotlight-free-link');
-    if (img) {
-      img.src = b.img;
-      img.alt = b.alt;
-    }
-    if (tag) tag.textContent = b.tag;
-    if (gram) gram.textContent = b.grammar;
-    if (freeLink && b.freeUrl) {
-      freeLink.href = b.freeUrl;
-      freeLink.textContent = b.freeLabel;
-    }
-
-    document.querySelectorAll('.da-book-thumb').forEach((t, i) => {
-      const active = i === currentGothicIdx;
-      t.classList.toggle('is-active', active);
-      t.setAttribute('aria-pressed', String(active));
-    });
-
-    if (sampleAudio && !sampleAudio.paused) {
-      sampleAudio.pause();
-      const lbl = document.getElementById('da-preview-audio-label');
-      if (lbl) lbl.textContent = 'Hear MP3 sample (synthetic voice)';
-    }
-  }
-
-  function playGothicSample() {
-    const b = GOTHIC_BOOKS[currentGothicIdx];
-    const lbl = document.getElementById('da-preview-audio-label');
-    if (!sampleAudio) {
-      sampleAudio = new Audio();
-    }
-    if (!sampleAudio.paused) {
-      sampleAudio.pause();
-      if (lbl) lbl.textContent = 'Hear MP3 sample (synthetic voice)';
-      return;
-    }
-    sampleAudio.src = b.audio;
-    if (lbl) lbl.textContent = '⏹ Stop MP3 sample';
-    sampleAudio.onended = () => {
-      if (lbl) lbl.textContent = 'Hear MP3 sample (synthetic voice)';
-    };
-    sampleAudio.play().catch(() => {
-      if (lbl) lbl.textContent = 'Hear MP3 sample (synthetic voice)';
-    });
-  }
-
-  function selectProfWestAct(idx, src) {
-    const parsedIdx = Number(idx);
-    const safeIdx = Number.isFinite(parsedIdx) && parsedIdx >= 0
-      ? parsedIdx % PROF_WEST_ACTS.length
-      : 0;
-    currentProfWestIdx = safeIdx;
-    const act = PROF_WEST_ACTS[safeIdx];
-    playTone(520 + safeIdx * 65, 0.05, 'triangle', 0.035);
-
-    const img = document.getElementById('pw-spotlight-img');
-    const tag = document.getElementById('pw-spotlight-tag');
-    const title = document.getElementById('pw-spotlight-title');
-
-    if (img) {
-      img.src = src || act.img;
-      img.alt = act.alt;
-    }
-    if (tag && act.tag) {
-      tag.textContent = act.tag;
-    }
-    if (title && act.title) {
-      title.textContent = act.title;
-    }
-
-    document.querySelectorAll('.pw-act-thumb').forEach((t, i) => {
-      const active = i === safeIdx;
-      t.classList.toggle('is-active', active);
-      t.setAttribute('aria-pressed', String(active));
-    });
-  }
-
-  function roll2d6Demo() {
-    const d1 = 1 + Math.floor(Math.random() * 6);
-    const d2 = 1 + Math.floor(Math.random() * 6);
-    const sum = d1 + d2;
-    const passed = sum <= 7;
-    // Chiptune dice rattle
-    [0, 35, 70, 105].forEach((delay, i) => {
-      setTimeout(() => playTone(340 + Math.random() * 320, 0.025, 'square', 0.035), delay);
-    });
-    setTimeout(() => {
-      if (passed) {
-        [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => playTone(f, 0.07, 'square', 0.04), i * 65));
-      } else {
-        playTone(220, 0.25, 'square', 0.05);
-      }
-    }, 140);
-    const readout = document.getElementById('c88-dice-readout');
-    if (readout) {
-      readout.textContent = `🎲 Rolled ${d1} + ${d2} = ${sum} (${passed ? 'Safe! 7 or under passes' : 'Spotted! Solve a grammar puzzle to recover'})`;
-    }
-  }
-
-  const VALID_CODE_HASHES = [
-    '76194e86377ca58a',
-    '69d0b37588c5f1d3',
-    '8c0169334cd13d01',
-    'ab0c08a56e1c455d',
-    'e3983fcdd03203a9',
-    '5a4f146356548ac3',
-    '420e8b810cc95303',
-    'ab0e473c6e1c45b8',
-    '3a90fcfd3df5fd99',
-    'df4050d2ac7e7818',
-    '87c6e97afd2f9576',
-    '8720a773c24deac9',
-    '68943376c022200c',
-    'e32febaa231630ba',
-    'f7c46303a42395e1',
-    '69f9d176bc781314',
-    '642ef07c8176b90a',
-    '07dfc1f76646e3e9',
-    '3089a39af9f71612',
-    'df3a72ff4ff87f6d',
-    '410a91742e314132',
-    '36d29a47ba9eca49',
-    'ba6766737503c529'
-  ];
-
+  /* ---------- Post-Stripe Safety Unlock Handler ---------- */
   function hashAccessCode(raw) {
     const clean = String(raw || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
     if (!clean) return '';
@@ -466,324 +476,42 @@ const LabObservatory = (() => {
     return h1.toString(16).padStart(8, '0') + h2.toString(16).padStart(8, '0');
   }
 
-  function unlockCourseAccessCode() {
-    const input = document.getElementById('lab-da-access-code-input') || document.getElementById('lab-da-passkey-input');
-    const feedback = document.getElementById('lab-da-access-code-feedback') || document.getElementById('lab-da-passkey-feedback');
-    if (!input || !feedback) return;
-    const digest = hashAccessCode(input.value);
-    if (VALID_CODE_HASHES.includes(digest)) {
+  function handleStripeUnlock(params) {
+    const unlockParam = params.get('unlock');
+    const sessionId = params.get('session_id') || '';
+    const isDirectUnlock =
+      params.get('unlocked') === 'true' ||
+      /^cs_(?:live|test)_[A-Za-z0-9_]{20,}$/.test(sessionId);
+
+    if (isDirectUnlock || (unlockParam && VALID_CODE_HASHES.includes(hashAccessCode(unlockParam)))) {
       try {
         localStorage.setItem('da_archive_unlocked', 'true');
         localStorage.setItem('da_canon_unlocked', 'true');
         localStorage.setItem('da_course_unlocked_v1', 'true');
-      } catch (e) {}
-      feedback.className = 'text-sm font-bold text-emerald-700 mt-1.5';
-      feedback.textContent = '✓ Access code verified! All 15 lessons unlocked—opening Course Hub...';
+      } catch (_) {}
+
+      const banner = document.getElementById('lab-unlock-banner');
+      if (banner) banner.classList.remove('hidden');
+    }
+  }
+
+  /* ---------- Belfast Desk Drop-Box (#belfast-desk-dropbox) ---------- */
+  function openBelfastDesk(scrollIntoView = true) {
+    const details = document.getElementById('belfast-desk-dropbox');
+    if (!details) return;
+    details.open = true;
+    if (scrollIntoView) {
       setTimeout(() => {
-        window.location.href = 'dark-academia-index.html?unlocked=true';
-      }, 450);
-    } else {
-      feedback.className = 'text-sm font-bold text-rose-700 mt-1.5';
-      feedback.innerHTML = '✗ Invalid access code. Check your confirmation screen or <a href="mailto:gareth@garethenglish.com?subject=Dark%20Academia%20Stripe%20Receipt%20%E2%80%94%20Access%20Code%20Request" class="underline text-brand-700 hover:text-brand-800">email Gareth your Stripe receipt</a>.';
+        details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 60);
     }
-  }
-
-  function checkGothicSampleKWT(revealModel) {
-    const input = document.getElementById('da-sample-kwt-input');
-    const feedback = document.getElementById('da-sample-kwt-feedback');
-    if (!feedback) return;
-
-    const raw = input
-      ? String(input.value || '')
-          .trim()
-          .replace(/,?\s*the road received very little sunlight\.?$/i, '')
-          .replace(/\s+/g, ' ')
-          .replace(/^[.,;!?'"“”‘’]+|[.,;!?'"“”‘’]+$/g, '')
-      : '';
-    const norm = raw.toLowerCase();
-    const words = norm ? norm.split(' ') : [];
-    const wordCount = words.length;
-    const modelHtml =
-      '<div class="mt-2 pt-2 border-t border-slate-200 text-slate-700"><strong class="text-slate-900">Model answer (6 words):</strong> <code class="text-brand-700 font-bold">Hemmed in by dense pine forests</code> <span class="text-slate-600">(also accepted: <code class="text-slate-900">Hemmed in by pine forests</code>)</span></div>';
-
-    // Forgiving C1 Part 4 pattern: 3 to 6 words, keeps HEMMED unchanged, forms a valid participle clause
-    const isPatternMatch =
-      wordCount >= 3 &&
-      wordCount <= 6 &&
-      /^(?:being\s+|closely\s+)?hemmed\s+in\s+by\s+(?:the\s+)?(?:dense\s+)?(?:pine\s+)?(?:forests?|trees|woods|pines)$/i.test(norm);
-
-    feedback.classList.remove('hidden');
-    if (revealModel) {
-      playTone(620, 0.06, 'triangle', 0.035);
-      if (input && !raw) input.value = 'Hemmed in by dense pine forests';
-      feedback.innerHTML =
-        '<strong class="text-slate-900">Cambridge Model (6 words):</strong> <code class="text-brand-700 font-bold">Hemmed in by dense pine forests</code> <span class="text-slate-600">(or 5 words: <code class="text-slate-900">Hemmed in by pine forests</code>)</span><br><span class="text-slate-700">Why it scores 2/2: Replaces “Because it was closely surrounded by” with the past participle opener <em>Hemmed in by...</em> while keeping the key word <strong>HEMMED</strong> unchanged.</span>';
-      return;
-    }
-
-    if (isPatternMatch) {
-      playTone(660, 0.08, 'triangle', 0.05);
-      setTimeout(() => playTone(880, 0.12, 'triangle', 0.05), 70);
-      feedback.innerHTML =
-        '<strong class="text-emerald-700">✓ 2/2 Marks! Spot on.</strong> Your participle opener <code class="text-slate-900 font-bold">' +
-        raw.replace(/[<>&"']/g, '') +
-        '</code> is 3–6 words and keeps the key word <strong>HEMMED</strong> unchanged.';
-    } else if (!norm) {
-      playTone(320, 0.07, 'sine', 0.03);
-      feedback.innerHTML =
-        'Type 3–6 words using <strong>HEMMED</strong> to replace <em>“Because it was closely surrounded by dense pine forests”</em>.' +
-        modelHtml;
-    } else if (!/\bhemmed\b/.test(norm)) {
-      playTone(220, 0.1, 'sawtooth', 0.04);
-      feedback.innerHTML =
-        '<strong class="text-rose-700">Remember the Part 4 rule:</strong> Include the exact key word <strong>HEMMED</strong> without changing its form.' +
-        modelHtml;
-    } else if (wordCount < 3 || wordCount > 6) {
-      playTone(260, 0.1, 'sawtooth', 0.04);
-      feedback.innerHTML =
-        `<strong class="text-amber-800">Check your word count (${wordCount} words):</strong> Part 4 answers must be between 3 and 6 words.` +
-        modelHtml;
-    } else {
-      playTone(260, 0.1, 'sawtooth', 0.04);
-      feedback.innerHTML =
-        '<strong class="text-amber-800">Close!</strong> Start with the past participle phrase <code class="text-slate-900 font-bold">Hemmed in by...</code> followed by the noun phrase.' +
-        modelHtml;
-    }
-  }
-
-  function initHeroParticles() {
-    const canvas = document.getElementById('lab-hero-canvas');
-    if (!canvas || !canvas.getContext) return;
-    const ctx = canvas.getContext('2d');
-    const resize = () => {
-      canvas.width = (canvas.parentElement && canvas.parentElement.clientWidth) || 1200;
-      canvas.height = (canvas.parentElement && canvas.parentElement.clientHeight) || 680;
-    };
-    resize();
-    window.addEventListener('resize', resize, { passive: true });
-
-    const nodes = Array.from({ length: 34 }, (_, i) => ({
-      x: ((i * 97) % 100) / 100,
-      y: ((i * 53) % 100) / 100,
-      vx: (i % 2 === 0 ? 1 : -1) * (0.00015 + (i % 4) * 0.00005),
-      vy: (i % 3 === 0 ? 1 : -1) * (0.00012 + (i % 5) * 0.00004),
-      r: 1.3 + (i % 3) * 0.8,
-      color: i % 3 === 0 ? '#38bdf8' : i % 3 === 1 ? '#f59e0b' : '#a855f7'
-    }));
-
-    const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let isHeroVisible = true;
-    let rafId = null;
-
-    const drawScene = (advance) => {
-      const W = canvas.width;
-      const H = canvas.height;
-      ctx.clearRect(0, 0, W, H);
-
-      nodes.forEach((n, idx) => {
-        if (advance) {
-          n.x += n.vx;
-          n.y += n.vy;
-          if (n.x < 0 || n.x > 1) n.vx *= -1;
-          if (n.y < 0 || n.y > 1) n.vy *= -1;
-        }
-
-        const px = n.x * W;
-        const py = n.y * H;
-
-        for (let j = idx + 1; j < nodes.length; j++) {
-          const m = nodes[j];
-          const dx = px - m.x * W;
-          const dy = py - m.y * H;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 140) {
-            ctx.strokeStyle = `rgba(125, 211, 252, ${((1 - dist / 140) * 0.14).toFixed(3)})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(px, py);
-            ctx.lineTo(m.x * W, m.y * H);
-            ctx.stroke();
-          }
-        }
-
-        ctx.fillStyle = n.color;
-        ctx.beginPath();
-        ctx.arc(px, py, n.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
-    };
-
-    if (reducedMotion) {
-      drawScene(false);
-      return;
-    }
-
-    const renderLoop = () => {
-      if (!isHeroVisible) {
-        rafId = null;
-        return;
-      }
-      drawScene(true);
-      rafId = requestAnimationFrame(renderLoop);
-    };
-
-    if ('IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            isHeroVisible = entry.isIntersecting;
-            if (isHeroVisible && !rafId) {
-              rafId = requestAnimationFrame(renderLoop);
-            }
-          });
-        },
-        { threshold: 0.02 }
-      );
-      observer.observe(canvas);
-    }
-
-    rafId = requestAnimationFrame(renderLoop);
-  }
-
-  let prosodyLoaded = false;
-  function ensureProsodyLabLoaded() {
-    if (prosodyLoaded) return;
-    prosodyLoaded = true;
-    const s = document.createElement('script');
-    s.src = 'prosody-lab.js?v=2';
-    s.defer = true;
-    document.body.appendChild(s);
-  }
-
-  const LEGACY_HASH_MAP = {
-    '#gothic-course': '#courses',
-    '#interactive-tools': '#arcade',
-    '#resources': '#study-guides'
-  };
-
-  function revealUnlockedStudyPack(scrollToBanner = false) {
-    try {
-      localStorage.setItem(SYLLABUS_UNLOCK_KEY, 'true');
-    } catch (e) {}
-    const subBanner = document.getElementById('subscribed-success-banner');
-    const leadGrid = document.getElementById('lead-form-grid');
-    const leadForm = document.getElementById('lead-form');
-    const cheatSheetSec = document.getElementById('cheat-sheet');
-    if (subBanner) {
-      subBanner.classList.remove('hidden');
-    }
-    if (leadGrid) {
-      leadGrid.classList.add('hidden');
-    } else if (leadForm) {
-      leadForm.classList.add('hidden');
-    }
-    if (scrollToBanner && cheatSheetSec) {
-      setTimeout(() => {
-        cheatSheetSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 150);
-    }
-  }
-
-  function initLeadFormUnlock() {
-    let isSubscribedParam = false;
-    try {
-      const searchParams = new URLSearchParams(window.location.search);
-      isSubscribedParam = searchParams.get('subscribed') === 'true';
-    } catch (e) {}
-
-    let hasStoredUnlock = false;
-    try {
-      hasStoredUnlock = localStorage.getItem(SYLLABUS_UNLOCK_KEY) === 'true';
-    } catch (e) {}
-
-    if (isSubscribedParam) {
-      revealUnlockedStudyPack(true);
-    } else if (hasStoredUnlock) {
-      revealUnlockedStudyPack(false);
-    }
-
-    const leadForm = document.getElementById('lead-form');
-    if (!leadForm) return;
-
-    leadForm.addEventListener('submit', async (e) => {
-      if (typeof window.fetch !== 'function' || typeof window.FormData !== 'function') return;
-      if (leadForm.dataset.submitting === 'true') {
-        e.preventDefault();
-        return;
-      }
-      e.preventDefault();
-
-      const emailInput = leadForm.querySelector('input[name="email"]');
-      const submitBtn = document.getElementById('lead-submit-btn') || leadForm.querySelector('button[type="submit"]');
-      const statusEl = document.getElementById('lead-form-status');
-      const emailVal = emailInput ? emailInput.value.trim() : '';
-
-      if (!emailVal || !emailVal.includes('@')) {
-        if (statusEl) {
-          statusEl.className = 'mt-3 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
-          statusEl.textContent = 'Please enter a valid email address first.';
-        }
-        if (emailInput) emailInput.focus();
-        return;
-      }
-
-      const originalBtnHtml = submitBtn ? submitBtn.innerHTML : 'Unlock PDF &amp; Study Pack &rarr;';
-      leadForm.dataset.submitting = 'true';
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Unlocking...';
-      }
-      if (statusEl) {
-        statusEl.textContent = '';
-        statusEl.className = 'text-sm font-semibold';
-      }
-
-      try {
-        const response = await fetch(leadForm.action || 'https://formspree.io/f/mvkgrwvj', {
-          method: 'POST',
-          body: new FormData(leadForm),
-          headers: { 'Accept': 'application/json' }
-        });
-
-        if (!response.ok) {
-          let errorMessage = 'Could not unlock the pack right now.';
-          try {
-            const payload = await response.json();
-            if (payload && Array.isArray(payload.errors) && payload.errors.length) {
-              errorMessage = payload.errors.map((err) => err.message).filter(Boolean).join(' ');
-            }
-          } catch (_) {}
-          throw new Error(errorMessage);
-        }
-
-        if (window.CandidateDossier && typeof window.CandidateDossier.saveEmail === 'function') {
-          window.CandidateDossier.saveEmail(emailVal);
-        }
-        if (typeof window.trackFunnelEvent === 'function') {
-          window.trackFunnelEvent('lab_lead_form_succeeded', { source: 'lab_cheat_sheet' });
-        }
-        leadForm.reset();
-        revealUnlockedStudyPack(false);
-      } catch (err) {
-        if (statusEl) {
-          statusEl.className = 'mt-3 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
-          statusEl.innerHTML = 'Could not unlock the pack right now \u2014 your email above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=C1%2FC2%20Study%20Pack%20%26%20Syllabus%20PDF" class="underline font-bold">gareth@garethenglish.com</a> and I will send the PDF straight back.';
-        }
-      } finally {
-        delete leadForm.dataset.submitting;
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalBtnHtml;
-        }
-      }
-    });
   }
 
   function readDeskDropboxTelemetry() {
     let lastFreeTool = 'lab';
     try {
       lastFreeTool = localStorage.getItem('gm_last_free_tool') || 'lab';
-    } catch (e) {}
+    } catch (_) {}
 
     let candidateDossier = '';
     try {
@@ -822,7 +550,7 @@ const LabObservatory = (() => {
           candidateDossier = parts.join(' | ') || rawSummary.slice(0, 400);
         }
       }
-    } catch (e) {}
+    } catch (_) {}
 
     return { lastFreeTool, candidateDossier };
   }
@@ -837,6 +565,8 @@ const LabObservatory = (() => {
     const resetBtn = document.getElementById('dropbox-reset-btn');
     const statusEl = document.getElementById('dropbox-form-status');
     const submitBtn = document.getElementById('dropbox-submit-btn');
+    const emailInput = document.getElementById('dropbox-email');
+    const messageInput = document.getElementById('dropbox-message');
 
     const syncTelemetryInputs = () => {
       const tel = readDeskDropboxTelemetry();
@@ -846,16 +576,24 @@ const LabObservatory = (() => {
 
     syncTelemetryInputs();
 
+    [emailInput, messageInput].forEach((field) => {
+      if (!field) return;
+      field.addEventListener('input', () => {
+        if (field.getAttribute('aria-invalid') === 'true') {
+          field.removeAttribute('aria-invalid');
+        }
+      });
+    });
+
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
         if (successBanner) successBanner.classList.add('hidden');
         deskForm.classList.remove('hidden');
         if (statusEl) {
           statusEl.textContent = '';
-          statusEl.className = 'text-sm font-semibold';
+          statusEl.className = 'desk-status';
         }
-        const msgInput = document.getElementById('dropbox-message');
-        if (msgInput) msgInput.focus();
+        if (messageInput) messageInput.focus();
       });
     }
 
@@ -867,31 +605,35 @@ const LabObservatory = (() => {
       }
       e.preventDefault();
 
-      const emailInput = deskForm.querySelector('input[name="email"]');
-      const messageInput = deskForm.querySelector('textarea[name="message"]');
       const emailVal = emailInput ? emailInput.value.trim() : '';
       const msgVal = messageInput ? messageInput.value.trim() : '';
 
       if (!emailVal || !emailVal.includes('@')) {
+        if (emailInput) {
+          emailInput.setAttribute('aria-invalid', 'true');
+          emailInput.focus();
+        }
         if (statusEl) {
-          statusEl.className = 'p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
+          statusEl.className = 'desk-status desk-status--error';
           statusEl.textContent = 'Please enter a valid email address so I can send your 24h red-pen note.';
         }
-        if (emailInput) emailInput.focus();
         return;
       }
 
       if (!msgVal) {
+        if (messageInput) {
+          messageInput.setAttribute('aria-invalid', 'true');
+          messageInput.focus();
+        }
         if (statusEl) {
-          statusEl.className = 'p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
+          statusEl.className = 'desk-status desk-status--error';
           statusEl.textContent = 'Please add your question, short paragraph, or Part 4 attempts first.';
         }
-        if (messageInput) messageInput.focus();
         return;
       }
 
       syncTelemetryInputs();
-      const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '<span>Send to My Belfast Desk (Free 24h Note) &rarr;</span>';
+      const originalBtnText = submitBtn ? submitBtn.textContent : 'Send to My Belfast Desk (Free 24h Note)';
       deskForm.dataset.submitting = 'true';
       if (submitBtn) {
         submitBtn.disabled = true;
@@ -899,14 +641,14 @@ const LabObservatory = (() => {
       }
       if (statusEl) {
         statusEl.textContent = '';
-        statusEl.className = 'text-sm font-semibold';
+        statusEl.className = 'desk-status';
       }
 
       try {
         const response = await fetch(deskForm.action || 'https://formspree.io/f/mvkgrwvj', {
           method: 'POST',
           body: new FormData(deskForm),
-          headers: { 'Accept': 'application/json' }
+          headers: { Accept: 'application/json' }
         });
 
         if (!response.ok) {
@@ -926,228 +668,158 @@ const LabObservatory = (() => {
         if (typeof window.trackFunnelEvent === 'function') {
           window.trackFunnelEvent('lab_desk_dropbox_succeeded', { source: 'lab_inline_desk_dropbox' });
         }
+
         deskForm.reset();
         syncTelemetryInputs();
         deskForm.classList.add('hidden');
-        if (successBanner) {
-          successBanner.classList.remove('hidden');
-        }
-      } catch (err) {
+        if (successBanner) successBanner.classList.remove('hidden');
+      } catch (_) {
         if (statusEl) {
-          statusEl.className = 'p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold';
-          statusEl.innerHTML = 'Your message was not sent yet \u2014 your text above is still saved. Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Lab%20Free%2024h%20Red-Pen%20Note" class="underline font-bold">gareth@garethenglish.com</a>.';
+          statusEl.className = 'desk-status desk-status--error';
+          statusEl.innerHTML =
+            'Your message was not sent yet (your text above is still saved). Please try again in a moment, or email me directly at <a href="mailto:gareth@garethenglish.com?subject=Lab%20Free%2024h%20Red-Pen%20Note">gareth@garethenglish.com</a>.';
         }
       } finally {
         delete deskForm.dataset.submitting;
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.innerHTML = originalBtnHtml;
+          submitBtn.textContent = originalBtnText;
         }
       }
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    syncSFXButtons();
-    setHolodeck(0);
-    initHeroParticles();
-    initLeadFormUnlock();
-    initBelfastDeskDropbox();
-
-    // Roving tabindex & arrow-key navigation for Hero Holodeck tabs (ARIA role="tablist")
-    const tablist = document.querySelector('.holodeck-tabs[role="tablist"]');
-    if (tablist) {
-      tablist.addEventListener('keydown', (e) => {
-        const tabs = Array.from(tablist.querySelectorAll('.holodeck-tab[role="tab"]'));
-        if (!tabs.length) return;
-        const currentIdx = tabs.findIndex((t) => t.getAttribute('aria-selected') === 'true');
-        const idx = currentIdx >= 0 ? currentIdx : 0;
-        let nextIdx = null;
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          nextIdx = (idx + 1) % tabs.length;
-        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          nextIdx = (idx - 1 + tabs.length) % tabs.length;
-        } else if (e.key === 'Home') {
-          nextIdx = 0;
-        } else if (e.key === 'End') {
-          nextIdx = tabs.length - 1;
-        }
-        if (nextIdx !== null) {
-          e.preventDefault();
-          setHolodeck(nextIdx, true);
-        }
-      });
-    }
-
-    // Regulation 37 UK Consumer Contracts Regulations cooling-off consent & acknowledgement check
-    const coolingCheckbox = document.getElementById('da-cooling-off-consent');
-    const coolingAlert = document.getElementById('da-cooling-off-alert');
-    const stripeBtn = document.getElementById('da-stripe-checkout-btn');
-    if (coolingCheckbox && coolingAlert) {
-      coolingCheckbox.addEventListener('change', () => {
-        if (coolingCheckbox.checked) {
-          coolingAlert.classList.add('hidden');
-        }
-      });
-    }
-    if (stripeBtn && coolingCheckbox) {
-      stripeBtn.addEventListener('click', (e) => {
-        if (!coolingCheckbox.checked) {
-          e.preventDefault();
-          if (coolingAlert) {
-            coolingAlert.classList.remove('hidden');
-          }
-          coolingCheckbox.focus();
-          playTone(240, 0.1, 'sawtooth', 0.04);
-        }
-      });
-    }
-
-    // Lazy-load prosody-lab.js when #prosody-lab approaches the viewport
-    const prosodySec = document.getElementById('prosody-lab');
-    if (prosodySec) {
-      if ('IntersectionObserver' in window) {
-        const prosodyObs = new IntersectionObserver(
-          (entries, obs) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                ensureProsodyLabLoaded();
-                obs.disconnect();
-              }
-            });
-          },
-          { rootMargin: '400px 0px' }
-        );
-        prosodyObs.observe(prosodySec);
-      } else {
-        ensureProsodyLabLoaded();
-      }
-    }
-
-    const extraDrawer = document.getElementById('extra-tools-drawer') || document.querySelector('details.young-learners-quarantine');
-
-    // Support legacy anchor hashes and auto-open bottom drawer when deep-linked
-    if (window.location.hash) {
-      const mappedHash = LEGACY_HASH_MAP[window.location.hash] || window.location.hash;
-      if (mappedHash === '#prosody-lab') {
-        ensureProsodyLabLoaded();
-      } else if (mappedHash === '#professor-west') {
-        if (extraDrawer) extraDrawer.open = true;
-      }
-      if (LEGACY_HASH_MAP[window.location.hash]) {
-        const legacyTarget = document.querySelector(mappedHash);
-        if (legacyTarget) {
-          setTimeout(() => legacyTarget.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-        }
-      }
-    }
-
-    // Pre-filter wing (?wing=teens) and handle post-Stripe course unlocks
+  /* ---------- Legacy Hash & Query Param Routing ---------- */
+  function routeFromLocation(isInitial = false) {
+    let params;
     try {
-      const params = new URLSearchParams(window.location.search);
-      const initialWing = params.get('wing');
-      if (initialWing && ['all', 'adults', 'teens', 'kids'].includes(initialWing)) {
-        filterWing(initialWing);
-      }
-      const unlockParam = params.get('unlock');
-      const isDirectUnlock = params.get('unlocked') === 'true' || /^cs_(?:live|test)_[A-Za-z0-9_]{20,}$/.test(params.get('session_id') || '');
-      if (isDirectUnlock || (unlockParam && VALID_CODE_HASHES.includes(hashAccessCode(unlockParam)))) {
-        try {
-          localStorage.setItem('da_archive_unlocked', 'true');
-          localStorage.setItem('da_canon_unlocked', 'true');
-          localStorage.setItem('da_course_unlocked_v1', 'true');
-        } catch (e) {}
-        const helpDrawer = document.getElementById('course-access-help');
-        if (helpDrawer && helpDrawer.tagName === 'DETAILS') {
-          helpDrawer.open = true;
-        }
-        const feedback = document.getElementById('lab-da-access-code-feedback');
-        if (feedback) {
-          feedback.className = 'text-sm font-bold text-emerald-700 mt-1.5';
-          feedback.textContent = '✓ Full 15-lesson course unlocked on this browser!';
-        }
-      }
-      if (window.location.hash === '#course-access-help') {
-        const helpDrawer = document.getElementById('course-access-help');
-        if (helpDrawer && helpDrawer.tagName === 'DETAILS') {
-          helpDrawer.open = true;
-        }
-      }
-    } catch (e) {}
+      params = new URLSearchParams(window.location.search);
+    } catch (_) {
+      params = new URLSearchParams('');
+    }
 
-    // Ensure clicking any anchor link (nav, mobile menu, bento cards, footer) un-hides filtered wings first
+    if (isInitial) {
+      handleStripeUnlock(params);
+    }
+
+    const hash = window.location.hash;
+    if (hash && LEGACY_HASH_ROUTES[hash]) {
+      const route = LEGACY_HASH_ROUTES[hash];
+      if (route.openDesk) {
+        openBelfastDesk(true);
+        return;
+      }
+      if (route.track) {
+        selectTrack(route.track, {
+          updateHistory: false,
+          scrollToPanels: false,
+          silent: true
+        });
+        if (route.scrollTarget) {
+          const target = document.querySelector(route.scrollTarget);
+          if (target) {
+            setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 90);
+          }
+        }
+        return;
+      }
+    }
+
+    const trackParam = params.get('track');
+    if (trackParam && VALID_TRACKS.includes(trackParam.toLowerCase())) {
+      selectTrack(trackParam, { updateHistory: false, silent: true });
+      return;
+    }
+
+    // Legacy ?wing= compatibility
+    const wingParam = (params.get('wing') || '').toLowerCase();
+    if (wingParam === 'adults') {
+      selectTrack('cae', { updateHistory: true, replaceHistory: true, silent: true });
+      return;
+    }
+    if (wingParam === 'teens') {
+      selectTrack('games', { updateHistory: true, replaceHistory: true, silent: true });
+      return;
+    }
+
+    selectTrack('overview', { updateHistory: false, silent: true });
+  }
+
+  /* ---------- Global Click Delegations ---------- */
+  function initInteractions() {
+    // 4 Entry Door Buttons
+    document.querySelectorAll('.lab-door[data-door]').forEach((door) => {
+      door.addEventListener('click', () => {
+        const target = door.dataset.door;
+        if (!target) return;
+        selectTrack(target, { updateHistory: true, scrollToPanels: true });
+      });
+    });
+
+    // Track Back Buttons ("All Tracks") & Quiz Track Bridge Buttons
     document.addEventListener('click', (e) => {
+      const jumpBtn = e.target.closest('[data-track-jump]');
+      if (jumpBtn) {
+        const target = jumpBtn.dataset.trackJump;
+        if (target) {
+          selectTrack(target, { updateHistory: true, scrollToPanels: true });
+        }
+        return;
+      }
+
+      const sfxBtn = e.target.closest('[data-sfx-toggle]');
+      if (sfxBtn) {
+        toggleSFX();
+        return;
+      }
+
       const anchor = e.target.closest('a[href^="#"]');
       if (!anchor) return;
       const hash = anchor.getAttribute('href');
-      if (!hash || hash === '#' || hash === '#main-content') return;
-      const targetEl = document.querySelector(hash);
-      if (!targetEl) return;
-      const parentWing = targetEl.closest('.lab-wing-section') || (targetEl.nextElementSibling && targetEl.nextElementSibling.closest('.lab-wing-section'));
-      if ((parentWing && parentWing.classList.contains('wing-hidden')) || targetEl.closest('.wing-hidden')) {
-        filterWing('all');
-      }
-      if (hash === '#prosody-lab' || hash === '#professor-west' || targetEl.closest('details.young-learners-quarantine')) {
-        const drawer = document.querySelector('details.young-learners-quarantine');
-        if (drawer) drawer.open = true;
-        ensureProsodyLabLoaded();
+      if (hash === '#belfast-desk-dropbox') {
+        e.preventDefault();
+        openBelfastDesk(true);
+      } else if (hash && LEGACY_HASH_ROUTES[hash]) {
+        e.preventDefault();
+        const route = LEGACY_HASH_ROUTES[hash];
+        if (route.track) {
+          selectTrack(route.track, { updateHistory: true, scrollToPanels: false });
+          const target = route.scrollTarget ? document.querySelector(route.scrollTarget) : null;
+          if (target) {
+            setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+          }
+        }
       }
     });
 
-    // Exam Lab level filter with aria-pressed support
-    window.filterLabs = function (level, btn) {
-      playTone(600, 0.045, 'triangle', 0.03);
-      document.querySelectorAll('.lab-filter-btn').forEach((b) => {
-        const active = b === btn;
-        b.setAttribute('aria-pressed', String(active));
-        b.className = active
-          ? 'lab-filter-btn px-4 py-2 rounded-full text-sm font-bold bg-brand-600 text-white shadow-sm transition cursor-pointer'
-          : 'lab-filter-btn px-4 py-2 rounded-full text-sm font-bold bg-white text-slate-700 hover:bg-slate-100 transition cursor-pointer';
-      });
-      document.querySelectorAll('.lab-card').forEach((card) => {
-        const cardLevel = card.getAttribute('data-level') || '';
-        if (level === 'all' || cardLevel === level || cardLevel.indexOf(level) !== -1) {
-          card.style.display = 'flex';
-        } else {
-          card.style.display = 'none';
-        }
-      });
-    };
+    window.addEventListener('popstate', () => {
+      routeFromLocation(false);
+    });
 
-    const accessCodeInput = document.getElementById('lab-da-access-code-input') || document.getElementById('lab-da-passkey-input');
-    if (accessCodeInput) {
-      accessCodeInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          unlockCourseAccessCode();
-        }
-      });
-    }
+    window.addEventListener('hashchange', () => {
+      routeFromLocation(false);
+    });
+  }
 
-    const sampleKwtInput = document.getElementById('da-sample-kwt-input');
-    if (sampleKwtInput) {
-      sampleKwtInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          checkGothicSampleKWT(false);
-        }
-      });
-    }
+  document.addEventListener('DOMContentLoaded', () => {
+    syncSFXButtons();
+    initTrackTablist();
+    initBeforeMatchSync();
+    initSampleQuiz();
+    initBelfastDeskDropbox();
+    initInteractions();
+    routeFromLocation(true);
   });
 
   return {
-    setHolodeck,
-    filterWing,
-    selectGothicBook,
-    selectProfWestAct,
-    playGothicSample,
-    checkGothicSampleKWT,
-    roll2d6Demo,
-    hoverBlip,
+    selectTrack,
     toggleSFX,
-    unlockCourseAccessCode,
-    unlockCoursePasskey: unlockCourseAccessCode
+    openBelfastDesk,
+    getActiveTrack: () => activeTrack,
+    getActiveQuizIdx: () => activeQuizIdx
   };
 })();
-window.LabObservatory = LabObservatory;
 
+window.LabStudio = LabStudio;
+// Keep lightweight alias so any external snippet checking LabObservatory.toggleSFX stays safe
+window.LabObservatory = LabStudio;
