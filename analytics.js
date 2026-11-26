@@ -98,7 +98,10 @@
                 { id: 'phind', re: /phind\.com/ },
                 { id: 'mistral', re: /chat\.mistral\.ai/ },
                 { id: 'deepseek', re: /chat\.deepseek\.com/ },
-                { id: 'grok', re: /grok\.com|x\.ai/ }
+                { id: 'grok', re: /grok\.com|x\.ai/ },
+                { id: 'duck_ai', re: /duck\.ai/ },
+                { id: 'qwen', re: /chat\.qwen\.ai|\bqwen\b/ },
+                { id: 'manus', re: /manus\.im/ }
             ];
 
             let matchedId = '';
@@ -108,7 +111,7 @@
                     break;
                 }
             }
-            if (!matchedId && /^(ai|llm|ai_referral|generative_ai)$/.test(utmMedium)) {
+            if (!matchedId && /^(ai|llm|ai_referral|generative_ai|ai_search)$/.test(utmMedium)) {
                 matchedId = (utmSource || 'ai_search').replace(/[^a-z0-9_-]/g, '').slice(0, 32) || 'ai_search';
             }
 
@@ -145,8 +148,8 @@
     const detectedAi = isStudentPortal ? null : detectAiSource();
 
     const RESEARCH_ARTICLE_RE = /(^|\/)(c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.html/i;
-    const FREE_GAME_RE = /(^|\/)(between-the-lines|red-pen-speedrun|jsw-c1-mansion|grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch|abyssal-bathysphere|darjeeling-signal-box|midnight-study-desk|blueprint-vault|chronicle-88|myst-island|operation-nobody|midnight-radio|belfast-tape-lab)\.html/i;
-    const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|fce-interactive-lesson|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|c1-part4-deconstructor|ielts-c1-syntax-workbench|speaking-part2-arc-trainer|connected-speech-lab|academy|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
+    const FREE_GAME_RE = /(^|\/)(between-the-lines|red-pen-speedrun|jsw-c1-mansion|grammar-crypt(?:-3d)?|reactor|factory|boardroom|phrasal-reactor|word-factory|boardroom-pitch|abyssal-bathysphere|darjeeling-signal-box|midnight-study-desk|blueprint-vault|chronicle-88|myst-island|operation-nobody|prototype-zero|world-atlas-travel|gaslight-inquisitor|rhetorical-arcana|aetheric-lens-articles|brass-orrery-memory-palace|satirical-arcade-c1-mastery|midnight-radio|belfast-tape-lab)\.html/i;
+    const EXAM_LAB_RE = /(^|\/)(lab|teacher-vault|fce-friendship-conditionals|cae-essay-builder(?:-v2)?|cpe-psychometrics-passives|ielts-essay-masterclass|ielts-2-minute-proofread-sniper|ielts-reading-tfng-headings|ielts-task1-static-overviews|c1-open-cloze-part2|cae-speaking-parts-2-3|cae-review-formal-email|cpe-speaking-studio|cpe-writing-part1-synthesis|cpe-reading-gapped-text|cpe-writing-part2-genres|cpe-lexical-precision-part1|fce-interactive-lesson|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit|sprucefield-research|cpe-part4-top-10-patterns|c1-50-key-word-transformations-checklist|c1-report-proposal-builder|ielts-task1-academic-verbs-drill|c1-part4-deconstructor|ielts-c1-syntax-workbench|speaking-part2-arc-trainer|connected-speech-lab|academy|fordow-hash-c1-pack|preply-worksheets-backup\/[^/]+)\.html/i;
     const FREE_GOTHIC_RE = /(^|\/)(dracula-unit[123]-[a-z-]+|frankenstein-unit[123]-[a-z-]+|jekyll-unit[123]-[a-z-]+|baskerville-unit[123]-[a-z-]+|alice-unit1[345]-[a-z-]+|the-gothic-canon-c1-c2-compendium|dark-academia-world)\.html/i;
     const STUDY_GUIDE_RE = /(^|\/)(cpe-inversion|cpe-part4-top-10-patterns|ielts-7-syllabus|ielts-writing-task-2|c1-c2-common-mistakes|how-i-mark|video-courses|key-word-transformations|word-formation|ielts-c1-structural-shifts|ielts-speaking-part-3|business-english-meetings|c1-syntactic-research-lab|cambridge-use-of-english-research|why-exam-templates-backfire|english-compression-1818-2026|spoken-vs-written-c1-slips|grammar-error-vs-style-audit)\.(html|pdf)/i;
 
@@ -245,12 +248,22 @@
             }
         }
 
-        // Attach AI referral & attribution trail into contact/booking forms automatically
+        // Fire Exam Studio / Free Game direct landing telemetry to GA4 when active
+        if (!isStudentPortal && !isResearchLanding && (EXAM_LAB_RE.test(currentPath) || FREE_GAME_RE.test(currentPath)) && typeof window.gtag === 'function') {
+            const aiSrc = getAiSource();
+            window.gtag('event', EXAM_LAB_RE.test(currentPath) ? 'exam_studio_view' : 'free_game_view', {
+                tool: currentSlug.replace(/\.html$/i, ''),
+                landing_page: currentSlug,
+                ...(aiSrc ? { ai_source: aiSrc } : {})
+            });
+        }
+
+        // Attach AI referral & attribution trail into contact/booking/dropbox forms automatically
         const enrichFormsWithAttribution = () => {
             const aiSrc = getAiSource();
             const aiLanding = getAiLandingPage();
             const lastTool = getLastFreeTool();
-            const forms = document.querySelectorAll('#contact-form, #lead-form');
+            const forms = document.querySelectorAll('#contact-form, #lead-form, #belfast-desk-dropbox-form');
             forms.forEach((form) => {
                 if (aiSrc && !form.querySelector('input[name="ai_referrer"]')) {
                     const inp = document.createElement('input');
@@ -314,6 +327,15 @@
             } else if (href === '#contact' || href.includes('#contact') || href.includes('#enquiry-card') || href.includes('#cal-booking-box') || href.includes('#book-diagnostic')) {
                 if (!hasFunnelTrackAttr) {
                     send(`booking-cta: ${label(a)} (from=${getLastFreeTool()})`);
+                    if (typeof window.gtag === 'function') {
+                        const aiSrc = getAiSource();
+                        window.gtag('event', 'booking_cta_click', {
+                            cta_label: label(a),
+                            from_free_tool: getLastFreeTool(),
+                            from_page: currentSlug || 'index.html',
+                            ...(aiSrc ? { ai_source: aiSrc } : {})
+                        });
+                    }
                 }
             } else if (href.includes('cal.com/gareth-montgomery-jgaefz')) {
                 if (!hasFunnelTrackAttr) {
@@ -335,11 +357,29 @@
                     });
                 }
             } else if (EXAM_LAB_RE.test(href)) {
-                setLastFreeTool(page(href));
-                if (!hasFunnelTrackAttr) send(`exam-lab: ${page(href)}`);
+                const targetPage = page(href);
+                setLastFreeTool(targetPage);
+                if (!hasFunnelTrackAttr) send(`exam-lab: ${targetPage}`);
+                if (typeof window.gtag === 'function') {
+                    const aiSrc = getAiSource();
+                    window.gtag('event', 'exam_studio_click', {
+                        tool: targetPage.replace(/\.html$/i, ''),
+                        from_page: currentSlug || 'index.html',
+                        ...(aiSrc ? { ai_source: aiSrc } : {})
+                    });
+                }
             } else if (FREE_GAME_RE.test(href)) {
-                setLastFreeTool(page(href));
-                if (!hasFunnelTrackAttr) send(`game: ${page(href)}`);
+                const targetPage = page(href);
+                setLastFreeTool(targetPage);
+                if (!hasFunnelTrackAttr) send(`game: ${targetPage}`);
+                if (typeof window.gtag === 'function') {
+                    const aiSrc = getAiSource();
+                    window.gtag('event', 'free_game_click', {
+                        tool: targetPage.replace(/\.html$/i, ''),
+                        from_page: currentSlug || 'index.html',
+                        ...(aiSrc ? { ai_source: aiSrc } : {})
+                    });
+                }
             } else if (FREE_GOTHIC_RE.test(href)) {
                 setLastFreeTool(page(href));
                 if (!hasFunnelTrackAttr) send(`free-gothic-lesson: ${page(href)}`);
@@ -356,8 +396,16 @@
             if (form.closest('#cheat-sheet') || form.closest('#arcade-signup')) {
                 setLastFreeTool('cheat-sheet-study-pack');
                 send('lead-magnet: cheat-sheet-download');
-            } else if (form.id === 'contact-form' || form.id === 'lead-form') {
+            } else if (form.id === 'contact-form' || form.id === 'lead-form' || form.id === 'belfast-desk-dropbox-form') {
                 send(`contact-form: enquiry-sent (from=${getLastFreeTool()})`);
+                if (typeof window.gtag === 'function') {
+                    const aiSrc = getAiSource();
+                    window.gtag('event', 'generate_lead', {
+                        form_id: form.id,
+                        from_free_tool: getLastFreeTool(),
+                        ...(aiSrc ? { ai_source: aiSrc } : {})
+                    });
+                }
             }
         });
     }
