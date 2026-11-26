@@ -329,8 +329,9 @@
     .eyebrow-emerald { color: var(--emerald-800); }
 
     /* Tab Panels: zero box styles on [role="tabpanel"] itself */
-    .panels-stack { display: grid; }
-    .slide-panel { grid-area: 1 / 1; }
+    .panels-stack { display: block; }
+    .slide-panel { position: relative; z-index: 1; }
+    .slide-panel[hidden] { pointer-events: none; z-index: 0; }
     .slide-inner {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -655,9 +656,9 @@
       border: 1px solid var(--border-strong);
       border-radius: var(--radius-sm);
       background: var(--surface);
-      overflow: hidden;
+      interpolate-size: allow-keywords;
     }
-    details.reveal summary {
+    details.reveal > summary {
       list-style: none;
       display: flex;
       align-items: center;
@@ -669,9 +670,11 @@
       color: var(--navy-900);
       cursor: pointer;
       user-select: none;
+      border-radius: var(--radius-sm);
     }
-    details.reveal summary::-webkit-details-marker { display: none; }
-    details.reveal summary::before {
+    details.reveal > summary::-webkit-details-marker { display: none; }
+    details.reveal > summary:hover { background: var(--navy-50); }
+    details.reveal > summary::before {
       content: "";
       inline-size: 0.6rem;
       block-size: 0.6rem;
@@ -684,6 +687,7 @@
     details.reveal[open] > summary {
       background: var(--navy-50);
       border-bottom: 1px solid var(--navy-100);
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
     }
     details.reveal[open] > summary::before { rotate: 45deg; }
     details.reveal::details-content {
@@ -692,18 +696,19 @@
       contain: layout;
     }
     details.reveal:not([open])::details-content { block-size: 0; }
+    details.reveal[open]::details-content { block-size: auto; }
     @media (prefers-reduced-motion: no-preference) {
-      details.reveal summary::before { transition: rotate 0.2s ease; }
+      details.reveal > summary::before { transition: rotate 0.2s ease; }
       details.reveal::details-content {
-        transition: block-size 0.28s ease-in-out, content-visibility 0.28s ease-in-out, display 0.28s ease-in-out;
-        transition-behavior: allow-discrete;
+        transition: block-size 0.28s ease-in-out, content-visibility 0.28s ease-in-out allow-discrete;
       }
     }
     .reveal-body {
       padding: 0.9rem 1rem;
       font-size: 0.94rem;
       color: var(--ink-800);
-      background: var(--surface);
+      background: var(--emerald-50);
+      border-radius: 0 0 var(--radius-sm) var(--radius-sm);
     }
     .reveal-body ins {
       text-decoration: none;
