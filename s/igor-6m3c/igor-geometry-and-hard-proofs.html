@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    try {
+      document.querySelector('meta[name="color-scheme"]').content = localStorage.getItem('color-scheme') ?? 'light dark';
+    } catch (e) {}
+  </script>
+  <title>Geometry Vocabulary &amp; Hard Proofs: Cambridge Interview Prep | Igor S. &middot; GarethEnglish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg-base: light-dark(#f6f3ec, #0b101b);
+      --bg-grid: light-dark(rgba(18, 38, 79, 0.04), rgba(148, 163, 184, 0.05));
+      --surface-card: light-dark(#ffffff, #131b2b);
+      --surface-subtle: light-dark(#faf8f3, #192338);
+      --surface-elevated: light-dark(rgba(246, 243, 236, 0.92), rgba(11, 16, 27, 0.92));
+      --ink-950: light-dark(#0c1527, #f8fafc);
+      --ink-800: light-dark(#1e293b, #e2e8f0);
+      --ink-700: light-dark(#334155, #cbd5e1);
+      --ink-500: light-dark(#5b687c, #94a3b8);
+      --border-hairline: light-dark(#e3dfd5, rgba(255, 255, 255, 0.1));
+      --border-strong: light-dark(#cbc5b7, rgba(255, 255, 255, 0.2));
+      --navy: light-dark(#163a70, #7cb3ff);
+      --navy-solid: light-dark(#12264f, #2563eb);
+      --navy-soft: light-dark(#edf3fc, rgba(59, 130, 246, 0.14));
+      --teal: light-dark(#0f766e, #2dd4bf);
+      --teal-soft: light-dark(#edfaf8, rgba(45, 212, 191, 0.14));
+      --amber: light-dark(#a1520a, #fbbf24);
+      --amber-soft: light-dark(#fef6e4, rgba(251, 191, 36, 0.14));
+      --emerald: light-dark(#047857, #34d399);
+      --emerald-soft: light-dark(#ecfdf5, rgba(52, 211, 153, 0.14));
+      --rose: light-dark(#b91c3c, #fb7185);
+      --rose-soft: light-dark(#fff1f4, rgba(251, 113, 133, 0.14));
+      --shadow-card: light-dark(0 10px 28px -6px rgba(12, 21, 39, 0.07), 0 14px 34px -8px rgba(0, 0, 0, 0.52));
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    :root:has(> head > meta[name="color-scheme"][content="dark"]) { color-scheme: dark; }
+    :root:has(> head > meta[name="color-scheme"][content="light"]) { color-scheme: light; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-base);
+      background-image:
+        linear-gradient(to right, var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--bg-grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+      color: var(--ink-800);
+      font-family: var(--font-sans);
+      line-height: 1.65;
+      padding-bottom: 84px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      background: var(--surface-elevated);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+    .back-link {
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: var(--navy-soft);
+      border: 1px solid var(--border-hairline);
+    }
+    .back-link:hover { border-color: var(--navy); }
+
+    .brand-tag {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--ink-500);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .theme-btn {
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-800);
+      cursor: pointer;
+    }
+    .theme-btn:hover { border-color: var(--navy); color: var(--navy); }
+
+    .container { max-width: 1120px; margin: 26px auto 0; padding: 0 20px; }
+
+    .hero {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-top: 4px solid var(--navy-solid);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 22px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+
+    .pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pill-navy { background: var(--navy-soft); color: var(--navy); border: 1px solid var(--border-hairline); }
+    .pill-teal { background: var(--teal-soft); color: var(--teal); border: 1px solid var(--border-hairline); }
+    .pill-amber { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--border-hairline); }
+    .pill-emerald { background: var(--emerald-soft); color: var(--emerald); border: 1px solid var(--border-hairline); }
+    .pill-rose { background: var(--rose-soft); color: var(--rose); border: 1px solid var(--border-hairline); }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.7rem, 3vw, 2.3rem);
+      color: var(--ink-950);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .hero-sub { font-size: 0.96rem; color: var(--ink-700); max-width: 78ch; }
+
+    /* Single-row accessible tablist */
+    .stage-tablist {
+      display: flex;
+      overflow-x: auto;
+      gap: 4px;
+      border-bottom: 1.5px solid var(--border-hairline);
+      margin-bottom: 22px;
+      scrollbar-width: none;
+      scroll-snap-type: inline proximity;
+    }
+    .stage-tablist::-webkit-scrollbar { display: none; }
+
+    .stage-tab {
+      flex: none;
+      scroll-snap-align: start;
+      position: relative;
+      background: transparent;
+      border: 0;
+      padding: 12px 18px;
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--ink-500);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .stage-tab:hover { color: var(--ink-950); }
+    .stage-tab[aria-selected="true"] { color: var(--navy); }
+    .stage-tab[aria-selected="true"]::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      border-block-end: 3px solid var(--navy);
+    }
+
+    /* Inner wrapper inside tabpanel so hidden="until-found" renders no empty strip */
+    .panel-inner { display: grid; gap: 20px; }
+
+    .card {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 16px;
+      padding: 24px 26px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      color: var(--ink-950);
+      line-height: 1.25;
+    }
+
+    .card-subtitle { font-size: 0.9rem; color: var(--ink-500); margin-top: 4px; }
+
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+      padding: 12px 14px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+    }
+
+    .filter-group { display: flex; flex-wrap: wrap; gap: 6px; }
+
+    .chip-btn, .ctrl-btn {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 7px 13px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-card);
+      color: var(--ink-800);
+      cursor: pointer;
+    }
+    .chip-btn:hover, .ctrl-btn:hover { border-color: var(--navy); color: var(--navy); }
+    .chip-btn[aria-pressed="true"], .ctrl-btn.primary {
+      background: var(--navy-solid);
+      color: #ffffff;
+      border-color: var(--navy-solid);
+    }
+    .ctrl-btn.teal {
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+    }
+    .ctrl-btn.amber {
+      background: var(--amber);
+      color: #ffffff;
+      border-color: var(--amber);
+    }
+
+    /* Geometry Vocabulary Grid */
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 14px;
+    }
+
+    .vocab-card {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .vocab-card.mastered {
+      border-color: var(--emerald);
+      background: var(--emerald-soft);
+    }
+
+    .vocab-top {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .geo-svg {
+      width: 78px;
+      height: 78px;
+      flex-shrink: 0;
+      border-radius: 10px;
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      color: var(--ink-950);
+    }
+
+    .vocab-prompt { font-size: 0.86rem; color: var(--ink-800); line-height: 1.45; }
+    .vocab-cat {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--ink-500);
+      letter-spacing: 0.04em;
+      margin-bottom: 3px;
+    }
+
+    .vocab-answer {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-left: 3.5px solid var(--navy);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+    }
+    .vocab-answer.blurred {
+      filter: blur(6px);
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .term-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+    .term-word { font-size: 1rem; font-weight: 800; color: var(--navy); }
+    .term-ipa { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-500); }
+    .term-example { color: var(--ink-700); font-style: italic; font-size: 0.82rem; }
+
+    .vocab-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    /* Problem Layout */
+    .problem-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      .problem-layout { grid-template-columns: 1fr; }
+    }
+
+    .math-statement {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-left: 4px solid var(--navy-solid);
+      border-radius: 12px;
+      padding: 18px 20px;
+      font-size: 0.96rem;
+      color: var(--ink-950);
+    }
+
+    .math-statement ol { padding-left: 20px; margin-top: 8px; display: grid; gap: 8px; }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-500);
+      margin: 18px 0 8px;
+    }
+
+    .followup-list {
+      padding-left: 20px;
+      display: grid;
+      gap: 8px;
+      font-size: 0.92rem;
+      color: var(--ink-800);
+    }
+
+    /* Modern Accordion (details/summary) */
+    .accordion { display: grid; gap: 10px; margin-top: 18px; }
+
+    .accordion details {
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      background: var(--surface-subtle);
+      overflow: hidden;
+    }
+
+    .accordion summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.6ch;
+      padding: 11px 14px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--navy);
+      cursor: pointer;
+    }
+    .accordion summary::-webkit-details-marker { display: none; }
+    .accordion summary::before {
+      content: "";
+      inline-size: 0.9em;
+      block-size: 0.9em;
+      flex-shrink: 0;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: scale(0.55) rotate(-45deg);
+      margin-right: 2px;
+    }
+    .accordion details[open] > summary::before {
+      transform: scale(0.55) rotate(45deg);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .accordion summary::before { transition: transform 0.2s ease; }
+      .accordion details::details-content {
+        transition: block-size 0.25s ease-in-out, content-visibility 0.25s ease-in-out, display 0.25s ease-in-out;
+        transition-behavior: allow-discrete;
+      }
+    }
+    .accordion details::details-content {
+      interpolate-size: allow-keywords;
+      overflow: clip;
+      contain: layout;
+    }
+    .accordion details:not([open])::details-content { block-size: 0; }
+
+    .details-body {
+      padding: 0 16px 14px;
+      font-size: 0.89rem;
+      color: var(--ink-800);
+      line-height: 1.6;
+      border-top: 1px solid var(--border-hairline);
+      padding-top: 12px;
+    }
+
+    /* Visual Stage */
+    .visual-stage {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .board-readout {
+      width: 100%;
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--ink-800);
+      line-height: 1.55;
+    }
+
+    .btn-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; width: 100%; }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--navy-soft);
+      color: var(--navy);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    /* Mod-4 Lab */
+    .mod-grid {
+      width: 100%;
+      display: grid;
+      gap: 12px;
+    }
+
+    .mod-box {
+      background: var(--surface-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 10px;
+      padding: 14px;
+    }
+
+    .mod-box h3 {
+      font-size: 0.9rem;
+      color: var(--ink-950);
+      margin-bottom: 8px;
+    }
+
+    .prime-toggles { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+
+    .footer-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 18px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="back-link" href="index.html">&larr; Back to Igor&rsquo;s Portal</a>
+      <span class="brand-tag">Cambridge Maths Interview Prep &middot; Session 3</span>
+    </div>
+    <button type="button" class="theme-btn" id="theme-toggle">Toggle Light / Dark</button>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="pill-row">
+        <span class="pill pill-navy">Cambridge Mathematics Interview</span>
+        <span class="pill pill-teal">24 Geometry Terms</span>
+        <span class="pill pill-amber">2 Upgraded Olympiad-Style Proofs</span>
+      </div>
+      <!-- STUDENT-PIXEL-BADGE-START -->
+<div class="student-pixel-badge-bar" style="display:inline-flex; align-items:center; gap:10px; padding:5px 13px 5px 6px; border-radius:999px; background:rgba(15,23,42,0.12); border:1px solid rgba(148,163,184,0.32); margin-bottom:10px; font-family:'Plus Jakarta Sans',-apple-system,sans-serif; font-size:0.78rem; font-weight:700; line-height:1.2;">
+  <img src="avatar.svg" alt="Igor S. (C1 Prep)" style="width:28px; height:28px; border-radius:7px; image-rendering:pixelated; border:1px solid rgba(255,255,255,0.28); flex-shrink:0;" />
+  <span>Igor S. (C1 Prep) &bull; Cambridge C1 Advanced (CAE)</span>
+</div>
+<!-- STUDENT-PIXEL-BADGE-END -->
+<h1>Geometry Vocabulary Recall &amp; Hard Proof Clinic</h1>
+      <p class="hero-sub">
+        Start with rapid-fire English geometry recall from visual diagrams, then talk through two genuine Cambridge interview problems: Gomory&rsquo;s chessboard theorem and primes of the form <code>4k + 3</code> versus <code>4k + 1</code>.
+      </p>
+    </section>
+
+    <div class="stage-tablist" focusgroup="tablist nomemory" role="tablist" aria-label="Lesson stages">
+      <button type="button" class="stage-tab" id="tab-geo" role="tab" aria-selected="true" focusgroupstart data-panel="panel-geo">
+        1. Geometry Vocabulary Studio (24 Terms)
+      </button>
+      <button type="button" class="stage-tab" id="tab-gomory" role="tab" aria-selected="false" data-panel="panel-gomory">
+        2. Chessboard Upgrade: Gomory&rsquo;s Theorem
+      </button>
+      <button type="button" class="stage-tab" id="tab-primes" role="tab" aria-selected="false" data-panel="panel-primes">
+        3. Integers Upgrade: 4k + 3 vs 4k + 1 Primes
+      </button>
+    </div>
+
+    <!-- STAGE 1: GEOMETRY VOCABULARY STUDIO -->
+    <section id="panel-geo" role="tabpanel" aria-labelledby="tab-geo">
+      <div class="panel-inner">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2>Visual Geometry Vocabulary Recall</h2>
+              <p class="card-subtitle">Look at the diagram and plain-English clue, say the exact English term aloud, then click to verify.</p>
+            </div>
+            <span class="pill pill-emerald" id="mastery-counter">Mastered: 0 / 24</span>
+          </div>
+
+          <div class="controls-bar">
+            <div class="filter-group" role="group" aria-label="Filter geometry category">
+              <button type="button" class="chip-btn" aria-pressed="true" data-cat="all">All (24)</button>
+              <button type="button" class="chip-btn" aria-pressed="false" data-cat="triangles">Triangles &amp; Centres (8)</button>
+              <button type="button" class="chip-btn" aria-pressed="false" data-cat="circles">Circles (6)</button>
+              <button type="button" class="chip-btn" aria-pressed="false" data-cat="angles">Angles &amp; Relations (6)</button>
+              <button type="button" class="chip-btn" aria-pressed="false" data-cat="loci">Loci &amp; Transforms (4)</button>
+            </div>
+            <div class="filter-group">
+              <button type="button" class="ctrl-btn primary" id="toggle-recall">Hide All Terms (Recall Mode)</button>
+              <button type="button" class="ctrl-btn" id="reset-mastery">Reset Score</button>
+            </div>
+          </div>
+
+          <div class="vocab-grid" id="vocab-grid"></div>
+
+          <div class="footer-nav">
+            <span></span>
+            <button type="button" class="ctrl-btn primary" data-go-tab="tab-gomory">Next: Gomory&rsquo;s Theorem &rarr;</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- STAGE 2: GOMORY'S THEOREM -->
+    <section id="panel-gomory" role="tabpanel" aria-labelledby="tab-gomory" hidden="until-found">
+      <div class="panel-inner">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2>Problem 1: Gomory&rsquo;s Theorem (Combinatorics &amp; Graph Theory)</h2>
+              <p class="card-subtitle">Upgrading the mutilated chessboard from a parity check to a universal constructive proof.</p>
+            </div>
+            <span class="pill pill-teal">Interactive 8 &times; 8 Board</span>
+          </div>
+
+          <div class="problem-layout">
+            <div>
+              <div class="math-statement">
+                Take a standard <strong>8 &times; 8 chessboard</strong> and remove <strong>any one black square and any one white square</strong> (anywhere on the board, not just corners).<br /><br />
+                Prove that the remaining 62 squares can <strong>always</strong> be tiled by 31 standard <code>2 &times; 1</code> dominoes with no overlaps and nothing hanging off the edge.
+              </div>
+
+              <div class="section-label">Follow-Up Stress Questions</div>
+              <ul class="followup-list">
+                <li>&ldquo;You cannot check all <code>32 &times; 32 = 1024</code> placements one by one. What single structure on the whole board makes the proof work for every pair at once?&rdquo;</li>
+                <li>&ldquo;How do you know both remaining segments of your loop have an even number of squares?&rdquo;</li>
+                <li>&ldquo;What if we remove <strong>two black</strong> and <strong>two white</strong> squares instead? Does a tiling still always exist?&rdquo;</li>
+              </ul>
+
+              <div class="accordion" aria-label="Gomory's theorem hints and proof">
+                <details>
+                  <summary>Checkpoint Hint (Small Nudge)</summary>
+                  <div class="details-body">
+                    Ignore the two removed squares for a moment. Can you trace a single closed loop (a <strong>Hamiltonian cycle</strong>) that visits all 64 squares once, stepping only to orthogonally adjacent squares? Now ask what happens to that loop when you delete one black square and one white square.
+                  </div>
+                </details>
+
+                <details>
+                  <summary>Complete Proof &amp; Plain-English Walkthrough</summary>
+                  <div class="details-body">
+                    <strong>1. Build a Hamiltonian cycle:</strong> Draw a single closed path visiting all 64 squares once (for example, go down column 1, snake back and forth across columns 2 to 8, and return along row 1).<br /><br />
+                    <strong>2. Colour alternation:</strong> Every step moves to an adjacent square, so the squares strictly alternate black and white around the loop (label them 1 to 64: odd indices are one colour, even indices are the other).<br /><br />
+                    <strong>3. Cut the loop:</strong> Removing one black square (say index <code>a</code>, odd) and one white square (index <code>b</code>, even) breaks the cycle into two paths (or one path if they are neighbours). The number of squares strictly between them on one arc is <code>|b &minus; a| &minus; 1</code>. Since one index is odd and the other is even, <code>|b &minus; a|</code> is odd, so <code>|b &minus; a| &minus; 1</code> is <strong>even</strong>. The complementary arc has <code>62 &minus; (even) = even</code> squares.<br /><br />
+                    <strong>4. Tile each path:</strong> Any path of even length is tiled immediately by pairing consecutive squares into dominoes.
+                  </div>
+                </details>
+
+                <details>
+                  <summary>Follow-Up: Why 2 Black + 2 White Fails</summary>
+                  <div class="details-body">
+                    <strong>Counterexample:</strong> Remove the two white squares directly adjacent to the top-left black corner (<code>a7</code> and <code>b8</code>), plus any two other black squares elsewhere on the board. The corner square <code>a8</code> is now completely isolated with zero available neighbours, so no domino can cover it.
+                  </div>
+                </details>
+              </div>
+            </div>
+
+            <div class="visual-stage">
+              <svg id="gomory-svg" width="320" height="320" viewBox="0 0 320 320" role="img" aria-label="Interactive 8 by 8 chessboard for Gomory's theorem"></svg>
+              <div class="board-readout" id="gomory-readout">
+                Click any <strong>1 black</strong> and <strong>1 white</strong> square to remove them.
+              </div>
+              <div class="btn-row">
+                <button type="button" class="ctrl-btn primary" id="btn-cycle">Show Hamiltonian Cycle</button>
+                <button type="button" class="ctrl-btn teal" id="btn-tile">Auto-Tile Paths</button>
+                <button type="button" class="ctrl-btn amber" id="btn-counter">2B + 2W Counterexample</button>
+                <button type="button" class="ctrl-btn" id="btn-reset-board">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-nav">
+            <button type="button" class="ctrl-btn" data-go-tab="tab-geo">&larr; Stage 1: Geometry Vocab</button>
+            <button type="button" class="ctrl-btn primary" data-go-tab="tab-primes">Next: 4k + 3 vs 4k + 1 Primes &rarr;</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- STAGE 3: PRIMES 4K+3 VS 4K+1 -->
+    <section id="panel-primes" role="tabpanel" aria-labelledby="tab-primes" hidden="until-found">
+      <div class="panel-inner">
+        <article class="card">
+          <div class="card-header">
+            <div>
+              <h2>Problem 2: Primes of the Form 4k + 3 vs 4k + 1 (Number Theory)</h2>
+              <p class="card-subtitle">Testing whether you understand why Euclid&rsquo;s proof works, and where it breaks.</p>
+            </div>
+            <span class="pill pill-amber">Proof &amp; Failure Diagnosis</span>
+          </div>
+
+          <div class="problem-layout">
+            <div>
+              <div class="math-statement">
+                <ol>
+                  <li>Prove that there are infinitely many prime numbers of the form <code>4k + 3</code> (such as 3, 7, 11, 19, 23).</li>
+                  <li>Explain precisely why the exact same proof <strong>fails</strong> if you try to adapt it to prove there are infinitely many primes of the form <code>4k + 1</code>.</li>
+                  <li><strong>(Stretch)</strong> Modify the construction to prove that there are infinitely many primes of the form <code>4k + 1</code>.</li>
+                </ol>
+              </div>
+
+              <div class="section-label">Follow-Up Stress Questions</div>
+              <ul class="followup-list">
+                <li>&ldquo;In Part 1, why did you construct <code>4(p<sub>1</sub>p<sub>2</sub>&hellip;p<sub>r</sub>) &minus; 1</code> instead of <code>+ 3</code>? What small bug happens with <code>+ 3</code> if <code>3</code> is in your list?&rdquo;</li>
+                <li>&ldquo;In Part 1, how do you know <code>N</code> has a prime factor of the form <code>4k + 3</code> rather than being prime itself?&rdquo;</li>
+                <li>&ldquo;In Part 3, which theorem forces every odd prime divisor of <code>x<sup>2</sup> + 1</code> to be congruent to <code>1 (mod 4)</code>?&rdquo;</li>
+              </ul>
+
+              <div class="accordion" aria-label="Primes mod 4 hints and proofs">
+                <details>
+                  <summary>Checkpoint Hint (Part 1 &amp; Part 2)</summary>
+                  <div class="details-body">
+                    Look at multiplication modulo 4. What happens when you multiply two numbers of the form <code>4a + 1</code> and <code>4b + 1</code>? Now compare that with multiplying two numbers of the form <code>4a + 3</code> and <code>4b + 3</code>.
+                  </div>
+                </details>
+
+                <details>
+                  <summary>Complete Proof: Part 1 (4k + 3) &amp; Part 2 (Why 4k + 1 Fails)</summary>
+                  <div class="details-body">
+                    <strong>Part 1:</strong> Suppose there are only finitely many primes of the form <code>4k + 3</code>, listed as <code>p<sub>1</sub>, p<sub>2</sub>, &hellip;, p<sub>r</sub></code>. Set <code>N = 4(p<sub>1</sub>p<sub>2</sub>&hellip;p<sub>r</sub>) &minus; 1</code>. Then <code>N &gt; 1</code> is odd and <code>N &equiv; 3 (mod 4)</code>.<br />
+                    Every odd prime is congruent to either <code>1</code> or <code>3 (mod 4)</code>. Any product of integers congruent to <code>1 (mod 4)</code> remains congruent to <code>1 (mod 4)</code>. Since <code>N &equiv; 3 (mod 4)</code>, <code>N</code> cannot be a product of only <code>4k + 1</code> primes, so it must have at least one prime factor <code>q &equiv; 3 (mod 4)</code>.<br />
+                    None of <code>p<sub>1</sub>, &hellip;, p<sub>r</sub></code> divides <code>N</code> (each leaves remainder <code>&minus;1</code>), so <code>q</code> is a new prime of the form <code>4k + 3</code>. Contradiction.<br /><br />
+                    <strong>Part 2 (Why 4k + 1 fails):</strong> If you form <code>N = 4(p<sub>1</sub>&hellip;p<sub>r</sub>) + 1</code>, you get <code>N &equiv; 1 (mod 4)</code>. However, an even number of <code>4k + 3</code> primes multiply to give <code>1 (mod 4)</code> (for example, <code>3 &times; 7 = 21 &equiv; 1 (mod 4)</code>). So <code>N</code> could factor completely into <code>4k + 3</code> primes, giving no contradiction.
+                  </div>
+                </details>
+
+                <details>
+                  <summary>Stretch Proof: Part 3 (Infinitely Many 4k + 1 Primes)</summary>
+                  <div class="details-body">
+                    Assume finitely many primes of the form <code>4k + 1</code>: <code>p<sub>1</sub>, &hellip;, p<sub>r</sub></code>. Set <code>N = (2p<sub>1</sub>p<sub>2</sub>&hellip;p<sub>r</sub>)<sup>2</sup> + 1 = x<sup>2</sup> + 1</code>.<br />
+                    Let <code>q</code> be any prime factor of <code>N</code>. Since <code>N</code> is odd, <code>q</code> is odd, and <code>x<sup>2</sup> &equiv; &minus;1 (mod q)</code>.<br />
+                    By <strong>Fermat&rsquo;s Little Theorem</strong>, <code>x<sup>q&minus;1</sup> &equiv; 1 (mod q)</code>. Rewriting this as <code>(x<sup>2</sup>)<sup>(q&minus;1)/2</sup> &equiv; (&minus;1)<sup>(q&minus;1)/2</sup> &equiv; 1 (mod q)</code> forces <code>(q &minus; 1)/2</code> to be even, so <code>q &equiv; 1 (mod 4)</code>.<br />
+                    None of <code>p<sub>1</sub>, &hellip;, p<sub>r</sub></code> divides <code>N</code> (remainder 1), so <code>q</code> is a new prime of the form <code>4k + 1</code>. Contradiction.
+                  </div>
+                </details>
+              </div>
+            </div>
+
+            <div class="visual-stage">
+              <div class="mod-grid">
+                <div class="mod-box">
+                  <h3>1. Mod-4 Product Trap Explorer</h3>
+                  <div class="prime-toggles">
+                    <button type="button" class="ctrl-btn" data-pair="5,13">5 &times; 13 (both 4k+1)</button>
+                    <button type="button" class="ctrl-btn" data-pair="3,7">3 &times; 7 (both 4k+3)</button>
+                    <button type="button" class="ctrl-btn" data-pair="3,5">3 &times; 5 (mixed)</button>
+                    <button type="button" class="ctrl-btn" data-pair="11,19">11 &times; 19 (both 4k+3)</button>
+                  </div>
+                  <div class="board-readout" id="mod-pair-out">
+                    Click a pair above to inspect its remainder modulo 4.
+                  </div>
+                </div>
+
+                <div class="mod-box">
+                  <h3>2. Euclid Builder: N = 4(p<sub>1</sub>&hellip;p<sub>r</sub>) &minus; 1</h3>
+                  <div class="prime-toggles" id="euclid-primes">
+                    <button type="button" class="chip-btn" aria-pressed="true" data-p="3">3</button>
+                    <button type="button" class="chip-btn" aria-pressed="true" data-p="7">7</button>
+                    <button type="button" class="chip-btn" aria-pressed="false" data-p="11">11</button>
+                    <button type="button" class="chip-btn" aria-pressed="false" data-p="19">19</button>
+                  </div>
+                  <div class="board-readout" id="euclid-out"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-nav">
+            <button type="button" class="ctrl-btn" data-go-tab="tab-gomory">&larr; Stage 2: Gomory&rsquo;s Theorem</button>
+            <a class="ctrl-btn primary" href="index.html" style="text-decoration:none;">Return to Portal &rarr;</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* Theme toggle */
+    const themeMeta = document.querySelector('meta[name="color-scheme"]');
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const next = themeMeta.content === 'dark' ? 'light' : 'dark';
+      themeMeta.content = next;
+      try { localStorage.setItem('color-scheme', next); } catch (e) {}
+    });
+
+    /* Accessible Tabs with hidden="until-found", beforematch, and arrow-key fallback */
+    const tabs = Array.from(document.querySelectorAll('.stage-tab'));
+    const panels = Array.from(document.querySelectorAll('[role="tabpanel"]'));
+
+    function selectTab(targetTab, focusTab = false) {
+      tabs.forEach(tab => {
+        const active = tab === targetTab;
+        tab.setAttribute('aria-selected', String(active));
+        tab.toggleAttribute('focusgroupstart', active);
+        const panel = document.getElementById(tab.dataset.panel);
+        if (panel) {
+          if (active) {
+            panel.removeAttribute('hidden');
+          } else {
+            panel.setAttribute('hidden', 'until-found');
+          }
+        }
+      });
+      targetTab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+      if (focusTab) targetTab.focus();
+    }
+
+    tabs.forEach((tab, idx) => {
+      tab.addEventListener('click', () => selectTab(tab));
+      tab.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          selectTab(tabs[(idx + 1) % tabs.length], true);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          selectTab(tabs[(idx - 1 + tabs.length) % tabs.length], true);
+        }
+      });
+    });
+
+    panels.forEach(panel => {
+      panel.addEventListener('beforematch', () => {
+        const matchTab = tabs.find(t => t.dataset.panel === panel.id);
+        if (matchTab) selectTab(matchTab);
+      });
+    });
+
+    document.querySelectorAll('[data-go-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = document.getElementById(btn.dataset.goTab);
+        if (target) {
+          selectTab(target);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+
+    /* STAGE 1: 24 Geometry Vocabulary Terms with custom SVG diagrams */
+    const GEO_TERMS = [
+      {
+        id: 'vertex', cat: 'triangles', catLabel: 'Triangles',
+        prompt: 'A corner point where two edges or rays meet (give both singular and plural).',
+        term: 'vertex (pl. vertices)', ipa: '/ˈvɜː.teks/ · /ˈvɜː.tɪ.siːz/',
+        example: 'Drop a perpendicular from vertex A to the opposite side BC.',
+        svg: '<polygon points="39,14 14,64 64,64" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="39" cy="14" r="5" fill="#e11d48"/>'
+      },
+      {
+        id: 'altitude', cat: 'triangles', catLabel: 'Triangles',
+        prompt: 'A segment from a vertex dropped at 90 degrees to the opposite side (or its extension).',
+        term: 'altitude', ipa: '/ˈæl.tɪ.tjuːd/',
+        example: 'The three altitudes of any triangle are concurrent at the orthocentre.',
+        svg: '<polygon points="48,14 12,64 66,64" fill="none" stroke="currentColor" stroke-width="2"/><line x1="48" y1="14" x2="48" y2="64" stroke="#0f766e" stroke-width="2.5" stroke-dasharray="4 2"/><rect x="48" y="56" width="8" height="8" fill="none" stroke="#0f766e" stroke-width="1.6"/>'
+      },
+      {
+        id: 'median', cat: 'triangles', catLabel: 'Triangles',
+        prompt: 'A segment joining a vertex of a triangle to the midpoint of the opposite side.',
+        term: 'median', ipa: '/ˈmiː.di.ən/',
+        example: 'Each median splits the triangle into two regions of equal area.',
+        svg: '<polygon points="52,14 12,64 66,64" fill="none" stroke="currentColor" stroke-width="2"/><line x1="52" y1="14" x2="39" y2="64" stroke="#2563eb" stroke-width="2.5"/><circle cx="39" cy="64" r="3.5" fill="#2563eb"/>'
+      },
+      {
+        id: 'angle-bisector', cat: 'triangles', catLabel: 'Triangles',
+        prompt: 'A line or ray that cuts an angle into two equal halves.',
+        term: 'angle bisector', ipa: '/ˈæŋ.ɡəl baɪˈsek.tər/',
+        example: 'By the angle bisector theorem, the opposite side is split in the ratio of the adjacent sides.',
+        svg: '<line x1="14" y1="62" x2="66" y2="62" stroke="currentColor" stroke-width="2"/><line x1="14" y1="62" x2="46" y2="14" stroke="currentColor" stroke-width="2"/><line x1="14" y1="62" x2="64" y2="31" stroke="#d97706" stroke-width="2.4"/><path d="M26,44 A22,22 0 0,1 35,51" fill="none" stroke="#d97706" stroke-width="1.8"/><path d="M35,51 A22,22 0 0,1 36,62" fill="none" stroke="#d97706" stroke-width="1.8"/>'
+      },
+      {
+        id: 'perp-bisector', cat: 'triangles', catLabel: 'Triangles',
+        prompt: 'The line at 90 degrees to a segment passing through its exact midpoint.',
+        term: 'perpendicular bisector', ipa: '/ˌpɜː.pənˈdɪk.jʊ.lər baɪˈsek.tər/',
+        example: 'Every point on the perpendicular bisector of AB is equidistant from A and B.',
+        svg: '<line x1="12" y1="44" x2="66" y2="44" stroke="currentColor" stroke-width="2.2"/><line x1="39" y1="10" x2="39" y2="68" stroke="#0f766e" stroke-width="2.4"/><rect x="39" y="36" width="8" height="8" fill="none" stroke="#0f766e" stroke-width="1.6"/>'
+      },
+      {
+        id: 'centroid', cat: 'triangles', catLabel: 'Triangles',
+        prompt: 'The intersection point of a triangle\'s three medians (its centre of mass, dividing each median 2:1).',
+        term: 'centroid', ipa: '/ˈsen.trɔɪd/',
+        example: 'The centroid divides every median in the ratio 2 to 1 from the vertex.',
+        svg: '<polygon points="39,12 12,64 66,64" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="39" y1="12" x2="39" y2="64" stroke="#64748b" stroke-width="1.4"/><line x1="12" y1="64" x2="52.5" y2="38" stroke="#64748b" stroke-width="1.4"/><line x1="66" y1="64" x2="25.5" y2="38" stroke="#64748b" stroke-width="1.4"/><circle cx="39" cy="46.6" r="4.5" fill="#2563eb"/>'
+      },
+      {
+        id: 'orthocentre', cat: 'triangles', catLabel: 'Triangles',
+        prompt: 'The common intersection point of the three altitudes of a triangle.',
+        term: 'orthocentre', ipa: '/ˈɔː.θəʊˌsen.tər/',
+        example: 'In an obtuse triangle, the orthocentre lies outside the triangle.',
+        svg: '<polygon points="48,14 14,64 66,64" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="48" y1="14" x2="48" y2="64" stroke="#0f766e" stroke-width="1.5"/><line x1="14" y1="64" x2="58" y2="41" stroke="#0f766e" stroke-width="1.5"/><circle cx="48" cy="46" r="4.5" fill="#e11d48"/>'
+      },
+      {
+        id: 'isosceles', cat: 'triangles', catLabel: 'Triangles',
+        prompt: 'A triangle with at least two sides of equal length (contrast with equilateral and scalene).',
+        term: 'isosceles / equilateral / scalene', ipa: '/aɪˈsɒs.ə.liːz/',
+        example: 'Since OA and OB are radii, triangle OAB is isosceles.',
+        svg: '<polygon points="39,12 18,64 60,64" fill="none" stroke="currentColor" stroke-width="2.2"/><line x1="25" y1="36" x2="32" y2="39" stroke="#d97706" stroke-width="2"/><line x1="53" y1="36" x2="46" y2="39" stroke="#d97706" stroke-width="2"/>'
+      },
+      {
+        id: 'chord', cat: 'circles', catLabel: 'Circles',
+        prompt: 'A straight line segment whose two endpoints both lie on the circumference of a circle.',
+        term: 'chord', ipa: '/kɔːd/',
+        example: 'The perpendicular from the centre to a chord bisects the chord.',
+        svg: '<circle cx="39" cy="39" r="27" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16" y1="53" x2="62" y2="53" stroke="#2563eb" stroke-width="2.8"/>'
+      },
+      {
+        id: 'secant', cat: 'circles', catLabel: 'Circles',
+        prompt: 'An extended straight line that cuts through a circle at two distinct points.',
+        term: 'secant', ipa: '/ˈsiː.kənt/',
+        example: 'By power of a point, the product of the secant segments is constant.',
+        svg: '<circle cx="39" cy="39" r="24" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="56" x2="72" y2="24" stroke="#d97706" stroke-width="2.4"/><circle cx="20" cy="50" r="3" fill="#d97706"/><circle cx="60" cy="30" r="3" fill="#d97706"/>'
+      },
+      {
+        id: 'tangent', cat: 'circles', catLabel: 'Circles',
+        prompt: 'A line that touches a circle (or curve) at exactly one point without crossing it.',
+        term: 'tangent (tangent to ... at P)', ipa: '/ˈtæn.dʒənt/',
+        example: 'The radius to the point of contact is perpendicular to the tangent.',
+        svg: '<circle cx="39" cy="39" r="22" fill="none" stroke="currentColor" stroke-width="2"/><line x1="12" y1="61" x2="66" y2="61" stroke="#0f766e" stroke-width="2.5"/><circle cx="39" cy="61" r="3.5" fill="#e11d48"/>'
+      },
+      {
+        id: 'circumcircle', cat: 'circles', catLabel: 'Circles',
+        prompt: 'The unique circle passing through all three vertices of a triangle (and its centre).',
+        term: 'circumcircle / circumcentre', ipa: '/ˈsɜː.kəm.sɜː.kəl/',
+        example: 'The circumcentre is the intersection of the perpendicular bisectors.',
+        svg: '<circle cx="39" cy="39" r="27" fill="none" stroke="#2563eb" stroke-width="2"/><polygon points="39,12 16,53 62,53" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="39" cy="39" r="3" fill="#2563eb"/>'
+      },
+      {
+        id: 'incircle', cat: 'circles', catLabel: 'Circles',
+        prompt: 'The largest circle fitting inside a triangle, tangent to all three sides (and its centre).',
+        term: 'incircle / incentre', ipa: '/ˈɪn.sɜː.kəl/',
+        example: 'The incentre lies where the three internal angle bisectors meet.',
+        svg: '<polygon points="39,10 10,64 68,64" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="39" cy="48" r="16" fill="none" stroke="#0f766e" stroke-width="2.2"/><circle cx="39" cy="48" r="3" fill="#0f766e"/>'
+      },
+      {
+        id: 'cyclic-quad', cat: 'circles', catLabel: 'Circles',
+        prompt: 'A four-sided polygon whose four vertices all lie on a single circle.',
+        term: 'cyclic quadrilateral', ipa: '/ˈsaɪ.klɪk ˌkwɒd.rɪˈlæt.ər.əl/',
+        example: 'Opposite angles in a cyclic quadrilateral are supplementary, summing to 180 degrees.',
+        svg: '<circle cx="39" cy="39" r="27" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3 2"/><polygon points="24,16 61,24 56,60 17,54" fill="none" stroke="#2563eb" stroke-width="2.2"/>'
+      },
+      {
+        id: 'subtended', cat: 'angles', catLabel: 'Angles & Relations',
+        prompt: 'The verb describing an angle formed opposite an arc or chord (e.g. "the angle ___ by AB at the centre").',
+        term: 'subtended (to subtend)', ipa: '/səbˈten.dɪd/',
+        example: 'The angle subtended by a diameter at the circumference is always 90 degrees.',
+        svg: '<circle cx="39" cy="39" r="27" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="18" y1="56" x2="60" y2="56" stroke="#d97706" stroke-width="2.5"/><polyline points="18,56 39,12 60,56" fill="none" stroke="#2563eb" stroke-width="2"/><path d="M33,24 A13,13 0 0,0 45,24" fill="none" stroke="#e11d48" stroke-width="2"/>'
+      },
+      {
+        id: 'collinear', cat: 'angles', catLabel: 'Angles & Relations',
+        prompt: 'Adjective for three or more points that all lie on the exact same straight line.',
+        term: 'collinear', ipa: '/kəʊˈlɪn.i.ər/',
+        example: 'By Menelaus\'s theorem, the three intersection points are collinear.',
+        svg: '<line x1="10" y1="62" x2="68" y2="16" stroke="#0f766e" stroke-width="2"/><circle cx="20" cy="54" r="4" fill="#0f766e"/><circle cx="39" cy="39" r="4" fill="#0f766e"/><circle cx="58" cy="24" r="4" fill="#0f766e"/>'
+      },
+      {
+        id: 'concurrent', cat: 'angles', catLabel: 'Angles & Relations',
+        prompt: 'Adjective for three or more lines that all pass through a single common point.',
+        term: 'concurrent', ipa: '/kənˈkʌr.ənt/',
+        example: 'We want to prove that the three lines AD, BE, and CF are concurrent.',
+        svg: '<line x1="12" y1="20" x2="66" y2="58" stroke="currentColor" stroke-width="1.8"/><line x1="14" y1="60" x2="64" y2="18" stroke="currentColor" stroke-width="1.8"/><line x1="39" y1="10" x2="39" y2="68" stroke="currentColor" stroke-width="1.8"/><circle cx="39" cy="39" r="4.5" fill="#e11d48"/>'
+      },
+      {
+        id: 'congruent-similar', cat: 'angles', catLabel: 'Angles & Relations',
+        prompt: 'Exact same shape and size versus same shape with proportional sides (give both terms).',
+        term: 'congruent vs similar', ipa: '/ˈkɒŋ.ɡru.ənt/ · /ˈsɪm.ɪ.lər/',
+        example: 'Triangles ABE and CDE are similar by AA, so their corresponding sides are proportional.',
+        svg: '<polygon points="12,58 26,24 38,58" fill="none" stroke="#2563eb" stroke-width="2"/><polygon points="44,58 53,36 62,58" fill="none" stroke="#0f766e" stroke-width="2"/>'
+      },
+      {
+        id: 'comp-supp', cat: 'angles', catLabel: 'Angles & Relations',
+        prompt: 'Two angles that sum to 90 degrees versus two angles that sum to 180 degrees.',
+        term: 'complementary (90°) / supplementary (180°)', ipa: '/ˌkɒm.plɪˈmen.tər.i/',
+        example: 'Because the lines are parallel, these interior angles are supplementary.',
+        svg: '<line x1="10" y1="54" x2="68" y2="54" stroke="currentColor" stroke-width="2"/><line x1="39" y1="54" x2="54" y2="18" stroke="#2563eb" stroke-width="2"/><path d="M26,54 A13,13 0 0,1 44,42" fill="none" stroke="#d97706" stroke-width="2"/><path d="M44,42 A13,13 0 0,1 52,54" fill="none" stroke="#0f766e" stroke-width="2"/>'
+      },
+      {
+        id: 'acute-obtuse-reflex', cat: 'angles', catLabel: 'Angles & Relations',
+        prompt: 'The three names for angles: under 90 degrees, between 90 and 180 degrees, and over 180 degrees.',
+        term: 'acute / obtuse / reflex', ipa: '/əˈkjuːt/ · /əbˈtjuːs/ · /ˈriː.fleks/',
+        example: 'Consider the case where angle ABC is obtuse rather than acute.',
+        svg: '<line x1="39" y1="52" x2="66" y2="52" stroke="currentColor" stroke-width="2"/><line x1="39" y1="52" x2="18" y2="24" stroke="#e11d48" stroke-width="2"/><path d="M51,52 A12,12 0 0,0 32,42" fill="none" stroke="#e11d48" stroke-width="2"/>'
+      },
+      {
+        id: 'locus', cat: 'loci', catLabel: 'Loci & Transforms',
+        prompt: 'The set of all points satisfying a given geometric condition (give singular and plural).',
+        term: 'locus (pl. loci)', ipa: '/ˈləʊ.kəs/ · /ˈləʊ.saɪ/',
+        example: 'The locus of points at constant distance r from O is a circle of radius r.',
+        svg: '<circle cx="39" cy="39" r="24" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 3"/><circle cx="39" cy="39" r="3" fill="currentColor"/><line x1="39" y1="39" x2="60" y2="28" stroke="#64748b" stroke-width="1.5"/>'
+      },
+      {
+        id: 'foot-perp', cat: 'loci', catLabel: 'Loci & Transforms',
+        prompt: 'The exact point where a perpendicular dropped from P meets a line l.',
+        term: 'foot of the perpendicular', ipa: '/fʊt əv ðə ˌpɜː.pənˈdɪk.jʊ.lər/',
+        example: 'Let H be the foot of the perpendicular from P to line AB.',
+        svg: '<line x1="10" y1="56" x2="68" y2="56" stroke="currentColor" stroke-width="2"/><circle cx="39" cy="18" r="3.5" fill="#2563eb"/><line x1="39" y1="18" x2="39" y2="56" stroke="#2563eb" stroke-width="2" stroke-dasharray="3 2"/><circle cx="39" cy="56" r="4.5" fill="#e11d48"/>'
+      },
+      {
+        id: 'homothety', cat: 'loci', catLabel: 'Loci & Transforms',
+        prompt: 'Scaling a figure radially from a fixed centre O by a factor k (UK school term + Olympiad term).',
+        term: 'enlargement / homothety', ipa: '/həˈmɒθ.ə.ti/',
+        example: 'Apply a homothety centred at A with scale factor 2 to map the small circle to the large one.',
+        svg: '<circle cx="14" cy="60" r="3" fill="#e11d48"/><line x1="14" y1="60" x2="66" y2="16" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 2"/><line x1="14" y1="60" x2="68" y2="54" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3 2"/><polygon points="30,46 38,44 36,57" fill="none" stroke="#0f766e" stroke-width="1.8"/><polygon points="46,33 62,29 58,55" fill="none" stroke="#2563eb" stroke-width="2"/>'
+      },
+      {
+        id: 'inscribed-circumscribed', cat: 'loci', catLabel: 'Loci & Transforms',
+        prompt: 'Drawn tightly inside a figure touching its sides versus drawn tightly around the outside touching its vertices.',
+        term: 'inscribed / circumscribed', ipa: '/ɪnˈskraɪbd/ · /ˈsɜː.kəm.skraɪbd/',
+        example: 'Consider a regular hexagon inscribed in a unit circle.',
+        svg: '<circle cx="39" cy="39" r="26" fill="none" stroke="#2563eb" stroke-width="2"/><rect x="20.6" y="20.6" width="36.8" height="36.8" fill="none" stroke="#0f766e" stroke-width="2"/>'
+      }
+    ];
+
+    let activeCat = 'all';
+    let recallMode = false;
+    const masteredSet = new Set();
+
+    function renderVocab() {
+      const grid = document.getElementById('vocab-grid');
+      grid.innerHTML = '';
+      const filtered = activeCat === 'all' ? GEO_TERMS : GEO_TERMS.filter(t => t.cat === activeCat);
+
+      filtered.forEach(item => {
+        const isMastered = masteredSet.has(item.id);
+        const card = document.createElement('div');
+        card.className = 'vocab-card' + (isMastered ? ' mastered' : '');
+        card.innerHTML = `
+          <div class="vocab-top">
+            <svg class="geo-svg" viewBox="0 0 78 78" aria-hidden="true">${item.svg}</svg>
+            <div>
+              <div class="vocab-cat">${item.catLabel}</div>
+              <div class="vocab-prompt">${item.prompt}</div>
+            </div>
+          </div>
+          <div class="vocab-answer ${recallMode ? 'blurred' : ''}" title="Click to reveal or hide">
+            <div class="term-head">
+              <span class="term-word">${item.term}</span>
+              <span class="term-ipa">${item.ipa}</span>
+            </div>
+            <div class="term-example">&ldquo;${item.example}&rdquo;</div>
+          </div>
+          <div class="vocab-actions">
+            <button type="button" class="ctrl-btn btn-peek">${recallMode ? 'Reveal Term' : 'Hide Term'}</button>
+            <button type="button" class="ctrl-btn ${isMastered ? 'teal' : ''} btn-master">${isMastered ? 'Mastered' : 'Mark Mastered'}</button>
+          </div>
+        `;
+
+        const ansBox = card.querySelector('.vocab-answer');
+        const peekBtn = card.querySelector('.btn-peek');
+        const toggleOne = () => {
+          ansBox.classList.toggle('blurred');
+          peekBtn.textContent = ansBox.classList.contains('blurred') ? 'Reveal Term' : 'Hide Term';
+        };
+        ansBox.addEventListener('click', toggleOne);
+        peekBtn.addEventListener('click', toggleOne);
+
+        card.querySelector('.btn-master').addEventListener('click', () => {
+          if (masteredSet.has(item.id)) masteredSet.delete(item.id);
+          else masteredSet.add(item.id);
+          updateMastery();
+          renderVocab();
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    function updateMastery() {
+      document.getElementById('mastery-counter').textContent = `Mastered: ${masteredSet.size} / ${GEO_TERMS.length}`;
+    }
+
+    document.querySelectorAll('[data-cat]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeCat = btn.dataset.cat;
+        document.querySelectorAll('[data-cat]').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+        renderVocab();
+      });
+    });
+
+    document.getElementById('toggle-recall').addEventListener('click', e => {
+      recallMode = !recallMode;
+      e.currentTarget.textContent = recallMode ? 'Show All Terms' : 'Hide All Terms (Recall Mode)';
+      renderVocab();
+    });
+
+    document.getElementById('reset-mastery').addEventListener('click', () => {
+      masteredSet.clear();
+      updateMastery();
+      renderVocab();
+    });
+
+    renderVocab();
+
+    /* STAGE 2: Gomory's Theorem Interactive 8x8 Board + Hamiltonian Cycle */
+    const CYCLE = [];
+    for (let r = 0; r < 8; r++) CYCLE.push([r, 0]);
+    for (let r = 7; r >= 0; r--) {
+      if (r % 2 === 1) {
+        for (let c = 1; c < 8; c++) CYCLE.push([r, c]);
+      } else {
+        for (let c = 7; c >= 1; c--) CYCLE.push([r, c]);
+      }
+    }
+    const cycleIndex = new Map(CYCLE.map(([r, c], i) => [`${r},${c}`, i]));
+
+    let removedBlack = '2,1'; /* b6 -> (2+1)=3 odd (black) */
+    let removedWhite = '5,5'; /* f3 -> (5+5)=10 even (white) */
+    let counterMode = false;
+    let showCycle = false;
+    let showTiling = false;
+
+    const FILES = ['a','b','c','d','e','f','g','h'];
+    function coordName(key) {
+      const [r, c] = key.split(',').map(Number);
+      return `${FILES[c]}${8 - r}`;
+    }
+
+    function renderGomory() {
+      const svg = document.getElementById('gomory-svg');
+      const readout = document.getElementById('gomory-readout');
+      const cell = 40;
+      let html = '';
+
+      const counterRemoved = new Set(['0,1', '1,0', '3,2', '5,4']); /* 2 white next to a8 (0,0 is white? wait: (0+0)=0 white, so (0,1) & (1,0) are black -> isolates white corner a8!) */
+      /* Let's verify colours cleanly: (r+c)%2 === 0 -> Light (white), (r+c)%2 === 1 -> Dark (black).
+         a8 is (0,0) = Light (white). Its two neighbours are (0,1)=b8 (black) and (1,0)=a7 (black).
+         Removing 2 black neighbours (0,1) & (1,0) plus 2 white squares (3,3)=d5 & (5,5)=f3 isolates white corner a8! */
+      const counterSet = new Set(['0,1', '1,0', '3,3', '5,5']);
+
+      for (let r = 0; r < 8; r++) {
+        for (let c = 0; c < 8; c++) {
+          const key = `${r},${c}`;
+          const isDark = (r + c) % 2 === 1;
+          let fill = isDark ? '#334155' : '#f1ede4';
+          const isRemoved = counterMode
+            ? counterSet.has(key)
+            : (key === removedBlack || key === removedWhite);
+
+          if (isRemoved) fill = '#b91c3c';
+          if (counterMode && key === '0,0') fill = '#f59e0b';
+
+          html += `<rect x="${c * cell}" y="${r * cell}" width="${cell}" height="${cell}" fill="${fill}" stroke="#1e293b" stroke-opacity="0.35" data-cell="${key}" style="cursor:pointer"/>`;
+          if (isRemoved) {
+            html += `<text x="${c * cell + 20}" y="${r * cell + 25}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="16" font-weight="800" fill="#ffffff" pointer-events="none">&times;</text>`;
+          }
+          if (counterMode && key === '0,0') {
+            html += `<text x="${c * cell + 20}" y="${r * cell + 24}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="11" font-weight="800" fill="#0f172a" pointer-events="none">TRAPPED</text>`;
+          }
+        }
+      }
+
+      if (!counterMode && removedBlack && removedWhite) {
+        const iA = cycleIndex.get(removedBlack);
+        const iB = cycleIndex.get(removedWhite);
+        const lo = Math.min(iA, iB);
+        const hi = Math.max(iA, iB);
+
+        const path1 = [];
+        for (let k = lo + 1; k < hi; k++) path1.push(CYCLE[k]);
+        const path2 = [];
+        for (let k = hi + 1; k < 64; k++) path2.push(CYCLE[k]);
+        for (let k = 0; k < lo; k++) path2.push(CYCLE[k]);
+
+        if (showCycle) {
+          const drawPath = (pts, color) => {
+            if (pts.length < 2) return '';
+            const d = pts.map(([r, c], idx) => `${idx === 0 ? 'M' : 'L'} ${c * cell + 20} ${r * cell + 20}`).join(' ');
+            return `<path d="${d}" fill="none" stroke="${color}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`;
+          };
+          html += drawPath(path1, '#14b8a6');
+          html += drawPath(path2, '#f59e0b');
+        }
+
+        if (showTiling) {
+          const drawDominoes = (pts, strokeColor) => {
+            let out = '';
+            for (let i = 0; i + 1 < pts.length; i += 2) {
+              const [r1, c1] = pts[i];
+              const [r2, c2] = pts[i + 1];
+              const x = Math.min(c1, c2) * cell + 5;
+              const y = Math.min(r1, r2) * cell + 5;
+              const w = (c1 === c2 ? cell : cell * 2) - 10;
+              const h = (r1 === r2 ? cell : cell * 2) - 10;
+              out += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="rgba(255,255,255,0.22)" stroke="${strokeColor}" stroke-width="2.5" pointer-events="none"/>`;
+            }
+            return out;
+          };
+          html += drawDominoes(path1, '#14b8a6');
+          html += drawDominoes(path2, '#f59e0b');
+        }
+
+        readout.innerHTML =
+          `Removed: <strong>${coordName(removedBlack)}</strong> (dark) &amp; <strong>${coordName(removedWhite)}</strong> (light)<br/>` +
+          `Teal path: <strong>${path1.length} squares</strong> (even &rarr; ${path1.length / 2} dominoes)<br/>` +
+          `Amber path: <strong>${path2.length} squares</strong> (even &rarr; ${path2.length / 2} dominoes)`;
+      } else if (counterMode) {
+        readout.innerHTML =
+          `<strong>2 Dark + 2 Light Counterexample:</strong> Removed <code>b8, a7</code> (dark) + <code>d5, f3</code> (light).<br/>` +
+          `Corner <code>a8</code> (amber) is completely isolated: 0 neighbours left.`;
+      }
+
+      svg.innerHTML = html;
+      svg.querySelectorAll('[data-cell]').forEach(rect => {
+        rect.addEventListener('click', () => {
+          counterMode = false;
+          const key = rect.dataset.cell;
+          const [r, c] = key.split(',').map(Number);
+          if ((r + c) % 2 === 1) removedBlack = key;
+          else removedWhite = key;
+          renderGomory();
+        });
+      });
+    }
+
+    document.getElementById('btn-cycle').addEventListener('click', e => {
+      counterMode = false;
+      showCycle = !showCycle;
+      e.currentTarget.textContent = showCycle ? 'Hide Hamiltonian Cycle' : 'Show Hamiltonian Cycle';
+      renderGomory();
+    });
+    document.getElementById('btn-tile').addEventListener('click', e => {
+      counterMode = false;
+      showTiling = !showTiling;
+      e.currentTarget.textContent = showTiling ? 'Hide Domino Tiling' : 'Auto-Tile Paths';
+      renderGomory();
+    });
+    document.getElementById('btn-counter').addEventListener('click', () => {
+      counterMode = !counterMode;
+      renderGomory();
+    });
+    document.getElementById('btn-reset-board').addEventListener('click', () => {
+      counterMode = false;
+      showCycle = false;
+      showTiling = false;
+      removedBlack = '2,1';
+      removedWhite = '5,5';
+      document.getElementById('btn-cycle').textContent = 'Show Hamiltonian Cycle';
+      document.getElementById('btn-tile').textContent = 'Auto-Tile Paths';
+      renderGomory();
+    });
+    renderGomory();
+
+    /* STAGE 3: Mod-4 Product Trap & Euclid Builder */
+    document.querySelectorAll('[data-pair]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const [a, b] = btn.dataset.pair.split(',').map(Number);
+        const prod = a * b;
+        const ra = a % 4, rb = b % 4, rp = prod % 4;
+        const note = (ra === 3 && rb === 3)
+          ? 'Trap exposed: two 4k+3 primes multiply to give 1 (mod 4)!'
+          : (ra === 1 && rb === 1)
+            ? 'Closure: 4k+1 times 4k+1 always stays 1 (mod 4).'
+            : 'Mixed pair: 1 times 3 gives 3 (mod 4).';
+        document.getElementById('mod-pair-out').innerHTML =
+          `<code>${a} &times; ${b} = ${prod}</code><br/>` +
+          `Mod 4: <code>${ra} &times; ${rb} &equiv; ${rp} (mod 4)</code><br/>${note}`;
+      });
+    });
+
+    function factorise(n) {
+      const factors = [];
+      let d = 2, x = n;
+      while (d * d <= x) {
+        while (x % d === 0) { factors.push(d); x /= d; }
+        d++;
+      }
+      if (x > 1) factors.push(x);
+      return factors;
+    }
+
+    function updateEuclid() {
+      const activePrimes = Array.from(document.querySelectorAll('#euclid-primes [aria-pressed="true"]'))
+        .map(b => Number(b.dataset.p));
+      const out = document.getElementById('euclid-out');
+      if (activePrimes.length === 0) {
+        out.textContent = 'Select at least one 4k + 3 prime above.';
+        return;
+      }
+      const prod = activePrimes.reduce((a, b) => a * b, 1);
+      const N = 4 * prod - 1;
+      const facs = factorise(N);
+      const new3 = facs.filter(f => f % 4 === 3);
+      out.innerHTML =
+        `List: {${activePrimes.join(', ')}}<br/>` +
+        `<code>N = 4(${activePrimes.join(' &times; ')}) &minus; 1 = ${N}</code> (mod 4 = <strong>${N % 4}</strong>)<br/>` +
+        `Prime factorisation: <code>${facs.join(' &times; ')}</code><br/>` +
+        `New 4k + 3 prime factor(s): <strong>${new3.join(', ')}</strong>`;
+    }
+
+    document.querySelectorAll('#euclid-primes button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const cur = btn.getAttribute('aria-pressed') === 'true';
+        btn.setAttribute('aria-pressed', String(!cur));
+        updateEuclid();
+      });
+    });
+    updateEuclid();
+  </script>
+  <!-- Cookieless Student Engagement Telemetry (GoatCounter) -->
+  <script src="../../analytics.js" defer></script>
+</body>
+</html>
