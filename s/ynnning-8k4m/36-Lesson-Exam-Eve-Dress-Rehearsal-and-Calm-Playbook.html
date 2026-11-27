@@ -700,7 +700,10 @@
     @media (prefers-reduced-motion: no-preference) {
       details.reveal > summary::before { transition: rotate 0.2s ease; }
       details.reveal::details-content {
-        transition: block-size 0.28s ease-in-out, content-visibility 0.28s ease-in-out allow-discrete;
+        transition-property: block-size, content-visibility, display;
+        transition-duration: 0.28s;
+        transition-timing-function: ease-in-out;
+        transition-behavior: allow-discrete;
       }
     }
     .reveal-body {
@@ -712,11 +715,161 @@
     }
     .reveal-body ins {
       text-decoration: none;
-      background: var(--emerald-50);
-      color: var(--emerald-800);
+      background: #d1fae5;
+      color: #064e3b;
       font-weight: 700;
-      padding: 0.04rem 0.26rem;
-      border-radius: 0.25rem;
+      padding: 0.08rem 0.34rem;
+      border-radius: 0.28rem;
+      border-bottom: 1.5px solid var(--emerald-700);
+    }
+    .proof-why {
+      margin: 0.55rem 0 0;
+      font-size: 0.85rem;
+      color: var(--ink-700);
+      line-height: 1.48;
+    }
+
+    /* Blueprint Formula & Proofread Boss Round Polish */
+    .formula {
+      font-family: var(--font-mono);
+      font-size: 0.77rem;
+      font-weight: 600;
+      color: var(--navy-900);
+      background: var(--navy-50);
+      border: 1px solid var(--navy-100);
+      border-radius: 0.45rem;
+      padding: 0.38rem 0.65rem;
+      margin: 0.4rem 0 0.65rem;
+      line-height: 1.45;
+    }
+    .proof-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      margin: 0.35rem 0 0.9rem;
+    }
+    .proof-bar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .proof-card {
+      display: flex;
+      flex-direction: column;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .proof-card.is-nailed {
+      border-color: var(--emerald-700);
+      box-shadow: 0 6px 18px -10px rgba(20, 108, 83, 0.28);
+    }
+    .proof-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.15rem;
+    }
+    .proof-top .eyebrow { margin-bottom: 0; }
+    .nail-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      min-block-size: 2rem;
+      padding: 0.22rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--ink-700);
+      font-family: var(--font-sans);
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+    }
+    .nail-btn:hover { border-color: var(--emerald-700); color: var(--emerald-800); background: var(--emerald-50); }
+    .nail-btn[aria-pressed="true"] {
+      background: var(--emerald-700);
+      border-color: var(--emerald-700);
+      color: #ffffff;
+    }
+    .proof-quote {
+      font-family: var(--font-display);
+      font-size: 1.03rem;
+      line-height: 1.5;
+      color: var(--ink-950);
+      margin: 0 0 0.25rem;
+    }
+
+    /* Slide 1: 4-Word 1-Minute Margin Notes Pad */
+    .margin-pad {
+      margin-top: 0.95rem;
+      padding-top: 0.85rem;
+      border-top: 1px dashed var(--border-strong);
+    }
+    .margin-pad-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .margin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.6rem;
+    }
+    @media (max-width: 560px) {
+      .margin-grid { grid-template-columns: 1fr; }
+    }
+    .margin-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .margin-field label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--navy-800);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .margin-field input {
+      width: 100%;
+      font: inherit;
+      font-size: max(1rem, 1em);
+      line-height: 1.35;
+      padding: 0.45rem 0.65rem;
+      min-block-size: 2.5rem;
+      border-radius: 0.48rem;
+      border: 1.5px solid #94a3b8;
+      background: var(--surface-warm);
+      color: var(--ink-950);
+    }
+    .margin-field input:focus-visible {
+      border-color: var(--navy-700);
+    }
+    .btn-quiet {
+      min-block-size: 2rem;
+      padding: 0.24rem 0.62rem;
+      font-size: 0.76rem;
+    }
+
+    /* Calm Reassurance Callout on Track Record */
+    .reassure-strip {
+      background: var(--emerald-50);
+      border: 1px solid var(--emerald-200);
+      border-left: 4px solid var(--emerald-700);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1.05rem;
+      margin-bottom: 1.25rem;
+      font-size: 0.93rem;
+      color: var(--emerald-800);
     }
 
     /* Evidence Wall Metric Cards */
@@ -884,7 +1037,7 @@
     }
 
     @media (pointer: coarse) {
-      .btn, .slide-tab, .stamp-chip, .q-check-btn, .clock-step { min-block-size: 2.75rem; }
+      .btn, .slide-tab, .stamp-chip, .q-check-btn, .clock-step, .nail-btn, .margin-field input { min-block-size: 3rem; }
     }
 
     /* Clean Single-Page Print Stylesheet for Saturday Pocket Playbook */
@@ -1033,6 +1186,31 @@
                 <div class="arc-box"><strong>2. 3-Act Arc</strong>30s setup &rarr; 45s scene &rarr; 45s reflection.</div>
                 <div class="arc-box"><strong>3. Anchor Rule</strong>Speak until the examiner thanks you.</div>
               </div>
+
+              <div class="margin-pad">
+                <div class="margin-pad-head">
+                  <span class="eyebrow" style="margin:0;">1-Minute Margin Words (Keywords Only)</span>
+                  <button type="button" class="btn btn-quiet" id="clear-margin-btn">Clear words</button>
+                </div>
+                <div class="margin-grid">
+                  <div class="margin-field">
+                    <label for="mn-1">1. Where &amp; When</label>
+                    <input type="text" id="mn-1" name="mn1" maxlength="32" enterkeyhint="next" data-persist="ning_l36_mn1" placeholder="e.g. Kyoto, 2023" />
+                  </div>
+                  <div class="margin-field">
+                    <label for="mn-2">2. Visual / Atmosphere</label>
+                    <input type="text" id="mn-2" name="mn2" maxlength="32" enterkeyhint="next" data-persist="ning_l36_mn2" placeholder="e.g. cedar, quiet light" />
+                  </div>
+                  <div class="margin-field">
+                    <label for="mn-3">3. What You Did</label>
+                    <input type="text" id="mn-3" name="mn3" maxlength="32" enterkeyhint="next" data-persist="ning_l36_mn3" placeholder="e.g. sketched courtyard" />
+                  </div>
+                  <div class="margin-field">
+                    <label for="mn-4">4. Why It Stayed</label>
+                    <input type="text" id="mn-4" name="mn4" maxlength="32" enterkeyhint="done" data-persist="ning_l36_mn4" placeholder="e.g. sense of calm" />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="card card-navy">
@@ -1160,7 +1338,7 @@
             </button>
             <button type="button" class="clock-step" aria-pressed="false" data-step="1">
               <span class="clock-min">03 to 18m</span>
-              <span class="clock-name">T1 Write (165-200w)</span>
+              <span class="clock-name">T1 Write (170-210w)</span>
             </button>
             <button type="button" class="clock-step" aria-pressed="false" data-step="2">
               <span class="clock-min">18 to 20m</span>
@@ -1172,7 +1350,7 @@
             </button>
             <button type="button" class="clock-step" aria-pressed="false" data-step="4">
               <span class="clock-min">25 to 56m</span>
-              <span class="clock-name">T2 Write (265-285w)</span>
+              <span class="clock-name">T2 Write (260-285w)</span>
             </button>
             <button type="button" class="clock-step" aria-pressed="false" data-step="5">
               <span class="clock-min">56 to 60m</span>
@@ -1182,73 +1360,113 @@
 
           <div class="clock-detail" id="clock-detail" aria-live="polite">
             <h3 style="margin-bottom:0.35rem;">Minutes 00 to 03: Task 1 Scan &amp; Overview First</h3>
-            <p style="margin:0; font-size:0.94rem;">Lock three things before typing a single word: (1) <strong>Tense</strong> (past years = Past Simple; 1920 to Today = Present Perfect Passive; process = Present Simple Passive), (2) <strong>Units &amp; exact labels</strong> straight off the chart/map, and (3) a crisp 2-sentence <strong>Overview</strong> with zero raw numbers.</p>
+            <p style="margin:0; font-size:0.94rem;">Lock three things before typing a single word: (1) <strong>Tense</strong> (past years like 2000 to 2020 = Past Simple; 1920 to Today = Present Perfect Passive; process = Present Simple Passive), (2) <strong>Exact units</strong> off the chart or table (<em>nights</em> vs <em>days</em>, <em>millions</em>), and (3) one crisp 2-sentence <strong>Overview paragraph</strong> with zero raw numbers.</p>
           </div>
 
-          <h3 style="margin-bottom:0.65rem;">Final Proofread Boss Round (6 Quick Fixes: Say Them Aloud)</h3>
-          <div class="grid-2">
-            <article class="card card-navy">
-              <span class="eyebrow">Check 1 &middot; Exact Chart &amp; Map Labels</span>
-              <p style="font-size:0.95rem;">&ldquo;A new entrance to the underground carpark was added beside the amphitheathre.&rdquo;</p>
+          <div class="proof-bar">
+            <div>
+              <h3 style="margin:0 0 0.12rem;">Final Proofread Boss Round (6 Quick Fixes: Say Them Aloud)</h3>
+              <p style="margin:0; font-size:0.86rem; color:var(--ink-500);">Six real, high-value habits straight from your exam-week writing. Spot the slips aloud, stamp each card done, then check the Cambridge model.</p>
+            </div>
+            <div class="proof-bar-actions">
+              <span class="meter-pill" id="proof-counter">0 / 6 nailed aloud</span>
+              <button type="button" class="btn btn-quiet" id="toggle-all-models" aria-expanded="false">Reveal All Models</button>
+            </div>
+          </div>
+
+          <div class="grid-2" id="proof-grid">
+            <article class="card card-navy proof-card" data-proof="p1">
+              <div class="proof-top">
+                <span class="eyebrow">Check 1 &middot; Task 1 Past Simple Lock</span>
+                <button type="button" class="nail-btn" aria-pressed="false">Nailed Aloud</button>
+              </div>
+              <div class="formula">In [past year] + Subject + Past Simple (reached / remained / spent)</div>
+              <p class="proof-quote">&ldquo;In 2020, commuter rail journeys reach a peak of 42 million, while average ticket prices remain steady at $18.&rdquo;</p>
               <details class="reveal">
                 <summary>&#128065;&#65039; Reveal Cambridge Model</summary>
                 <div class="reveal-body">
-                  &ldquo;A new entrance to <ins>an</ins> underground <ins>car park</ins> was added beside the <ins>amphitheatre</ins>.&rdquo;
+                  <p style="margin:0;">&ldquo;In 2020, commuter rail journeys <ins>reached</ins> a peak of 42 million, while average ticket prices <ins>remained</ins> steady at $18.&rdquo;</p>
+                  <p class="proof-why">Once a sentence anchors to a finished year like 2020, keep every verb in both halves in Past Simple.</p>
                 </div>
               </details>
             </article>
 
-            <article class="card card-gold">
-              <span class="eyebrow eyebrow-gold">Check 2 &middot; Indefinite Article (a / an)</span>
-              <p style="font-size:0.95rem;">&ldquo;Green roofs create cooler microclimate and offer welcome quiet space for office workers.&rdquo;</p>
+            <article class="card card-gold proof-card" data-proof="p2">
+              <div class="proof-top">
+                <span class="eyebrow eyebrow-gold">Check 2 &middot; Exact Numbers &amp; Chart Agreement</span>
+                <button type="button" class="nail-btn" aria-pressed="false">Nailed Aloud</button>
+              </div>
+              <div class="formula">The bar chart illustrates &middot; Exact Number + million + Plural Noun (no -s, no of)</div>
+              <p class="proof-quote">&ldquo;The bar charts illustrates that the city attracted 12 millions of overnight visitors in 2015.&rdquo;</p>
               <details class="reveal">
                 <summary>&#128065;&#65039; Reveal Cambridge Model</summary>
                 <div class="reveal-body">
-                  &ldquo;Green roofs create <ins>a</ins> cooler microclimate and offer <ins>a</ins> welcome quiet space for office workers.&rdquo;
+                  <p style="margin:0;">&ldquo;The bar <ins>chart</ins> illustrates that the city attracted <ins>12 million</ins> overnight visitors in 2015.&rdquo;</p>
+                  <p class="proof-why">Match singular <em>chart</em> with <em>illustrates</em>, and drop <em>-s</em> and <em>of</em> whenever an exact number sits before <em>million</em>.</p>
                 </div>
               </details>
             </article>
 
-            <article class="card card-emerald">
-              <span class="eyebrow eyebrow-emerald">Check 3 &middot; Preposition &amp; Noun Collocation</span>
-              <p style="font-size:0.95rem;">&ldquo;Shared libraries provide residents free access to books, reducing the exposure to screen fatigue.&rdquo;</p>
+            <article class="card card-emerald proof-card" data-proof="p3">
+              <div class="proof-top">
+                <span class="eyebrow eyebrow-emerald">Check 3 &middot; Indefinite Article (a / an)</span>
+                <button type="button" class="nail-btn" aria-pressed="false">Nailed Aloud</button>
+              </div>
+              <div class="formula">a / an + Adjective + Singular Countable Noun</div>
+              <p class="proof-quote">&ldquo;Public green spaces create calmer urban atmosphere and offer safe outdoor area for local families.&rdquo;</p>
               <details class="reveal">
                 <summary>&#128065;&#65039; Reveal Cambridge Model</summary>
                 <div class="reveal-body">
-                  &ldquo;Shared libraries provide residents <ins>with</ins> free access to books, reducing <ins>exposure</ins> to screen fatigue.&rdquo;
+                  <p style="margin:0;">&ldquo;Public green spaces create <ins>a</ins> calmer urban atmosphere and offer <ins>a</ins> safe outdoor area for local families.&rdquo;</p>
+                  <p class="proof-why">Singular countable nouns (<em>atmosphere</em>, <em>area</em>) always need <em>a</em> or <em>an</em> when modified by an adjective.</p>
                 </div>
               </details>
             </article>
 
-            <article class="card card-navy">
-              <span class="eyebrow">Check 4 &middot; Opener Subject Match</span>
-              <p style="font-size:0.95rem;">&ldquo;Despite attracting fewer visitors, average daily spending in Japan was considerably higher.&rdquo;</p>
+            <article class="card card-navy proof-card" data-proof="p4">
+              <div class="proof-top">
+                <span class="eyebrow">Check 4 &middot; Fixed Verb &amp; Noun Patterns</span>
+                <button type="button" class="nail-btn" aria-pressed="false">Nailed Aloud</button>
+              </div>
+              <div class="formula">tend + to + Verb &middot; opportunity to + Verb (or possibility of + -ing)</div>
+              <p class="proof-quote">&ldquo;Remote workers tend spend fewer hours commuting, which gives them the possibility to focus on deeper projects.&rdquo;</p>
               <details class="reveal">
                 <summary>&#128065;&#65039; Reveal Cambridge Model</summary>
                 <div class="reveal-body">
-                  &ldquo;Despite attracting fewer visitors, <ins>Japan recorded</ins> considerably higher average daily spending.&rdquo;
+                  <p style="margin:0;">&ldquo;Remote workers <ins>tend to spend</ins> fewer hours commuting, which gives them <ins>the opportunity to focus</ins> on deeper projects.&rdquo;</p>
+                  <p class="proof-why">Keep <em>to</em> after <em>tend</em>, and use <em>the opportunity to focus</em> (or <em>the possibility of focusing</em>).</p>
                 </div>
               </details>
             </article>
 
-            <article class="card card-gold">
-              <span class="eyebrow eyebrow-gold">Check 5 &middot; British Consistency &amp; Spelling</span>
-              <p style="font-size:0.95rem;">&ldquo;Large organizations often struggle to prioritize innovation within rigid beurocratic systems.&rdquo;</p>
+            <article class="card card-gold proof-card" data-proof="p5">
+              <div class="proof-top">
+                <span class="eyebrow eyebrow-gold">Check 5 &middot; Agreement &amp; Complete Clauses</span>
+                <button type="button" class="nail-btn" aria-pressed="false">Nailed Aloud</button>
+              </div>
+              <div class="formula">Singular Head Noun + -s Verb &middot; find that + Subject + Verb (or find + Noun)</div>
+              <p class="proof-quote">&ldquo;The constant noise of open-plan offices often reduce concentration, and many researchers find that their clearest ideas during quiet mornings at home.&rdquo;</p>
               <details class="reveal">
                 <summary>&#128065;&#65039; Reveal Cambridge Model</summary>
                 <div class="reveal-body">
-                  &ldquo;Large <ins>organisations</ins> often struggle to <ins>prioritise</ins> innovation within rigid <ins>bureaucratic</ins> systems.&rdquo;
+                  <p style="margin:0;">&ldquo;The constant noise of open-plan offices often <ins>reduces</ins> concentration, and many researchers <ins>find that their clearest ideas emerge</ins> during quiet mornings at home.&rdquo;</p>
+                  <p class="proof-why">Singular head noun <em>noise</em> takes <em>reduces</em>, and <em>find that</em> needs a verb inside the clause (or drop <em>that</em>: <em>find their clearest ideas</em>).</p>
                 </div>
               </details>
             </article>
 
-            <article class="card card-emerald">
-              <span class="eyebrow eyebrow-emerald">Check 6 &middot; Singular / Plural &amp; General Truth</span>
-              <p style="font-size:0.95rem;">&ldquo;The financial uncertainty that freelance work introduced often outweigh the benefits from economies of scale.&rdquo;</p>
+            <article class="card card-emerald proof-card" data-proof="p6">
+              <div class="proof-top">
+                <span class="eyebrow eyebrow-emerald">Check 6 &middot; Backwards Scan: Typos &amp; &ldquo;In the Case Of&rdquo;</span>
+                <button type="button" class="nail-btn" aria-pressed="false">Nailed Aloud</button>
+              </div>
+              <div class="formula">in the case of + Noun (= regarding) &middot; Backwards pass catches typos &amp; doubled words</div>
+              <p class="proof-quote">&ldquo;In case of densely populated coutnries, investing in the the public rail network eases traffic congestion.&rdquo;</p>
               <details class="reveal">
                 <summary>&#128065;&#65039; Reveal Cambridge Model</summary>
                 <div class="reveal-body">
-                  &ldquo;The financial uncertainty that freelance work <ins>introduces</ins> often <ins>outweighs</ins> the benefits <ins>of</ins> economies of scale.&rdquo;
+                  <p style="margin:0;">&ldquo;<ins>In the case of</ins> densely populated <ins>countries</ins>, investing in <ins>the</ins> public rail network eases traffic congestion.&rdquo;</p>
+                  <p class="proof-why"><em>In case of</em> is for precautions (<em>in case of fire</em>), while <em>in the case of</em> introduces a situation; a 2-minute backwards read spots <em>coutnries</em> and <em>the the</em> instantly.</p>
                 </div>
               </details>
             </article>
@@ -1267,17 +1485,17 @@
             </div>
           </div>
 
-          <div class="grid-3" style="margin-bottom:1.25rem;">
+          <div class="grid-3" style="margin-bottom:1.15rem;">
             <article class="stat-card">
-              <span class="eyebrow eyebrow-emerald">Task 2 Accuracy Jump</span>
-              <div class="stat-num">3/14 &rarr; 9/15</div>
-              <p style="font-size:0.88rem; color:var(--ink-700);">Tripled error-free sentences from Essay #4 to Essay #5, and doubled accuracy under full timed conditions in your Self-Employment mock (6/13 clean, comma splice defeated).</p>
+              <span class="eyebrow eyebrow-emerald">Timed Task 2 Peak</span>
+              <div class="stat-num">8 / 14 Clean</div>
+              <p style="font-size:0.88rem; color:var(--ink-700);">Climbed steadily under real timing: 2/13 (Essay 6) &rarr; 6/13 (Self-Employment) &rarr; <strong>8/14</strong> on Groups vs Alone (and <strong>10/14, or 71%</strong>, once two quick keyboard slips are brushed away). Zero comma splices.</p>
             </article>
 
             <article class="stat-card" style="border-top-color:var(--gold-700);">
-              <span class="eyebrow eyebrow-gold">Task 1 Structure &amp; Length</span>
-              <div class="stat-num">219 words</div>
-              <p style="font-size:0.88rem; color:var(--ink-700);">Cleared the 150-word floor with room to spare on Grange Park in 4 crisp paragraphs, and delivered 6/8 spotless sentences on the Hydroelectric process diagram (Band 7.0).</p>
+              <span class="eyebrow eyebrow-gold">Both Word Floors Cleared</span>
+              <div class="stat-num">221w + 260w</div>
+              <p style="font-size:0.88rem; color:var(--ink-700);">Cleared both exam minimums back to back under timing: 221 words on the Tourism mixed chart and 260 words in 4 balanced paragraphs on Task 2, with a fresh, natural conclusion.</p>
             </article>
 
             <article class="stat-card" style="border-top-color:var(--navy-800);">
@@ -1287,28 +1505,34 @@
             </article>
           </div>
 
+          <div class="reassure-strip">
+            <strong>Keep this in perspective tomorrow:</strong> We have been deliberately strict in practice, counting every tiny keyboard slip under a microscope. Because Task 2 carries two-thirds of your Writing score, your calm 4-paragraph structure and 8 to 10 error-free sentences already sit solidly at <strong>Band 7.0</strong> with genuine <strong>Band 7.5</strong> reach.
+          </div>
+
           <div class="grid-2" style="align-items:start;">
             <div class="card card-gold">
               <span class="eyebrow eyebrow-gold">Real Band 7.5 Sentences You Already Wrote</span>
               <h3>Trust Your Own Natural C1 Voice</h3>
+              <blockquote class="quote-win">&ldquo;In my view, although learning in a group yields a more enjoyable social experience, learning alone without distraction produces better results.&rdquo;</blockquote>
+              <blockquote class="quote-win">&ldquo;What learning in solitude enables is the opportunity to focus deeply on the content without distraction, which is increasingly rare and precious in our time.&rdquo;</blockquote>
               <blockquote class="quote-win">&ldquo;Not only is reduced biodiversity a problem&hellip;&rdquo;</blockquote>
-              <blockquote class="quote-win">&ldquo;In addition, their workload can be unpredictable, leading to a suboptimal work-life balance.&rdquo;</blockquote>
               <blockquote class="quote-win">&ldquo;Ultimately, whether the benefits of self-employment can be fully realised depends on how effectively its financial risks are managed.&rdquo;</blockquote>
               <p style="font-size:0.86rem; color:var(--ink-500); margin-top:0.65rem;">Notice that not one of these sentences needs showy thesaurus words. Clear ideas + clean C1 grammar already carry Band 7.5.</p>
             </div>
 
             <div class="card card-navy">
-              <span class="eyebrow">Final Live Scratchpad &amp; Quick Pronunciation Check</span>
+              <span class="eyebrow">Final Live Scratchpad &amp; Quick Watch-Outs</span>
               <h3>Exam-Eve Notes</h3>
               <div class="pill-row">
                 <span class="pill">CHAR-ac-ter</span>
                 <span class="pill">AD-mir-a-ble</span>
                 <span class="pill">Skan-da-NAY-vee-an</span>
+                <span class="pill gd">countries</span>
+                <span class="pill gd">exchanges</span>
+                <span class="pill gd">almost</span>
                 <span class="pill gd">bureaucratic</span>
-                <span class="pill gd">amphitheatre</span>
-                <span class="pill gd">car park</span>
               </div>
-              <label class="field-label" for="eve-scratchpad">Final live reminders from tonight&rsquo;s dress rehearsal:</label>
+              <label class="field-label" for="eve-scratchpad">Final live reminders from today&rsquo;s dress rehearsal:</label>
               <textarea id="eve-scratchpad" class="live-input" data-persist="ning_l36_scratchpad"></textarea>
               <p style="font-size:0.8rem; color:var(--ink-500); margin-top:0.4rem;">Saved automatically in your browser.</p>
             </div>
@@ -1360,14 +1584,14 @@
                 <section class="pass-section">
                   <h3>2. Writing Clock &amp; 4-Point Backwards Pass</h3>
                   <ul class="pass-list">
-                    <li><strong>00 to 20m (Task 1, 165-200w):</strong> 4 paragraphs, zero raw numbers in Overview, hard stop at minute 20.</li>
-                    <li><strong>20 to 60m (Task 2, 265-285w):</strong> 4 balanced paragraphs; add <strong>1 consequence sentence</strong> after every <em>For example,</em>.</li>
-                    <li><strong>Final 4 Minutes (Read Backwards):</strong>
+                    <li><strong>00 to 20m (Task 1, 170-210w):</strong> 4 paragraphs (1 crisp Overview paragraph with zero raw numbers), Past Simple for past years, hard stop at minute 20.</li>
+                    <li><strong>20 to 60m (Task 2, 260-285w):</strong> 4 balanced paragraphs; add <strong>1 consequence sentence</strong> after every <em>For example,</em>; write a fresh 2-sentence conclusion.</li>
+                    <li><strong>Final 4 Minutes (Read Backwards, Bottom to Top):</strong>
                       <ol style="margin:0.25rem 0 0 1.15rem; padding:0;">
-                        <li><code>a / an</code> before adjective + singular countable noun.</li>
-                        <li>Prepositions &amp; verbs (<em>provide someone with</em>, <em>decide which</em>, singular/plural match).</li>
-                        <li>Opener subject match after <em>Despite + -ing</em>.</li>
-                        <li>Exact chart/map label spelling + British <em>-ise</em> throughout.</li>
+                        <li>Fast typing slips &amp; doubled words (<em>countries</em>, <em>exchanges</em>, <em>almost</em>, no <em>the the</em>).</li>
+                        <li>Task 1 Past Simple for finished years (<em>was / lasted / spent</em>) &amp; exact numbers (<em>75 million</em>, no <em>-s / of</em>).</li>
+                        <li><code>a / an</code> before adjective + singular noun &amp; fixed patterns (<em>tend to</em>, <em>in the case of</em>, <em>opportunity to</em>).</li>
+                        <li>Subject-verb agreement (<em>chart illustrates</em>, <em>noise reduces</em>) &amp; a clear verb inside every <em>that</em>-clause.</li>
                       </ol>
                     </li>
                   </ul>
@@ -1490,6 +1714,11 @@
       panel.addEventListener('beforematch', () => selectSlide(idx, false));
     });
 
+    // Graceful fallback when hidden="until-found" is unsupported (e.g. Safari)
+    if (!('onbeforematch' in HTMLElement.prototype)) {
+      panels.forEach((panel, i) => { panel.hidden = i !== activeIdx; });
+    }
+
     // Checkable Question Cards
     const rehCounter = document.getElementById('rehearsal-counter');
     document.querySelectorAll('.q-check-btn').forEach((btn) => {
@@ -1589,27 +1818,27 @@
     const clockStepsData = [
       {
         title: 'Minutes 00 to 03: Task 1 Scan & Overview First',
-        body: 'Lock three things before typing a single word: (1) <strong>Tense</strong> (past years = Past Simple; 1920 to Today = Present Perfect Passive; process = Present Simple Passive), (2) <strong>Units &amp; exact labels</strong> straight off the chart/map, and (3) a crisp 2-sentence <strong>Overview</strong> with zero raw numbers.'
+        body: 'Lock three things before typing a single word: (1) <strong>Tense</strong> (past years like 2000 to 2020 = Past Simple; 1920 to Today = Present Perfect Passive; process = Present Simple Passive), (2) <strong>Exact units</strong> off the chart or table (<em>nights</em> vs <em>days</em>, <em>millions</em>), and (3) one crisp 2-sentence <strong>Overview paragraph</strong> with zero raw numbers.'
       },
       {
-        title: 'Minutes 03 to 18: Task 1 Write (165 to 200 Words, 4 Paragraphs)',
-        body: 'Intro (1 sentence paraphrase) &rarr; Overview (2 big-picture sentences, zero raw figures) &rarr; Body 1 (grouped by major trend or map zone) &rarr; Body 2 (grouped by contrasting trend or remaining zone). Copy labels verbatim.'
+        title: 'Minutes 03 to 18: Task 1 Write (170 to 210 Words, 4 Paragraphs)',
+        body: 'Intro (1-sentence paraphrase) &rarr; Overview (1 clean paragraph covering all visuals, zero raw figures) &rarr; Body 1 (grouped by major trend or map zone) &rarr; Body 2 (grouped by contrasting trend or companion table). Keep estimating and comparing naturally; if a fraction feels awkward under pressure, simply pair two anchor figures ($210 vs $140) and move on.'
       },
       {
-        title: 'Minutes 18 to 20: Task 1 Sniper Check & Hard Stop',
-        body: 'Two-minute scan for exact label spelling, singular/plural agreement, and tense harmony. At minute 20, <strong>stop cleanly and move to Task 2</strong>. Task 2 carries double the marks.'
+        title: 'Minutes 18 to 20: Task 1 Quick Check & Hard Stop',
+        body: 'Two-minute scan for Past Simple on finished years, exact number forms (<em>75 million</em>, no <em>-s / of</em>), and fast typing slips (<em>countries</em>, <em>Japan</em>). At minute 20, <strong>stop cleanly and move to Task 2</strong>. Task 2 carries two-thirds of the mark.'
       },
       {
         title: 'Minutes 20 to 25: Task 2 4-Box Skeleton',
-        body: 'Sketch 4 quick bullet lines before writing: P1 Thesis + clear stance; P2 Main Point A + concrete example + consequence; P3 Main Point B + concrete example + consequence; P4 Fresh closing.'
+        body: 'Sketch 4 quick bullet lines before writing: P1 Thesis + clear stance; P2 Main Point A + concrete example + consequence; P3 Main Point B + concrete example + consequence; P4 Fresh 2-sentence closing.'
       },
       {
-        title: 'Minutes 25 to 56: Task 2 Write (265 to 285 Words, 4 Paragraphs)',
-        body: 'Write steadily in 4 full paragraphs (never split Body 2 into a short 2-sentence orphan). Add <strong>one consequence sentence</strong> after every <em>For example,</em> and drop 3 natural C1 frames (<em>While some&hellip;, others&hellip;</em>, <em>What makes&hellip; is&hellip;</em>, <em>, leading to&hellip;</em>, <em>whether&hellip; depends on&hellip;</em>).'
+        title: 'Minutes 25 to 56: Task 2 Write (260 to 285 Words, 4 Paragraphs)',
+        body: 'Write steadily in 4 balanced paragraphs (never split Body 2 into a short 2-sentence orphan). Add <strong>one follow-up consequence sentence</strong> after every <em>For example,</em> and drop 2 to 3 natural C1 frames (<em>While some&hellip;, others&hellip;</em>, <em>What &hellip; enables is&hellip;</em>, <em>, which is&hellip;</em>).'
       },
       {
         title: 'Minutes 56 to 60: Ning&rsquo;s Backwards 4-Point Proofread',
-        body: 'Read sentence by sentence from the very bottom upwards so your brain sees grammar instead of meaning. Check: (1) <code>a/an</code> before adjective + singular noun, (2) prepositions &amp; agreement, (3) opener subject after <em>Despite</em>, (4) spelling &amp; British <em>-ise</em>.'
+        body: 'Read sentence by sentence from the last full stop upwards so your eyes catch form instead of meaning. Check: (1) <strong>fast typing slips &amp; doubled words</strong> (<em>countries</em>, <em>almost</em>, <em>the the</em>), (2) <strong>Task 1 Past Simple &amp; exact numbers</strong> (<em>was / lasted / spent</em>, <em>75 million</em>), (3) <code>a / an</code> &amp; <strong>fixed patterns</strong> (<em>tend to</em>, <em>in the case of</em>), (4) <strong>agreement &amp; complete clauses</strong> (<em>chart illustrates</em>, verb inside every <em>that</em>-clause).'
       }
     ];
     const clockBtns = Array.from(document.querySelectorAll('#clock-grid .clock-step'));
@@ -1623,6 +1852,87 @@
         playTone(520 + idx * 35, 0.06);
       });
     });
+
+    // Slide 3: Proofread Boss Round Stamp Counter & Reveal/Hide All Sync
+    const PROOF_KEY = 'ning_l36_proof_nailed_v2';
+    const proofCards = Array.from(document.querySelectorAll('#proof-grid .proof-card'));
+    const proofCounter = document.getElementById('proof-counter');
+    const toggleAllBtn = document.getElementById('toggle-all-models');
+    const proofDetails = Array.from(document.querySelectorAll('#proof-grid details.reveal'));
+
+    function syncProofCounter() {
+      let count = 0;
+      const state = {};
+      proofCards.forEach((card) => {
+        const btn = card.querySelector('.nail-btn');
+        const on = btn && btn.getAttribute('aria-pressed') === 'true';
+        card.classList.toggle('is-nailed', on);
+        if (btn) btn.textContent = on ? '\u2713 Nailed Aloud' : 'Nailed Aloud';
+        if (on) count++;
+        state[card.dataset.proof] = on;
+      });
+      if (proofCounter) {
+        proofCounter.textContent = `${count} / ${proofCards.length} nailed aloud`;
+        proofCounter.classList.toggle('complete', count === proofCards.length);
+      }
+      try { localStorage.setItem(PROOF_KEY, JSON.stringify(state)); } catch (_) {}
+    }
+
+    try {
+      const savedProof = JSON.parse(localStorage.getItem(PROOF_KEY) || '{}');
+      proofCards.forEach((card) => {
+        const btn = card.querySelector('.nail-btn');
+        if (btn && savedProof[card.dataset.proof]) btn.setAttribute('aria-pressed', 'true');
+      });
+    } catch (_) {}
+    syncProofCounter();
+
+    proofCards.forEach((card) => {
+      const btn = card.querySelector('.nail-btn');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        const next = btn.getAttribute('aria-pressed') !== 'true';
+        btn.setAttribute('aria-pressed', String(next));
+        playTone(next ? 680 : 400, 0.06);
+        syncProofCounter();
+      });
+    });
+
+    function syncToggleAllModels() {
+      if (!toggleAllBtn || !proofDetails.length) return;
+      const allOpen = proofDetails.every((d) => d.open);
+      toggleAllBtn.setAttribute('aria-expanded', String(allOpen));
+      toggleAllBtn.textContent = allOpen ? 'Hide All Models' : 'Reveal All Models';
+    }
+    if (toggleAllBtn) {
+      toggleAllBtn.addEventListener('click', () => {
+        const expand = toggleAllBtn.getAttribute('aria-expanded') !== 'true';
+        proofDetails.forEach((d) => { d.open = expand; });
+        playTone(expand ? 600 : 420, 0.06);
+        syncToggleAllModels();
+      });
+    }
+    document.addEventListener('toggle', (e) => {
+      if (e.target && e.target.matches('#proof-grid details.reveal')) {
+        syncToggleAllModels();
+      }
+    }, { capture: true });
+    syncToggleAllModels();
+
+    // Slide 1: Clear 4-Word Margin Notes Button
+    const clearMarginBtn = document.getElementById('clear-margin-btn');
+    if (clearMarginBtn) {
+      clearMarginBtn.addEventListener('click', () => {
+        ['mn-1', 'mn-2', 'mn-3', 'mn-4'].forEach((id) => {
+          const inp = document.getElementById(id);
+          if (inp) {
+            inp.value = '';
+            try { localStorage.removeItem(inp.dataset.persist); } catch (_) {}
+          }
+        });
+        playTone(410, 0.05);
+      });
+    }
 
     // Auto-saving Scratchpad
     document.querySelectorAll('[data-persist]').forEach((el) => {
